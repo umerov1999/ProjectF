@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="image_text">Text</string>
+    <string name="image_clip">Clip</string>
+    <string name="image_reset">Reset</string>
+    <string name="image_done">Done</string>
+    <string name="image_cancel">Cancel</string>
+    <string name="image_rotate">Rotate</string>
+
+    <string name="image_mosaic_tip">Move your finger to apply the mosaic</string>
+    <string name="image_undo">Undo</string>
+
+    <string name="ucrop_label_original">Original</string>
+    <string name="ucrop_label_edit_photo">Cropping</string>
+
+    <string name="ucrop_menu_crop">Crop</string>
+
+    <string name="ucrop_error_input_data_is_absent">Both input and output must be specified Uri.</string>
+    <string name="ucrop_mutate_exception_hint">So override the color resource (ucrop_color_toolbar_widget) in your app to make it work on devices pre-L</string>
+    <string name="ucrop_rotate">Rotate</string>
+    <string name="ucrop_scale">Scale</string>
+    <string name="ucrop_crop">Crop</string>
+</resources>

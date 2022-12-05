@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/post_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/buttons_bar_container"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:scrollbars="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+                        android:id="@+id/fragment_post_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:autoLink="web"
+                        android:paddingTop="8dp"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        app:displayHashTags="true"
+                        app:emojiconSize="20sp"
+                        app:hashTagColor="?attr/colorAccent"
+                        tools:text="Message" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <include
+                            layout="@layout/post_attachment_links"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/item_post_signer_root"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="0dp"
+                        android:paddingTop="8dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="8dp">
+
+                        <ImageView
+                            android:id="@+id/item_post_signer_icon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/person" />
+
+                        <TextView
+                            android:id="@+id/item_post_signer_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                            tools:text="Umerov Artem" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/item_post_copyright"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:gravity="center_vertical"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                        android:textColor="?attr/colorAccent" />
+                </LinearLayout>
+            </ScrollView>
+
+            <RelativeLayout
+                android:id="@+id/buttons_bar_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:paddingBottom="4dp">
+
+                <include layout="@layout/line_divider" />
+
+                <dev.ragnarok.fenrir.view.CircleCounterButton
+                    android:id="@+id/like_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:active_background_color="?attr/icon_color_active"
+                    app:always_counter="true"
+                    app:button_icon="@drawable/heart"
+                    app:noactive_icon_color="?attr/colorOnSurface" />
+
+                <dev.ragnarok.fenrir.view.CircleCounterButton
+                    android:id="@+id/comments_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/share_button"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:active="false"
+                    app:active_background_color="?attr/icon_color_active"
+                    app:always_counter="true"
+                    app:button_icon="@drawable/comment"
+                    app:noactive_icon_color="?attr/colorOnSurface" />
+
+                <dev.ragnarok.fenrir.view.CircleCounterButton
+                    android:id="@+id/share_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:active_background_color="?attr/icon_color_active"
+                    app:always_counter="true"
+                    app:button_icon="@drawable/ic_outline_share"
+                    app:noactive_icon_color="?attr/colorOnSurface" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/fragment_post_deleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/deleted_post" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/post_loading_root"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+                android:id="@+id/loading"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:alpha="0.8"
+                android:visibility="gone"
+                app:loopAnimation="true" />
+
+            <TextView
+                android:id="@+id/post_loading_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/loading" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/try_again_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/try_again"
+                android:textAllCaps="true" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

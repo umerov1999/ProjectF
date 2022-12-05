@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="is_tablet">true</bool>
+    <integer name="files_column_count">3</integer>
+    <integer name="photos_column_count">5</integer>
+    <integer name="videos_column_count">5</integer>
+</resources>

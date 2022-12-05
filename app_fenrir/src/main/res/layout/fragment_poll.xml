@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/toolbar_container"
+        layout="@layout/toolbar" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/item_poll_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar_container"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
+        app:cardElevation="1dp">
+
+        <dev.ragnarok.fenrir.view.AspectRatioImageView
+            android:id="@+id/item_poll_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:aspectRatioEnabled="true"
+            app:aspectRatioH="9"
+            app:aspectRatioW="16"
+            app:dominantMeasurement="width" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/vote"
+        android:layout_below="@id/item_poll_frame"
+        android:scrollbars="vertical" />
+
+    <dev.ragnarok.fenrir.view.ProgressButton
+        android:id="@+id/vote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:animateLayoutChanges="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:button_text="@string/add_vote" />
+
+</RelativeLayout>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/crypt_state"
+        android:icon="@drawable/ic_outline_lock_open"
+        android:title="@string/encryption_status"
+        app:iconTint="?colorOnSurface"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_refresh"
+        android:title="@string/refresh" />
+
+    <item
+        android:id="@+id/last_read"
+        android:title="@string/last_read" />
+
+    <item
+        android:id="@+id/show_profile"
+        android:title="@string/show_profile" />
+
+
+    <item
+        android:id="@+id/action_leave_chat"
+        android:title="@string/group_chat_leave" />
+
+    <item
+        android:id="@+id/delete_chat"
+        android:title="@string/delete_chat" />
+
+    <item
+        android:id="@+id/action_edit_chat"
+        android:title="@string/edit_chat" />
+
+    <item
+        android:id="@+id/action_chat_members"
+        android:title="@string/chat_users" />
+
+    <item
+        android:id="@+id/action_invite_link"
+        android:title="@string/invite_link" />
+
+    <item
+        android:id="@+id/download_peer_to"
+        android:title="@string/download_peer_to" />
+
+    <item
+        android:id="@+id/make_screenshot"
+        android:title="@string/make_screenshot" />
+
+    <item
+        android:id="@+id/action_key_exchange"
+        android:title="@string/key_exchange" />
+
+    <item
+        android:id="@+id/messages_search"
+        android:title="@string/search" />
+
+    <item
+        android:id="@+id/action_short_link"
+        android:title="@string/short_link" />
+
+    <item
+        android:id="@+id/change_hrono_history"
+        android:title="@string/change_hrono_history" />
+
+    <item
+        android:id="@+id/action_attachments_in_conversation"
+        android:title="@string/attachments_in_chat" />
+
+</menu>

@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        android:id="@+id/pagan_symbol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:loopAnimation="true"
+        tools:src="@drawable/ic_cat" />
+
+    <include
+        android:id="@+id/runes_container"
+        layout="@layout/runes_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_margin_horizontal"
+        android:layout_marginTop="@dimen/card_margin_horizontal"
+        android:layout_marginEnd="@dimen/card_margin_horizontal" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_margin_horizontal"
+        android:layout_marginTop="@dimen/card_margin"
+        android:layout_marginEnd="@dimen/card_margin_horizontal"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardElevation="0dp"
+        tools:ignore="UnusedAttribute">
+
+        <ImageView
+            android:id="@+id/cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.6"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <FrameLayout
+                    android:layout_width="@dimen/avatar_size_big"
+                    android:layout_height="@dimen/avatar_size_big">
+
+                    <ImageView
+                        android:id="@+id/header_group_avatar"
+                        android:layout_width="@dimen/avatar_size_big"
+                        android:layout_height="@dimen/avatar_size_big"
+                        android:background="@drawable/sel_button_round_5_white"
+                        android:contentDescription="@null"
+                        android:padding="1.5dp" />
+
+                    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+                        android:id="@+id/donated_anim"
+                        android:layout_width="@dimen/avatar_size_big"
+                        android:layout_height="@dimen/avatar_size_big"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/item_verified"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:background="@drawable/sel_button_round_5_white"
+                        android:backgroundTint="#009900"
+                        android:backgroundTintMode="add"
+                        android:contentDescription="@null"
+                        android:padding="4dp"
+                        android:src="@drawable/verified"
+                        android:visibility="gone"
+                        app:tint="?white_color" />
+
+                    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+                        android:id="@+id/item_blacklisted"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="end|bottom"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:contentDescription="@null"
+                        android:visibility="gone"
+                        app:loopAnimation="true"
+                        tools:src="@drawable/audio_died" />
+
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/header_group_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:maxLines="3"
+                        android:textAppearance="@style/ProfileText" />
+
+                    <TextView
+                        android:id="@+id/header_group_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="end"
+                        android:maxLines="2"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/fragment_group_audio"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center_vertical"
+                            android:contentDescription="@null"
+                            android:src="@drawable/song"
+                            android:visibility="gone"
+                            app:tint="?colorOnSurface" />
+
+                        <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+                            android:id="@+id/header_group_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:autoLink="web|phone|map|email"
+                            android:ellipsize="end"
+                            android:gravity="end"
+                            android:maxLines="6"
+                            android:stateListAnimator="@animator/clicked"
+                            android:textAppearance="@style/ProfileSubText"
+                            android:visibility="visible"
+                            app:emojiconSize="20sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:baselineAligned="false"
+                android:gravity="end"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/header_group_primary_button"
+                    style="@style/MyOutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:insetTop="3dp"
+                    android:insetBottom="3dp"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/button_profile_tint"
+                    tools:text="Primary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/header_group_secondary_button"
+                    style="@style/MyOutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:insetTop="3dp"
+                    android:insetBottom="3dp"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/button_profile_tint"
+                    tools:text="Secondary" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/header_group_fab_message"
+                    style="?attr/fab_secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/email"
+                    app:elevation="1dp"
+                    app:fabSize="mini" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <HorizontalScrollView
+        android:id="@+id/horiz_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_margin_horizontal"
+        android:layout_marginTop="@dimen/card_margin"
+        android:layout_marginEnd="@dimen/card_margin_horizontal"
+        android:layout_marginBottom="@dimen/card_margin_horizontal"
+        android:background="?materialCardBackgroundStyle">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/header_group_members_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/header_group_bmembers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/counter_followers"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_group_topics_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/header_group_btopics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+                    android:text="@string/counter_topics"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_group_chats_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/header_group_bchats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+                    android:text="@string/counter_chats"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_group_articles_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/header_group_barticles"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+                    android:text="@string/counter_articles"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_group_photos_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/header_group_bphotos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+                    android:text="@string/counter_photos"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_group_videos_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/header_group_bvideos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+                    android:text="@string/counter_videos"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_group_audios_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/header_group_baudios"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+                    android:text="@string/counter_audios"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_group_documents_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/header_group_bdocuments"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+                    android:text="@string/counter_documents"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_group_products_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/header_group_bproducts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+                    android:text="@string/counter_markets"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_group_products_services_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/header_group_bservices_products"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+                    android:text="@string/counter_markets_services"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_group_narratives_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/header_group_bnarratives"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:gravity="center"
+                    android:text="@string/counter_narratives"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/header_group_contacts_container"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="bottom"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked"
+                android:text="@string/community_managers_contacts"
+                android:textAppearance="@style/ProfileSubText"
+                app:drawableTint="?android:attr/textColorPrimary"
+                app:drawableTopCompat="@drawable/account_circle" />
+
+
+            <TextView
+                android:id="@+id/header_group_links_container"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="bottom"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked"
+                android:text="@string/links"
+                android:textAppearance="@style/ProfileSubText"
+                app:drawableTint="?android:attr/textColorPrimary"
+                app:drawableTopCompat="@drawable/share" />
+
+            <TextView
+                android:id="@+id/header_group_about_container"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="bottom"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked"
+                android:text="@string/description_hint"
+                android:textAppearance="@style/ProfileSubText"
+                app:drawableTint="?android:attr/textColorPrimary"
+                app:drawableTopCompat="@drawable/about_writed" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/post_filter_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/menu_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:visibility="gone" />
+
+</LinearLayout>
+

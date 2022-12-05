@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardBackgroundColor="?message_bubble_color"
+    app:cardElevation="0dp"
+    app:contentPadding="0dp">
+
+    <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:clipToPadding="true"
+            android:fitsSystemWindows="true"
+            android:theme="@style/Theme.Toolbar.Surface" />
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:padding="4dp">
+
+                    <ImageView
+                        android:id="@+id/avatar"
+                        android:layout_width="@dimen/message_author_avatar_size"
+                        android:layout_height="@dimen/message_author_avatar_size"
+                        android:layout_marginStart="4dp"
+                        android:contentDescription="@null" />
+
+                    <dev.ragnarok.fenrir.view.MessageView
+                        android:id="@+id/item_message_bubble"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_toEndOf="@id/avatar"
+                        android:orientation="vertical"
+                        android:paddingStart="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="8dp"
+                        app:first_color="?attr/message_bubble_color"
+                        app:radius="@dimen/message_bubble_corner_radius"
+                        app:second_color="?message_bubble_color">
+
+                        <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+                            android:id="@+id/item_message_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:autoLink="web"
+                            android:gravity="start"
+                            android:textSize="@dimen/font_size_title"
+                            emojicon:emojiconSize="20sp"
+                            tools:text="Message" />
+
+                        <LinearLayout
+                            android:id="@+id/item_message_attachment_container"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/item_message_text"
+                            android:orientation="vertical">
+
+                            <include
+                                layout="@layout/attachment_links"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <dev.ragnarok.fenrir.view.emoji.BotKeyboardView
+                            android:id="@+id/input_keyboard_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:visibility="gone"
+                            app:track_keyboard_height="false" />
+
+                        <TextView
+                            android:id="@+id/item_message_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:textSize="@dimen/font_size_additional"
+                            tools:text="time" />
+
+                    </dev.ragnarok.fenrir.view.MessageView>
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/colorSurface"
+                    android:padding="4dp">
+
+                    <ImageButton
+                        android:id="@+id/activity_quick_answer_to_dialog"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:contentDescription="@null"
+                        android:src="@drawable/reply"
+                        android:text="@string/go_to_dialog"
+                        app:tint="?quick_reply_icon_color" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/activity_quick_answer_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+
+                        android:layout_toStartOf="@id/activity_quick_answer_send"
+                        android:layout_toEndOf="@id/activity_quick_answer_to_dialog"
+                        android:background="@drawable/background_message_round"
+                        android:ellipsize="end"
+                        android:gravity="center_vertical"
+                        android:hint="@string/text_hint"
+                        android:maxLines="3"
+                        android:minHeight="48dp"
+                        android:paddingStart="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="8dp"
+                        android:textColorHint="?android:textColorSecondary"
+                        android:textSize="@dimen/font_size_title" />
+
+                    <ImageButton
+                        android:id="@+id/activity_quick_answer_send"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/circle_back"
+                        android:clickable="true"
+                        android:contentDescription="@null"
+                        android:focusable="true"
+                        android:padding="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/send"
+                        android:text="@string/send" />
+
+                </RelativeLayout>
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

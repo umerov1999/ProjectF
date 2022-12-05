@@ -1,0 +1,113 @@
+plugins {
+    id("com.android.library")
+}
+
+//1.8.0-alpha03
+
+def srcDirs = [
+        'com/google/android/material/animation',
+        'com/google/android/material/appbar',
+        'com/google/android/material/badge',
+        'com/google/android/material/behavior',
+        'com/google/android/material/bottomappbar',
+        'com/google/android/material/bottomnavigation',
+        'com/google/android/material/bottomsheet',
+        'com/google/android/material/button',
+        'com/google/android/material/canvas',
+        'com/google/android/material/card',
+        'com/google/android/material/checkbox',
+        'com/google/android/material/chip',
+        'com/google/android/material/circularreveal',
+        'com/google/android/material/circularreveal/cardview',
+        'com/google/android/material/circularreveal/coordinatorlayout',
+        'com/google/android/material/color',
+        'com/google/android/material/datepicker',
+        'com/google/android/material/dialog',
+        'com/google/android/material/divider',
+        'com/google/android/material/drawable',
+        'com/google/android/material/elevation',
+        'com/google/android/material/expandable',
+        'com/google/android/material/floatingactionbutton',
+        'com/google/android/material/imageview',
+        'com/google/android/material/internal',
+        'com/google/android/material/materialswitch',
+        'com/google/android/material/math',
+        'com/google/android/material/menu',
+        'com/google/android/material/motion',
+        'com/google/android/material/navigation',
+        'com/google/android/material/navigationrail',
+        'com/google/android/material/progressindicator',
+        'com/google/android/material/radiobutton',
+        'com/google/android/material/resources',
+        'com/google/android/material/ripple',
+        'com/google/android/material/search',
+        'com/google/android/material/shape',
+        'com/google/android/material/shadow',
+        'com/google/android/material/sidesheet',
+        'com/google/android/material/slider',
+        'com/google/android/material/snackbar',
+        'com/google/android/material/stateful',
+        'com/google/android/material/switchmaterial',
+        'com/google/android/material/tabs',
+        'com/google/android/material/textfield',
+        'com/google/android/material/textview',
+        'com/google/android/material/theme',
+        'com/google/android/material/theme/overlay',
+        'com/google/android/material/timepicker',
+        'com/google/android/material/tooltip',
+        'com/google/android/material/transition',
+        'com/google/android/material/transformation',
+        'com/google/android/material/typography',
+]
+
+android {
+    namespace "com.google.android.material"
+    sourceSets {
+        main.java.srcDir 'java'
+        main.java.includes = srcDirs.collect { it + '/**/*.java' }
+        main.java.excludes = [
+                '**/build/**',
+        ]
+        srcDirs.forEach {
+            main.res.srcDirs += 'java/' + it + '/res'
+            main.res.srcDirs += 'java/' + it + '/res-public'
+        }
+    }
+    compileSdk = appCompileSDK
+    buildToolsVersion = appBuildTools
+
+    defaultConfig {
+        minSdk = appMinSDK
+        targetSdk = appTargetSDK
+        generatedDensities = []
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        encoding = "utf-8"
+        aaptOptions.additionalParameters "--no-version-vectors"
+    }
+    lint {
+        checkOnly 'NewApi'
+    }
+}
+
+dependencies {
+    implementation("androidx.annotation:annotation:$annotationVersion")
+    implementation("androidx.appcompat:appcompat:$appcompatVersion")
+    implementation("androidx.core:core:$coreVersion")
+    implementation("androidx.activity:activity:$activityVersion")
+    implementation("androidx.fragment:fragment:$fragmentVersion")
+    implementation("androidx.cardview:cardview:$cardviewVersion")
+    implementation("androidx.dynamicanimation:dynamicanimation:$dynamicanimationVersion")
+    implementation("androidx.constraintlayout:constraintlayout:$constraintlayoutVersion")
+    //implementation("androidx.recyclerview:recyclerview:$recyclerviewVersion")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:$coordinatorlayoutVersion")
+    implementation("androidx.vectordrawable:vectordrawable:$vectordrawableVersion")
+    implementation("androidx.transition:transition:$transitionVersion")
+    implementation("androidx.lifecycle:lifecycle-runtime:$lifecycleVersion")
+    implementation("androidx.drawerlayout:drawerlayout:$drawerlayoutVersion")
+    implementation("com.google.errorprone:error_prone_annotations:${errorproneVersion}")
+    implementation project(path: ":viewpager2")
+}

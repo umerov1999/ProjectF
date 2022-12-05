@@ -1,0 +1,14 @@
+#ifndef TAGLIB_CONFIG_H
+#define TAGLIB_CONFIG_H
+
+#define   HAVE_MSC_BYTESWAP 1
+
+#define   HAVE_WIN_ATOMIC 1
+
+/* Defined if your compiler supports some safer version of vsprintf */
+#define   HAVE_VSNPRINTF 1
+#define   HAVE_VSPRINTF_S 1
+
+/* Defined if your compiler supports ISO _strdup */
+#define   HAVE_ISO_STRDUP 1
+#endif

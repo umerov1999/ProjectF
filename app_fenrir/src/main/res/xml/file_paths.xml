@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path
+        name="Captured"
+        path="DCIM/Fenrir" />
+    <cache-path
+        name="notif-cache"
+        path="notif-cache" />
+    <external-path
+        name="external_files"
+        path="." />
+</paths>

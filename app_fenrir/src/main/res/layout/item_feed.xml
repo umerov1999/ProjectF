@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    style="?materialCardStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/card_margin_horizontal"
+    android:layout_marginEnd="@dimen/card_margin_horizontal"
+    android:layout_marginBottom="@dimen/card_margin"
+    android:foreground="?android:attr/selectableItemBackground"
+    tools:ignore="UnusedAttribute">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dp"
+        android:paddingBottom="2dp">
+
+        <ImageView
+            android:id="@+id/item_post_avatar"
+            android:layout_width="@dimen/avatar_size_small"
+            android:layout_height="@dimen/avatar_size_small"
+            android:layout_marginStart="16dp"
+            android:contentDescription="@null"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/item_post_owner_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            app:layout_constraintEnd_toStartOf="@id/post_views_counter"
+            app:layout_constraintStart_toEndOf="@id/item_post_avatar"
+            app:layout_constraintTop_toTopOf="@id/item_post_avatar"
+            tools:text="Umerov Artem" />
+
+        <TextView
+            android:id="@+id/item_post_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            app:layout_constraintEnd_toEndOf="@id/item_post_owner_name"
+            app:layout_constraintStart_toStartOf="@id/item_post_owner_name"
+            app:layout_constraintTop_toBottomOf="@id/item_post_owner_name"
+            tools:text="Today 19:26" />
+
+        <TextView
+            android:id="@+id/post_views_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            app:drawableRightCompat="@drawable/ic_eye_white_vector"
+            app:drawableTint="?android:textColorSecondary"
+            app:layout_constraintBottom_toBottomOf="@id/item_post_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/item_post_owner_name"
+            tools:text="1533" />
+
+        <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+            android:id="@+id/item_post_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:autoLink="web"
+            android:gravity="start"
+            android:linksClickable="false"
+            android:paddingBottom="4dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            app:displayHashTags="true"
+            app:emojiconSize="20sp"
+            app:hashTagColor="?attr/colorAccent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/item_post_avatar"
+            app:layout_constraintTop_toBottomOf="@id/item_post_avatar"
+            tools:text="Message" />
+
+        <TextView
+            android:id="@+id/item_post_copyright"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center_vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:textColor="?attr/colorAccent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/item_post_avatar"
+            app:layout_constraintTop_toBottomOf="@id/item_post_text" />
+
+        <TextView
+            android:id="@+id/item_post_show_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/show_more"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="@id/item_post_text"
+            app:layout_constraintTop_toBottomOf="@id/item_post_copyright" />
+
+        <LinearLayout
+            android:id="@+id/item_post_attachments"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/item_post_show_more">
+
+            <include
+                layout="@layout/post_attachment_links"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/buttons_bar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="like_button,comments_button,share_button" />
+
+        <dev.ragnarok.fenrir.view.CircleCounterButton
+            android:id="@+id/like_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:active_background_color="?attr/icon_color_active"
+            app:always_counter="false"
+            app:button_icon="@drawable/heart"
+            app:layout_constraintEnd_toStartOf="@id/comments_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/item_post_attachments"
+            app:noactive_icon_color="?attr/colorOnSurface" />
+
+        <dev.ragnarok.fenrir.view.CircleCounterButton
+            android:id="@+id/comments_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:active_background_color="?attr/icon_color_active"
+            app:always_counter="false"
+            app:button_icon="@drawable/comment"
+            app:layout_constraintEnd_toStartOf="@id/share_button"
+            app:layout_constraintStart_toEndOf="@id/like_button"
+            app:layout_constraintTop_toBottomOf="@id/item_post_attachments"
+            app:noactive_icon_color="?attr/colorOnSurface" />
+
+        <dev.ragnarok.fenrir.view.CircleCounterButton
+            android:id="@+id/share_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:active_background_color="?attr/icon_color_active"
+            app:button_icon="@drawable/ic_outline_share"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/comments_button"
+            app:layout_constraintTop_toBottomOf="@id/item_post_attachments"
+            app:noactive_icon_color="?attr/colorOnSurface" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
+

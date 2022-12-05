@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="App.DayNight.Dynamic" parent="Theme.Material3.DynamicColors.DayNight">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">?attr/colorPrimary</item>
+        <item name="statusbarNonColoredColor">#000</item>
+        <item name="toolbarElevation">@dimen/toolbar_with_elevation</item>
+        <item name="android:scrollbarSize">2dp</item>
+
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:statusBarColor">?android:colorBackground</item>
+        <item name="android:navigationBarColor">?android:colorBackground</item>
+
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.AppTheme.SmallComponent
+        </item>
+        <item name="shapeAppearanceMediumComponent">
+            @style/ShapeAppearance.AppTheme.MediumComponent
+        </item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.AppTheme.LargeComponent
+        </item>
+
+        <item name="materialCardViewStyle">@style/Theme.MaterialCardView</item>
+        <item name="badgeStyle">@style/Theme.BadgeStyle</item>
+        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
+        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary.Small</item>
+        <item name="fab_player">@style/Theme.FloatingActionButtonSecondary</item>
+
+        <item name="materialCardStyle">@style/CardViewMD2</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_stroke_filled</item>
+
+        <item name="dividerColor">#E1E3E7</item>
+
+        <item name="dialogs_unread_color">#20b0b0b0</item>
+        <item name="navi_menu_selector">@drawable/list_selector_white</item>
+        <item name="message_unread_color">@color/m3_ref_palette_dynamic_primary50</item>
+        <item name="icon_color_active">@color/m3_ref_palette_dynamic_primary60</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+
+        <item name="messages_background_color">#ECECEC</item>
+        <item name="my_messages_bubble_color">@color/m3_ref_palette_dynamic_secondary90</item>
+        <item name="my_messages_secondary_bubble_color">@color/m3_ref_palette_dynamic_secondary80
+        </item>
+
+        <item name="message_bubble_color">#D4FFFFFF</item>
+        <item name="sticker_hint_color">#DDFFFFFF</item>
+        <item name="navi_menu_color">@android:color/white</item>
+        <item name="toast_background">#3E3E3E</item>
+        <item name="white_color">#FFFFFF</item>
+        <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
+
+        <item name="chat_background_cookies">@drawable/cookies_white</item>
+        <item name="chat_background_lines">@drawable/lines_white</item>
+        <item name="chat_background_runes">@drawable/runes_white</item>
+
+        <item name="buttonAddPhotoBackground">@drawable/background_rectangle_dash_inverse</item>
+        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+    </style>
+</resources>

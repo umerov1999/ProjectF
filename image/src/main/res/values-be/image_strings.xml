@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image_text">Тэкст</string>
+    <string name="image_clip">Абрэзаць</string>
+    <string name="image_reset">Скінуць</string>
+    <string name="image_done">Гатова</string>
+    <string name="image_cancel">Адмена</string>
+    <string name="image_rotate">Павярнуць</string>
+
+    <string name="image_mosaic_tip">Перамяшчайце палец, каб прымяніць мазаіку</string>
+    <string name="image_undo">Адмяніць</string>
+
+    <string name="ucrop_label_original">Арыгінал</string>
+    <string name="ucrop_label_edit_photo">Абрэзка</string>
+
+    <string name="ucrop_menu_crop">Абрэзаць</string>
+
+    <string name="ucrop_error_input_data_is_absent">Неабходна паказаць як уваходны, так і выходны Uri.</string>
+    <string name="ucrop_mutate_exception_hint">Таму перавызначыце рэсурс колеру (ucrop_color_toolbar_widget) у сваім дадатку, каб ён працаваў на прыладах pre-L</string>
+    <string name="ucrop_rotate">Паварот</string>
+    <string name="ucrop_scale">Павелічэнне</string>
+    <string name="ucrop_crop">Абрэзаць</string>
+</resources>

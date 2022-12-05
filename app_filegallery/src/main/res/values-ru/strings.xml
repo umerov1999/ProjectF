@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Файлы</string>
+
+    <string name="crash_error_activity_error_occurred_explanation">Необрабатываемое исключение.</string>
+    <string name="crash_error_activity_restart_app">Перезапуск</string>
+    <string name="crash_error_activity_error_details">Детали</string>
+    <string name="crash_error_activity_error_details_title">Детали исключения</string>
+    <string name="crash_error_activity_error_details_close">Закрыть</string>
+    <string name="crash_error_activity_error_details_copy">Копировать</string>
+    <string name="crash_error_activity_error_details_copied">Скопировано</string>
+    <string name="crash_error_activity_error_details_clipboard_label">Информация об ошибке</string>
+    <string name="crash_error_activity_out_of_memory">Недостаточно оперативной памяти!</string>
+
+    <string-array name="array_language_names">
+        <item>По умолчанию</item>
+        <item>Английский</item>
+        <item>Русский</item>
+        <item>Белорусский</item>
+    </string-array>
+
+    <string-array name="night_mode_names">
+        <item>Выкл</item>
+        <item>Вкл</item>
+        <item>Автоматически</item>
+        <item>Как в системе</item>
+    </string-array>
+
+    <string-array name="theme_overlay_names">
+        <item>Выкл</item>
+        <item>Amoled</item>
+        <item>Material 1</item>
+    </string-array>
+
+    <string-array name="array_font_size_names">
+        <item>По умолчанию</item>
+        <item>Маленький</item>
+        <item>Средний</item>
+        <item>Большой</item>
+        <item>Огромный</item>
+    </string-array>
+
+    <string-array name="array_lifecycle_names">
+        <item>1 мин.</item>
+        <item>2 мин.</item>
+        <item>5 мин.</item>
+        <item>10 мин.</item>
+        <item>15 мин.</item>
+    </string-array>
+
+    <string-array name="array_ffmpeg_names">
+        <item>Выкл</item>
+        <item>Включен</item>
+        <item>Первостепенный</item>
+    </string-array>
+
+    <string-array name="array_rendering_mode_names">
+        <item>Software</item>
+        <item>Hardware разрешён</item>
+        <item>Принудительно Hardware</item>
+    </string-array>
+
+    <string name="files">Файлы</string>
+    <string name="button_back">Назад</string>
+    <string name="search_hint">Найти</string>
+    <string name="close">Закрыть</string>
+    <string name="search_options">Опции поиска</string>
+    <string name="directory_is_empty">Директория пуста</string>
+    <string name="error_timeout_message">Превышено время ожидание запроса</string>
+    <string name="error_unknown_host">Нет подключения к сети</string>
+    <string name="more_info">Подробнее</string>
+    <string name="button_ok">OK</string>
+    <string name="button_yes">Да</string>
+    <string name="button_cancel">Отмена</string>
+    <string name="button_copy">Копировать</string>
+    <string name="button_open">Открыть</string>
+    <string name="not_permitted">Разрешения не предоставлены! Функция не доступна</string>
+    <string name="click_back_to_exit">Нажмите еще раз для выхода</string>
+    <string name="success">Успех</string>
+    <string name="choose_theme_title">Цветовая палитра</string>
+    <string name="night_mode_title">Ночной режим</string>
+    <string name="font_size">Размер шрифта</string>
+    <string name="use_internal_downloader">Использовать внутренний загрузчик</string>
+    <string name="use_internal_downloader_summary">Для видео и документов</string>
+    <string name="video_controller_to_decor">Видео кнопки в DecorView</string>
+    <string name="video_swipes">Свайпы у видео</string>
+    <string name="download_photo_tap">Скачивать фото по долгому нажатию</string>
+    <string name="show_photos_line">Показывать трекбар с фотками</string>
+    <string name="music_settings">Плеер и музыка</string>
+    <string name="audio_round_icon">Круглые обложки аудио</string>
+    <string name="use_long_click_download">Скачивать по долгому нажатию</string>
+    <string name="revert_play_audio">Кнопка плей - меню</string>
+    <string name="player_has_background">Фон плеера</string>
+    <string name="player_background">Настройка фона плеера</string>
+    <string name="use_stop_audio">Стоп вместо паузы аудио</string>
+    <string name="audio_save_mode_button">Скачивать несколько треков</string>
+    <string name="show_mini_player">Показывать мини-плеер</string>
+    <string name="lifecycle_music_service">Время жизни плеера (сек.)</string>
+    <string name="ffmpeg_audio_codecs">FFmpeg аудио кодеки</string>
+    <string name="download_directory">Куда скачивать</string>
+    <string name="music_dir">Музыка</string>
+    <string name="photo_dir">Фото</string>
+    <string name="video_dir">Видео</string>
+    <string name="photo_to_user_dir">Сортировать фото по папкам</string>
+    <string name="dev_settings">Для разработчиков</string>
+    <string name="developer_mode">Режим разработчика</string>
+    <string name="max_bitmap_resolution">Максимальное разрешение картинки</string>
+    <string name="max_thumb_resolution">Максимальное разрешение обложки</string>
+    <string name="rendering_mode">Режим отрисовки изображений</string>
+    <string name="need_restart">Требуется перезапуск</string>
+    <string name="enable_dirs_files_count">Количество файлов в папке</string>
+    <string name="cache_cleaner">Очистить кэш</string>
+    <string name="local_media_server">Локальный медиа сервер</string>
+    <string name="settings">Настройки</string>
+    <string name="rotate_speed">Скорость вращения %1$d</string>
+    <string name="rotate_scale">Масштаб фона %1$d</string>
+    <string name="player_blur">Размытие %1$d</string>
+    <string name="invert_rotating">Вращать по часовой</string>
+    <string name="fade_saturation">Мерцающая насыщенность</string>
+    <string name="set_default">Сбросить</string>
+    <string name="slidr_vertical_settings">Вертикальные настройки:</string>
+    <string name="slidr_horizontal_settings">Горизонтальные настройки:</string>
+    <string name="slidr_sensitive">Чувствительность %1$d</string>
+    <string name="slidr_velocity_threshold">Порог скорости %1$d</string>
+    <string name="slidr_distance_threshold">Порог дистанции %1$d</string>
+    <string name="not_available">НЕДОСТУПНО</string>
+    <string name="theme_edit_title">Выбор цветового оформления</string>
+    <string name="enabled">Включен</string>
+    <string name="enabled_audio_local_sync">Синхронизировать скачанные</string>
+    <string name="rotating_player_cover">Вращать обложку плеера</string>
+    <string name="audio_channel">FileGallery-Плеер</string>
+    <string name="downloading">Скачивание</string>
+    <string name="saved_audio">Скачивание трека…</string>
+    <string name="exist_audio">Уже скачано (изменение даты…)</string>
+    <string name="cancel">Отмена</string>
+    <string name="null_image_link">Отсутствует ссылка на скачивание</string>
+    <string name="error">Ошибка</string>
+    <string name="error_with_message">Ошибка: %1$s</string>
+    <string name="work_manager">FileGallery Work</string>
+    <string name="channel_keep_work_manager">WorkManager</string>
+    <string name="foreground_downloader">Менеджер загрузок</string>
+    <string name="saved">Сохранено</string>
+    <string name="pause">пауза</string>
+    <string name="previous">предыдущий</string>
+    <string name="next">следующий</string>
+    <string name="play">Воспроизвести</string>
+    <string name="equalizer_closed">Эквалайзер закрыт</string>
+    <string name="no_system_equalizer">Нет системного эквалайзера</string>
+    <string name="equalizer">Эквалайзер</string>
+    <string name="copied_to_clipboard">Скопировано в буфер обмена</string>
+    <string name="copy_track_info">Информация</string>
+    <string name="audio_force_download">Уже скачен. Всё равно скачать?</string>
+    <string name="error_audio">Ошибка аудио</string>
+    <string name="album_cover">Обложка альбома</string>
+    <string name="empty_url">Пустая ссылка</string>
+    <string name="open_full_player">Открыть плеер</string>
+    <string name="save_to_drive">Сохранить на накопитель</string>
+    <string name="rotate_video">Поворот</string>
+    <string name="popup">В окне</string>
+    <string name="image_number">%1$d из %2$d</string>
+    <string name="download">Скачать</string>
+    <string name="play_audio_after_current">Играть следующим</string>
+    <string name="get_bitrate">Узнать Битрейт</string>
+    <string name="delete">Удалить</string>
+    <string name="update_time">Задать текущее время</string>
+    <string name="edit">Редактировать</string>
+    <string name="bitrate">Битрейт: %1$d kbs, Размер: %2$s</string>
+    <string name="change_name">Название</string>
+    <string name="do_delete">Удалить?</string>
+    <string name="confirmation">Подтверждение</string>
+    <string name="return_away">Вернуться</string>
+    <string name="go_discography">Перейти к дискографии</string>
+    <string name="reverse_time">От старых к новым</string>
+    <string name="null_audio">Нет проигрываемых аудио</string>
+    <string name="audio_not_found">Аудио не найдено в списке</string>
+    <string name="formatted_date_tomorrow_clean">завтра в %1$s</string>
+    <string name="formatted_date_yesterday_clean">вчера в %1$s</string>
+    <string name="local_server_audio">Аудио</string>
+    <string name="local_server_photo">Фото</string>
+    <string name="local_server_video">Видео</string>
+    <string name="local_server_need_enable">Включите Локальный медиа сервер в настройках</string>
+    <string name="video_ext">Расширения для видео</string>
+    <string name="photo_ext">Расширения для фото</string>
+    <string name="audio_ext">Расширения для аудио</string>
+    <string name="files_count_a">%1$d файл</string>
+    <string name="files_count_b">%1$d файла</string>
+    <string name="files_count_c">%1$d файлов</string>
+    <string name="open_with">Открыть с помощью</string>
+    <string name="share">Отправить</string>
+    <string name="fix_dir_time">Исправить время вложенных папок</string>
+    <string name="tag_owner_title">Тэги</string>
+    <string name="title_entry_name">Введите имя</string>
+    <string name="tags">Тэги</string>
+    <string name="add_dir_tag">Присвоить метку</string>
+    <string name="remove_dir_tag">Убрать метку</string>
+    <string name="export_settings">Экспорт настроек</string>
+    <string name="import_settings">Импорт настроек</string>
+    <string name="export_adb">Экспорт для adb</string>
+    <string name="slidr_settings">Настройки Slidr</string>
+    <string name="import_export_settings">Импорт/Экспорт</string>
+    <string name="viewpager_page_transform">Анимация Viewpager2</string>
+    <string name="player_cover_transform">Анимация свайпа обложки плеера</string>
+    <string name="developer">Разработчик: Умеров Артём</string>
+    <string name="repo">Репозиторий: https://github.com/umerov1999/FileGallery</string>
+    <string name="repo_local_server">Репозиторий: https://github.com/umerov1999/FenrirMediaServer/releases</string>
+    <string name="tag_count_a">%1$d метка</string>
+    <string name="tag_count_b">%1$d метки</string>
+    <string name="tag_count_c">%1$d меток</string>
+    <string name="success_add">Успешно добавлено %1$s в %2$s</string>
+    <string name="rename">Переименовать</string>
+    <string name="qr">QR код</string>
+    <string name="detect_qr">Распознать QR</string>
+    <string name="select_file">Выбор %1$s</string>
+    <string name="select_folder">Выбор директории</string>
+    <string name="not_supported">Не поддерживается</string>
+    <string name="biometric">Приложите палец к сканеру отпечатков</string>
+    <string name="biometric_not_support">Вход по отпечатку пальца не поддерживается!</string>
+    <string name="create_pin_code_title">Создайте PIN-код</string>
+    <string name="entered_pin_codes_do_not_match">Введенные PIN-коды не совпадают</string>
+    <string name="pin_digit">Пин код</string>
+    <string name="use_pin_title">Используйте PIN-код или отпечаток пальца</string>
+    <string name="repeat_pin_code_title">Повторите PIN-код</string>
+    <string name="not_yet_implemented_message">Ещё не реализовано!</string>
+    <string name="error_login_by_fingerprint_not_allowed">Вход с помощью отпечатка пальца не разрешен</string>
+    <string name="limit_exceeded_number_of_attempts_message">Превышен лимит попыток ввода</string>
+    <string name="pin_is_invalid_message">Неверный PIN-код</string>
+    <string name="security">Безопасность</string>
+    <string name="allow_fingerprint_title">Разрешить отпечаток пальца</string>
+    <string name="change_pin_title">Изменить PIN-код</string>
+    <string name="ask_for_pin_on_application_start_title">PIN-код при старте</string>
+    <string name="ask_for_pin_on_application_start_summary">Запрашивать PIN-код при старте приложения</string>
+    <string name="do_remove">Вы уверены, что хотите удалить %1$s?</string>
+    <string name="do_tag_remove">Вы уверены, что хотите убрать метку %1$s?</string>
+    <string name="attention">Внимание</string>
+    <string name="delete_disabled">Удаление заблокировано</string>
+    <string name="root_dir">Корень</string>
+    <string name="general_settings">Общие</string>
+    <string name="validate_tls">Верификация сертификатов</string>
+    <string name="validate_tls_summary">Отключение делает вас уязвимым</string>
+    <string name="reboot_pc_win">Перезапуск Win</string>
+    <string name="reboot_pc_linux">Перезапуск Linux</string>
+    <string name="reset_settings">Сброс настроек</string>
+    <string name="wrong_settings_format">Данный формат настроек не поддерживается!</string>
+    <string name="ongoing_player_notification">Непрерывное уведомление</string>
+    <string name="files_uploading_notification_title">Загрузка файлов</string>
+    <string name="play_remote">Играть через сервер</string>
+    <string name="open_folder_new_window">Открывать директории в новом окне</string>
+    <string name="compress_incoming_traffic">Сжимать входящий траффик</string>
+    <string name="parser_type">Парсер</string>
+    <string name="limit_cache_images">Лимит кэша картинок в памяти</string>
+    <string name="language_ui">Язык</string>
+    <string name="scan_qr">Сканировать QR</string>
+</resources>

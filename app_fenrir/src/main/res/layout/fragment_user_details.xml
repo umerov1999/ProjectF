@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/profile_avatar_height"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:id="@+id/ivAvatarHighRes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/profile_avatar_height"
+        android:alpha="0"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop" />
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/toolbar_semitransparent_themed"
+        android:theme="@style/Theme.Toolbar.Surface"
+        app:contentInsetStartWithNavigation="0dp"
+        app:subtitleTextAppearance="@style/TextAppearance.Material3.BodySmall"
+        app:titleTextAppearance="@style/TextAppearance.Toolbar.Title" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/profile_avatar_height"
+        android:background="#3000" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?materialCardBackgroundStyle"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
+        android:scrollbars="vertical"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="@dimen/profile_bottom_peek_height"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabOpenChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="@null"
+        android:src="@drawable/email"
+        android:visibility="gone"
+        app:layout_anchor="@id/recycler_view"
+        app:layout_anchorGravity="end" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

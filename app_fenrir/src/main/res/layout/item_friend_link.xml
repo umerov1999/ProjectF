@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    style="?materialCardStyle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="4dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="4dp"
+    android:layout_marginBottom="0dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:stateListAnimator="@animator/clicked"
+    app:contentPadding="8dp"
+    tools:ignore="UnusedAttribute">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/item_link_pic"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/item_link_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:lines="2"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textSize="12sp"
+            tools:text="Name" />
+
+        <TextView
+            android:id="@+id/item_link_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textSize="12sp"
+            tools:text="Expires" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

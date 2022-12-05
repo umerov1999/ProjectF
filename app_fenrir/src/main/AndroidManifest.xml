@@ -1,0 +1,652 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:installLocation="auto">
+
+    <queries>
+        <package android:name="com.coub.android" />
+        <package android:name="org.schabi.newpipe" />
+        <package android:name="com.google.android.youtube" />
+        <package android:name="app.revanced.android.youtube" />
+    </queries>
+
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.screen.PORTRAIT"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera2"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission
+        android:name="android.permission.INSTALL_SHORTCUT"
+        tools:ignore="SystemPermissionTypo" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
+    <application
+        android:name="dev.ragnarok.fenrir.App"
+        android:allowAudioPlaybackCapture="true"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="false"
+        android:theme="@style/App.DayNight"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="s">
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.LoginActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/authorization" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.ValidateActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/validate"
+            android:theme="@style/App.DayNight.Swipes" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.ProxyManagerActivity"
+            android:label="@string/proxy_manager_title" />
+
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/App.DayNight"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.QuickAnswerActivity"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:theme="@style/QuickReply"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.ChatActivityBubbles"
+            android:allowEmbedded="true"
+            android:configChanges="keyboardHidden|orientation"
+            android:documentLaunchMode="always"
+            android:label="@string/chat"
+            android:resizeableActivity="true"
+            android:theme="@style/App.DayNight.Swipes"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.KeyExchangeCommitActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/QuickReply" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.CaptchaActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/QuickReply"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.PostPublishPrepareActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="@string/share_to_wall_label"
+            android:theme="@style/QuickReply">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <data android:mimeType="image/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="image/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <data android:mimeType="video/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="video/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="text/plain" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
+
+        <provider
+            android:name="dev.ragnarok.fenrir.db.FenrirContentProvider"
+            android:authorities="${applicationId}.providers.FenrirMessages"
+            android:exported="false"
+            android:multiprocess="true" />
+
+        <service
+            android:name="dev.ragnarok.fenrir.service.QuickReplyService"
+            android:exported="false" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.PhotosActivity"
+            android:label="@string/photos" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.PostCreateActivity"
+            android:label="@string/share_to_wall_label"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
+
+            <!--<intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="text/plain" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>-->
+
+        </activity>
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.MainActivity"
+            android:configChanges="keyboardHidden"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/SplashTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="audio/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <data android:mimeType="audio/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity-alias
+            android:name="dev.ragnarok.fenrir.activity.alias.DefaultFenrirAlias"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:targetActivity="dev.ragnarok.fenrir.activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="dev.ragnarok.fenrir.activity.alias.BlueFenrirAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/fenrir_blue"
+            android:roundIcon="@mipmap/fenrir_blue"
+            android:targetActivity="dev.ragnarok.fenrir.activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="dev.ragnarok.fenrir.activity.alias.GreenFenrirAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/fenrir_green"
+            android:roundIcon="@mipmap/fenrir_green"
+            android:targetActivity="dev.ragnarok.fenrir.activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="dev.ragnarok.fenrir.activity.alias.YellowFenrirAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/fenrir_yellow"
+            android:roundIcon="@mipmap/fenrir_yellow"
+            android:targetActivity="dev.ragnarok.fenrir.activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="dev.ragnarok.fenrir.activity.alias.VioletFenrirAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/fenrir_violet"
+            android:roundIcon="@mipmap/fenrir_violet"
+            android:targetActivity="dev.ragnarok.fenrir.activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="dev.ragnarok.fenrir.activity.alias.LineageFenrirAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/fenrir_lineage"
+            android:roundIcon="@mipmap/fenrir_lineage"
+            android:targetActivity="dev.ragnarok.fenrir.activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="dev.ragnarok.fenrir.activity.alias.RedFenrirAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/fenrir_red"
+            android:roundIcon="@mipmap/fenrir_red"
+            android:targetActivity="dev.ragnarok.fenrir.activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="dev.ragnarok.fenrir.activity.alias.BlackFenrirAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/fenrir_black"
+            android:roundIcon="@mipmap/fenrir_black"
+            android:targetActivity="dev.ragnarok.fenrir.activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="dev.ragnarok.fenrir.activity.alias.VKFenrirAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/vk_official"
+            android:roundIcon="@mipmap/vk_official"
+            android:targetActivity="dev.ragnarok.fenrir.activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="dev.ragnarok.fenrir.activity.alias.WhiteFenrirAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/fenrir_white"
+            android:roundIcon="@mipmap/fenrir_white"
+            android:targetActivity="dev.ragnarok.fenrir.activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.selectprofiles.SelectProfilesActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.SwipebleActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="true"
+            android:theme="@style/App.DayNight.Swipes"
+            android:windowSoftInputMode="adjustResize|stateHidden">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="vk.com"
+                    android:scheme="http" />
+                <data
+                    android:host="vk.com"
+                    android:scheme="https" />
+                <data
+                    android:host="vk.cc"
+                    android:scheme="http" />
+                <data
+                    android:host="vk.cc"
+                    android:scheme="https" />
+                <data
+                    android:host="vk.me"
+                    android:scheme="http" />
+                <data
+                    android:host="vk.me"
+                    android:scheme="https" />
+                <data
+                    android:host="m.vk.com"
+                    android:scheme="http" />
+                <data
+                    android:host="m.vk.com"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.ChatActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/chat"
+            android:theme="@style/App.DayNight.Swipes"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.photopager.PhotoPagerActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/photos"
+            android:theme="@style/App.DayNight.Swipes"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.gifpager.GifPagerActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="true"
+            android:label="@string/gif_player"
+            android:theme="@style/App.DayNight.Swipes"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.storypager.StoryPagerActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="true"
+            android:label="@string/story"
+            android:theme="@style/App.DayNight.Swipes"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.SinglePhotoActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="true"
+            android:label="@string/photo"
+            android:theme="@style/App.DayNight.Swipes"
+            android:windowSoftInputMode="adjustResize|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.NotReadMessagesActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/not_read"
+            android:theme="@style/App.DayNight.Swipes"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.LocalJsonToChatActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="true"
+            android:label="@string/chat_json"
+            android:windowSoftInputMode="adjustResize|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+
+                <data android:mimeType="application/javascript" />
+                <data android:mimeType="application/json" />
+                <data android:mimeType="application/typescript" />
+                <data android:mimeType="application/x-sh" />
+                <data android:mimeType="application/x-shellscript" />
+                <data android:mimeType="application/xml" />
+                <data android:mimeType="text/*" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.LottieActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="true"
+            android:label="@string/lottie_preview"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden"
+            tools:ignore="LockedOrientationActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+
+                <data android:mimeType="application/javascript" />
+                <data android:mimeType="application/json" />
+                <data android:mimeType="application/typescript" />
+                <data android:mimeType="application/x-sh" />
+                <data android:mimeType="application/x-shellscript" />
+                <data android:mimeType="application/xml" />
+                <data android:mimeType="text/*" />
+            </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.SendAttachmentsActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="true"
+            android:label="@string/share_to_message"
+            android:windowSoftInputMode="adjustResize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <data android:mimeType="image/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="image/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <data android:mimeType="video/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="video/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="text/plain" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.AttachmentsActivity"
+            android:label="@string/attachments" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.VideoSelectActivity"
+            android:label="@string/videos" />
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.AudioSelectActivity"
+            android:label="@string/audios" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.AccountsActivity"
+            android:label="@string/account_manager" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.FileManagerSelectActivity"
+            android:theme="@style/App.DayNight.Swipes" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.DeltaOwnerActivity"
+            android:exported="true"
+            android:label="@string/delta"
+            android:theme="@style/App.DayNight.Swipes">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="application/javascript" />
+                <data android:mimeType="application/json" />
+                <data android:mimeType="application/typescript" />
+                <data android:mimeType="application/x-sh" />
+                <data android:mimeType="application/x-shellscript" />
+                <data android:mimeType="application/xml" />
+                <data android:mimeType="text/*" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.PhotoAlbumsActivity"
+            android:label="@string/photos" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.VideoPlayerActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:resizeableActivity="true"
+            android:supportsPictureInPicture="true"
+            android:theme="@style/App.DayNight.Swipes" />
+
+        <!-- Profile phone Activity -->
+        <!-- Shortcut launcher Activity -->
+        <!-- Search interface -->
+        <!-- Used to set options -->
+
+        <service
+            android:name="dev.ragnarok.fenrir.media.music.MusicPlaybackService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </service>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.file_provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity android:name="dev.ragnarok.fenrir.activity.EnterPinActivity" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.EnterPinActivityPortraitOnly"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.CreatePinActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+
+        <service android:name="dev.ragnarok.fenrir.crypt.KeyExchangeService" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.qr.CameraScanActivity"
+            android:label="@string/scan_qr"
+            android:theme="@style/App.DayNight.Swipes" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.DualTabPhotoActivity"
+            android:label="@string/photos" />
+
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.crash.DefaultErrorActivity"
+            android:process=":fenrir_error_activity"
+            android:theme="@style/App.DayNight.Swipes" />
+
+        <service
+            android:name="dev.ragnarok.fenrir.service.KeepLongpollService"
+            android:exported="false" />
+
+        <service
+            android:name="dev.ragnarok.fenrir.FcmListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>

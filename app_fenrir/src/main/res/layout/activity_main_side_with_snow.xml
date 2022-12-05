@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dev.ragnarok.fenrir.view.ErrorIgnoreDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/my_drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:fitsSystemWindows="true">
+
+    <RelativeLayout
+        android:id="@+id/main_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/miniplayer_side_root"
+            android:clipToPadding="false" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/miniplayer_side_root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="3dp"
+            app:contentPadding="0dp">
+
+            <dev.ragnarok.fenrir.view.MiniPlayerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <dev.ragnarok.fenrir.view.snowfall.SnowfallView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:snowflakeAlphaMax="255"
+            app:snowflakeAlphaMin="150"
+            app:snowflakeAngleMax="5"
+            app:snowflakeSizeMax="32dp"
+            app:snowflakeSizeMin="8dp"
+            app:snowflakeSpeedMax="8"
+            app:snowflakeSpeedMin="2"
+            app:snowflakesAlreadyFalling="false"
+            app:snowflakesFadingEnabled="true"
+            app:snowflakesNum="220" />
+    </RelativeLayout>
+
+    <dev.ragnarok.fenrir.view.navigation.SideNavigationView
+        android:id="@+id/additional_navigation_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:alpha="0.90" />
+
+</dev.ragnarok.fenrir.view.ErrorIgnoreDrawerLayout>

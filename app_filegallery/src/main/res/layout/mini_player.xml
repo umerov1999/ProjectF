@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="1dp"
+    android:layout_marginBottom="10dp"
+    android:elevation="3dp"
+    android:orientation="horizontal"
+    android:paddingTop="4dp">
+
+    <FrameLayout
+        android:id="@+id/item_audio_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:stateListAnimator="@animator/clicked">
+
+        <ImageView
+            android:id="@+id/item_audio_play_cover"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:contentDescription="@string/play" />
+
+        <dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+            android:id="@+id/item_audio_visual"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/mini_artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true" />
+
+        <dev.ragnarok.filegallery.view.CustomSeekBar
+            android:id="@+id/seek_player_pos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            app:applyAlpha="true"
+            app:bufferedColor="?colorPrimary"
+            app:circleColor="?colorPrimary"
+            app:lineColor="?colorSecondary"
+            app:pressedCircleColor="?colorSecondary"
+            app:progressColor="?colorPrimary" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/open_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:backgroundTint="?colorSurface"
+        android:contentDescription="@string/open_full_player"
+        android:padding="8dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_outline_keyboard_arrow_up"
+        app:tint="?colorPrimary" />
+
+    <ImageButton
+        android:id="@+id/close_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:backgroundTint="?colorSurface"
+        android:contentDescription="@string/close"
+        android:padding="8dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_outline_keyboard_arrow_down"
+        app:tint="?colorPrimary" />
+</LinearLayout>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/content_root"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/bottom_buttons_bar"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="8dp">
+
+                <ImageView
+                    android:id="@+id/no_preview_icon"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="100dp"
+                    android:background="@drawable/circle_back_white"
+                    android:backgroundTint="?colorPrimary"
+                    android:contentDescription="@null"
+                    android:padding="16dp"
+                    android:src="@drawable/file"
+                    app:tint="?white_color" />
+
+                <dev.ragnarok.fenrir.view.TouchImageView
+                    android:id="@+id/fragment_document_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp">
+
+                    <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+                        android:id="@+id/fragment_document_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:textSize="16sp" />
+
+                    <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+                        android:id="@+id/fragment_document_subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/bottom_buttons_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp">
+
+                <dev.ragnarok.fenrir.view.CircleCounterButton
+                    android:id="@+id/add_or_delete_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:active_background_color="?attr/icon_color_active"
+                    app:always_counter="false"
+                    app:noactive_icon_color="?attr/colorOnSurface" />
+
+                <dev.ragnarok.fenrir.view.CircleCounterButton
+                    android:id="@+id/download_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:active="false"
+                    app:active_background_color="?attr/icon_color_active"
+                    app:always_counter="false"
+                    app:button_icon="@drawable/download"
+                    app:noactive_icon_color="?attr/colorOnSurface" />
+
+                <dev.ragnarok.fenrir.view.CircleCounterButton
+                    android:id="@+id/share_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:active_background_color="?attr/icon_color_active"
+                    app:always_counter="false"
+                    app:button_icon="@drawable/ic_outline_share"
+                    app:noactive_icon_color="?attr/colorOnSurface" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/loading_root"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true" />
+
+            <TextView
+                android:id="@+id/post_loading_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/loading" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/try_again_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/try_again"
+                android:textAllCaps="true" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>
+

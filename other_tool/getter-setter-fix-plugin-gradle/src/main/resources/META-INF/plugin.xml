@@ -1,0 +1,24 @@
+<idea-plugin>
+    <id>dev.ragnarok.intellij.getter_setter_plugin</id>
+    <name>Getter Setter Kotlin Fixer</name>
+    <vendor email="fenrir.logs@list.ru" url="https://github.com/umerov1999">Umerov Artem</vendor>
+
+    <description>Fix Kotlin Getter And Setter Plugin: Use - Ctrl+T - fix, Ctrl+K - case
+    </description>
+    <depends>com.intellij.modules.platform</depends>
+    <extensions defaultExtensionNs="com.intellij" />
+
+    <actions>
+        <action class="dev.ragnarok.intellij.getter_setter_plugin.GetterSetterFixAction"
+            description="Fix getter and setter" id="GetterSetterFix.Search.Editor"
+            text="Fix Getter and Setter">
+            <add-to-group anchor="last" group-id="EditorPopupMenu" />
+            <keyboard-shortcut first-keystroke="ctrl t" keymap="$default" />
+        </action>
+        <action class="dev.ragnarok.intellij.getter_setter_plugin.CaseActionAction"
+            description="Fix getter and setter" id="CaseAction.Search.Editor" text="Convert Case">
+            <add-to-group anchor="last" group-id="EditorPopupMenu" />
+            <keyboard-shortcut first-keystroke="ctrl k" keymap="$default" />
+        </action>
+    </actions>
+</idea-plugin>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/videoSurfaceContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <dev.ragnarok.filegallery.view.ExpandableSurfaceView
+        android:id="@+id/videoSurface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:alpha="0.8"
+        android:background="@drawable/toolbar_semitransparent"
+        android:clipToPadding="true"
+        android:theme="@style/Theme.Toolbar.Video"
+        app:subtitleTextAppearance="@style/TextAppearance.Material3.BodySmall"
+        app:subtitleTextColor="?colorSecondary"
+        app:titleTextAppearance="@style/TextAppearance.Toolbar.Title">
+
+        <ImageView
+            android:id="@+id/toolbar_play_speed"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@null"
+            android:src="@drawable/voice_speed"
+            android:stateListAnimator="@animator/clicked" />
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <FrameLayout
+        android:id="@+id/panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>

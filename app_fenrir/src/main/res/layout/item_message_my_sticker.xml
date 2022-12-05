@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="2dp"
+    android:paddingBottom="4dp">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/item_message_restore"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/restore" />
+
+    <RelativeLayout
+        android:id="@+id/message_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="end"
+        android:paddingStart="4dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="2dp">
+
+        <ImageView
+            android:id="@+id/item_message_avatar"
+            android:layout_width="@dimen/avatar_size_small"
+            android:layout_height="@dimen/avatar_size_small"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="2dp"
+            android:contentDescription="@null"
+            android:visibility="gone" />
+
+        <dev.ragnarok.fenrir.view.OnlineView
+            android:id="@+id/item_message_important"
+            android:layout_width="@dimen/online_dot_size"
+            android:layout_height="@dimen/online_dot_size"
+            android:layout_alignStart="@id/item_message_avatar"
+            android:layout_alignBottom="@id/item_message_avatar"
+            android:padding="3dp"
+            android:src="@drawable/star"
+            android:visibility="gone"
+            app:circle_color="?icon_color_active"
+            app:stroke_color="?android:colorBackground" />
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="6dp"
+            android:gravity="end"
+            android:orientation="vertical">
+
+            <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+                android:id="@+id/sticker"
+                android:layout_width="128dp"
+                android:layout_height="128dp" />
+
+            <TextView
+                android:id="@+id/item_message_status_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="time" />
+
+            <LinearLayout
+                android:id="@+id/item_message_attachment_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <dev.ragnarok.fenrir.view.MessageView
+                    android:id="@+id/item_message_bubble"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="end"
+                    android:orientation="vertical"
+                    android:paddingStart="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="4dp"
+                    app:first_color="?attr/message_bubble_color"
+                    app:second_color="?message_bubble_color">
+
+                    <include
+                        layout="@layout/attachment_links"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </dev.ragnarok.fenrir.view.MessageView>
+            </LinearLayout>
+
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

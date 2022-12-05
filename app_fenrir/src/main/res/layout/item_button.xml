@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButton xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_button_function"
+    style="@style/MyOutlinedButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="6dp"
+    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+    android:textColor="?colorOnSurface"
+    app:icon="@drawable/ic_fluent_channel_follow_24_regular"
+    app:iconTint="?colorOnSurface" />

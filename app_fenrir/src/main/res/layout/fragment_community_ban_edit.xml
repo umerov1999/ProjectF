@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/Theme.Toolbar.Colored"
+            app:layout_scrollFlags="scroll|enterAlways|snap" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <RelativeLayout
+                android:id="@+id/avatar_root"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true">
+
+                <ImageView
+                    android:id="@+id/avatar"
+                    android:layout_width="@dimen/avatar_size_big"
+                    android:layout_height="@dimen/avatar_size_big"
+                    android:background="@drawable/sel_button_round_5_white"
+                    android:contentDescription="@null"
+                    android:padding="1.5dp" />
+
+                <dev.ragnarok.fenrir.view.OnlineView
+                    android:id="@+id/online"
+                    android:layout_width="@dimen/online_dot_size_big"
+                    android:layout_height="@dimen/online_dot_size_big"
+                    android:layout_alignStart="@id/avatar"
+                    android:layout_alignBottom="@id/avatar"
+                    android:layout_marginStart="4dp"
+
+                    android:layout_marginBottom="4dp"
+                    android:padding="4dp"
+                    app:circle_color="?icon_color_active" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/avatar_root"
+
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/avatar_root"
+                android:gravity="end"
+                android:orientation="vertical"
+                android:paddingBottom="12dp">
+
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="end"
+                    android:textColor="?white_color"
+                    android:textSize="@dimen/font_size_big_title"
+                    tools:text="Umerov Artem" />
+
+                <TextView
+                    android:id="@+id/domain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="end"
+                    android:textColor="?white_color"
+                    android:textSize="@dimen/font_size_subtitle"
+                    tools:text="id98464648" />
+
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="end"
+                    android:textColor="?white_color"
+                    android:textColorLink="?android:textColorPrimary"
+                    android:textSize="@dimen/font_size_subtitle"
+                    tools:text="Заблокирован 20 мая 2022 в 16:13" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/community_ban_block_for_title"
+                android:textColor="?android:textColorSecondary" />
+
+            <dev.ragnarok.fenrir.view.MySpinnerView
+                android:id="@+id/spinner_block_for"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:spinner_hint_color="?android:textColorSecondary"
+                app:spinner_icon_color="?attr/colorAccent"
+                app:spinner_text_color="?android:textColorPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/community_ban_reason_title"
+                android:textColor="?android:textColorSecondary" />
+
+            <dev.ragnarok.fenrir.view.MySpinnerView
+                android:id="@+id/spinner_reason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:spinner_hint_color="?android:textColorSecondary"
+                app:spinner_icon_color="?attr/colorAccent"
+                app:spinner_text_color="?android:textColorPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/community_ban_comment_title"
+                android:textColor="?android:textColorSecondary" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/community_ban_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="top"
+                android:hint="@string/community_ban_comment_hint"
+                android:inputType="text|textCapSentences|textMultiLine"
+                android:minHeight="80dp"
+                android:padding="8dp"
+                android:textSize="14sp" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/community_ban_show_comment_to_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/show_this_comment_to_the_blocked_user" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

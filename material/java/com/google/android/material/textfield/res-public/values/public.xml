@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2018 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!-- Definitions of attributes to be exposed as public -->
+<resources>
+  <public name="textInputStyle" type="attr"/>
+  <public name="textInputOutlinedStyle" type="attr"/>
+  <public name="textInputFilledStyle" type="attr"/>
+  <public name="textInputOutlinedDenseStyle" type="attr"/>
+  <public name="textInputFilledDenseStyle" type="attr"/>
+  <public name="textInputOutlinedExposedDropdownMenuStyle" type="attr"/>
+  <public name="textInputFilledExposedDropdownMenuStyle" type="attr"/>
+
+  <public name="boxBackgroundColor" type="attr"/>
+  <public name="boxBackgroundMode" type="attr"/>
+  <public name="boxCollapsedPaddingTop" type="attr"/>
+  <public name="boxCornerRadiusTopStart" type="attr"/>
+  <public name="boxCornerRadiusTopEnd" type="attr"/>
+  <public name="boxCornerRadiusBottomStart" type="attr"/>
+  <public name="boxCornerRadiusBottomEnd" type="attr"/>
+  <public name="boxStrokeColor" type="attr"/>
+  <public name="boxStrokeErrorColor" type="attr"/>
+  <public name="boxStrokeWidth" type="attr"/>
+  <public name="boxStrokeWidthFocused" type="attr"/>
+
+  <public name="counterEnabled" type="attr"/>
+  <public name="counterMaxLength" type="attr"/>
+  <public name="counterOverflowTextAppearance" type="attr"/>
+  <public name="counterOverflowTextColor" type="attr"/>
+  <public name="counterTextAppearance" type="attr"/>
+  <public name="counterTextColor" type="attr"/>
+  <public name="prefixText" type="attr"/>
+  <public name="prefixTextAppearance" type="attr"/>
+  <public name="prefixTextColor" type="attr"/>
+  <public name="suffixText" type="attr"/>
+  <public name="suffixTextAppearance" type="attr"/>
+  <public name="suffixTextColor" type="attr"/>
+  <public name="errorEnabled" type="attr"/>
+  <public name="errorTextAppearance" type="attr"/>
+  <public name="errorTextColor" type="attr"/>
+  <public name="errorContentDescription" type="attr"/>
+  <public name="errorIconDrawable" type="attr"/>
+  <public name="errorIconTint" type="attr"/>
+  <public name="errorIconTintMode" type="attr"/>
+  <public name="helperText" type="attr"/>
+  <public name="helperTextEnabled" type="attr"/>
+  <public name="helperTextTextAppearance" type="attr"/>
+  <public name="helperTextTextColor" type="attr"/>
+  <public name="hintAnimationEnabled" type="attr"/>
+  <public name="expandedHintEnabled" type="attr"/>
+  <public name="hintEnabled" type="attr"/>
+  <public name="hintTextAppearance" type="attr"/>
+  <public name="hintTextColor" type="attr"/>
+  <public name="startIconDrawable" type="attr"/>
+  <public name="startIconContentDescription" type="attr"/>
+  <public name="startIconCheckable" type="attr"/>
+  <public name="startIconTint" type="attr"/>
+  <public name="startIconTintMode" type="attr"/>
+  <public name="startIconMinSize" type="attr"/>
+  <public name="startIconScaleType" type="attr" />
+  <public name="placeholderText" type="attr"/>
+  <public name="placeholderTextAppearance" type="attr"/>
+  <public name="placeholderTextColor" type="attr"/>
+  <public name="endIconMode" type="attr"/>
+  <public name="endIconDrawable" type="attr"/>
+  <public name="endIconContentDescription" type="attr"/>
+  <public name="endIconCheckable" type="attr"/>
+  <public name="endIconTint" type="attr"/>
+  <public name="endIconTintMode" type="attr"/>
+  <public name="endIconMinSize" type="attr"/>
+  <public name="endIconScaleType" type="attr" />
+  <!-- Deprecated. Use endIconMode instead. -->
+  <public name="passwordToggleEnabled" type="attr"/>
+  <!--Deprecated. Use endIconDrawable instead. -->
+  <public name="passwordToggleDrawable" type="attr"/>
+  <!--Deprecated. Use endIconContentDescription instead. -->
+  <public name="passwordToggleContentDescription" type="attr"/>
+  <!--Deprecated. Use endIconTint instead. -->
+  <public name="passwordToggleTint" type="attr"/>
+  <!--Deprecated. Use endIconTintMode instead. -->
+  <public name="passwordToggleTintMode" type="attr"/>
+
+  <public name="textInputLayoutFocusedRectEnabled" type="attr"/>
+  <public name="simpleItemLayout" type="attr"/>
+  <public name="simpleItems" type="attr"/>
+  <public name="simpleItemSelectedColor" type="attr"/>
+  <public name="simpleItemSelectedRippleColor" type="attr"/>
+
+  <public name="Widget.Design.TextInputLayout" type="style"/>
+  <public name="Widget.MaterialComponents.TextInputLayout.FilledBox" type="style"/>
+  <public name="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense" type="style"/>
+  <public name="Widget.MaterialComponents.TextInputLayout.OutlinedBox" type="style"/>
+  <public name="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense" type="style"/>
+  <public name="Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu" type="style"/>
+  <public name="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu" type="style"/>
+  <public name="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu" type="style"/>
+  <public name="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu" type="style"/>
+
+  <public name="Widget.Material3.AutoCompleteTextView.FilledBox" type="style"/>
+  <public name="Widget.Material3.AutoCompleteTextView.FilledBox.Dense" type="style"/>
+  <public name="Widget.Material3.AutoCompleteTextView.OutlinedBox" type="style"/>
+  <public name="Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense" type="style"/>
+  <public name="Widget.Material3.TextInputEditText.FilledBox" type="style"/>
+  <public name="Widget.Material3.TextInputEditText.FilledBox.Dense" type="style"/>
+  <public name="Widget.Material3.TextInputEditText.OutlinedBox" type="style"/>
+  <public name="Widget.Material3.TextInputEditText.OutlinedBox.Dense" type="style"/>
+  <public name="Widget.Material3.TextInputLayout.FilledBox" type="style"/>
+  <public name="Widget.Material3.TextInputLayout.FilledBox.Dense" type="style"/>
+  <public name="Widget.Material3.TextInputLayout.OutlinedBox" type="style"/>
+  <public name="Widget.Material3.TextInputLayout.OutlinedBox.Dense" type="style"/>
+  <public name="Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu" type="style"/>
+  <public name="Widget.Material3.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu" type="style"/>
+  <public name="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu" type="style"/>
+  <public name="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu" type="style"/>
+
+  <public name="ThemeOverlay.Material3.AutoCompleteTextView" type="style"/>
+  <public name="ThemeOverlay.Material3.AutoCompleteTextView.FilledBox" type="style"/>
+  <public name="ThemeOverlay.Material3.AutoCompleteTextView.FilledBox.Dense" type="style"/>
+  <public name="ThemeOverlay.Material3.AutoCompleteTextView.OutlinedBox" type="style"/>
+  <public name="ThemeOverlay.Material3.AutoCompleteTextView.OutlinedBox.Dense" type="style"/>
+  <public name="ThemeOverlay.Material3.TextInputEditText" type="style"/>
+  <public name="ThemeOverlay.Material3.TextInputEditText.FilledBox" type="style"/>
+  <public name="ThemeOverlay.Material3.TextInputEditText.FilledBox.Dense" type="style"/>
+  <public name="ThemeOverlay.Material3.TextInputEditText.OutlinedBox" type="style"/>
+  <public name="ThemeOverlay.Material3.TextInputEditText.OutlinedBox.Dense" type="style"/>
+</resources>

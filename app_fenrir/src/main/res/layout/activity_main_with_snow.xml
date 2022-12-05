@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:fitsSystemWindows="true">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_navigation_menu_container"
+        android:clipToPadding="false" />
+
+    <dev.ragnarok.fenrir.view.navigation.AdditionalNavigationView
+        android:id="@+id/additional_navigation_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom_navigation_menu_container" />
+
+    <include
+        android:id="@+id/bottom_navigation_menu_container"
+        layout="@layout/bottom_navigation_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
+    <dev.ragnarok.fenrir.view.snowfall.SnowfallView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:snowflakeAlphaMax="255"
+        app:snowflakeAlphaMin="150"
+        app:snowflakeAngleMax="5"
+        app:snowflakeSizeMax="32dp"
+        app:snowflakeSizeMin="8dp"
+        app:snowflakeSpeedMax="8"
+        app:snowflakeSpeedMin="2"
+        app:snowflakesAlreadyFalling="false"
+        app:snowflakesFadingEnabled="true"
+        app:snowflakesNum="220" />
+
+</RelativeLayout>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/check_friends_only"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="@string/for_friends_only"
+        android:textColor="?android:textColorSecondary" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/check_from_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="@string/post_from_group"
+        android:textColor="?android:textColorSecondary" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/check_show_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="@string/add_signature"
+        android:textColor="?android:textColorSecondary" />
+
+    <LinearLayout
+        android:id="@+id/signer_root"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="4dp">
+
+        <ImageView
+            android:id="@+id/signer_avatar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/signer_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:textStyle="italic"
+            tools:text="Umerov Artem" />
+
+    </LinearLayout>
+
+</LinearLayout>

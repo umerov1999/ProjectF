@@ -1,0 +1,64 @@
+plugins {
+    id("com.android.library")
+}
+
+android {
+    namespace "com.google.firebase.installations"
+    compileSdk = appCompileSDK
+    buildToolsVersion = appBuildTools
+
+    flavorDimensions.add("type")
+    productFlavors {
+        fenrir {
+            dimension = "type"
+            buildConfigField(
+                    "String",
+                    "PATCH_APP_ID",
+                    asStringVar(vk_app_package)
+            )
+            buildConfigField(
+                    "String",
+                    "PATCH_APP_FINGERPRINT",
+                    asStringVar(vk_app_finger_print)
+            )
+        }
+        kate {
+            dimension = "type"
+            buildConfigField(
+                    "String",
+                    "PATCH_APP_ID",
+                    asStringVar(kate_app_package)
+            )
+            buildConfigField(
+                    "String",
+                    "PATCH_APP_FINGERPRINT",
+                    asStringVar(kate_app_finger_print)
+            )
+        }
+    }
+
+    defaultConfig {
+        minSdk = appMinSDK
+        targetSdk = appTargetSDK
+        buildConfigField("String", "VERSION_NAME", asStringVar("17.0.2"))
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        encoding = "utf-8"
+    }
+}
+
+static def asStringVar(String str) {
+    return "\"$str\""
+}
+
+dependencies {
+    implementation("com.google.firebase:firebase-common:$firebaseCommonVersion")
+    implementation("com.google.firebase:firebase-installations-interop:$firebaseInstallationsInteropVersion")
+    implementation("com.google.firebase:firebase-components:$firebaseComponentsVersion")
+    implementation("com.google.android.gms:play-services-tasks:$playServicesTasksVersion")
+
+    compileOnly("com.google.auto.value:auto-value-annotations:$autoValueVersion")
+    annotationProcessor("com.google.auto.value:auto-value:$autoValueVersion")
+}

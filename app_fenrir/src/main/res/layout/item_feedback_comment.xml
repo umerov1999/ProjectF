@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/header_root"
+        style="?materialCardStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:contentPadding="8dp"
+        tools:ignore="UnusedAttribute">
+
+        <TextView
+            android:id="@+id/item_feedback_header_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text="@string/title"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:textStyle="bold"
+            app:textAllCaps="true" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:id="@+id/content_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:descendantFocusability="blocksDescendants"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/item_comment_owner_avatar_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/item_comment_top_container"
+                android:layout_alignParentStart="true">
+
+                <ImageView
+                    android:id="@+id/item_comment_owner_avatar"
+                    android:layout_width="@dimen/avatar_size_small"
+                    android:layout_height="@dimen/avatar_size_small"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:contentDescription="@null" />
+
+                <dev.ragnarok.fenrir.view.OnlineView
+                    android:id="@+id/item_circle_changable"
+                    android:layout_width="@dimen/online_dot_size"
+                    android:layout_height="@dimen/online_dot_size"
+                    android:layout_alignStart="@id/item_comment_owner_avatar"
+                    android:layout_alignBottom="@id/item_comment_owner_avatar"
+                    android:padding="3dp"
+                    android:src="@drawable/plus"
+                    app:circle_color="?icon_color_active"
+                    app:stroke_color="?android:colorBackground" />
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/item_feedback_comment_attachment"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop" />
+
+            <LinearLayout
+                android:id="@+id/item_comment_top_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@id/item_feedback_comment_attachment"
+                android:layout_toEndOf="@id/item_comment_owner_avatar_container"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="2dp"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/item_comment_owner_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="8dp"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    tools:text="Name" />
+
+                <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+                    android:id="@+id/item_comment_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:autoLink="web"
+                    android:gravity="start"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="8dp"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                    app:emojiconSize="18sp"
+                    tools:text="Message" />
+
+                <LinearLayout
+                    android:id="@+id/item_feedback_comment_attachments_root"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp">
+
+                    <include
+                        layout="@layout/feedback_attachment_links"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/item_comment_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    tools:text="time" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/comment_reply_feedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/background_gray_round"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/item_comment_reply_owner_avatar"
+                android:layout_width="@dimen/avatar_size_small"
+                android:layout_height="@dimen/avatar_size_small"
+                android:layout_alignTop="@id/item_comment_reply_top_container"
+                android:layout_alignParentStart="false"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="2dp"
+                android:contentDescription="@null" />
+
+            <dev.ragnarok.fenrir.view.OnlineView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:background="@drawable/online"
+                android:padding="3dp"
+                android:src="@drawable/reply"
+                app:circle_color="?icon_color_active"
+                app:stroke_color="?android:colorBackground" />
+
+            <LinearLayout
+                android:id="@+id/item_comment_reply_top_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/item_comment_reply_owner_avatar"
+                android:orientation="vertical"
+                android:paddingStart="8dp"
+                android:paddingEnd="0dp"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/item_comment_reply_owner_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textIsSelectable="false"
+                    tools:text="Name" />
+
+                <dev.ragnarok.fenrir.view.emoji.EmojiconTextView xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/item_comment_reply_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:autoLink="web"
+                    android:gravity="start"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                    emojicon:emojiconSize="20sp"
+                    tools:text="Message" />
+
+                <LinearLayout
+                    android:id="@+id/item_reply_comment_attachments_root"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp">
+
+                    <include
+                        layout="@layout/feedback_attachment_links"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/item_comment_reply_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    tools:text="time" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>
+
+

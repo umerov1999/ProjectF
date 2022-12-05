@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="2dp"
+    android:paddingBottom="4dp">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/item_message_restore"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/restore" />
+
+    <RelativeLayout
+        android:id="@+id/message_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:paddingStart="4dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="2dp">
+
+        <ImageView
+            android:id="@+id/item_message_avatar"
+            android:layout_width="@dimen/avatar_size_small"
+            android:layout_height="@dimen/avatar_size_small"
+            android:layout_marginStart="4dp"
+            android:contentDescription="@null" />
+
+        <dev.ragnarok.fenrir.view.OnlineView
+            android:id="@+id/item_message_important"
+            android:layout_width="@dimen/online_dot_size"
+            android:layout_height="@dimen/online_dot_size"
+            android:layout_alignStart="@id/item_message_avatar"
+            android:layout_alignBottom="@id/item_message_avatar"
+            android:padding="3dp"
+            android:src="@drawable/star"
+            app:circle_color="?icon_color_active"
+            app:stroke_color="?android:colorBackground" />
+
+        <dev.ragnarok.fenrir.view.MessageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@id/item_message_avatar"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="6dp"
+            app:first_color="?message_bubble_color"
+            app:second_color="?message_bubble_color">
+
+            <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+                android:id="@+id/item_message_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:gravity="start"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                app:displayHashTags="true"
+                app:emojiconSize="20sp"
+                app:fixWrapText="true"
+                app:hashTagColor="?attr/colorAccent"
+                tools:text="Message" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/gift"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearance="@style/ShapeAppearance.MediumRoundedPictures" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/gift"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="?colorSecondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    app:drawableStartCompat="@drawable/gift"
+                    app:drawableTint="?colorSecondary" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/item_message_status_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="time" />
+
+        </dev.ragnarok.fenrir.view.MessageView>
+
+    </RelativeLayout>
+</LinearLayout>

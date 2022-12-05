@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="5dp"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:gravity="center_horizontal"
+            android:text="@string/slidr_vertical_settings"
+            android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+            android:textSize="22sp" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_vertical_sensitive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+        <SeekBar
+            android:id="@+id/edit_vertical_sensitive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:max="200"
+            android:min="20"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:progress="80" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_vertical_velocity_threshold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+        <SeekBar
+            android:id="@+id/edit_vertical_velocity_threshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:max="100"
+            android:min="4"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:progress="50" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_vertical_distance_threshold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+        <SeekBar
+            android:id="@+id/edit_vertical_distance_threshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:max="100"
+            android:min="4"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:progress="50" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:gravity="center_horizontal"
+            android:text="@string/slidr_horizontal_settings"
+            android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+            android:textSize="22sp" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_horizontal_sensitive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+        <SeekBar
+            android:id="@+id/edit_horizontal_sensitive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:max="200"
+            android:min="20"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:progress="50" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_horizontal_velocity_threshold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+        <SeekBar
+            android:id="@+id/edit_horizontal_velocity_threshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:max="100"
+            android:min="4"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:progress="50" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_horizontal_distance_threshold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+        <SeekBar
+            android:id="@+id/edit_horizontal_distance_threshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:max="100"
+            android:min="4"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:progress="50" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/community_options_additional_info_title"
+        android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+
+    <LinearLayout
+        android:id="@+id/category_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/community_options_category_title"
+            android:textColor="?android:textColorSecondary" />
+
+        <dev.ragnarok.fenrir.view.MySpinnerView
+            android:id="@+id/spinner_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:spinner_hint="@string/select_category_hint"
+            app:spinner_hint_color="?android:textColorSecondary"
+            app:spinner_icon_color="?attr/colorAccent"
+            app:spinner_text_color="?android:textColorPrimary" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:labelFor="@+id/link"
+        android:text="@string/community_options_age_restrictions_title"
+        android:textColor="?android:textColorSecondary" />
+
+    <RadioGroup
+        android:id="@+id/category_age"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/age_under16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/age_restriction_under_16_years" />
+
+        <RadioButton
+            android:id="@+id/age_16_to_18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/age_restriction_16_years_and_over" />
+
+        <RadioButton
+            android:id="@+id/age_after_18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/age_restriction_18_years_and_over" />
+
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:labelFor="@+id/website"
+        android:text="@string/community_options_website_title"
+        android:textColor="?android:textColorSecondary" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/website"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:importantForAutofill="no"
+        android:inputType="textUri"
+        android:padding="8dp"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:id="@+id/public_date_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/link"
+            android:text="@string/community_options_date_created_title"
+            android:textColor="?android:textColorSecondary" />
+
+        <TextView
+            android:id="@+id/day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="sans-serif-medium"
+            android:padding="8dp"
+            android:textColor="?attr/colorAccent"
+            tools:text="Day:" />
+
+        <TextView
+            android:id="@+id/month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="sans-serif-medium"
+            android:padding="8dp"
+            android:textColor="?attr/colorAccent"
+            tools:text="Month:" />
+
+        <TextView
+            android:id="@+id/year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="sans-serif-medium"
+            android:padding="8dp"
+            android:textColor="?attr/colorAccent"
+            tools:text="Year:" />
+
+    </LinearLayout>
+
+</LinearLayout>

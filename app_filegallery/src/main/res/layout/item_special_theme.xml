@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardElevation="1dp"
+    app:contentPadding="0dp">
+
+    <RelativeLayout
+        android:id="@+id/theme_type"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/special_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textColor="?colorPrimary"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:textAllCaps="true"
+            tools:text="@string/app_name" />
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            tools:text="Theme Name" />
+    </RelativeLayout>
+
+    <dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+        android:id="@+id/selected"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center_horizontal"
+        android:visibility="visible"
+        app:loopAnimation="true"
+        tools:src="@drawable/theme_select" />
+
+</com.google.android.material.card.MaterialCardView>

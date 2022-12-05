@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_advanced_block">Дадаткова</string>
+    <string name="pref_found">Знойдзена: %1$s</string>
+    <string name="pref_find">Пошук настроек</string>
+    <string name="pref_color_value">Значэнне колеру</string>
+</resources>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    style="?materialCardStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    tools:ignore="UnusedAttribute">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <dev.ragnarok.filegallery.view.AspectRatioImageView
+                android:id="@+id/video_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                app:aspectRatioEnabled="true"
+                app:aspectRatioH="9"
+                app:aspectRatioW="16"
+                app:dominantMeasurement="width"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
+
+            <TextView
+                android:id="@+id/video_lenght"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:background="#90000000"
+                android:gravity="center"
+                android:padding="4dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:textColor="@android:color/white"
+                tools:text="25,4 MB" />
+
+        </FrameLayout>
+
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start|top"
+            android:paddingStart="6dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="4dp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            tools:text="Title" />
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="start|top"
+            android:maxLines="2"
+            android:paddingStart="6dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="4dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            tools:text="Description" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

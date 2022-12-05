@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+
+    <ImageView
+        android:id="@+id/item_post_avatar_image"
+        android:layout_width="@dimen/avatar_size_chat"
+        android:layout_height="@dimen/avatar_size_chat"
+        android:contentDescription="@null"
+        android:visibility="gone" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/item_document_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:minWidth="96dp"
+        android:minHeight="96dp"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
+
+    <ImageView
+        android:id="@+id/item_document_graffity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:contentDescription="@null"
+        android:minWidth="96dp"
+        android:minHeight="96dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/item_document_type"
+            android:layout_width="@dimen/article_size"
+            android:layout_height="@dimen/article_size"
+            android:layout_margin="4dp"
+            android:background="@drawable/circle_back_white"
+            android:backgroundTint="?colorPrimary"
+            android:contentDescription="@null"
+            android:gravity="center"
+            android:padding="8dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/close"
+            app:tint="?white_color" />
+
+        <TextView
+            android:id="@+id/item_document_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            tools:text="Title" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="8dp">
+
+        <TextView
+            android:id="@+id/item_document_ext_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="4"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            tools:text="Size" />
+
+        <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+            android:id="@+id/item_message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:paddingTop="6dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:visibility="gone"
+            app:displayHashTags="true"
+            app:emojiconSize="20sp"
+            app:fixWrapText="true"
+            app:hashTagColor="?attr/colorAccent"
+            tools:text="Message" />
+
+        <TextView
+            android:id="@+id/item_post_show_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:text="@string/show_more"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:textColor="?attr/colorAccent"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/item_message_attachment_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <include
+                layout="@layout/attachment_links"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>
+
+

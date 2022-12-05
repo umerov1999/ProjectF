@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="?materialCardStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?message_bubble_color"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <dev.ragnarok.fenrir.view.AspectRatioImageView
+                android:id="@+id/item_attachment_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:background="@drawable/background_unknown_image"
+                android:scaleType="centerCrop"
+                app:aspectRatioEnabled="true"
+                app:aspectRatioH="1"
+                app:aspectRatioW="1"
+                app:dominantMeasurement="width"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
+
+            <ImageView
+                android:id="@+id/item_attachment_tint"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="#9b000000"
+                android:contentDescription="@null" />
+
+            <FrameLayout
+                android:id="@+id/item_attachment_progress_root"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/circle_back"
+                    android:contentDescription="@null"
+                    android:padding="8dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/close"
+                    app:tint="?white_color" />
+
+                <dev.ragnarok.fenrir.view.CircleRoadProgress
+                    android:id="@+id/item_attachment_progress"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center"
+                    app:arcLoadingColor="?attr/colorAccent"
+                    app:arcLoadingStartAngle="270"
+                    app:arcLoadingStrokeWidth="4dp"
+                    app:roadColor="#ffffff"
+                    app:roadStrokeWidth="4dp" />
+
+            </FrameLayout>
+
+        </FrameLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/dividerColor" />
+
+        <LinearLayout
+            android:id="@+id/item_attachment_title_root"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/item_attachment_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="2"
+                android:minLines="2"
+                android:padding="4dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="Device.Camera" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
+

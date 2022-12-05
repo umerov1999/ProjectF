@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="?message_bubble_color"
+    app:cardCornerRadius="6dp"
+    app:cardUseCompatPadding="true">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <dev.ragnarok.fenrir.view.AspectRatioImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/messages_background_color"
+            android:gravity="center"
+            android:scaleType="centerCrop"
+            app:aspectRatioEnabled="true"
+            app:aspectRatioH="1"
+            app:aspectRatioW="1"
+            app:dominantMeasurement="width" />
+
+        <LinearLayout
+            android:id="@+id/selected"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="#60000000"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/item_photo_index"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                android:textColor="#ffffff"
+                android:textStyle="bold"
+                tools:text="1" />
+
+        </LinearLayout>
+    </FrameLayout>
+</com.google.android.material.card.MaterialCardView>

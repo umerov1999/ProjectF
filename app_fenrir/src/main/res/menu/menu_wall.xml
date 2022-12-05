@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/magnify"
+        android:title="@string/search"
+        app:iconTint="?colorOnSurface"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_show_qr"
+        android:icon="@drawable/qr_code"
+        android:title="@string/search"
+        app:iconTint="?colorOnSurface"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_refresh"
+        android:title="@string/refresh" />
+
+    <item
+        android:id="@+id/action_copy_url"
+        android:title="@string/copy_url" />
+
+    <item
+        android:id="@+id/action_copy_id"
+        android:title="@string/copy_id" />
+
+    <item
+        android:id="@+id/action_add_to_shortcut"
+        android:title="@string/add_to_launcher_shortcuts" />
+
+    <item
+        android:id="@+id/action_open_url"
+        android:title="@string/open_clipboard_url" />
+
+    <item
+        android:id="@+id/action_jump_offset"
+        android:title="@string/action_jump_offset" />
+
+    <item
+        android:id="@+id/search_stories"
+        android:title="@string/search_stories" />
+
+    <item
+        android:id="@+id/action_edit"
+        android:title="@string/edit" />
+
+    <item
+        android:id="@+id/wall_attachments"
+        android:title="@string/wall_attachments" />
+
+    <item
+        android:id="@+id/action_toggle_monitor"
+        android:title="@string/toggle_monitor_on" />
+</menu>

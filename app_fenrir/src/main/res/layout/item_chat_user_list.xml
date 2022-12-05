@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/card_margin"
+    android:background="?attr/selectableItemBackground"
+    android:minHeight="64dp">
+
+    <FrameLayout
+        android:id="@+id/item_user_avatar_container"
+        android:layout_width="@dimen/avatar_size_usual"
+        android:layout_height="@dimen/avatar_size_usual"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp">
+
+        <ImageView
+            android:id="@+id/item_user_avatar"
+            android:layout_width="@dimen/avatar_size_usual"
+            android:layout_height="@dimen/avatar_size_usual"
+            android:contentDescription="@null" />
+
+        <dev.ragnarok.fenrir.view.OnlineView
+            android:id="@+id/item_user_online"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="bottom"
+            android:padding="3dp"
+            app:circle_color="?icon_color_active"
+            app:stroke_color="?android:colorBackground" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_toStartOf="@id/item_user_remove"
+        android:layout_toEndOf="@id/item_user_avatar_container"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textColor="?colorPrimary"
+            tools:text="Name" />
+
+        <TextView
+            android:id="@+id/item_user_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            tools:text="Admin" />
+
+        <TextView
+            android:id="@+id/item_user_invited_by"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            tools:text="Invited" />
+
+        <TextView
+            android:id="@+id/item_user_domain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            tools:text="\@Domain" />
+
+        <TextView
+            android:id="@+id/item_user_invited_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textSize="10sp"
+            tools:ignore="SmallSp"
+            tools:text="Time" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/item_user_remove"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/circle_back"
+        android:clickable="true"
+        android:contentDescription="@null"
+        android:focusable="true"
+        android:padding="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/close" />
+
+</RelativeLayout>

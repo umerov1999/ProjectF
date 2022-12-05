@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
+
+    <RelativeLayout
+        android:id="@+id/content_root"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp">
+
+        <RelativeLayout
+            android:id="@+id/avatar_root"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp">
+
+            <ImageView
+                android:id="@+id/item_chat_avatar"
+                android:layout_width="@dimen/avatar_size_chat"
+                android:layout_height="@dimen/avatar_size_chat"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/empty_avatar_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:text="@string/voice_click"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:textAllCaps="true" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/avatar_root"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="6dp"
+            android:layout_toEndOf="@id/avatar_root"
+            android:gravity="center_vertical"
+            android:minHeight="42dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/dialog_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                tools:text="Name" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</RelativeLayout>

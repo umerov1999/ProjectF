@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dev.ragnarok.fenrir.view.AspectRatioFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:aspectHeight="4"
+    app:aspectWidth="3"
+    app:resize_mode="fit"
+    app:useAspect="true">
+
+    <com.google.android.material.card.MaterialCardView
+        style="?materialCardStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/background_unknown_image"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
+
+            <ImageView
+                android:id="@+id/tint_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#9b000000"
+                android:contentDescription="@null" />
+
+            <FrameLayout
+                android:id="@+id/progress_root"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/title">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/circle_back"
+                    android:contentDescription="@null"
+                    android:padding="8dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/close"
+                    app:tint="?white_color" />
+
+                <dev.ragnarok.fenrir.view.CircleRoadProgress
+                    android:id="@+id/progress_view"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center"
+                    app:arcLoadingColor="?attr/colorAccent"
+                    app:arcLoadingStartAngle="270"
+                    app:arcLoadingStrokeWidth="4dp"
+                    app:roadColor="#ffffff"
+                    app:roadStrokeWidth="4dp" />
+
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/retry_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignTop="@id/title"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/audio_button_material"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/refresh"
+                app:tint="?white_color" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_toEndOf="@id/retry_upload"
+                android:background="?android:colorBackground"
+                android:gravity="center"
+                android:maxLines="2"
+                android:minLines="2"
+                android:paddingStart="8dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="2dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="Photo" />
+
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</dev.ragnarok.fenrir.view.AspectRatioFrameLayout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="files_column_count">3</integer>
+    <integer name="articles_column_count">2</integer>
+    <integer name="videos_column_count">3</integer>
+    <integer name="photos_column_count">5</integer>
+    <integer name="local_gallery_column_count">4</integer>
+    <integer name="photos_albums_column_count">3</integer>
+    <integer name="privacy_entry_column_count">5</integer>
+
+    <!--Диаметр кнопки "Play" для вложенных аудиозаписей-->
+    <dimen name="article_size">45dp</dimen>
+
+    <!--Диаметр изображения аватара владельца поста-->
+
+    <bool name="is_tablet">true</bool>
+
+    <integer name="attachments_editor_column_count">4</integer>
+</resources>

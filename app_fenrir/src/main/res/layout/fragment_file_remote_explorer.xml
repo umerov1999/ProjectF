@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground"
+        android:stateListAnimator="@null">
+
+        <dev.ragnarok.fenrir.view.RoundCornerLinearView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:radius_bottom_left="12dp"
+            app:radius_bottom_right="12dp"
+            app:radius_top_left="6dp"
+            app:radius_top_right="6dp"
+            app:view_color="?colorPrimary">
+
+            <TextView
+                android:id="@+id/current_path"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingStart="12dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="4dp"
+                android:textColor="#ffffff" />
+        </dev.ragnarok.fenrir.view.RoundCornerLinearView>
+
+        <dev.ragnarok.fenrir.view.MySearchView
+            android:id="@+id/searchview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:search_source_id="20" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:choiceMode="singleChoice"
+            android:scrollbars="vertical" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/music_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="@null"
+        android:src="@drawable/audio_player"
+        app:layout_behavior="dev.ragnarok.fenrir.view.FABBehavior"
+        app:maxImageSize="30dp" />
+
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/directory_is_empty"
+        android:textColor="?android:textColorPrimary" />
+
+    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        android:id="@+id/loading"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:alpha="0.8"
+        android:visibility="gone"
+        app:loopAnimation="true" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_catalog_v2_artists"
+        android:title="@string/action_catalog_v2_artists" />
+
+    <item
+        android:id="@+id/action_catalog_v2_find_friends"
+        android:title="@string/action_catalog_v2_find_friends" />
+
+    <item
+        android:id="@+id/action_catalog_v2_find_groups"
+        android:title="@string/action_catalog_v2_find_groups" />
+
+    <item
+        android:id="@+id/action_catalog_v2_recent"
+        android:title="@string/action_catalog_v2_recent" />
+</menu>

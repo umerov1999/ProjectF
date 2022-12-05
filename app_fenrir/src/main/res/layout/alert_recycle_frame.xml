@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="6dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+            android:id="@+id/alert_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="web|phone|email"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textIsSelectable="true"
+            android:textSize="14sp"
+            tools:text="Message" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/alert_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:scrollbars="vertical" />
+    </LinearLayout>
+</ScrollView>

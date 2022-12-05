@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="neutral">#E0E0E0</color>
+
+    <color name="icon_var1">#FFBF00</color>
+    <color name="icon_var2">#FF6D9F</color>
+    <color name="icon_var3">#04B1FF</color>
+</resources>

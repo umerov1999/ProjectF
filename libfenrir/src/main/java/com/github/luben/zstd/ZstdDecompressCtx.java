@@ -1,0 +1,291 @@
+package com.github.luben.zstd;
+
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+public class ZstdDecompressCtx extends AutoCloseBase {
+
+    private long nativePtr;
+    private ZstdDictDecompress decompression_dict;
+
+    /**
+     * Create a context for faster compress operations
+     * One such context is required for each thread - put this in a ThreadLocal.
+     */
+    public ZstdDecompressCtx() {
+        init();
+        if (0 == nativePtr) {
+            throw new IllegalStateException("ZSTD_createDeCompressCtx failed");
+        }
+        storeFence();
+    }
+
+    private native void init();
+
+    private native void free();
+
+    void doClose() {
+        if (nativePtr != 0) {
+            free();
+            nativePtr = 0;
+        }
+    }
+
+    /**
+     * Enable or disable magicless frames
+     *
+     * @param magiclessFlag A 32-bits checksum of content is written at end of frame, default: false
+     */
+    public ZstdDecompressCtx setMagicless(boolean magiclessFlag) {
+        if (nativePtr == 0) {
+            throw new IllegalStateException("Compression context is closed");
+        }
+        acquireSharedLock();
+        Zstd.setDecompressionMagicless(nativePtr, magiclessFlag);
+        releaseSharedLock();
+        return this;
+    }
+
+    /**
+     * Load decompression dictionary
+     *
+     * @param dict the dictionary or `null` to remove loaded dictionary
+     */
+    public ZstdDecompressCtx loadDict(ZstdDictDecompress dict) {
+        if (nativePtr == 0) {
+            throw new IllegalStateException("Decompression context is closed");
+        }
+        acquireSharedLock();
+        dict.acquireSharedLock();
+        try {
+            long result = loadDDictFast0(dict);
+            if (Zstd.isError(result)) {
+                throw new ZstdException(result);
+            }
+            // keep a reference to the dictionary so it's not garbage collected
+            decompression_dict = dict;
+        } finally {
+            dict.releaseSharedLock();
+            releaseSharedLock();
+        }
+        return this;
+    }
+
+    private native long loadDDictFast0(ZstdDictDecompress dict);
+
+    /**
+     * Load decompression dictionary.
+     *
+     * @param dict the dictionary or `null` to remove loaded dictionary
+     */
+    public ZstdDecompressCtx loadDict(byte[] dict) {
+        if (nativePtr == 0) {
+            throw new IllegalStateException("Compression context is closed");
+        }
+        acquireSharedLock();
+        try {
+            long result = loadDDict0(dict);
+            if (Zstd.isError(result)) {
+                throw new ZstdException(result);
+            }
+            decompression_dict = null;
+        } finally {
+            releaseSharedLock();
+        }
+        return this;
+    }
+
+    private native long loadDDict0(byte[] dict);
+
+    /**
+     * Clear all state and parameters from the decompression context. This leaves the object in a
+     * state identical to a newly created decompression context.
+     */
+    public void reset() {
+        ensureOpen();
+        reset0();
+    }
+
+    private native void reset0();
+
+    private void ensureOpen() {
+        if (nativePtr == 0) {
+            throw new IllegalStateException("Decompression context is closed");
+        }
+    }
+
+    /**
+     * Decompress as much of the <code>src</code> {@link ByteBuffer} into the <code>dst</code> {@link
+     * ByteBuffer} as possible.
+     *
+     * @param dst destination of uncompressed data
+     * @param src buffer to decompress
+     * @return true if all state has been flushed from internal buffers
+     */
+    public boolean decompressDirectByteBufferStream(ByteBuffer dst, ByteBuffer src) {
+        ensureOpen();
+        long result = decompressDirectByteBufferStream0(dst, dst.position(), dst.limit(), src, src.position(), src.limit());
+        if ((result & 0x80000000L) != 0) {
+            long code = result & 0xFF;
+            throw new ZstdException(code, Zstd.getErrorName(code));
+        }
+        src.position((int) (result & 0x7FFFFFFF));
+        dst.position((int) (result >>> 32) & 0x7FFFFFFF);
+        return (result >>> 63) == 1;
+    }
+
+    /**
+     * 4 pieces of information are packed into the return value of this method, which must be
+     * treated as an unsigned long. The highest bit is set if all data has been flushed from
+     * internal buffers. The next 31 bits are the new position of the destination buffer. The next
+     * bit is set if an error occurred. If an error occurred, the lowest 31 bits encode a zstd error
+     * code. Otherwise, the lowest 31 bits are the new position of the source buffer.
+     */
+    private native long decompressDirectByteBufferStream0(ByteBuffer dst, int dstOffset, int dstSize, ByteBuffer src, int srcOffset, int srcSize);
+
+    /**
+     * Decompresses buffer 'srcBuff' into buffer 'dstBuff' using this ZstdDecompressCtx.
+     * <p>
+     * Destination buffer should be sized to be larger of equal to the originalSize.
+     * This is a low-level function that does not take into account or affect the `limit`
+     * or `position` of source or destination buffers.
+     *
+     * @param dstBuff   the destination buffer - must be direct
+     * @param dstOffset the start offset of 'dstBuff'
+     * @param dstSize   the size of 'dstBuff'
+     * @param srcBuff   the source buffer - must be direct
+     * @param srcOffset the start offset of 'srcBuff'
+     * @param srcSize   the size of 'srcBuff'
+     * @return the number of bytes decompressed into destination buffer (originalSize)
+     */
+    public int decompressDirectByteBuffer(ByteBuffer dstBuff, int dstOffset, int dstSize, ByteBuffer srcBuff, int srcOffset, int srcSize) {
+        if (nativePtr == 0) {
+            throw new IllegalStateException("Decompression context is closed");
+        }
+        if (!srcBuff.isDirect()) {
+            throw new IllegalArgumentException("srcBuff must be a direct buffer");
+        }
+        if (!dstBuff.isDirect()) {
+            throw new IllegalArgumentException("dstBuff must be a direct buffer");
+        }
+
+        acquireSharedLock();
+
+        try {
+            long size = decompressDirectByteBuffer0(dstBuff, dstOffset, dstSize, srcBuff, srcOffset, srcSize);
+            if (Zstd.isError(size)) {
+                throw new ZstdException(size);
+            }
+            if (size > Integer.MAX_VALUE) {
+                throw new ZstdException(Zstd.errGeneric(), "Output size is greater than MAX_INT");
+            }
+            return (int) size;
+        } finally {
+            releaseSharedLock();
+        }
+    }
+
+    private native long decompressDirectByteBuffer0(ByteBuffer dst, int dstOffset, int dstSize, ByteBuffer src, int srcOffset, int srcSize);
+
+    /**
+     * Decompresses byte array 'srcBuff' into byte array 'dstBuff' using this ZstdDecompressCtx.
+     * <p>
+     * Destination buffer should be sized to be larger of equal to the originalSize.
+     *
+     * @param dstBuff   the destination buffer
+     * @param dstOffset the start offset of 'dstBuff'
+     * @param dstSize   the size of 'dstBuff'
+     * @param srcBuff   the source buffer
+     * @param srcOffset the start offset of 'srcBuff'
+     * @param srcSize   the size of 'srcBuff'
+     * @return the number of bytes decompressed into destination buffer (originalSize)
+     */
+    public int decompressByteArray(byte[] dstBuff, int dstOffset, int dstSize, byte[] srcBuff, int srcOffset, int srcSize) {
+        if (nativePtr == 0) {
+            throw new IllegalStateException("Decompression context is closed");
+        }
+
+        acquireSharedLock();
+
+        try {
+            long size = decompressByteArray0(dstBuff, dstOffset, dstSize, srcBuff, srcOffset, srcSize);
+            if (Zstd.isError(size)) {
+                throw new ZstdException(size);
+            }
+            if (size > Integer.MAX_VALUE) {
+                throw new ZstdException(Zstd.errGeneric(), "Output size is greater than MAX_INT");
+            }
+            return (int) size;
+        } finally {
+            releaseSharedLock();
+        }
+    }
+
+    private native long decompressByteArray0(byte[] dst, int dstOffset, int dstSize, byte[] src, int srcOffset, int srcSize);
+
+    /** Covenience methods */
+
+    /**
+     * Decompresses buffer 'srcBuff' into buffer 'dstBuff' using this ZstdDecompressCtx.
+     * <p>
+     * Destination buffer should be sized to be larger of equal to the originalSize.
+     *
+     * @param dstBuf the destination buffer - must be direct. It is assumed that the `position()` of this buffer marks the offset
+     *               at which the decompressed data are to be written, and that the `limit()` of this buffer is the maximum
+     *               decompressed data size to allow.
+     *               <p>
+     *               When this method returns successfully, its `position()` will be set to its current `position()` plus the
+     *               decompressed size of the data.
+     *               </p>
+     * @param srcBuf the source buffer - must be direct. It is assumed that the `position()` of this buffer marks the beginning of the
+     *               compressed data to be decompressed, and that the `limit()` of this buffer marks its end.
+     *               <p>
+     *               When this method returns successfully, its `position()` will be set to the initial `limit()`.
+     *               </p>
+     * @return the size of the decompressed data.
+     */
+    public int decompress(ByteBuffer dstBuf, ByteBuffer srcBuf) throws ZstdException {
+
+        int size = decompressDirectByteBuffer(dstBuf,  // decompress into dstBuf
+                dstBuf.position(),                      // write decompressed data at offset position()
+                dstBuf.limit() - dstBuf.position(),     // write no more than limit() - position()
+                srcBuf,                                 // read compressed data from srcBuf
+                srcBuf.position(),                      // read starting at offset position()
+                srcBuf.limit() - srcBuf.position());    // read no more than limit() - position()
+        srcBuf.position(srcBuf.limit());
+        dstBuf.position(dstBuf.position() + size);
+        return size;
+    }
+
+    public ByteBuffer decompress(ByteBuffer srcBuf, int originalSize) throws ZstdException {
+        ByteBuffer dstBuf = ByteBuffer.allocateDirect(originalSize);
+        int size = decompressDirectByteBuffer(dstBuf, 0, originalSize, srcBuf, srcBuf.position(), srcBuf.limit() - srcBuf.position());
+        srcBuf.position(srcBuf.limit());
+        // Since we allocated the buffer ourselves, we know it cannot be used to hold any further decompressed data,
+        // so leave the position at zero where the caller surely wants it, ready to read
+        return dstBuf;
+    }
+
+    public int decompress(byte[] dst, byte[] src) {
+        return decompressByteArray(dst, 0, dst.length, src, 0, src.length);
+    }
+
+    /**
+     * Decompress data
+     *
+     * @param src          the source buffer
+     * @param originalSize the maximum size of the uncompressed data.
+     *                     If originaSize is greater than the actuall uncompressed size, additional memory copy going to happen.
+     *                     If originalSize is smaller than the uncompressed size, ZstdExeption will be thrown.
+     * @return byte array with the decompressed data
+     */
+    public byte[] decompress(byte[] src, int originalSize) throws ZstdException {
+        byte[] dst = new byte[originalSize];
+        int size = decompress(dst, src);
+        if (size != originalSize) {
+            return Arrays.copyOfRange(dst, 0, size);
+        } else {
+            return dst;
+        }
+    }
+}

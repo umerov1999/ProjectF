@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <dev.ragnarok.fenrir.view.BottomShadowView
+        android:id="@+id/toolbar_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:background="?android:colorBackground"
+        app:elevation="4dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:clipToPadding="true"
+            android:theme="@style/Theme.Toolbar.Surface"
+            app:subtitleTextAppearance="@style/TextAppearance.Material3.BodySmall"
+            app:titleTextAppearance="@style/TextAppearance.Toolbar.Title">
+
+            <FrameLayout
+                android:id="@+id/avatar_root"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginEnd="8dp">
+
+                <ImageView
+                    android:id="@+id/toolbar_avatar"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@null"
+                    android:stateListAnimator="@animator/clicked" />
+
+                <TextView
+                    android:id="@+id/empty_avatar_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/voice_click"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:textAllCaps="true" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/avatar_root"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/dialog_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textSize="16sp"
+                    tools:text="Name" />
+
+                <TextView
+                    android:id="@+id/dialog_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textSize="12sp"
+                    tools:text="SubTitle" />
+
+            </LinearLayout>
+
+        </com.google.android.material.appbar.MaterialToolbar>
+    </dev.ragnarok.fenrir.view.BottomShadowView>
+
+    <dev.ragnarok.fenrir.view.BottomShadowView
+        android:id="@+id/pinned_root_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar_root"
+        android:animateLayoutChanges="true"
+        android:background="?android:colorBackground"
+        android:orientation="vertical"
+        android:stateListAnimator="@animator/clicked"
+        app:elevation="4dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp">
+
+            <ImageView
+                android:id="@+id/pinned_avatar"
+                android:layout_width="@dimen/avatar_size_tiny"
+                android:layout_height="@dimen/avatar_size_tiny"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="12dp"
+                android:contentDescription="@null"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/pinned_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_toStartOf="@id/buttonUnpin"
+                android:layout_toEndOf="@id/pinned_avatar"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                tools:text="User Name" />
+
+            <TextView
+                android:id="@+id/pinned_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pinned_title"
+                android:layout_marginStart="16dp"
+                android:layout_toStartOf="@id/buttonUnpin"
+                android:layout_toEndOf="@id/pinned_avatar"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="Hi! How are you?" />
+
+            <ImageView
+                android:id="@+id/buttonUnpin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@null"
+                android:padding="8dp"
+                android:src="@drawable/close"
+                app:tint="?attr/colorOnSurface" />
+
+        </RelativeLayout>
+
+    </dev.ragnarok.fenrir.view.BottomShadowView>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/fragment_friend_dialog_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/input_view"
+        android:layout_below="@id/pinned_root_view"
+        android:scrollbars="vertical" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/stickers"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignBottom="@id/fragment_friend_dialog_list"
+        android:layout_gravity="bottom"
+        android:background="?sticker_hint_color"
+        android:visibility="gone" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/goto_button"
+        style="@style/Widget.Material3.FloatingActionButton.Small.Surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/fragment_friend_dialog_list"
+        android:layout_alignBottom="@id/fragment_friend_dialog_list"
+        android:layout_marginStart="@dimen/fab_margin"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_outline_keyboard_arrow_up" />
+
+    <RelativeLayout
+        android:id="@+id/writingGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/pinned_root_view"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="4dp"
+        android:background="?materialCardBackgroundStyle">
+
+        <ImageView
+            android:id="@+id/writingava"
+            android:layout_width="@dimen/avatar_size_small"
+            android:layout_height="@dimen/avatar_size_small"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@null"
+            android:padding="8dp" />
+
+        <TextView
+            android:id="@+id/writing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toEndOf="@id/writingava"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            tools:text="@string/user_type_message" />
+
+        <ImageView
+            android:id="@+id/writing_type"
+            android:layout_width="@dimen/avatar_size_small"
+            android:layout_height="@dimen/avatar_size_small"
+            android:layout_centerInParent="true"
+            android:layout_toEndOf="@id/writing"
+            android:contentDescription="@null"
+            android:padding="10dp"
+            android:src="@drawable/pencil"
+            app:tint="?android:attr/textColorPrimary" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/input_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/colorSurface"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/editMessageGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?message_bubble_color"
+            android:paddingStart="4dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="8dp">
+
+            <ImageView
+                android:id="@+id/iconEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@null"
+                android:padding="8dp"
+                android:src="@drawable/pencil"
+                app:tint="?attr/colorOnSurface" />
+
+            <TextView
+                android:id="@+id/editMessageTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_toStartOf="@id/buttonCancelEditing"
+                android:layout_toEndOf="@id/iconEdit"
+                android:text="@string/edit_message"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+            <TextView
+                android:id="@+id/editMessageText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editMessageTitle"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_toStartOf="@id/buttonCancelEditing"
+                android:layout_toEndOf="@id/iconEdit"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                tools:text="Hi! How are you?" />
+
+            <ImageView
+                android:id="@+id/buttonCancelEditing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@null"
+                android:padding="8dp"
+                android:src="@drawable/close"
+                app:tint="?attr/colorOnSurface" />
+
+        </RelativeLayout>
+
+        <dev.ragnarok.fenrir.view.MiniPlayerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <include
+            layout="@layout/fragment_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/down_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:animateLayoutChanges="true"
+        android:visibility="gone" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/fragment_chat_empty_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/chat_empty_text"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:visibility="gone" />
+
+        <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+            android:id="@+id/fragment_chat_empty_animation"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:alpha="0.8"
+            android:visibility="gone"
+            app:loopAnimation="true" />
+
+    </LinearLayout>
+
+</RelativeLayout>

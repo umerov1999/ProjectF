@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp"
+    android:stateListAnimator="@animator/clicked">
+
+
+    <ImageView
+        android:layout_width="@dimen/avatar_size_big"
+        android:layout_height="@dimen/avatar_size_big"
+        android:layout_gravity="center"
+        android:contentDescription="@null"
+        android:padding="17dp"
+        android:src="@drawable/artist_icon"
+        app:tint="?colorPrimary" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="4dp">
+
+        <TextView
+            android:id="@+id/item_artist_search_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textColor="?attr/colorSecondary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            tools:text="Name" />
+
+        <TextView
+            android:id="@+id/item_artist_search_domain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textSize="13sp"
+            tools:text="\@domain" />
+
+        <TextView
+            android:id="@+id/item_artist_search_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textSize="13sp"
+            tools:text="Id" />
+
+    </LinearLayout>
+
+</LinearLayout>

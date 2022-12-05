@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?materialCardBackgroundStyle"
+    android:orientation="horizontal"
+    android:padding="4dp">
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/runic"
+        android:src="@drawable/runic_letter_fehu"
+        app:tint="?colorPrimary" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/runic"
+        android:src="@drawable/runic_letter_ehwaz"
+        app:tint="?colorSecondary" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/runic"
+        android:src="@drawable/runic_letter_naudiz"
+        app:tint="?colorPrimary" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/runic"
+        android:src="@drawable/runic_letter_raido"
+        app:tint="?colorSecondary" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/runic"
+        android:src="@drawable/runic_letter_isaz"
+        app:tint="?colorPrimary" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/runic"
+        android:src="@drawable/runic_letter_raido"
+        app:tint="?colorPrimary" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/runic"
+        android:src="@drawable/runic_letter_space"
+        app:tint="?colorSecondary" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/runic"
+        android:src="@drawable/runic_letter_fehu"
+        app:tint="?colorPrimary" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/runic"
+        android:src="@drawable/runic_letter_kauna"
+        app:tint="?colorSecondary" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/runic"
+        android:src="@drawable/runic_letter_manaz"
+        app:tint="?colorPrimary" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/runic"
+        android:src="@drawable/runic_letter_algis"
+        app:tint="?colorSecondary" />
+</LinearLayout>

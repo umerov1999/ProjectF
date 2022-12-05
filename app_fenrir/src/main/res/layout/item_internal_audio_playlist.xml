@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <dev.ragnarok.fenrir.view.AspectRatioImageView
+        android:id="@+id/item_thumb"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:scaleType="centerCrop"
+        app:aspectRatioEnabled="true"
+        app:aspectRatioH="1"
+        app:aspectRatioW="1" />
+
+    <LinearLayout
+        android:id="@+id/item_additional_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_weight="4"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textColor="?colorPrimary"
+            tools:text="Name" />
+
+        <TextView
+            android:id="@+id/item_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textColor="?colorSecondary"
+            tools:text="Artist" />
+
+        <TextView
+            android:id="@+id/item_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textSize="12sp"
+            tools:text="Description" />
+
+        <TextView
+            android:id="@+id/item_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            tools:text="count" />
+
+        <TextView
+            android:id="@+id/item_genre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            tools:text="genre" />
+
+        <TextView
+            android:id="@+id/item_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:lines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textSize="10sp"
+            tools:ignore="SmallSp"
+            tools:text="time" />
+
+        <TextView
+            android:id="@+id/item_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:lines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textSize="10sp"
+            tools:ignore="SmallSp"
+            tools:text="year" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_playlist"
+                style="@style/Widget.Material3.FloatingActionButton.Small.Surface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@null"
+                android:src="@drawable/plus"
+                app:elevation="2dp"
+                app:layout_behavior="dev.ragnarok.fenrir.view.FABBehavior" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/share_playlist"
+                style="@style/Widget.Material3.FloatingActionButton.Small.Surface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:contentDescription="@null"
+                android:src="@drawable/share"
+                app:elevation="2dp"
+                app:layout_behavior="dev.ragnarok.fenrir.view.FABBehavior" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

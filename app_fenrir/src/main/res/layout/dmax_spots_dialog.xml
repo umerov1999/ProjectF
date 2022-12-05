@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardElevation="1dp"
+    app:contentPadding="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/dmax_spots_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/title_margin"
+            android:gravity="center_horizontal"
+            android:padding="@dimen/title_padding"
+            android:text="@string/loading"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textSize="18sp" />
+
+        <FrameLayout
+            android:id="@+id/dmax_spots_progress"
+            android:layout_width="@dimen/progress_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/progress_margin" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

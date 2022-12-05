@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        android:id="@+id/pagan_symbol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:loopAnimation="true"
+        tools:src="@drawable/ic_cat" />
+
+    <include
+        android:id="@+id/runes_container"
+        layout="@layout/runes_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_margin_horizontal"
+        android:layout_marginTop="@dimen/card_margin_horizontal"
+        android:layout_marginEnd="@dimen/card_margin_horizontal" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_margin_horizontal"
+        android:layout_marginTop="@dimen/card_margin"
+        android:layout_marginEnd="@dimen/card_margin_horizontal"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardElevation="0dp"
+        tools:ignore="UnusedAttribute">
+
+        <ImageView
+            android:id="@+id/cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.6"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <FrameLayout
+                    android:layout_width="@dimen/avatar_size_big"
+                    android:layout_height="@dimen/avatar_size_big">
+
+                    <ImageView
+                        android:id="@+id/avatar"
+                        android:layout_width="@dimen/avatar_size_big"
+                        android:layout_height="@dimen/avatar_size_big"
+                        android:background="@drawable/sel_button_round_5_white"
+                        android:contentDescription="@string/open_avatar"
+                        android:padding="1.5dp" />
+
+                    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+                        android:id="@+id/donated_anim"
+                        android:layout_width="@dimen/avatar_size_big"
+                        android:layout_height="@dimen/avatar_size_big"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/item_verified"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:background="@drawable/sel_button_round_5_white"
+                        android:backgroundTint="#009900"
+                        android:backgroundTintMode="add"
+                        android:contentDescription="@null"
+                        android:padding="4dp"
+                        android:src="@drawable/verified"
+                        android:visibility="gone"
+                        app:tint="?white_color" />
+
+                    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+                        android:id="@+id/item_blacklisted"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="end|bottom"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:contentDescription="@null"
+                        android:visibility="gone"
+                        app:loopAnimation="true"
+                        tools:src="@drawable/audio_died" />
+
+                    <dev.ragnarok.fenrir.view.OnlineView
+                        android:id="@+id/header_navi_menu_online"
+                        android:layout_width="@dimen/online_dot_size_big"
+                        android:layout_height="@dimen/online_dot_size_big"
+                        android:layout_gravity="bottom|start"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:padding="4dp"
+                        app:circle_color="?icon_color_active" />
+
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end|center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/fragment_user_profile_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:textAppearance="@style/ProfileText"
+                        tools:text="User" />
+
+                    <TextView
+                        android:id="@+id/fragment_user_profile_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        tools:text="\@domain" />
+
+                    <TextView
+                        android:id="@+id/fragment_user_profile_activity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="end"
+                        android:textSize="@dimen/font_size_subtitle" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/fragment_user_profile_audio"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center_vertical"
+                            android:contentDescription="@null"
+                            android:src="@drawable/song"
+                            android:visibility="gone"
+                            app:tint="?colorOnSurface" />
+
+                        <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+                            android:id="@+id/fragment_user_profile_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:autoLink="web|phone|map|email"
+                            android:ellipsize="end"
+                            android:gravity="end"
+                            android:maxLines="6"
+                            android:stateListAnimator="@animator/clicked"
+                            android:textAppearance="@style/ProfileSubText"
+                            android:visibility="visible"
+                            app:emojiconSize="20sp"
+                            tools:text="It is my status :D" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:baselineAligned="false"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/subscribe_btn"
+                    style="@style/MyOutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:insetTop="3dp"
+                    android:insetBottom="3dp"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/button_profile_tint"
+                    tools:text="Subscribe" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/header_user_profile_fab_message"
+                    style="@style/Widget.Material3.FloatingActionButton.Small.Surface"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/email"
+                    app:elevation="1dp" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/info_btn"
+                    style="?attr/fab_secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/about_writed"
+                    app:elevation="1dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <HorizontalScrollView
+        android:id="@+id/horiz_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_margin_horizontal"
+        android:layout_marginTop="@dimen/card_margin"
+        android:layout_marginEnd="@dimen/card_margin_horizontal"
+        android:layout_marginBottom="@dimen/card_margin_horizontal"
+        android:background="?materialCardBackgroundStyle"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/header_user_profile_friends_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/fragment_user_profile_bfriends"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/counter_friends"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_user_profile_groups_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/fragment_user_profile_bgroups"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/counter_groups"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_user_profile_photos_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/fragment_user_profile_bphotos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/counter_photos"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_user_profile_audios_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/fragment_user_profile_baudios"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/counter_audios"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_user_profile_videos_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/fragment_user_profile_bvideos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/counter_videos"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_user_profile_articles_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/fragment_user_profile_barticles"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/counter_articles"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_user_profile_gifts_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/fragment_user_profile_bgifts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/counter_gifts"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/header_user_profile_narratives_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:stateListAnimator="@animator/clicked">
+
+                <TextView
+                    android:id="@+id/fragment_user_profile_bnarratives"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ProfileText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/counter_narratives"
+                    android:textAppearance="@style/ProfileSubText" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/post_filter_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none" />
+</LinearLayout>
+

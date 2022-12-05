@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="6dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="6dp"
+    android:paddingBottom="4dp">
+
+    <FrameLayout
+        android:id="@+id/item_audio_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:id="@+id/item_audio_play_cover"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:contentDescription="@null" />
+
+        <dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+            android:id="@+id/item_audio_visual"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/track_option"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"
+        android:layout_toStartOf="@id/info_block"
+        android:layout_toEndOf="@id/item_audio_play"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/dialog_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textSize="15sp"
+            tools:text="Name" />
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textSize="12sp"
+            tools:text="Artist" />
+    </LinearLayout>
+
+    <TableLayout
+        android:id="@+id/info_block"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:orientation="vertical">
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/item_audio_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:maxLines="1"
+                android:paddingStart="0dp"
+                android:paddingEnd="2dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="Time" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+
+            <ImageView
+                android:id="@+id/saved"
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:contentDescription="@null"
+                android:padding="2dp"
+                android:src="@drawable/save"
+                app:tint="?attr/colorPrimary" />
+        </TableRow>
+
+    </TableLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/item_audio_selection"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/item_audio_play"
+        android:layout_alignBottom="@id/item_audio_play"
+        android:alpha="0.5"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:cardBackgroundColor="?colorPrimary"
+        app:cardCornerRadius="6dp"
+        app:cardElevation="0dp"
+        app:contentPadding="0dp" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/item_audio_play"
+        android:layout_alignBottom="@id/item_audio_play"
+        android:alpha="0.5"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:cardBackgroundColor="?colorPrimary"
+        app:cardCornerRadius="6dp"
+        app:cardElevation="0dp"
+        app:contentPadding="0dp" />
+</RelativeLayout>

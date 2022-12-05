@@ -1,0 +1,132 @@
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id("kotlinx-serialization")
+}
+
+android {
+    namespace "dev.ragnarok.filegallery"
+    configurations {
+        compile.exclude module: 'support-v4'
+    }
+    packagingOptions {
+        exclude("META-INF/notice.txt")
+        exclude("META-INF/license.txt")
+        exclude("META-INF/LICENSE")
+        exclude("META-INF/NOTICE")
+        exclude("META-INF/*.version")
+    }
+
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
+    compileSdk = appCompileSDK
+    buildToolsVersion = appBuildTools
+    ndkVersion = appNdk
+
+    defaultConfig {
+        generatedDensities = []
+
+        minSdk = appMinSDK
+        targetSdk = appTargetSDK
+        versionCode = appFileGalleryVersionCode
+        versionName = appFileGalleryVersionName
+        buildConfigField("boolean", "MANAGE_SCOPED_STORAGE", "true")
+        buildConfigField("boolean", "FORCE_DEVELOPER_MODE", is_developer_build ? "true" : "false")
+
+        applicationId = "dev.ragnarok.filegallery"
+
+        ndk {
+            abiFilters = targetAbi
+        }
+        resConfigs "en", "ru", "be"
+    }
+
+    lint {
+        abortOnError = true
+        checkReleaseBuilds = true
+    }
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xmaxwarns" << "1000" << "-Xmaxerrs" << "1000"
+    }
+
+    compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled = appMinSDK < 26
+
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        encoding = "utf-8"
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = ["-opt-in=kotlin.contracts.ExperimentalContracts",
+                            "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+                            "-opt-in=kotlin.RequiresOptIn", "-opt-in=kotlin.ExperimentalStdlibApi"]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled = false
+            shrinkResources = false
+            zipAlignEnabled = true
+        }
+        debug {
+            minifyEnabled = false
+            shrinkResources = false
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: "*.aar", dir: "../compiled_native")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-parcelize-runtime:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlin_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines")
+    compileOnly("org.jetbrains.kotlin:kotlin-annotations-jvm:$kotlin_version")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:$desugarLibraryVersion")
+    implementation("androidx.core:core-ktx:$coreVersion")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-common:$lifecycleVersion")
+    implementation("androidx.annotation:annotation:$annotationVersion")
+    //implementation("androidx.recyclerview:recyclerview:$recyclerviewVersion")
+    implementation("androidx.vectordrawable:vectordrawable:$vectordrawableVersion")
+    implementation("androidx.appcompat:appcompat:$appcompatVersion")
+    implementation("androidx.customview:customview:$customviewVersion")
+    implementation("androidx.customview:customview-poolingcontainer:$customviewPoolingcontainerVersion")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:$swiperefreshlayoutVersion")
+    implementation("androidx.browser:browser:$browserVersion")
+    implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
+    implementation("io.reactivex.rxjava3:rxjava:$rxJavaVersion")
+    //implementation project(path: ":libfenrir")
+    implementation project(path: ":picasso3")
+    implementation project(path: ":viewpager2")
+    implementation project(path: ":material")
+    implementation project(path: ":preference")
+    implementation project(path: ":retrofit")
+    implementation project(path: ":camera2")
+    implementation("com.squareup.okhttp3:okhttp-android:$okhttpLibraryVersion")
+    //implementation("com.squareup.okhttp3:logging-interceptor:$okhttpLibraryVersion")
+    implementation("com.squareup.okio:okio:$okioVersion")
+    implementation("com.google.android.exoplayer:exoplayer-core:$exoLibraryVersion")
+    implementation("androidx.constraintlayout:constraintlayout:$constraintlayoutVersion")
+    implementation("androidx.biometric:biometric-ktx:$biometricVersion")
+    implementation("androidx.media:media:$mediaVersion")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:$coordinatorlayoutVersion")
+    implementation("androidx.activity:activity-ktx:$activityVersion")
+    implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
+    implementation("androidx.work:work-runtime-ktx:$workVersion")
+    implementation("com.google.guava:guava:$guavaVersion")
+    implementation("androidx.drawerlayout:drawerlayout:$drawerlayoutVersion")
+    implementation("androidx.loader:loader:$loaderVersion")
+    implementation("androidx.cardview:cardview:$cardviewVersion")
+    implementation("androidx.collection:collection-ktx:$collectionVersion")
+    implementation("androidx.savedstate:savedstate-ktx:$savedStateVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlin_serializer")
+    implementation("com.google.errorprone:error_prone_annotations:${errorproneVersion}")
+}

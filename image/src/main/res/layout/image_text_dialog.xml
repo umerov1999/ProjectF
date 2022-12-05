@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/image_bg_top"
+        android:padding="16dp">
+
+        <ImageButton
+            android:id="@+id/tv_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:contentDescription="@string/image_cancel"
+            android:src="@drawable/image_btn_cancel" />
+
+        <ImageButton
+            android:id="@+id/tv_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:background="@null"
+            android:contentDescription="@string/image_done"
+            android:src="@drawable/image_btn_ok" />
+
+    </FrameLayout>
+
+    <EditText
+        android:id="@+id/et_text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="22dp"
+        android:layout_weight="1"
+        android:background="@null"
+        android:gravity="top"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        android:padding="16dp"
+        android:textColor="@color/image_color_primary"
+        android:textSize="24sp"
+        tools:text="Sample" />
+
+    <include layout="@layout/image_color_layout" />
+
+</LinearLayout>

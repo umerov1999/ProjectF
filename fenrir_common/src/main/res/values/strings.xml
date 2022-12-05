@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string-array name="array_pagan_symbol_names">
+        <item>Disabled.</item>
+        <item>Cat</item>
+        <item>Yggdrasil</item>
+        <item>Valknut</item>
+        <item>Mjolnir</item>
+        <item>Vegvisir</item>
+        <item>Vegvisir 2</item>
+        <item>Celtic knot</item>
+        <item>Celtic flower</item>
+        <item>Slepnir</item>
+        <item>Fenrir</item>
+        <item>Triskel</item>
+        <item>Hel</item>
+        <item>Odin</item>
+        <item>Odin 2</item>
+        <item>Freya</item>
+        <item>Viking</item>
+        <item>Raven</item>
+        <item>Pennywise</item>
+        <item>Chur</item>
+        <item>Fire</item>
+        <item>Flame</item>
+        <item>[Random]</item>
+    </string-array>
+
+    <string-array name="array_pagan_symbol_items" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+    </string-array>
+
+    <!-- Google Play-->
+    <string name="developer">Developer: Umerov Artyom</string>
+    <string name="first_pagan">First pagan</string>
+    <string name="repo">Repository: https://github.com/umerov1999/Fenrir-for-VK</string>
+    <string name="repo_local_server">Repository: https://github.com/umerov1999/FenrirMediaServer/releases</string>
+    <string name="enabled_local_server">Enabled</string>
+    <string name="reboot_pc_win">Reboot Win</string>
+    <string name="reboot_pc_linux">Reboot Linux</string>
+</resources>

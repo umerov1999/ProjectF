@@ -1,0 +1,61 @@
+package androidx.recyclerview.widget
+
+import android.os.Parcel
+import android.os.Parcelable
+import kotlinx.serialization.Serializable
+
+/**
+ * @hide
+ */
+@Serializable
+class LinearLayoutManager_SavedState : Parcelable {
+    var mAnchorPosition = 0
+    var mAnchorOffset = 0
+    var mAnchorLayoutFromEnd = false
+
+    @Suppress("unused")
+    constructor()
+    internal constructor(`in`: Parcel) {
+        mAnchorPosition = `in`.readInt()
+        mAnchorOffset = `in`.readInt()
+        mAnchorLayoutFromEnd = `in`.readInt() != 0
+    }
+
+    constructor(other: LinearLayoutManager_SavedState) {
+        mAnchorPosition = other.mAnchorPosition
+        mAnchorOffset = other.mAnchorOffset
+        mAnchorLayoutFromEnd = other.mAnchorLayoutFromEnd
+    }
+
+    fun hasValidAnchor(): Boolean {
+        return mAnchorPosition >= 0
+    }
+
+    fun invalidateAnchor() {
+        mAnchorPosition = RecyclerView.NO_POSITION
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeInt(mAnchorPosition)
+        dest.writeInt(mAnchorOffset)
+        dest.writeInt(if (mAnchorLayoutFromEnd) 1 else 0)
+    }
+
+    companion object {
+        @JvmField
+        val CREATOR: Parcelable.Creator<LinearLayoutManager_SavedState> =
+            object : Parcelable.Creator<LinearLayoutManager_SavedState> {
+                override fun createFromParcel(`in`: Parcel): LinearLayoutManager_SavedState {
+                    return LinearLayoutManager_SavedState(`in`)
+                }
+
+                override fun newArray(size: Int): Array<LinearLayoutManager_SavedState?> {
+                    return arrayOfNulls(size)
+                }
+            }
+    }
+}

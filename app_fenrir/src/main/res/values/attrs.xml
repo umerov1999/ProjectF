@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="WrapWidthTextView">
+        <attr name="fixWrapText" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="CircleRoadProgress">
+        <attr name="circleCenterPointX" format="float" />
+        <attr name="circleCenterPointY" format="float" />
+
+        <attr name="roadColor" format="color" />
+        <attr name="roadStrokeWidth" format="dimension" />
+        <attr name="roadRadius" format="float" />
+
+        <attr name="arcLoadingColor" format="color" />
+        <attr name="arcLoadingStrokeWidth" format="dimension" />
+        <attr name="arcLoadingStartAngle" format="float" />
+    </declare-styleable>
+
+    <declare-styleable name="Emojicon">
+        <attr name="displayHashTags" format="boolean" />
+        <attr name="emojiconSize" format="dimension" />
+        <attr name="emojiconTextStart" format="integer" />
+        <attr name="emojiconTextLength" format="integer" />
+        <attr name="hashTagColor" format="color" />
+    </declare-styleable>
+
+    <attr name="message_bubble_color" format="color" />
+    <attr name="sticker_hint_color" format="color" />
+    <attr name="dialogs_unread_color" format="color" />
+    <attr name="toast_background" format="color" />
+    <attr name="icon_color_active" format="color" />
+    <attr name="icon_color_inactive" format="color" />
+    <attr name="toolbar_left_icon_color" format="color" />
+
+    <attr name="fab_secondary" format="reference" />
+    <attr name="fab_player" format="reference" />
+
+    <attr name="navi_menu_color" format="color" />
+    <attr name="navi_menu_selector" format="reference" />
+    <attr name="messages_background_color" format="color" />
+    <attr name="my_messages_bubble_color" format="color" />
+    <attr name="my_messages_secondary_bubble_color" format="color" />
+    <attr name="chat_background_cookies" format="reference" />
+    <attr name="chat_background_lines" format="reference" />
+    <attr name="chat_background_runes" format="reference" />
+    <attr name="message_unread_color" format="color" />
+    <attr name="buttonAddPhotoBackground" format="reference" />
+    <attr name="dividerColor" format="color" />
+    <attr name="materialCardStyle" format="reference" />
+    <attr name="materialCardBackgroundStyle" format="reference" />
+
+    <attr name="toolbarElevation" format="reference" />
+    <attr name="statusbarNonColoredColor" format="color" />
+
+    <!-- QuickReply-->
+    <attr name="quick_reply_icon_color" format="color" />
+
+
+    <declare-styleable name="MozaikLayout">
+        <attr name="maxSingleImageHeight" format="dimension" />
+        <attr name="prefImageSize" format="dimension" />
+        <attr name="spacing" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="CircleCounterButton">
+        <attr name="button_icon" format="reference" />
+        <attr name="always_counter" format="boolean" />
+        <attr name="active" format="boolean" />
+        <attr name="count" format="integer" />
+        <attr name="active_icon_color" format="color" />
+        <attr name="noactive_icon_color" format="color" />
+        <attr name="active_background_color" format="color" />
+        <attr name="noactive_background_color" format="color" />
+        <attr name="text_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="WaveFormView">
+        <attr name="waveform_active_color" format="color" />
+        <attr name="waveform_noactive_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="KeyboardView">
+        <attr name="keyboard_theme" format="enum">
+            <enum name="fullscreen" value="0" />
+            <enum name="dialog" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ProgressButton">
+        <attr name="button_layout" format="reference" />
+        <attr name="button_text" format="string" />
+        <attr name="button_all_caps" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="OnlineView">
+        <attr name="circle_color" format="color" />
+        <attr name="stroke_color" format="color" />
+        <attr name="stroke_width" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="ColorFilterImageView">
+        <attr name="filter_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="SawView">
+        <attr name="sawToothPrefWidht" format="dimension" />
+        <attr name="sawBackground" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="YoutubeButton">
+        <attr name="youtube_button_icon" format="reference" />
+        <attr name="youtube_button_text" format="string" />
+        <attr name="youtube_button_text_color" format="color" />
+        <attr name="youtube_button_icon_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="MySpinnerView">
+        <attr name="spinner_hint" format="string" />
+        <attr name="spinner_hint_color" format="color" />
+        <attr name="spinner_text_color" format="color" />
+        <attr name="spinner_icon_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="MySearchView">
+        <attr name="search_source_id" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="AspectRatioImageView">
+        <attr name="aspectRatioW" format="integer" />
+        <attr name="aspectRatioH" format="integer" />
+        <attr name="aspectRatioEnabled" format="boolean" />
+        <attr name="dominantMeasurement">
+            <enum name="width" value="0" />
+            <enum name="height" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="MessageView">
+        <attr name="radius" format="dimension" />
+        <attr name="first_color" format="color" />
+        <attr name="second_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundCornerLinearView">
+        <attr name="radius_bottom_right" format="dimension" />
+        <attr name="radius_bottom_left" format="dimension" />
+        <attr name="radius_top_right" format="dimension" />
+        <attr name="radius_top_left" format="dimension" />
+        <attr name="view_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="BotKeyboardView">
+        <attr name="track_keyboard_height" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="TouchImageView">
+        <attr name="zoom_enabled" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="AspectRatioFrameLayout">
+        <attr name="resize_mode" format="enum">
+            <enum name="fit" value="0" />
+            <enum name="fixed_width" value="1" />
+            <enum name="fixed_height" value="2" />
+            <enum name="fill" value="3" />
+            <enum name="zoom" value="4" />
+        </attr>
+        <attr name="useAspect" format="boolean" />
+        <attr name="aspectWidth" format="integer" />
+        <attr name="aspectHeight" format="integer" />
+    </declare-styleable>
+
+    <attr name="materialPopupMenuStyle" format="reference" />
+
+    <declare-styleable name="MaterialRecyclerViewPopupWindow">
+        <attr name="android:dropDownHorizontalOffset" />
+        <attr name="android:dropDownVerticalOffset" />
+        <attr name="android:backgroundDimEnabled" />
+        <attr name="android:backgroundDimAmount" />
+        <attr name="mpm_paddingBottom" format="dimension" />
+        <attr name="mpm_paddingStart" format="dimension" />
+        <attr name="mpm_paddingEnd" format="dimension" />
+        <attr name="mpm_paddingTop" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="SnowfallView">
+        <attr name="snowflakesNum" format="integer" />
+        <attr name="snowflakeAlphaMin" format="integer" />
+        <attr name="snowflakeAlphaMax" format="integer" />
+        <attr name="snowflakeAngleMax" format="integer" />
+        <attr name="snowflakeSizeMin" format="dimension" />
+        <attr name="snowflakeSizeMax" format="dimension" />
+        <attr name="snowflakeSpeedMin" format="integer" />
+        <attr name="snowflakeSpeedMax" format="integer" />
+        <attr name="snowflakesFadingEnabled" format="boolean" />
+        <attr name="snowflakesAlreadyFalling" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="RLottieImageView">
+        <attr name="loopAnimation" format="boolean" />
+        <attr name="fromRes" format="reference" />
+        <attr name="w" format="dimension" />
+        <attr name="h" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="AnimatedShapeableImageView">
+        <attr name="default_width" format="dimension" />
+        <attr name="default_height" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="BottomShadowView">
+        <attr name="android:background" />
+        <attr name="elevation" />
+    </declare-styleable>
+    <declare-styleable name="CustomSeekBar">
+        <attr name="progressColor" format="color" />
+        <attr name="bufferedColor" format="color" />
+        <attr name="lineColor" format="color" />
+        <attr name="circleColor" format="color" />
+        <attr name="pressedCircleColor" format="color" />
+        <attr name="applyAlpha" format="boolean" />
+        <attr name="lineHeight" format="dimension" />
+    </declare-styleable>
+</resources>

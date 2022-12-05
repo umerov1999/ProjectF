@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/account_select"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="72dp"
+    android:stateListAnimator="@animator/clicked">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="72dp"
+        android:layout_toStartOf="@id/active"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/first_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            tools:text="Name" />
+
+        <TextView
+            android:id="@+id/domain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            tools:text="Domain" />
+
+        <TextView
+            android:id="@+id/last_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            tools:text="Time" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/item_user_avatar_container"
+        android:layout_width="@dimen/avatar_size_usual"
+        android:layout_height="@dimen/avatar_size_usual"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp">
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/avatar_size_usual"
+            android:layout_height="@dimen/avatar_size_usual"
+            android:contentDescription="@null" />
+
+        <dev.ragnarok.fenrir.view.OnlineView
+            android:id="@+id/item_user_online"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="bottom"
+            android:padding="3dp"
+            app:circle_color="?icon_color_active"
+            app:stroke_color="?android:colorBackground" />
+    </FrameLayout>
+
+    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        android:id="@+id/active"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:padding="2dp"
+        android:visibility="gone"
+        app:loopAnimation="true" />
+
+</RelativeLayout>
+
+

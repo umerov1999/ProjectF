@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/footer_load_more_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/footer_load_more_run"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/load_more"
+        android:textAllCaps="true" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/footer_load_more_progress"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerInParent="true"
+        android:indeterminate="true" />
+
+    <TextView
+        android:id="@+id/footer_load_more_end_of_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/end_of_list"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:textColor="?android:textColorSecondary" />
+
+</RelativeLayout>

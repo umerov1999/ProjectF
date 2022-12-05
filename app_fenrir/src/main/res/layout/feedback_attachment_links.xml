@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <dev.ragnarok.fenrir.view.mozaik.MozaikLayout
+        android:id="@+id/feedback_photo_attachments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <dev.ragnarok.fenrir.view.AudioContainer
+        android:id="@+id/feedback_audio_attachments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <LinearLayout
+        android:id="@+id/feedback_video_attachments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <LinearLayout
+        android:id="@+id/feedback_stickers_attachments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <LinearLayout
+        android:id="@+id/feedback_docs_attachments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <LinearLayout
+        android:id="@+id/feedback_articles_attachments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+</merge>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_first_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="first_name:"
+                android:inputType="text"
+                android:textSize="16sp"
+                tools:ignore="HardcodedText" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_last_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="last_name:"
+                android:inputType="text"
+                android:textSize="16sp"
+                tools:ignore="HardcodedText" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_maiden_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="maiden_name:"
+                android:inputType="text"
+                android:textSize="16sp"
+                tools:ignore="HardcodedText" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_screen_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="screen_name:"
+                android:inputType="text"
+                android:textSize="16sp"
+                tools:ignore="HardcodedText" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_home_town"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="home_town:"
+                android:inputType="text"
+                android:textSize="16sp"
+                tools:ignore="HardcodedText" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_bdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="burn date:"
+                android:inputType="text"
+                android:textSize="16sp"
+                tools:ignore="HardcodedText" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Spinner
+            android:id="@+id/sex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:dropDownWidth="match_parent"
+            android:entries="@array/array_sex"
+            android:hint="sex:"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+</ScrollView>

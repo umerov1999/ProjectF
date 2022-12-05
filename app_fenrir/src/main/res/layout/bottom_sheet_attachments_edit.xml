@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <dev.ragnarok.fenrir.view.AspectRatioFrameLayout
+            android:id="@+id/offset_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:aspectHeight="4"
+            app:aspectWidth="3"
+            app:resize_mode="fit"
+            app:useAspect="true" />
+
+        <TextView
+            android:id="@+id/no_attachments_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="4dp"
+            android:layout_toEndOf="@id/offset_view"
+            android:gravity="center"
+            android:maxWidth="200dp"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:text="@string/message_attachment_empty_text"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            app:drawableTint="?attr/colorOnSurface"
+            app:drawableTopCompat="@drawable/ic_sad_vector" />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center|end"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/buttonCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@null"
+            android:padding="12dp"
+            android:src="@drawable/ic_outline_camera"
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageView
+            android:id="@+id/buttonVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@null"
+            android:padding="12dp"
+            android:src="@drawable/ic_outline_video_library"
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageView
+            android:id="@+id/buttonAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@null"
+            android:padding="12dp"
+            android:src="@drawable/ic_outline_library_music"
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageView
+            android:id="@+id/buttonDoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@null"
+            android:padding="12dp"
+            android:src="@drawable/ic_outline_library_books"
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageButton
+            android:id="@+id/buttonHide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@null"
+            android:padding="12dp"
+            android:src="@drawable/ic_arrow_down_vector"
+            app:tint="?android:textColorPrimary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/save" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="@drawable/background_rectangle_stroke"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="8dp"
+        android:text="@string/title"
+        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:textAllCaps="true" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_ripple"
+        android:paddingStart="12dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="4dp">
+
+        <ImageView
+            android:id="@+id/item_chat_avatar"
+            android:layout_width="@dimen/avatar_size_chat"
+            android:layout_height="@dimen/avatar_size_chat"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@null"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/item_verified"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:background="@drawable/sel_button_round_5_white"
+            android:backgroundTint="#009900"
+            android:backgroundTintMode="add"
+            android:contentDescription="@null"
+            android:padding="3dp"
+            android:src="@drawable/verified"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/item_chat_avatar"
+            app:layout_constraintTop_toTopOf="@id/item_chat_avatar"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/empty_avatar_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/voice_click"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/item_chat_avatar"
+            app:layout_constraintEnd_toEndOf="@id/item_chat_avatar"
+            app:layout_constraintStart_toStartOf="@id/item_chat_avatar"
+            app:layout_constraintTop_toTopOf="@id/item_chat_avatar"
+            app:textAllCaps="true"
+            tools:text="AB"
+            tools:textColor="?android:textColorPrimary" />
+
+        <dev.ragnarok.fenrir.view.OnlineView
+            android:id="@+id/item_chat_online"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:padding="3dp"
+            app:circle_color="?icon_color_active"
+            app:layout_constraintBottom_toBottomOf="@id/item_chat_avatar"
+            app:layout_constraintStart_toStartOf="@id/item_chat_avatar"
+            app:stroke_color="?android:colorBackground" />
+
+        <ImageView
+            android:id="@+id/item_blacklisted"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@null"
+            android:src="@drawable/audio_died"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/item_chat_avatar"
+            app:layout_constraintEnd_toEndOf="@id/item_chat_avatar"
+            app:tint="#AAFF0000" />
+
+        <androidx.constraintlayout.helper.widget.Layer
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="dialog_type,dialog_title,dialog_silent,unread_ticks,item_chat_date,dialog_message,item_chat_unread_count"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/dialog_message"
+            app:layout_constraintTop_toTopOf="@id/item_chat_avatar" />
+
+        <ImageView
+            android:id="@+id/dialog_type"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="12dp"
+            android:contentDescription="@null"
+            app:layout_constraintEnd_toStartOf="@id/dialog_title"
+            app:layout_constraintStart_toEndOf="@id/item_chat_avatar"
+            app:layout_constraintTop_toTopOf="@id/item_chat_avatar"
+            app:tint="?colorOnSurface"
+            tools:src="@drawable/channel" />
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="7dp"
+            android:layout_toStartOf="@id/dialog_silent"
+            android:layout_toEndOf="@id/dialog_type"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            app:layout_constraintEnd_toStartOf="@id/dialog_silent"
+            app:layout_constraintStart_toEndOf="@id/dialog_type"
+            app:layout_constraintTop_toTopOf="@id/item_chat_avatar"
+            app:layout_goneMarginStart="12dp"
+            tools:text="Name" />
+
+        <ImageView
+            android:id="@+id/dialog_silent"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="6dp"
+            android:contentDescription="@null"
+            android:src="@drawable/notification_disable"
+            app:layout_constraintEnd_toStartOf="@id/unread_ticks"
+            app:layout_constraintTop_toTopOf="@id/dialog_type"
+            app:tint="?colorOnSurface" />
+
+        <ImageView
+            android:id="@+id/unread_ticks"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="4dp"
+            android:layout_toStartOf="@id/item_chat_date"
+            android:contentDescription="@null"
+            app:layout_constraintEnd_toStartOf="@id/item_chat_date"
+            app:layout_constraintTop_toTopOf="@id/item_chat_avatar"
+            app:tint="?colorPrimary"
+            tools:src="@drawable/check" />
+
+        <TextView
+            android:id="@+id/item_chat_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/item_chat_avatar"
+            tools:text="time" />
+
+        <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+            android:id="@+id/dialog_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dialog_title"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="11dp"
+            android:layout_toStartOf="@id/item_chat_unread_count"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:scrollbars="none"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textSize="14sp"
+            app:emojiconSize="17sp"
+            app:layout_constraintEnd_toStartOf="@id/item_chat_unread_count"
+            app:layout_constraintStart_toEndOf="@id/item_chat_avatar"
+            app:layout_constraintTop_toBottomOf="@id/dialog_title"
+            tools:text="Message" />
+
+        <TextView
+            android:id="@+id/item_chat_unread_count"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:layout_alignTop="@id/dialog_message"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/counter"
+            android:backgroundTint="?colorPrimary"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:minWidth="26dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?colorOnPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/item_chat_date"
+            app:layout_constraintTop_toBottomOf="@id/dialog_title"
+            tools:text="2000" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

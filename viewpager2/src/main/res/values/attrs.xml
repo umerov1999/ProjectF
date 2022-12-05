@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default style for RecyclerView. Should be set in your theme. -->
+    <attr name="recyclerViewStyle" format="reference" />
+
+    <declare-styleable name="RecyclerView">
+        <!-- Class name of the Layout Manager to be used.
+        <p/>
+        The class must ext androidx.recyclerview.widget.RecyclerViewView$LayoutManager
+        and have either a default constructor or constructor with the signature
+        (android.content.Context, android.util.AttributeSet, int, int).
+         <p/>
+         If the name starts with a '.', application package is prefixed.
+         Else, if the name contains a '.', the classname is assumed to be a full class name.
+         Else, the recycler view package naandroidx.appcompat.widgetdget) is prefixed. -->
+        <attr name="layoutManager" format="string" />
+
+        <!-- ============================= -->
+        <!-- Attributes for Layout Manager -->
+        <!-- ============================= -->
+        <eat-comment />
+
+        <attr name="android:orientation" />
+        <attr name="android:descendantFocusability" />
+        <attr name="android:clipToPadding" />
+        <attr name="spanCount" format="integer" />
+        <attr name="reverseLayout" format="boolean" />
+        <attr name="stackFromEnd" format="boolean" />
+        <attr name="fastScrollEnabled" format="boolean" />
+        <attr name="fastScrollVerticalThumbDrawable" format="reference" />
+        <attr name="fastScrollVerticalTrackDrawable" format="reference" />
+        <attr name="fastScrollHorizontalThumbDrawable" format="reference" />
+        <attr name="fastScrollHorizontalTrackDrawable" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="ViewPager2">
+        <attr name="android:orientation" />
+    </declare-styleable>
+</resources>

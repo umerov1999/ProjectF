@@ -1,0 +1,1046 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.App.DayNight" parent="Theme.Material3.DayNight.NoActionBar">
+        <!--        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">?dividerColor</item>-->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">?attr/colorPrimary</item>
+        <item name="statusbarNonColoredColor">#000</item>
+        <item name="toolbarElevation">@dimen/toolbar_with_elevation</item>
+        <item name="android:scrollbarSize">2dp</item>
+    </style>
+
+    <style name="Base.App.DayNight.Specific" parent="Base.App.DayNight">
+        <item name="android:statusBarColor">#BBBBBB</item>
+        <item name="android:navigationBarColor">#BBBBBB</item>
+    </style>
+
+    <style name="App.DayNight" parent="Base.App.DayNight.Specific">
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.AppTheme.SmallComponent
+        </item>
+        <item name="shapeAppearanceMediumComponent">
+            @style/ShapeAppearance.AppTheme.MediumComponent
+        </item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.AppTheme.LargeComponent
+        </item>
+
+        <item name="materialCardViewStyle">@style/Theme.MaterialCardView</item>
+        <item name="badgeStyle">@style/Theme.BadgeStyle</item>
+        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
+        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary.Small</item>
+        <item name="fab_player">@style/Theme.FloatingActionButtonSecondary</item>
+
+        <item name="materialCardStyle">@style/CardViewMD2</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_stroke_filled</item>
+
+        <item name="dividerColor">#E1E3E7</item>
+        <item name="colorPrimary">#448AFF</item>
+        <item name="colorControlNormal">#448AFF</item>
+        <item name="colorSecondary">#1E88E5</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryInverse">#C9D6EA</item>
+        <item name="colorPrimaryContainer">#E7EBF3</item>
+        <item name="colorOnPrimaryContainer">#001643</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">#E5E8EF</item>
+        <item name="colorOnSecondaryContainer">#12171C</item>
+
+        <item name="dialogs_unread_color">#20b0b0b0</item>
+        <item name="navi_menu_selector">@drawable/list_selector_white</item>
+        <item name="message_unread_color">#90234b81</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+
+        <item name="messages_background_color">#ECECEC</item>
+        <item name="my_messages_bubble_color">#D490BDFF</item>
+        <item name="my_messages_secondary_bubble_color">#D490BDFF</item>
+
+        <item name="message_bubble_color">#D4FFFFFF</item>
+        <item name="sticker_hint_color">#DDFFFFFF</item>
+        <item name="navi_menu_color">@android:color/white</item>
+        <item name="toast_background">#3E3E3E</item>
+        <item name="white_color">#FFFFFF</item>
+        <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
+
+        <item name="chat_background_cookies">@drawable/cookies_white</item>
+        <item name="chat_background_lines">@drawable/lines_white</item>
+        <item name="chat_background_runes">@drawable/runes_white</item>
+
+        <item name="buttonAddPhotoBackground">@drawable/background_rectangle_dash_inverse</item>
+        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+    </style>
+
+    <style name="App.DayNight.Swipes" parent="App.DayNight">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="App.DayNight.Ice" parent="App.DayNight">
+        <item name="colorPrimary">#448AFF</item>
+        <item name="colorControlNormal">#448AFF</item>
+        <item name="colorSecondary">#1E88E5</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#001643</item>
+        <item name="colorPrimaryContainer">#E7EBF3</item>
+        <item name="colorPrimaryInverse">#C9D6EA</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#0D1519</item>
+        <item name="colorSecondaryContainer">#DFE9F4</item>
+    </style>
+
+    <style name="App.DayNight.Dynamic" parent="App.DayNight.Ice" />
+
+    <style name="App.DayNight.IceGreen" parent="App.DayNight">
+        <item name="colorPrimary">#448AFF</item>
+        <item name="colorControlNormal">#448AFF</item>
+        <item name="colorSecondary">#4CAF50</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#001643</item>
+        <item name="colorPrimaryContainer">#E7EBF3</item>
+        <item name="colorPrimaryInverse">#C9D6EA</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#070905</item>
+        <item name="colorSecondaryContainer">#AEEFB9</item>
+    </style>
+
+    <style name="App.DayNight.BlueRed" parent="App.DayNight">
+        <item name="colorPrimary">#448AFF</item>
+        <item name="colorControlNormal">#448AFF</item>
+        <item name="colorSecondary">#FF0000</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AA151515</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#001643</item>
+        <item name="colorPrimaryContainer">#E7EBF3</item>
+        <item name="colorPrimaryInverse">#C9D6EA</item>
+        <item name="colorOnSecondary">#FEFEFE</item>
+        <item name="colorOnSecondaryContainer">#1F1214</item>
+        <item name="colorSecondaryContainer">#F7E3E2</item>
+    </style>
+
+    <style name="App.DayNight.VioletIce" parent="App.DayNight">
+        <item name="colorPrimary">#757AFF</item>
+        <item name="colorControlNormal">#757AFF</item>
+        <item name="colorSecondary">#50F2C4</item>
+        <item name="icon_color_active">#AA757AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#0B0945</item>
+        <item name="colorPrimaryContainer">#EBEAEF</item>
+        <item name="colorPrimaryInverse">#D2D3E4</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#0F1B16</item>
+        <item name="colorSecondaryContainer">#E1F0EC</item>
+    </style>
+
+    <style name="App.DayNight.OldIce" parent="App.DayNight">
+        <item name="colorPrimary">#448AFF</item>
+        <item name="colorControlNormal">#448AFF</item>
+        <item name="colorSecondary">#82B1FF</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryInverse">#C9D6EA</item>
+        <item name="colorPrimaryContainer">#E7EBF3</item>
+        <item name="colorOnPrimaryContainer">#001643</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">#E5E8EF</item>
+        <item name="colorOnSecondaryContainer">#12171C</item>
+    </style>
+
+    <style name="App.DayNight.Cold" parent="App.DayNight">
+        <item name="colorPrimary">#346096</item>
+        <item name="colorControlNormal">#43474E</item>
+        <item name="colorSecondary">#545F70</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#001C3B</item>
+        <item name="colorPrimaryContainer">#D3E3FF</item>
+        <item name="colorPrimaryInverse">#A4C9FF</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#121C2B</item>
+        <item name="colorSecondaryContainer">#D8E3F8</item>
+    </style>
+
+    <style name="App.DayNight.ColdGreen" parent="App.DayNight">
+        <item name="colorPrimary">#556518</item>
+        <item name="colorControlNormal">#46483B</item>
+        <item name="colorSecondary">#5C6145</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#171E00</item>
+        <item name="colorPrimaryContainer">#D9EB90</item>
+        <item name="colorPrimaryInverse">#BDCF76</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#191D08</item>
+        <item name="colorSecondaryContainer">#E1E6C3</item>
+    </style>
+
+    <style name="App.DayNight.ColdGold" parent="App.DayNight">
+        <item name="colorPrimary">#7478BC</item>
+        <item name="colorControlNormal">#7478BC</item>
+        <item name="colorSecondary">#D1BF9F</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#03183D</item>
+        <item name="colorPrimaryContainer">#ECECEC</item>
+        <item name="colorPrimaryInverse">#D4D8DD</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#1B1914</item>
+        <item name="colorSecondaryContainer">#ECEBE8</item>
+    </style>
+
+    <style name="App.DayNight.BlueYellow" parent="App.DayNight">
+        <item name="colorPrimary">#448AFF</item>
+        <item name="colorControlNormal">#448AFF</item>
+        <item name="colorSecondary">#FFA726</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#001643</item>
+        <item name="colorPrimaryContainer">#E7EBF3</item>
+        <item name="colorPrimaryInverse">#C9D6EA</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#1E1710</item>
+        <item name="colorSecondaryContainer">#F2EBDF</item>
+    </style>
+
+    <style name="App.DayNight.Fire" parent="App.DayNight">
+        <item name="colorPrimary">#FF9800</item>
+        <item name="colorControlNormal">#FF9800</item>
+        <item name="colorSecondary">#FFA726</item>
+        <item name="icon_color_active">#AAFF9800</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#3C2500</item>
+        <item name="colorPrimaryContainer">#F5EFE0</item>
+        <item name="colorPrimaryInverse">#F1DCBD</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#1E1710</item>
+        <item name="colorSecondaryContainer">#F2EBDF</item>
+    </style>
+
+    <style name="App.DayNight.Red" parent="App.DayNight">
+        <item name="colorPrimary">#FF0000</item>
+        <item name="colorControlNormal">#FF0000</item>
+        <item name="colorSecondary">#F44336</item>
+        <item name="icon_color_active">#AAFF0000</item>
+        <item name="icon_color_inactive">#AA151515</item>
+        <item name="colorOnPrimary">#FEFEFE</item>
+        <item name="colorOnPrimaryContainer">#450D08</item>
+        <item name="colorPrimaryContainer">#F8E7E5</item>
+        <item name="colorPrimaryInverse">#F6CAC9</item>
+        <item name="colorOnSecondary">#FEFEFE</item>
+        <item name="colorOnSecondaryContainer">#1D1212</item>
+        <item name="colorSecondaryContainer">#F4E5E3</item>
+    </style>
+
+    <style name="App.DayNight.VioletRed" parent="App.DayNight">
+        <item name="colorPrimary">#9800FF</item>
+        <item name="colorControlNormal">#9800FF</item>
+        <item name="colorSecondary">#F44336</item>
+        <item name="icon_color_active">#AAF44336</item>
+        <item name="icon_color_inactive">#AA151515</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#25003C</item>
+        <item name="colorPrimaryContainer">#EFE0F5</item>
+        <item name="colorPrimaryInverse">#DCBDF1</item>
+        <item name="colorOnSecondary">#FEFEFE</item>
+        <item name="colorOnSecondaryContainer">#1D1212</item>
+        <item name="colorSecondaryContainer">#F4E5E3</item>
+    </style>
+
+    <style name="App.DayNight.Contrast" parent="App.DayNight">
+        <item name="colorPrimary">#000000</item>
+        <item name="colorControlNormal">#000000</item>
+        <item name="colorSecondary">#444444</item>
+        <item name="colorOnPrimary">#FFF</item>
+        <item name="colorOnSecondary">#FFF</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="my_messages_bubble_color">#D4BCBCBC</item>
+        <item name="my_messages_secondary_bubble_color">#D4BCBCBC</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="toolbar_left_icon_color">#FFF</item>
+        <item name="colorOnPrimaryContainer">#000000</item>
+        <item name="colorPrimaryContainer">#545454</item>
+        <item name="colorPrimaryInverse">#4D4D4D</item>
+        <item name="colorOnSecondaryContainer">#000000</item>
+        <item name="colorSecondaryContainer">#CFCFCF</item>
+    </style>
+
+    <style name="App.DayNight.RedViolet" parent="App.DayNight">
+        <item name="colorPrimary">#F44336</item>
+        <item name="colorControlNormal">#9800FF</item>
+        <item name="colorSecondary">#9800FF</item>
+        <item name="icon_color_active">#AA9800FF</item>
+        <item name="icon_color_inactive">#AA151515</item>
+        <item name="colorOnPrimary">#FFFEFF</item>
+        <item name="colorOnPrimaryContainer">#410E05</item>
+        <item name="colorPrimaryContainer">#F4E9E7</item>
+        <item name="colorPrimaryInverse">#EDCFCD</item>
+        <item name="colorOnSecondary">#FFFEFF</item>
+        <item name="colorOnSecondaryContainer">#17101E</item>
+        <item name="colorSecondaryContainer">#ECDDF4</item>
+    </style>
+
+    <style name="App.DayNight.Violet" parent="App.DayNight">
+        <item name="colorPrimary">#9800FF</item>
+        <item name="colorControlNormal">#9800FF</item>
+        <item name="colorSecondary">#8500FF</item>
+        <item name="icon_color_active">#AA9800FF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="my_messages_bubble_color">#AAD438FF</item>
+        <item name="my_messages_secondary_bubble_color">#BF6539DF</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#25003C</item>
+        <item name="colorPrimaryContainer">#EFE0F5</item>
+        <item name="colorPrimaryInverse">#DCBDF1</item>
+        <item name="colorOnSecondary">#FFFEFF</item>
+        <item name="colorOnSecondaryContainer">#16111E</item>
+        <item name="colorSecondaryContainer">#EBDDF5</item>
+    </style>
+
+    <style name="App.DayNight.BlueViolet" parent="App.DayNight">
+        <item name="colorPrimary">#448AFF</item>
+        <item name="colorControlNormal">#448AFF</item>
+        <item name="colorSecondary">#8500FF</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#001643</item>
+        <item name="colorPrimaryContainer">#E7EBF3</item>
+        <item name="colorPrimaryInverse">#C9D6EA</item>
+        <item name="colorOnSecondary">#FFFEFF</item>
+        <item name="colorOnSecondaryContainer">#16111E</item>
+        <item name="colorSecondaryContainer">#EBDDF5</item>
+    </style>
+
+    <style name="App.DayNight.YellowViolet" parent="App.DayNight">
+        <item name="colorPrimary">#FF9800</item>
+        <item name="colorControlNormal">#FF9800</item>
+        <item name="colorSecondary">#8500FF</item>
+        <item name="icon_color_active">#AAFF9800</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#3C2500</item>
+        <item name="colorPrimaryContainer">#F5EFE0</item>
+        <item name="colorPrimaryInverse">#F1DCBD</item>
+        <item name="colorOnSecondary">#FFFEFF</item>
+        <item name="colorOnSecondaryContainer">#16111E</item>
+        <item name="colorSecondaryContainer">#EBDDF5</item>
+    </style>
+
+    <style name="App.DayNight.NeonYellowIce" parent="App.DayNight">
+        <item name="colorPrimary">#AAD300</item>
+        <item name="colorControlNormal">#AAD300</item>
+        <item name="colorSecondary">#04D9FF</item>
+        <item name="icon_color_active">#AAAAD300</item>
+        <item name="icon_color_inactive">#AA151515</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#1E2C00</item>
+        <item name="colorPrimaryContainer">#EFF5E0</item>
+        <item name="colorPrimaryInverse">#E2ECBB</item>
+        <item name="colorOnSecondary">#FEFFFF</item>
+        <item name="colorOnSecondaryContainer">#0F1B1B</item>
+        <item name="colorSecondaryContainer">#DCEEF3</item>
+    </style>
+
+    <style name="App.DayNight.VioletYellow" parent="App.DayNight">
+        <item name="colorPrimary">#8500FF</item>
+        <item name="colorControlNormal">#8500FF</item>
+        <item name="colorSecondary">#FF9800</item>
+        <item name="icon_color_active">#AA9800FF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#21003E</item>
+        <item name="colorPrimaryContainer">#EEE1F6</item>
+        <item name="colorPrimaryInverse">#D9BEF2</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#1E1710</item>
+        <item name="colorSecondaryContainer">#F4ECDD</item>
+    </style>
+
+    <style name="App.DayNight.FuxiaNeonYellow" parent="App.DayNight">
+        <item name="colorPrimary">#FE59C2</item>
+        <item name="colorControlNormal">#FE59C2</item>
+        <item name="colorSecondary">#CFFF04</item>
+        <item name="icon_color_active">#AAFE59C2</item>
+        <item name="icon_color_inactive">#AA151515</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#3E0020</item>
+        <item name="colorPrimaryContainer">#F1E7EC</item>
+        <item name="colorPrimaryInverse">#E5CADB</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#1A1B0F</item>
+        <item name="colorSecondaryContainer">#EDF3DC</item>
+    </style>
+
+    <style name="App.DayNight.FuxiaNeonViolet" parent="App.DayNight">
+        <item name="colorPrimary">#FE4164</item>
+        <item name="colorControlNormal">#FE4164</item>
+        <item name="colorSecondary">#BC13FE</item>
+        <item name="icon_color_active">#AAFE4164</item>
+        <item name="icon_color_inactive">#AA151515</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#44060E</item>
+        <item name="colorPrimaryContainer">#F3E8E9</item>
+        <item name="colorPrimaryInverse">#ECCCD2</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#18101D</item>
+        <item name="colorSecondaryContainer">#EDDDF2</item>
+    </style>
+
+    <style name="App.DayNight.VioletGreen" parent="App.DayNight">
+        <item name="colorPrimary">#8500FF</item>
+        <item name="colorControlNormal">#8500FF</item>
+        <item name="colorSecondary">#268000</item>
+        <item name="icon_color_active">#AA9800FF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#21003E</item>
+        <item name="colorPrimaryContainer">#EEE1F6</item>
+        <item name="colorPrimaryInverse">#D9BEF2</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#070905</item>
+        <item name="colorSecondaryContainer">#AEEFB9</item>
+    </style>
+
+    <style name="App.DayNight.GreenViolet" parent="App.DayNight">
+        <item name="colorPrimary">#268000</item>
+        <item name="colorControlNormal">#268000</item>
+        <item name="colorSecondary">#8500FF</item>
+        <item name="icon_color_active">#AA268000</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#DBDBDB</item>
+        <item name="colorOnPrimaryContainer">#051500</item>
+        <item name="colorPrimaryContainer">#C7D5C4</item>
+        <item name="colorPrimaryInverse">#B4D2A7</item>
+        <item name="colorOnSecondary">#FFFEFF</item>
+        <item name="colorOnSecondaryContainer">#16111E</item>
+        <item name="colorSecondaryContainer">#EBDDF5</item>
+    </style>
+
+    <style name="App.DayNight.Green" parent="App.DayNight">
+        <item name="colorPrimary">#268000</item>
+        <item name="colorControlNormal">#268000</item>
+        <item name="colorSecondary">#4CAF50</item>
+        <item name="icon_color_active">#AA268000</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#DBDBDB</item>
+        <item name="colorOnPrimaryContainer">#051500</item>
+        <item name="colorPrimaryContainer">#C7D5C4</item>
+        <item name="colorPrimaryInverse">#B4D2A7</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#0B100B</item>
+        <item name="colorSecondaryContainer">#AEEFB9</item>
+    </style>
+
+    <style name="App.DayNight.VioletGray" parent="App.DayNight">
+        <item name="colorPrimary">#8500FF</item>
+        <item name="colorControlNormal">#8500FF</item>
+        <item name="colorSecondary">#444444</item>
+        <item name="icon_color_active">#AA9800FF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#21003E</item>
+        <item name="colorPrimaryContainer">#EEE1F6</item>
+        <item name="colorPrimaryInverse">#D9BEF2</item>
+        <item name="colorOnSecondary">#D2D2D2</item>
+        <item name="colorOnSecondaryContainer">#000000</item>
+        <item name="colorSecondaryContainer">#CFCFCF</item>
+    </style>
+
+    <style name="App.DayNight.PinkGray" parent="App.DayNight">
+        <item name="colorPrimary">#FF4F8B</item>
+        <item name="colorControlNormal">#FF4F8B</item>
+        <item name="colorSecondary">#444444</item>
+        <item name="icon_color_active">#AAFF4F8B</item>
+        <item name="icon_color_inactive">#AA151515</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#430115</item>
+        <item name="colorPrimaryContainer">#F2E8EB</item>
+        <item name="colorPrimaryInverse">#E9CBD5</item>
+        <item name="colorOnSecondary">#D2D2D2</item>
+        <item name="colorOnSecondaryContainer">#000000</item>
+        <item name="colorSecondaryContainer">#CFCFCF</item>
+    </style>
+
+    <style name="App.DayNight.Gray" parent="App.DayNight">
+        <item name="colorPrimary">#444444</item>
+        <item name="colorControlNormal">#444444</item>
+        <item name="colorSecondary">#777777</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#000000</item>
+        <item name="colorPrimaryContainer">#939393</item>
+        <item name="colorPrimaryInverse">#878787</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#060506</item>
+        <item name="colorSecondaryContainer">#CFCFCF</item>
+    </style>
+
+    <style name="App.DayNight.Orange" parent="App.DayNight">
+        <item name="colorPrimary">#FF5722</item>
+        <item name="colorControlNormal">#FF5722</item>
+        <item name="colorSecondary">#FF6F00</item>
+        <item name="icon_color_active">#BBFF8D02</item>
+        <item name="icon_color_inactive">#AA151515</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#431600</item>
+        <item name="colorPrimaryContainer">#F5EBE5</item>
+        <item name="colorPrimaryInverse">#F0D2C7</item>
+        <item name="colorOnSecondary">#FFFEFE</item>
+        <item name="colorOnSecondaryContainer">#1E1511</item>
+        <item name="colorSecondaryContainer">#F6E9DE</item>
+    </style>
+
+    <style name="App.DayNight.OrangeGray" parent="App.DayNight">
+        <item name="colorPrimary">#FF5722</item>
+        <item name="colorControlNormal">#FF5722</item>
+        <item name="colorSecondary">#777777</item>
+        <item name="icon_color_active">#BBFF8D02</item>
+        <item name="icon_color_inactive">#AA151515</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#431600</item>
+        <item name="colorPrimaryContainer">#F5EBE5</item>
+        <item name="colorPrimaryInverse">#F0D2C7</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#060506</item>
+        <item name="colorSecondaryContainer">#CFCFCF</item>
+    </style>
+
+    <style name="App.DayNight.Lineage" parent="App.DayNight">
+        <item name="colorPrimary">#167C80</item>
+        <item name="colorControlNormal">#167C80</item>
+        <item name="colorSecondary">#63FFDE</item>
+        <item name="icon_color_active">#AA167C80</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#DBDBDB</item>
+        <item name="colorOnPrimaryContainer">#000E10</item>
+        <item name="colorPrimaryContainer">#C3CECF</item>
+        <item name="colorPrimaryInverse">#A6C3C5</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#111C18</item>
+        <item name="colorSecondaryContainer">#D2F1EA</item>
+    </style>
+
+    <style name="App.DayNight.Ice.Amoled" parent="App.DayNight.Ice" />
+
+    <style name="App.DayNight.IceGreen.Amoled" parent="App.DayNight.IceGreen" />
+
+    <style name="App.DayNight.VioletIce.Amoled" parent="App.DayNight.VioletIce" />
+
+    <style name="App.DayNight.OldIce.Amoled" parent="App.DayNight.OldIce" />
+
+    <style name="App.DayNight.Cold.Amoled" parent="App.DayNight.Cold" />
+
+    <style name="App.DayNight.ColdGreen.Amoled" parent="App.DayNight.ColdGreen" />
+
+    <style name="App.DayNight.ColdGold.Amoled" parent="App.DayNight.ColdGold" />
+
+    <style name="App.DayNight.BlueYellow.Amoled" parent="App.DayNight.BlueYellow" />
+
+    <style name="App.DayNight.Fire.Amoled" parent="App.DayNight.Fire" />
+
+    <style name="App.DayNight.Red.Amoled" parent="App.DayNight.Red" />
+
+    <style name="App.DayNight.VioletRed.Amoled" parent="App.DayNight.VioletRed" />
+
+    <style name="App.DayNight.Contrast.Amoled" parent="App.DayNight.Contrast" />
+
+    <style name="App.DayNight.RedViolet.Amoled" parent="App.DayNight.RedViolet" />
+
+    <style name="App.DayNight.Violet.Amoled" parent="App.DayNight.Violet" />
+
+    <style name="App.DayNight.BlueViolet.Amoled" parent="App.DayNight.BlueViolet" />
+
+    <style name="App.DayNight.YellowViolet.Amoled" parent="App.DayNight.YellowViolet" />
+
+    <style name="App.DayNight.VioletYellow.Amoled" parent="App.DayNight.VioletYellow" />
+
+    <style name="App.DayNight.FuxiaNeonYellow.Amoled" parent="App.DayNight.FuxiaNeonYellow" />
+
+    <style name="App.DayNight.FuxiaNeonViolet.Amoled" parent="App.DayNight.FuxiaNeonViolet" />
+
+    <style name="App.DayNight.NeonYellowIce.Amoled" parent="App.DayNight.NeonYellowIce" />
+
+    <style name="App.DayNight.VioletGreen.Amoled" parent="App.DayNight.VioletGreen" />
+
+    <style name="App.DayNight.GreenViolet.Amoled" parent="App.DayNight.GreenViolet" />
+
+    <style name="App.DayNight.Orange.Amoled" parent="App.DayNight.Orange" />
+
+    <style name="App.DayNight.OrangeGray.Amoled" parent="App.DayNight.OrangeGray" />
+
+    <style name="App.DayNight.Gray.Amoled" parent="App.DayNight.Gray" />
+
+    <style name="App.DayNight.Green.Amoled" parent="App.DayNight.Green" />
+
+    <style name="App.DayNight.VioletGray.Amoled" parent="App.DayNight.VioletGray" />
+
+    <style name="App.DayNight.PinkGray.Amoled" parent="App.DayNight.PinkGray" />
+
+    <style name="App.DayNight.Lineage.Amoled" parent="App.DayNight.Lineage" />
+
+    <style name="App.DayNight.Dynamic.Amoled" parent="App.DayNight.Dynamic" />
+
+    <style name="App.DayNight.BlueRed.Amoled" parent="App.DayNight.BlueRed" />
+
+    <style name="App.DayNight.Ice.MD1" parent="App.DayNight.Ice">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.IceGreen.MD1" parent="App.DayNight.IceGreen">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.VioletIce.MD1" parent="App.DayNight.VioletIce">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.BlueRed.MD1" parent="App.DayNight.BlueRed">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.OldIce.MD1" parent="App.DayNight.OldIce">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.Cold.MD1" parent="App.DayNight.Cold">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.ColdGreen.MD1" parent="App.DayNight.ColdGreen">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.ColdGold.MD1" parent="App.DayNight.ColdGold">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.BlueYellow.MD1" parent="App.DayNight.BlueYellow">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.Fire.MD1" parent="App.DayNight.Fire">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.Red.MD1" parent="App.DayNight.Red">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.VioletRed.MD1" parent="App.DayNight.VioletRed">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.Contrast.MD1" parent="App.DayNight.Contrast">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.RedViolet.MD1" parent="App.DayNight.RedViolet">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.Violet.MD1" parent="App.DayNight.Violet">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.BlueViolet.MD1" parent="App.DayNight.BlueViolet">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.YellowViolet.MD1" parent="App.DayNight.YellowViolet">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.VioletYellow.MD1" parent="App.DayNight.VioletYellow">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.FuxiaNeonYellow.MD1" parent="App.DayNight.FuxiaNeonYellow">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.FuxiaNeonViolet.MD1" parent="App.DayNight.FuxiaNeonViolet">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.NeonYellowIce.MD1" parent="App.DayNight.NeonYellowIce">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.VioletGreen.MD1" parent="App.DayNight.VioletGreen">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.GreenViolet.MD1" parent="App.DayNight.GreenViolet">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.Orange.MD1" parent="App.DayNight.Orange">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.OrangeGray.MD1" parent="App.DayNight.OrangeGray">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.Gray.MD1" parent="App.DayNight.Gray">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.Green.MD1" parent="App.DayNight.Green">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.VioletGray.MD1" parent="App.DayNight.VioletGray">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.PinkGray.MD1" parent="App.DayNight.PinkGray">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.Lineage.MD1" parent="App.DayNight.Lineage">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.Dynamic.MD1" parent="App.DayNight.Dynamic">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="Theme.MaterialCardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">1dp</item>
+    </style>
+
+    <style name="Theme.BadgeStyle" parent="Widget.Material3.Badge">
+        <item name="backgroundColor">?colorPrimary</item>
+        <item name="badgeTextColor">?colorOnPrimary</item>
+    </style>
+
+    <style name="QuickReply" parent="Theme.Material3.DayNight.Dialog">
+        <item name="colorPrimary">#448AFF</item>
+        <item name="colorControlNormal">#448AFF</item>
+        <item name="colorSecondary">#82B1FF</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryInverse">#C9D6EA</item>
+        <item name="colorPrimaryContainer">#E7EBF3</item>
+        <item name="colorOnPrimaryContainer">#001643</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">#E5E8EF</item>
+        <item name="colorOnSecondaryContainer">#12171C</item>
+        <item name="android:colorBackground">@color/transparent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="message_bubble_color">@color/white</item>
+        <item name="sticker_hint_color">#99FFFFFF</item>
+        <item name="quick_reply_icon_color">#151515</item>
+        <item name="dividerColor">#E1E3E7</item>
+        <item name="white_color">#FFFFFF</item>
+        <item name="badgeStyle">@style/Theme.BadgeStyle</item>
+        <item name="materialCardStyle">@style/CardViewMD2</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_stroke_filled</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.AppTheme.SmallComponent
+        </item>
+        <item name="shapeAppearanceMediumComponent">
+            @style/ShapeAppearance.AppTheme.MediumComponent
+        </item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.AppTheme.LargeComponent
+        </item>
+        <item name="materialCardViewStyle">@style/Theme.MaterialCardView</item>
+        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
+        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary.Small</item>
+        <item name="fab_player">@style/Theme.FloatingActionButtonSecondary</item>
+        <item name="dialogs_unread_color">#20b0b0b0</item>
+        <item name="navi_menu_selector">@drawable/list_selector_white</item>
+        <item name="message_unread_color">#90234b81</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="messages_background_color">#ECECEC</item>
+        <item name="my_messages_bubble_color">#D490BDFF</item>
+        <item name="my_messages_secondary_bubble_color">#D490BDFF</item>
+        <item name="navi_menu_color">@android:color/white</item>
+        <item name="toast_background">#3E3E3E</item>
+        <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
+        <item name="chat_background_cookies">@drawable/cookies_white</item>
+        <item name="chat_background_lines">@drawable/lines_white</item>
+        <item name="chat_background_runes">@drawable/runes_white</item>
+        <item name="buttonAddPhotoBackground">@drawable/background_rectangle_dash_inverse</item>
+        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+    </style>
+
+    <style name="QuickReply.Amoled" parent="QuickReply" />
+
+    <style name="QuickReply.MD1" parent="QuickReply">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="Theme.Toolbar.Surface" parent="ThemeOverlay.Material3.Toolbar.Surface">
+        <!--        <item name="android:tint">?colorOnSurface</item>-->
+        <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.Tinted</item>
+        <item name="actionMenuTextColor">?colorOnSurface</item>
+        <item name="android:textColorPrimary">?colorOnSurface</item>
+        <item name="android:textColorSecondary">?colorOnSurface</item>
+    </style>
+
+    <style name="Toolbar.Button.Navigation.TintedColored" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="tint">?white_color</item>
+    </style>
+
+    <style name="Theme.Toolbar.Colored" parent="ThemeOverlay.Material3.Toolbar.Surface">
+        <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.TintedColored
+        </item>
+        <item name="actionMenuTextColor">?white_color</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:textColorPrimary">?white_color</item>
+        <item name="colorControlNormal">?white_color</item>
+    </style>
+
+    <style name="Toolbar.Button.Navigation.Tinted" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="tint">?colorPrimary</item>
+    </style>
+
+    <style name="Toolbar.Button.Navigation.TintedDark" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="tint">?toolbar_left_icon_color</item>
+    </style>
+
+    <style name="TextAppearance.Toolbar.Title" parent="@style/TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="Theme.Toolbar.Photo" parent="ThemeOverlay.Material3.Toolbar.Surface">
+        <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.TintedDark</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+    </style>
+
+    <style name="Theme.Toolbar.Video" parent="ThemeOverlay.Material3.Toolbar.Surface">
+        <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.TintedDark</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+    </style>
+
+    <style name="Theme.Tablayout" parent="Widget.Material3.TabLayout">
+        <item name="tabRippleColor">?colorPrimary</item>
+        <item name="tabMode">scrollable</item>
+        <item name="tabTextColor">?android:textColorSecondary</item>
+        <item name="tabSelectedTextColor">?colorPrimary</item>
+        <item name="tabIndicatorColor">?colorPrimary</item>
+        <item name="enforceTextAppearance">true</item>
+        <item name="tabGravity">start</item>
+        <item name="tabTextAppearance">@style/MineCustomTabText</item>
+    </style>
+
+    <style name="MineCustomTabText" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="ProfileText" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="fontFamily">sans-serif-light</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="ProfileSubText" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="fontFamily">sans-serif-light</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Theme.FloatingActionButton" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">?colorSurface</item>
+        <item name="tint">?colorSecondary</item>
+    </style>
+
+    <style name="Theme.FloatingActionButtonSecondary" parent="Widget.Material3.FloatingActionButton.Secondary">
+        <item name="backgroundTint">?colorSecondary</item>
+        <item name="tint">@color/white</item>
+    </style>
+
+    <style name="Theme.FloatingActionButtonSecondary.Small" parent="Widget.Material3.FloatingActionButton.Small.Secondary">
+        <item name="backgroundTint">?colorSecondary</item>
+        <item name="tint">@color/white</item>
+    </style>
+
+    <style name="Theme.FloatingActionButtonAudio" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">@color/white</item>
+        <item name="tint">?colorSurface</item>
+        <item name="rippleColor">?colorSurface</item>
+    </style>
+
+    <style name="ShapeAppearance.AppTheme.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10dp</item>
+    </style>
+
+    <style name="ShapeAppearance.AppTheme.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10dp</item>
+    </style>
+
+    <style name="ShapeAppearance.AppTheme.LargeComponent" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10dp</item>
+    </style>
+
+    <style name="SplashTheme" parent="App.DayNight">
+        <item name="android:colorBackground">@color/night</item>
+        <item name="colorOnBackground">#1E1E1E</item>
+        <item name="colorSurface">#F01E1E1E</item>
+        <item name="android:windowBackground">@drawable/background_splash</item>
+    </style>
+
+    <style name="CustomBottomSheetDialog" parent="ThemeOverlay.Material3.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
+    </style>
+
+    <style name="CustomBottomSheet" parent="Widget.Material3.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/CustomShapeAppearanceBottomSheetDialog</item>
+    </style>
+
+    <style name="CustomShapeAppearanceBottomSheetDialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">10dp</item>
+        <item name="cornerSizeTopLeft">10dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+
+    <style name="CardViewMD2" parent="Widget.Material3.CardView.Outlined">
+        <item name="cardElevation">0dp</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">?dividerColor</item>
+    </style>
+
+    <style name="CardViewMD" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">1dp</item>
+    </style>
+
+    <style name="ShapeAppearance.RoundedPlayerCover" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">30dp</item>
+    </style>
+
+    <style name="ShapeAppearance.MediumRoundedPictures" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="ShapeAppearance.RoundedPlayList" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamilyBottomLeft">rounded</item>
+        <item name="cornerFamilyBottomRight">rounded</item>
+        <item name="cornerSizeBottomRight">15dp</item>
+        <item name="cornerSizeBottomLeft">15dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+    </style>
+
+    <style name="Widget.MPM.Menu" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:popupBackground">@drawable/popupmenu_background</item>
+        <item name="mpm_paddingBottom">@dimen/mpm_popup_menu_vertical_padding</item>
+        <item name="mpm_paddingStart">0dp</item>
+        <item name="mpm_paddingEnd">0dp</item>
+        <item name="mpm_paddingTop">@dimen/mpm_popup_menu_vertical_padding</item>
+    </style>
+
+    <style name="Widget.MPM.Item" parent="">
+        <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
+    </style>
+
+    <style name="MyOutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="shapeAppearanceOverlay">@style/MyButton.shapeAppearance</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="MyButton" parent="Widget.Material3.Button">
+        <item name="shapeAppearanceOverlay">@style/MyButton.shapeAppearance</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="MyButton.shapeAppearance" parent="">
+        <item name="cornerSize">25%</item>
+    </style>
+
+    <style name="ZoomLayoutStyle" parent="App.DayNight">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+    <style name="App.CrashError" parent="Base.App.DayNight">
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.AppTheme.SmallComponent
+        </item>
+        <item name="shapeAppearanceMediumComponent">
+            @style/ShapeAppearance.AppTheme.MediumComponent
+        </item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.AppTheme.LargeComponent
+        </item>
+
+        <item name="materialCardViewStyle">@style/Theme.MaterialCardView</item>
+        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
+        <item name="materialCardStyle">@style/CardViewMD2</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_stroke_filled</item>
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="colorPrimary">#FF4444</item>
+        <item name="colorControlNormal">#FF4460</item>
+        <item name="colorSecondary">#FF9800</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimaryContainer">#450D08</item>
+        <item name="colorPrimaryContainer">#F3E9E8</item>
+        <item name="colorPrimaryInverse">#ECCFCF</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorOnSecondaryContainer">#1E1710</item>
+        <item name="colorSecondaryContainer">#F4ECDD</item>
+    </style>
+
+</resources>

@@ -1,0 +1,38 @@
+plugins {
+    id("com.android.library")
+    id("kotlin-android")
+}
+
+android {
+    namespace "com.squareup.picasso3"
+    compileSdk = appCompileSDK
+    buildToolsVersion = appBuildTools
+
+    defaultConfig {
+        minSdk = appMinSDK
+        targetSdk = appTargetSDK
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        encoding = "utf-8"
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-parcelize-runtime:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlin_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines")
+    compileOnly("org.jetbrains.kotlin:kotlin-annotations-jvm:$kotlin_version")
+    implementation("androidx.annotation:annotation:$annotationVersion")
+    implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
+    implementation("androidx.lifecycle:lifecycle-common:$lifecycleVersion")
+    implementation("androidx.core:core-ktx:$coreVersion")
+    implementation("com.squareup.okhttp3:okhttp-android:$okhttpLibraryVersion")
+    implementation("com.squareup.okio:okio:$okioVersion")
+}

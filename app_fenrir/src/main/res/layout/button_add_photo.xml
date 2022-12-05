@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dev.ragnarok.fenrir.view.AspectRatioFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    app:aspectHeight="5"
+    app:aspectWidth="4"
+    app:resize_mode="fit"
+    app:useAspect="true">
+
+    <LinearLayout
+        android:id="@+id/content_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?buttonAddPhotoBackground"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:text="@string/button_add_photo"
+            android:textSize="12sp"
+            app:drawableTint="?attr/colorOnSurface"
+            app:drawableTopCompat="@drawable/ic_outline_add_a_photo" />
+
+    </LinearLayout>
+
+</dev.ragnarok.fenrir.view.AspectRatioFrameLayout>

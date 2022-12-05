@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_files"
+        android:icon="@drawable/file"
+        android:title="@string/files" />
+
+    <item
+        android:id="@+id/menu_settings"
+        android:icon="@drawable/preferences"
+        android:title="@string/settings" />
+
+    <item
+        android:id="@+id/menu_local_server"
+        android:icon="@drawable/web"
+        android:title="@string/local_media_server" />
+
+    <item
+        android:id="@+id/menu_tags"
+        android:icon="@drawable/star"
+        android:title="@string/tags" />
+</menu>

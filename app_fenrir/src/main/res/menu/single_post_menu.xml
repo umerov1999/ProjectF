@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/edit_post"
+        android:icon="@drawable/pencil"
+        android:title="@string/edit"
+        app:iconTint="?colorOnSurface"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/delete_post"
+        android:title="@string/delete" />
+
+    <item
+        android:id="@+id/restore_post"
+        android:title="@string/restore" />
+
+    <item
+        android:id="@+id/pin_post"
+        android:title="@string/pin" />
+
+    <item
+        android:id="@+id/unpin_post"
+        android:title="@string/unpin" />
+
+    <item
+        android:id="@+id/goto_user_post"
+        android:title="@string/goto_user" />
+
+    <item
+        android:id="@+id/report"
+        android:title="@string/report" />
+
+    <item
+        android:id="@+id/copy_url_post"
+        android:title="@string/copy_url" />
+
+    <item
+        android:id="@+id/copy_text"
+        android:title="@string/copy_text" />
+
+    <item
+        android:id="@+id/action_export"
+        android:title="@string/save" />
+
+    <item
+        android:id="@+id/action_allow_text_selection"
+        android:title="@string/allow_text_selection" />
+
+    <item
+        android:id="@+id/add_to_bookmarks"
+        android:title="@string/add_to_bookmarks" />
+
+    <item
+        android:id="@+id/refresh"
+        android:title="@string/refresh" />
+
+</menu>

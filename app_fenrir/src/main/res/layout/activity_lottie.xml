@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        android:id="@+id/lottie_preview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:adjustViewBounds="true" />
+
+    <TextView
+        android:id="@+id/log_tag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/lottie_to_gif"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/to_gif_converter" />
+
+
+</LinearLayout>

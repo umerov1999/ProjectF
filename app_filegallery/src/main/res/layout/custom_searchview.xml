@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginStart="6dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="6dp"
+    android:layout_marginBottom="2dp"
+    android:background="@drawable/background_rectangle_stroke"
+    android:orientation="horizontal"
+    android:paddingStart="2dp"
+    android:paddingEnd="2dp">
+
+    <ImageView
+        android:id="@+id/button_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/button_back"
+        android:src="@drawable/arrow_left"
+        app:tint="?colorOnSurface" />
+
+    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+        android:id="@+id/input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="18dp"
+        android:layout_weight="1"
+        android:background="@null"
+        android:hint="@string/search_hint"
+        android:imeOptions="flagNoExtractUi|actionSearch"
+        android:inputType="text|textAutoComplete"
+        android:maxLines="1"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+        android:textColorHint="?android:textColorSecondary" />
+
+    <ImageView
+        android:id="@+id/clear"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/close"
+        android:padding="12dp"
+        android:src="@drawable/close"
+        app:tint="?colorOnSurface" />
+
+    <ImageView
+        android:id="@+id/additional"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/search_options"
+        android:padding="12dp"
+        android:src="@drawable/dots_vertical"
+        app:tint="?colorOnSurface" />
+</LinearLayout>

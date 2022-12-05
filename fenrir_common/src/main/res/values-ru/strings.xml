@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_pagan_symbol_names">
+        <item>Выкл.</item>
+        <item>Кот</item>
+        <item>Иггдрасиль</item>
+        <item>Валькнут</item>
+        <item>Мьёльнир</item>
+        <item>Вегвизир</item>
+        <item>Вегвизир 2</item>
+        <item>Кельтский узел</item>
+        <item>Кельтский цветок</item>
+        <item>Слейпнир</item>
+        <item>Фенрир</item>
+        <item>Трискель</item>
+        <item>Хель</item>
+        <item>Один</item>
+        <item>Один 2</item>
+        <item>Фрейя</item>
+        <item>Викинг</item>
+        <item>Ворон</item>
+        <item>Пеннивайз</item>
+        <item>Чур</item>
+        <item>Файер</item>
+        <item>Пламя</item>
+        <item>[Рандом]</item>
+    </string-array>
+
+    <!-- Google Play-->
+    <string name="developer">Разработчик: Умеров Артём</string>
+    <string name="first_pagan">Первый языческий</string>
+    <string name="repo">Репозиторий: https://github.com/umerov1999/Fenrir-for-VK</string>
+    <string name="repo_local_server">Репозиторий: https://github.com/umerov1999/FenrirMediaServer/releases</string>
+
+    <string name="enabled_local_server">Включен</string>
+    <string name="reboot_pc_win">Перезапуск Win</string>
+    <string name="reboot_pc_linux">Перезапуск Linux</string>
+</resources>

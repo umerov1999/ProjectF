@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/Theme.Toolbar.Colored"
+            app:layout_scrollFlags="scroll|enterAlways|snap" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <RelativeLayout
+                android:id="@+id/avatar_root"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true">
+
+                <ImageView
+                    android:id="@+id/avatar"
+                    android:layout_width="@dimen/avatar_size_big"
+                    android:layout_height="@dimen/avatar_size_big"
+                    android:background="@drawable/sel_button_round_5_white"
+                    android:contentDescription="@null"
+                    android:padding="1.5dp" />
+
+                <dev.ragnarok.fenrir.view.OnlineView
+                    android:id="@+id/online"
+                    android:layout_width="@dimen/online_dot_size_big"
+                    android:layout_height="@dimen/online_dot_size_big"
+                    android:layout_alignStart="@id/avatar"
+                    android:layout_alignBottom="@id/avatar"
+                    android:layout_marginStart="4dp"
+
+                    android:layout_marginBottom="4dp"
+                    android:padding="4dp"
+                    app:circle_color="?icon_color_active" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/avatar_root"
+
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/avatar_root"
+                android:gravity="end"
+                android:orientation="vertical"
+                android:paddingBottom="12dp">
+
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="end"
+                    android:textColor="?white_color"
+                    android:textSize="@dimen/font_size_big_title"
+                    tools:text="Umerov Artem" />
+
+                <TextView
+                    android:id="@+id/domain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="end"
+                    android:textColor="?white_color"
+                    android:textSize="@dimen/font_size_subtitle"
+                    tools:text="id98464648" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/community_choose_access_level_title"
+                    android:textColor="?android:textColorSecondary" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group_roles"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/button_moderator"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/community_moderator" />
+
+                    <TextView
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:text="@string/community_moderator_desc"
+                        android:textColor="?android:textColorSecondary" />
+
+                    <RadioButton
+                        android:id="@+id/button_editor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/community_editor" />
+
+                    <TextView
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:text="@string/community_editor_desc"
+                        android:textColor="?android:textColorSecondary" />
+
+                    <RadioButton
+                        android:id="@+id/button_admin"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/community_administrator" />
+
+                    <TextView
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:text="@string/community_administrator_desc"
+                        android:textColor="?android:textColorSecondary" />
+
+                </RadioGroup>
+
+                <RadioGroup
+                    android:id="@+id/radio_group_creator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:enabled="false"
+                        android:text="@string/community_creator" />
+
+                    <TextView
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:text="@string/community_creator_desc"
+                        android:textColor="?android:textColorSecondary" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?attr/dividerColor" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/community_manager_show_in_contacts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/community_manager_show_in_contacts" />
+
+                <LinearLayout
+                    android:id="@+id/contact_info_root"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/community_manager_position"
+                        android:textColor="?android:textColorSecondary" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/community_manager_positon"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="top"
+                        android:inputType="text|textCapSentences|textMultiLine"
+                        android:padding="8dp"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/community_manager_email"
+                        android:textColor="?android:textColorSecondary" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/community_manager_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="top"
+                        android:inputType="textWebEmailAddress"
+                        android:padding="8dp"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/community_manager_phone"
+                        android:textColor="?android:textColorSecondary" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/community_manager_phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="top"
+                        android:inputType="phone"
+                        android:padding="8dp"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

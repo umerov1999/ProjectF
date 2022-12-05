@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    style="?materialCardStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    tools:ignore="UnusedAttribute">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <dev.ragnarok.fenrir.view.AspectRatioImageView
+                android:id="@+id/item_video_album_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                app:aspectRatioEnabled="true"
+                app:aspectRatioH="9"
+                app:aspectRatioW="16"
+                app:dominantMeasurement="width"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
+
+            <LinearLayout
+                android:id="@+id/selected"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="#60000000"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/item_video_index"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                    android:textColor="#ffffff"
+                    android:textStyle="bold"
+                    tools:text="1" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/item_video_album_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_marginBottom="4dp"
+                android:background="#90000000"
+                android:gravity="center"
+                android:padding="4dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                tools:text="3 videos" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/item_video_album_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|start"
+            android:padding="8dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textStyle="bold"
+            tools:text="Take Me To Church - Hozier Cover Sofia Karlberg" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textColor="?icon_color_active"
+            tools:text="Title" />
+
+        <TextView
+            android:id="@+id/count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/tab_counter_background"
+            android:backgroundTint="?colorPrimary"
+            android:paddingStart="6dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="2dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?white_color"
+            tools:text="count" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:minHeight="64dp">
+
+        <FrameLayout
+            android:id="@+id/item_friend_avatar_container"
+            android:layout_width="@dimen/avatar_size_usual"
+            android:layout_height="@dimen/avatar_size_usual"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp">
+
+            <ImageView
+                android:id="@+id/item_friend_avatar"
+                android:layout_width="@dimen/avatar_size_usual"
+                android:layout_height="@dimen/avatar_size_usual"
+                android:contentDescription="@null" />
+
+            <ImageView
+                android:id="@+id/item_verified"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="top|end"
+                android:background="@drawable/sel_button_round_5_white"
+                android:backgroundTint="#009900"
+                android:backgroundTintMode="add"
+                android:contentDescription="@null"
+                android:padding="3dp"
+                android:src="@drawable/verified"
+                android:visibility="gone"
+                app:tint="@color/white" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_toStartOf="@id/item_friend_online"
+            android:layout_toEndOf="@id/item_friend_avatar_container"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/item_friend_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                tools:text="Name" />
+
+            <TextView
+                android:id="@+id/item_friend_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="Time" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/item_friend_online"
+            android:layout_width="@dimen/online_dot_size"
+            android:layout_height="@dimen/online_dot_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@null" />
+
+    </RelativeLayout>
+</LinearLayout>
+
+
+

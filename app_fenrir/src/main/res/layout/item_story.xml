@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    style="?materialCardStyle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/card_margin_horizontal"
+    android:layout_marginTop="@dimen/card_margin_horizontal"
+    android:layout_marginBottom="@dimen/card_margin"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:stateListAnimator="@animator/clicked"
+    app:contentPadding="6dp"
+    tools:ignore="UnusedAttribute">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="64dp"
+            android:layout_height="64dp">
+
+            <ImageView
+                android:id="@+id/item_story_pic"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:contentDescription="@null" />
+
+            <ImageView
+                android:id="@+id/item_story_empty"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:alpha="0.8"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_error"
+                android:visibility="gone"
+                app:tint="?icon_color_inactive" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/item_story_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:lines="2"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textSize="11sp"
+            tools:text="Name" />
+
+        <TextView
+            android:id="@+id/item_story_expires"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textSize="9sp"
+            tools:ignore="SmallSp"
+            tools:text="Expires" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

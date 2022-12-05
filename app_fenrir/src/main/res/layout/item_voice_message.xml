@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/item_voice_duration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:textColor="?attr/icon_color_active"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        tools:ignore="SmallSp"
+        tools:text="00:15" />
+
+    <LinearLayout
+        android:id="@+id/item_voice_buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_voice_duration"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/item_voice_button_play"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/spinner"
+            android:backgroundTint="?colorPrimary"
+            android:contentDescription="@null"
+            android:padding="6dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/play"
+            android:stateListAnimator="@animator/clicked"
+            app:tint="?colorPrimary" />
+
+        <TextView
+            android:id="@+id/item_voice_translate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:stateListAnimator="@animator/clicked"
+            android:text="@string/voice_click"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textColor="?colorPrimary"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/item_voice_speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="4dp"
+            android:contentDescription="@null"
+            android:gravity="center"
+            android:src="@drawable/voice_speed"
+            android:stateListAnimator="@animator/clicked"
+            app:tint="?colorOnSurface" />
+    </LinearLayout>
+
+    <dev.ragnarok.fenrir.view.WaveFormView
+        android:id="@+id/item_voice_wave_form_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_voice_duration"
+        android:layout_alignBottom="@id/item_voice_buttons"
+        android:layout_marginStart="12dp"
+        android:layout_toEndOf="@id/item_voice_buttons"
+        app:waveform_active_color="?attr/colorPrimary"
+        app:waveform_noactive_color="?attr/colorOnSurface" />
+
+    <TextView
+        android:id="@+id/transcription_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_voice_wave_form_view"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/background_rectangle_stroke"
+        android:padding="9dp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:visibility="gone"
+        tools:text="Message" />
+
+</RelativeLayout>

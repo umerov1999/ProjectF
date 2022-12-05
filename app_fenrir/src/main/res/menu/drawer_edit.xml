@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/check"
+        android:title="@string/save"
+        app:iconTint="?colorOnSurface"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_reset"
+        android:icon="@drawable/refresh"
+        android:title="@string/reset"
+        app:iconTint="?colorOnSurface"
+        app:showAsAction="ifRoom" />
+</menu>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/detect_qr"
+        android:title="@string/detect_qr" />
+    <item
+        android:id="@+id/save_on_drive"
+        android:title="@string/save_to_drive" />
+</menu>

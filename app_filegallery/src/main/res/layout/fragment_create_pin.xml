@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="4dp"
+    app:cardElevation="1dp"
+    app:contentPadding="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="?attr/colorPrimary"
+            android:elevation="5dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/pin_title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/create_pin_code_title"
+                android:textColor="#FFF"
+                android:textSize="24sp" />
+
+            <LinearLayout
+                android:id="@+id/value_root"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal"
+                android:padding="@dimen/content_large_margin">
+
+                <ImageView
+                    android:id="@+id/pincode_digit_0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/pin_digit"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:src="@drawable/runic_letter_algis" />
+
+                <ImageView
+                    android:id="@+id/pincode_digit_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/pin_digit"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:src="@drawable/runic_letter_manaz" />
+
+                <ImageView
+                    android:id="@+id/pincode_digit_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/pin_digit"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:src="@drawable/runic_letter_naudiz" />
+
+                <ImageView
+                    android:id="@+id/pincode_digit_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/pin_digit"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:src="@drawable/runic_letter_raido" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <dev.ragnarok.filegallery.view.KeyboardView
+                android:id="@+id/keyboard"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:keyboard_theme="fullscreen" />
+
+        </FrameLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

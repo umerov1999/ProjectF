@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/footer_load_more_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="4dp">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/footer_load_more_run"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/load_more"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/footer_load_more_progress"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:indeterminate="true" />
+
+    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        android:id="@+id/footer_load_more_end_of_list"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center" />
+
+</FrameLayout>

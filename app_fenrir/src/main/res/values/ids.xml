@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="zoomable" type="id" />
+    <item name="skip_zoom_layout" type="id" />
+    <item name="slidable_panel" type="id" />
+    <item name="slidable_content" type="id" />
+</resources>

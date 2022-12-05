@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "54740537194",
+    "firebase_url": "https://gcm-kate-mobile.firebaseio.com",
+    "project_id": "gcm-kate-mobile",
+    "storage_bucket": "gcm-kate-mobile.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54740537194:android:e6650eeec95b0c935fdf13",
+        "android_client_info": {
+          "package_name": "dev.ragnarok.fenrir_kate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "54740537194-e01nfmpgbjrgg23her9u29i2ob1dlsqr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxyfjjO7NgocZY7gty0kieGLqLOw2G1BU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "54740537194-e01nfmpgbjrgg23her9u29i2ob1dlsqr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

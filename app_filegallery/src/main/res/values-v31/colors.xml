@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">@android:color/system_neutral1_10</color>
+
+    <color name="icon_var1">#FFC107</color>
+    <color name="icon_var2">#E91E63</color>
+    <color name="icon_var3">@android:color/system_accent1_300</color>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#ffffff</color>
+    <color name="night">#131313</color>
+    <color name="transparent">#00000000</color>
+    <color name="neutral">#BEBEBE</color>
+    <color name="default_message_status">#36638D</color>
+    <color name="ic_launcher_background">#000000</color>
+    <color name="ic_vk_background">#0079FF</color>
+</resources>

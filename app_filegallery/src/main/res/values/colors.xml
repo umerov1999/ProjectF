@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#ffffff</color>
+    <color name="night">#131313</color>
+    <color name="transparent">#00000000</color>
+    <color name="neutral">#BEBEBE</color>
+    <color name="ic_launcher_background">#ffffff</color>
+
+    <color name="icon_var1">#FFC107</color>
+    <color name="icon_var2">#E91E63</color>
+    <color name="icon_var3">#03A9F4</color>
+</resources>

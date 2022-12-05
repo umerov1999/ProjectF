@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="App.DayNight.Dynamic" parent="Theme.Material3.DynamicColors.DayNight">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">?attr/colorPrimary</item>
+        <item name="statusbarNonColoredColor">#000</item>
+        <item name="toolbarElevation">@dimen/toolbar_with_elevation</item>
+        <item name="android:scrollbarSize">2dp</item>
+
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:statusBarColor">?android:colorBackground</item>
+        <item name="android:navigationBarColor">?android:colorBackground</item>
+
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.AppTheme.SmallComponent
+        </item>
+        <item name="shapeAppearanceMediumComponent">
+            @style/ShapeAppearance.AppTheme.MediumComponent
+        </item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.AppTheme.LargeComponent
+        </item>
+
+        <item name="materialCardViewStyle">@style/Theme.MaterialCardView</item>
+        <item name="badgeStyle">@style/Theme.BadgeStyle</item>
+        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
+        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary</item>
+        <item name="fab_player">@style/Theme.FloatingActionButtonSecondary</item>
+
+        <item name="materialCardStyle">@style/CardViewMD2</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_stroke_filled</item>
+
+        <item name="dividerColor">#E1E3E7</item>
+
+        <item name="messages_background_color">#ECECEC</item>
+
+        <item name="message_bubble_color">#D4FFFFFF</item>
+        <item name="toast_background">#3E3E3E</item>
+        <item name="white_color">#FFFFFF</item>
+        <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
+
+        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+    </style>
+</resources>

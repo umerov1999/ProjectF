@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    style="?materialCardStyle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/card_margin_horizontal"
+    android:layout_marginTop="@dimen/card_margin_horizontal"
+    android:layout_marginBottom="@dimen/card_margin"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:stateListAnimator="@animator/clicked"
+    app:contentPadding="6dp"
+    tools:ignore="UnusedAttribute">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/item_menu_pic"
+            android:layout_width="100dp"
+            android:layout_height="80dp"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
+
+        <TextView
+            android:id="@+id/item_menu_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:lines="2"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textSize="11sp"
+            tools:text="Name" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

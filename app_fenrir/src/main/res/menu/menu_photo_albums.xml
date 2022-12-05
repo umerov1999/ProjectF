@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_photo_comments"
+        android:icon="@drawable/comment"
+        android:title="@string/comments"
+        app:iconTint="?colorOnSurface"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_photo_toggle_like"
+        android:icon="@drawable/ic_no_heart"
+        android:title="@string/like"
+        app:iconTint="?colorOnSurface"
+        app:showAsAction="always" />
+</menu>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image_text">Текст</string>
+    <string name="image_clip">Обрезать</string>
+    <string name="image_reset">Сбросить</string>
+    <string name="image_done">Готово</string>
+    <string name="image_cancel">Отмена</string>
+    <string name="image_rotate">Повернуть</string>
+
+    <string name="image_mosaic_tip">Перемещайте палец, чтобы применить мозаику</string>
+    <string name="image_undo">Отменить</string>
+
+    <string name="ucrop_label_original">Оригинал</string>
+    <string name="ucrop_label_edit_photo">Обрезка</string>
+
+    <string name="ucrop_menu_crop">Обрезать</string>
+
+    <string name="ucrop_error_input_data_is_absent">Необходимо указать как входной, так и выходной Uri.</string>
+    <string name="ucrop_mutate_exception_hint">Поэтому переопределите ресурс цвета (ucrop_color_toolbar_widget) в своем приложении, чтобы он работал на устройствах pre-L</string>
+    <string name="ucrop_rotate">Поворот</string>
+    <string name="ucrop_scale">Увеличение</string>
+    <string name="ucrop_crop">Обрезать</string>
+</resources>

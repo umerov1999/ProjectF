@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="message_bubble_color" format="color" />
+    <attr name="toast_background" format="color" />
+    <attr name="white_color" format="color" />
+    <attr name="toolbar_left_icon_color" format="color" />
+
+    <attr name="fab_secondary" format="reference" />
+    <attr name="fab_player" format="reference" />
+
+    <attr name="messages_background_color" format="color" />
+    <attr name="dividerColor" format="color" />
+    <attr name="materialCardStyle" format="reference" />
+    <attr name="materialCardBackgroundStyle" format="reference" />
+
+    <attr name="toolbarElevation" format="reference" />
+    <attr name="statusbarNonColoredColor" format="color" />
+
+    <declare-styleable name="KeyboardView">
+        <attr name="keyboard_theme" format="enum">
+            <enum name="fullscreen" value="0" />
+            <enum name="dialog" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="CircleCounterButton">
+        <attr name="button_icon" format="reference" />
+        <attr name="always_counter" format="boolean" />
+        <attr name="active" format="boolean" />
+        <attr name="count" format="integer" />
+        <attr name="active_icon_color" format="color" />
+        <attr name="noactive_icon_color" format="color" />
+        <attr name="active_background_color" format="color" />
+        <attr name="noactive_background_color" format="color" />
+        <attr name="text_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="MySearchView">
+        <attr name="search_source_id" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundCornerLinearView">
+        <attr name="radius_bottom_right" format="dimension" />
+        <attr name="radius_bottom_left" format="dimension" />
+        <attr name="radius_top_right" format="dimension" />
+        <attr name="radius_top_left" format="dimension" />
+        <attr name="view_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomSeekBar">
+        <attr name="progressColor" format="color" />
+        <attr name="bufferedColor" format="color" />
+        <attr name="lineColor" format="color" />
+        <attr name="circleColor" format="color" />
+        <attr name="pressedCircleColor" format="color" />
+        <attr name="applyAlpha" format="boolean" />
+        <attr name="lineHeight" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="AspectRatioImageView">
+        <attr name="aspectRatioW" format="integer" />
+        <attr name="aspectRatioH" format="integer" />
+        <attr name="aspectRatioEnabled" format="boolean" />
+        <attr name="dominantMeasurement">
+            <enum name="width" value="0" />
+            <enum name="height" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="TouchImageView">
+        <attr name="zoom_enabled" format="boolean" />
+    </declare-styleable>
+
+    <attr name="materialPopupMenuStyle" format="reference" />
+
+    <declare-styleable name="MaterialRecyclerViewPopupWindow">
+        <attr name="android:dropDownHorizontalOffset" />
+        <attr name="android:dropDownVerticalOffset" />
+        <attr name="android:backgroundDimEnabled" />
+        <attr name="android:backgroundDimAmount" />
+        <attr name="mpm_paddingBottom" format="dimension" />
+        <attr name="mpm_paddingStart" format="dimension" />
+        <attr name="mpm_paddingEnd" format="dimension" />
+        <attr name="mpm_paddingTop" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="RLottieImageView">
+        <attr name="loopAnimation" format="boolean" />
+        <attr name="fromRes" format="reference" />
+        <attr name="w" format="dimension" />
+        <attr name="h" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="AnimatedShapeableImageView">
+        <attr name="default_width" format="dimension" />
+        <attr name="default_height" format="dimension" />
+    </declare-styleable>
+</resources>

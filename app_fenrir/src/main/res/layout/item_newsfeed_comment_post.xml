@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    style="?materialCardStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/card_margin_horizontal"
+    android:layout_marginEnd="@dimen/card_margin_horizontal"
+    android:layout_marginBottom="@dimen/card_margin"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:contentPadding="1dp"
+    tools:ignore="UnusedAttribute">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/post_root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:orientation="vertical">
+
+            <include layout="@layout/content_post_header" />
+
+            <include
+                android:id="@+id/top_divider"
+                layout="@layout/line_divider" />
+
+            <include layout="@layout/content_post" />
+
+        </LinearLayout>
+
+
+        <include layout="@layout/line_divider" />
+
+        <include
+            android:id="@+id/comment_root"
+            layout="@layout/content_newsfeed_comment" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

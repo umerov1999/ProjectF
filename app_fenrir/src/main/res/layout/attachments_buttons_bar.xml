@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/buttons_bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <dev.ragnarok.fenrir.view.YoutubeButton
+        android:id="@+id/fragment_create_post_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:youtube_button_icon="@drawable/photo_album"
+        app:youtube_button_icon_color="?attr/colorOnSurface"
+        app:youtube_button_text="@string/photo"
+        app:youtube_button_text_color="?attr/colorOnSurface" />
+
+    <dev.ragnarok.fenrir.view.YoutubeButton
+        android:id="@+id/fragment_create_post_audio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:youtube_button_icon="@drawable/music"
+        app:youtube_button_icon_color="?attr/colorOnSurface"
+        app:youtube_button_text="@string/music"
+        app:youtube_button_text_color="?attr/colorOnSurface" />
+
+    <dev.ragnarok.fenrir.view.YoutubeButton
+        android:id="@+id/fragment_create_post_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:youtube_button_icon="@drawable/video"
+        app:youtube_button_icon_color="?attr/colorOnSurface"
+        app:youtube_button_text="@string/video"
+        app:youtube_button_text_color="?attr/colorOnSurface" />
+
+    <dev.ragnarok.fenrir.view.YoutubeButton
+        android:id="@+id/fragment_create_post_doc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:youtube_button_icon="@drawable/book"
+        app:youtube_button_icon_color="?attr/colorOnSurface"
+        app:youtube_button_text="@string/document_short"
+        app:youtube_button_text_color="?attr/colorOnSurface" />
+
+    <dev.ragnarok.fenrir.view.YoutubeButton
+        android:id="@+id/fragment_create_post_poll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:youtube_button_icon="@drawable/chart_bar"
+        app:youtube_button_icon_color="?attr/colorOnSurface"
+        app:youtube_button_text="@string/poll"
+        app:youtube_button_text_color="?attr/colorOnSurface" />
+
+    <!-- <dev.ragnarok.fenrir.view.YoutubeButton
+         android:id="@+id/fragment_create_post_timer"
+         android:background="?attr/selectableItemBackgroundBorderless"
+         app:youtube_button_icon="@drawable/clock"
+         app:youtube_button_icon_color="?attr/colorOnSurface"
+         app:youtube_button_text="@string/timer"
+         app:youtube_button_text_color="?attr/colorOnSurface"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"/>-->
+
+    <!--<ImageButton android:contentDescription="@null"
+        android:id="@+id/button_expand"
+        android:layout_width="@dimen/attachment_manager_button_size"
+        android:layout_height="@dimen/attachment_manager_button_size"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_expand"
+        android:tint="?textColorPrimaryOnColoredBack" />-->
+
+</LinearLayout>

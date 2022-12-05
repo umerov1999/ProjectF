@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" tools:ignore="MissingTranslation">
+    <string name="app_name">Files</string>
+
+    <string name="crash_error_activity_error_occurred_explanation">Unhandled exception.</string>
+    <string name="crash_error_activity_restart_app">Restart</string>
+    <string name="crash_error_activity_error_details">Details</string>
+    <string name="crash_error_activity_error_details_title">Exception Details</string>
+    <string name="crash_error_activity_error_details_close">Close</string>
+    <string name="crash_error_activity_error_details_copy">Copy</string>
+    <string name="crash_error_activity_error_details_copied">Copied</string>
+    <string name="crash_error_activity_error_details_clipboard_label">Crash info</string>
+    <string name="crash_error_activity_out_of_memory">Out of RAM!</string>
+
+    <string-array name="array_language_names">
+        <item>Default</item>
+        <item>English</item>
+        <item>Russian</item>
+        <item>Belorussian</item>
+    </string-array>
+
+    <string-array name="array_language_items" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="night_mode_values" translatable="false">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="night_mode_names">
+        <item>Off</item>
+        <item>On</item>
+        <item>Automatic</item>
+        <item>Follow system</item>
+    </string-array>
+
+    <string-array name="theme_overlay_names">
+        <item>Off</item>
+        <item>Amoled</item>
+        <item>Material 1</item>
+    </string-array>
+
+    <string-array name="theme_overlay_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="array_font_size_names">
+        <item>Default</item>
+        <item>Small</item>
+        <item>Average</item>
+        <item>Large</item>
+        <item>Huge</item>
+    </string-array>
+
+    <string-array name="array_font_size_items" translatable="false">
+        <item>0</item>
+        <item>-1</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="array_lifecycle_names">
+        <item>1 min.</item>
+        <item>2 min.</item>
+        <item>5 min.</item>
+        <item>10 min.</item>
+        <item>15 min.</item>
+    </string-array>
+
+    <string-array name="array_lifecycle_items" translatable="false">
+        <item>60000</item>
+        <item>120000</item>
+        <item>300000</item>
+        <item>600000</item>
+        <item>900000</item>
+    </string-array>
+
+    <string-array name="array_ffmpeg_names">
+        <item>Off</item>
+        <item>Enabled</item>
+        <item>Primary</item>
+    </string-array>
+
+    <string-array name="array_ffmpeg_items" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="array_rendering_mode_names">
+        <item>Software</item>
+        <item>Hardware enabled</item>
+        <item>Force Hardware</item>
+    </string-array>
+
+    <string-array name="array_rendering_mode_items" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="array_limit_cache_images_names" translatable="false">
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>128 MB</item>
+        <item>256 MB</item>
+        <item>512 MB</item>
+        <item>1 GB</item>
+    </string-array>
+
+    <string-array name="array_limit_cache_images_items" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>128</item>
+        <item>256</item>
+        <item>512</item>
+        <item>1024</item>
+    </string-array>
+
+    <string-array name="player_progress_state" translatable="false">
+        <item> ••••••</item>
+        <item>• •••••</item>
+        <item>•• ••••</item>
+        <item>••• •••</item>
+        <item>•••• ••</item>
+        <item>••••• •</item>
+        <item>•••••• </item>
+    </string-array>
+
+    <string-array name="array_pager_transform_names" translatable="false">
+        <item>Off</item>
+        <item>Depth Transformer</item>
+        <item>Zoom Out Transformer</item>
+        <item>Clock Spin Transformer</item>
+        <item>Background To Foreground Transformer</item>
+        <item>Cube In Depth Transformer</item>
+        <item>Fan Transformer</item>
+        <item>Gate Transformer</item>
+        <item>Slider Transformer</item>
+    </string-array>
+
+    <string-array name="array_pager_transform_anim_items" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
+    <string-array name="array_parser_names" translatable="false">
+        <item>Json</item>
+        <item>MessagePack</item>
+    </string-array>
+
+    <string-array name="array_parser_items" translatable="false">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string name="files">Files</string>
+    <string name="button_back">Back</string>
+    <string name="search_hint">Search</string>
+    <string name="close">Close</string>
+    <string name="search_options">Search Options</string>
+    <string name="directory_is_empty">Directory is empty</string>
+    <string name="error_timeout_message">Request timed out</string>
+    <string name="error_unknown_host">No network connection</string>
+    <string name="more_info">More info</string>
+    <string name="button_ok">OK</string>
+    <string name="button_yes">Yes</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_copy">Copy</string>
+    <string name="button_open">Open</string>
+    <string name="not_permitted">Permissions not granted! Feature not available</string>
+    <string name="click_back_to_exit">Click again to exit</string>
+    <string name="success">Success</string>
+    <string name="choose_theme_title">Color Palette</string>
+    <string name="night_mode_title">Night mode</string>
+    <string name="theme_overlay" translatable="false">Amoled/Material 1</string>
+    <string name="font_size">Font size</string>
+    <string name="use_internal_downloader">Use internal downloader</string>
+    <string name="use_internal_downloader_summary">For videos and documents</string>
+    <string name="video_controller_to_decor">Video button in DecorView</string>
+    <string name="video_swipes">Video swipes</string>
+    <string name="download_photo_tap">Download photos by long press</string>
+    <string name="show_photos_line">Show photo trackbar</string>
+    <string name="music_settings">Player and music</string>
+    <string name="audio_round_icon">Round audio covers</string>
+    <string name="use_long_click_download">Download by long press</string>
+    <string name="revert_play_audio">Play button - menu</string>
+    <string name="player_has_background">Player background</string>
+    <string name="player_background">Player background settings</string>
+    <string name="use_stop_audio">Stop instead of pausing audio</string>
+    <string name="audio_save_mode_button">Download multiple tracks</string>
+    <string name="show_mini_player">Show Mini Player</string>
+    <string name="lifecycle_music_service">Player lifetime (sec)</string>
+    <string name="ffmpeg_audio_codecs">FFmpeg audio codecs</string>
+    <string name="download_directory">Where to download it</string>
+    <string name="music_dir">Music</string>
+    <string name="photo_dir">Photo</string>
+    <string name="video_dir">Video</string>
+    <string name="photo_to_user_dir">Sort photos by folder</string>
+    <string name="dev_settings">For Developers</string>
+    <string name="developer_mode">Developer mode</string>
+    <string name="max_bitmap_resolution">Max bitmap resolution</string>
+    <string name="max_thumb_resolution">Maximum cover resolution</string>
+    <string name="rendering_mode">Image rendering mode</string>
+    <string name="need_restart">Restart required</string>
+    <string name="enable_dirs_files_count">Number of files in folder</string>
+    <string name="cache_cleaner">Clear cache</string>
+    <string name="local_media_server">Local media server</string>
+    <string name="settings">Settings</string>
+    <string name="rotate_speed">Rotation speed %1$d</string>
+    <string name="rotate_scale">Background scale %1$d</string>
+    <string name="player_blur">Blur %1$d</string>
+    <string name="invert_rotating">Rotate Clockwise</string>
+    <string name="fade_saturation">Flickering saturation</string>
+    <string name="set_default">Reset</string>
+    <string name="slidr_vertical_settings">Vertical settings:</string>
+    <string name="slidr_horizontal_settings">Horizontal settings:</string>
+    <string name="slidr_sensitive">Sensitivity %1$d</string>
+    <string name="slidr_velocity_threshold">Velocity threshold %1$d</string>
+    <string name="slidr_distance_threshold">Distance threshold %1$d</string>
+    <string name="not_available">NOT AVAILABLE</string>
+    <string name="theme_edit_title">Choosing a color theme</string>
+    <string name="enabled">Enabled</string>
+    <string name="enabled_audio_local_sync">Synchronize downloads</string>
+    <string name="rotating_player_cover">Rotate player cover</string>
+    <string name="audio_channel">FileGallery-Player</string>
+    <string name="downloading">Downloading</string>
+    <string name="saved_audio">Downloading track…</string>
+    <string name="exist_audio">Already downloaded (date change…)</string>
+    <string name="cancel">Cancel</string>
+    <string name="null_image_link">Missing download link</string>
+    <string name="error">Error</string>
+    <string name="error_with_message">Error: %1$s</string>
+    <string name="work_manager">FileGallery Work</string>
+    <string name="channel_keep_work_manager">WorkManager</string>
+    <string name="foreground_downloader">Download Manager</string>
+    <string name="saved">Saved</string>
+    <string name="pause">pause</string>
+    <string name="previous">previous</string>
+    <string name="next">next</string>
+    <string name="play">Play</string>
+    <!-- Do not translate. Duration format for duration < 1 hour -->
+    <string name="durationformatshort" translatable="false"><xliff:g id="format">%2$d:%3$02d</xliff:g></string>
+    <!-- Do not translate. Duration format for duration >= 1 hour -->
+    <string name="durationformatlong" translatable="false"><xliff:g id="format">%1$d:%2$02d:%3$02d</xliff:g></string>
+    <string name="equalizer_closed">Equalizer closed</string>
+    <string name="no_system_equalizer">No system equalizer</string>
+    <string name="equalizer">Equalizer</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
+    <string name="copy_track_info">Info</string>
+    <string name="audio_force_download">Already downloaded. Download anyway?</string>
+    <string name="error_audio">Audio error</string>
+    <string name="album_cover">Album cover</string>
+    <string name="empty_url">Empty URL</string>
+    <string name="open_full_player">Open player</string>
+    <string name="save_to_drive">Save to Drive</string>
+    <string name="rotate_video">Rotate</string>
+    <string name="popup">In the window</string>
+    <string name="image_number">%1$d of %2$d</string>
+    <string name="download">Download</string>
+    <string name="play_audio_after_current">Play Next</string>
+    <string name="get_bitrate">Get Bitrate</string>
+    <string name="delete">Delete</string>
+    <string name="update_time">Set current time</string>
+    <string name="edit">Edit</string>
+    <string name="bitrate">Bitrate: %1$d kbs, Size: %2$s</string>
+    <string name="change_name">Name</string>
+    <string name="do_delete">Delete?</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="return_away">Return</string>
+    <string name="go_discography">Go to discography</string>
+    <string name="reverse_time">Old to New</string>
+    <string name="null_audio">No audio playing</string>
+    <string name="audio_not_found">Audio not found in the list</string>
+    <string name="formatted_date_tomorrow_clean">tomorrow at %1$s</string>
+    <string name="formatted_date_yesterday_clean">yesterday at %1$s</string>
+    <string name="local_server_audio">Audio</string>
+    <string name="local_server_photo">Photo</string>
+    <string name="local_server_video">Video</string>
+    <string name="local_server_need_enable">Enable Local Media Server in settings</string>
+    <string name="video_ext">Video Extensions</string>
+    <string name="photo_ext">Photo Extensions</string>
+    <string name="audio_ext">Audio extensions</string>
+    <string name="files_count_a">%1$d file</string>
+    <string name="files_count_b">%1$d files</string>
+    <string name="files_count_c">%1$d files</string>
+    <string name="open_with">Open with</string>
+    <string name="share">Submit</string>
+    <string name="fix_dir_time">Fix subfolder times</string>
+    <string name="tag_owner_title">Tags</string>
+    <string name="title_entry_name">Enter a name</string>
+    <string name="tags">Tags</string>
+    <string name="add_dir_tag">Add Tag</string>
+    <string name="remove_dir_tag">Remove tag</string>
+    <string name="export_settings">Export settings</string>
+    <string name="import_settings">Import settings</string>
+    <string name="export_adb">Export for adb</string>
+    <string name="slidr_settings">Slidr Settings</string>
+    <string name="import_export_settings">Import/Export</string>
+    <string name="viewpager_page_transform">Viewpager2 animation</string>
+    <string name="player_cover_transform">Player cover swipe animation</string>
+    <string name="developer">Developer: Artyom Umerov</string>
+    <string name="repo">Repository: https://github.com/umerov1999/FileGallery</string>
+    <string name="repo_local_server">Repository: https://github.com/umerov1999/FenrirMediaServer/releases</string>
+    <string name="tag_count_a">%1$d tag</string>
+    <string name="tag_count_b">%1$d tags</string>
+    <string name="tag_count_c">%1$d tags</string>
+    <string name="success_add">Successfully added %1$s to %2$s</string>
+    <string name="rename">Rename</string>
+    <string name="qr">QR code</string>
+    <string name="detect_qr">Recognize QR</string>
+    <string name="select_file">Selection %1$s</string>
+    <string name="select_folder">Select directory</string>
+    <string name="not_supported">Not supported</string>
+    <string name="biometric">Put your finger on the fingerprint reader</string>
+    <string name="biometric_not_support">Fingerprint login not supported!</string>
+    <string name="create_pin_code_title">Create a PIN</string>
+    <string name="entered_pin_codes_do_not_match">Entered PIN codes do not match</string>
+    <string name="pin_digit">Pin code</string>
+    <string name="use_pin_title">Use PIN or fingerprint</string>
+    <string name="button_1" translatable="false">1</string>
+    <string name="button_2" translatable="false">2</string>
+    <string name="button_3" translatable="false">3</string>
+    <string name="button_4" translatable="false">4</string>
+    <string name="button_5" translatable="false">5</string>
+    <string name="button_6" translatable="false">6</string>
+    <string name="button_7" translatable="false">7</string>
+    <string name="button_8" translatable="false">8</string>
+    <string name="button_9" translatable="false">9</string>
+    <string name="button_0" translatable="false">0</string>
+    <string name="repeat_pin_code_title">Repeat PIN</string>
+    <string name="not_yet_implemented_message">Not implemented yet!</string>
+    <string name="error_login_by_fingerprint_not_allowed">Fingerprint login not allowed</string>
+    <string name="limit_exceeded_number_of_attempts_message">Input attempt limit exceeded</string>
+    <string name="pin_is_invalid_message">Invalid PIN</string>
+    <string name="security">Security</string>
+    <string name="allow_fingerprint_title">Allow fingerprint</string>
+    <string name="change_pin_title">Change PIN</string>
+    <string name="ask_for_pin_on_application_start_title">PIN at startup</string>
+    <string name="ask_for_pin_on_application_start_summary">Request PIN on application start</string>
+    <string name="do_remove">Are you sure you want to remove %1$s?</string>
+    <string name="do_tag_remove">Are you sure you want to remove the %1$s tag?</string>
+    <string name="attention">Attention</string>
+    <string name="delete_disabled">Deletion disabled</string>
+    <string name="root_dir">Root</string>
+    <string name="general_settings">General</string>
+    <string name="validate_tls">Certificate Verification</string>
+    <string name="validate_tls_summary">Disabling makes you vulnerable</string>
+    <string name="reboot_pc_win">Restart Win</string>
+    <string name="reboot_pc_linux">Restart Linux</string>
+    <string name="reset_settings">Reset settings</string>
+    <string name="wrong_settings_format">This settings format is not supported!</string>
+    <string name="ongoing_player_notification">Continuous notification</string>
+    <string name="files_uploading_notification_title">Uploading files</string>
+    <string name="play_remote">Play via server</string>
+    <string name="open_folder_new_window">Open directories in a new window</string>
+    <string name="compress_incoming_traffic">Compress incoming traffic</string>
+    <string name="parser_type">Parser</string>
+    <string name="limit_cache_images">In-Memory Image Cache Limit</string>
+    <string name="language_ui">Language</string>
+    <string name="scan_qr">Scan QR</string>
+</resources>

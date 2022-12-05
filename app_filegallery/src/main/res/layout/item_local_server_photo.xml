@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="6dp"
+    app:cardUseCompatPadding="true">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <dev.ragnarok.filegallery.view.AspectRatioImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="false"
+            android:background="?attr/messages_background_color"
+            android:gravity="center"
+            android:scaleType="centerCrop"
+            app:aspectRatioEnabled="true"
+            app:aspectRatioH="1"
+            app:aspectRatioW="1"
+            app:dominantMeasurement="width" />
+
+        <dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+            android:id="@+id/current"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignStart="@id/imageView"
+            android:layout_alignTop="@id/imageView"
+            android:layout_alignEnd="@id/imageView"
+            android:layout_alignBottom="@id/imageView"
+            android:visibility="gone"
+            app:loopAnimation="true" />
+
+        <FrameLayout
+            android:id="@+id/vk_photo_item_top"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_alignStart="@id/imageView"
+            android:layout_alignTop="@id/imageView"
+            android:background="?attr/colorSecondary"
+            android:paddingStart="4dp"
+            android:paddingEnd="8dp">
+
+            <TextView
+                android:id="@+id/vk_photo_item_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/font_size_additional"
+                android:textStyle="bold"
+                tools:text="1.5K" />
+        </FrameLayout>
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

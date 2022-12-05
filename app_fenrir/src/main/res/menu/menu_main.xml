@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_feed"
+        android:icon="@drawable/rss"
+        android:title="@string/feed" />
+
+    <item
+        android:id="@+id/menu_search"
+        android:icon="@drawable/magnify"
+        android:title="@string/search" />
+
+    <item
+        android:id="@+id/menu_messages"
+        android:icon="@drawable/email"
+        android:title="@string/dialogs" />
+
+    <item
+        android:id="@+id/menu_feedback"
+        android:icon="@drawable/feed"
+        android:title="@string/drawer_feedback" />
+
+    <item
+        android:id="@+id/menu_other"
+        android:icon="@drawable/ic_menu_24_white"
+        android:title="@string/other" />
+</menu>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/fragment_input_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/message_input_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/buttonSendContainer"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/buttonAttach"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/attach"
+                android:padding="6dp"
+                android:src="@drawable/attachment"
+                app:tint="?colorOnSurface" />
+
+            <TextView
+                android:id="@+id/fragment_input_att_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="0dp"
+                android:layout_marginBottom="4dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="4" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                app:cardBackgroundColor="?messages_background_color"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/buttonEmoji"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/emoji"
+                        android:padding="10dp"
+                        android:src="@drawable/emoticon"
+                        app:tint="?colorOnSurface" />
+
+                    <dev.ragnarok.fenrir.view.emoji.EmojiconEditText
+                        android:id="@+id/fragment_input_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/text_hint"
+                        android:imeOptions="actionDone|flagNoExtractUi"
+                        android:inputType="text|textCapSentences|textMultiLine"
+                        android:maxLines="8"
+                        android:minHeight="40dp"
+                        android:paddingStart="0dp"
+                        android:paddingTop="2dp"
+                        android:paddingEnd="8dp"
+                        android:paddingBottom="2dp"
+                        android:saveEnabled="false"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                        android:textColorHint="?android:textColorHint"
+                        app:emojiconSize="20sp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/buttonSendContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/message_input_container"
+            android:layout_alignParentEnd="true">
+
+            <ImageButton
+                android:id="@+id/buttonSend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@null"
+                android:padding="14dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/send"
+                app:tint="?colorOnSurface" />
+
+            <ImageView
+                android:id="@+id/author_avatar"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/fragment_input_emoji_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground"
+        android:orientation="horizontal"
+        android:visibility="gone" />
+
+</LinearLayout>

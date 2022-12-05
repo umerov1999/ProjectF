@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/community_options_comments_title"
+        android:textSize="24sp" />
+
+    <LinearLayout
+        android:id="@+id/feedback_comments_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/community_options_feedback_title" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/feedback_comments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/community_options_enable_comments" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/community_options_comments_filter_title"
+        android:textColor="?android:textColorSecondary" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/obscene_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/community_options_enable_profanity_filter" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/obscene_stopwords"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/community_options_enable_keyword_filter" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/obscene_stopwords_values"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="top"
+        android:hint="@string/community_options_separate_keywords_by_commas"
+        android:importantForAutofill="no"
+        android:inputType="textUri"
+        android:minHeight="80dp"
+        android:padding="8dp"
+        android:textSize="14sp" />
+
+</LinearLayout>

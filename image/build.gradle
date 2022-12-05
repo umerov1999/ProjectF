@@ -1,0 +1,37 @@
+plugins {
+    id("com.android.library")
+}
+
+android {
+    namespace "me.minetsh.imaging"
+    compileSdk = appCompileSDK
+    buildToolsVersion = appBuildTools
+
+    defaultConfig {
+        generatedDensities = []
+        minSdk = appMinSDK
+        targetSdk = appTargetSDK
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        encoding = "utf-8"
+    }
+
+}
+
+dependencies {
+    implementation("androidx.annotation:annotation:$annotationVersion")
+    implementation("androidx.appcompat:appcompat:$appcompatVersion")
+    //implementation("androidx.recyclerview:recyclerview:$recyclerviewVersion")
+    implementation project(path: ":viewpager2")
+    implementation("androidx.core:core:$coreVersion")
+    implementation("androidx.activity:activity:$activityVersion")
+    implementation("androidx.fragment:fragment:$fragmentVersion")
+    implementation project(path: ":material")
+    implementation("androidx.constraintlayout:constraintlayout:$constraintlayoutVersion")
+    implementation("io.reactivex.rxjava3:rxjava:$rxJavaVersion")
+    implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
+    implementation("androidx.transition:transition:$transitionVersion")
+}

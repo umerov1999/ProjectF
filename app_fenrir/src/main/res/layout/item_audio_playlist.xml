@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/playlist_container"
+    style="?materialCardStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    app:contentPadding="0dp">
+
+    <LinearLayout
+        android:id="@+id/content_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <dev.ragnarok.fenrir.view.AspectRatioImageView
+            android:id="@+id/item_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            app:aspectRatioEnabled="true"
+            app:aspectRatioH="1"
+            app:aspectRatioW="1"
+            app:dominantMeasurement="width"
+            app:shapeAppearance="@style/ShapeAppearance.RoundedPlayList" />
+
+        <LinearLayout
+            android:id="@+id/item_additional_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/item_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textColor="?colorPrimary"
+                tools:text="Name" />
+
+            <TextView
+                android:id="@+id/item_artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textColor="?colorSecondary"
+                tools:text="Artist" />
+
+            <TextView
+                android:id="@+id/item_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textSize="12sp"
+                tools:text="Description" />
+
+            <TextView
+                android:id="@+id/item_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="count" />
+
+            <TextView
+                android:id="@+id/item_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="time" />
+
+            <TextView
+                android:id="@+id/item_genre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="genre" />
+
+            <TextView
+                android:id="@+id/item_year"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="year" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

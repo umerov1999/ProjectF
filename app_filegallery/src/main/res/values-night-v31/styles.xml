@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="App.DayNight.Dynamic" parent="Theme.Material3.DynamicColors.DayNight">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">?attr/colorPrimary</item>
+        <item name="statusbarNonColoredColor">#000</item>
+        <item name="toolbarElevation">@dimen/toolbar_with_elevation</item>
+        <item name="android:scrollbarSize">2dp</item>
+
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:statusBarColor">?android:colorBackground</item>
+        <item name="android:navigationBarColor">?android:colorBackground</item>
+
+        <item name="android:colorBackground">@color/night</item>
+        <item name="badgeStyle">@style/Theme.BadgeStyle</item>
+        <item name="materialCardViewStyle">@style/Theme.MaterialCardView</item>
+        <item name="materialCardStyle">@style/CardViewMD2</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_stroke_filled</item>
+
+        <item name="colorBackgroundFloating">@color/night</item>
+        <item name="colorOnBackground">#1E1E1E</item>
+        <item name="colorSurface">#F01E1E1E</item>
+
+        <item name="colorOnSurface">#CCCCCC</item>
+        <item name="colorSurfaceVariant">#161616</item>
+        <item name="colorOnSurfaceVariant">#A3A3A3</item>
+        <item name="colorSurfaceInverse">#CCCCCC</item>
+        <item name="colorOnSurfaceInverse">#090909</item>
+
+        <item name="white_color">#FFFFFF</item>
+        <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
+
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.AppTheme.SmallComponent
+        </item>
+        <item name="shapeAppearanceMediumComponent">
+            @style/ShapeAppearance.AppTheme.MediumComponent
+        </item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.AppTheme.LargeComponent
+        </item>
+        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
+        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary</item>
+        <item name="fab_player">@style/Theme.FloatingActionButtonAudio</item>
+
+        <item name="dividerColor">#313131</item>
+        <item name="toast_background">#FFFFFF</item>
+
+        <item name="messages_background_color">#151515</item>
+        <item name="message_bubble_color">#313131</item>
+        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+    </style>
+</resources>

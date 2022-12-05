@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "841415684880",
+    "firebase_url": "https://api-project-841415684880.firebaseio.com",
+    "project_id": "api-project-841415684880",
+    "storage_bucket": "api-project-841415684880.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:841415684880:android:632f429381141121",
+        "android_client_info": {
+          "package_name": "dev.ragnarok.fenrir"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "841415684880-i5q85vkpnnj8fgbd1qde5o9kq87656dk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCL17U2Q5i1NVwIcXgMOZMidSRFHyGYgwM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "841415684880-i5q85vkpnnj8fgbd1qde5o9kq87656dk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

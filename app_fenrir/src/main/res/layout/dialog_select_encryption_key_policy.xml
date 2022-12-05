@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/content_medium_margin">
+
+        <RadioButton
+            android:id="@+id/button_on_disk"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/content_medium_margin"
+            android:text="@string/store_on_disk"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="42dp"
+            android:text="@string/store_on_disk_summary"
+            android:textColor="?android:textColorSecondary" />
+
+        <RadioButton
+            android:id="@+id/button_in_ram"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/content_medium_margin"
+            android:text="@string/store_in_ram"
+            android:textSize="@dimen/font_size_title" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="42dp"
+            android:text="@string/store_in_ram_summary"
+            android:textColor="?android:textColorSecondary" />
+
+    </RadioGroup>
+
+</ScrollView>

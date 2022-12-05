@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <dev.ragnarok.fenrir.view.AspectRatioImageView
+                android:id="@+id/item_market_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                android:stateListAnimator="@animator/clicked"
+                app:aspectRatioEnabled="true"
+                app:aspectRatioH="9"
+                app:aspectRatioW="16"
+                app:dominantMeasurement="width"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedPlayerCover" />
+
+            <TextView
+                android:id="@+id/item_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                tools:text="100 RUB" />
+
+            <TextView
+                android:id="@+id/item_available"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textColor="?colorOnSurface"
+                tools:text="available" />
+
+            <TextView
+                android:id="@+id/item_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="web|phone"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                tools:text="Title" />
+
+            <TextView
+                android:id="@+id/item_sku"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:enabled="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:longClickable="true"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textIsSelectable="true"
+                tools:text="Sku" />
+
+            <TextView
+                android:id="@+id/item_weight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                tools:text="Weight" />
+
+            <TextView
+                android:id="@+id/item_dimensions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                tools:text="Dimensions" />
+
+            <TextView
+                android:id="@+id/item_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:autoLink="web|phone"
+                android:enabled="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:longClickable="true"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textIsSelectable="true"
+                android:textSize="12sp"
+                tools:text="Description" />
+
+            <TextView
+                android:id="@+id/item_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                tools:text="time" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/item_messaging_marketer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:backgroundTint="#FFFFFF"
+                android:stateListAnimator="@animator/clicked"
+                android:text="@string/marketer"
+                android:textColor="@android:color/black"
+                app:icon="@drawable/ic_market_outline"
+                app:iconTint="@android:color/black" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <dev.ragnarok.fenrir.view.CircleCounterButton
+            android:id="@+id/fave_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="25"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:active_background_color="?attr/icon_color_active"
+            app:button_icon="@drawable/star"
+            app:noactive_icon_color="?attr/colorOnSurface" />
+
+        <dev.ragnarok.fenrir.view.CircleCounterButton
+            android:id="@+id/share_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="25"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:active_background_color="?attr/icon_color_active"
+            app:button_icon="@drawable/ic_outline_share"
+            app:noactive_icon_color="?attr/colorOnSurface" />
+
+    </LinearLayout>
+
+</LinearLayout>
