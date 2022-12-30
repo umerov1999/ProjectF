@@ -2,118 +2,175 @@ package dev.ragnarok.filegallery.api.services
 
 import dev.ragnarok.filegallery.api.model.Items
 import dev.ragnarok.filegallery.api.model.response.BaseResponse
+import dev.ragnarok.filegallery.api.rest.IServiceRest
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileRemote
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
 import io.reactivex.rxjava3.core.Single
 import okhttp3.MultipartBody
-import retrofit2.http.*
 
-interface ILocalServerService {
-    @FormUrlEncoded
-    @POST("audio.get")
+class ILocalServerService : IServiceRest() {
     fun getAudios(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("reverse") reverse: Int?
-    ): Single<BaseResponse<Items<Audio>>>
+        offset: Int?,
+        count: Int?,
+        reverse: Int?
+    ): Single<BaseResponse<Items<Audio>>> {
+        return rest.request(
+            "audio.get", form(
+                "offset" to offset,
+                "count" to count,
+                "reverse" to reverse
+            ), items(Audio.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("discography.get")
     fun getDiscography(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("reverse") reverse: Int?
-    ): Single<BaseResponse<Items<Audio>>>
+        offset: Int?,
+        count: Int?,
+        reverse: Int?
+    ): Single<BaseResponse<Items<Audio>>> {
+        return rest.request(
+            "discography.get", form(
+                "offset" to offset,
+                "count" to count,
+                "reverse" to reverse
+            ), items(Audio.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("photos.get")
     fun getPhotos(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("reverse") reverse: Int?
-    ): Single<BaseResponse<Items<Photo>>>
+        offset: Int?,
+        count: Int?,
+        reverse: Int?
+    ): Single<BaseResponse<Items<Photo>>> {
+        return rest.request(
+            "photos.get", form(
+                "offset" to offset,
+                "count" to count,
+                "reverse" to reverse
+            ), items(Photo.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.get")
     fun getVideos(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("reverse") reverse: Int?
-    ): Single<BaseResponse<Items<Video>>>
+        offset: Int?,
+        count: Int?,
+        reverse: Int?
+    ): Single<BaseResponse<Items<Video>>> {
+        return rest.request(
+            "video.get", form(
+                "offset" to offset,
+                "count" to count,
+                "reverse" to reverse
+            ), items(Video.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.search")
     fun searchAudios(
-        @Field("q") query: String?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("reverse") reverse: Int?
-    ): Single<BaseResponse<Items<Audio>>>
+        query: String?,
+        offset: Int?,
+        count: Int?,
+        reverse: Int?
+    ): Single<BaseResponse<Items<Audio>>> {
+        return rest.request(
+            "audio.search", form(
+                "q" to query,
+                "offset" to offset,
+                "count" to count,
+                "reverse" to reverse
+            ), items(Audio.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("discography.search")
     fun searchDiscography(
-        @Field("q") query: String?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("reverse") reverse: Int?
-    ): Single<BaseResponse<Items<Audio>>>
+        query: String?,
+        offset: Int?,
+        count: Int?,
+        reverse: Int?
+    ): Single<BaseResponse<Items<Audio>>> {
+        return rest.request(
+            "discography.search", form(
+                "q" to query,
+                "offset" to offset,
+                "count" to count,
+                "reverse" to reverse
+            ), items(Audio.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.search")
     fun searchVideos(
-        @Field("q") query: String?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("reverse") reverse: Int?
-    ): Single<BaseResponse<Items<Video>>>
+        query: String?,
+        offset: Int?,
+        count: Int?,
+        reverse: Int?
+    ): Single<BaseResponse<Items<Video>>> {
+        return rest.request(
+            "video.search", form(
+                "q" to query,
+                "offset" to offset,
+                "count" to count,
+                "reverse" to reverse
+            ), items(Video.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("photos.search")
     fun searchPhotos(
-        @Field("q") query: String?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("reverse") reverse: Int?
-    ): Single<BaseResponse<Items<Photo>>>
+        query: String?,
+        offset: Int?,
+        count: Int?,
+        reverse: Int?
+    ): Single<BaseResponse<Items<Photo>>> {
+        return rest.request(
+            "photos.search", form(
+                "q" to query,
+                "offset" to offset,
+                "count" to count,
+                "reverse" to reverse
+            ), items(Photo.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("update_time")
-    fun update_time(@Field("hash") hash: String?): Single<BaseResponse<Int>>
+    fun update_time(hash: String?): Single<BaseResponse<Int>> {
+        return rest.request("update_time", form("hash" to hash), baseInt)
+    }
 
-    @FormUrlEncoded
-    @POST("delete_media")
-    fun delete_media(@Field("hash") hash: String?): Single<BaseResponse<Int>>
+    fun delete_media(hash: String?): Single<BaseResponse<Int>> {
+        return rest.request("delete_media", form("hash" to hash), baseInt)
+    }
 
-    @FormUrlEncoded
-    @POST("get_file_name")
-    fun get_file_name(@Field("hash") hash: String?): Single<BaseResponse<String>>
+    fun get_file_name(hash: String?): Single<BaseResponse<String>> {
+        return rest.request("get_file_name", form("hash" to hash), baseString)
+    }
 
-    @FormUrlEncoded
-    @POST("update_file_name")
     fun update_file_name(
-        @Field("hash") hash: String?,
-        @Field("name") name: String?
-    ): Single<BaseResponse<Int>>
+        hash: String?,
+        name: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "update_file_name", form(
+                "hash" to hash,
+                "name" to name
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fs.get")
     fun fsGet(
-        @Field("dir") dir: String?
-    ): Single<BaseResponse<Items<FileRemote>>>
+        dir: String?
+    ): Single<BaseResponse<Items<FileRemote>>> {
+        return rest.request("fs.get", form("dir" to dir), items(FileRemote.serializer()))
+    }
 
-    @FormUrlEncoded
-    @POST("rebootPC")
     fun rebootPC(
-        @Field("type") type: String?
-    ): Single<BaseResponse<Int>>
+        type: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request("rebootPC", form("type" to type), baseInt)
+    }
 
-    @Multipart
-    @POST
     fun remotePlayAudioRx(
-        @Url server: String?,
-        @Part file: MultipartBody.Part
-    ): Single<BaseResponse<Int>>
+        server: String,
+        file: MultipartBody.Part
+    ): Single<BaseResponse<Int>> {
+        return rest.doMultipartFormFullUrl(server, file, baseInt)
+    }
 }

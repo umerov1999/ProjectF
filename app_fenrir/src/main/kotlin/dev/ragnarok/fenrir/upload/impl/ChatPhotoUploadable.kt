@@ -38,7 +38,11 @@ class ChatPhotoUploadable(private val context: Context, private val networker: I
             try {
                 `is` = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 networker.uploads()
-                    .uploadChatPhotoRx(server.url, `is`!!, listener)
+                    .uploadChatPhotoRx(
+                        server.url ?: throw NotFoundException("upload url empty"),
+                        `is`!!,
+                        listener
+                    )
                     .doFinally { safelyClose(`is`) }
                     .flatMap { dto ->
                         networker.vkDefault(accountId)

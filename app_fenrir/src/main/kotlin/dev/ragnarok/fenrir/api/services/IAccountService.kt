@@ -5,28 +5,30 @@ import dev.ragnarok.fenrir.api.model.RefreshToken
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfoResponse
 import dev.ragnarok.fenrir.api.model.response.*
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.POST
 
-interface IAccountService {
-    @POST("account.ban")
-    @FormUrlEncoded
-    fun ban(@Field("owner_id") owner_id: Int): Single<BaseResponse<Int>>
+class IAccountService : IServiceRest() {
+    fun ban(owner_id: Int): Single<BaseResponse<Int>> {
+        return rest.request("account.ban", form("owner_id" to owner_id), baseInt)
+    }
 
-    @POST("account.unban")
-    @FormUrlEncoded
-    fun unban(@Field("owner_id") owner_id: Int): Single<BaseResponse<Int>>
+    fun unban(owner_id: Int): Single<BaseResponse<Int>> {
+        return rest.request("account.unban", form("owner_id" to owner_id), baseInt)
+    }
 
-    @POST("account.getBanned")
-    @FormUrlEncoded
     fun getBanned(
-        @Field("count") count: Int?,
-        @Field("offset") offset: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<AccountsBannedResponse>>
+        count: Int?,
+        offset: Int?,
+        fields: String?
+    ): Single<BaseResponse<AccountsBannedResponse>> {
+        return rest.request(
+            "account.getBanned",
+            form("count" to count, "offset" to offset, "fields" to fields),
+            base(AccountsBannedResponse.serializer())
+        )
+    }
+
     //https://vk.com/dev/account.getCounters
     /**
      * @param filter friends — новые заявки в друзья;
@@ -41,81 +43,131 @@ interface IAccountService {
      * sdk — запросы в мобильных играх;
      * app_requests — уведомления от приложений.
      */
-    @POST("account.getCounters")
-    @FormUrlEncoded
-    fun getCounters(@Field("filter") filter: String?): Single<BaseResponse<CountersDto>>
+    fun getCounters(filter: String?): Single<BaseResponse<CountersDto>> {
+        return rest.request(
+            "account.getCounters",
+            form("filter" to filter),
+            base(CountersDto.serializer())
+        )
+    }
 
     //https://vk.com/dev/account.unregisterDevice
-    @FormUrlEncoded
-    @POST("account.unregisterDevice")
-    fun unregisterDevice(@Field("device_id") deviceId: String?): Single<BaseResponse<Int>>
+    fun unregisterDevice(deviceId: String?): Single<BaseResponse<Int>> {
+        return rest.request("account.unregisterDevice", form("device_id" to deviceId), baseInt)
+    }
 
     //https://vk.com/dev/account.registerDevice
-    @FormUrlEncoded
-    @POST("account.registerDevice")
     fun registerDevice(
-        @Field("token") token: String?,
-        @Field("pushes_granted") pushes_granted: Int?,
-        @Field("app_version") app_version: String?,
-        @Field("push_provider") push_provider: String?,
-        @Field("companion_apps") companion_apps: String?,
-        @Field("type") type: Int?,
-        @Field("device_model") deviceModel: String?,
-        @Field("device_id") deviceId: String?,
-        @Field("system_version") systemVersion: String?,
-        @Field("settings") settings: String?
-    ): Single<BaseResponse<Int>>
+        token: String?,
+        pushes_granted: Int?,
+        app_version: String?,
+        push_provider: String?,
+        companion_apps: String?,
+        type: Int?,
+        deviceModel: String?,
+        deviceId: String?,
+        systemVersion: String?,
+        settings: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "account.registerDevice",
+            form(
+                "token" to token,
+                "pushes_granted" to pushes_granted,
+                "app_version" to app_version,
+                "push_provider" to push_provider,
+                "companion_apps" to companion_apps,
+                "type" to type,
+                "device_model" to deviceModel,
+                "device_id" to deviceId,
+                "system_version" to systemVersion,
+                "settings" to settings
+            ), baseInt
+        )
+    }
 
     /**
      * Marks a current user as offline.
      *
      * @return In case of success returns 1.
      */
-    @GET("account.setOffline")
-    fun setOffline(): Single<BaseResponse<Int>>
+    val setOffline: Single<BaseResponse<Int>>
+        get() = rest.request("account.setOffline", null, baseInt)
 
-    @get:GET("account.getProfileInfo")
     val profileInfo: Single<BaseResponse<VKApiProfileInfo>>
+        get() = rest.request("account.getProfileInfo", null, base(VKApiProfileInfo.serializer()))
 
-    @get:GET("account.getPushSettings")
     val pushSettings: Single<BaseResponse<PushSettingsResponse>>
+        get() = rest.request(
+            "account.getPushSettings",
+            null,
+            base(PushSettingsResponse.serializer())
+        )
 
-    @FormUrlEncoded
-    @POST("account.saveProfileInfo")
     fun saveProfileInfo(
-        @Field("first_name") first_name: String?,
-        @Field("last_name") last_name: String?,
-        @Field("maiden_name") maiden_name: String?,
-        @Field("screen_name") screen_name: String?,
-        @Field("bdate") bdate: String?,
-        @Field("home_town") home_town: String?,
-        @Field("sex") sex: Int?
-    ): Single<BaseResponse<VKApiProfileInfoResponse>>
+        first_name: String?,
+        last_name: String?,
+        maiden_name: String?,
+        screen_name: String?,
+        bdate: String?,
+        home_town: String?,
+        sex: Int?
+    ): Single<BaseResponse<VKApiProfileInfoResponse>> {
+        return rest.request(
+            "account.saveProfileInfo",
+            form(
+                "first_name" to first_name,
+                "last_name" to last_name,
+                "maiden_name" to maiden_name,
+                "screen_name" to screen_name,
+                "bdate" to bdate,
+                "home_town" to home_town,
+                "sex" to sex
+            ), base(VKApiProfileInfoResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("auth.refreshToken")
     fun refreshToken(
-        @Field("receipt") receipt: String?,
-        @Field("receipt2") receipt2: String?,
-        @Field("nonce") nonce: String?,
-        @Field("timestamp") timestamp: Long?
-    ): Single<BaseResponse<RefreshToken>>
+        receipt: String?,
+        receipt2: String?,
+        nonce: String?,
+        timestamp: Long?
+    ): Single<BaseResponse<RefreshToken>> {
+        return rest.request(
+            "auth.refreshToken",
+            form(
+                "receipt" to receipt,
+                "receipt2" to receipt2,
+                "nonce" to nonce,
+                "timestamp" to timestamp
+            ),
+            base(RefreshToken.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("account.importMessagesContacts")
+    val resetMessagesContacts: Single<BaseResponse<Int>>
+        get() = rest.request("account.resetMessagesContacts", null, baseInt)
+
     fun importMessagesContacts(
-        @Field("contacts") contacts: String?
-    ): Single<VkResponse>
+        contacts: String?
+    ): Single<VkResponse> {
+        return rest.request(
+            "account.importMessagesContacts",
+            form("contacts" to contacts),
+            VkResponse.serializer()
+        )
+    }
 
-    @GET("account.resetMessagesContacts")
-    fun resetMessagesContacts(): Single<BaseResponse<Int>>
-
-    @FormUrlEncoded
-    @POST("account.getContactList")
     fun getContactList(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<ContactsResponse>>
+        offset: Int?,
+        count: Int?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<ContactsResponse>> {
+        return rest.request(
+            "account.getContactList",
+            form("offset" to offset, "count" to count, "extended" to extended, "fields" to fields),
+            base(ContactsResponse.serializer())
+        )
+    }
 }

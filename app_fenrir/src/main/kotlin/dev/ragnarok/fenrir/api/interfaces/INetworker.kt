@@ -1,9 +1,9 @@
 package dev.ragnarok.fenrir.api.interfaces
 
-import dev.ragnarok.fenrir.api.IVkRetrofitProvider
+import dev.ragnarok.fenrir.api.IVkRestProvider
 
 interface INetworker {
-    fun getVkRetrofitProvider(): IVkRetrofitProvider
+    fun getVkRestProvider(): IVkRestProvider
     fun vkDefault(accountId: Int): IAccountApis
     fun vkManual(accountId: Int, accessToken: String): IAccountApis
     fun vkDirectAuth(): IAuthApi

@@ -42,7 +42,11 @@ class OwnerPhotoUploadable(
             try {
                 `is` = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 networker.uploads()
-                    .uploadOwnerPhotoRx(server.url, `is`!!, listener)
+                    .uploadOwnerPhotoRx(
+                        server.url ?: throw NotFoundException("upload url empty"),
+                        `is`!!,
+                        listener
+                    )
                     .doFinally { safelyClose(`is`) }
                     .flatMap { dto ->
                         networker.vkDefault(accountId)

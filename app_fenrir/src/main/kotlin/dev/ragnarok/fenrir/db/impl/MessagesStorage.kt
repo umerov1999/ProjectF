@@ -504,7 +504,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             if (count > 0) {
                 e.onComplete()
             } else {
-                e.onError(NotFoundException())
+                e.tryOnError(NotFoundException())
             }
         }
     }
@@ -550,7 +550,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             if (count > 0) {
                 e.onComplete()
             } else {
-                e.onError(NotFoundException())
+                e.tryOnError(NotFoundException())
             }
         }
     }

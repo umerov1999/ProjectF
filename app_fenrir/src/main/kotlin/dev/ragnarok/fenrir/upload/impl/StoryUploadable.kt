@@ -56,7 +56,7 @@ class StoryUploadable(private val context: Context, private val networker: INetw
                 val filename = UploadUtils.findFileName(context, uri)
                 return@flatMap networker.uploads()
                     .uploadStoryRx(
-                        server.url,
+                        server.url ?: throw NotFoundException("upload url empty"),
                         filename,
                         `is`,
                         listener,

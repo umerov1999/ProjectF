@@ -6,130 +6,225 @@ import dev.ragnarok.fenrir.api.model.VKApiVideoAlbum
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.SearchVideoResponse
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface IVideoService {
-    @FormUrlEncoded
-    @POST("video.getComments")
+class IVideoService : IServiceRest() {
     fun getComments(
-        @Field("owner_id") ownerId: Int?,
-        @Field("video_id") videoId: Int,
-        @Field("need_likes") needLikes: Int?,
-        @Field("start_comment_id") startCommentId: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("sort") sort: String?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<DefaultCommentsResponse>>
+        ownerId: Int?,
+        videoId: Int,
+        needLikes: Int?,
+        startCommentId: Int?,
+        offset: Int?,
+        count: Int?,
+        sort: String?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<DefaultCommentsResponse>> {
+        return rest.request(
+            "video.getComments", form(
+                "owner_id" to ownerId,
+                "video_id" to videoId,
+                "need_likes" to needLikes,
+                "start_comment_id" to startCommentId,
+                "offset" to offset,
+                "count" to count,
+                "sort" to sort,
+                "extended" to extended,
+                "fields" to fields
+            ), base(DefaultCommentsResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.add")
     fun addVideo(
-        @Field("target_id") targetId: Int?,
-        @Field("video_id") videoId: Int?,
-        @Field("owner_id") ownerId: Int?
-    ): Single<BaseResponse<Int>>
+        targetId: Int?,
+        videoId: Int?,
+        ownerId: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "video.add", form(
+                "target_id" to targetId,
+                "video_id" to videoId,
+                "owner_id" to ownerId
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.delete")
     fun deleteVideo(
-        @Field("video_id") videoId: Int?,
-        @Field("owner_id") ownerId: Int?,
-        @Field("target_id") targetId: Int?
-    ): Single<BaseResponse<Int>>
+        videoId: Int?,
+        ownerId: Int?,
+        targetId: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "video.delete", form(
+                "video_id" to videoId,
+                "owner_id" to ownerId,
+                "target_id" to targetId
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.getAlbums")
     fun getAlbums(
-        @Field("owner_id") ownerId: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("extended") extended: Int?,
-        @Field("need_system") needSystem: Int?
-    ): Single<BaseResponse<Items<VKApiVideoAlbum>>>
+        ownerId: Int?,
+        offset: Int?,
+        count: Int?,
+        extended: Int?,
+        needSystem: Int?
+    ): Single<BaseResponse<Items<VKApiVideoAlbum>>> {
+        return rest.request(
+            "video.getAlbums", form(
+                "owner_id" to ownerId,
+                "offset" to offset,
+                "count" to count,
+                "extended" to extended,
+                "need_system" to needSystem
+            ), items(VKApiVideoAlbum.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.getAlbumsByVideo")
     fun getAlbumsByVideo(
-        @Field("target_id") target_id: Int?,
-        @Field("owner_id") owner_id: Int?,
-        @Field("video_id") video_id: Int?,
-        @Field("extended") extended: Int?
-    ): Single<BaseResponse<Items<VKApiVideoAlbum>>>
+        target_id: Int?,
+        owner_id: Int?,
+        video_id: Int?,
+        extended: Int?
+    ): Single<BaseResponse<Items<VKApiVideoAlbum>>> {
+        return rest.request(
+            "video.getAlbumsByVideo", form(
+                "target_id" to target_id,
+                "owner_id" to owner_id,
+                "video_id" to video_id,
+                "extended" to extended
+            ), items(VKApiVideoAlbum.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.search")
     fun search(
-        @Field("q") query: String?,
-        @Field("sort") sort: Int?,
-        @Field("hd") hd: Int?,
-        @Field("adult") adult: Int?,
-        @Field("filters") filters: String?,
-        @Field("search_own") searchOwn: Int?,
-        @Field("offset") offset: Int?,
-        @Field("longer") longer: Int?,
-        @Field("shorter") shorter: Int?,
-        @Field("count") count: Int?,
-        @Field("extended") extended: Int?
-    ): Single<BaseResponse<SearchVideoResponse>>
+        query: String?,
+        sort: Int?,
+        hd: Int?,
+        adult: Int?,
+        filters: String?,
+        searchOwn: Int?,
+        offset: Int?,
+        longer: Int?,
+        shorter: Int?,
+        count: Int?,
+        extended: Int?
+    ): Single<BaseResponse<SearchVideoResponse>> {
+        return rest.request(
+            "video.search", form(
+                "q" to query,
+                "sort" to sort,
+                "hd" to hd,
+                "adult" to adult,
+                "filters" to filters,
+                "search_own" to searchOwn,
+                "offset" to offset,
+                "longer" to longer,
+                "shorter" to shorter,
+                "count" to count,
+                "extended" to extended
+            ), base(SearchVideoResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.restoreComment")
     fun restoreComment(
-        @Field("owner_id") ownerId: Int?,
-        @Field("comment_id") commentId: Int
-    ): Single<BaseResponse<Int>>
+        ownerId: Int?,
+        commentId: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "video.restoreComment", form(
+                "owner_id" to ownerId,
+                "comment_id" to commentId
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.deleteComment")
     fun deleteComment(
-        @Field("owner_id") ownerId: Int?,
-        @Field("comment_id") commentId: Int
-    ): Single<BaseResponse<Int>>
+        ownerId: Int?,
+        commentId: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "video.deleteComment", form(
+                "owner_id" to ownerId,
+                "comment_id" to commentId
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.get")
     operator fun get(
-        @Field("owner_id") ownerId: Int?,
-        @Field("videos") videos: String?,
-        @Field("album_id") albumId: Int?,
-        @Field("count") count: Int?,
-        @Field("offset") offset: Int?,
-        @Field("extended") extended: Int?
-    ): Single<BaseResponse<Items<VKApiVideo>>>
+        ownerId: Int?,
+        videos: String?,
+        albumId: Int?,
+        count: Int?,
+        offset: Int?,
+        extended: Int?
+    ): Single<BaseResponse<Items<VKApiVideo>>> {
+        return rest.request(
+            "video.get", form(
+                "owner_id" to ownerId,
+                "videos" to videos,
+                "album_id" to albumId,
+                "count" to count,
+                "offset" to offset,
+                "extended" to extended
+            ), items(VKApiVideo.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.createComment")
     fun createComment(
-        @Field("owner_id") ownerId: Int?,
-        @Field("video_id") videoId: Int,
-        @Field("message") message: String?,
-        @Field("attachments") attachments: String?,
-        @Field("from_group") fromGroup: Int?,
-        @Field("reply_to_comment") replyToComment: Int?,
-        @Field("sticker_id") stickerId: Int?,
-        @Field("guid") uniqueGeneratedId: Int?
-    ): Single<BaseResponse<Int>>
+        ownerId: Int?,
+        videoId: Int,
+        message: String?,
+        attachments: String?,
+        fromGroup: Int?,
+        replyToComment: Int?,
+        stickerId: Int?,
+        uniqueGeneratedId: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "video.createComment", form(
+                "owner_id" to ownerId,
+                "video_id" to videoId,
+                "message" to message,
+                "attachments" to attachments,
+                "from_group" to fromGroup,
+                "reply_to_comment" to replyToComment,
+                "sticker_id" to stickerId,
+                "guid" to uniqueGeneratedId
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.editComment")
     fun editComment(
-        @Field("owner_id") ownerId: Int?,
-        @Field("comment_id") commentId: Int,
-        @Field("message") message: String?,
-        @Field("attachments") attachments: String?
-    ): Single<BaseResponse<Int>>
+        ownerId: Int?,
+        commentId: Int,
+        message: String?,
+        attachments: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "video.editComment", form(
+                "owner_id" to ownerId,
+                "comment_id" to commentId,
+                "message" to message,
+                "attachments" to attachments
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("video.edit")
     fun edit(
-        @Field("owner_id") ownerId: Int?,
-        @Field("video_id") video_id: Int,
-        @Field("name") name: String?,
-        @Field("desc") desc: String?
-    ): Single<BaseResponse<Int>>
+        ownerId: Int?,
+        video_id: Int,
+        name: String?,
+        desc: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "video.edit", form(
+                "owner_id" to ownerId,
+                "video_id" to video_id,
+                "name" to name,
+                "desc" to desc
+            ), baseInt
+        )
+    }
 }

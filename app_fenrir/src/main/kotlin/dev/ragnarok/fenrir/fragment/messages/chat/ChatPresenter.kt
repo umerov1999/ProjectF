@@ -2195,7 +2195,7 @@ class ChatPresenter(
                         sInput[0] = FileInputStream(file)
                         return@flatMap Includes.networkInterfaces.uploads()
                             .uploadDocumentRx(
-                                server.url,
+                                server.url ?: throw NotFoundException("upload url empty"),
                                 if (filePath.isAnimated) filePath.animationName else file.name,
                                 sInput[0]!!,
                                 null

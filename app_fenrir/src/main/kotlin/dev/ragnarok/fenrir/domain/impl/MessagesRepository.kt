@@ -534,7 +534,7 @@ class MessagesRepository(
             val resp = b?.let { kJson.decodeFromStream(ChatJsonResponse.serializer(), it) }
             b?.close()
             if (resp == null || resp.page_title.isNullOrEmpty()) {
-                its.onError(Throwable("parsing error"))
+                its.tryOnError(Throwable("parsing error"))
                 return@create
             }
             val ids = VKOwnIds().append(resp.messages)
@@ -1577,7 +1577,12 @@ class MessagesRepository(
                     try {
                         `is`[0] = FileInputStream(file)
                         return@flatMap networker.uploads()
-                            .uploadDocumentRx(server.url, file.name, `is`[0]!!, null)
+                            .uploadDocumentRx(
+                                server.url ?: throw NotFoundException("upload url empty"),
+                                file.name,
+                                `is`[0]!!,
+                                null
+                            )
                             .doFinally(safelyCloseAction(`is`[0]))
                             .flatMap { uploadDto ->
                                 docsApi

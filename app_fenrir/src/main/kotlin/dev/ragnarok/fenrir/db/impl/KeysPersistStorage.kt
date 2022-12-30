@@ -34,7 +34,7 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
             val alreaadyExist = findKeyPairFor(pair.accountId, pair.sessionId)
                 .blockingGet()
             if (alreaadyExist != null) {
-                e.onError(DatabaseException("Key pair with the session ID is already in the database"))
+                e.tryOnError(DatabaseException("Key pair with the session ID is already in the database"))
                 return@create
             }
             val cv = ContentValues()

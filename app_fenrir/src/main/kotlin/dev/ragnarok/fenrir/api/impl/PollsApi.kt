@@ -22,7 +22,7 @@ internal class PollsApi(accountId: Int, provider: IServiceProvider) :
         ownerId: Int,
         addAnswers: List<String>
     ): Single<VKApiPoll> {
-        return provideService(IPollsService::class.java, TokenType.USER)
+        return provideService(IPollsService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .create(
@@ -42,7 +42,7 @@ internal class PollsApi(accountId: Int, provider: IServiceProvider) :
         answerId: Long,
         isBoard: Boolean?
     ): Single<Boolean> {
-        return provideService(IPollsService::class.java, TokenType.USER)
+        return provideService(IPollsService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteVote(ownerId, pollId, answerId, integerFromBoolean(isBoard))
                     .map(extractResponseWithErrorHandling())
@@ -56,7 +56,7 @@ internal class PollsApi(accountId: Int, provider: IServiceProvider) :
         answerIds: Set<Long>,
         isBoard: Boolean?
     ): Single<Boolean> {
-        return provideService(IPollsService::class.java, TokenType.USER)
+        return provideService(IPollsService(), TokenType.USER)
             .flatMap { service ->
                 service.addVote(ownerId, pollId, join(answerIds, ","), integerFromBoolean(isBoard))
                     .map(extractResponseWithErrorHandling())
@@ -65,7 +65,7 @@ internal class PollsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getById(ownerId: Int, isBoard: Boolean?, pollId: Int): Single<VKApiPoll> {
-        return provideService(IPollsService::class.java, TokenType.USER)
+        return provideService(IPollsService(), TokenType.USER)
             .flatMap { service ->
                 service.getById(ownerId, integerFromBoolean(isBoard), pollId)
                     .map(extractResponseWithErrorHandling())
@@ -81,7 +81,7 @@ internal class PollsApi(accountId: Int, provider: IServiceProvider) :
         val ids = join(answer_ids, ",") { obj: Any -> obj.toString() } ?: return Single.just(
             emptyList()
         )
-        return provideService(IPollsService::class.java, TokenType.USER)
+        return provideService(IPollsService(), TokenType.USER)
             .flatMap { service ->
                 service.getVoters(
                     ownerId,

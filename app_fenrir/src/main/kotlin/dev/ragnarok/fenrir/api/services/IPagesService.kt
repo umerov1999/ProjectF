@@ -2,22 +2,30 @@ package dev.ragnarok.fenrir.api.services
 
 import dev.ragnarok.fenrir.api.model.VKApiWikiPage
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface IPagesService {
+class IPagesService : IServiceRest() {
     //https://vk.com/dev/pages.get
-    @FormUrlEncoded
-    @POST("pages.get")
     operator fun get(
-        @Field("owner_id") ownerId: Int,
-        @Field("page_id") pageId: Int,
-        @Field("global") global: Int?,
-        @Field("site_preview") sitePreview: Int?,
-        @Field("title") title: String?,
-        @Field("need_source") needSource: Int?,
-        @Field("need_html") needHtml: Int?
-    ): Single<BaseResponse<VKApiWikiPage>>
+        ownerId: Int,
+        pageId: Int,
+        global: Int?,
+        sitePreview: Int?,
+        title: String?,
+        needSource: Int?,
+        needHtml: Int?
+    ): Single<BaseResponse<VKApiWikiPage>> {
+        return rest.request(
+            "pages.get", form(
+                "owner_id" to ownerId,
+                "page_id" to pageId,
+                "global" to global,
+                "site_preview" to sitePreview,
+                "title" to title,
+                "need_source" to needSource,
+                "need_html" to needHtml
+            ), base(VKApiWikiPage.serializer())
+        )
+    }
 }

@@ -1219,6 +1219,7 @@
     <string name="button_login_send_code_via_sms">Отправить код через SMS</string>
     <string name="error_not_found_message">Объект не найден</string>
     <string name="vk_servers_error">Сервера ВК упали (HTTP: %1$d)</string>
+    <string name="client_rest_shutdown">Запрос отменён</string>
     <string name="quick_search_title">Быстрый поиск</string>
     <string name="countries_title">Страны</string>
     <string name="message_channel">Сообщения</string>

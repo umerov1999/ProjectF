@@ -3,38 +3,64 @@ package dev.ragnarok.fenrir.api.services
 import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface IAuthService {
-    @FormUrlEncoded
-    @POST("token")
+class IAuthService : IServiceRest() {
     fun directLogin(
-        @Field("grant_type") grantType: String?,
-        @Field("client_id") clientId: Int,
-        @Field("client_secret") clientSecret: String?,
-        @Field("username") username: String?,
-        @Field("password") password: String?,
-        @Field("v") v: String?,
-        @Field("2fa_supported") twoFaSupported: Int?,
-        @Field("scope") scope: String?,
-        @Field("code") smscode: String?,
-        @Field("captcha_sid") captchaSid: String?,
-        @Field("captcha_key") captchaKey: String?,
-        @Field("force_sms") forceSms: Int?,
-        @Field("device_id") device_id: String?,
-        @Field("libverify_support") libverify_support: Int?
-    ): Single<LoginResponse>
+        grantType: String?,
+        clientId: Int,
+        clientSecret: String?,
+        username: String?,
+        password: String?,
+        v: String?,
+        twoFaSupported: Int?,
+        scope: String?,
+        smscode: String?,
+        captchaSid: String?,
+        captchaKey: String?,
+        forceSms: Int?,
+        device_id: String?,
+        libverify_support: Int?
+    ): Single<LoginResponse> {
+        return rest.request(
+            "token",
+            form(
+                "grant_type" to grantType,
+                "client_id" to clientId,
+                "client_secret" to clientSecret,
+                "username" to username,
+                "password" to password,
+                "v" to v,
+                "2fa_supported" to twoFaSupported,
+                "scope" to scope,
+                "code" to smscode,
+                "captcha_sid" to captchaSid,
+                "captcha_key" to captchaKey,
+                "force_sms" to forceSms,
+                "device_id" to device_id,
+                "libverify_support" to libverify_support
+            ), LoginResponse.serializer(), false
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("auth.validatePhone")
     fun validatePhone(
-        @Field("api_id") apiId: Int,
-        @Field("client_id") clientId: Int,
-        @Field("client_secret") clientSecret: String?,
-        @Field("sid") sid: String?,
-        @Field("v") v: String?
-    ): Single<BaseResponse<VKApiValidationResponse>>
+        apiId: Int,
+        clientId: Int,
+        clientSecret: String?,
+        sid: String?,
+        v: String?
+    ): Single<BaseResponse<VKApiValidationResponse>> {
+        return rest.request(
+            "auth.validatePhone",
+            form(
+                "api_id" to apiId,
+                "client_id" to clientId,
+                "client_secret" to clientSecret,
+                "sid" to sid,
+                "v" to v
+            ),
+            base(VKApiValidationResponse.serializer())
+        )
+    }
 }

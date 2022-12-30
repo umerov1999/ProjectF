@@ -4,172 +4,284 @@ import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.FavePageResponse
 import dev.ragnarok.fenrir.api.model.response.FavePostsResponse
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface IFaveService {
-    @FormUrlEncoded
-    @POST("fave.getPages")
+class IFaveService : IServiceRest() {
     fun getPages(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("type") type: String?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<Items<FavePageResponse>>>
+        offset: Int?,
+        count: Int?,
+        type: String?,
+        fields: String?
+    ): Single<BaseResponse<Items<FavePageResponse>>> {
+        return rest.request(
+            "fave.getPages", form(
+                "offset" to offset,
+                "count" to count,
+                "type" to type,
+                "fields" to fields
+            ), items(FavePageResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.get")
     fun getVideos(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("item_type") item_type: String?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<Items<VKApiAttachments.Entry>>>
+        offset: Int?,
+        count: Int?,
+        item_type: String?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<Items<VKApiAttachments.Entry>>> {
+        return rest.request(
+            "fave.get", form(
+                "offset" to offset,
+                "count" to count,
+                "item_type" to item_type,
+                "extended" to extended,
+                "fields" to fields
+            ), items(VKApiAttachments.Entry.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.get")
     fun getArticles(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("item_type") item_type: String?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<Items<VKApiAttachments.Entry>>>
+        offset: Int?,
+        count: Int?,
+        item_type: String?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<Items<VKApiAttachments.Entry>>> {
+        return rest.request(
+            "fave.get", form(
+                "offset" to offset,
+                "count" to count,
+                "item_type" to item_type,
+                "extended" to extended,
+                "fields" to fields
+            ), items(VKApiAttachments.Entry.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("articles.getOwnerPublished")
     fun getOwnerPublishedArticles(
-        @Field("owner_id") owner_id: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("sort_by") sort_by: String?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<Items<VKApiArticle>>>
+        owner_id: Int?,
+        offset: Int?,
+        count: Int?,
+        sort_by: String?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<Items<VKApiArticle>>> {
+        return rest.request(
+            "articles.getOwnerPublished", form(
+                "owner_id" to owner_id,
+                "offset" to offset,
+                "count" to count,
+                "sort_by" to sort_by,
+                "extended" to extended,
+                "fields" to fields
+            ), items(VKApiArticle.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.get")
     fun getPosts(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("item_type") item_type: String?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<FavePostsResponse>>
+        offset: Int?,
+        count: Int?,
+        item_type: String?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<FavePostsResponse>> {
+        return rest.request(
+            "fave.get", form(
+                "offset" to offset,
+                "count" to count,
+                "item_type" to item_type,
+                "extended" to extended,
+                "fields" to fields
+            ), base(FavePostsResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.get")
     fun getLinks(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("item_type") item_type: String?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<Items<FaveLinkDto>>>
+        offset: Int?,
+        count: Int?,
+        item_type: String?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<Items<FaveLinkDto>>> {
+        return rest.request(
+            "fave.get", form(
+                "offset" to offset,
+                "count" to count,
+                "item_type" to item_type,
+                "extended" to extended,
+                "fields" to fields
+            ), items(FaveLinkDto.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.get")
     fun getProducts(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("item_type") item_type: String?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<Items<VKApiAttachments.Entry>>>
+        offset: Int?,
+        count: Int?,
+        item_type: String?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<Items<VKApiAttachments.Entry>>> {
+        return rest.request(
+            "fave.get", form(
+                "offset" to offset,
+                "count" to count,
+                "item_type" to item_type,
+                "extended" to extended,
+                "fields" to fields
+            ), items(VKApiAttachments.Entry.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.getPhotos")
     fun getPhotos(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiPhoto>>>
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiPhoto>>> {
+        return rest.request(
+            "fave.getPhotos", form(
+                "offset" to offset,
+                "count" to count
+            ), items(VKApiPhoto.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.addLink")
-    fun addLink(@Field("link") link: String?): Single<BaseResponse<Int>>
+    fun addLink(link: String?): Single<BaseResponse<Int>> {
+        return rest.request("fave.addLink", form("link" to link), baseInt)
+    }
 
-    @FormUrlEncoded
-    @POST("fave.addPage")
     fun addPage(
-        @Field("user_id") userId: Int?,
-        @Field("group_id") groupId: Int?
-    ): Single<BaseResponse<Int>>
+        userId: Int?,
+        groupId: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "fave.addPage", form(
+                "user_id" to userId,
+                "group_id" to groupId
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.addVideo")
     fun addVideo(
-        @Field("owner_id") owner_id: Int?,
-        @Field("id") id: Int?,
-        @Field("access_key") access_key: String?
-    ): Single<BaseResponse<Int>>
+        owner_id: Int?,
+        id: Int?,
+        access_key: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "fave.addVideo", form(
+                "owner_id" to owner_id,
+                "id" to id,
+                "access_key" to access_key
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.addArticle")
-    fun addArticle(@Field("url") url: String?): Single<BaseResponse<Int>>
+    fun addArticle(url: String?): Single<BaseResponse<Int>> {
+        return rest.request("fave.addArticle", form("url" to url), baseInt)
+    }
 
-    @FormUrlEncoded
-    @POST("fave.addProduct")
     fun addProduct(
-        @Field("id") id: Int,
-        @Field("owner_id") owner_id: Int,
-        @Field("access_key") access_key: String?
-    ): Single<BaseResponse<Int>>
+        id: Int,
+        owner_id: Int,
+        access_key: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "fave.addProduct", form(
+                "id" to id,
+                "owner_id" to owner_id,
+                "access_key" to access_key
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.addPost")
     fun addPost(
-        @Field("owner_id") owner_id: Int?,
-        @Field("id") id: Int?,
-        @Field("access_key") access_key: String?
-    ): Single<BaseResponse<Int>>
+        owner_id: Int?,
+        id: Int?,
+        access_key: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "fave.addPost", form(
+                "owner_id" to owner_id,
+                "id" to id,
+                "access_key" to access_key
+            ), baseInt
+        )
+    }
 
     //https://vk.com/dev/fave.removePage
-    @FormUrlEncoded
-    @POST("fave.removePage")
     fun removePage(
-        @Field("user_id") userId: Int?,
-        @Field("group_id") groupId: Int?
-    ): Single<BaseResponse<Int>>
+        userId: Int?,
+        groupId: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "fave.removePage", form(
+                "user_id" to userId,
+                "group_id" to groupId
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.removeLink")
-    fun removeLink(@Field("link_id") linkId: String?): Single<BaseResponse<Int>>
+    fun removeLink(linkId: String?): Single<BaseResponse<Int>> {
+        return rest.request("fave.removeLink", form("link_id" to linkId), baseInt)
+    }
 
-    @FormUrlEncoded
-    @POST("fave.removeArticle")
     fun removeArticle(
-        @Field("owner_id") owner_id: Int?,
-        @Field("article_id") article_id: Int?
-    ): Single<BaseResponse<Int>>
+        owner_id: Int?,
+        article_id: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "fave.removeArticle", form(
+                "owner_id" to owner_id,
+                "article_id" to article_id
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.removeProduct")
     fun removeProduct(
-        @Field("id") id: Int?,
-        @Field("owner_id") owner_id: Int?
-    ): Single<BaseResponse<Int>>
+        id: Int?,
+        owner_id: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "fave.removeProduct", form(
+                "id" to id,
+                "owner_id" to owner_id
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.removePost")
     fun removePost(
-        @Field("owner_id") owner_id: Int?,
-        @Field("id") id: Int?
-    ): Single<BaseResponse<Int>>
+        owner_id: Int?,
+        id: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "fave.removePost", form(
+                "owner_id" to owner_id,
+                "id" to id
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("fave.removeVideo")
     fun removeVideo(
-        @Field("owner_id") owner_id: Int?,
-        @Field("id") id: Int?
-    ): Single<BaseResponse<Int>>
+        owner_id: Int?,
+        id: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "fave.removeVideo", form(
+                "owner_id" to owner_id,
+                "id" to id
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("execute")
     fun pushFirst(
-        @Field("code") code: String?,
-        @Field("owner_id") ownerId: Int
-    ): Single<BaseResponse<Int>>
+        code: String?,
+        ownerId: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "execute", form(
+                "code" to code,
+                "owner_id" to ownerId
+            ), baseInt
+        )
+    }
 }

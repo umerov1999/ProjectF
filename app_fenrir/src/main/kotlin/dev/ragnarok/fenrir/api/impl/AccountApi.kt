@@ -14,7 +14,7 @@ import io.reactivex.rxjava3.core.Single
 internal class AccountApi(accountId: Int, provider: IServiceProvider) :
     AbsApi(accountId, provider), IAccountApi {
     override fun ban(ownerId: Int): Single<Int> {
-        return provideService(IAccountService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IAccountService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
                     .ban(ownerId)
@@ -23,7 +23,7 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun unban(ownerId: Int): Single<Int> {
-        return provideService(IAccountService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IAccountService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
                     .unban(ownerId)
@@ -36,7 +36,7 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         fields: String?
     ): Single<AccountsBannedResponse> {
-        return provideService(IAccountService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IAccountService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
                     .getBanned(count, offset, fields)
@@ -45,7 +45,7 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun unregisterDevice(deviceId: String?): Single<Boolean> {
-        return provideService(IAccountService::class.java, TokenType.USER)
+        return provideService(IAccountService(), TokenType.USER)
             .flatMap { service ->
                 service.unregisterDevice(deviceId)
                     .map(extractResponseWithErrorHandling())
@@ -65,7 +65,7 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
         systemVersion: String?,
         settings: String?
     ): Single<Boolean> {
-        return provideService(IAccountService::class.java, TokenType.USER)
+        return provideService(IAccountService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .registerDevice(
@@ -86,24 +86,24 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun setOffline(): Single<Boolean> {
-        return provideService(IAccountService::class.java, TokenType.USER)
+        return provideService(IAccountService(), TokenType.USER)
             .flatMap { service ->
                 service
-                    .setOffline()
+                    .setOffline
                     .map(extractResponseWithErrorHandling())
                     .map { it == 1 }
             }
     }
 
     override val profileInfo: Single<VKApiProfileInfo>
-        get() = provideService(IAccountService::class.java, TokenType.USER)
+        get() = provideService(IAccountService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .profileInfo
                     .map(extractResponseWithErrorHandling())
             }
     override val pushSettings: Single<PushSettingsResponse>
-        get() = provideService(IAccountService::class.java, TokenType.USER)
+        get() = provideService(IAccountService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .pushSettings
@@ -119,7 +119,7 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
         home_town: String?,
         sex: Int?
     ): Single<VKApiProfileInfoResponse> {
-        return provideService(IAccountService::class.java, TokenType.USER)
+        return provideService(IAccountService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .saveProfileInfo(
@@ -136,7 +136,7 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getCounters(filter: String?): Single<CountersDto> {
-        return provideService(IAccountService::class.java, TokenType.USER)
+        return provideService(IAccountService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .getCounters(filter)
@@ -150,7 +150,7 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
         nonce: String?,
         timestamp: Long?
     ): Single<RefreshToken> {
-        return provideService(IAccountService::class.java, TokenType.USER)
+        return provideService(IAccountService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .refreshToken(receipt, receipt2, nonce, timestamp)
@@ -159,7 +159,7 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun importMessagesContacts(contacts: String?): Completable {
-        return provideService(IAccountService::class.java, TokenType.USER)
+        return provideService(IAccountService(), TokenType.USER)
             .flatMapCompletable { service ->
                 service
                     .importMessagesContacts(contacts)
@@ -168,7 +168,7 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getContactList(offset: Int?, count: Int?): Single<ContactsResponse> {
-        return provideService(IAccountService::class.java, TokenType.USER)
+        return provideService(IAccountService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .getContactList(offset, count, 1, VKApiUser.ALL_FIELDS)
@@ -177,10 +177,10 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun resetMessagesContacts(): Completable {
-        return provideService(IAccountService::class.java, TokenType.USER)
+        return provideService(IAccountService(), TokenType.USER)
             .flatMapCompletable { service ->
                 service
-                    .resetMessagesContacts()
+                    .resetMessagesContacts
                     .flatMapCompletable(checkResponseWithErrorHandling())
             }
     }

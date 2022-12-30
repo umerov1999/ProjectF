@@ -101,6 +101,7 @@ class App : Application() {
                 }, RxUtils.ignore())
         )
         RxJavaPlugins.setErrorHandler {
+            it.printStackTrace()
             Handler(mainLooper).post {
                 if (Settings.get().other().isDeveloper_mode) {
                     createCustomToast(this).showToastError(

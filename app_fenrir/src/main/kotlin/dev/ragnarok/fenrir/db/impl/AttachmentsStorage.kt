@@ -128,7 +128,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
             if (count > 0) {
                 e.onComplete()
             } else {
-                e.onError(NotFoundException())
+                e.tryOnError(NotFoundException())
             }
         }
     }

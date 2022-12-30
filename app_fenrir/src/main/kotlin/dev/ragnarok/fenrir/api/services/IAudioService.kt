@@ -4,78 +4,120 @@ import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.VKApiCatalogV2BlockResponse
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.VKApiCatalogV2ListResponse
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.VKApiCatalogV2SectionResponse
-import dev.ragnarok.fenrir.api.model.response.*
+import dev.ragnarok.fenrir.api.model.response.AddToPlaylistResponse
+import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.ServicePlaylistResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiAudioUploadServer
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
+import kotlinx.serialization.builtins.serializer
 
-interface IAudioService {
-    @FormUrlEncoded
-    @POST("audio.setBroadcast")
+class IAudioService : IServiceRest() {
     fun setBroadcast(
-        @Field("audio") audio: String?,
-        @Field("target_ids") targetIds: String?
-    ): Single<BaseResponse<List<Int>>>
+        audio: String?,
+        targetIds: String?
+    ): Single<BaseResponse<List<Int>>> {
+        return rest.request(
+            "audio.setBroadcast", form("audio" to audio, "target_ids" to targetIds), baseList(
+                Int.serializer()
+            )
+        )
+    }
 
     //https://vk.com/dev/audio.search
-    @FormUrlEncoded
-    @POST("audio.search")
     fun search(
-        @Field("q") query: String?,
-        @Field("auto_complete") autoComplete: Int?,
-        @Field("lyrics") lyrics: Int?,
-        @Field("performer_only") performerOnly: Int?,
-        @Field("sort") sort: Int?,
-        @Field("search_own") searchOwn: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiAudio>>>
+        query: String?,
+        autoComplete: Int?,
+        lyrics: Int?,
+        performerOnly: Int?,
+        sort: Int?,
+        searchOwn: Int?,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiAudio>>> {
+        return rest.request(
+            "audio.search",
+            form(
+                "q" to query,
+                "auto_complete" to autoComplete,
+                "lyrics" to lyrics,
+                "performer_only" to performerOnly,
+                "sort" to sort,
+                "search_own" to searchOwn,
+                "offset" to offset,
+                "count" to count
+            ), items(VKApiAudio.serializer())
+        )
+    }
 
     //https://vk.com/dev/audio.searchArtists
-    @FormUrlEncoded
-    @POST("audio.searchArtists")
     fun searchArtists(
-        @Field("q") query: String?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiArtist>>>
+        query: String?,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiArtist>>> {
+        return rest.request(
+            "audio.searchArtists",
+            form("q" to query, "offset" to offset, "count" to count),
+            items(VKApiArtist.serializer())
+        )
+    }
 
     //https://vk.com/dev/audio.searchPlaylists
-    @FormUrlEncoded
-    @POST("audio.searchPlaylists")
     fun searchPlaylists(
-        @Field("q") query: String?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiAudioPlaylist>>>
+        query: String?,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiAudioPlaylist>>> {
+        return rest.request(
+            "audio.searchPlaylists",
+            form("q" to query, "offset" to offset, "count" to count),
+            items(VKApiAudioPlaylist.serializer())
+        )
+    }
 
     //https://vk.com/dev/audio.restore
-    @FormUrlEncoded
-    @POST("audio.restore")
     fun restore(
-        @Field("audio_id") audioId: Int,
-        @Field("owner_id") ownerId: Int?
-    ): Single<BaseResponse<VKApiAudio>>
+        audioId: Int,
+        ownerId: Int?
+    ): Single<BaseResponse<VKApiAudio>> {
+        return rest.request(
+            "audio.restore",
+            form("audio_id" to audioId, "owner_id" to ownerId),
+            base(VKApiAudio.serializer())
+        )
+    }
 
     //https://vk.com/dev/audio.delete
-    @FormUrlEncoded
-    @POST("audio.delete")
     fun delete(
-        @Field("audio_id") audioId: Int,
-        @Field("owner_id") ownerId: Int
-    ): Single<BaseResponse<Int>>
+        audioId: Int,
+        ownerId: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "audio.delete",
+            form("audio_id" to audioId, "owner_id" to ownerId),
+            baseInt
+        )
+    }
 
     //https://vk.com/dev/audio.add
-    @FormUrlEncoded
-    @POST("audio.add")
     fun add(
-        @Field("audio_id") audioId: Int,
-        @Field("owner_id") ownerId: Int,
-        @Field("group_id") groupId: Int?,
-        @Field("access_key") accessKey: String?
-    ): Single<BaseResponse<Int>>
+        audioId: Int,
+        ownerId: Int,
+        groupId: Int?,
+        accessKey: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "audio.add",
+            form(
+                "audio_id" to audioId,
+                "owner_id" to ownerId,
+                "group_id" to groupId,
+                "access_key" to accessKey
+            ),
+            baseInt
+        )
+    }
 
     /**
      * Returns a list of audio files of a user or community.
@@ -88,213 +130,347 @@ interface IAudioService {
      * @return Returns the total results number in count field and an array of objects describing audio in items field.
      */
     //https://vk.com/dev/audio.get
-    @FormUrlEncoded
-    @POST("audio.get")
     operator fun get(
-        @Field("playlist_id") playlist_id: Int?,
-        @Field("owner_id") ownerId: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("access_key") accessKey: String?
-    ): Single<BaseResponse<Items<VKApiAudio>>>
+        playlist_id: Int?,
+        ownerId: Int?,
+        offset: Int?,
+        count: Int?,
+        accessKey: String?
+    ): Single<BaseResponse<Items<VKApiAudio>>> {
+        return rest.request(
+            "audio.get",
+            form(
+                "playlist_id" to playlist_id,
+                "owner_id" to ownerId,
+                "offset" to offset,
+                "count" to count,
+                "access_key" to accessKey
+            ), items(VKApiAudio.serializer())
+        )
+    }
 
     //https://vk.com/dev/audio.getAudiosByArtist
-    @FormUrlEncoded
-    @POST("audio.getAudiosByArtist")
     fun getAudiosByArtist(
-        @Field("artist_id") artist_id: String?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiAudio>>>
+        artist_id: String?,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiAudio>>> {
+        return rest.request(
+            "audio.getAudiosByArtist",
+            form("artist_id" to artist_id, "offset" to offset, "count" to count),
+            items(VKApiAudio.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.getPopular")
     fun getPopular(
-        @Field("only_eng") foreign: Int?,
-        @Field("genre_id") genre: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<List<VKApiAudio>>>
+        only_eng: Int?,
+        genre: Int?,
+        count: Int?
+    ): Single<BaseResponse<List<VKApiAudio>>> {
+        return rest.request(
+            "audio.getPopular",
+            form("only_eng" to only_eng, "genre_id" to genre, "count" to count),
+            baseList(VKApiAudio.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.getRecommendations")
     fun getRecommendations(
-        @Field("user_id") user_id: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiAudio>>>
+        user_id: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiAudio>>> {
+        return rest.request(
+            "audio.getRecommendations",
+            form("user_id" to user_id, "count" to count),
+            items(VKApiAudio.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.getRecommendations")
     fun getRecommendationsByAudio(
-        @Field("target_audio") audio: String?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiAudio>>>
+        audio: String?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiAudio>>> {
+        return rest.request(
+            "audio.getRecommendations",
+            form("target_audio" to audio, "count" to count),
+            items(VKApiAudio.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.getById")
-    fun getById(@Field("audios") audios: String?): Single<BaseResponse<List<VKApiAudio>>>
+    fun getById(audios: String?): Single<BaseResponse<List<VKApiAudio>>> {
+        return rest.request(
+            "audio.getById",
+            form("audios" to audios),
+            baseList(VKApiAudio.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.getById")
     fun getByIdVersioned(
-        @Field("audios") audios: String?,
-        @Field("v") version: String?
-    ): Single<BaseResponse<List<VKApiAudio>>>
+        audios: String?,
+        version: String?
+    ): Single<BaseResponse<List<VKApiAudio>>> {
+        return rest.request(
+            "audio.getById",
+            form("audios" to audios, "v" to version),
+            baseList(VKApiAudio.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.getLyrics")
-    fun getLyrics(@Field("lyrics_id") lyrics_id: Int): Single<BaseResponse<VKApiLyrics>>
+    fun getLyrics(lyrics_id: Int): Single<BaseResponse<VKApiLyrics>> {
+        return rest.request(
+            "audio.getLyrics",
+            form("lyrics_id" to lyrics_id),
+            base(VKApiLyrics.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.getPlaylists")
     fun getPlaylists(
-        @Field("owner_id") owner_id: Int,
-        @Field("offset") offset: Int,
-        @Field("count") count: Int
-    ): Single<BaseResponse<Items<VKApiAudioPlaylist>>>
+        owner_id: Int,
+        offset: Int,
+        count: Int
+    ): Single<BaseResponse<Items<VKApiAudioPlaylist>>> {
+        return rest.request(
+            "audio.getPlaylists",
+            form("owner_id" to owner_id, "offset" to offset, "count" to count),
+            items(VKApiAudioPlaylist.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("execute")
-    fun getPlaylistsCustom(@Field("code") code: String?): Single<ServicePlaylistResponse>
+    fun getPlaylistsCustom(code: String?): Single<ServicePlaylistResponse> {
+        return rest.request("execute", form("code" to code), ServicePlaylistResponse.serializer())
+    }
 
-    @FormUrlEncoded
-    @POST("audio.deletePlaylist")
     fun deletePlaylist(
-        @Field("playlist_id") playlist_id: Int,
-        @Field("owner_id") ownerId: Int
-    ): Single<BaseResponse<Int>>
+        playlist_id: Int,
+        ownerId: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "audio.deletePlaylist",
+            form("playlist_id" to playlist_id, "owner_id" to ownerId),
+            baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.followPlaylist")
     fun followPlaylist(
-        @Field("playlist_id") playlist_id: Int,
-        @Field("owner_id") ownerId: Int,
-        @Field("access_key") accessKey: String?
-    ): Single<BaseResponse<VKApiAudioPlaylist>>
+        playlist_id: Int,
+        ownerId: Int,
+        accessKey: String?
+    ): Single<BaseResponse<VKApiAudioPlaylist>> {
+        return rest.request(
+            "audio.followPlaylist",
+            form("playlist_id" to playlist_id, "owner_id" to ownerId, "access_key" to accessKey),
+            base(VKApiAudioPlaylist.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.savePlaylistAsCopy")
     fun clonePlaylist(
-        @Field("playlist_id") playlist_id: Int,
-        @Field("owner_id") ownerId: Int
-    ): Single<BaseResponse<VKApiAudioPlaylist>>
+        playlist_id: Int,
+        ownerId: Int
+    ): Single<BaseResponse<VKApiAudioPlaylist>> {
+        return rest.request(
+            "audio.savePlaylistAsCopy",
+            form("playlist_id" to playlist_id, "owner_id" to ownerId),
+            base(VKApiAudioPlaylist.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.getPlaylistById")
     fun getPlaylistById(
-        @Field("playlist_id") playlist_id: Int,
-        @Field("owner_id") ownerId: Int,
-        @Field("access_key") accessKey: String?
-    ): Single<BaseResponse<VKApiAudioPlaylist>>
+        playlist_id: Int,
+        ownerId: Int,
+        accessKey: String?
+    ): Single<BaseResponse<VKApiAudioPlaylist>> {
+        return rest.request(
+            "audio.getPlaylistById",
+            form("playlist_id" to playlist_id, "owner_id" to ownerId, "access_key" to accessKey),
+            base(VKApiAudioPlaylist.serializer())
+        )
+    }
 
-    @get:POST("audio.getUploadServer")
     val uploadServer: Single<BaseResponse<VKApiAudioUploadServer>>
+        get() = rest.request(
+            "audio.getUploadServer",
+            null,
+            base(VKApiAudioUploadServer.serializer())
+        )
 
-    @FormUrlEncoded
-    @POST("audio.save")
     fun save(
-        @Field("server") server: String?,
-        @Field("audio") audio: String?,
-        @Field("hash") hash: String?,
-        @Field("artist") artist: String?,
-        @Field("title") title: String?
-    ): Single<BaseResponse<VKApiAudio>>
+        server: String?,
+        audio: String?,
+        hash: String?,
+        artist: String?,
+        title: String?
+    ): Single<BaseResponse<VKApiAudio>> {
+        return rest.request(
+            "audio.save",
+            form(
+                "server" to server,
+                "audio" to audio,
+                "hash" to hash,
+                "artist" to artist,
+                "title" to title
+            ),
+            base(VKApiAudio.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.edit")
     fun edit(
-        @Field("owner_id") ownerId: Int,
-        @Field("audio_id") audioId: Int,
-        @Field("artist") artist: String?,
-        @Field("title") title: String?,
-        @Field("text") text: String?
-    ): Single<BaseResponse<Int>>
+        ownerId: Int,
+        audioId: Int,
+        artist: String?,
+        title: String?,
+        text: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "audio.edit",
+            form(
+                "owner_id" to ownerId,
+                "audio_id" to audioId,
+                "artist" to artist,
+                "title" to title,
+                "text" to text
+            ),
+            baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.createPlaylist")
     fun createPlaylist(
-        @Field("owner_id") ownerId: Int,
-        @Field("title") title: String?,
-        @Field("description") description: String?
-    ): Single<BaseResponse<VKApiAudioPlaylist>>
+        ownerId: Int,
+        title: String?,
+        description: String?
+    ): Single<BaseResponse<VKApiAudioPlaylist>> {
+        return rest.request(
+            "audio.createPlaylist",
+            form("owner_id" to ownerId, "title" to title, "description" to description),
+            base(VKApiAudioPlaylist.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.editPlaylist")
     fun editPlaylist(
-        @Field("owner_id") ownerId: Int,
-        @Field("playlist_id") playlist_id: Int,
-        @Field("title") title: String?,
-        @Field("description") description: String?
-    ): Single<BaseResponse<Int>>
+        ownerId: Int,
+        playlist_id: Int,
+        title: String?,
+        description: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "audio.editPlaylist",
+            form(
+                "owner_id" to ownerId,
+                "playlist_id" to playlist_id,
+                "title" to title,
+                "description" to description
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.removeFromPlaylist")
     fun removeFromPlaylist(
-        @Field("owner_id") ownerId: Int,
-        @Field("playlist_id") playlist_id: Int,
-        @Field("audio_ids") audio_ids: String?
-    ): Single<BaseResponse<Int>>
+        ownerId: Int,
+        playlist_id: Int,
+        audio_ids: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "audio.removeFromPlaylist",
+            form("owner_id" to ownerId, "playlist_id" to playlist_id, "audio_ids" to audio_ids),
+            baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.addToPlaylist")
     fun addToPlaylist(
-        @Field("owner_id") ownerId: Int,
-        @Field("playlist_id") playlist_id: Int,
-        @Field("audio_ids") audio_ids: String?
-    ): Single<BaseResponse<List<AddToPlaylistResponse>>>
+        ownerId: Int,
+        playlist_id: Int,
+        audio_ids: String?
+    ): Single<BaseResponse<List<AddToPlaylistResponse>>> {
+        return rest.request(
+            "audio.addToPlaylist",
+            form("owner_id" to ownerId, "playlist_id" to playlist_id, "audio_ids" to audio_ids),
+            baseList(AddToPlaylistResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.reorder")
     fun reorder(
-        @Field("owner_id") ownerId: Int,
-        @Field("audio_id") audio_id: Int,
-        @Field("before") before: Int?,
-        @Field("after") after: Int?
-    ): Single<BaseResponse<Int>>
+        ownerId: Int,
+        audio_id: Int,
+        before: Int?,
+        after: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "audio.reorder",
+            form(
+                "owner_id" to ownerId,
+                "audio_id" to audio_id,
+                "before" to before,
+                "after" to after
+            ),
+            baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("stats.trackEvents")
-    fun trackEvents(@Field("events") events: String?): Single<BaseResponse<Int>>
+    fun trackEvents(events: String?): Single<BaseResponse<Int>> {
+        return rest.request("stats.trackEvents", form("events" to events), baseInt)
+    }
 
-    @FormUrlEncoded
-    @POST("catalog.getAudio")
     fun getCatalogV2Sections(
-        @Field("owner_id") owner_id: Int,
-        @Field("need_blocks") need_blocks: Int,
-        @Field("url") url: String?
-    ): Single<BaseResponse<VKApiCatalogV2ListResponse>>
+        owner_id: Int,
+        need_blocks: Int,
+        url: String?
+    ): Single<BaseResponse<VKApiCatalogV2ListResponse>> {
+        return rest.request(
+            "catalog.getAudio",
+            form("owner_id" to owner_id, "need_blocks" to need_blocks, "url" to url),
+            base(VKApiCatalogV2ListResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("catalog.getAudioArtist")
     fun getCatalogV2Artist(
-        @Field("artist_id") artist_id: String,
-        @Field("need_blocks") need_blocks: Int
-    ): Single<BaseResponse<VKApiCatalogV2ListResponse>>
+        artist_id: String,
+        need_blocks: Int
+    ): Single<BaseResponse<VKApiCatalogV2ListResponse>> {
+        return rest.request(
+            "catalog.getAudioArtist",
+            form("artist_id" to artist_id, "need_blocks" to need_blocks),
+            base(VKApiCatalogV2ListResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("catalog.getSection")
     fun getCatalogV2Section(
-        @Field("section_id") section_id: String,
-        @Field("start_from") start_from: String?
-    ): Single<BaseResponse<VKApiCatalogV2SectionResponse>>
+        section_id: String,
+        start_from: String?
+    ): Single<BaseResponse<VKApiCatalogV2SectionResponse>> {
+        return rest.request(
+            "catalog.getSection",
+            form("section_id" to section_id, "start_from" to start_from),
+            base(VKApiCatalogV2SectionResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("catalog.getBlockItems")
     fun getCatalogV2BlockItems(
-        @Field("block_id") block_id: String,
-        @Field("start_from") start_from: String?
-    ): Single<BaseResponse<VKApiCatalogV2BlockResponse>>
+        block_id: String,
+        start_from: String?
+    ): Single<BaseResponse<VKApiCatalogV2BlockResponse>> {
+        return rest.request(
+            "catalog.getBlockItems",
+            form("block_id" to block_id, "start_from" to start_from),
+            base(VKApiCatalogV2BlockResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("catalog.getAudioSearch")
     fun getCatalogV2AudioSearch(
-        @Field("query") query: String?,
-        @Field("context") context: String?,
-        @Field("need_blocks") need_blocks: Int
-    ): Single<BaseResponse<VKApiCatalogV2ListResponse>>
+        query: String?,
+        context: String?,
+        need_blocks: Int
+    ): Single<BaseResponse<VKApiCatalogV2ListResponse>> {
+        return rest.request(
+            "catalog.getAudioSearch",
+            form("query" to query, "context" to context, "need_blocks" to need_blocks),
+            base(VKApiCatalogV2ListResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("audio.getArtistById")
     fun getArtistById(
-        @Field("artist_id") artist_id: String
-    ): Single<BaseResponse<ArtistInfo>>
+        artist_id: String
+    ): Single<BaseResponse<ArtistInfo>> {
+        return rest.request(
+            "audio.getArtistById",
+            form("artist_id" to artist_id),
+            base(ArtistInfo.serializer())
+        )
+    }
 }

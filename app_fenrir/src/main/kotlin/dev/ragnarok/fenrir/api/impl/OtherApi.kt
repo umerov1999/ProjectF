@@ -1,11 +1,11 @@
 package dev.ragnarok.fenrir.api.impl
 
-import dev.ragnarok.fenrir.api.IVkRetrofitProvider
+import dev.ragnarok.fenrir.api.IVkRestProvider
 import dev.ragnarok.fenrir.api.interfaces.IOtherApi
+import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
-import dev.ragnarok.fenrir.util.serializeble.retrofit.HttpCodeException
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import okhttp3.FormBody
@@ -13,7 +13,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 
-class OtherApi(private val accountId: Int, private val provider: IVkRetrofitProvider) : IOtherApi {
+class OtherApi(private val accountId: Int, private val provider: IVkRestProvider) : IOtherApi {
     override fun rawRequest(
         method: String,
         postParams: Map<String, String>
@@ -33,18 +33,18 @@ class OtherApi(private val accountId: Int, private val provider: IVkRetrofitProv
                             )
                             .post(bodyBuilder.build())
                             .build()
-                        val call = client.newCall(request)
+                        val call = client.build().newCall(request)
                         emitter.setCancellable { call.cancel() }
                         try {
                             val response = call.execute()
                             if (!response.isSuccessful) {
-                                emitter.onError(HttpCodeException(response.code))
+                                emitter.tryOnError(HttpException(response.code))
                             } else {
                                 emitter.onSuccess(response)
                             }
                             response.close()
                         } catch (e: Exception) {
-                            emitter.onError(e)
+                            emitter.tryOnError(e)
                         }
                     }
             }

@@ -22,7 +22,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
         fields: String?,
         nameCase: String?
     ): Single<VKApiUser> {
-        return provideService(IUsersService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IUsersService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getUserWallInfo(
@@ -65,7 +65,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
         fields: String?,
         nameCase: String?
     ): Single<Items<VKApiUser>> {
-        return provideService(IUsersService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IUsersService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service.getFollowers(userId, offset, count, fields, nameCase)
                     .map(extractResponseWithErrorHandling())
@@ -79,7 +79,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
         out: Int?,
         fields: String?
     ): Single<Items<VKApiUser>> {
-        return provideService(IUsersService::class.java, TokenType.USER)
+        return provideService(IUsersService(), TokenType.USER)
             .flatMap { service ->
                 service.getRequests(offset, count, extended, out, fields)
                     .map(extractResponseWithErrorHandling())
@@ -121,7 +121,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
         groupId: Int?,
         fromList: String?
     ): Single<Items<VKApiUser>> {
-        return provideService(IUsersService::class.java, TokenType.USER)
+        return provideService(IUsersService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .search(
@@ -164,7 +164,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun report(userId: Int?, type: String?, comment: String?): Single<Int> {
-        return provideService(IUsersService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
                     .report(userId, type, comment)
@@ -173,7 +173,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun checkAndAddFriend(userId: Int?): Single<Int> {
-        return provideService(IUsersService::class.java, TokenType.USER)
+        return provideService(IUsersService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .checkAndAddFriend(
@@ -185,7 +185,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getStory(owner_id: Int?, extended: Int?, fields: String?): Single<StoryResponse> {
-        return provideService(IUsersService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.getStory(owner_id, extended, fields)
                     .map(extractResponseWithErrorHandling())
@@ -197,7 +197,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiNarratives>> {
-        return provideService(IUsersService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.getNarratives(owner_id, offset, count)
                     .map(extractResponseWithErrorHandling())
@@ -210,7 +210,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
         fields: String?
     ): Single<StoryGetResponse> {
         val storyString = join(stories, ",") { AccessIdPair.format(it) }
-        return provideService(IUsersService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.getStoryById(storyString, extended, fields)
                     .map(extractResponseWithErrorHandling())
@@ -218,7 +218,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getGifts(user_id: Int?, count: Int?, offset: Int?): Single<Items<VKApiGift>> {
-        return provideService(IUsersService::class.java, TokenType.USER)
+        return provideService(IUsersService(), TokenType.USER)
             .flatMap { service ->
                 service.getGifts(user_id, count, offset)
                     .map(extractResponseWithErrorHandling())
@@ -232,7 +232,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
         extended: Int?,
         fields: String?
     ): Single<StoryResponse> {
-        return provideService(IUsersService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.searchStory(q, mentioned_id, count, extended, fields)
                     .map(extractResponseWithErrorHandling())
@@ -253,7 +253,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
             ids.add(join(domains, ","))
         }
         return provideService(
-            IUsersService::class.java,
+            IUsersService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE
@@ -265,7 +265,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun stories_getPhotoUploadServer(): Single<VKApiStoryUploadServer> {
-        return provideService(IUsersService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.stories_getPhotoUploadServer(1)
                     .map(extractResponseWithErrorHandling())
@@ -273,7 +273,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun stories_getVideoUploadServer(): Single<VKApiStoryUploadServer> {
-        return provideService(IUsersService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.stories_getVideoUploadServer(1)
                     .map(extractResponseWithErrorHandling())
@@ -281,7 +281,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun stories_save(upload_results: String?): Single<Items<VKApiStory>> {
-        return provideService(IUsersService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.stories_save(upload_results)
                     .map(extractResponseWithErrorHandling())

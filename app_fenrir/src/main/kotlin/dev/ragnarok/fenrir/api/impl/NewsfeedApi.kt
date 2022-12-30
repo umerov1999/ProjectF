@@ -17,7 +17,7 @@ import kotlin.math.abs
 internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
     AbsApi(accountId, provider), INewsfeedApi {
     override fun getLists(listIds: Collection<Int>?): Single<Items<VKApiFeedList>> {
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service.getLists(join(listIds, ","), 1)
                     .map(extractResponseWithErrorHandling())
@@ -25,7 +25,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun saveList(title: String?, listIds: Collection<Int>?): Single<Int> {
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service.saveList(title, join(listIds, ","))
                     .map(extractResponseWithErrorHandling())
@@ -42,7 +42,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
                 users.add(i)
             }
         }
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service.addBan(join(users, ","), join(groups, ","))
                     .map(extractResponseWithErrorHandling())
@@ -50,7 +50,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun deleteList(list_id: Int?): Single<Int> {
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteList(list_id)
                     .map(extractResponseWithErrorHandling())
@@ -58,7 +58,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun ignoreItem(type: String?, owner_id: Int?, item_id: Int?): Single<Int> {
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service.ignoreItem(type, owner_id, item_id)
                     .map(extractResponseWithErrorHandling())
@@ -76,7 +76,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
         startFrom: String?,
         fields: String?
     ): Single<NewsfeedSearchResponse> {
-        return provideService(INewsfeedService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(INewsfeedService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .search(
@@ -97,7 +97,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
         startFrom: String?,
         fields: String?
     ): Single<NewsfeedCommentsResponse> {
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .getComments(
@@ -122,7 +122,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
         startTime: Long?,
         endTime: Long?
     ): Single<NewsfeedCommentsResponse> {
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .getMentions(owner_id, count, offset, startTime, endTime)
@@ -135,7 +135,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
         endTime: Long?, maxPhotoCount: Int?, sourceIds: String?,
         startFrom: String?, count: Int?, fields: String?
     ): Single<NewsfeedResponse> {
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service[filters, integerFromBoolean(returnBanned), startTime, endTime, maxPhotoCount, sourceIds, startFrom, count, fields]
                     .map(extractResponseWithErrorHandling())
@@ -147,7 +147,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
         endTime: Long?, maxPhotoCount: Int?, sourceIds: String?,
         startFrom: String?, count: Int?, fields: String?
     ): Single<NewsfeedResponse> {
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service.getByType(
                     "top",
@@ -169,7 +169,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
         startTime: Long?, endTime: Long?,
         maxPhotoCount: Int?, startFrom: String?, count: Int?, fields: String?
     ): Single<NewsfeedResponse> {
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .getRecommended(
@@ -186,7 +186,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
         count: Int?,
         fields: String?
     ): Single<NewsfeedResponse> {
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .getFeedLikes(maxPhotoCount, startFrom, count, fields)
@@ -204,7 +204,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
                 users.add(i)
             }
         }
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteBan(join(users, ","), join(groups, ","))
                     .map(extractResponseWithErrorHandling())
@@ -212,7 +212,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getBanned(): Single<NewsfeedBanResponse> {
-        return provideService(INewsfeedService::class.java, TokenType.USER)
+        return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .getBanned(

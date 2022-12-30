@@ -6,80 +6,137 @@ import dev.ragnarok.fenrir.api.model.response.StoryGetResponse
 import dev.ragnarok.fenrir.api.model.response.StoryResponse
 import dev.ragnarok.fenrir.api.model.response.UserWallInfoResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiStoryUploadServer
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface IUsersService {
-    @FormUrlEncoded
-    @POST("execute")
+class IUsersService : IServiceRest() {
     fun getUserWallInfo(
-        @Field("code") code: String?,
-        @Field("user_id") userId: Int,
-        @Field("fields") fields: String?,
-        @Field("name_case") nameCase: String?
-    ): Single<BaseResponse<UserWallInfoResponse>>
+        code: String?,
+        userId: Int,
+        fields: String?,
+        nameCase: String?
+    ): Single<BaseResponse<UserWallInfoResponse>> {
+        return rest.request(
+            "execute", form(
+                "code" to code,
+                "user_id" to userId,
+                "fields" to fields,
+                "name_case" to nameCase
+            ), base(UserWallInfoResponse.serializer())
+        )
+    }
 
     //https://vk.com/dev/users.getFollowers
-    @FormUrlEncoded
-    @POST("users.getFollowers")
     fun getFollowers(
-        @Field("user_id") userId: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("fields") fields: String?,
-        @Field("name_case") nameCase: String?
-    ): Single<BaseResponse<Items<VKApiUser>>>
+        userId: Int?,
+        offset: Int?,
+        count: Int?,
+        fields: String?,
+        nameCase: String?
+    ): Single<BaseResponse<Items<VKApiUser>>> {
+        return rest.request(
+            "users.getFollowers", form(
+                "user_id" to userId,
+                "offset" to offset,
+                "count" to count,
+                "fields" to fields,
+                "name_case" to nameCase
+            ), items(VKApiUser.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("friends.getRequests")
     fun getRequests(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("extended") extended: Int?,
-        @Field("out") out: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<Items<VKApiUser>>>
+        offset: Int?,
+        count: Int?,
+        extended: Int?,
+        out: Int?,
+        fields: String?
+    ): Single<BaseResponse<Items<VKApiUser>>> {
+        return rest.request(
+            "friends.getRequests", form(
+                "offset" to offset,
+                "count" to count,
+                "extended" to extended,
+                "out" to out,
+                "fields" to fields
+            ), items(VKApiUser.serializer())
+        )
+    }
 
     //https://vk.com/dev/users.search
-    @FormUrlEncoded
-    @POST("users.search")
     fun search(
-        @Field("q") query: String?,
-        @Field("sort") sort: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("fields") fields: String?,
-        @Field("city") city: Int?,
-        @Field("country") country: Int?,
-        @Field("hometown") hometown: String?,
-        @Field("university_country") universityCountry: Int?,
-        @Field("university") university: Int?,
-        @Field("university_year") universityYear: Int?,
-        @Field("university_faculty") universityFaculty: Int?,
-        @Field("university_chair") universityChair: Int?,
-        @Field("sex") sex: Int?,
-        @Field("status") status: Int?,
-        @Field("age_from") ageFrom: Int?,
-        @Field("age_to") ageTo: Int?,
-        @Field("birth_day") birthDay: Int?,
-        @Field("birth_month") birthMonth: Int?,
-        @Field("birth_year") birthYear: Int?,
-        @Field("online") online: Int?,
-        @Field("has_photo") hasPhoto: Int?,
-        @Field("school_country") schoolCountry: Int?,
-        @Field("school_city") schoolCity: Int?,
-        @Field("school_class") schoolClass: Int?,
-        @Field("school") school: Int?,
-        @Field("school_year") schoolYear: Int?,
-        @Field("religion") religion: String?,
-        @Field("interests") interests: String?,
-        @Field("company") company: String?,
-        @Field("position") position: String?,
-        @Field("group_id") groupId: Int?,
-        @Field("from_list") fromList: String?
-    ): Single<BaseResponse<Items<VKApiUser>>>
+        query: String?,
+        sort: Int?,
+        offset: Int?,
+        count: Int?,
+        fields: String?,
+        city: Int?,
+        country: Int?,
+        hometown: String?,
+        universityCountry: Int?,
+        university: Int?,
+        universityYear: Int?,
+        universityFaculty: Int?,
+        universityChair: Int?,
+        sex: Int?,
+        status: Int?,
+        ageFrom: Int?,
+        ageTo: Int?,
+        birthDay: Int?,
+        birthMonth: Int?,
+        birthYear: Int?,
+        online: Int?,
+        hasPhoto: Int?,
+        schoolCountry: Int?,
+        schoolCity: Int?,
+        schoolClass: Int?,
+        school: Int?,
+        schoolYear: Int?,
+        religion: String?,
+        interests: String?,
+        company: String?,
+        position: String?,
+        groupId: Int?,
+        fromList: String?
+    ): Single<BaseResponse<Items<VKApiUser>>> {
+        return rest.request(
+            "users.search", form(
+                "q" to query,
+                "sort" to sort,
+                "offset" to offset,
+                "count" to count,
+                "fields" to fields,
+                "city" to city,
+                "country" to country,
+                "hometown" to hometown,
+                "university_country" to universityCountry,
+                "university" to university,
+                "university_year" to universityYear,
+                "university_faculty" to universityFaculty,
+                "university_chair" to universityChair,
+                "sex" to sex,
+                "status" to status,
+                "age_from" to ageFrom,
+                "age_to" to ageTo,
+                "birth_day" to birthDay,
+                "birth_month" to birthMonth,
+                "birth_year" to birthYear,
+                "online" to online,
+                "has_photo" to hasPhoto,
+                "school_country" to schoolCountry,
+                "school_city" to schoolCity,
+                "school_class" to schoolClass,
+                "school" to school,
+                "school_year" to schoolYear,
+                "religion" to religion,
+                "interests" to interests,
+                "company" to company,
+                "position" to position,
+                "group_id" to groupId,
+                "from_list" to fromList
+            ), items(VKApiUser.serializer())
+        )
+    }
 
     /**
      * Returns detailed information on users.
@@ -97,80 +154,141 @@ interface IUsersService {
      * @return Returns a list of user objects.
      * A deactivated field may be returned with the value deleted or banned if a user has been suspended.
      */
-    @FormUrlEncoded
-    @POST("users.get")
     operator fun get(
-        @Field("user_ids") userIds: String?,
-        @Field("fields") fields: String?,
-        @Field("name_case") nameCase: String?
-    ): Single<BaseResponse<List<VKApiUser>>>
+        userIds: String?,
+        fields: String?,
+        nameCase: String?
+    ): Single<BaseResponse<List<VKApiUser>>> {
+        return rest.request(
+            "users.get", form(
+                "user_ids" to userIds,
+                "fields" to fields,
+                "name_case" to nameCase
+            ), baseList(VKApiUser.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("stories.getPhotoUploadServer")
-    fun stories_getPhotoUploadServer(@Field("add_to_news") add_to_news: Int?): Single<BaseResponse<VKApiStoryUploadServer>>
+    fun stories_getPhotoUploadServer(add_to_news: Int?): Single<BaseResponse<VKApiStoryUploadServer>> {
+        return rest.request(
+            "stories.getPhotoUploadServer",
+            form("add_to_news" to add_to_news),
+            base(VKApiStoryUploadServer.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("stories.getVideoUploadServer")
-    fun stories_getVideoUploadServer(@Field("add_to_news") add_to_news: Int?): Single<BaseResponse<VKApiStoryUploadServer>>
+    fun stories_getVideoUploadServer(add_to_news: Int?): Single<BaseResponse<VKApiStoryUploadServer>> {
+        return rest.request(
+            "stories.getVideoUploadServer",
+            form("add_to_news" to add_to_news),
+            base(VKApiStoryUploadServer.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("stories.save")
-    fun stories_save(@Field("upload_results") upload_results: String?): Single<BaseResponse<Items<VKApiStory>>>
+    fun stories_save(upload_results: String?): Single<BaseResponse<Items<VKApiStory>>> {
+        return rest.request(
+            "stories.save",
+            form("upload_results" to upload_results),
+            items(VKApiStory.serializer())
+        )
+    }
 
-    @POST("users.report")
-    @FormUrlEncoded
     fun report(
-        @Field("user_id") userId: Int?,
-        @Field("type") type: String?,
-        @Field("comment") comment: String?
-    ): Single<BaseResponse<Int>>
+        userId: Int?,
+        type: String?,
+        comment: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "users.report", form(
+                "user_id" to userId,
+                "type" to type,
+                "comment" to comment
+            ), baseInt
+        )
+    }
 
-    @POST("stories.get")
-    @FormUrlEncoded
     fun getStory(
-        @Field("owner_id") owner_id: Int?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<StoryResponse>>
+        owner_id: Int?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<StoryResponse>> {
+        return rest.request(
+            "stories.get", form(
+                "owner_id" to owner_id,
+                "extended" to extended,
+                "fields" to fields
+            ), base(StoryResponse.serializer())
+        )
+    }
 
-    @POST("narratives.getFromOwner")
-    @FormUrlEncoded
     fun getNarratives(
-        @Field("owner_id") owner_id: Int,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiNarratives>>>
+        owner_id: Int,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiNarratives>>> {
+        return rest.request(
+            "narratives.getFromOwner", form(
+                "owner_id" to owner_id,
+                "offset" to offset,
+                "count" to count
+            ), items(VKApiNarratives.serializer())
+        )
+    }
 
-    @POST("stories.getById")
-    @FormUrlEncoded
     fun getStoryById(
-        @Field("stories") stories: String?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<StoryGetResponse>>
+        stories: String?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<StoryGetResponse>> {
+        return rest.request(
+            "stories.getById", form(
+                "stories" to stories,
+                "extended" to extended,
+                "fields" to fields
+            ), base(StoryGetResponse.serializer())
+        )
+    }
 
-    @POST("gifts.get")
-    @FormUrlEncoded
     fun getGifts(
-        @Field("user_id") user_id: Int?,
-        @Field("count") count: Int?,
-        @Field("offset") offset: Int?
-    ): Single<BaseResponse<Items<VKApiGift>>>
+        user_id: Int?,
+        count: Int?,
+        offset: Int?
+    ): Single<BaseResponse<Items<VKApiGift>>> {
+        return rest.request(
+            "gifts.get", form(
+                "user_id" to user_id,
+                "count" to count,
+                "offset" to offset
+            ), items(VKApiGift.serializer())
+        )
+    }
 
-    @POST("stories.search")
-    @FormUrlEncoded
     fun searchStory(
-        @Field("q") q: String?,
-        @Field("mentioned_id") mentioned_id: Int?,
-        @Field("count") count: Int?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<StoryResponse>>
+        q: String?,
+        mentioned_id: Int?,
+        count: Int?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<StoryResponse>> {
+        return rest.request(
+            "stories.search", form(
+                "q" to q,
+                "mentioned_id" to mentioned_id,
+                "count" to count,
+                "extended" to extended,
+                "fields" to fields
+            ), base(StoryResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("execute")
     fun checkAndAddFriend(
-        @Field("code") code: String?,
-        @Field("user_id") user_id: Int?
-    ): Single<BaseResponse<Int>>
+        code: String?,
+        user_id: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "execute", form(
+                "code" to code,
+                "user_id" to user_id
+            ), baseInt
+        )
+    }
 }

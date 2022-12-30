@@ -14,9 +14,9 @@ import io.reactivex.rxjava3.core.Single
 internal class NotificationsApi(accountId: Int, provider: IServiceProvider) :
     AbsApi(accountId, provider), INotificationsApi {
     override fun markAsViewed(): Single<Int> {
-        return provideService(INotificationsService::class.java, TokenType.USER)
+        return provideService(INotificationsService(), TokenType.USER)
             .flatMap { service ->
-                service.markAsViewed()
+                service.markAsViewed
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -28,7 +28,7 @@ internal class NotificationsApi(accountId: Int, provider: IServiceProvider) :
         startTime: Long?,
         endTime: Long?
     ): Single<NotificationsResponse> {
-        return provideService(INotificationsService::class.java, TokenType.USER)
+        return provideService(INotificationsService(), TokenType.USER)
             .flatMap { service ->
                 service[count, startFrom, filters, startTime, endTime]
                     .map(extractResponseWithErrorHandling())
@@ -57,7 +57,7 @@ internal class NotificationsApi(accountId: Int, provider: IServiceProvider) :
         startTime: Long?,
         endTime: Long?
     ): Single<FeedbackVKOfficialList> {
-        return provideService(INotificationsService::class.java, TokenType.USER)
+        return provideService(INotificationsService(), TokenType.USER)
             .flatMap { service ->
                 service.getOfficial(
                     count,
@@ -72,7 +72,7 @@ internal class NotificationsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun hide(query: String?): Single<Int> {
-        return provideService(INotificationsService::class.java, TokenType.USER)
+        return provideService(INotificationsService(), TokenType.USER)
             .flatMap { service ->
                 service.hide(query)
                     .map(extractResponseWithErrorHandling())

@@ -2,10 +2,11 @@ package dev.ragnarok.fenrir.api.impl
 
 import android.annotation.SuppressLint
 import dev.ragnarok.fenrir.api.IServiceProvider
-import dev.ragnarok.fenrir.api.IVkRetrofitProvider
-import dev.ragnarok.fenrir.api.RetrofitWrapper
+import dev.ragnarok.fenrir.api.IVkRestProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.*
+import dev.ragnarok.fenrir.api.rest.IServiceRest
+import dev.ragnarok.fenrir.api.rest.SimplePostHttp
 import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.core.Single
 
@@ -13,7 +14,7 @@ internal class VkApies private constructor(
     accountId: Int,
     useCustomToken: Boolean,
     customAccessToken: String?,
-    provider: IVkRetrofitProvider
+    provider: IVkRestProvider
 ) : IAccountApis {
     private val messagesApi: IMessagesApi
     private val photosApi: IPhotosApi
@@ -133,12 +134,12 @@ internal class VkApies private constructor(
     companion object {
         @SuppressLint("UseSparseArrays")
         private val APIS: MutableMap<Int, VkApies> = HashMap(1)
-        fun create(accountId: Int, accessToken: String?, provider: IVkRetrofitProvider): VkApies {
+        fun create(accountId: Int, accessToken: String?, provider: IVkRestProvider): VkApies {
             return VkApies(accountId, true, accessToken, provider)
         }
 
         @Synchronized
-        operator fun get(accountId: Int, provider: IVkRetrofitProvider): VkApies {
+        operator fun get(accountId: Int, provider: IVkRestProvider): VkApies {
             var apies = APIS[accountId]
             if (apies == null) {
                 apies = VkApies(accountId, false, null, provider)
@@ -149,30 +150,33 @@ internal class VkApies private constructor(
     }
 
     init {
-        val retrofitProvider: IServiceProvider = object : IServiceProvider {
-            override fun <T : Any> provideService(
+        val restProvider: IServiceProvider = object : IServiceProvider {
+            override fun <T : IServiceRest> provideService(
                 accountId: Int,
-                serviceClass: Class<T>,
+                serviceClass: T,
                 vararg tokenTypes: Int
             ): Single<T> {
-                return provideRetrofit(
+                return provideRest(
                     accountId,
                     *tokenTypes
-                ).map { retrofit -> retrofit.create(serviceClass) }
+                ).map {
+                    serviceClass.addon(it)
+                    serviceClass
+                }
             }
 
-            fun provideRetrofit(aid: Int, vararg tokenPolicy: Int): Single<RetrofitWrapper> {
+            fun provideRest(aid: Int, vararg tokenPolicy: Int): Single<SimplePostHttp> {
                 if (useCustomToken) {
-                    return provider.provideCustomRetrofit(aid, customAccessToken!!)
+                    return provider.provideCustomRest(aid, customAccessToken!!)
                 }
                 val isCommunity = aid < 0
                 return if (isCommunity) {
                     when {
                         Utils.intValueIn(TokenType.COMMUNITY, *tokenPolicy) -> {
-                            provider.provideNormalRetrofit(aid)
+                            provider.provideNormalRest(aid)
                         }
                         Utils.intValueIn(TokenType.SERVICE, *tokenPolicy) -> {
-                            provider.provideServiceRetrofit()
+                            provider.provideServiceRest()
                         }
                         else -> {
                             Single.error(
@@ -185,10 +189,10 @@ internal class VkApies private constructor(
                 } else {
                     when {
                         Utils.intValueIn(TokenType.USER, *tokenPolicy) -> {
-                            provider.provideNormalRetrofit(aid)
+                            provider.provideNormalRest(aid)
                         }
                         Utils.intValueIn(TokenType.SERVICE, *tokenPolicy) -> {
-                            provider.provideServiceRetrofit()
+                            provider.provideServiceRest()
                         }
                         else -> {
                             Single.error(
@@ -201,28 +205,28 @@ internal class VkApies private constructor(
                 }
             }
         }
-        accountApi = AccountApi(accountId, retrofitProvider)
-        audioApi = AudioApi(accountId, retrofitProvider)
-        boardApi = BoardApi(accountId, retrofitProvider)
-        commentsApi = CommentsApi(accountId, retrofitProvider)
-        databaseApi = DatabaseApi(accountId, retrofitProvider)
-        docsApi = DocsApi(accountId, retrofitProvider)
-        faveApi = FaveApi(accountId, retrofitProvider)
-        friendsApi = FriendsApi(accountId, retrofitProvider)
-        groupsApi = GroupsApi(accountId, retrofitProvider)
-        likesApi = LikesApi(accountId, retrofitProvider)
-        messagesApi = MessagesApi(accountId, retrofitProvider)
-        newsfeedApi = NewsfeedApi(accountId, retrofitProvider)
-        notificationsApi = NotificationsApi(accountId, retrofitProvider)
-        pagesApi = PagesApi(accountId, retrofitProvider)
-        photosApi = PhotosApi(accountId, retrofitProvider)
-        pollsApi = PollsApi(accountId, retrofitProvider)
-        statusApi = StatusApi(accountId, retrofitProvider)
-        storeApi = StoreApi(accountId, retrofitProvider)
-        usersApi = UsersApi(accountId, retrofitProvider)
-        utilsApi = UtilsApi(accountId, retrofitProvider)
-        videoApi = VideoApi(accountId, retrofitProvider)
-        wallApi = WallApi(accountId, retrofitProvider)
+        accountApi = AccountApi(accountId, restProvider)
+        audioApi = AudioApi(accountId, restProvider)
+        boardApi = BoardApi(accountId, restProvider)
+        commentsApi = CommentsApi(accountId, restProvider)
+        databaseApi = DatabaseApi(accountId, restProvider)
+        docsApi = DocsApi(accountId, restProvider)
+        faveApi = FaveApi(accountId, restProvider)
+        friendsApi = FriendsApi(accountId, restProvider)
+        groupsApi = GroupsApi(accountId, restProvider)
+        likesApi = LikesApi(accountId, restProvider)
+        messagesApi = MessagesApi(accountId, restProvider)
+        newsfeedApi = NewsfeedApi(accountId, restProvider)
+        notificationsApi = NotificationsApi(accountId, restProvider)
+        pagesApi = PagesApi(accountId, restProvider)
+        photosApi = PhotosApi(accountId, restProvider)
+        pollsApi = PollsApi(accountId, restProvider)
+        statusApi = StatusApi(accountId, restProvider)
+        storeApi = StoreApi(accountId, restProvider)
+        usersApi = UsersApi(accountId, restProvider)
+        utilsApi = UtilsApi(accountId, restProvider)
+        videoApi = VideoApi(accountId, restProvider)
+        wallApi = WallApi(accountId, restProvider)
         otherApi = OtherApi(accountId, provider)
     }
 }

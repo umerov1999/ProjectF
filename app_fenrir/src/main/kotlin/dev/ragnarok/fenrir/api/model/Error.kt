@@ -1,11 +1,10 @@
 package dev.ragnarok.fenrir.api.model
 
 import dev.ragnarok.fenrir.orZero
-import dev.ragnarok.fenrir.util.serializeble.retrofit.kotlinx.serialization.Serializer
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import java.lang.reflect.Type
 
 @Serializable
 class Error {
@@ -28,10 +27,7 @@ class Error {
     var requestParams: List<Params>? = null
 
     @Transient
-    var type: Type? = null
-
-    @Transient
-    var serializer: Serializer? = null
+    var serializer: KSerializer<*>? = null
 
     fun requests(): HashMap<String, String> {
         val params: HashMap<String, String> = HashMap(requestParams?.size.orZero())

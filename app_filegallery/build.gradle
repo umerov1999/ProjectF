@@ -108,7 +108,6 @@ dependencies {
     implementation project(path: ":viewpager2")
     implementation project(path: ":material")
     implementation project(path: ":preference")
-    implementation project(path: ":retrofit")
     implementation project(path: ":camera2")
     implementation("com.squareup.okhttp3:okhttp-android:$okhttpLibraryVersion")
     //implementation("com.squareup.okhttp3:logging-interceptor:$okhttpLibraryVersion")

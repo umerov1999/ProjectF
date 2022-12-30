@@ -2,38 +2,53 @@ package dev.ragnarok.fenrir.api.services
 
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.NotificationsResponse
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface INotificationsService {
-    @POST("notifications.markAsViewed")
-    fun markAsViewed(): Single<BaseResponse<Int>>
+class INotificationsService : IServiceRest() {
+    val markAsViewed: Single<BaseResponse<Int>>
+        get() = rest.request("notifications.markAsViewed", null, baseInt)
 
-    @FormUrlEncoded
-    @POST("notifications.get")
     operator fun get(
-        @Field("count") count: Int?,
-        @Field("start_from") startFrom: String?,
-        @Field("filters") filters: String?,
-        @Field("start_time") startTime: Long?,
-        @Field("end_time") endTime: Long?
-    ): Single<BaseResponse<NotificationsResponse>>
+        count: Int?,
+        startFrom: String?,
+        filters: String?,
+        startTime: Long?,
+        endTime: Long?
+    ): Single<BaseResponse<NotificationsResponse>> {
+        return rest.request(
+            "notifications.get", form(
+                "count" to count,
+                "start_from" to startFrom,
+                "filters" to filters,
+                "start_time" to startTime,
+                "end_time" to endTime
+            ), base(NotificationsResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("notifications.get")
     fun getOfficial(
-        @Field("count") count: Int?,
-        @Field("start_from") startFrom: Int?,
-        @Field("filters") filters: String?,
-        @Field("start_time") startTime: Long?,
-        @Field("end_time") endTime: Long?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<FeedbackVKOfficialList>>
+        count: Int?,
+        startFrom: Int?,
+        filters: String?,
+        startTime: Long?,
+        endTime: Long?,
+        fields: String?
+    ): Single<BaseResponse<FeedbackVKOfficialList>> {
+        return rest.request(
+            "notifications.get", form(
+                "count" to count,
+                "start_from" to startFrom,
+                "filters" to filters,
+                "start_time" to startTime,
+                "end_time" to endTime,
+                "fields" to fields
+            ), base(FeedbackVKOfficialList.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("notifications.hide")
-    fun hide(@Field("query") query: String?): Single<BaseResponse<Int>>
+    fun hide(query: String?): Single<BaseResponse<Int>> {
+        return rest.request("notifications.hide", form("query" to query), baseInt)
+    }
 }

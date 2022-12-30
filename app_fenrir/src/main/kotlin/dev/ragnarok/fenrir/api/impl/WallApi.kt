@@ -20,7 +20,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
         extended: Boolean?,
         fields: String?
     ): Single<WallSearchResponse> {
-        return provideService(IWallService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IWallService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .search(
@@ -45,7 +45,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
         placeId: Int?,
         markAsAds: Boolean?
     ): Single<Boolean> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .edit(
@@ -71,7 +71,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun pin(ownerId: Int?, postId: Int): Single<Boolean> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.pin(ownerId, postId)
                     .map(extractResponseWithErrorHandling())
@@ -80,7 +80,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun unpin(ownerId: Int?, postId: Int): Single<Boolean> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.unpin(ownerId, postId)
                     .map(extractResponseWithErrorHandling())
@@ -96,7 +96,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
         markAsAds: Boolean?
     ): Single<RepostReponse> {
         val `object` = "wall" + postOwnerId + "_" + postId
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.repost(`object`, message, groupId, integerFromBoolean(markAsAds))
                     .map(extractResponseWithErrorHandling())
@@ -120,7 +120,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
         markAsAds: Boolean?,
         adsPromotedStealth: Boolean?
     ): Single<Int> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .post(
@@ -149,7 +149,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun delete(ownerId: Int?, postId: Int): Single<Boolean> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.delete(ownerId, postId)
                     .map(extractResponseWithErrorHandling())
@@ -158,7 +158,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun restoreComment(ownerId: Int?, commentId: Int): Single<Boolean> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.restoreComment(ownerId, commentId)
                     .map(extractResponseWithErrorHandling())
@@ -167,7 +167,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun deleteComment(ownerId: Int?, commentId: Int): Single<Boolean> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteComment(ownerId, commentId)
                     .map(extractResponseWithErrorHandling())
@@ -176,7 +176,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun restore(ownerId: Int?, postId: Int): Single<Boolean> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.restore(ownerId, postId)
                     .map(extractResponseWithErrorHandling())
@@ -188,7 +188,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
         ownerId: Int?, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
     ): Single<Boolean> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.editComment(
                     ownerId,
@@ -208,7 +208,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
         replyToComment: Int?, attachments: Collection<IAttachmentToken>?,
         stickerId: Int?, generatedUniqueId: Int?
     ): Single<Int> {
-        return provideService(IWallService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IWallService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
                     .createComment(
@@ -238,7 +238,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
         extended: Boolean?,
         fields: String?
     ): Single<WallResponse> {
-        return provideService(IWallService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IWallService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service[ownerId, domain, offset, count, filter, if (extended != null) if (extended) 1 else 0 else null, fields]
                     .map(extractResponseWithErrorHandling())
@@ -252,7 +252,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
         fields: String?
     ): Single<PostsResponse> {
         val line = join(ids, ",") { orig -> orig.ownerId.toString() + "_" + orig.id }
-        return provideService(IWallService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IWallService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getById(
@@ -266,7 +266,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun reportPost(owner_id: Int?, post_id: Int?, reason: Int?): Single<Int> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .reportPost(owner_id, post_id, reason)
@@ -275,7 +275,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun subscribe(owner_id: Int?): Single<Int> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .subscribe(owner_id)
@@ -284,7 +284,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun unsubscribe(owner_id: Int?): Single<Int> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .unsubscribe(owner_id)
@@ -293,7 +293,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun reportComment(owner_id: Int?, post_id: Int?, reason: Int?): Single<Int> {
-        return provideService(IWallService::class.java, TokenType.USER)
+        return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .reportComment(owner_id, post_id, reason)
@@ -306,7 +306,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
         startCommentId: Int?, offset: Int?, count: Int?,
         sort: String?, extended: Boolean?, fields: String?
     ): Single<DefaultCommentsResponse> {
-        return provideService(IWallService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IWallService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getComments(

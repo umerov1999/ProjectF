@@ -122,7 +122,7 @@ object ContactsUtils {
                 null
             )
             if (cursor == null) {
-                it.onError(Throwable("Can't collect contact list!"))
+                it.tryOnError(Throwable("Can't collect contact list!"))
                 return@create
             }
             if (cursor.count > 0) {
@@ -137,7 +137,7 @@ object ContactsUtils {
                 cursor.close()
             }
             if (contacts.isEmpty()) {
-                it.onError(Throwable("Can't collect contact list!"))
+                it.tryOnError(Throwable("Can't collect contact list!"))
             }
             it.onSuccess(
                 kJson.encodeToString(ListSerializer(ContactData.serializer()), contacts)

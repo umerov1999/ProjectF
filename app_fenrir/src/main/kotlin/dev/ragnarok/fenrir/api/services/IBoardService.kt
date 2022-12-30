@@ -3,44 +3,63 @@ package dev.ragnarok.fenrir.api.services
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.TopicsResponse
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface IBoardService {
+class IBoardService : IServiceRest() {
     //https://vk.com/dev/board.getComments
-    @FormUrlEncoded
-    @POST("board.getComments")
     fun getComments(
-        @Field("group_id") groupId: Int,
-        @Field("topic_id") topicId: Int,
-        @Field("need_likes") needLikes: Int?,
-        @Field("start_comment_id") startCommentId: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("extended") extended: Int?,
-        @Field("sort") sort: String?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<DefaultCommentsResponse>>
+        groupId: Int,
+        topicId: Int,
+        needLikes: Int?,
+        startCommentId: Int?,
+        offset: Int?,
+        count: Int?,
+        extended: Int?,
+        sort: String?,
+        fields: String?
+    ): Single<BaseResponse<DefaultCommentsResponse>> {
+        return rest.request(
+            "board.getComments",
+            form(
+                "group_id" to groupId,
+                "topic_id" to topicId,
+                "need_likes" to needLikes,
+                "start_comment_id" to startCommentId,
+                "offset" to offset,
+                "count" to count,
+                "extended" to extended,
+                "sort" to sort,
+                "fields" to fields
+            ), base(DefaultCommentsResponse.serializer())
+        )
+    }
 
     //https://vk.com/dev/board.restoreComment
-    @FormUrlEncoded
-    @POST("board.restoreComment")
     fun restoreComment(
-        @Field("group_id") groupId: Int,
-        @Field("topic_id") topicId: Int,
-        @Field("comment_id") commentId: Int
-    ): Single<BaseResponse<Int>>
+        groupId: Int,
+        topicId: Int,
+        commentId: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "board.restoreComment",
+            form("group_id" to groupId, "topic_id" to topicId, "comment_id" to commentId),
+            baseInt
+        )
+    }
 
     //https://vk.com/dev/board.deleteComment
-    @FormUrlEncoded
-    @POST("board.deleteComment")
     fun deleteComment(
-        @Field("group_id") groupId: Int,
-        @Field("topic_id") topicId: Int,
-        @Field("comment_id") commentId: Int
-    ): Single<BaseResponse<Int>>
+        groupId: Int,
+        topicId: Int,
+        commentId: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "board.deleteComment",
+            form("group_id" to groupId, "topic_id" to topicId, "comment_id" to commentId),
+            baseInt
+        )
+    }
 
     /**
      * Returns a list of topics on a community's discussion board.
@@ -68,19 +87,32 @@ interface IBoardService {
      * To preview the full comment, specify 0. Default 90
      * @return array of objects describing topics.
      */
-    @FormUrlEncoded
-    @POST("board.getTopics")
     fun getTopics(
-        @Field("group_id") groupId: Int,
-        @Field("topic_ids") topicIds: String?,
-        @Field("order") order: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("extended") extended: Int?,
-        @Field("preview") preview: Int?,
-        @Field("preview_length") previewLength: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<TopicsResponse>> // not doccumented
+        groupId: Int,
+        topicIds: String?,
+        order: Int?,
+        offset: Int?,
+        count: Int?,
+        extended: Int?,
+        preview: Int?,
+        previewLength: Int?,
+        fields: String?
+    ): Single<BaseResponse<TopicsResponse>> {
+        return rest.request(
+            "board.getTopics",
+            form(
+                "group_id" to groupId,
+                "topic_ids" to topicIds,
+                "order" to order,
+                "offset" to offset,
+                "count" to count,
+                "extended" to extended,
+                "preview" to preview,
+                "preview_length" to previewLength,
+                "fields" to fields
+            ), base(TopicsResponse.serializer())
+        )
+    }
 
     /**
      * Edits a comment on a topic on a community's discussion board.
@@ -103,25 +135,45 @@ interface IBoardService {
      * List of comma-separated words
      * @return 1
      */
-    @FormUrlEncoded
-    @POST("board.editComment")
     fun editComment(
-        @Field("group_id") groupId: Int,
-        @Field("topic_id") topicId: Int,
-        @Field("comment_id") commentId: Int,
-        @Field("message") message: String?,
-        @Field("attachments") attachments: String?
-    ): Single<BaseResponse<Int>>
+        groupId: Int,
+        topicId: Int,
+        commentId: Int,
+        message: String?,
+        attachments: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "board.editComment",
+            form(
+                "group_id" to groupId,
+                "topic_id" to topicId,
+                "comment_id" to commentId,
+                "message" to message,
+                "attachments" to attachments
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("board.addComment")
     fun addComment(
-        @Field("group_id") groupId: Int?,
-        @Field("topic_id") topicId: Int,
-        @Field("message") message: String?,
-        @Field("attachments") attachments: String?,
-        @Field("from_group") fromGroup: Int?,
-        @Field("sticker_id") stickerId: Int?,
-        @Field("guid") generatedUniqueId: Int?
-    ): Single<BaseResponse<Int>>
+        groupId: Int?,
+        topicId: Int,
+        message: String?,
+        attachments: String?,
+        fromGroup: Int?,
+        stickerId: Int?,
+        generatedUniqueId: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "board.addComment",
+            form(
+                "group_id" to groupId,
+                "topic_id" to topicId,
+                "message" to message,
+                "attachments" to attachments,
+                "from_group" to fromGroup,
+                "sticker_id" to stickerId,
+                "guid" to generatedUniqueId
+            ), baseInt
+        )
+    }
 }

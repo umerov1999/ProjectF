@@ -23,7 +23,7 @@ internal class BoardApi(accountId: Int, provider: IServiceProvider) :
         sort: String?,
         fields: String?
     ): Single<DefaultCommentsResponse> {
-        return provideService(IBoardService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IBoardService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getComments(
@@ -42,7 +42,7 @@ internal class BoardApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun restoreComment(groupId: Int, topicId: Int, commentId: Int): Single<Boolean> {
-        return provideService(IBoardService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IBoardService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.restoreComment(groupId, topicId, commentId)
                     .map(extractResponseWithErrorHandling())
@@ -51,7 +51,7 @@ internal class BoardApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun deleteComment(groupId: Int, topicId: Int, commentId: Int): Single<Boolean> {
-        return provideService(IBoardService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IBoardService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.deleteComment(groupId, topicId, commentId)
                     .map(extractResponseWithErrorHandling())
@@ -64,7 +64,7 @@ internal class BoardApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?, count: Int?, extended: Boolean?,
         preview: Int?, previewLength: Int?, fields: String?
     ): Single<TopicsResponse> {
-        return provideService(IBoardService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IBoardService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getTopics(
@@ -95,7 +95,7 @@ internal class BoardApi(accountId: Int, provider: IServiceProvider) :
         groupId: Int, topicId: Int, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
     ): Single<Boolean> {
-        return provideService(IBoardService::class.java, TokenType.USER)
+        return provideService(IBoardService(), TokenType.USER)
             .flatMap { service ->
                 service.editComment(
                     groupId,
@@ -120,7 +120,7 @@ internal class BoardApi(accountId: Int, provider: IServiceProvider) :
         stickerId: Int?,
         generatedUniqueId: Int?
     ): Single<Int> {
-        return provideService(IBoardService::class.java, TokenType.USER)
+        return provideService(IBoardService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .addComment(

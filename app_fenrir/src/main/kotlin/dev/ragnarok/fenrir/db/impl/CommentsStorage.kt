@@ -226,7 +226,7 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
             if (id == null) {
                 val uri = contentResolver.insert(commentsWithAccountUri, contentValues)
                 if (uri == null) {
-                    e.onError(DatabaseException("Result URI is null"))
+                    e.tryOnError(DatabaseException("Result URI is null"))
                     return@create
                 }
                 id = uri.pathSegments[1].toInt()

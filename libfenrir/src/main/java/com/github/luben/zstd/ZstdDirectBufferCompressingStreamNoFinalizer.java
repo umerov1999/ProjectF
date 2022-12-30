@@ -7,8 +7,8 @@ import java.nio.ByteBuffer;
 
 public class ZstdDirectBufferCompressingStreamNoFinalizer implements Closeable, Flushable {
     private final long stream;
-    private final int consumed = 0;
-    private final int produced = 0;
+    private int consumed;
+    private int produced;
     private final int level;
     private ByteBuffer target;
     private boolean closed;

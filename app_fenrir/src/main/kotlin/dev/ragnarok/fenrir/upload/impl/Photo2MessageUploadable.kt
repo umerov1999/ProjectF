@@ -47,7 +47,9 @@ class Photo2MessageUploadable(
             try {
                 `is` = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 networker.uploads()
-                    .uploadPhotoToMessageRx(server.url, `is`!!, listener)
+                    .uploadPhotoToMessageRx(
+                        server.url ?: throw NotFoundException("upload url empty"), `is`!!, listener
+                    )
                     .doFinally(safelyCloseAction(`is`))
                     .flatMap { dto ->
                         networker.vkDefault(accountId)

@@ -2,45 +2,59 @@ package dev.ragnarok.fenrir.api.services
 
 import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.model.response.*
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 
-interface IMessageService {
-    @FormUrlEncoded
-    @POST("messages.edit")
+class IMessageService : IServiceRest() {
     fun editMessage(
-        @Field("peer_id") peedId: Int,
-        @Field("message_id") messageId: Int,
-        @Field("message") message: String?,
-        @Field("attachment") attachment: String?,
-        @Field("keep_forward_messages") keepForwardMessages: Int?,
-        @Field("keep_snippets") keepSnippets: Int?
-    ): Single<BaseResponse<Int>>
+        peedId: Int,
+        messageId: Int,
+        message: String?,
+        attachment: String?,
+        keepForwardMessages: Int?,
+        keepSnippets: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.edit", form(
+                "peer_id" to peedId,
+                "message_id" to messageId,
+                "message" to message,
+                "attachment" to attachment,
+                "keep_forward_messages" to keepForwardMessages,
+                "keep_snippets" to keepSnippets
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.pin")
     fun pin(
-        @Field("peer_id") peerId: Int,
-        @Field("message_id") messageId: Int
-    ): Single<BaseResponse<VKApiMessage>>
+        peerId: Int,
+        messageId: Int
+    ): Single<BaseResponse<VKApiMessage>> {
+        return rest.request(
+            "messages.pin", form(
+                "peer_id" to peerId,
+                "message_id" to messageId
+            ), base(VKApiMessage.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.pinConversation")
-    fun pinConversation(@Field("peer_id") peerId: Int): Single<BaseResponse<Int>>
+    fun pinConversation(peerId: Int): Single<BaseResponse<Int>> {
+        return rest.request("messages.pinConversation", form("peer_id" to peerId), baseInt)
+    }
 
-    @FormUrlEncoded
-    @POST("messages.unpinConversation")
-    fun unpinConversation(@Field("peer_id") peerId: Int): Single<BaseResponse<Int>>
+    fun unpinConversation(peerId: Int): Single<BaseResponse<Int>> {
+        return rest.request("messages.unpinConversation", form("peer_id" to peerId), baseInt)
+    }
 
-    @FormUrlEncoded
-    @POST("messages.markAsListened")
-    fun markAsListened(@Field("message_id") message_id: Int): Single<BaseResponse<Int>>
+    fun markAsListened(message_id: Int): Single<BaseResponse<Int>> {
+        return rest.request("messages.markAsListened", form("message_id" to message_id), baseInt)
+    }
 
-    @FormUrlEncoded
-    @POST("messages.unpin")
-    fun unpin(@Field("peer_id") peerId: Int): Single<BaseResponse<Int>>
+    fun unpin(peerId: Int): Single<BaseResponse<Int>> {
+        return rest.request("messages.unpin", form("peer_id" to peerId), baseInt)
+    }
 
     /**
      * Allows the current user to leave a chat or, if the current user started the chat,
@@ -50,16 +64,25 @@ interface IMessageService {
      * @param memberId ID of the member to be removed from the chat
      * @return 1
      */
-    @FormUrlEncoded
-    @POST("messages.removeChatUser")
     fun removeChatUser(
-        @Field("chat_id") chatId: Int,
-        @Field("member_id") memberId: Int
-    ): Single<BaseResponse<Int>>
+        chatId: Int,
+        memberId: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.removeChatUser", form(
+                "chat_id" to chatId,
+                "member_id" to memberId
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.deleteChatPhoto")
-    fun deleteChatPhoto(@Field("chat_id") chatId: Int): Single<BaseResponse<UploadChatPhotoResponse>>
+    fun deleteChatPhoto(chatId: Int): Single<BaseResponse<UploadChatPhotoResponse>> {
+        return rest.request(
+            "messages.deleteChatPhoto",
+            form("chat_id" to chatId),
+            base(UploadChatPhotoResponse.serializer())
+        )
+    }
 
     /**
      * Adds a new user to a chat.
@@ -68,12 +91,17 @@ interface IMessageService {
      * @param userId ID of the user to be added to the chat.
      * @return 1
      */
-    @FormUrlEncoded
-    @POST("messages.addChatUser")
     fun addChatUser(
-        @Field("chat_id") chatId: Int,
-        @Field("user_id") userId: Int
-    ): Single<BaseResponse<Int>>
+        chatId: Int,
+        userId: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.addChatUser", form(
+                "chat_id" to chatId,
+                "user_id" to userId
+            ), baseInt
+        )
+    }
 
     /**
      * Returns information about a chat.
@@ -90,21 +118,35 @@ interface IMessageService {
      * abl — prepositional
      * @return Returns a list of chat objects.
      */
-    @FormUrlEncoded
-    @POST("messages.getChat")
     fun getChat(
-        @Field("chat_id") chatId: Int?,
-        @Field("chat_ids") chatIds: String?,
-        @Field("fields") fields: String?,
-        @Field("name_case") nameCase: String?
-    ): Single<BaseResponse<ChatsInfoResponse>>
+        chatId: Int?,
+        chatIds: String?,
+        fields: String?,
+        nameCase: String?
+    ): Single<BaseResponse<ChatsInfoResponse>> {
+        return rest.request(
+            "messages.getChat", form(
+                "chat_id" to chatId,
+                "chat_ids" to chatIds,
+                "fields" to fields,
+                "name_case" to nameCase
+            ), base(ChatsInfoResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.getConversationMembers")
     fun getConversationMembers(
-        @Field("peer_id") peer_id: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<ConversationMembersResponse>>
+        peer_id: Int?,
+        fields: String?
+    ): Single<BaseResponse<ConversationMembersResponse>> {
+        return rest.request(
+            "messages.getConversationMembers",
+            form(
+                "peer_id" to peer_id,
+                "fields" to fields
+            ),
+            base(ConversationMembersResponse.serializer())
+        )
+    }
 
     /**
      * Edits the title of a chat.
@@ -113,12 +155,17 @@ interface IMessageService {
      * @param title  New title of the chat.
      * @return 1
      */
-    @FormUrlEncoded
-    @POST("messages.editChat")
     fun editChat(
-        @Field("chat_id") chatId: Int,
-        @Field("title") title: String?
-    ): Single<BaseResponse<Int>>
+        chatId: Int,
+        title: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.editChat", form(
+                "chat_id" to chatId,
+                "title" to title
+            ), baseInt
+        )
+    }
 
     /**
      * Creates a chat with several participants.
@@ -127,12 +174,17 @@ interface IMessageService {
      * @param title   Chat title
      * @return the ID of the created chat (chat_id).
      */
-    @FormUrlEncoded
-    @POST("messages.createChat")
     fun createChat(
-        @Field("user_ids") userIds: String?,
-        @Field("title") title: String?
-    ): Single<BaseResponse<Int>>
+        userIds: String?,
+        title: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.createChat", form(
+                "user_ids" to userIds,
+                "title" to title
+            ), baseInt
+        )
+    }
 
     /**
      * Deletes all private messages in a conversation.
@@ -140,9 +192,13 @@ interface IMessageService {
      * @param peerId Destination ID.
      * @return 1
      */
-    @FormUrlEncoded
-    @POST("messages.deleteConversation")
-    fun deleteDialog(@Field("peer_id") peerId: Int): Single<BaseResponse<ConversationDeleteResult>>
+    fun deleteDialog(peerId: Int): Single<BaseResponse<ConversationDeleteResult>> {
+        return rest.request(
+            "messages.deleteConversation",
+            form("peer_id" to peerId),
+            base(ConversationDeleteResult.serializer())
+        )
+    }
 
     /**
      * Restores a deleted message.
@@ -150,9 +206,9 @@ interface IMessageService {
      * @param messageId ID of a previously-deleted message to restore
      * @return 1
      */
-    @FormUrlEncoded
-    @POST("messages.restore")
-    fun restore(@Field("message_id") messageId: Int): Single<BaseResponse<Int>>
+    fun restore(messageId: Int): Single<BaseResponse<Int>> {
+        return rest.request("messages.restore", form("message_id" to messageId), baseInt)
+    }
 
     /**
      * Deletes one or more messages.
@@ -161,13 +217,21 @@ interface IMessageService {
      * @param spam       1 — to mark message as spam.
      * @return 1
      */
-    @FormUrlEncoded
-    @POST("messages.delete")
     fun delete(
-        @Field("message_ids") messageIds: String?,
-        @Field("delete_for_all") deleteForAll: Int?,
-        @Field("spam") spam: Int?
-    ): Single<BaseResponse<Map<String, Int>>>
+        messageIds: String?,
+        deleteForAll: Int?,
+        spam: Int?
+    ): Single<BaseResponse<Map<String, Int>>> {
+        return rest.request(
+            "messages.delete",
+            form(
+                "message_ids" to messageIds,
+                "delete_for_all" to deleteForAll,
+                "spam" to spam
+            ),
+            base(MapSerializer(String.serializer(), Int.serializer()))
+        )
+    }
 
     /**
      * Marks messages as read.
@@ -176,19 +240,29 @@ interface IMessageService {
      * @param startMessageId Message ID to start from
      * @return 1
      */
-    @FormUrlEncoded
-    @POST("messages.markAsRead")
     fun markAsRead(
-        @Field("peer_id") peerId: Int?,
-        @Field("start_message_id") startMessageId: Int?
-    ): Single<BaseResponse<Int>>
+        peerId: Int?,
+        startMessageId: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.markAsRead", form(
+                "peer_id" to peerId,
+                "start_message_id" to startMessageId
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.markAsImportant")
     fun markAsImportant(
-        @Field("message_ids") messageIds: String?,
-        @Field("important") important: Int?
-    ): Single<BaseResponse<List<Int>>>
+        messageIds: String?,
+        important: Int?
+    ): Single<BaseResponse<List<Int>>> {
+        return rest.request(
+            "messages.markAsImportant", form(
+                "message_ids" to messageIds,
+                "important" to important
+            ), baseList(Int.serializer())
+        )
+    }
 
     /**
      * Changes the status of a user as typing in a conversation.
@@ -197,12 +271,17 @@ interface IMessageService {
      * @param type   typing — user has started to type.
      * @return 1
      */
-    @FormUrlEncoded
-    @POST("messages.setActivity")
     fun setActivity(
-        @Field("peer_id") peerId: Int,
-        @Field("type") type: String?
-    ): Single<BaseResponse<Int>>
+        peerId: Int,
+        type: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.setActivity", form(
+                "peer_id" to peerId,
+                "type" to type
+            ), baseInt
+        )
+    }
 
     /**
      * Returns a list of the current user's private messages that match search criteria.
@@ -217,16 +296,25 @@ interface IMessageService {
      * @param count         Number of messages to return
      * @return list of the current user's private messages
      */
-    @FormUrlEncoded
-    @POST("messages.search")
     fun search(
-        @Field("q") query: String?,
-        @Field("peer_id") peerId: Int?,
-        @Field("date") date: Long?,
-        @Field("preview_length") previewLength: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiMessage>>>
+        query: String?,
+        peerId: Int?,
+        date: Long?,
+        previewLength: Int?,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiMessage>>> {
+        return rest.request(
+            "messages.search", form(
+                "q" to query,
+                "peer_id" to peerId,
+                "date" to date,
+                "preview_length" to previewLength,
+                "offset" to offset,
+                "count" to count
+            ), items(VKApiMessage.serializer())
+        )
+    }
 
     /**
      * Returns updates in user's private messages.
@@ -254,18 +342,31 @@ interface IMessageService {
      * (addition of a new message) from the history field. Each object of message contains a set
      * of fields described here. The first array element is the total number of messages.
      */
-    @FormUrlEncoded
-    @POST("messages.getLongPollHistory")
     fun getLongPollHistory(
-        @Field("ts") ts: Long?,
-        @Field("pts") pts: Long?,
-        @Field("preview_length") previewLength: Int?,
-        @Field("onlines") onlines: Int?,
-        @Field("fields") fields: String?,
-        @Field("events_limit") eventsLimit: Int?,
-        @Field("msgs_limit") msgsLimit: Int?,
-        @Field("max_msg_id") maxMsgId: Int?
-    ): Single<BaseResponse<LongpollHistoryResponse>>
+        ts: Long?,
+        pts: Long?,
+        previewLength: Int?,
+        onlines: Int?,
+        fields: String?,
+        eventsLimit: Int?,
+        msgsLimit: Int?,
+        maxMsgId: Int?
+    ): Single<BaseResponse<LongpollHistoryResponse>> {
+        return rest.request(
+            "messages.getLongPollHistory",
+            form(
+                "ts" to ts,
+                "pts" to pts,
+                "preview_length" to previewLength,
+                "onlines" to onlines,
+                "fields" to fields,
+                "events_limit" to eventsLimit,
+                "msgs_limit" to msgsLimit,
+                "max_msg_id" to maxMsgId
+            ),
+            base(LongpollHistoryResponse.serializer())
+        )
+    }
 
     /**
      * Returns media files from the dialog or group chat.
@@ -279,16 +380,27 @@ interface IMessageService {
      * @return a list of photo, video, audio or doc objects depending on media_type parameter value
      * and additional next_from field containing new offset value.
      */
-    @FormUrlEncoded
-    @POST("messages.getHistoryAttachments")
     fun getHistoryAttachments(
-        @Field("peer_id") peerId: Int,
-        @Field("media_type") mediaType: String?,
-        @Field("start_from") startFrom: String?,
-        @Field("count") count: Int?,
-        @Field("photo_sizes") photoSizes: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<AttachmentsHistoryResponse>>
+        peerId: Int,
+        mediaType: String?,
+        startFrom: String?,
+        count: Int?,
+        photoSizes: Int?,
+        fields: String?
+    ): Single<BaseResponse<AttachmentsHistoryResponse>> {
+        return rest.request(
+            "messages.getHistoryAttachments",
+            form(
+                "peer_id" to peerId,
+                "media_type" to mediaType,
+                "start_from" to startFrom,
+                "count" to count,
+                "photo_sizes" to photoSizes,
+                "fields" to fields
+            ),
+            base(AttachmentsHistoryResponse.serializer())
+        )
+    }
 
     /**
      * Sends a message.
@@ -306,21 +418,35 @@ interface IMessageService {
      * @param stickerId       Sticker id
      * @return sent message ID.
      */
-    @FormUrlEncoded
-    @POST("messages.send")
     fun send(
-        @Field("random_id") randomId: Long?,
-        @Field("peer_id") peerId: Int?,
-        @Field("domain") domain: String?,
-        @Field("message") message: String?,
-        @Field("lat") latitude: Double?,
-        @Field("long") longitude: Double?,
-        @Field("attachment") attachment: String?,
-        @Field("forward_messages") forwardMessages: String?,
-        @Field("sticker_id") stickerId: Int?,
-        @Field("payload") payload: String?,
-        @Field("reply_to") reply_to: Int?
-    ): Single<BaseResponse<Int>>
+        randomId: Long?,
+        peerId: Int?,
+        domain: String?,
+        message: String?,
+        latitude: Double?,
+        longitude: Double?,
+        attachment: String?,
+        forwardMessages: String?,
+        stickerId: Int?,
+        payload: String?,
+        reply_to: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.send", form(
+                "random_id" to randomId,
+                "peer_id" to peerId,
+                "domain" to domain,
+                "message" to message,
+                "lat" to latitude,
+                "long" to longitude,
+                "attachment" to attachment,
+                "forward_messages" to forwardMessages,
+                "sticker_id" to stickerId,
+                "payload" to payload,
+                "reply_to" to reply_to
+            ), baseInt
+        )
+    }
 
     /**
      * Returns messages by their IDs.
@@ -331,39 +457,67 @@ interface IMessageService {
      * NOTE: Messages are not truncated by default. Messages are truncated by words.
      * @return a list of message objects.
      */
-    @FormUrlEncoded
-    @POST("messages.getById")
     fun getById(
-        @Field("message_ids") messageIds: String?,
-        @Field("preview_length") previewLength: Int?
-    ): Single<BaseResponse<Items<VKApiMessage>>>
+        messageIds: String?,
+        previewLength: Int?
+    ): Single<BaseResponse<Items<VKApiMessage>>> {
+        return rest.request(
+            "messages.getById", form(
+                "message_ids" to messageIds,
+                "preview_length" to previewLength
+            ), items(VKApiMessage.serializer())
+        )
+    }
 
     //https://vk.com/dev/messages.getConversations
-    @FormUrlEncoded
-    @POST("messages.getConversations")
     fun getDialogs(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("start_message_id") startMessageId: Int?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<DialogsResponse>>
+        offset: Int?,
+        count: Int?,
+        startMessageId: Int?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<DialogsResponse>> {
+        return rest.request(
+            "messages.getConversations", form(
+                "offset" to offset,
+                "count" to count,
+                "start_message_id" to startMessageId,
+                "extended" to extended,
+                "fields" to fields
+            ), base(DialogsResponse.serializer())
+        )
+    }
 
     //https://vk.com/dev/messages.getConversationsById
-    @FormUrlEncoded
-    @POST("messages.getConversationsById")
     fun getConversationsById(
-        @Field("peer_ids") peerIds: String?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<ItemsProfilesGroupsResponse<VKApiConversation>>>
+        peerIds: String?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<ItemsProfilesGroupsResponse<VKApiConversation>>> {
+        return rest.request(
+            "messages.getConversationsById",
+            form(
+                "peer_ids" to peerIds,
+                "extended" to extended,
+                "fields" to fields
+            ),
+            base(ItemsProfilesGroupsResponse.serializer(VKApiConversation.serializer()))
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.getLongPollServer")
     fun getLongpollServer(
-        @Field("need_pts") needPts: Int,
-        @Field("lp_version") lpVersion: Int
-    ): Single<BaseResponse<VKApiLongpollServer>>
+        needPts: Int,
+        lpVersion: Int
+    ): Single<BaseResponse<VKApiLongpollServer>> {
+        return rest.request(
+            "messages.getLongPollServer",
+            form(
+                "need_pts" to needPts,
+                "lp_version" to lpVersion
+            ),
+            base(VKApiLongpollServer.serializer())
+        )
+    }
 
     /**
      * Returns message history for the specified user or group chat.
@@ -377,58 +531,106 @@ interface IMessageService {
      * 0 — return messages in reverse chronological order.
      * @return Returns a list of message objects.
      */
-    @FormUrlEncoded
-    @POST("messages.getHistory")
     fun getHistory(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("peer_id") peerId: Int,
-        @Field("start_message_id") startMessageId: Int?,
-        @Field("rev") rev: Int?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<MessageHistoryResponse>>
+        offset: Int?,
+        count: Int?,
+        peerId: Int,
+        startMessageId: Int?,
+        rev: Int?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<MessageHistoryResponse>> {
+        return rest.request(
+            "messages.getHistory",
+            form(
+                "offset" to offset,
+                "count" to count,
+                "peer_id" to peerId,
+                "start_message_id" to startMessageId,
+                "rev" to rev,
+                "extended" to extended,
+                "fields" to fields
+            ),
+            base(MessageHistoryResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.getHistory")
     fun getJsonHistory(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("peer_id") peerId: Int
-    ): Single<BaseResponse<Items<VKApiJsonString>>>
+        offset: Int?,
+        count: Int?,
+        peerId: Int
+    ): Single<BaseResponse<Items<VKApiJsonString>>> {
+        return rest.request(
+            "messages.getHistory", form(
+                "offset" to offset,
+                "count" to count,
+                "peer_id" to peerId
+            ), items(VKApiJsonString.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.getImportantMessages")
     fun getImportantMessages(
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("start_message_id") startMessageId: Int?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<MessageImportantResponse>>
+        offset: Int?,
+        count: Int?,
+        startMessageId: Int?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<MessageImportantResponse>> {
+        return rest.request(
+            "messages.getImportantMessages",
+            form(
+                "offset" to offset,
+                "count" to count,
+                "start_message_id" to startMessageId,
+                "extended" to extended,
+                "fields" to fields
+            ),
+            base(MessageImportantResponse.serializer())
+        )
+    }
 
     //https://vk.com/dev/messages.searchDialogs
-    @FormUrlEncoded
-    @POST("messages.searchConversations")
     fun searchConversations(
-        @Field("q") q: String?,
-        @Field("count") count: Int?,
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<ConversationsResponse>>
+        q: String?,
+        count: Int?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<ConversationsResponse>> {
+        return rest.request(
+            "messages.searchConversations",
+            form(
+                "q" to q,
+                "count" to count,
+                "extended" to extended,
+                "fields" to fields
+            ),
+            base(ConversationsResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.recogniseAudioMessage")
     fun recogniseAudioMessage(
-        @Field("message_id") message_id: Int?,
-        @Field("audio_message_id") audio_message_id: String?
-    ): Single<BaseResponse<Int>>
+        message_id: Int?,
+        audio_message_id: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.recogniseAudioMessage", form(
+                "message_id" to message_id,
+                "audio_message_id" to audio_message_id
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.setMemberRole")
     fun setMemberRole(
-        @Field("peer_id") peer_id: Int?,
-        @Field("member_id") member_id: Int?,
-        @Field("role") role: String?
-    ): Single<BaseResponse<Int>>
+        peer_id: Int?,
+        member_id: Int?,
+        role: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.setMemberRole", form(
+                "peer_id" to peer_id,
+                "member_id" to member_id,
+                "role" to role
+            ), baseInt
+        )
+    }
 }

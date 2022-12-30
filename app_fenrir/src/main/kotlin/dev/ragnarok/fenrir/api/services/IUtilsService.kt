@@ -7,55 +7,74 @@ import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.ResolveDomailResponse
 import dev.ragnarok.fenrir.api.model.response.VKApiChatResponse
 import dev.ragnarok.fenrir.api.model.response.VKApiLinkResponse
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.POST
 
-interface IUtilsService {
-    @FormUrlEncoded
-    @POST("utils.resolveScreenName")
-    fun resolveScreenName(@Field("screen_name") screenName: String?): Single<BaseResponse<ResolveDomailResponse>>
+class IUtilsService : IServiceRest() {
+    fun resolveScreenName(screenName: String?): Single<BaseResponse<ResolveDomailResponse>> {
+        return rest.request(
+            "utils.resolveScreenName",
+            form("screen_name" to screenName),
+            base(ResolveDomailResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("utils.getShortLink")
-    fun getShortLink(
-        @Field("url") url: String?,
-        @Field("private") t_private: Int?
-    ): Single<BaseResponse<VKApiShortLink>>
+    fun getShortLink(url: String?, t_private: Int?): Single<BaseResponse<VKApiShortLink>> {
+        return rest.request(
+            "utils.getShortLink",
+            form("url" to url, "private" to t_private),
+            base(VKApiShortLink.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("utils.getLastShortenedLinks")
     fun getLastShortenedLinks(
-        @Field("count") count: Int?,
-        @Field("offset") offset: Int?
-    ): Single<BaseResponse<Items<VKApiShortLink>>>
+        count: Int?,
+        offset: Int?
+    ): Single<BaseResponse<Items<VKApiShortLink>>> {
+        return rest.request(
+            "utils.getLastShortenedLinks", form("count" to count, "offset" to offset),
+            items(VKApiShortLink.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("utils.deleteFromLastShortened")
-    fun deleteFromLastShortened(@Field("key") key: String?): Single<BaseResponse<Int>>
+    fun deleteFromLastShortened(key: String?): Single<BaseResponse<Int>> {
+        return rest.request(
+            "utils.deleteFromLastShortened", form("key" to key),
+            baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("utils.checkLink")
-    fun checkLink(@Field("url") url: String?): Single<BaseResponse<VKApiCheckedLink>>
+    fun checkLink(url: String?): Single<BaseResponse<VKApiCheckedLink>> {
+        return rest.request(
+            "utils.checkLink", form("url" to url),
+            base(VKApiCheckedLink.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.joinChatByInviteLink")
-    fun joinChatByInviteLink(@Field("link") link: String?): Single<BaseResponse<VKApiChatResponse>>
+    fun joinChatByInviteLink(link: String?): Single<BaseResponse<VKApiChatResponse>> {
+        return rest.request(
+            "messages.joinChatByInviteLink",
+            form("link" to link),
+            base(VKApiChatResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("messages.getInviteLink")
     fun getInviteLink(
-        @Field("peer_id") peer_id: Int?,
-        @Field("reset") reset: Int?
-    ): Single<BaseResponse<VKApiLinkResponse>>
+        peer_id: Int?,
+        reset: Int?
+    ): Single<BaseResponse<VKApiLinkResponse>> {
+        return rest.request(
+            "messages.getInviteLink",
+            form("peer_id" to peer_id, "reset" to reset),
+            base(VKApiLinkResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("execute")
-    fun customScript(@Field("code") code: String?): Single<BaseResponse<Int>>
+    fun customScript(code: String?): Single<BaseResponse<Int>> {
+        return rest.request("execute", form("code" to code), baseInt)
+    }
 
-    @FormUrlEncoded
-    @GET("utils.getServerTime")
-    fun getServerTime(): Single<BaseResponse<Long>>
+    fun getServerTime(): Single<BaseResponse<Long>> {
+        return rest.request("utils.getServerTime", null, baseLong)
+    }
 }

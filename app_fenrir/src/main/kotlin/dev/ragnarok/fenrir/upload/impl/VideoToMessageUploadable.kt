@@ -60,7 +60,12 @@ class VideoToMessageUploadable(
                     context, uri
                 )
                 networker.uploads()
-                    .uploadVideoRx(server.url, filename, `is`, listener)
+                    .uploadVideoRx(
+                        server.url ?: throw NotFoundException("upload url empty"),
+                        filename,
+                        `is`,
+                        listener
+                    )
                     .doFinally(safelyCloseAction(`is`))
                     .flatMap { dto ->
                         val video = Video().setId(dto.video_id).setOwnerId(dto.owner_id).setTitle(

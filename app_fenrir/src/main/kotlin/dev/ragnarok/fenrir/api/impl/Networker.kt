@@ -8,29 +8,29 @@ import dev.ragnarok.fenrir.settings.IProxySettings
 import io.reactivex.rxjava3.core.Single
 
 class Networker(settings: IProxySettings) : INetworker {
-    private val otherVkRetrofitProvider: IOtherVkRetrofitProvider
-    private val vkRetrofitProvider: IVkRetrofitProvider
-    private val uploadRetrofitProvider: IUploadRetrofitProvider
+    private val otherVkRestProvider: IOtherVkRestProvider
+    private val vkRestProvider: IVkRestProvider
+    private val uploadRestProvider: IUploadRestProvider
     override fun vkDefault(accountId: Int): IAccountApis {
-        return VkApies[accountId, vkRetrofitProvider]
+        return VkApies[accountId, vkRestProvider]
     }
 
     override fun vkManual(accountId: Int, accessToken: String): IAccountApis {
-        return VkApies.create(accountId, accessToken, vkRetrofitProvider)
+        return VkApies.create(accountId, accessToken, vkRestProvider)
     }
 
-    override fun getVkRetrofitProvider(): IVkRetrofitProvider {
-        return vkRetrofitProvider
+    override fun getVkRestProvider(): IVkRestProvider {
+        return vkRestProvider
     }
 
     override fun vkDirectAuth(): IAuthApi {
         return AuthApi(object : IDirectLoginSeviceProvider {
             override fun provideAuthService(): Single<IAuthService> {
-                return otherVkRetrofitProvider.provideAuthRetrofit()
-                    .map { wrapper ->
-                        wrapper.create(
-                            IAuthService::class.java
-                        )
+                return otherVkRestProvider.provideAuthRest()
+                    .map {
+                        val ret = IAuthService()
+                        ret.addon(it)
+                        ret
                     }
             }
         })
@@ -39,11 +39,11 @@ class Networker(settings: IProxySettings) : INetworker {
     override fun vkAuth(): IAuthApi {
         return AuthApi(object : IDirectLoginSeviceProvider {
             override fun provideAuthService(): Single<IAuthService> {
-                return otherVkRetrofitProvider.provideAuthServiceRetrofit()
-                    .map { wrapper ->
-                        wrapper.create(
-                            IAuthService::class.java
-                        )
+                return otherVkRestProvider.provideAuthServiceRest()
+                    .map {
+                        val ret = IAuthService()
+                        ret.addon(it)
+                        ret
                     }
             }
         })
@@ -52,27 +52,27 @@ class Networker(settings: IProxySettings) : INetworker {
     override fun localServerApi(): ILocalServerApi {
         return LocalServerApi(object : ILocalServerServiceProvider {
             override fun provideLocalServerService(): Single<ILocalServerService> {
-                return otherVkRetrofitProvider.provideLocalServerRetrofit()
-                    .map { wrapper ->
-                        wrapper.create(
-                            ILocalServerService::class.java
-                        )
+                return otherVkRestProvider.provideLocalServerRest()
+                    .map {
+                        val ret = ILocalServerService()
+                        ret.addon(it)
+                        ret
                     }
             }
         })
     }
 
     override fun longpoll(): ILongpollApi {
-        return LongpollApi(otherVkRetrofitProvider)
+        return LongpollApi(otherVkRestProvider)
     }
 
     override fun uploads(): IUploadApi {
-        return UploadApi(uploadRetrofitProvider)
+        return UploadApi(uploadRestProvider)
     }
 
     init {
-        otherVkRetrofitProvider = OtherVkRetrofitProvider(settings)
-        vkRetrofitProvider = VkRetrofitProvider(settings, VkMethodHttpClientFactory())
-        uploadRetrofitProvider = UploadRetrofitProvider(settings)
+        otherVkRestProvider = OtherVkRestProvider(settings)
+        vkRestProvider = VkRestProvider(settings, VkMethodHttpClientFactory())
+        uploadRestProvider = UploadRestProvider(settings)
     }
 }

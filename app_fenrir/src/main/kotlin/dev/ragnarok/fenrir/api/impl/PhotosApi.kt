@@ -15,7 +15,7 @@ import io.reactivex.rxjava3.core.Single
 internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     AbsApi(accountId, provider), IPhotosApi {
     override fun deleteAlbum(albumId: Int, groupId: Int?): Single<Boolean> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteAlbum(albumId, groupId)
                     .map(extractResponseWithErrorHandling())
@@ -24,7 +24,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun restore(ownerId: Int?, photoId: Int): Single<Boolean> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.restore(ownerId, photoId)
                     .map(extractResponseWithErrorHandling())
@@ -33,7 +33,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun delete(ownerId: Int?, photoId: Int): Single<Boolean> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.delete(ownerId, photoId)
                     .map(extractResponseWithErrorHandling())
@@ -42,7 +42,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun deleteComment(ownerId: Int?, commentId: Int): Single<Boolean> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteComment(ownerId, commentId)
                     .map(extractResponseWithErrorHandling())
@@ -51,7 +51,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun restoreComment(ownerId: Int?, commentId: Int): Single<Boolean> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.restoreComment(ownerId, commentId)
                     .map(extractResponseWithErrorHandling())
@@ -63,7 +63,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         ownerId: Int?, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
     ): Single<Boolean> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.editComment(
                     ownerId,
@@ -89,7 +89,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     ): Single<VKApiPhotoAlbum> {
         val privacyViewTxt = privacyView?.buildJsonArray()
         val privacyCommentTxt = privacyComment?.buildJsonArray()
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .createAlbum(
@@ -112,7 +112,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     ): Single<Boolean> {
         val privacyViewTxt = privacyView?.buildJsonArray()
         val privacyCommentTxt = privacyComment?.buildJsonArray()
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .editAlbum(
@@ -125,7 +125,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun copy(ownerId: Int, photoId: Int, accessKey: String?): Single<Int> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.copy(ownerId, photoId, accessKey)
                     .map(extractResponseWithErrorHandling())
@@ -137,7 +137,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         replyToComment: Int?, attachments: Collection<IAttachmentToken>?,
         stickerId: Int?, accessKey: String?, generatedUniqueId: Int?
     ): Single<Int> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .createComment(
@@ -170,7 +170,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         extended: Boolean?,
         fields: String?
     ): Single<DefaultCommentsResponse> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .getComments(
@@ -186,7 +186,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
             ids,
             ","
         ) { pair -> pair.ownerId.toString() + "_" + pair.id + if (pair.accessKey == null) "" else "_" + pair.accessKey }
-        return provideService(IPhotosService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IPhotosService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service.getById(line, 1, 1)
                     .map(extractResponseWithErrorHandling())
@@ -204,7 +204,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getUploadServer(albumId: Int, groupId: Int?): Single<VKApiUploadServer> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .getUploadServer(albumId, groupId)
@@ -217,7 +217,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         hash: String?,
         photo: String?
     ): Single<UploadOwnerPhotoResponse> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .saveOwnerPhoto(server, hash, photo)
@@ -226,7 +226,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getOwnerPhotoUploadServer(ownerId: Int?): Single<VKApiOwnerPhotoUploadServer> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .getOwnerPhotoUploadServer(ownerId)
@@ -235,7 +235,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getChatUploadServer(chat_id: Int?): Single<VKApiChatPhotoUploadServer> {
-        return provideService(IPhotosService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IPhotosService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
                     .getChatUploadServer(chat_id)
@@ -244,7 +244,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun setChatPhoto(file: String?): Single<UploadChatPhotoResponse> {
-        return provideService(IPhotosService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IPhotosService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
                     .setChatPhoto(file)
@@ -257,7 +257,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         server: Int, hash: String?, latitude: Double?,
         longitude: Double?, caption: String?
     ): Single<List<VKApiPhoto>> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .saveWallPhoto(
@@ -275,7 +275,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getWallUploadServer(groupId: Int?): Single<VKApiWallUploadServer> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .getWallUploadServer(groupId)
@@ -287,7 +287,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         albumId: Int, groupId: Int?, server: Int, photosList: String?,
         hash: String?, latitude: Double?, longitude: Double?, caption: String?
     ): Single<List<VKApiPhoto>> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
                     .save(albumId, groupId, server, photosList, hash, latitude, longitude, caption)
@@ -300,7 +300,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         rev: Boolean?, offset: Int?, count: Int?
     ): Single<Items<VKApiPhoto>> {
         val photos = join(photoIds, ",")
-        return provideService(IPhotosService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IPhotosService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service[ownerId, albumId, photos, integerFromBoolean(rev), 1, 1, offset, count]
                     .map(extractResponseWithErrorHandling())
@@ -314,7 +314,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiPhoto>> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.getUserPhotos(ownerId, extended, sort, offset, count)
                     .map(extractResponseWithErrorHandling())
@@ -328,7 +328,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiPhoto>> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.getAll(ownerId, extended, photo_sizes, offset, count, 0, 1, 0)
                     .map(extractResponseWithErrorHandling())
@@ -336,7 +336,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override val messagesUploadServer: Single<VKApiPhotoMessageServer>
-        get() = provideService(IPhotosService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        get() = provideService(IPhotosService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.messagesUploadServer
                     .map(extractResponseWithErrorHandling())
@@ -347,7 +347,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         photo: String?,
         hash: String?
     ): Single<List<VKApiPhoto>> {
-        return provideService(IPhotosService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IPhotosService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.saveMessagesPhoto(server, photo, hash)
                     .map(extractResponseWithErrorHandling())
@@ -360,7 +360,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         needCovers: Boolean?
     ): Single<Items<VKApiPhotoAlbum>> {
         val ids = join(albumIds, ",")
-        return provideService(IPhotosService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IPhotosService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service.getAlbums(
                     ownerId,
@@ -380,7 +380,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         photo_id: Int?,
         access_key: String?
     ): Single<List<VKApiPhotoTags>> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.getTags(ownerId, photo_id, access_key).map(
                     extractResponseWithErrorHandling()
@@ -395,7 +395,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiComment>> {
-        return provideService(IPhotosService::class.java, TokenType.USER)
+        return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.getAllComments(ownerId, album_id, need_likes, offset, count).map(
                     extractResponseWithErrorHandling()
@@ -414,7 +414,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiPhoto>> {
-        return provideService(IPhotosService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IPhotosService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service.search(
                     q,

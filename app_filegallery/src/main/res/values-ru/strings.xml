@@ -250,4 +250,6 @@
     <string name="limit_cache_images">Лимит кэша картинок в памяти</string>
     <string name="language_ui">Язык</string>
     <string name="scan_qr">Сканировать QR</string>
+    <string name="client_rest_shutdown">Запрос отменён</string>
+    <string name="internal_server_error">Ошибка сервера (HTTP: %1$d)</string>
 </resources>

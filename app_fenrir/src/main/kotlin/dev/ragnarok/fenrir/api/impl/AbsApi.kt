@@ -9,42 +9,42 @@ import dev.ragnarok.fenrir.api.model.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.Params
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.VkResponse
+import dev.ragnarok.fenrir.api.rest.HttpException
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import dev.ragnarok.fenrir.service.ApiErrorCodes
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.refresh.RefreshToken
 import dev.ragnarok.fenrir.util.serializeble.json.decodeFromStream
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import dev.ragnarok.fenrir.util.serializeble.retrofit.HttpCodeException
-import dev.ragnarok.fenrir.util.serializeble.retrofit.kotlinx.serialization.Serializer
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.exceptions.Exceptions
 import io.reactivex.rxjava3.functions.Function
+import kotlinx.serialization.KSerializer
 import okhttp3.*
-import java.lang.reflect.Type
 import java.util.*
 
-internal open class AbsApi(val accountId: Int, private val retrofitProvider: IServiceProvider) {
-    fun <T : Any> provideService(serviceClass: Class<T>, vararg tokenTypes: Int): Single<T> {
+internal open class AbsApi(val accountId: Int, private val restProvider: IServiceProvider) {
+    fun <T : IServiceRest> provideService(serviceClass: T, vararg tokenTypes: Int): Single<T> {
         var pTokenTypes: IntArray = tokenTypes
         if (pTokenTypes.nullOrEmpty()) {
             pTokenTypes = intArrayOf(TokenType.USER) // user by default
         }
-        return retrofitProvider.provideService(accountId, serviceClass, *pTokenTypes)
+        return restProvider.provideService(accountId, serviceClass, *pTokenTypes)
     }
 
     @Suppress("unchecked_cast")
     private fun <T : Any> rawVKRequest(
         method: String,
         postParams: Map<String, String>,
-        javaClass: Type, serializerType: Serializer
+        serializerType: KSerializer<*>
     ): Single<BaseResponse<T>> {
         val bodyBuilder = FormBody.Builder()
         for ((key, value) in postParams) {
             bodyBuilder.add(key, value)
         }
-        return Includes.networkInterfaces.getVkRetrofitProvider().provideNormalHttpClient(accountId)
+        return Includes.networkInterfaces.getVkRestProvider().provideNormalHttpClient(accountId)
             .flatMap { client ->
                 Single.create { emitter: SingleEmitter<Response> ->
                     val request: Request = Request.Builder()
@@ -53,35 +53,29 @@ internal open class AbsApi(val accountId: Int, private val retrofitProvider: ISe
                         )
                         .post(bodyBuilder.build())
                         .build()
-                    val call = client.newCall(request)
+                    val call = client.build().newCall(request)
                     emitter.setCancellable { call.cancel() }
                     try {
                         val response = call.execute()
                         if (!response.isSuccessful) {
-                            emitter.onError(HttpCodeException(response.code))
+                            emitter.tryOnError(HttpException(response.code))
                         } else {
                             emitter.onSuccess(response)
                         }
                         response.close()
                     } catch (e: Exception) {
-                        emitter.onError(e)
+                        emitter.tryOnError(e)
                     }
                 }
             }
             .map { response ->
                 val k = if (response.body.isMsgPack()) MsgPack().decodeFromOkioStream(
-                    serializerType.serializer(
-                        javaClass
-                    ), response.body.source()
+                    serializerType, response.body.source()
                 ) as BaseResponse<T> else kJson.decodeFromStream(
-                    serializerType.serializer(
-                        javaClass
-                    ), response.body.byteStream()
+                    serializerType, response.body.byteStream()
                 ) as BaseResponse<T>
                 k.error?.let {
-                    it.type = javaClass
                     it.serializer = serializerType
-
                     val o = ArrayList<Params>()
                     for ((key, value) in postParams) {
                         val tmp = Params()
@@ -107,7 +101,7 @@ internal open class AbsApi(val accountId: Int, private val retrofitProvider: ISe
         for ((key, value) in postParams) {
             bodyBuilder.add(key, value)
         }
-        return Includes.networkInterfaces.getVkRetrofitProvider().provideNormalHttpClient(accountId)
+        return Includes.networkInterfaces.getVkRestProvider().provideNormalHttpClient(accountId)
             .flatMap { client ->
                 Single.create { emitter: SingleEmitter<Response> ->
                     val request: Request = Request.Builder()
@@ -116,18 +110,18 @@ internal open class AbsApi(val accountId: Int, private val retrofitProvider: ISe
                         )
                         .post(bodyBuilder.build())
                         .build()
-                    val call = client.newCall(request)
+                    val call = client.build().newCall(request)
                     emitter.setCancellable { call.cancel() }
                     try {
                         val response = call.execute()
                         if (!response.isSuccessful) {
-                            emitter.onError(HttpCodeException(response.code))
+                            emitter.tryOnError(HttpException(response.code))
                         } else {
                             emitter.onSuccess(response)
                         }
                         response.close()
                     } catch (e: Exception) {
-                        emitter.onError(e)
+                        emitter.tryOnError(e)
                     }
                 }
             }
@@ -229,7 +223,6 @@ internal open class AbsApi(val accountId: Int, private val retrofitProvider: ISe
                     return@Function rawVKRequest<T>(
                         method,
                         params,
-                        it.type ?: throw UnsupportedOperationException(),
                         it.serializer ?: throw UnsupportedOperationException()
                     )
                         .map(extractResponseWithErrorHandling())
@@ -301,18 +294,15 @@ internal open class AbsApi(val accountId: Int, private val retrofitProvider: ISe
             return sb.toString()
         }
 
-
         fun formatAttachmentToken(token: IAttachmentToken): String {
             return token.format()
         }
-
 
         fun toQuotes(word: String?): String? {
             return if (word == null) {
                 null
             } else "\"" + word + "\""
         }
-
 
         fun integerFromBoolean(value: Boolean?): Int? {
             return if (value == null) null else if (value) 1 else 0

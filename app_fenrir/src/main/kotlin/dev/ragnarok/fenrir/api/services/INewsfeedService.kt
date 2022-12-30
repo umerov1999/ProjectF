@@ -3,94 +3,143 @@ package dev.ragnarok.fenrir.api.services
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiFeedList
 import dev.ragnarok.fenrir.api.model.response.*
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface INewsfeedService {
+class INewsfeedService : IServiceRest() {
     /**
      * filters post, photo, video, topic, market, note
      */
     //https://vk.com/dev/newsfeed.getComments
-    @FormUrlEncoded
-    @POST("newsfeed.getComments")
     fun getComments(
-        @Field("count") count: Int?,
-        @Field("filters") filters: String?,
-        @Field("reposts") reposts: String?,
-        @Field("start_time") startTime: Long?,
-        @Field("end_time") endTime: Long?,
-        @Field("last_comments_count") lastCommentsCount: Int?,
-        @Field("start_from") startFrom: String?,
-        @Field("fields") fields: String?,
-        @Field("photo_sizes") photoSizes: Int?
-    ): Single<BaseResponse<NewsfeedCommentsResponse>>
+        count: Int?,
+        filters: String?,
+        reposts: String?,
+        startTime: Long?,
+        endTime: Long?,
+        lastCommentsCount: Int?,
+        startFrom: String?,
+        fields: String?,
+        photoSizes: Int?
+    ): Single<BaseResponse<NewsfeedCommentsResponse>> {
+        return rest.request(
+            "newsfeed.getComments", form(
+                "count" to count,
+                "filters" to filters,
+                "reposts" to reposts,
+                "start_time" to startTime,
+                "end_time" to endTime,
+                "last_comments_count" to lastCommentsCount,
+                "start_from" to startFrom,
+                "fields" to fields,
+                "photo_sizes" to photoSizes
+            ), base(NewsfeedCommentsResponse.serializer())
+        )
+    }
 
     //https://vk.com/dev/newsfeed.getMentions
-    @FormUrlEncoded
-    @POST("newsfeed.getMentions")
     fun getMentions(
-        @Field("owner_id") owner_id: Int?,
-        @Field("count") count: Int?,
-        @Field("offset") offset: Int?,
-        @Field("start_time") startTime: Long?,
-        @Field("end_time") endTime: Long?
-    ): Single<BaseResponse<NewsfeedCommentsResponse>>
+        owner_id: Int?,
+        count: Int?,
+        offset: Int?,
+        startTime: Long?,
+        endTime: Long?
+    ): Single<BaseResponse<NewsfeedCommentsResponse>> {
+        return rest.request(
+            "newsfeed.getMentions", form(
+                "owner_id" to owner_id,
+                "count" to count,
+                "offset" to offset,
+                "start_time" to startTime,
+                "end_time" to endTime
+            ), base(NewsfeedCommentsResponse.serializer())
+        )
+    }
 
     //https://vk.com/dev/newsfeed.getLists
-    @FormUrlEncoded
-    @POST("newsfeed.getLists")
     fun getLists(
-        @Field("list_ids") listIds: String?,
-        @Field("extended") extended: Int?
-    ): Single<BaseResponse<Items<VKApiFeedList>>>
+        listIds: String?,
+        extended: Int?
+    ): Single<BaseResponse<Items<VKApiFeedList>>> {
+        return rest.request(
+            "newsfeed.getLists", form(
+                "list_ids" to listIds,
+                "extended" to extended
+            ), items(VKApiFeedList.serializer())
+        )
+    }
 
     //https://vk.com/dev/newsfeed.saveList
-    @FormUrlEncoded
-    @POST("newsfeed.saveList")
     fun saveList(
-        @Field("title") title: String?,
-        @Field("source_ids") source_ids: String?
-    ): Single<BaseResponse<Int>>
+        title: String?,
+        source_ids: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "newsfeed.saveList", form(
+                "title" to title,
+                "source_ids" to source_ids
+            ), baseInt
+        )
+    }
 
     //https://vk.com/dev/newsfeed.getBanned
-    @FormUrlEncoded
-    @POST("newsfeed.getBanned")
     fun getBanned(
-        @Field("extended") extended: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<NewsfeedBanResponse>>
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<NewsfeedBanResponse>> {
+        return rest.request(
+            "newsfeed.getBanned", form(
+                "extended" to extended,
+                "fields" to fields
+            ), base(NewsfeedBanResponse.serializer())
+        )
+    }
 
     //https://vk.com/dev/newsfeed.deleteBan
-    @FormUrlEncoded
-    @POST("newsfeed.deleteBan")
     fun deleteBan(
-        @Field("user_ids") user_ids: String?,
-        @Field("group_ids") group_ids: String?
-    ): Single<BaseResponse<Int>>
+        user_ids: String?,
+        group_ids: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "newsfeed.deleteBan", form(
+                "user_ids" to user_ids,
+                "group_ids" to group_ids
+            ), baseInt
+        )
+    }
 
     //https://vk.com/dev/newsfeed.addBan
-    @FormUrlEncoded
-    @POST("newsfeed.addBan")
     fun addBan(
-        @Field("user_ids") user_ids: String?,
-        @Field("group_ids") group_ids: String?
-    ): Single<BaseResponse<Int>>
+        user_ids: String?,
+        group_ids: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "newsfeed.addBan", form(
+                "user_ids" to user_ids,
+                "group_ids" to group_ids
+            ), baseInt
+        )
+    }
 
     //https://vk.com/dev/newsfeed.ignoreItem
-    @FormUrlEncoded
-    @POST("newsfeed.ignoreItem")
     fun ignoreItem(
-        @Field("type") type: String?,
-        @Field("owner_id") owner_id: Int?,
-        @Field("item_id") item_id: Int?
-    ): Single<BaseResponse<Int>>
+        type: String?,
+        owner_id: Int?,
+        item_id: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "newsfeed.ignoreItem", form(
+                "type" to type,
+                "owner_id" to owner_id,
+                "item_id" to item_id
+            ), baseInt
+        )
+    }
 
     //https://vk.com/dev/newsfeed.deleteList
-    @FormUrlEncoded
-    @POST("newsfeed.deleteList")
-    fun deleteList(@Field("list_id") list_id: Int?): Single<BaseResponse<Int>>
+    fun deleteList(list_id: Int?): Single<BaseResponse<Int>> {
+        return rest.request("newsfeed.deleteList", form("list_id" to list_id), baseInt)
+    }
 
     /**
      * Returns search results by statuses.
@@ -107,19 +156,31 @@ interface INewsfeedService {
      * @param fields    Additional fields of profiles and communities to return.
      * @return Returns the total number of posts and an array of wall objects
      */
-    @FormUrlEncoded
-    @POST("newsfeed.search")
     fun search(
-        @Field("q") query: String?,
-        @Field("extended") extended: Int?,
-        @Field("count") count: Int?,
-        @Field("latitude") latitude: Double?,
-        @Field("longitude") longitude: Double?,
-        @Field("start_time") startTime: Long?,
-        @Field("end_time") endTime: Long?,
-        @Field("start_from") startFrom: String?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<NewsfeedSearchResponse>>
+        query: String?,
+        extended: Int?,
+        count: Int?,
+        latitude: Double?,
+        longitude: Double?,
+        startTime: Long?,
+        endTime: Long?,
+        startFrom: String?,
+        fields: String?
+    ): Single<BaseResponse<NewsfeedSearchResponse>> {
+        return rest.request(
+            "newsfeed.search", form(
+                "q" to query,
+                "extended" to extended,
+                "count" to count,
+                "latitude" to latitude,
+                "longitude" to longitude,
+                "start_time" to startTime,
+                "end_time" to endTime,
+                "start_from" to startFrom,
+                "fields" to fields
+            ), base(NewsfeedSearchResponse.serializer())
+        )
+    }
 
     /**
      * Returns data required to show newsfeed for the current user.
@@ -156,52 +217,93 @@ interface INewsfeedService {
      * new_offset — Contains an offset parameter that is passed to get the next array of news.
      * next_from — Contains a from parameter that is passed to get the next array of news.
     </gid></gid></gid></uid></uid></uid> */
-    @FormUrlEncoded
-    @POST("newsfeed.get")
     operator fun get(
-        @Field("filters") filters: String?,
-        @Field("return_banned") returnBanned: Int?,
-        @Field("start_time") startTime: Long?,
-        @Field("end_time") endTime: Long?,
-        @Field("max_photos") maxPhotoCount: Int?,
-        @Field("source_ids") sourceIds: String?,
-        @Field("start_from") startFrom: String?,
-        @Field("count") count: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<NewsfeedResponse>>
+        filters: String?,
+        returnBanned: Int?,
+        startTime: Long?,
+        endTime: Long?,
+        maxPhotoCount: Int?,
+        sourceIds: String?,
+        startFrom: String?,
+        count: Int?,
+        fields: String?
+    ): Single<BaseResponse<NewsfeedResponse>> {
+        return rest.request(
+            "newsfeed.get", form(
+                "filters" to filters,
+                "return_banned" to returnBanned,
+                "start_time" to startTime,
+                "end_time" to endTime,
+                "max_photos" to maxPhotoCount,
+                "source_ids" to sourceIds,
+                "start_from" to startFrom,
+                "count" to count,
+                "fields" to fields
+            ), base(NewsfeedResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("newsfeed.getByType")
     fun getByType(
-        @Field("feed_type") feed_type: String,
-        @Field("filters") filters: String?,
-        @Field("return_banned") returnBanned: Int?,
-        @Field("start_time") startTime: Long?,
-        @Field("end_time") endTime: Long?,
-        @Field("max_photos") maxPhotoCount: Int?,
-        @Field("source_ids") sourceIds: String?,
-        @Field("start_from") startFrom: String?,
-        @Field("count") count: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<NewsfeedResponse>>
+        feed_type: String,
+        filters: String?,
+        returnBanned: Int?,
+        startTime: Long?,
+        endTime: Long?,
+        maxPhotoCount: Int?,
+        sourceIds: String?,
+        startFrom: String?,
+        count: Int?,
+        fields: String?
+    ): Single<BaseResponse<NewsfeedResponse>> {
+        return rest.request(
+            "newsfeed.getByType", form(
+                "feed_type" to feed_type,
+                "filters" to filters,
+                "return_banned" to returnBanned,
+                "start_time" to startTime,
+                "end_time" to endTime,
+                "max_photos" to maxPhotoCount,
+                "source_ids" to sourceIds,
+                "start_from" to startFrom,
+                "count" to count,
+                "fields" to fields
+            ), base(NewsfeedResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("newsfeed.getRecommended")
     fun getRecommended(
-        @Field("start_time") startTime: Long?,
-        @Field("end_time") endTime: Long?,
-        @Field("max_photos") maxPhotoCount: Int?,
-        @Field("start_from") startFrom: String?,
-        @Field("count") count: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<NewsfeedResponse>>
+        startTime: Long?,
+        endTime: Long?,
+        maxPhotoCount: Int?,
+        startFrom: String?,
+        count: Int?,
+        fields: String?
+    ): Single<BaseResponse<NewsfeedResponse>> {
+        return rest.request(
+            "newsfeed.getRecommended", form(
+                "start_time" to startTime,
+                "end_time" to endTime,
+                "max_photos" to maxPhotoCount,
+                "start_from" to startFrom,
+                "count" to count,
+                "fields" to fields
+            ), base(NewsfeedResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("execute.getFeedLikes")
     fun getFeedLikes(
-        @Field("max_photos") maxPhotoCount: Int?,
-        @Field("start_from") startFrom: String?,
-        @Field("count") count: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<NewsfeedResponse>>
+        maxPhotoCount: Int?,
+        startFrom: String?,
+        count: Int?,
+        fields: String?
+    ): Single<BaseResponse<NewsfeedResponse>> {
+        return rest.request(
+            "execute.getFeedLikes", form(
+                "max_photos" to maxPhotoCount,
+                "start_from" to startFrom,
+                "count" to count,
+                "fields" to fields
+            ), base(NewsfeedResponse.serializer())
+        )
+    }
 }

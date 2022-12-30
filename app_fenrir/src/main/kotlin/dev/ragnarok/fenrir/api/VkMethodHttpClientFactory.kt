@@ -15,7 +15,7 @@ class VkMethodHttpClientFactory : IVkMethodHttpClientFactory {
     override fun createDefaultVkHttpClient(
         accountId: Int,
         config: ProxyConfig?
-    ): OkHttpClient {
+    ): OkHttpClient.Builder {
         return createDefaultVkApiOkHttpClient(
             DefaultVkApiInterceptor(
                 accountId,
@@ -28,7 +28,7 @@ class VkMethodHttpClientFactory : IVkMethodHttpClientFactory {
         accountId: Int,
         token: String,
         config: ProxyConfig?
-    ): OkHttpClient {
+    ): OkHttpClient.Builder {
         return createDefaultVkApiOkHttpClient(
             CustomTokenVkApiInterceptor(
                 token,
@@ -39,7 +39,7 @@ class VkMethodHttpClientFactory : IVkMethodHttpClientFactory {
         )
     }
 
-    override fun createServiceVkHttpClient(config: ProxyConfig?): OkHttpClient {
+    override fun createServiceVkHttpClient(config: ProxyConfig?): OkHttpClient.Builder {
         return createDefaultVkApiOkHttpClient(
             CustomTokenVkApiInterceptor(
                 BuildConfig.SERVICE_TOKEN,
@@ -53,7 +53,7 @@ class VkMethodHttpClientFactory : IVkMethodHttpClientFactory {
     private fun createDefaultVkApiOkHttpClient(
         interceptor: AbsVkApiInterceptor,
         config: ProxyConfig?
-    ): OkHttpClient {
+    ): OkHttpClient.Builder {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
             .addInterceptor(interceptor)
             .readTimeout(15, TimeUnit.SECONDS)
@@ -68,13 +68,13 @@ class VkMethodHttpClientFactory : IVkMethodHttpClientFactory {
         ProxyUtil.applyProxyConfig(builder, config)
         HttpLoggerAndParser.adjust(builder)
         HttpLoggerAndParser.configureToIgnoreCertificates(builder)
-        return builder.build()
+        return builder
     }
 
     override fun createRawVkApiOkHttpClient(
         @AccountType type: Int,
         config: ProxyConfig?
-    ): OkHttpClient {
+    ): OkHttpClient.Builder {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
             .readTimeout(15, TimeUnit.SECONDS)
             .connectTimeout(15, TimeUnit.SECONDS)
@@ -88,6 +88,6 @@ class VkMethodHttpClientFactory : IVkMethodHttpClientFactory {
         ProxyUtil.applyProxyConfig(builder, config)
         HttpLoggerAndParser.adjust(builder)
         HttpLoggerAndParser.configureToIgnoreCertificates(builder)
-        return builder.build()
+        return builder
     }
 }

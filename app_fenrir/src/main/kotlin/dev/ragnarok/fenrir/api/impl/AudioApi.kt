@@ -20,7 +20,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     override fun setBroadcast(audio: AccessIdPair, targetIds: Collection<Int>): Single<List<Int>> {
         val f = join(setOf(audio), ",") { AccessIdPair.format(it) }
         val s = join(targetIds, ",")
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .setBroadcast(f, s)
@@ -38,7 +38,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiAudio>> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .search(
@@ -60,7 +60,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiArtist>> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .searchArtists(query, offset, count)
@@ -73,7 +73,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiAudioPlaylist>> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .searchPlaylists(query, offset, count)
@@ -82,7 +82,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun restore(audioId: Int, ownerId: Int?): Single<VKApiAudio> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .restore(audioId, ownerId)
@@ -91,7 +91,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun delete(audioId: Int, ownerId: Int): Single<Boolean> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .delete(audioId, ownerId)
@@ -113,7 +113,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         title: String?,
         text: String?
     ): Single<Int> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .edit(ownerId, audioId, artist, title, text)
@@ -122,7 +122,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun add(audioId: Int, ownerId: Int, groupId: Int?, accessKey: String?): Single<Int> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .add(audioId, ownerId, groupId, accessKey)
@@ -135,7 +135,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         title: String?,
         description: String?
     ): Single<VKApiAudioPlaylist> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .createPlaylist(ownerId, title, description)
@@ -149,7 +149,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         title: String?,
         description: String?
     ): Single<Int> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .editPlaylist(ownerId, playlist_id, title, description)
@@ -162,7 +162,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
     ): Single<Int> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .removeFromPlaylist(
@@ -178,7 +178,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
     ): Single<List<AddToPlaylistResponse>> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .addToPlaylist(
@@ -190,7 +190,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun reorder(ownerId: Int, audio_id: Int, before: Int?, after: Int?): Single<Int> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .reorder(ownerId, audio_id, before, after)
@@ -199,7 +199,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun trackEvents(events: String?): Single<Int> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .trackEvents(events)
@@ -210,7 +210,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     override fun getCatalogV2Sections(
         owner_id: Int, artist_id: String?, url: String?, query: String?, context: String?
     ): Single<VKApiCatalogV2ListResponse> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 (if (artist_id.nonNullNoEmpty()) service.getCatalogV2Artist(
                     artist_id,
@@ -229,7 +229,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     override fun getCatalogV2BlockItems(
         block_id: String, start_from: String?
     ): Single<VKApiCatalogV2BlockResponse> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .getCatalogV2BlockItems(block_id, start_from)
@@ -241,7 +241,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         section_id: String,
         start_from: String?
     ): Single<VKApiCatalogV2SectionResponse> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service.getCatalogV2Section(section_id, start_from)
                     .map(extractResponseWithErrorHandling())
@@ -249,7 +249,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun deletePlaylist(playlist_id: Int, ownerId: Int): Single<Int> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .deletePlaylist(playlist_id, ownerId)
@@ -262,7 +262,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         ownerId: Int,
         accessKey: String?
     ): Single<VKApiAudioPlaylist> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .followPlaylist(playlist_id, ownerId, accessKey)
@@ -271,7 +271,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun clonePlaylist(playlist_id: Int, ownerId: Int): Single<VKApiAudioPlaylist> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .clonePlaylist(playlist_id, ownerId)
@@ -284,7 +284,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         ownerId: Int,
         accessKey: String?
     ): Single<VKApiAudioPlaylist> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .getPlaylistById(playlist_id, ownerId, accessKey)
@@ -299,7 +299,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         count: Int?,
         accessKey: String?
     ): Single<Items<VKApiAudio>> {
-        return provideService(IAudioService::class.java).flatMap { service ->
+        return provideService(IAudioService()).flatMap { service ->
             service[playlist_id, ownerId, offset, count, accessKey].map(
                 extractResponseWithErrorHandling()
             )
@@ -311,7 +311,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiAudio>> {
-        return provideService(IAudioService::class.java).flatMap { service ->
+        return provideService(IAudioService()).flatMap { service ->
             service.getAudiosByArtist(artist_id, offset, count).map(
                 extractResponseWithErrorHandling()
             )
@@ -322,7 +322,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         foreign: Int?,
         genre: Int?, count: Int?
     ): Single<List<VKApiAudio>> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .getPopular(foreign, genre, count)
@@ -331,7 +331,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getRecommendations(audioOwnerId: Int?, count: Int?): Single<Items<VKApiAudio>> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .getRecommendations(audioOwnerId, count)
@@ -340,7 +340,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getRecommendationsByAudio(audio: String?, count: Int?): Single<Items<VKApiAudio>> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .getRecommendationsByAudio(audio, count)
@@ -353,7 +353,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         offset: Int,
         count: Int
     ): Single<Items<VKApiAudioPlaylist>> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .getPlaylists(owner_id, offset, count)
@@ -362,7 +362,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getPlaylistsCustom(code: String?): Single<ServicePlaylistResponse> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .getPlaylistsCustom(code)
@@ -375,7 +375,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
             ids.add(AccessIdPair(i.id, i.ownerId, i.accessKey))
         }
         val audio_string = join(ids, ",") { AccessIdPair.format(it) }
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .getById(audio_string)
@@ -389,7 +389,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
             ids.add(AccessIdPair(i.id, i.ownerId, i.accessKey))
         }
         val audio_string = join(ids, ",") { AccessIdPair.format(it) }
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .getByIdVersioned(audio_string, "5.90")
@@ -398,7 +398,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getLyrics(lyrics_id: Int): Single<VKApiLyrics> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .getLyrics(lyrics_id)
@@ -407,7 +407,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override val uploadServer: Single<VKApiAudioUploadServer>
-        get() = provideService(IAudioService::class.java)
+        get() = provideService(IAudioService())
             .flatMap { service ->
                 service.uploadServer
                     .map(extractResponseWithErrorHandling())
@@ -420,7 +420,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
         artist: String?,
         title: String?
     ): Single<VKApiAudio> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service.save(server, audio, hash, artist, title)
                     .map(extractResponseWithErrorHandling())
@@ -430,7 +430,7 @@ internal class AudioApi(accountId: Int, provider: IServiceProvider) :
     override fun getArtistById(
         artist_id: String
     ): Single<ArtistInfo> {
-        return provideService(IAudioService::class.java)
+        return provideService(IAudioService())
             .flatMap { service ->
                 service
                     .getArtistById(artist_id)

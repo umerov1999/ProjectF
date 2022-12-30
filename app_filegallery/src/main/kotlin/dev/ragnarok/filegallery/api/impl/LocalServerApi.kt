@@ -222,7 +222,7 @@ internal class LocalServerApi(private val service: ILocalServerServiceProvider) 
     }
 
     override fun remotePlayAudioRx(
-        server: String?,
+        server: String,
         filename: String?,
         `is`: InputStream,
         listener: PercentagePublisher?

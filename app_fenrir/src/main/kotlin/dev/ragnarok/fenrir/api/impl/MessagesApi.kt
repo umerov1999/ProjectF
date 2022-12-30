@@ -13,7 +13,7 @@ import io.reactivex.rxjava3.core.Single
 internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
     AbsApi(accountId, provider), IMessagesApi {
     private fun serviceRx(vararg tokenTypes: Int): Single<IMessageService> {
-        return provideService(IMessageService::class.java, *tokenTypes)
+        return provideService(IMessageService(), *tokenTypes)
     }
 
     override fun edit(

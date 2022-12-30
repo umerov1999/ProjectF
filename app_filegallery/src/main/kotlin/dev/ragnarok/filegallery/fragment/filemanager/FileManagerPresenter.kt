@@ -637,14 +637,14 @@ class FileManagerPresenter(
                 if (item.file_path?.let { it1 -> File(it1).delete() } == true) {
                     it.onComplete()
                 } else {
-                    it.onError(Throwable("Can't Delete File"))
+                    it.tryOnError(Throwable("Can't Delete File"))
                 }
             } else {
                 item.file_path?.let { it1 -> deleteRecursive(it1) }
                 if (item.file_path?.let { it1 -> File(it1).delete() } == true) {
                     it.onComplete()
                 } else {
-                    it.onError(Throwable("Can't Delete Folder"))
+                    it.tryOnError(Throwable("Can't Delete Folder"))
                 }
             }
         }.fromIOToMain()

@@ -3,10 +3,9 @@ package dev.ragnarok.fenrir.service
 import android.content.Context
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.ApiException
+import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import dev.ragnarok.fenrir.util.serializeble.retrofit.HttpCodeException
-import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -30,10 +29,11 @@ object ErrorLocalizer {
                 context.getString(R.string.error_not_found_message)
             }
             is HttpException -> {
-                context.getString(R.string.vk_servers_error, throwable.code())
-            }
-            is HttpCodeException -> {
-                context.getString(R.string.vk_servers_error, throwable.code)
+                if (throwable.code < 0) {
+                    context.getString(R.string.client_rest_shutdown)
+                } else {
+                    context.getString(R.string.vk_servers_error, throwable.code)
+                }
             }
             else -> throwable.message.nonNullNoEmpty({ it }, { throwable.toString() })
         }

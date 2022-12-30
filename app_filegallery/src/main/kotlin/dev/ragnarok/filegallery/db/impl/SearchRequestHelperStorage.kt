@@ -215,7 +215,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
     override fun insertTagOwner(name: String?): Single<TagOwner> {
         return Single.create { emitter: SingleEmitter<TagOwner> ->
             if (name.trimmedIsNullOrEmpty()) {
-                emitter.onError(Throwable("require name not null!!!"))
+                emitter.tryOnError(Throwable("require name not null!!!"))
             } else {
                 val nameClean = name.trim { it <= ' ' }
                 val db = helper.writableDatabase
@@ -241,7 +241,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                         db.setTransactionSuccessful()
                     }
                     db.endTransaction()
-                    emitter.onError(Throwable("require name not equals!!!"))
+                    emitter.tryOnError(Throwable("require name not equals!!!"))
                     return@create
                 }
                 val cv = ContentValues()
@@ -259,7 +259,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
     override fun updateNameTagOwner(id: Int, name: String?): Completable {
         return Completable.create { iti ->
             if (name.trimmedIsNullOrEmpty()) {
-                iti.onError(Throwable("require name not null!!!"))
+                iti.tryOnError(Throwable("require name not null!!!"))
             } else {
                 val nameClean = name.trim { it <= ' ' }
                 val db = helper.writableDatabase

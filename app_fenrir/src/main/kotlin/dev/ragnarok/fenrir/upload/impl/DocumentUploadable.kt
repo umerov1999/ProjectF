@@ -64,7 +64,12 @@ class DocumentUploadable(
                 }
                 val filename = UploadUtils.findFileName(context, uri)
                 networker.uploads()
-                    .uploadDocumentRx(server.url, filename, `is`, listener)
+                    .uploadDocumentRx(
+                        server.url ?: throw NotFoundException("upload url empty"),
+                        filename,
+                        `is`,
+                        listener
+                    )
                     .doFinally(safelyCloseAction(`is`))
                     .flatMap { dto ->
                         networker

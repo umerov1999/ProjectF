@@ -4,65 +4,105 @@ import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.LikeResponse
 import dev.ragnarok.fenrir.api.model.response.LikesListResponse
 import dev.ragnarok.fenrir.api.model.response.isLikeResponse
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface ILikesService {
+class ILikesService : IServiceRest() {
     //https://vk.com/dev/likes.getList
-    @FormUrlEncoded
-    @POST("likes.getList")
     fun getList(
-        @Field("type") type: String?,
-        @Field("owner_id") ownerId: Int?,
-        @Field("item_id") itemId: Int?,
-        @Field("page_url") pageUrl: String?,
-        @Field("filter") filter: String?,
-        @Field("friends_only") friendsOnly: Int?,
-        @Field("extended") extended: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("skip_own") skipOwn: Int?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<LikesListResponse>>
+        type: String?,
+        ownerId: Int?,
+        itemId: Int?,
+        pageUrl: String?,
+        filter: String?,
+        friendsOnly: Int?,
+        extended: Int?,
+        offset: Int?,
+        count: Int?,
+        skipOwn: Int?,
+        fields: String?
+    ): Single<BaseResponse<LikesListResponse>> {
+        return rest.request(
+            "likes.getList", form(
+                "type" to type,
+                "owner_id" to ownerId,
+                "item_id" to itemId,
+                "page_url" to pageUrl,
+                "filter" to filter,
+                "friends_only" to friendsOnly,
+                "extended" to extended,
+                "offset" to offset,
+                "count" to count,
+                "skip_own" to skipOwn,
+                "fields" to fields
+            ), base(LikesListResponse.serializer())
+        )
+    }
 
     //https://vk.com/dev/likes.delete
-    @FormUrlEncoded
-    @POST("likes.delete")
     fun delete(
-        @Field("type") type: String?,
-        @Field("owner_id") ownerId: Int?,
-        @Field("item_id") itemId: Int,
-        @Field("access_key") accessKey: String?
-    ): Single<BaseResponse<LikeResponse>>
+        type: String?,
+        ownerId: Int?,
+        itemId: Int,
+        accessKey: String?
+    ): Single<BaseResponse<LikeResponse>> {
+        return rest.request(
+            "likes.delete", form(
+                "type" to type,
+                "owner_id" to ownerId,
+                "item_id" to itemId,
+                "access_key" to accessKey
+            ), base(LikeResponse.serializer())
+        )
+    }
 
     //https://vk.com/dev/likes.add
-    @FormUrlEncoded
-    @POST("likes.add")
     fun add(
-        @Field("type") type: String?,
-        @Field("owner_id") ownerId: Int?,
-        @Field("item_id") itemId: Int,
-        @Field("access_key") accessKey: String?
-    ): Single<BaseResponse<LikeResponse>>
+        type: String?,
+        ownerId: Int?,
+        itemId: Int,
+        accessKey: String?
+    ): Single<BaseResponse<LikeResponse>> {
+        return rest.request(
+            "likes.add", form(
+                "type" to type,
+                "owner_id" to ownerId,
+                "item_id" to itemId,
+                "access_key" to accessKey
+            ), base(LikeResponse.serializer())
+        )
+    }
 
     //https://vk.com/dev/likes.isLiked
-    @FormUrlEncoded
-    @POST("likes.isLiked")
     fun isLiked(
-        @Field("type") type: String?,
-        @Field("owner_id") ownerId: Int?,
-        @Field("item_id") itemId: Int
-    ): Single<BaseResponse<isLikeResponse>>
+        type: String?,
+        ownerId: Int?,
+        itemId: Int
+    ): Single<BaseResponse<isLikeResponse>> {
+        return rest.request(
+            "likes.isLiked", form(
+                "type" to type,
+                "owner_id" to ownerId,
+                "item_id" to itemId
+            ), base(isLikeResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("execute")
     fun checkAndAddLike(
-        @Field("code") code: String?,
-        @Field("type") type: String?,
-        @Field("owner_id") ownerId: Int?,
-        @Field("item_id") itemId: Int,
-        @Field("access_key") accessKey: String?
-    ): Single<BaseResponse<Int>>
+        code: String?,
+        type: String?,
+        ownerId: Int?,
+        itemId: Int,
+        accessKey: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "execute", form(
+                "code" to code,
+                "type" to type,
+                "owner_id" to ownerId,
+                "item_id" to itemId,
+                "access_key" to accessKey
+            ), baseInt
+        )
+    }
 }

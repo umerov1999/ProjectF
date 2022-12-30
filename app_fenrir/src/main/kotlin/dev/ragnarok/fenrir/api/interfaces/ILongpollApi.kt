@@ -6,7 +6,7 @@ import io.reactivex.rxjava3.core.Single
 
 interface ILongpollApi {
     fun getUpdates(
-        server: String?,
+        server: String,
         key: String?,
         ts: Long,
         wait: Int,
@@ -15,7 +15,7 @@ interface ILongpollApi {
     ): Single<VkApiLongpollUpdates>
 
     fun getGroupUpdates(
-        server: String?,
+        server: String,
         key: String?,
         ts: String?,
         wait: Int

@@ -2,29 +2,44 @@ package dev.ragnarok.fenrir.api.services
 
 import dev.ragnarok.fenrir.api.model.longpoll.VkApiGroupLongpollUpdates
 import dev.ragnarok.fenrir.api.model.longpoll.VkApiLongpollUpdates
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.GET
-import retrofit2.http.Query
-import retrofit2.http.Url
 
-interface ILongpollUpdatesService {
-    @GET
+class ILongpollUpdatesService : IServiceRest() {
     fun getUpdates(
-        @Url server: String?,
-        @Query("act") act: String?,
-        @Query("key") key: String?,
-        @Query("ts") ts: Long,
-        @Query("wait") wait: Int,
-        @Query("mode") mode: Int,
-        @Query("version") version: Int
-    ): Single<VkApiLongpollUpdates>
+        server: String,
+        act: String?,
+        key: String?,
+        ts: Long,
+        wait: Int,
+        mode: Int,
+        version: Int
+    ): Single<VkApiLongpollUpdates> {
+        return rest.requestFullUrl(
+            server,
+            form(
+                "act" to act,
+                "key" to key,
+                "ts" to ts,
+                "wait" to wait,
+                "mode" to mode,
+                "version" to version
+            ),
+            VkApiLongpollUpdates.serializer()
+        )
+    }
 
-    @GET
     fun getGroupUpdates(
-        @Url server: String?,
-        @Query("act") act: String?,
-        @Query("key") key: String?,
-        @Query("ts") ts: String?,
-        @Query("wait") wait: Int
-    ): Single<VkApiGroupLongpollUpdates>
+        server: String,
+        act: String?,
+        key: String?,
+        ts: String?,
+        wait: Int
+    ): Single<VkApiGroupLongpollUpdates> {
+        return rest.requestFullUrl(
+            server,
+            form("act" to act, "key" to key, "ts" to ts, "wait" to wait),
+            VkApiGroupLongpollUpdates.serializer()
+        )
+    }
 }

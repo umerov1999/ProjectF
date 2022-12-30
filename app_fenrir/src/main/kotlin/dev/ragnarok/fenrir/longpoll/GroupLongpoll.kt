@@ -64,7 +64,7 @@ internal class GroupLongpoll(
         if (validServer) {
             compositeDisposable.add(
                 networker.longpoll()
-                    .getGroupUpdates(server, key, ts, 25)
+                    .getGroupUpdates(server ?: return, key, ts, 25)
                     .fromIOToMain()
                     .subscribe({ updates -> onUpdates(updates) }) { throwable ->
                         onUpdatesGetError(

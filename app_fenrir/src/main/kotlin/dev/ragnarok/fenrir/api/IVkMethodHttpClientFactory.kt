@@ -5,13 +5,16 @@ import dev.ragnarok.fenrir.model.ProxyConfig
 import okhttp3.OkHttpClient
 
 interface IVkMethodHttpClientFactory {
-    fun createDefaultVkHttpClient(accountId: Int, config: ProxyConfig?): OkHttpClient
+    fun createDefaultVkHttpClient(accountId: Int, config: ProxyConfig?): OkHttpClient.Builder
     fun createCustomVkHttpClient(
         accountId: Int,
         token: String,
         config: ProxyConfig?
-    ): OkHttpClient
+    ): OkHttpClient.Builder
 
-    fun createServiceVkHttpClient(config: ProxyConfig?): OkHttpClient
-    fun createRawVkApiOkHttpClient(@AccountType type: Int, config: ProxyConfig?): OkHttpClient
+    fun createServiceVkHttpClient(config: ProxyConfig?): OkHttpClient.Builder
+    fun createRawVkApiOkHttpClient(
+        @AccountType type: Int,
+        config: ProxyConfig?
+    ): OkHttpClient.Builder
 }

@@ -14,7 +14,7 @@ object Mp3InfoHelper {
                 .build()
             val response = builder.build().newCall(request).execute()
             if (!response.isSuccessful) {
-                it.onError(
+                it.tryOnError(
                     Exception(
                         "Server return " + response.code +
                                 " " + response.message
@@ -25,7 +25,7 @@ object Mp3InfoHelper {
                 response.body.close()
                 response.close()
                 if (length.isNullOrEmpty()) {
-                    it.onError(Exception("Empty content length!"))
+                    it.tryOnError(Exception("Empty content length!"))
                 }
                 length?.let { o ->
                     it.onSuccess(o.toLong())

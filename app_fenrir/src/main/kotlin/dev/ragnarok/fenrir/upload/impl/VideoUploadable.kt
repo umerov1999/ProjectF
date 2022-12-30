@@ -56,7 +56,12 @@ class VideoUploadable(private val context: Context, private val networker: INetw
                 }
                 val filename = UploadUtils.findFileName(context, uri)
                 return@flatMap networker.uploads()
-                    .uploadVideoRx(server.url, filename, `is`, listener)
+                    .uploadVideoRx(
+                        server.url ?: throw NotFoundException("upload url empty"),
+                        filename,
+                        `is`,
+                        listener
+                    )
                     .doFinally(safelyCloseAction(`is`))
                     .flatMap { dto ->
                         val result = UploadResult(

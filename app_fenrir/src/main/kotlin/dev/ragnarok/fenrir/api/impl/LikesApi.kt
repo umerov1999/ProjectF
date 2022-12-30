@@ -15,7 +15,7 @@ internal class LikesApi(accountId: Int, provider: IServiceProvider) :
         filter: String?, friendsOnly: Boolean?, offset: Int?,
         count: Int?, skipOwn: Boolean?, fields: String?
     ): Single<LikesListResponse> {
-        return provideService(ILikesService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(ILikesService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getList(
@@ -32,7 +32,7 @@ internal class LikesApi(accountId: Int, provider: IServiceProvider) :
         itemId: Int,
         accessKey: String?
     ): Single<Int> {
-        return provideService(ILikesService::class.java, TokenType.USER)
+        return provideService(ILikesService(), TokenType.USER)
             .flatMap { service ->
                 service.delete(type, ownerId, itemId, accessKey)
                     .map(extractResponseWithErrorHandling())
@@ -41,7 +41,7 @@ internal class LikesApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun add(type: String?, ownerId: Int?, itemId: Int, accessKey: String?): Single<Int> {
-        return provideService(ILikesService::class.java, TokenType.USER)
+        return provideService(ILikesService(), TokenType.USER)
             .flatMap { service ->
                 service.add(type, ownerId, itemId, accessKey)
                     .map(extractResponseWithErrorHandling())
@@ -50,7 +50,7 @@ internal class LikesApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun isLiked(type: String?, ownerId: Int?, itemId: Int): Single<Boolean> {
-        return provideService(ILikesService::class.java, TokenType.USER)
+        return provideService(ILikesService(), TokenType.USER)
             .flatMap { service ->
                 service.isLiked(type, ownerId, itemId)
                     .map(extractResponseWithErrorHandling())
@@ -64,7 +64,7 @@ internal class LikesApi(accountId: Int, provider: IServiceProvider) :
         itemId: Int,
         accessKey: String?
     ): Single<Int> {
-        return provideService(ILikesService::class.java, TokenType.USER)
+        return provideService(ILikesService(), TokenType.USER)
             .flatMap { service ->
                 service.checkAndAddLike(
                     "var type = Args.type; var owner_id = Args.owner_id; var item_id = Args.item_id; var access_key = Args.access_key; if(API.likes.isLiked({\"v\":\"" + Constants.API_VERSION + "\", \"type\": type, \"owner_id\": owner_id, \"item_id\": item_id}).liked == 0) {return API.likes.add({\"v\":\"" + Constants.API_VERSION + "\", \"type\": type, \"owner_id\": owner_id, \"item_id\": item_id, \"access_key\": access_key}).likes;} return 0;",

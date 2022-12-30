@@ -1217,6 +1217,7 @@
     <string name="button_login_send_code_via_sms">Адправіць код праз SMS</string>
     <string name="error_not_found_message">Аб\'ект не знойдзены</string>
     <string name="vk_servers_error">Сервера ВК упалі (HTTP: %1$d)</string>
+    <string name="client_rest_shutdown">Запыт скасаваны</string>
     <string name="quick_search_title">Хуткі пошук</string>
     <string name="countries_title">Краіны</string>
     <string name="message_channel">Паведамленні</string>

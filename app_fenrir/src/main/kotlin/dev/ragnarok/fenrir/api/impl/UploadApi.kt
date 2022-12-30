@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.api.impl
 
-import dev.ragnarok.fenrir.api.IUploadRetrofitProvider
+import dev.ragnarok.fenrir.api.IUploadRestProvider
 import dev.ragnarok.fenrir.api.PercentagePublisher
 import dev.ragnarok.fenrir.api.interfaces.IUploadApi
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
@@ -13,13 +13,17 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import java.io.InputStream
 
-class UploadApi internal constructor(private val provider: IUploadRetrofitProvider) : IUploadApi {
-    private fun service(): IUploadService {
-        return provider.provideUploadRetrofit().blockingGet().create(IUploadService::class.java)
+class UploadApi internal constructor(private val provider: IUploadRestProvider) : IUploadApi {
+    private fun service(): Single<IUploadService> {
+        return provider.provideUploadRest().map {
+            val ret = IUploadService()
+            ret.addon(it)
+            ret
+        }
     }
 
     override fun uploadDocumentRx(
-        server: String?,
+        server: String,
         filename: String?,
         doc: InputStream,
         listener: PercentagePublisher?
@@ -29,11 +33,11 @@ class UploadApi internal constructor(private val provider: IUploadRetrofitProvid
             "*/*".toMediaTypeOrNull()
         )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("file", filename, body)
-        return service().uploadDocumentRx(server, part)
+        return service().flatMap { service -> service.uploadDocumentRx(server, part) }
     }
 
     override fun uploadAudioRx(
-        server: String?,
+        server: String,
         filename: String?,
         `is`: InputStream,
         listener: PercentagePublisher?
@@ -43,11 +47,11 @@ class UploadApi internal constructor(private val provider: IUploadRetrofitProvid
             "*/*".toMediaTypeOrNull()
         )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("file", filename, body)
-        return service().uploadAudioRx(server, part)
+        return service().flatMap { service -> service.uploadAudioRx(server, part) }
     }
 
     override fun remotePlayAudioRx(
-        server: String?,
+        server: String,
         filename: String?,
         `is`: InputStream,
         listener: PercentagePublisher?
@@ -57,11 +61,11 @@ class UploadApi internal constructor(private val provider: IUploadRetrofitProvid
             "*/*".toMediaTypeOrNull()
         )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("audio", filename, body)
-        return service().remotePlayAudioRx(server, part)
+        return service().flatMap { service -> service.remotePlayAudioRx(server, part) }
     }
 
     override fun uploadStoryRx(
-        server: String?,
+        server: String,
         filename: String?,
         `is`: InputStream,
         listener: PercentagePublisher?,
@@ -77,11 +81,11 @@ class UploadApi internal constructor(private val provider: IUploadRetrofitProvid
                 filename,
                 body
             )
-        return service().uploadStoryRx(server, part)
+        return service().flatMap { service -> service.uploadStoryRx(server, part) }
     }
 
     override fun uploadVideoRx(
-        server: String?,
+        server: String,
         filename: String?,
         video: InputStream,
         listener: PercentagePublisher?
@@ -91,11 +95,11 @@ class UploadApi internal constructor(private val provider: IUploadRetrofitProvid
             "*/*".toMediaTypeOrNull()
         )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("file", filename, body)
-        return service().uploadVideoRx(server, part)
+        return service().flatMap { service -> service.uploadVideoRx(server, part) }
     }
 
     override fun uploadOwnerPhotoRx(
-        server: String?,
+        server: String,
         photo: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadOwnerPhotoDto> {
@@ -105,11 +109,11 @@ class UploadApi internal constructor(private val provider: IUploadRetrofitProvid
                 "image/*".toMediaTypeOrNull()
             )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("photo", "photo.jpg", body)
-        return service().uploadOwnerPhotoRx(server, part)
+        return service().flatMap { service -> service.uploadOwnerPhotoRx(server, part) }
     }
 
     override fun uploadChatPhotoRx(
-        server: String?,
+        server: String,
         photo: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadChatPhotoDto> {
@@ -119,11 +123,11 @@ class UploadApi internal constructor(private val provider: IUploadRetrofitProvid
                 "image/*".toMediaTypeOrNull()
             )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("photo", "photo.jpg", body)
-        return service().uploadChatPhotoRx(server, part)
+        return service().flatMap { service -> service.uploadChatPhotoRx(server, part) }
     }
 
     override fun uploadPhotoToWallRx(
-        server: String?,
+        server: String,
         photo: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadPhotoToWallDto> {
@@ -133,11 +137,11 @@ class UploadApi internal constructor(private val provider: IUploadRetrofitProvid
                 "image/*".toMediaTypeOrNull()
             )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("photo", "photo.jpg", body)
-        return service().uploadPhotoToWallRx(server, part)
+        return service().flatMap { service -> service.uploadPhotoToWallRx(server, part) }
     }
 
     override fun uploadPhotoToMessageRx(
-        server: String?,
+        server: String,
         `is`: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadPhotoToMessageDto> {
@@ -147,11 +151,11 @@ class UploadApi internal constructor(private val provider: IUploadRetrofitProvid
                 "image/*".toMediaTypeOrNull()
             )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("photo", "photo.jpg", body)
-        return service().uploadPhotoToMessageRx(server, part)
+        return service().flatMap { service -> service.uploadPhotoToMessageRx(server, part) }
     }
 
     override fun uploadPhotoToAlbumRx(
-        server: String?,
+        server: String,
         file1: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadPhotoToAlbumDto> {
@@ -161,7 +165,7 @@ class UploadApi internal constructor(private val provider: IUploadRetrofitProvid
                 "image/*".toMediaTypeOrNull()
             )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("file1", "photo.jpg", body)
-        return service().uploadPhotoToAlbumRx(server, part)
+        return service().flatMap { service -> service.uploadPhotoToAlbumRx(server, part) }
     }
 
     companion object {

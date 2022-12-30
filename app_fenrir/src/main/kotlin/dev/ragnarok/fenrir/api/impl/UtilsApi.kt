@@ -16,7 +16,7 @@ internal class UtilsApi(accountId: Int, provider: IServiceProvider) :
     AbsApi(accountId, provider), IUtilsApi {
     override fun resolveScreenName(screenName: String?): Single<ResolveDomailResponse> {
         return provideService(
-            IUtilsService::class.java,
+            IUtilsService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE
@@ -29,7 +29,7 @@ internal class UtilsApi(accountId: Int, provider: IServiceProvider) :
 
     override fun getShortLink(url: String?, t_private: Int?): Single<VKApiShortLink> {
         return provideService(
-            IUtilsService::class.java,
+            IUtilsService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE
@@ -41,7 +41,7 @@ internal class UtilsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getLastShortenedLinks(count: Int?, offset: Int?): Single<Items<VKApiShortLink>> {
-        return provideService(IUtilsService::class.java, TokenType.USER)
+        return provideService(IUtilsService(), TokenType.USER)
             .flatMap { service ->
                 service.getLastShortenedLinks(count, offset)
                     .map(extractResponseWithErrorHandling())
@@ -49,7 +49,7 @@ internal class UtilsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun deleteFromLastShortened(key: String?): Single<Int> {
-        return provideService(IUtilsService::class.java, TokenType.USER)
+        return provideService(IUtilsService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteFromLastShortened(key)
                     .map(extractResponseWithErrorHandling())
@@ -58,7 +58,7 @@ internal class UtilsApi(accountId: Int, provider: IServiceProvider) :
 
     override fun checkLink(url: String?): Single<VKApiCheckedLink> {
         return provideService(
-            IUtilsService::class.java,
+            IUtilsService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE
@@ -70,7 +70,7 @@ internal class UtilsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun joinChatByInviteLink(link: String?): Single<VKApiChatResponse> {
-        return provideService(IUtilsService::class.java, TokenType.USER)
+        return provideService(IUtilsService(), TokenType.USER)
             .flatMap { service ->
                 service.joinChatByInviteLink(link)
                     .map(extractResponseWithErrorHandling())
@@ -78,7 +78,7 @@ internal class UtilsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getInviteLink(peer_id: Int?, reset: Int?): Single<VKApiLinkResponse> {
-        return provideService(IUtilsService::class.java, TokenType.USER, TokenType.COMMUNITY)
+        return provideService(IUtilsService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.getInviteLink(peer_id, reset)
                     .map(extractResponseWithErrorHandling())
@@ -87,7 +87,7 @@ internal class UtilsApi(accountId: Int, provider: IServiceProvider) :
 
     override fun customScript(code: String?): Single<Int> {
         return provideService(
-            IUtilsService::class.java,
+            IUtilsService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE
@@ -100,7 +100,7 @@ internal class UtilsApi(accountId: Int, provider: IServiceProvider) :
 
     override fun getServerTime(): Single<Long> {
         return provideService(
-            IUtilsService::class.java,
+            IUtilsService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE

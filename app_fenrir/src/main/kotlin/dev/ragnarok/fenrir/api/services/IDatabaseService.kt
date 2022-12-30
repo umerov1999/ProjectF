@@ -5,16 +5,18 @@ import dev.ragnarok.fenrir.api.model.VKApiCity
 import dev.ragnarok.fenrir.api.model.VKApiCountry
 import dev.ragnarok.fenrir.api.model.database.*
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface IDatabaseService {
+class IDatabaseService : IServiceRest() {
     //https://vk.com/dev/database.getCitiesById
-    @FormUrlEncoded
-    @POST("database.getCities")
-    fun getCitiesById(@Field("city_ids") cityIds: String?): Single<BaseResponse<List<VKApiCity>>>
+    fun getCitiesById(cityIds: String?): Single<BaseResponse<List<VKApiCity>>> {
+        return rest.request(
+            "database.getCities",
+            form("city_ids" to cityIds),
+            baseList(VKApiCity.serializer())
+        )
+    }
 
     /**
      * Returns a list of countries.
@@ -26,14 +28,18 @@ interface IDatabaseService {
      * @param count   Number of countries to return. Default 100, maximum value 1000
      * @return Returns the total results number in count field and an array of objects describing countries in items field
      */
-    @FormUrlEncoded
-    @POST("database.getCountries")
     fun getCountries(
-        @Field("need_all") needAll: Int?,
-        @Field("code") code: String?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiCountry>>>
+        needAll: Int?,
+        code: String?,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiCountry>>> {
+        return rest.request(
+            "database.getCountries",
+            form("need_all" to needAll, "code" to code, "offset" to offset, "count" to count),
+            items(VKApiCountry.serializer())
+        )
+    }
 
     /**
      * Returns a list of school classes specified for the country.
@@ -41,9 +47,13 @@ interface IDatabaseService {
      * @param countryId Country ID.
      * @return Returns an array of objects, each of them is a pair of class ID and definition.
      */
-    @FormUrlEncoded
-    @POST("database.getSchoolClasses")
-    fun getSchoolClasses(@Field("country_id") countryId: Int?): Single<BaseResponse<List<SchoolClazzDto>>>
+    fun getSchoolClasses(countryId: Int?): Single<BaseResponse<List<SchoolClazzDto>>> {
+        return rest.request(
+            "database.getSchoolClasses",
+            form("country_id" to countryId),
+            baseList(SchoolClazzDto.serializer())
+        )
+    }
 
     /**
      * Returns list of chairs on a specified faculty.
@@ -53,13 +63,17 @@ interface IDatabaseService {
      * @param count     amount of chairs to get. Default 100, maximum value 10000
      * @return the total results number in count field and an array of objects describing chairs in items field
      */
-    @FormUrlEncoded
-    @POST("database.getChairs")
     fun getChairs(
-        @Field("faculty_id") facultyId: Int,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<ChairDto>>>
+        facultyId: Int,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<ChairDto>>> {
+        return rest.request(
+            "database.getChairs",
+            form("faculty_id" to facultyId, "offset" to offset, "count" to count),
+            items(ChairDto.serializer())
+        )
+    }
 
     /**
      * Returns a list of faculties (i.e., university departments).
@@ -70,13 +84,17 @@ interface IDatabaseService {
      * @return the total results number in count field and an array
      * of objects describing faculties in items field
      */
-    @FormUrlEncoded
-    @POST("database.getFaculties")
     fun getFaculties(
-        @Field("university_id") universityId: Int,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<FacultyDto>>>
+        universityId: Int,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<FacultyDto>>> {
+        return rest.request(
+            "database.getFaculties",
+            form("university_id" to universityId, "offset" to offset, "count" to count),
+            items(FacultyDto.serializer())
+        )
+    }
 
     /**
      * Returns a list of higher education institutions.
@@ -88,15 +106,23 @@ interface IDatabaseService {
      * @param count     Number of universities to return. Default 100, maximum value 10000
      * @return an array of objects describing universities
      */
-    @FormUrlEncoded
-    @POST("database.getUniversities")
     fun getUniversities(
-        @Field("q") query: String?,
-        @Field("country_id") countryId: Int?,
-        @Field("city_id") cityId: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<UniversityDto>>>
+        query: String?,
+        countryId: Int?,
+        cityId: Int?,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<UniversityDto>>> {
+        return rest.request(
+            "database.getUniversities", form(
+                "q" to query,
+                "country_id" to countryId,
+                "city_id" to cityId,
+                "offset" to offset,
+                "count" to count
+            ), items(UniversityDto.serializer())
+        )
+    }
 
     /**
      * Returns a list of schools.
@@ -107,14 +133,21 @@ interface IDatabaseService {
      * @param count  Number of schools to return. Default 100, maximum value 10000
      * @return an array of objects describing schools
      */
-    @FormUrlEncoded
-    @POST("database.getSchools")
     fun getSchools(
-        @Field("q") query: String?,
-        @Field("city_id") cityId: Int,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<SchoolDto>>>
+        query: String?,
+        cityId: Int,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<SchoolDto>>> {
+        return rest.request(
+            "database.getSchools", form(
+                "q" to query,
+                "city_id" to cityId,
+                "offset" to offset,
+                "count" to count
+            ), items(SchoolDto.serializer())
+        )
+    }
 
     /**
      * Returns a list of cities.
@@ -128,14 +161,23 @@ interface IDatabaseService {
      * @param count     Number of cities to return. Default 100, maximum value 1000
      * @return the total results number in count field and an array of objects describing cities in items field
      */
-    @FormUrlEncoded
-    @POST("database.getCities")
     fun getCities(
-        @Field("country_id") countryId: Int,
-        @Field("region_id") regionId: Int?,
-        @Field("q") query: String?,
-        @Field("need_all") needAll: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiCity>>>
+        countryId: Int,
+        regionId: Int?,
+        query: String?,
+        needAll: Int?,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiCity>>> {
+        return rest.request(
+            "database.getCities", form(
+                "country_id" to countryId,
+                "region_id" to regionId,
+                "q" to query,
+                "need_all" to needAll,
+                "offset" to offset,
+                "count" to count
+            ), items(VKApiCity.serializer())
+        )
+    }
 }

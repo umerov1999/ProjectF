@@ -13,6 +13,7 @@ import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
 import dev.ragnarok.fenrir.api.ProxyUtil
 import dev.ragnarok.fenrir.api.model.VKApiUser
+import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.domain.*
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.Repository.walls
@@ -30,7 +31,6 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import dev.ragnarok.fenrir.util.serializeble.retrofit.HttpCodeException
 import io.reactivex.rxjava3.core.Single
 import okhttp3.*
 import java.io.File
@@ -715,7 +715,7 @@ class UserWallPresenter(
             try {
                 val response = call.execute()
                 if (!response.isSuccessful) {
-                    emitter.onError(HttpCodeException(response.code))
+                    emitter.tryOnError(HttpException(response.code))
                 } else {
                     val resp = response.body.string()
                     val locale = Utils.appLocale
@@ -772,12 +772,12 @@ class UserWallPresenter(
                             )
                         )
                     } catch (e: ParseException) {
-                        emitter.onError(e)
+                        emitter.tryOnError(e)
                     }
                 }
                 response.close()
             } catch (e: Exception) {
-                emitter.onError(e)
+                emitter.tryOnError(e)
             }
         }
     }

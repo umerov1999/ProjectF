@@ -250,4 +250,6 @@
     <string name="limit_cache_images">Ліміт кэша карцінак у памяці</string>
     <string name="language_ui">Мова</string>
     <string name="scan_qr">Сканаваць QR</string>
+    <string name="client_rest_shutdown">Запыт скасаваны</string>
+    <string name="internal_server_error">Памылка сервера (HTTP: %1$d)</string>
 </resources>

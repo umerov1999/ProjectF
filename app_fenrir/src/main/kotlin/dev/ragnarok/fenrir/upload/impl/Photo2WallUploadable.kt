@@ -46,7 +46,11 @@ class Photo2WallUploadable(
             try {
                 `is` = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 networker.uploads()
-                    .uploadPhotoToWallRx(server.url, `is`!!, listener)
+                    .uploadPhotoToWallRx(
+                        server.url ?: throw NotFoundException("upload url empty"),
+                        `is`!!,
+                        listener
+                    )
                     .doFinally(safelyCloseAction(`is`))
                     .flatMap { dto ->
                         networker.vkDefault(accountId)

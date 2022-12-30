@@ -60,10 +60,10 @@ class AudioDuplicatePresenter(
                 if (bitrate != null) {
                     v.onSuccess((bitrate.toLong() / 1000).toInt())
                 } else {
-                    v.onError(Throwable("Can't receipt bitrate "))
+                    v.tryOnError(Throwable("Can't receipt bitrate "))
                 }
             } catch (e: RuntimeException) {
-                v.onError(e)
+                v.tryOnError(e)
             }
         }
     }
@@ -122,13 +122,13 @@ class AudioDuplicatePresenter(
                     if (bitrate != null) {
                         v.onSuccess((bitrate.toLong() / 1000).toInt())
                     } else {
-                        v.onError(Throwable("Can't receipt bitrate "))
+                        v.tryOnError(Throwable("Can't receipt bitrate "))
                     }
                 } else {
-                    v.onError(Throwable("Can't receipt bitrate "))
+                    v.tryOnError(Throwable("Can't receipt bitrate "))
                 }
             } catch (e: RuntimeException) {
-                v.onError(e)
+                v.tryOnError(e)
             }
         }
     }

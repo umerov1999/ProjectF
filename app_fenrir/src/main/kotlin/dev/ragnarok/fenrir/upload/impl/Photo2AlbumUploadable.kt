@@ -52,7 +52,11 @@ class Photo2AlbumUploadable(
             try {
                 `is` = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 networker.uploads()
-                    .uploadPhotoToAlbumRx(server.url, `is`!!, listener)
+                    .uploadPhotoToAlbumRx(
+                        server.url ?: throw NotFoundException("upload url empty"),
+                        `is`!!,
+                        listener
+                    )
                     .doFinally(safelyCloseAction(`is`))
                     .flatMap { dto ->
                         var latitude: Double? = null

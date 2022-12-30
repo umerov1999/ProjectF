@@ -1453,6 +1453,7 @@
     <string name="button_login_send_code_via_sms">Send code via SMS</string>
     <string name="error_not_found_message">Object not found</string>
     <string name="vk_servers_error">VK servers down (HTTP: %1$d)</string>
+    <string name="client_rest_shutdown">Request canceled</string>
     <string name="quick_search_title">Quick search</string>
     <string name="countries_title">Countries</string>
     <string name="message_channel">Messages</string>

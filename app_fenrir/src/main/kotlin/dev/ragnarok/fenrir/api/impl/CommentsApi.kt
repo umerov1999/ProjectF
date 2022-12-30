@@ -23,7 +23,7 @@ internal class CommentsApi(accountId: Int, provider: IServiceProvider) :
         fields: String?
     ): Single<CustomCommentsResponse> {
         val thread_id = threadComment ?: 0
-        return provideService(ICommentsService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(ICommentsService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service["var comment_id = Args.comment_id;\n" +
                         "var owner_id = Args.owner_id;\n" +

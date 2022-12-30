@@ -1,4 +1,4 @@
-include ":app_fenrir", ":app_filegallery", ":fenrir_common", ":picasso3", ":firebase-installations", ":image", ":retrofit", ":material", ":preference", ":viewpager2"
+include ":app_fenrir", ":app_filegallery", ":fenrir_common", ":picasso3", ":firebase-installations", ":image", ":material", ":preference", ":viewpager2"
 include ":camera2"
 
 //include ":libfenrir"

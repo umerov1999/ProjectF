@@ -89,13 +89,13 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                     if (bitrate != null && fl != null) {
                         v.onSuccess(Pair((bitrate.toLong() / 1000).toInt(), File(fl).length()))
                     } else {
-                        v.onError(Throwable("Can't receipt bitrate "))
+                        v.tryOnError(Throwable("Can't receipt bitrate "))
                     }
                 } else {
-                    v.onError(Throwable("Can't receipt bitrate "))
+                    v.tryOnError(Throwable("Can't receipt bitrate "))
                 }
             } catch (e: RuntimeException) {
-                v.onError(e)
+                v.tryOnError(e)
             }
         }
     }
@@ -120,16 +120,16 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                             it.onComplete()
                             return@create
                         } else {
-                            it.onError(Throwable("Can't strip metadata"))
+                            it.tryOnError(Throwable("Can't strip metadata"))
                         }
                     } else {
-                        it.onError(Throwable("Can't find file"))
+                        it.tryOnError(Throwable("Can't find file"))
                     }
                 } else {
-                    it.onError(Throwable("Can't find file"))
+                    it.tryOnError(Throwable("Can't find file"))
                 }
             } catch (e: RuntimeException) {
-                it.onError(e)
+                it.tryOnError(e)
             }
         }
     }

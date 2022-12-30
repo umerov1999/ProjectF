@@ -8,28 +8,28 @@ import java.io.InputStream
 
 interface IUploadApi {
     fun uploadDocumentRx(
-        server: String?,
+        server: String,
         filename: String?,
         doc: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadDocDto>
 
     fun uploadAudioRx(
-        server: String?,
+        server: String,
         filename: String?,
         `is`: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadAudioDto>
 
     fun remotePlayAudioRx(
-        server: String?,
+        server: String,
         filename: String?,
         `is`: InputStream,
         listener: PercentagePublisher?
     ): Single<BaseResponse<Int>>
 
     fun uploadStoryRx(
-        server: String?,
+        server: String,
         filename: String?,
         `is`: InputStream,
         listener: PercentagePublisher?,
@@ -37,38 +37,38 @@ interface IUploadApi {
     ): Single<BaseResponse<UploadStoryDto>>
 
     fun uploadVideoRx(
-        server: String?,
+        server: String,
         filename: String?,
         video: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadVideoDto>
 
     fun uploadOwnerPhotoRx(
-        server: String?,
+        server: String,
         photo: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadOwnerPhotoDto>
 
     fun uploadChatPhotoRx(
-        server: String?,
+        server: String,
         photo: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadChatPhotoDto>
 
     fun uploadPhotoToWallRx(
-        server: String?,
+        server: String,
         photo: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadPhotoToWallDto>
 
     fun uploadPhotoToMessageRx(
-        server: String?,
+        server: String,
         `is`: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadPhotoToMessageDto>
 
     fun uploadPhotoToAlbumRx(
-        server: String?,
+        server: String,
         file1: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadPhotoToAlbumDto>

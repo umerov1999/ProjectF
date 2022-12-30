@@ -3,60 +3,97 @@ package dev.ragnarok.fenrir.api.services
 import dev.ragnarok.fenrir.api.model.VKApiPoll
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.PollUsersResponse
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface IPollsService {
-    @FormUrlEncoded
-    @POST("polls.create")
+class IPollsService : IServiceRest() {
     fun create(
-        @Field("question") question: String?,
-        @Field("is_anonymous") isAnonymous: Int?,
-        @Field("is_multiple") isMultiple: Int?,
-        @Field("owner_id") ownerId: Int?,
-        @Field("add_answers") addAnswers: String?
-    ): Single<BaseResponse<VKApiPoll>>
+        question: String?,
+        isAnonymous: Int?,
+        isMultiple: Int?,
+        ownerId: Int?,
+        addAnswers: String?
+    ): Single<BaseResponse<VKApiPoll>> {
+        return rest.request(
+            "polls.create", form(
+                "question" to question,
+                "is_anonymous" to isAnonymous,
+                "is_multiple" to isMultiple,
+                "owner_id" to ownerId,
+                "add_answers" to addAnswers
+            ), base(VKApiPoll.serializer())
+        )
+    }
 
     //https://vk.com/dev/polls.deleteVote
-    @FormUrlEncoded
-    @POST("polls.deleteVote")
     fun deleteVote(
-        @Field("owner_id") ownerId: Int?,
-        @Field("poll_id") pollId: Int,
-        @Field("answer_id") answerId: Long,
-        @Field("is_board") isBoard: Int?
-    ): Single<BaseResponse<Int>>
+        ownerId: Int?,
+        pollId: Int,
+        answerId: Long,
+        isBoard: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "polls.deleteVote", form(
+                "owner_id" to ownerId,
+                "poll_id" to pollId,
+                "answer_id" to answerId,
+                "is_board" to isBoard
+            ), baseInt
+        )
+    }
 
     //https://vk.com/dev/polls.addVote
-    @FormUrlEncoded
-    @POST("polls.addVote")
     fun addVote(
-        @Field("owner_id") ownerId: Int?,
-        @Field("poll_id") pollId: Int,
-        @Field("answer_ids") answerIds: String?,
-        @Field("is_board") isBoard: Int?
-    ): Single<BaseResponse<Int>>
+        ownerId: Int?,
+        pollId: Int,
+        answerIds: String?,
+        isBoard: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "polls.addVote", form(
+                "owner_id" to ownerId,
+                "poll_id" to pollId,
+                "answer_ids" to answerIds,
+                "is_board" to isBoard
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("polls.getById")
     fun getById(
-        @Field("owner_id") ownerId: Int?,
-        @Field("is_board") isBoard: Int?,
-        @Field("poll_id") pollId: Int?
-    ): Single<BaseResponse<VKApiPoll>>
+        ownerId: Int?,
+        isBoard: Int?,
+        pollId: Int?
+    ): Single<BaseResponse<VKApiPoll>> {
+        return rest.request(
+            "polls.getById", form(
+                "owner_id" to ownerId,
+                "is_board" to isBoard,
+                "poll_id" to pollId
+            ), base(VKApiPoll.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("polls.getVoters")
     fun getVoters(
-        @Field("owner_id") ownerId: Int,
-        @Field("poll_id") pollId: Int,
-        @Field("is_board") isBoard: Int?,
-        @Field("answer_ids") answer_ids: String,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("fields") fields: String?,
-        @Field("name_case") nameCase: String?
-    ): Single<BaseResponse<List<PollUsersResponse>>>
+        ownerId: Int,
+        pollId: Int,
+        isBoard: Int?,
+        answer_ids: String,
+        offset: Int?,
+        count: Int?,
+        fields: String?,
+        nameCase: String?
+    ): Single<BaseResponse<List<PollUsersResponse>>> {
+        return rest.request(
+            "polls.getVoters", form(
+                "owner_id" to ownerId,
+                "poll_id" to pollId,
+                "is_board" to isBoard,
+                "answer_ids" to answer_ids,
+                "offset" to offset,
+                "count" to count,
+                "fields" to fields,
+                "name_case" to nameCase
+            ), baseList(PollUsersResponse.serializer())
+        )
+    }
 }

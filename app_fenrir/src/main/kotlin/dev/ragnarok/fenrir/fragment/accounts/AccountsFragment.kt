@@ -40,6 +40,7 @@ import dev.ragnarok.fenrir.api.adapters.AbsAdapter.Companion.asPrimitiveSafe
 import dev.ragnarok.fenrir.api.adapters.AbsAdapter.Companion.has
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.db.DBHelper
 import dev.ragnarok.fenrir.dialog.directauth.DirectAuthDialog
 import dev.ragnarok.fenrir.dialog.directauth.DirectAuthDialog.Companion.newInstance
@@ -70,7 +71,6 @@ import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentThem
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
 import dev.ragnarok.fenrir.util.serializeble.json.*
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import dev.ragnarok.fenrir.util.serializeble.retrofit.HttpCodeException
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import io.reactivex.rxjava3.core.Single
@@ -737,7 +737,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
             .add(
                 "device_id", Utils.getDeviceId(provideApplicationContext())
             )
-        return Includes.networkInterfaces.getVkRetrofitProvider().provideRawHttpClient(type)
+        return Includes.networkInterfaces.getVkRestProvider().provideRawHttpClient(type)
             .flatMap { client ->
                 Single.create { emitter: SingleEmitter<Response> ->
                     val request: Request = Request.Builder()
@@ -747,18 +747,18 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
                         )
                         .post(bodyBuilder.build())
                         .build()
-                    val call = client.newCall(request)
+                    val call = client.build().newCall(request)
                     emitter.setCancellable { call.cancel() }
                     try {
                         val response = call.execute()
                         if (!response.isSuccessful) {
-                            emitter.onError(HttpCodeException(response.code))
+                            emitter.tryOnError(HttpException(response.code))
                         } else {
                             emitter.onSuccess(response)
                         }
                         response.close()
                     } catch (e: Exception) {
-                        emitter.onError(e)
+                        emitter.tryOnError(e)
                     }
                 }
             }

@@ -189,10 +189,10 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                         )
                     )
                 } else {
-                    v.onError(Throwable("Can't receipt bitrate "))
+                    v.tryOnError(Throwable("Can't receipt bitrate "))
                 }
             } catch (e: RuntimeException) {
-                v.onError(e)
+                v.tryOnError(e)
             }
         }
     }

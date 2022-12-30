@@ -13,7 +13,7 @@ import io.reactivex.rxjava3.core.Single
 internal class DatabaseApi(accountId: Int, provider: IServiceProvider) :
     AbsApi(accountId, provider), IDatabaseApi {
     override fun getCitiesById(cityIds: Collection<Int>): Single<List<VKApiCity>> {
-        return provideService(IDatabaseService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IDatabaseService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getCitiesById(join(cityIds, ",") { obj: Any -> obj.toString() })
@@ -27,7 +27,7 @@ internal class DatabaseApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiCountry>> {
-        return provideService(IDatabaseService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IDatabaseService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service.getCountries(integerFromBoolean(needAll), code, offset, count)
                     .map(extractResponseWithErrorHandling())
@@ -35,7 +35,7 @@ internal class DatabaseApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getSchoolClasses(countryId: Int?): Single<List<SchoolClazzDto>> {
-        return provideService(IDatabaseService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IDatabaseService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getSchoolClasses(countryId)
@@ -44,7 +44,7 @@ internal class DatabaseApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getChairs(facultyId: Int, offset: Int?, count: Int?): Single<Items<ChairDto>> {
-        return provideService(IDatabaseService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IDatabaseService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getChairs(facultyId, offset, count)
@@ -57,7 +57,7 @@ internal class DatabaseApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<FacultyDto>> {
-        return provideService(IDatabaseService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IDatabaseService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getFaculties(universityId, offset, count)
@@ -72,7 +72,7 @@ internal class DatabaseApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<UniversityDto>> {
-        return provideService(IDatabaseService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IDatabaseService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getUniversities(query, countryId, cityId, offset, count)
@@ -86,7 +86,7 @@ internal class DatabaseApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<SchoolDto>> {
-        return provideService(IDatabaseService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IDatabaseService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getSchools(query, cityId, offset, count)
@@ -102,7 +102,7 @@ internal class DatabaseApi(accountId: Int, provider: IServiceProvider) :
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiCity>> {
-        return provideService(IDatabaseService::class.java, TokenType.USER, TokenType.SERVICE)
+        return provideService(IDatabaseService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
                     .getCities(

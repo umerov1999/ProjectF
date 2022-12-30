@@ -1,11 +1,12 @@
 package dev.ragnarok.fenrir.api
 
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
 
 interface IServiceProvider {
-    fun <T : Any> provideService(
+    fun <T : IServiceRest> provideService(
         accountId: Int,
-        serviceClass: Class<T>,
+        serviceClass: T,
         vararg tokenTypes: Int
     ): Single<T>
 }

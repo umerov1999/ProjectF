@@ -4,172 +4,292 @@ import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.GroupLongpollServer
 import dev.ragnarok.fenrir.api.model.response.GroupWallInfoResponse
+import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
 
-interface IGroupsService {
-    @FormUrlEncoded
-    @POST("groups.editManager")
+class IGroupsService : IServiceRest() {
     fun editManager(
-        @Field("group_id") groupId: Int,
-        @Field("user_id") userId: Int,
-        @Field("role") role: String?,
-        @Field("is_contact") isContact: Int?,
-        @Field("contact_position") contactPosition: String?,
-        @Field("contact_email") contactEmail: String?,
-        @Field("contact_phone") contactPhone: String?
-    ): Single<BaseResponse<Int>>
+        groupId: Int,
+        userId: Int,
+        role: String?,
+        isContact: Int?,
+        contactPosition: String?,
+        contactEmail: String?,
+        contactPhone: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "groups.editManager", form(
+                "group_id" to groupId,
+                "user_id" to userId,
+                "role" to role,
+                "is_contact" to isContact,
+                "contact_position" to contactPosition,
+                "contact_email" to contactEmail,
+                "contact_phone" to contactPhone
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("groups.edit")
     fun edit(
-        @Field("group_id") groupId: Int,
-        @Field("title") title: String?,
-        @Field("description") description: String?,
-        @Field("screen_name") screen_name: String?,
-        @Field("access") access: Int?,
-        @Field("website") website: String?,
-        //@Field("public_category") public_category: Int?,
-        //@Field("public_subcategory") public_subcategory: Int?,
-        @Field("public_date") public_date: String?,
-        @Field("age_limits") age_limits: Int?,
-        @Field("obscene_filter") obscene_filter: Int?,
-        @Field("obscene_stopwords") obscene_stopwords: Int?,
-        @Field("obscene_words") obscene_words: String?
-    ): Single<BaseResponse<Int>>
+        groupId: Int,
+        title: String?,
+        description: String?,
+        screen_name: String?,
+        access: Int?,
+        website: String?,
+        //public_category: Int?,
+        //public_subcategory: Int?,
+        public_date: String?,
+        age_limits: Int?,
+        obscene_filter: Int?,
+        obscene_stopwords: Int?,
+        obscene_words: String?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "groups.edit", form(
+                "group_id" to groupId,
+                "title" to title,
+                "description" to description,
+                "screen_name" to screen_name,
+                "access" to access,
+                "website" to website,
+                "public_date" to public_date,
+                "age_limits" to age_limits,
+                "obscene_filter" to obscene_filter,
+                "obscene_stopwords" to obscene_stopwords,
+                "obscene_words" to obscene_words
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("groups.unban")
     fun unban(
-        @Field("group_id") groupId: Int,
-        @Field("owner_id") ownerId: Int
-    ): Single<BaseResponse<Int>>
+        groupId: Int,
+        ownerId: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "groups.unban", form(
+                "group_id" to groupId,
+                "owner_id" to ownerId
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("market.getAlbums")
     fun getMarketAlbums(
-        @Field("owner_id") owner_id: Int,
-        @Field("offset") offset: Int,
-        @Field("count") count: Int
-    ): Single<BaseResponse<Items<VKApiMarketAlbum>>>
+        owner_id: Int,
+        offset: Int,
+        count: Int
+    ): Single<BaseResponse<Items<VKApiMarketAlbum>>> {
+        return rest.request(
+            "market.getAlbums", form(
+                "owner_id" to owner_id,
+                "offset" to offset,
+                "count" to count
+            ), items(VKApiMarketAlbum.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("market.get")
     fun getMarket(
-        @Field("owner_id") owner_id: Int,
-        @Field("album_id") album_id: Int?,
-        @Field("offset") offset: Int,
-        @Field("count") count: Int,
-        @Field("extended") extended: Int?
-    ): Single<BaseResponse<Items<VKApiMarket>>>
+        owner_id: Int,
+        album_id: Int?,
+        offset: Int,
+        count: Int,
+        extended: Int?
+    ): Single<BaseResponse<Items<VKApiMarket>>> {
+        return rest.request(
+            "market.get", form(
+                "owner_id" to owner_id,
+                "album_id" to album_id,
+                "offset" to offset,
+                "count" to count,
+                "extended" to extended
+            ), items(VKApiMarket.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("market.getServices")
     fun getMarketServices(
-        @Field("owner_id") owner_id: Int,
-        @Field("offset") offset: Int,
-        @Field("count") count: Int,
-        @Field("extended") extended: Int?
-    ): Single<BaseResponse<Items<VKApiMarket>>>
+        owner_id: Int,
+        offset: Int,
+        count: Int,
+        extended: Int?
+    ): Single<BaseResponse<Items<VKApiMarket>>> {
+        return rest.request(
+            "market.getServices", form(
+                "owner_id" to owner_id,
+                "offset" to offset,
+                "count" to count,
+                "extended" to extended
+            ), items(VKApiMarket.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("market.getById")
     fun getMarketById(
-        @Field("item_ids") item_ids: String?,
-        @Field("extended") extended: Int?
-    ): Single<BaseResponse<Items<VKApiMarket>>>
+        item_ids: String?,
+        extended: Int?
+    ): Single<BaseResponse<Items<VKApiMarket>>> {
+        return rest.request(
+            "market.getById", form(
+                "item_ids" to item_ids,
+                "extended" to extended
+            ), items(VKApiMarket.serializer())
+        )
+    }
 
-    @POST("groups.ban")
-    @FormUrlEncoded
     fun ban(
-        @Field("group_id") groupId: Int,
-        @Field("owner_id") ownerId: Int,
-        @Field("end_date") endDate: Long?,
-        @Field("reason") reason: Int?,
-        @Field("comment") comment: String?,
-        @Field("comment_visible") commentVisible: Int?
-    ): Single<BaseResponse<Int>>
+        groupId: Int,
+        ownerId: Int,
+        endDate: Long?,
+        reason: Int?,
+        comment: String?,
+        commentVisible: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "groups.ban", form(
+                "group_id" to groupId,
+                "owner_id" to ownerId,
+                "end_date" to endDate,
+                "reason" to reason,
+                "comment" to comment,
+                "comment_visible" to commentVisible
+            ), baseInt
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("groups.getSettings")
-    fun getSettings(@Field("group_id") groupId: Int): Single<BaseResponse<GroupSettingsDto>>
+    fun getSettings(groupId: Int): Single<BaseResponse<GroupSettingsDto>> {
+        return rest.request(
+            "groups.getSettings",
+            form("group_id" to groupId),
+            base(GroupSettingsDto.serializer())
+        )
+    }
 
     //https://vk.com/dev/groups.getBanned
-    @FormUrlEncoded
-    @POST("groups.getBanned")
     fun getBanned(
-        @Field("group_id") groupId: Int,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("fields") fields: String?,
-        @Field("user_id") userId: Int?
-    ): Single<BaseResponse<Items<VKApiBanned>>>
+        groupId: Int,
+        offset: Int?,
+        count: Int?,
+        fields: String?,
+        userId: Int?
+    ): Single<BaseResponse<Items<VKApiBanned>>> {
+        return rest.request(
+            "groups.getBanned", form(
+                "group_id" to groupId,
+                "offset" to offset,
+                "count" to count,
+                "fields" to fields,
+                "user_id" to userId
+            ), items(VKApiBanned.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("execute")
     fun getGroupWallInfo(
-        @Field("code") code: String?,
-        @Field("group_id") groupId: String?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<GroupWallInfoResponse>>
+        code: String?,
+        groupId: String?,
+        fields: String?
+    ): Single<BaseResponse<GroupWallInfoResponse>> {
+        return rest.request(
+            "execute", form(
+                "code" to code,
+                "group_id" to groupId,
+                "fields" to fields
+            ), base(GroupWallInfoResponse.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("groups.getMembers")
     fun getMembers(
-        @Field("group_id") groupId: String?,
-        @Field("sort") sort: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?,
-        @Field("fields") fields: String?,
-        @Field("filter") filter: String?
-    ): Single<BaseResponse<Items<VKApiUser>>>
+        groupId: String?,
+        sort: Int?,
+        offset: Int?,
+        count: Int?,
+        fields: String?,
+        filter: String?
+    ): Single<BaseResponse<Items<VKApiUser>>> {
+        return rest.request(
+            "groups.getMembers", form(
+                "group_id" to groupId,
+                "sort" to sort,
+                "offset" to offset,
+                "count" to count,
+                "fields" to fields,
+                "filter" to filter
+            ), items(VKApiUser.serializer())
+        )
+    }
 
     //https://vk.com/dev/groups.search
-    @FormUrlEncoded
-    @POST("groups.search")
     fun search(
-        @Field("q") query: String?,
-        @Field("type") type: String?,
-        @Field("fields") fields: String?,
-        @Field("country_id") countryId: Int?,
-        @Field("city_id") cityId: Int?,
-        @Field("future") future: Int?,
-        @Field("market") market: Int?,
-        @Field("sort") sort: Int?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiCommunity>>>
+        query: String?,
+        type: String?,
+        fields: String?,
+        countryId: Int?,
+        cityId: Int?,
+        future: Int?,
+        market: Int?,
+        sort: Int?,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiCommunity>>> {
+        return rest.request(
+            "groups.search", form(
+                "q" to query,
+                "type" to type,
+                "fields" to fields,
+                "country_id" to countryId,
+                "city_id" to cityId,
+                "future" to future,
+                "market" to market,
+                "sort" to sort,
+                "offset" to offset,
+                "count" to count
+            ), items(VKApiCommunity.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("groups.getLongPollServer")
-    fun getLongPollServer(@Field("group_id") groupId: Int): Single<BaseResponse<GroupLongpollServer>>
+    fun getLongPollServer(groupId: Int): Single<BaseResponse<GroupLongpollServer>> {
+        return rest.request(
+            "groups.getLongPollServer",
+            form("group_id" to groupId),
+            base(GroupLongpollServer.serializer())
+        )
+    }
 
     //https://vk.com/dev/groups.leave
-    @FormUrlEncoded
-    @POST("groups.leave")
-    fun leave(@Field("group_id") groupId: Int): Single<BaseResponse<Int>>
+    fun leave(groupId: Int): Single<BaseResponse<Int>> {
+        return rest.request("groups.leave", form("group_id" to groupId), baseInt)
+    }
 
     //https://vk.com/dev/groups.join
-    @FormUrlEncoded
-    @POST("groups.join")
     fun join(
-        @Field("group_id") groupId: Int,
-        @Field("not_sure") notSure: Int?
-    ): Single<BaseResponse<Int>>
+        groupId: Int,
+        notSure: Int?
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "groups.join", form(
+                "group_id" to groupId,
+                "not_sure" to notSure
+            ), baseInt
+        )
+    }
 
     //https://vk.com/dev/groups.get
-    @FormUrlEncoded
-    @POST("groups.get")
     operator fun get(
-        @Field("user_id") userId: Int?,
-        @Field("extended") extended: Int?,
-        @Field("filter") filter: String?,
-        @Field("fields") fields: String?,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiCommunity>>>
+        userId: Int?,
+        extended: Int?,
+        filter: String?,
+        fields: String?,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiCommunity>>> {
+        return rest.request(
+            "groups.get", form(
+                "user_id" to userId,
+                "extended" to extended,
+                "filter" to filter,
+                "fields" to fields,
+                "offset" to offset,
+                "count" to count
+            ), items(VKApiCommunity.serializer())
+        )
+    }
 
     /**
      * Returns information about communities by their IDs.
@@ -180,19 +300,31 @@ interface IGroupsService {
      * @param fields   Group fields to return. List of comma-separated words
      * @return an array of objects describing communities
      */
-    @FormUrlEncoded
-    @POST("groups.getById")
     fun getById(
-        @Field("group_ids") groupIds: String?,
-        @Field("group_id") groupId: String?,
-        @Field("fields") fields: String?
-    ): Single<BaseResponse<List<VKApiCommunity>>>
+        groupIds: String?,
+        groupId: String?,
+        fields: String?
+    ): Single<BaseResponse<List<VKApiCommunity>>> {
+        return rest.request(
+            "groups.getById", form(
+                "group_ids" to groupIds,
+                "group_id" to groupId,
+                "fields" to fields
+            ), baseList(VKApiCommunity.serializer())
+        )
+    }
 
-    @FormUrlEncoded
-    @POST("groups.getChats")
     fun getChats(
-        @Field("group_id") groupId: Int,
-        @Field("offset") offset: Int?,
-        @Field("count") count: Int?
-    ): Single<BaseResponse<Items<VKApiGroupChats>>>
+        groupId: Int,
+        offset: Int?,
+        count: Int?
+    ): Single<BaseResponse<Items<VKApiGroupChats>>> {
+        return rest.request(
+            "groups.getChats", form(
+                "group_id" to groupId,
+                "offset" to offset,
+                "count" to count
+            ), items(VKApiGroupChats.serializer())
+        )
+    }
 }
