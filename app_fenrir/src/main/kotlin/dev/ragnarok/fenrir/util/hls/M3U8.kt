@@ -41,7 +41,7 @@ class M3U8 {
     val length: Single<Long>
         get() = Single.create { pp ->
             var ret = 0L
-            val client = Utils.createOkHttp(60, false).build()
+            val client = Utils.createOkHttp(15, false).build()
             try {
                 val mediaURL: URL
                 var m3u8Url = URL(url)
@@ -51,12 +51,13 @@ class M3U8 {
                         return@create
                     }
                     BufferedReader(InputStreamReader(im)).use { br ->
-                        var line: String
+                        var line: String?
                         val urls = ArrayList<Map.Entry<Long, URL>>()
                         var newurl: Long = 0
                         while (br.readLine().also { line = it } != null) {
-                            line = line.trim { it <= ' ' }
-                            val property = checkProperty(line)
+                            line = line?.trim { it <= ' ' }
+                            line ?: continue
+                            val property = checkProperty(line ?: return@create)
                             newurl = if (property == null) {
                                 0
                             } else if (property.type == "EXT-X-STREAM-INF") {
@@ -90,10 +91,11 @@ class M3U8 {
                     val type = KeyType.NONE
                     val key = ByteArray(16)
                     val iv = ByteArray(16)
-                    var line: String
+                    var line: String?
                     while (br.readLine().also { line = it } != null) {
-                        line = line.trim { it <= ' ' }
-                        val property = checkProperty(line)
+                        line = line?.trim { it <= ' ' }
+                        line ?: continue
+                        val property = checkProperty(line ?: return@use)
                         if (property != null) {
                             if (property.type == "FILE") {
                                 val tsUrl = URL(mediaURL, line)
@@ -117,6 +119,7 @@ class M3U8 {
                         ret += if (response.isSuccessful) {
                             val v = response.header("Content-Length")
                             response.body.close()
+                            response.close()
                             if (v.isNullOrEmpty()) {
                                 pp.onSuccess(0L)
                                 return@create
@@ -124,6 +127,7 @@ class M3U8 {
                             v.toLong()
                         } else {
                             pp.onSuccess(0L)
+                            response.close()
                             return@create
                         }
                         j++
@@ -333,14 +337,12 @@ class M3U8 {
                 sb.append("}")
             }
             values?.let {
-                if (values != null) {
-                    sb.append(", values = [ ")
-                    for (i in it) {
-                        sb.append(i)
-                        sb.append(", ")
-                    }
-                    sb.append("]")
+                sb.append(", values = [ ")
+                for (i in it) {
+                    sb.append(i)
+                    sb.append(", ")
                 }
+                sb.append("]")
             }
             return sb.toString()
         }

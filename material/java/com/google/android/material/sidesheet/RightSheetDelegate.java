@@ -16,15 +16,13 @@
 
 package com.google.android.material.sidesheet;
 
-import static com.google.android.material.sidesheet.Sheet.STATE_DRAGGING;
 import static com.google.android.material.sidesheet.Sheet.STATE_EXPANDED;
 import static com.google.android.material.sidesheet.Sheet.STATE_HIDDEN;
 import static java.lang.Math.max;
 
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import androidx.annotation.NonNull;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
 import com.google.android.material.sidesheet.Sheet.SheetEdge;
 import com.google.android.material.sidesheet.Sheet.StableSheetState;
@@ -44,7 +42,7 @@ final class RightSheetDelegate extends SheetDelegate {
   @SheetEdge
   @Override
   int getSheetEdge() {
-    return SideSheetBehavior.RIGHT;
+    return SideSheetBehavior.EDGE_RIGHT;
   }
 
   /** Returns the sheet's offset in pixels from the origin edge when hidden. */
@@ -106,79 +104,6 @@ final class RightSheetDelegate extends SheetDelegate {
   }
 
   @Override
-  <V extends View> void setTargetStateOnNestedPreScroll(
-      @NonNull CoordinatorLayout coordinatorLayout,
-      @NonNull V child,
-      @NonNull View target,
-      int dx,
-      int dy,
-      @NonNull int[] consumed,
-      int type) {
-    int currentLeft = child.getLeft();
-    int newLeft = currentLeft - dx;
-    if (dx < 0) { // Moving towards the left.
-      if (newLeft > getExpandedOffset()) {
-        consumed[1] = currentLeft - getExpandedOffset();
-        ViewCompat.offsetLeftAndRight(child, -consumed[1]);
-        sheetBehavior.setStateInternal(STATE_EXPANDED);
-      } else {
-        if (!sheetBehavior.isDraggable()) {
-          // Prevent dragging
-          return;
-        }
-
-        consumed[1] = dx;
-        ViewCompat.offsetLeftAndRight(child, -dx);
-        sheetBehavior.setStateInternal(STATE_DRAGGING);
-      }
-    } else if (dx > 0) { // Moving towards the right.
-      if (!target.canScrollHorizontally(-1)) {
-        if (newLeft <= getHiddenOffset()) {
-          if (!sheetBehavior.isDraggable()) {
-            // Prevent dragging
-            return;
-          }
-
-          consumed[1] = dx;
-          ViewCompat.offsetLeftAndRight(child, dx);
-          sheetBehavior.setStateInternal(STATE_DRAGGING);
-        } else {
-          consumed[1] = currentLeft - getHiddenOffset();
-          ViewCompat.offsetLeftAndRight(child, consumed[1]);
-          sheetBehavior.setStateInternal(STATE_HIDDEN);
-        }
-      }
-    }
-  }
-
-  @Override
-  @StableSheetState
-  <V extends View> int calculateTargetStateOnStopNestedScroll(@NonNull V child) {
-    @StableSheetState int targetState;
-    if (sheetBehavior.getLastNestedScrollDx() > 0) {
-      targetState = STATE_EXPANDED;
-    } else if (sheetBehavior.shouldHide(child, sheetBehavior.getXVelocity())) {
-      targetState = STATE_HIDDEN;
-    } else if (sheetBehavior.getLastNestedScrollDx() == 0) {
-      int currentLeft = child.getLeft();
-
-      if (Math.abs(currentLeft - getExpandedOffset()) < Math.abs(currentLeft - getHiddenOffset())) {
-        targetState = STATE_EXPANDED;
-      } else {
-        targetState = STATE_HIDDEN;
-      }
-    } else {
-      targetState = STATE_HIDDEN;
-    }
-    return targetState;
-  }
-
-  @Override
-  <V extends View> boolean hasReachedExpandedOffset(@NonNull V child) {
-    return child.getLeft() == getExpandedOffset();
-  }
-
-  @Override
   boolean shouldHide(@NonNull View child, float velocity) {
     final float newRight = child.getRight() + velocity * sheetBehavior.getHideFriction();
     return Math.abs(newRight) > sheetBehavior.getHideThreshold();
@@ -197,5 +122,25 @@ final class RightSheetDelegate extends SheetDelegate {
   @Override
   <V extends View> int getOutwardEdge(@NonNull V child) {
     return child.getLeft();
+  }
+
+  @Override
+  float calculateSlideOffsetBasedOnOutwardEdge(int left) {
+    float hiddenOffset = getHiddenOffset();
+    float sheetWidth = hiddenOffset - getExpandedOffset();
+
+    return (hiddenOffset - left) / sheetWidth;
+  }
+
+  @Override
+  void updateCoplanarSiblingLayoutParams(
+      @NonNull MarginLayoutParams coplanarSiblingLayoutParams, int sheetLeft, int sheetRight) {
+    int parentWidth = sheetBehavior.getParentWidth();
+
+    // Wait until the sheet partially enters the screen to avoid an initial content jump to the
+    // right edge of the screen.
+    if (sheetLeft <= parentWidth) {
+      coplanarSiblingLayoutParams.rightMargin = parentWidth - sheetLeft;
+    }
   }
 }

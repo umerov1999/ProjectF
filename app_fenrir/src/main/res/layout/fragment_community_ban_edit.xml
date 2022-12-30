@@ -71,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
                     android:gravity="end"
-                    android:textColor="?white_color"
+                    android:textColor="?white_color_contrast_fix"
                     android:textSize="@dimen/font_size_big_title"
                     tools:text="Umerov Artem" />
 
@@ -81,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
                     android:gravity="end"
-                    android:textColor="?white_color"
+                    android:textColor="?white_color_contrast_fix"
                     android:textSize="@dimen/font_size_subtitle"
                     tools:text="id98464648" />
 
@@ -92,7 +92,7 @@
                     android:layout_marginTop="8dp"
                     android:fontFamily="sans-serif-light"
                     android:gravity="end"
-                    android:textColor="?white_color"
+                    android:textColor="?white_color_contrast_fix"
                     android:textColorLink="?android:textColorPrimary"
                     android:textSize="@dimen/font_size_subtitle"
                     tools:text="Заблокирован 20 мая 2022 в 16:13" />

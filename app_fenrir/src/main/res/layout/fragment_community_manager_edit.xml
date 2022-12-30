@@ -71,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
                     android:gravity="end"
-                    android:textColor="?white_color"
+                    android:textColor="?white_color_contrast_fix"
                     android:textSize="@dimen/font_size_big_title"
                     tools:text="Umerov Artem" />
 
@@ -81,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
                     android:gravity="end"
-                    android:textColor="?white_color"
+                    android:textColor="?white_color_contrast_fix"
                     android:textSize="@dimen/font_size_subtitle"
                     tools:text="id98464648" />
 

@@ -38,7 +38,8 @@
 
         <item name="message_bubble_color">#D4FFFFFF</item>
         <item name="toast_background">#3E3E3E</item>
-        <item name="white_color">#FFFFFF</item>
+        <item name="white_color_contrast_fix">#FFFFFF</item>
+        <item name="black_color_contrast_fix">#000000</item>
         <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
 
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>

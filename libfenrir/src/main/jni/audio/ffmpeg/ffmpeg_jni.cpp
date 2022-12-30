@@ -15,7 +15,7 @@
  */
 #include <jni.h>
 #include <cstdlib>
-#include <android/log.h>
+#include "fenrir_native.h"
 
 extern "C" {
 #ifdef __cplusplus
@@ -31,10 +31,6 @@ extern "C" {
 #include <libavutil/opt.h>
 #include <libswresample/swresample.h>
 }
-
-#define LOG_TAG "ffmpeg_jni"
-#define LOGE(...) \
-  ((void)__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__))
 
 #define LIBRARY_FUNC(RETURN_TYPE, NAME, ...)                              \
   extern "C" {                                                            \
@@ -120,7 +116,7 @@ AUDIO_DECODER_FUNC(jlong, ffmpegInitialize, jstring codecName,
                    jint rawSampleRate, jint rawChannelCount) {
     const AVCodec *codec = getCodecByName(env, codecName);
     if (!codec) {
-        LOGE("Codec not found.");
+        LOGE("FFMPEG: Codec not found.");
         return 0L;
     }
     return (jlong) createContext(env, codec, extraData, outputFloat, rawSampleRate,
@@ -130,24 +126,24 @@ AUDIO_DECODER_FUNC(jlong, ffmpegInitialize, jstring codecName,
 AUDIO_DECODER_FUNC(jint, ffmpegDecode, jlong context, jobject inputData,
                    jint inputSize, jobject outputData, jint outputSize) {
     if (!context) {
-        LOGE("Context must be non-NULL.");
+        LOGE("FFMPEG: Context must be non-NULL.");
         return -1;
     }
     if (!inputData || !outputData) {
-        LOGE("Input and output buffers must be non-NULL.");
+        LOGE("FFMPEG: Input and output buffers must be non-NULL.");
         return -1;
     }
     if (inputSize < 0) {
-        LOGE("Invalid input buffer size: %d.", inputSize);
+        LOGE("FFMPEG: Invalid input buffer size: %d.", inputSize);
         return -1;
     }
     if (outputSize < 0) {
-        LOGE("Invalid output buffer length: %d", outputSize);
+        LOGE("FFMPEG: Invalid output buffer length: %d", outputSize);
         return -1;
     }
     AVPacket *packet = av_packet_alloc();
     if (packet == nullptr) {
-        LOGE("Invalid packet");
+        LOGE("FFMPEG: Invalid packet");
         return -1;
     }
     auto *inputBuffer = (uint8_t *) env->GetDirectBufferAddress(inputData);
@@ -161,7 +157,7 @@ AUDIO_DECODER_FUNC(jint, ffmpegDecode, jlong context, jobject inputData,
 
 AUDIO_DECODER_FUNC(jint, ffmpegGetChannelCount, jlong context) {
     if (!context) {
-        LOGE("Context must be non-NULL.");
+        LOGE("FFMPEG: Context must be non-NULL.");
         return -1;
     }
     return ((AVCodecContext *) context)->channels;
@@ -169,7 +165,7 @@ AUDIO_DECODER_FUNC(jint, ffmpegGetChannelCount, jlong context) {
 
 AUDIO_DECODER_FUNC(jint, ffmpegGetSampleRate, jlong context) {
     if (!context) {
-        LOGE("Context must be non-NULL.");
+        LOGE("FFMPEG: Context must be non-NULL.");
         return -1;
     }
     return ((AVCodecContext *) context)->sample_rate;
@@ -178,7 +174,7 @@ AUDIO_DECODER_FUNC(jint, ffmpegGetSampleRate, jlong context) {
 AUDIO_DECODER_FUNC(jlong, ffmpegReset, jlong jContext, jbyteArray extraData) {
     auto *context = (AVCodecContext *) jContext;
     if (!context) {
-        LOGE("Tried to reset without a context.");
+        LOGE("FFMPEG: Tried to reset without a context.");
         return 0L;
     }
 
@@ -189,7 +185,7 @@ AUDIO_DECODER_FUNC(jlong, ffmpegReset, jlong jContext, jbyteArray extraData) {
         releaseContext(context);
         const AVCodec *codec = avcodec_find_decoder(codecId);
         if (!codec) {
-            LOGE("Unexpected error finding codec %d.", codecId);
+            LOGE("FFMPEG: Unexpected error finding codec %d.", codecId);
             return 0L;
         }
         auto outputFloat =
@@ -224,7 +220,7 @@ AVCodecContext *createContext(JNIEnv *env, const AVCodec *codec, jbyteArray extr
                               jint rawChannelCount) {
     AVCodecContext *context = avcodec_alloc_context3(codec);
     if (!context) {
-        LOGE("Failed to allocate context.");
+        LOGE("FFMPEG: Failed to allocate context.");
         return nullptr;
     }
     context->request_sample_fmt =
@@ -235,7 +231,7 @@ AVCodecContext *createContext(JNIEnv *env, const AVCodec *codec, jbyteArray extr
         context->extradata =
                 (uint8_t *) av_malloc(size + AV_INPUT_BUFFER_PADDING_SIZE);
         if (!context->extradata) {
-            LOGE("Failed to allocate extradata.");
+            LOGE("FFMPEG: Failed to allocate extradata.");
             releaseContext(context);
             return nullptr;
         }
@@ -272,7 +268,7 @@ int decodePacket(AVCodecContext *context, AVPacket *packet,
     while (true) {
         AVFrame *frame = av_frame_alloc();
         if (!frame) {
-            LOGE("Failed to allocate output frame.");
+            LOGE("FFMPEG: Failed to allocate output frame.");
             return AUDIO_DECODER_ERROR_INVALID_DATA;
         }
         result = avcodec_receive_frame(context, frame);
@@ -318,7 +314,7 @@ int decodePacket(AVCodecContext *context, AVPacket *packet,
         int outSamples = swr_get_out_samples(resampleContext, sampleCount);
         int bufferOutSize = outSampleSize * channelCount * outSamples;
         if (outSize + bufferOutSize > outputSize) {
-            LOGE("Output buffer size (%d) too small for output data (%d).",
+            LOGE("FFMPEG: Output buffer size (%d) too small for output data (%d).",
                  outputSize, outSize + bufferOutSize);
             av_frame_free(&frame);
             return AUDIO_DECODER_ERROR_INVALID_DATA;
@@ -332,7 +328,7 @@ int decodePacket(AVCodecContext *context, AVPacket *packet,
         }
         int available = swr_get_out_samples(resampleContext, 0);
         if (available != 0) {
-            LOGE("Expected no samples remaining after resampling, but found %d.",
+            LOGE("FFMPEG: Expected no samples remaining after resampling, but found %d.",
                  available);
             return AUDIO_DECODER_ERROR_INVALID_DATA;
         }
@@ -344,13 +340,13 @@ int decodePacket(AVCodecContext *context, AVPacket *packet,
 
 int transformError(int errorNumber) {
     return errorNumber == AVERROR_INVALIDDATA ? AUDIO_DECODER_ERROR_INVALID_DATA
-                                         : AUDIO_DECODER_ERROR_OTHER;
+                                              : AUDIO_DECODER_ERROR_OTHER;
 }
 
 void logError(const char *functionName, int errorNumber) {
     char *buffer = (char *) malloc(ERROR_STRING_BUFFER_LENGTH * sizeof(char));
     av_strerror(errorNumber, buffer, ERROR_STRING_BUFFER_LENGTH);
-    LOGE("Error in %s: %s", functionName, buffer);
+    LOGE("FFMPEG: Error in %s: %s", functionName, buffer);
     free(buffer);
 }
 

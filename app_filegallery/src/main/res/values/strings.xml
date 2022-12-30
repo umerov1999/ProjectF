@@ -318,7 +318,7 @@
     <string name="viewpager_page_transform">Viewpager2 animation</string>
     <string name="player_cover_transform">Player cover swipe animation</string>
     <string name="developer">Developer: Artyom Umerov</string>
-    <string name="repo">Repository: https://github.com/umerov1999/FileGallery</string>
+    <string name="repo">Repository: https://github.com/umerov1999/ProjectF</string>
     <string name="repo_local_server">Repository: https://github.com/umerov1999/FenrirMediaServer/releases</string>
     <string name="tag_count_a">%1$d tag</string>
     <string name="tag_count_b">%1$d tags</string>

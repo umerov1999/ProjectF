@@ -8,7 +8,7 @@ import androidx.annotation.StringRes
 import dev.ragnarok.fenrir_common.R
 
 object Common {
-    private const val RANDOM_PAGAN_SYMBOL_NUMBER = 22
+    private const val RANDOM_PAGAN_SYMBOL_NUMBER = 24
     private var randomPaganSymbol = -1
 
     fun randomizePaganSymbol() {
@@ -50,14 +50,14 @@ object Common {
             number = randomPaganSymbol
         }
         return when (number) {
-            2 -> PaganSymbolWall(R.drawable.ic_igdr)
-            3 -> PaganSymbolWall(R.drawable.valknut)
-            4 -> PaganSymbolWall(R.drawable.ic_mjolnir)
-            5 -> PaganSymbolWall(R.drawable.ic_vegvisir)
-            6 -> PaganSymbolWall(R.drawable.ic_vegvisir2)
-            7 -> PaganSymbolWall(R.drawable.ic_celtic_knot)
-            8 -> PaganSymbolWall(R.drawable.ic_celtic_flower)
-            9 -> PaganSymbolWall(R.drawable.ic_slepnir)
+            2 -> PaganSymbolWall(R.raw.svg_pagan_igdr, 120f, 120f)
+            3 -> PaganSymbolWall(R.raw.svg_pagan_valknut, 160f, 160f)
+            4 -> PaganSymbolWall(R.raw.svg_pagan_mjolnir, 108f, 108f)
+            5 -> PaganSymbolWall(R.raw.svg_pagan_vegvisir, 140f, 140f)
+            6 -> PaganSymbolWall(R.raw.svg_pagan_vegvisir2, 160f, 160f)
+            7 -> PaganSymbolWall(R.raw.svg_pagan_celtic_knot, 108f, 108f)
+            8 -> PaganSymbolWall(R.raw.svg_pagan_celtic_flower, 180f, 180f)
+            9 -> PaganSymbolWall(R.raw.svg_pagan_slepnir, 108f, 108f)
             10 -> PaganSymbolWall(
                 R.raw.fenrir, 140f, intArrayOf(
                     0x333333,
@@ -66,23 +66,25 @@ object Common {
                     getColorSecondary(context)
                 )
             )
-            11 -> PaganSymbolWall(R.drawable.ic_triskel)
-            12 -> PaganSymbolWall(R.drawable.ic_hell)
-            13 -> PaganSymbolWall(R.drawable.ic_odin)
-            14 -> PaganSymbolWall(R.drawable.ic_odin2)
-            15 -> PaganSymbolWall(R.drawable.ic_freya)
-            16 -> PaganSymbolWall(R.drawable.ic_viking)
-            17 -> PaganSymbolWall(R.drawable.ic_raven)
-            18 -> PaganSymbolWall(R.drawable.ic_pennywise)
-            19 -> PaganSymbolWall(R.drawable.ic_chur)
-            20 -> PaganSymbolWall(R.drawable.ic_fire)
+            11 -> PaganSymbolWall(R.raw.svg_pagan_triskel, 108f, 108f)
+            12 -> PaganSymbolWall(R.raw.svg_pagan_hell, 140f, 140f)
+            13 -> PaganSymbolWall(R.raw.svg_pagan_odin, 178f, 120f)
+            14 -> PaganSymbolWall(R.raw.svg_pagan_odin2, 160f, 160f)
+            15 -> PaganSymbolWall(R.raw.svg_pagan_freya, 160f, 160f)
+            16 -> PaganSymbolWall(R.raw.svg_pagan_viking, 140f, 140f)
+            17 -> PaganSymbolWall(R.raw.svg_pagan_raven, 160f, 160f)
+            18 -> PaganSymbolWall(R.raw.svg_pagan_pennywise, 140f, 140f)
+            19 -> PaganSymbolWall(R.raw.svg_pagan_chur, 150f, 150f)
+            20 -> PaganSymbolWall(R.raw.svg_pagan_fire, 180f, 180f)
             21 -> PaganSymbolWall(
                 R.raw.flame, 140f, intArrayOf(
                     0xFF812E,
                     getColorPrimary(context)
                 ), true
             )
-            else -> PaganSymbolWall(R.drawable.ic_cat)
+            22 -> PaganSymbolWall(R.raw.svg_pagan_valkyrie_1, 170f, 170f)
+            23 -> PaganSymbolWall(R.raw.svg_pagan_valkyrie_2, 180f, 180f)
+            else -> PaganSymbolWall(R.raw.svg_pagan_cat, 160f, 160f)
         }
     }
 
@@ -117,17 +119,19 @@ object Common {
                 0x777777,
                 getColorSecondary(context)
             )
-        ).fallBack(R.drawable.ic_cat)
+        ).fallBack(R.raw.svg_pagan_cat, 160f, 160f)
     }
 
     class PaganSymbolWall {
-        constructor(@DrawableRes icon: Int) {
+        constructor(@RawRes icon: Int, width: Float, height: Float) {
             isAnimation = false
             iconRes = icon
             lottieRes = R.raw.fenrir
-            this.replacement = null
-            widthHeight = 0f
-            useMoveColor = false
+            this.lottie_replacement = null
+            lottie_widthHeight = 140f
+            icon_width = width
+            icon_height = height
+            lottie_useMoveColor = false
         }
 
         constructor(
@@ -137,28 +141,35 @@ object Common {
             useMoveColor: Boolean = false
         ) {
             isAnimation = true
-            iconRes = R.drawable.ic_cat
+            iconRes = R.raw.svg_pagan_cat
             lottieRes = animation
-            this.replacement = replacement
-            this.widthHeight = widthHeight
-            this.useMoveColor = useMoveColor
+            this.lottie_replacement = replacement
+            this.lottie_widthHeight = widthHeight
+            this.lottie_useMoveColor = useMoveColor
+            icon_width = 160f
+            icon_height = 160f
         }
 
-        fun fallBack(@DrawableRes icon: Int): PaganSymbolWall {
+        fun fallBack(@RawRes icon: Int, width: Float, height: Float): PaganSymbolWall {
             iconRes = icon
+            icon_width = width
+            icon_height = height
             return this
         }
 
         val isAnimation: Boolean
 
-        @DrawableRes
+        @RawRes
         var iconRes: Int
             private set
 
         @RawRes
         val lottieRes: Int
-        val replacement: IntArray?
-        val widthHeight: Float
-        val useMoveColor: Boolean
+        val lottie_replacement: IntArray?
+        val lottie_widthHeight: Float
+        val lottie_useMoveColor: Boolean
+
+        var icon_width: Float
+        var icon_height: Float
     }
 }

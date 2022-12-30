@@ -756,7 +756,7 @@ class RLottieDrawable : Drawable, Animatable {
             screenRefreshRate = rate
         }
 
-        fun readRes(@RawRes rawRes: Int): BufferWriteNative? {
+        internal fun readRes(@RawRes rawRes: Int): BufferWriteNative? {
             var inputStream: InputStream? = null
             return try {
                 inputStream = appContext.resources.openRawResource(rawRes)

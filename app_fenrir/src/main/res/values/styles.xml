@@ -59,7 +59,8 @@
         <item name="sticker_hint_color">#DDFFFFFF</item>
         <item name="navi_menu_color">@android:color/white</item>
         <item name="toast_background">#3E3E3E</item>
-        <item name="white_color">#FFFFFF</item>
+        <item name="white_color_contrast_fix">#FFFFFF</item>
+        <item name="black_color_contrast_fix">#000000</item>
         <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
 
         <item name="chat_background_cookies">@drawable/cookies_white</item>
@@ -272,6 +273,7 @@
         <item name="colorPrimaryInverse">#4D4D4D</item>
         <item name="colorOnSecondaryContainer">#000000</item>
         <item name="colorSecondaryContainer">#CFCFCF</item>
+        <item name="black_color_contrast_fix">#FFFFFF</item>
     </style>
 
     <style name="App.DayNight.RedViolet" parent="App.DayNight">
@@ -775,7 +777,8 @@
         <item name="sticker_hint_color">#99FFFFFF</item>
         <item name="quick_reply_icon_color">#151515</item>
         <item name="dividerColor">#E1E3E7</item>
-        <item name="white_color">#FFFFFF</item>
+        <item name="white_color_contrast_fix">#FFFFFF</item>
+        <item name="black_color_contrast_fix">#000000</item>
         <item name="badgeStyle">@style/Theme.BadgeStyle</item>
         <item name="materialCardStyle">@style/CardViewMD2</item>
         <item name="materialCardBackgroundStyle">@drawable/background_rectangle_stroke_filled</item>
@@ -824,16 +827,16 @@
     </style>
 
     <style name="Toolbar.Button.Navigation.TintedColored" parent="Widget.AppCompat.Toolbar.Button.Navigation">
-        <item name="tint">?white_color</item>
+        <item name="tint">?white_color_contrast_fix</item>
     </style>
 
     <style name="Theme.Toolbar.Colored" parent="ThemeOverlay.Material3.Toolbar.Surface">
         <item name="toolbarNavigationButtonStyle">@style/Toolbar.Button.Navigation.TintedColored
         </item>
-        <item name="actionMenuTextColor">?white_color</item>
+        <item name="actionMenuTextColor">?white_color_contrast_fix</item>
         <item name="android:textColor">?android:textColorSecondary</item>
-        <item name="android:textColorPrimary">?white_color</item>
-        <item name="colorControlNormal">?white_color</item>
+        <item name="android:textColorPrimary">?white_color_contrast_fix</item>
+        <item name="colorControlNormal">?white_color_contrast_fix</item>
     </style>
 
     <style name="Toolbar.Button.Navigation.Tinted" parent="Widget.AppCompat.Toolbar.Button.Navigation">

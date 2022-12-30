@@ -25,7 +25,6 @@ import io.reactivex.rxjava3.core.Completable
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
-import java.nio.charset.StandardCharsets
 import kotlin.math.abs
 
 class PostDownload(private val context: Context) {
@@ -45,7 +44,7 @@ class PostDownload(private val context: Context) {
     }
 
     private fun readBase64(`val`: String): String {
-        return String(Base64.decode(`val`, Base64.DEFAULT), StandardCharsets.UTF_8)
+        return String(Base64.decode(`val`, Base64.DEFAULT), Charsets.UTF_8)
     }
 
     private fun getAvatarUrl(owner: Owner): String {
@@ -427,7 +426,7 @@ class PostDownload(private val context: Context) {
                 val output: OutputStream = FileOutputStream(html)
                 val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
                 output.write(bom)
-                output.write(main.toByteArray(StandardCharsets.UTF_8))
+                output.write(main.toByteArray(Charsets.UTF_8))
                 output.flush()
                 output.close()
                 context.sendBroadcast(

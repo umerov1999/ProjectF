@@ -108,7 +108,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="2dp"
                 android:layout_toEndOf="@id/vk_photo_item_like"
-                android:textColor="?white_color"
+                android:textColor="?white_color_contrast_fix"
                 android:textSize="@dimen/font_size_additional"
                 android:textStyle="bold"
                 tools:text="4000" />
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:textColor="?white_color"
+                android:textColor="?white_color_contrast_fix"
                 android:textSize="@dimen/font_size_additional"
                 android:textStyle="bold"
                 tools:text="1.5K" />
@@ -135,7 +135,7 @@
                 android:contentDescription="@null"
                 android:padding="4dp"
                 android:src="@drawable/comment"
-                app:tint="?white_color" />
+                app:tint="?white_color_contrast_fix" />
 
             <ImageView
                 android:id="@+id/vk_photo_item_like"
@@ -146,7 +146,7 @@
                 android:contentDescription="@null"
                 android:padding="4dp"
                 android:src="@drawable/heart_filled"
-                app:tint="?white_color" />
+                app:tint="?white_color_contrast_fix" />
 
         </RelativeLayout>
 

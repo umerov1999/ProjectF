@@ -28,7 +28,6 @@ import kotlinx.serialization.encodeToString
 import okhttp3.ResponseBody
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.charset.StandardCharsets
 import java.util.*
 
 class RequestExecutePresenter(accountId: Int, savedInstanceState: Bundle?) :
@@ -93,7 +92,7 @@ class RequestExecutePresenter(accountId: Int, savedInstanceState: Bundle?) :
             val filename = makeLegalFilename(rMethod, "json")
             val file = File(Environment.getExternalStorageDirectory(), filename)
             file.delete()
-            val bytes = fullResponseBody?.toByteArray(StandardCharsets.UTF_8) ?: return
+            val bytes = fullResponseBody?.toByteArray(Charsets.UTF_8) ?: return
             out = FileOutputStream(file)
             val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
             out.write(bom)

@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-#include <android/log.h>
 #include <jni.h>
 
 #include <cstdlib>
 
 #include "opus.h"              // NOLINT
 #include "opus_multistream.h"  // NOLINT
-
-#define LOG_TAG "opus_jni"
-#define LOGE(...) \
-  ((void)__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__))
+#include "fenrir_native.h"
 
 #define DECODER_FUNC(RETURN_TYPE, NAME, ...)                          \
   extern "C" {                                                        \
@@ -68,12 +64,12 @@ DECODER_FUNC(jlong, opusInit, jint sampleRate, jint channelCount,
             sampleRate, channelCount, numStreams, numCoupled, streamMap, &status);
     env->ReleaseByteArrayElements(jStreamMap, streamMapBytes, 0);
     if (!decoder || status != OPUS_OK) {
-        LOGE("Failed to create Opus Decoder; status=%s", opus_strerror(status));
+        LOGE("OPUS: Failed to create Opus Decoder; status=%s", opus_strerror(status));
         return 0;
     }
     status = opus_multistream_decoder_ctl(decoder, OPUS_SET_GAIN(gain));
     if (status != OPUS_OK) {
-        LOGE("Failed to set Opus header gain; status=%s", opus_strerror(status));
+        LOGE("OPUS: Failed to set Opus header gain; status=%s", opus_strerror(status));
         return 0;
     }
 

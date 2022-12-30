@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <libyuv.h>
 #include <jni.h>
-#include "log.h"
+#include "fenrir_native.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>

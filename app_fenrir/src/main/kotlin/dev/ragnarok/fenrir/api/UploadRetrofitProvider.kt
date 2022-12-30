@@ -48,9 +48,10 @@ class UploadRetrofitProvider(private val proxySettings: IProxySettings) : IUploa
 
     private fun createUploadRetrofit(): Retrofit {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(40, TimeUnit.SECONDS)
-            .connectTimeout(40, TimeUnit.SECONDS)
-            .writeTimeout(40, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .callTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request =
                     chain.toRequestBuilder(false).vkHeader(true).addHeader(

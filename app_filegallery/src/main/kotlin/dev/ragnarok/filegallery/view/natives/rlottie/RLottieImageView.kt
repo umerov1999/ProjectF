@@ -91,6 +91,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
                 val input = BufferedInputStream(bfr)
                 cache.writeTempCacheFile(url, input)
                 input.close()
+                response.close()
                 cache.renameTempFile(url)
             } catch (e: Exception) {
                 u.onSuccess(false)

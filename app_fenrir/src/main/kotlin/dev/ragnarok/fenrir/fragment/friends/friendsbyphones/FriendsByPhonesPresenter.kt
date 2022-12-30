@@ -17,7 +17,6 @@ import dev.ragnarok.fenrir.util.serializeble.json.Json
 import kotlinx.serialization.builtins.ListSerializer
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.charset.StandardCharsets
 import java.util.*
 
 class FriendsByPhonesPresenter(accountId: Int, context: Context, savedInstanceState: Bundle?) :
@@ -61,7 +60,7 @@ class FriendsByPhonesPresenter(accountId: Int, context: Context, savedInstanceSt
             val bytes = Json {
                 prettyPrint = true
             }.encodeToString(ListSerializer(ContactConversation.serializer()), data).toByteArray(
-                StandardCharsets.UTF_8
+                Charsets.UTF_8
             )
             out = FileOutputStream(file)
             val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())

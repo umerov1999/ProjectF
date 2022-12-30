@@ -39,7 +39,7 @@ class Photo2WallUploadable(
             networker.vkDefault(accountId)
                 .photos()
                 .getWallUploadServer(groupId)
-                .map { s -> s }
+                .map { it }
         }
         return serverSingle.flatMap { server ->
             var `is`: InputStream? = null

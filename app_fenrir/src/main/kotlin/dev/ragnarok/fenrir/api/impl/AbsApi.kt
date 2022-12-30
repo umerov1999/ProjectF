@@ -14,6 +14,7 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.refresh.RefreshToken
 import dev.ragnarok.fenrir.util.serializeble.json.decodeFromStream
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
+import dev.ragnarok.fenrir.util.serializeble.retrofit.HttpCodeException
 import dev.ragnarok.fenrir.util.serializeble.retrofit.kotlinx.serialization.Serializer
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
@@ -21,7 +22,6 @@ import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.exceptions.Exceptions
 import io.reactivex.rxjava3.functions.Function
 import okhttp3.*
-import java.io.IOException
 import java.lang.reflect.Type
 import java.util.*
 
@@ -51,19 +51,21 @@ internal open class AbsApi(val accountId: Int, private val retrofitProvider: ISe
                         .url(
                             method
                         )
-                        .method("POST", bodyBuilder.build())
+                        .post(bodyBuilder.build())
                         .build()
                     val call = client.newCall(request)
                     emitter.setCancellable { call.cancel() }
-                    call.enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            emitter.onError(e)
-                        }
-
-                        override fun onResponse(call: Call, response: Response) {
+                    try {
+                        val response = call.execute()
+                        if (!response.isSuccessful) {
+                            emitter.onError(HttpCodeException(response.code))
+                        } else {
                             emitter.onSuccess(response)
                         }
-                    })
+                        response.close()
+                    } catch (e: Exception) {
+                        emitter.onError(e)
+                    }
                 }
             }
             .map { response ->
@@ -112,19 +114,21 @@ internal open class AbsApi(val accountId: Int, private val retrofitProvider: ISe
                         .url(
                             method
                         )
-                        .method("POST", bodyBuilder.build())
+                        .post(bodyBuilder.build())
                         .build()
                     val call = client.newCall(request)
                     emitter.setCancellable { call.cancel() }
-                    call.enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            emitter.onError(e)
-                        }
-
-                        override fun onResponse(call: Call, response: Response) {
+                    try {
+                        val response = call.execute()
+                        if (!response.isSuccessful) {
+                            emitter.onError(HttpCodeException(response.code))
+                        } else {
                             emitter.onSuccess(response)
                         }
-                    })
+                        response.close()
+                    } catch (e: Exception) {
+                        emitter.onError(e)
+                    }
                 }
             }
             .map {

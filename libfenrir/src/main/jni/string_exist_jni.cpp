@@ -10,18 +10,10 @@
 #include <unistd.h>
 #include <utility>
 #include "sha1.hpp"
-#include "tools.h"
-#include "log.h"
+#include "crc.hpp"
+#include "fenrir_native.h"
 
 using namespace std;
-
-#pragma pack(push, 1)
-struct HDR {
-    char hdr[4];
-    int size;
-};
-#pragma pack(pop)
-#define HEADER "\x02\x4C\x5A\x34"
 
 class StringExist {
 public:
@@ -83,6 +75,25 @@ private:
     bool mutexCreated;
     pthread_mutex_t lock{};
 };
+
+/*
+static std::string base36_encode_digit(uint64_t id) {
+    std::ostringstream s;
+    char digit;
+    while (id != 0) {
+        digit = char(id % 36);
+        if (digit < 10)
+            s.put('0' + digit);
+        else
+            s.put('a' + (digit - 10));
+        id /= 36;
+    }
+    if (s.str().empty()) {
+        s.put('0');
+    }
+    return s.str();
+}
+*/
 
 extern "C" JNIEXPORT jlong
 Java_dev_ragnarok_fenrir_module_StringExist_init(JNIEnv *, jobject, jboolean useMutex) {
@@ -210,17 +221,17 @@ Java_dev_ragnarok_fenrir_module_BufferWriteNative_compressLZ4Buffer(JNIEnv *env,
     }
     std::vector<char> out;
     auto cnt = LZ4_compressBound((int) bufPointer->size());
-    HDR hdr = {};
-    memcpy(hdr.hdr, HEADER, strlen(HEADER));
+    MY_LZ4HDR_PUSH hdr = {};
+    memcpy(hdr.hdr, MY_LZ4_HEADER, MY_LZ4_HEADER_LENGTH);
     hdr.size = (int) bufPointer->size();
 
-    out.resize(cnt + sizeof(HDR));
+    out.resize(cnt + sizeof(MY_LZ4HDR_PUSH));
     auto size = (uint32_t) LZ4_compress_default(bufPointer->data(),
-                                                ((char *) out.data() + sizeof(HDR)),
+                                                ((char *) out.data() + sizeof(MY_LZ4HDR_PUSH)),
                                                 (int) bufPointer->size(), cnt);
-    memcpy((char *) out.data(), &hdr, sizeof(HDR));
-    auto d = env->NewByteArray((int) size + (int) sizeof(HDR));
-    env->SetByteArrayRegion(d, 0, (int) size + (int) sizeof(HDR),
+    memcpy((char *) out.data(), &hdr, sizeof(MY_LZ4HDR_PUSH));
+    auto d = env->NewByteArray((int) size + (int) sizeof(MY_LZ4HDR_PUSH));
+    env->SetByteArrayRegion(d, 0, (int) size + (int) sizeof(MY_LZ4HDR_PUSH),
                             reinterpret_cast<const jbyte *>(out.data()));
     return d;
 }
@@ -232,15 +243,17 @@ Java_dev_ragnarok_fenrir_module_BufferWriteNative_deCompressLZ4Buffer(JNIEnv *en
         return nullptr;
     }
     auto *bufPointer = (std::vector<char> *) (intptr_t) pointer;
-    if (bufPointer->size() < 4 && memcmp(bufPointer->data(), HEADER, strlen(HEADER)) != 0) {
+    if (bufPointer->size() < 4 &&
+        memcmp(bufPointer->data(), MY_LZ4_HEADER, MY_LZ4_HEADER_LENGTH) != 0) {
         return nullptr;
     }
-    HDR hdr = {};
-    memcpy(&hdr, bufPointer->data(), sizeof(HDR));
+    MY_LZ4HDR_PUSH hdr = {};
+    memcpy(&hdr, bufPointer->data(), sizeof(MY_LZ4HDR_PUSH));
     std::vector<char> out;
     out.resize(hdr.size);
-    LZ4_decompress_safe(((const char *) bufPointer->data() + sizeof(HDR)), (char *) out.data(),
-                        (int) bufPointer->size() - (int) sizeof(HDR), hdr.size);
+    LZ4_decompress_safe(((const char *) bufPointer->data() + sizeof(MY_LZ4HDR_PUSH)),
+                        (char *) out.data(),
+                        (int) bufPointer->size() - (int) sizeof(MY_LZ4HDR_PUSH), hdr.size);
 
     auto d = env->NewByteArray((int) hdr.size);
     env->SetByteArrayRegion(d, 0, (int) hdr.size,

@@ -37,7 +37,7 @@
                     android:contentDescription="@null"
                     android:padding="16dp"
                     android:src="@drawable/file"
-                    app:tint="?white_color" />
+                    app:tint="?white_color_contrast_fix" />
 
                 <dev.ragnarok.fenrir.view.TouchImageView
                     android:id="@+id/fragment_document_preview"

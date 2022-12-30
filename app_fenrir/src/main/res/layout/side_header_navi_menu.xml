@@ -72,7 +72,7 @@
                 android:padding="4dp"
                 android:src="@drawable/verified"
                 android:visibility="gone"
-                app:tint="?white_color" />
+                app:tint="?white_color_contrast_fix" />
         </FrameLayout>
 
         <LinearLayout

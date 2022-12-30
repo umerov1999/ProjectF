@@ -41,7 +41,7 @@ class DocumentUploadable(
             networker.vkDefault(accountId)
                 .docs()
                 .getUploadServer(groupId)
-                .map { s -> s }
+                .map { it }
         } else {
             Single.just(initialServer)
         }

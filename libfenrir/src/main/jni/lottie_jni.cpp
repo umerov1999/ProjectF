@@ -8,11 +8,9 @@
 #include <map>
 #include <sys/stat.h>
 #include <utime.h>
-#include "log.h"
-#include "tools.h"
+#include "fenrir_native.h"
 #include "gif.h"
 
-extern "C" {
 using namespace rlottie;
 
 class LottieInfo {
@@ -22,10 +20,10 @@ public:
     std::string path;
 };
 
-static std::string doDecompressLottie(size_t length, char *bytes, bool &orig) {
+std::string doDecompressResource(size_t length, char *bytes, bool &orig) {
     orig = false;
     std::string data;
-    if (length >= 3 && memcmp(bytes, "\x1F\x8B\x08", 3) == 0) {
+    if (length >= GZIP_HEADER_LENGTH && memcmp(bytes, GZIP_HEADER, GZIP_HEADER_LENGTH) == 0) {
         z_stream zs;
         memset(&zs, 0, sizeof(zs));
 
@@ -52,24 +50,20 @@ static std::string doDecompressLottie(size_t length, char *bytes, bool &orig) {
         if (ret != Z_STREAM_END) {
             return "";
         }
-    } else if (length >= 4 && memcmp(bytes, "\x02\x4C\x5A\x34", 4) == 0) {
-#pragma pack(push, 1)
-        struct HDR {
-            char hdr[4];
-            int size;
-        };
-#pragma pack(pop)
-        HDR hdr = {};
-        memcpy(&hdr, bytes, sizeof(HDR));
+    } else if (length >= MY_LZ4_HEADER_LENGTH &&
+               memcmp(bytes, MY_LZ4_HEADER, MY_LZ4_HEADER_LENGTH) == 0) {
+        MY_LZ4HDR_PUSH hdr = {};
+        memcpy(&hdr, bytes, sizeof(MY_LZ4HDR_PUSH));
         data.resize(hdr.size);
-        LZ4_decompress_safe(((const char *) bytes + sizeof(HDR)), (char *) data.data(),
-                            (int) length - (int) sizeof(HDR), hdr.size);
+        LZ4_decompress_safe(((const char *) bytes + sizeof(MY_LZ4HDR_PUSH)), (char *) data.data(),
+                            (int) length - (int) sizeof(MY_LZ4HDR_PUSH), hdr.size);
     } else {
         orig = true;
     }
     return data;
 }
 
+extern "C" {
 JNIEXPORT jlong
 Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_create(JNIEnv *env, jobject, jstring src,
                                                                jintArray data,
@@ -115,7 +109,7 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_create(JNIEnv *env, jobj
     f.close();
     arr[length] = '\0';
     bool orig;
-    std::string jsonString = doDecompressLottie(length, arr, orig);
+    std::string jsonString = doDecompressResource(length, arr, orig);
     if (orig) {
         info->animation = rlottie::Animation::loadFromData(arr, colors);
     }
@@ -172,7 +166,7 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_createWithJson(JNIEnv *e
     auto *info = new LottieInfo();
     auto u = ((std::vector<char> *) (intptr_t) json);
     bool orig;
-    std::string jsonString = doDecompressLottie(u->size(), u->data(), orig);
+    std::string jsonString = doDecompressResource(u->size(), u->data(), orig);
     if (orig) {
         info->animation = rlottie::Animation::loadFromData(u->data(), colors);
     } else {
@@ -336,7 +330,7 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottie2Gif_lottie2gif(JNIEnv *env, jobj
     auto *info = new LottieInfo();
     auto u = ((std::vector<char> *) (intptr_t) json);
     bool orig;
-    std::string jsonString = doDecompressLottie(u->size(), u->data(), orig);
+    std::string jsonString = doDecompressResource(u->size(), u->data(), orig);
     if (orig) {
         info->animation = rlottie::Animation::loadFromData(u->data(), nullptr);
     } else {

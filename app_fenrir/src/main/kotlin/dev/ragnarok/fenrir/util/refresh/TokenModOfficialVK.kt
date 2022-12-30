@@ -14,7 +14,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.nio.charset.StandardCharsets
 import java.security.*
 import java.security.interfaces.RSAPrivateKey
 import java.util.*
@@ -163,9 +162,10 @@ object TokenModOfficialVK {
     @Throws(IOException::class)
     private fun doRequest(str: String, list: List<String>, str3: String): String {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(40, TimeUnit.SECONDS)
-            .connectTimeout(40, TimeUnit.SECONDS)
-            .writeTimeout(40, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .callTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 chain.proceed(
                     chain.toRequestBuilder(false)
@@ -211,7 +211,7 @@ object TokenModOfficialVK {
             instance.initSign(privateKey)
             instance.update(
                 join("\n", arrayOf("com.vkontakte.android", str)).toByteArray(
-                    StandardCharsets.UTF_8
+                    Charsets.UTF_8
                 )
             )
             Base64.encodeToString(instance.sign(), Base64.URL_SAFE or Base64.NO_WRAP)

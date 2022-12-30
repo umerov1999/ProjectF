@@ -36,6 +36,50 @@ foreach (ffmpeg_lib avutil swresample avcodec avformat swscale)
             ${ffmpeg_lib_file_path})
 endforeach ()
 
+add_library(thorvg STATIC
+        thorvg/src/lib/sw_engine/tvgSwFill.cpp
+        thorvg/src/lib/sw_engine/tvgSwImage.cpp
+        thorvg/src/lib/sw_engine/tvgSwMath.cpp
+        thorvg/src/lib/sw_engine/tvgSwMemPool.cpp
+        thorvg/src/lib/sw_engine/tvgSwRaster.cpp
+        thorvg/src/lib/sw_engine/tvgSwRenderer.cpp
+        thorvg/src/lib/sw_engine/tvgSwRle.cpp
+        thorvg/src/lib/sw_engine/tvgSwShape.cpp
+        thorvg/src/lib/sw_engine/tvgSwStroke.cpp
+        thorvg/src/lib/tvgAccessor.cpp
+        thorvg/src/lib/tvgBezier.cpp
+        thorvg/src/lib/tvgCanvas.cpp
+        thorvg/src/lib/tvgFill.cpp
+        thorvg/src/lib/tvgGlCanvas.cpp
+        thorvg/src/lib/tvgInitializer.cpp
+        thorvg/src/lib/tvgLinearGradient.cpp
+        thorvg/src/lib/tvgLoader.cpp
+        thorvg/src/lib/tvgPaint.cpp
+        thorvg/src/lib/tvgPicture.cpp
+        thorvg/src/lib/tvgRadialGradient.cpp
+        thorvg/src/lib/tvgRender.cpp
+        thorvg/src/lib/tvgSaver.cpp
+        thorvg/src/lib/tvgScene.cpp
+        thorvg/src/lib/tvgShape.cpp
+        thorvg/src/lib/tvgSwCanvas.cpp
+        thorvg/src/lib/tvgTaskScheduler.cpp
+        thorvg/src/loaders/raw/tvgRawLoader.cpp
+        thorvg/src/loaders/svg/tvgSvgCssStyle.cpp
+        thorvg/src/loaders/svg/tvgSvgLoader.cpp
+        thorvg/src/loaders/svg/tvgSvgPath.cpp
+        thorvg/src/loaders/svg/tvgSvgSceneBuilder.cpp
+        thorvg/src/loaders/svg/tvgSvgUtil.cpp
+        thorvg/src/loaders/svg/tvgXmlParser.cpp)
+
+target_compile_options(thorvg PRIVATE
+        -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter ${SYM_VISIBILITY})
+target_include_directories(thorvg PRIVATE
+        thorvg/inc
+        thorvg/src/lib
+        thorvg/src/lib/sw_engine
+        thorvg/src/loaders/raw
+        thorvg/src/loaders/svg)
+
 add_library(rlottie STATIC
         rlottie/src/lottie/lottieanimation.cpp
         rlottie/src/lottie/lottieitem.cpp
@@ -72,9 +116,8 @@ add_library(rlottie STATIC
 target_compile_options(rlottie PRIVATE
         -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter ${SYM_VISIBILITY})
 target_include_directories(rlottie PRIVATE
-        ./
         rlottie/inc
-        rlottie/src/vector/
+        rlottie/src/vector
         rlottie/src/vector/pixman
         rlottie/src/vector/freetype
         rlottie/src/vector/stb)
@@ -309,7 +352,6 @@ target_compile_definitions(opus PRIVATE
         OPUS_BUILD FIXED_POINT USE_ALLOCA restrict= __EMX__ HAVE_LRINT HAVE_LRINTF)
 
 add_library(common STATIC
-        tools.cpp
         audio/ts/MpegTsBitStream.cpp
         audio/ts/MpegTsDemux.cpp
         audio/taglib/ape/apefile.cpp
@@ -445,6 +487,7 @@ target_compile_options(common PRIVATE
 add_library(fenrir_jni
         SHARED
         lottie_jni.cpp
+        thorvg_jni.cpp
         audio/ffmpeg/ffmpeg_jni.cpp
         audio/opus/opus_jni.cc
         animation/animation_jni.cpp
@@ -466,6 +509,7 @@ target_include_directories(fenrir_jni
         PRIVATE
         ./
         rlottie/inc
+        thorvg/inc
         animation/libyuv/include
         exoplayer/include
         audio/opus/libopus/include
@@ -500,5 +544,6 @@ target_link_libraries(fenrir_jni
         PRIVATE avutil ${LTO_LINK}
         PRIVATE common ${LTO_LINK}
         PRIVATE rlottie ${LTO_LINK}
+        PRIVATE thorvg ${LTO_LINK}
         PRIVATE libyuv ${LTO_LINK}
         PRIVATE opus ${LTO_LINK})

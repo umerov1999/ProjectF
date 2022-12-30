@@ -40,7 +40,7 @@ class Photo2MessageUploadable(
         } else {
             networker.vkDefault(accountId)
                 .photos()
-                .messagesUploadServer.map { s -> s }
+                .messagesUploadServer.map { it }
         }
         return serverSingle.flatMap { server ->
             var `is`: InputStream? = null

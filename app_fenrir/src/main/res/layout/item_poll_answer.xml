@@ -53,7 +53,7 @@
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:gravity="center"
                 android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                android:textColor="?white_color"
+                android:textColor="?white_color_contrast_fix"
                 android:textStyle="bold"
                 tools:text="34" />
         </FrameLayout>

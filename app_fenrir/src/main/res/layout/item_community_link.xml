@@ -24,7 +24,7 @@
             android:contentDescription="@null"
             android:padding="12dp"
             android:src="@drawable/ic_external"
-            app:tint="?white_color" />
+            app:tint="?white_color_contrast_fix" />
 
         <ImageView
             android:id="@+id/icon"

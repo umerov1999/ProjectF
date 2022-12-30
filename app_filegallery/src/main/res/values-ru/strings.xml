@@ -201,7 +201,7 @@
     <string name="viewpager_page_transform">Анимация Viewpager2</string>
     <string name="player_cover_transform">Анимация свайпа обложки плеера</string>
     <string name="developer">Разработчик: Умеров Артём</string>
-    <string name="repo">Репозиторий: https://github.com/umerov1999/FileGallery</string>
+    <string name="repo">Репозиторий: https://github.com/umerov1999/ProjectF</string>
     <string name="repo_local_server">Репозиторий: https://github.com/umerov1999/FenrirMediaServer/releases</string>
     <string name="tag_count_a">%1$d метка</string>
     <string name="tag_count_b">%1$d метки</string>

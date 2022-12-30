@@ -1,6 +1,5 @@
 #include <jni.h>
 #include <string>
-#include <android/log.h>
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
@@ -10,8 +9,7 @@
 #include "libyuv/convert_argb.h"
 #include "libyuv/rotate_argb.h"
 #include "libyuv/convert.h"
-
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "fenrir_native_log:YuvToRgbJni", __VA_ARGS__)
+#include "fenrir_native.h"
 
 #define align_buffer_64(var, size)                                           \
   uint8_t* var##_mem = (uint8_t*)(malloc((size) + 63));         /* NOLINT */ \
@@ -89,7 +87,7 @@ static int Android420ToABGR(const uint8_t *src_y,
 extern "C" {
 JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeShiftPixel(
         JNIEnv *env,
-        jobject ,
+        jobject,
         jobject src_y,
         jint src_stride_y,
         jobject src_u,
@@ -157,7 +155,7 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeW
         jobject surface) {
     ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
     if (window == nullptr) {
-        LOGE("Failed to get ANativeWindow");
+        LOGE("IMAGE_PROCESSING_UTIL: Failed to get ANativeWindow");
         return -1;
     }
 
@@ -169,7 +167,7 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeW
     int lockResult = ANativeWindow_lock(window, &buffer, nullptr);
     if (lockResult != 0) {
         ANativeWindow_release(window);
-        LOGE("Failed to lock window.");
+        LOGE("IMAGE_PROCESSING_UTIL: Failed to lock window.");
         return -1;
     }
 
@@ -177,7 +175,7 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeW
     jbyte *jpeg_ptr = env->GetByteArrayElements(jpeg_array, nullptr);
     if (jpeg_ptr == nullptr) {
         ANativeWindow_release(window);
-        LOGE("Failed to get JPEG bytes array pointer.");
+        LOGE("IMAGE_PROCESSING_UTIL: Failed to get JPEG bytes array pointer.");
         return -1;
     }
     auto *buffer_ptr = reinterpret_cast<uint8_t *>(buffer.bits);
@@ -190,7 +188,8 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeW
     return 0;
 }
 
-JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid420ToABGR(
+JNIEXPORT jint
+Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid420ToABGR(
         JNIEnv *env,
         jobject,
         jobject src_y,

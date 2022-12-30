@@ -33,7 +33,10 @@ class OtherRetrofitProvider @SuppressLint("CheckResult") constructor(private val
     private fun createLocalServerRetrofit(): Retrofit {
         val localSettings = mainSettings.getLocalServer()
         val builder = OkHttpClient.Builder()
-            .readTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .callTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request =
                     chain.request().newBuilder().serverHeader(false)
@@ -56,7 +59,7 @@ class OtherRetrofitProvider @SuppressLint("CheckResult") constructor(private val
                     formBuilder.add("password", it)
                 }
                 val request = original.newBuilder()
-                    .method("POST", formBuilder.build())
+                    .post(formBuilder.build())
                     .build()
                 chain.proceed(request)
             })

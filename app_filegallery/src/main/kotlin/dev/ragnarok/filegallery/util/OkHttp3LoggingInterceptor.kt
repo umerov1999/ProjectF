@@ -14,7 +14,6 @@ import okio.Buffer
 import okio.GzipSource
 import okio.source
 import java.io.IOException
-import java.nio.charset.Charset
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -196,7 +195,7 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
                     }
                 }
 
-                val charset: Charset = requestBody.contentType().charset()
+                val charset = requestBody.contentType().charset()
 
                 logger.log("")
                 if (gzippedLength != null) {
@@ -237,6 +236,8 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
                 logger.log("<-- END HTTP")
             } else if (bodyHasUnknownEncoding(response.headers)) {
                 logger.log("<-- END HTTP (encoded body omitted)")
+            } else if (bodyIsStreaming(response)) {
+                logger.log("<-- END HTTP (streaming)")
             } else {
                 val source = responseBody.source()
                 source.request(Long.MAX_VALUE) // Buffer the entire body.
@@ -284,6 +285,11 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
         }
 
         return response
+    }
+
+    private fun bodyIsStreaming(response: Response): Boolean {
+        val contentType = response.body.contentType()
+        return contentType != null && contentType.type == "text" && contentType.subtype == "event-stream"
     }
 
     private fun logHeader(headers: Headers, i: Int) {

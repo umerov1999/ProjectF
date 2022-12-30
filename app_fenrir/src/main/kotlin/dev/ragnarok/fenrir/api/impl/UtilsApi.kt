@@ -97,4 +97,17 @@ internal class UtilsApi(accountId: Int, provider: IServiceProvider) :
                     .map(extractResponseWithErrorHandling())
             }
     }
+
+    override fun getServerTime(): Single<Long> {
+        return provideService(
+            IUtilsService::class.java,
+            TokenType.USER,
+            TokenType.COMMUNITY,
+            TokenType.SERVICE
+        )
+            .flatMap { service ->
+                service.getServerTime()
+                    .map(extractResponseWithErrorHandling())
+            }
+    }
 }

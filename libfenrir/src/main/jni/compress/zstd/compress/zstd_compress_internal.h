@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Yann Collet, Facebook, Inc.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  * All rights reserved.
  *
  * This source code is licensed under both the BSD-style license (found in the
@@ -118,12 +118,13 @@ typedef struct {
 /** ZSTD_buildBlockEntropyStats() :
  *  Builds entropy for the block.
  *  @return : 0 on success or error code */
-size_t ZSTD_buildBlockEntropyStats(seqStore_t* seqStorePtr,
-                             const ZSTD_entropyCTables_t* prevEntropy,
-                                   ZSTD_entropyCTables_t* nextEntropy,
-                             const ZSTD_CCtx_params* cctxParams,
-                                   ZSTD_entropyCTablesMetadata_t* entropyMetadata,
-                                   void* workspace, size_t wkspSize);
+size_t ZSTD_buildBlockEntropyStats(
+                    const seqStore_t* seqStorePtr,
+                    const ZSTD_entropyCTables_t* prevEntropy,
+                          ZSTD_entropyCTables_t* nextEntropy,
+                    const ZSTD_CCtx_params* cctxParams,
+                          ZSTD_entropyCTablesMetadata_t* entropyMetadata,
+                          void* workspace, size_t wkspSize);
 
 /*********************************
 *  Compression internals structs *

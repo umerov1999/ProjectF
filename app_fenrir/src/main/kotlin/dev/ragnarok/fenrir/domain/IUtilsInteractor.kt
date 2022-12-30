@@ -24,4 +24,5 @@ interface IUtilsInteractor {
     fun joinChatByInviteLink(accountId: Int, link: String?): Single<VKApiChatResponse>
     fun getInviteLink(accountId: Int, peer_id: Int?, reset: Int?): Single<VKApiLinkResponse>
     fun customScript(accountId: Int, code: String?): Single<Int>
+    fun getServerTime(accountId: Int): Single<Long>
 }

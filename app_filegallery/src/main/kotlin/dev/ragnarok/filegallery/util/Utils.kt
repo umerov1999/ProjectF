@@ -301,6 +301,8 @@ object Utils {
         return OkHttpClient.Builder()
             .connectTimeout(timeouts.toLong(), TimeUnit.SECONDS)
             .readTimeout(timeouts.toLong(), TimeUnit.SECONDS)
+            .writeTimeout(timeouts.toLong(), TimeUnit.SECONDS)
+            .callTimeout(timeouts.toLong(), TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 chain.proceed(
                     chain.request().newBuilder().addHeader("User-Agent", Constants.USER_AGENT)
@@ -413,9 +415,10 @@ object Utils {
 
     fun getExoPlayerFactory(userAgent: String?): OkHttpDataSource.Factory {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .callTimeout(15, TimeUnit.SECONDS)
         return OkHttpDataSource.Factory(builder.build()).setUserAgent(userAgent)
     }
 

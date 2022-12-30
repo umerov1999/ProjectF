@@ -5,7 +5,7 @@
 #include <iostream>
 #include <list>
 #include <utility>
-#include "log.h"
+#include "fenrir_native.h"
 
 using namespace std;
 

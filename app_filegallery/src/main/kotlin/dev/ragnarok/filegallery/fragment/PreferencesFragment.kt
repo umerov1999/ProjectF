@@ -81,7 +81,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.FilenameFilter
-import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 
 class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScreenChangeListener,
@@ -151,7 +150,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 val settings = SettingsBackup().doBackup()
                 root.put("settings", settings)
                 val bytes = Json { prettyPrint = true }.printJsonElement(root.build()).toByteArray(
-                    StandardCharsets.UTF_8
+                    Charsets.UTF_8
                 )
                 val out = FileOutputStream(file)
                 val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
@@ -814,7 +813,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     try {
                         val file = File(Environment.getExternalStorageDirectory(), "to_adb.sh")
                         file.delete()
-                        val bytes = ou.toString().toByteArray(StandardCharsets.UTF_8)
+                        val bytes = ou.toString().toByteArray(Charsets.UTF_8)
                         out = FileOutputStream(file)
                         val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
                         out.write(bom)

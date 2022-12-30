@@ -49,7 +49,8 @@
         <item name="sticker_hint_color">#DDFFFFFF</item>
         <item name="navi_menu_color">@android:color/white</item>
         <item name="toast_background">#3E3E3E</item>
-        <item name="white_color">#FFFFFF</item>
+        <item name="white_color_contrast_fix">#FFFFFF</item>
+        <item name="black_color_contrast_fix">#000000</item>
         <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
 
         <item name="chat_background_cookies">@drawable/cookies_white</item>

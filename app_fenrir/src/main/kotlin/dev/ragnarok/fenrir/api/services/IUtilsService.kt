@@ -10,6 +10,7 @@ import dev.ragnarok.fenrir.api.model.response.VKApiLinkResponse
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface IUtilsService {
@@ -53,4 +54,8 @@ interface IUtilsService {
     @FormUrlEncoded
     @POST("execute")
     fun customScript(@Field("code") code: String?): Single<BaseResponse<Int>>
+
+    @FormUrlEncoded
+    @GET("utils.getServerTime")
+    fun getServerTime(): Single<BaseResponse<Long>>
 }

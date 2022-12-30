@@ -9,6 +9,9 @@ import androidx.annotation.StringRes
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
+import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
+import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
+import dev.ragnarok.fenrir.api.ProxyUtil
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.domain.*
 import dev.ragnarok.fenrir.domain.Repository.owners
@@ -23,11 +26,19 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.*
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.ShortcutUtils.createWallShortcutRx
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import dev.ragnarok.fenrir.util.Utils.getRegistrationDate
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
+import dev.ragnarok.fenrir.util.serializeble.retrofit.HttpCodeException
+import io.reactivex.rxjava3.core.Single
+import okhttp3.*
 import java.io.File
+import java.text.DateFormat
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
 
 class UserWallPresenter(
     accountId: Int,
@@ -535,7 +546,7 @@ class UserWallPresenter(
     }
 
     private fun resolveMenu() {
-        view?.InvalidateOptionsMenu()
+        view?.invalidateOptionsMenu()
     }
 
     fun fireAddToFrindsClick(message: String?) {
@@ -672,8 +683,112 @@ class UserWallPresenter(
         onUserInfoUpdated()
     }
 
+    private fun parseResponse(str: String, pattern: Pattern): String? {
+        val matcher = pattern.matcher(str)
+        return if (matcher.find()) {
+            matcher.group(1)
+        } else null
+    }
+
+    private fun getRegistrationDate(owner_id: Int): Single<String> {
+        return Single.create { emitter ->
+            val builder: OkHttpClient.Builder = OkHttpClient.Builder()
+                .readTimeout(15, TimeUnit.SECONDS)
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .callTimeout(15, TimeUnit.SECONDS)
+                .addInterceptor(Interceptor { chain: Interceptor.Chain ->
+                    val request =
+                        chain.toRequestBuilder(false).vkHeader(true).addHeader(
+                            "User-Agent", Constants.USER_AGENT(
+                                AccountType.BY_TYPE
+                            )
+                        ).build()
+                    chain.proceed(request)
+                })
+            ProxyUtil.applyProxyConfig(builder, Includes.proxySettings.activeProxy)
+            val request: Request = Request.Builder()
+                .url("https://vk.com/foaf.php?id=$owner_id").build()
+
+            val call = builder.build().newCall(request)
+            emitter.setCancellable { call.cancel() }
+            try {
+                val response = call.execute()
+                if (!response.isSuccessful) {
+                    emitter.onError(HttpCodeException(response.code))
+                } else {
+                    val resp = response.body.string()
+                    val locale = Utils.appLocale
+                    try {
+                        var registered: String? = null
+                        var auth: String? = null
+                        var changes: String? = null
+                        var tmp =
+                            parseResponse(
+                                resp,
+                                Pattern.compile("ya:created dc:date=\"(.*?)\"")
+                            )
+                        if (tmp.nonNullNoEmpty()) {
+                            registered = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
+                                tmp
+                            )?.let {
+                                DateFormat.getDateInstance(1).format(
+                                    it
+                                )
+                            }
+                        }
+                        tmp = parseResponse(
+                            resp,
+                            Pattern.compile("ya:lastLoggedIn dc:date=\"(.*?)\"")
+                        )
+                        if (tmp.nonNullNoEmpty()) {
+                            auth = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
+                                tmp
+                            )?.let {
+                                DateFormat.getDateInstance(1).format(
+                                    it
+                                )
+                            }
+                        }
+                        tmp = parseResponse(
+                            resp,
+                            Pattern.compile("ya:modified dc:date=\"(.*?)\"")
+                        )
+                        if (tmp.nonNullNoEmpty()) {
+                            changes = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
+                                tmp
+                            )?.let {
+                                DateFormat.getDateInstance(1).format(
+                                    it
+                                )
+                            }
+                        }
+                        emitter.onSuccess(
+                            context.getString(
+                                R.string.registration_date_info,
+                                registered,
+                                auth,
+                                changes
+                            )
+                        )
+                    } catch (e: ParseException) {
+                        emitter.onError(e)
+                    }
+                }
+                response.close()
+            } catch (e: Exception) {
+                emitter.onError(e)
+            }
+        }
+    }
+
     fun fireGetRegistrationDate() {
-        getRegistrationDate(context, ownerId)
+        appendDisposable(
+            getRegistrationDate(ownerId).fromIOToMain()
+                .subscribe({
+                    view?.showRegistrationDate(it)
+                }, { showError(it) })
+        )
     }
 
     fun fireReport() {

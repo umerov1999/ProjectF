@@ -25,6 +25,8 @@ import dev.ragnarok.fenrir.crypt.CryptHelper.generateRsaKeyPair
 import dev.ragnarok.fenrir.crypt.ver.Version.currentVersion
 import dev.ragnarok.fenrir.crypt.ver.Version.ofCurrent
 import dev.ragnarok.fenrir.db.Stores
+import dev.ragnarok.fenrir.domain.IUtilsInteractor
+import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.push.OwnerInfo
@@ -47,7 +49,7 @@ import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
 
 class KeyExchangeService : Service() {
-    private val mSessionIdGenerator: ISessionIdGenerator = FirebaseSessionIdGenerator()
+    private val mUtilsInteractor: IUtilsInteractor = InteractorFactory.createUtilsInteractor()
     private val mCompositeSubscription = CompositeDisposable()
     private var mCurrentActiveSessions: LongSparseArray<KeyExchangeSession> = LongSparseArray(1)
     private var mCurrentActiveNotifications: LongSparseArray<NotificationCompat.Builder> =
@@ -88,7 +90,7 @@ class KeyExchangeService : Service() {
                 @KeyLocationPolicy val keyLocationPolicy = intent.extras!!.getInt(
                     EXTRA_KEY_LOCATION_POLICY
                 )
-                iniciateKeyExchange(accountId, peerId, keyLocationPolicy)
+                initiateKeyExchange(accountId, peerId, keyLocationPolicy)
             }
             ACTION_APPLY_EXHANGE -> {
                 val accountId = intent.extras!!.getInt(Extra.ACCOUNT_ID)
@@ -165,7 +167,7 @@ class KeyExchangeService : Service() {
     }
 
     @SuppressLint("CheckResult")
-    private fun iniciateKeyExchange(
+    private fun initiateKeyExchange(
         accountId: Int,
         peerId: Int,
         @KeyLocationPolicy keyLocationPolicy: Int
@@ -176,7 +178,7 @@ class KeyExchangeService : Service() {
                 .showToastInfo(R.string.session_already_created)
             return
         }
-        mSessionIdGenerator.generateNextId()
+        mUtilsInteractor.getServerTime(accountId)
             .fromIOToMain()
             .subscribe({
                 val session = KeyExchangeSession.createOutSession(

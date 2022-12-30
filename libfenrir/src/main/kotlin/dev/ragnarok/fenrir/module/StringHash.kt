@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.module
 
-import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 
 object StringHash {
@@ -14,7 +13,7 @@ object StringHash {
         } else try {
             val crypt = MessageDigest.getInstance("SHA-1")
             crypt.reset()
-            crypt.update(value.toByteArray(StandardCharsets.UTF_8))
+            crypt.update(value.toByteArray(Charsets.UTF_8))
             crypt.digest().joinToString("") { "%02x".format(it) }
         } catch (e: Exception) {
             e.printStackTrace()

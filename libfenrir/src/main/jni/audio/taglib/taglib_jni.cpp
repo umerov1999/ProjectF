@@ -6,7 +6,7 @@
 #include <id3v2frame.h>
 #include <id3v2header.h>
 #include <attachedpictureframe.h>
-#include "log.h"
+#include "fenrir_native.h"
 
 using namespace std;
 using namespace TagLib;

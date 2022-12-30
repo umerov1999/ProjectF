@@ -218,7 +218,6 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     ): Single<List<VKApiPhotoTags>> {
         return networker.vkDefault(accountId)
             .photos().getTags(ownerId, photo_id, access_key)
-            .map { items -> items }
     }
 
     override fun getAllComments(

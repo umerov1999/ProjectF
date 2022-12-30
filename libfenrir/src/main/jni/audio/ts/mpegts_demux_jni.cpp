@@ -2,7 +2,7 @@
 #include <sstream>
 #include <cstring>
 #include <jni.h>
-#include "log.h"
+#include "fenrir_native.h"
 #include "MpegTsBitStream.hpp"
 #include "MpegTsDemux.hpp"
 

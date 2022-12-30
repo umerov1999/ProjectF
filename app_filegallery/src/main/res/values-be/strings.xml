@@ -201,7 +201,7 @@
     <string name="viewpager_page_transform">Анімацыя Viewpager2</string>
     <string name="player_cover_transform">Анімацыя свайпа вокладкі плэера</string>
     <string name="developer">Распрацоўшчык: Памёр Арцём</string>
-    <string name="repo">Рэпазіторый: https://github.com/umerov1999/FileGallery</string>
+    <string name="repo">Рэпазіторый: https://github.com/umerov1999/ProjectF</string>
     <string name="repo_local_server">Рэпазітар: https://github.com/umerov1999/FenrirMediaServer/releases</string>
     <string name="tag_count_a">%1$d пазнака</string>
     <string name="tag_count_b">%1$d пазнакі</string>

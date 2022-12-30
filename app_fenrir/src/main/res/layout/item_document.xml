@@ -54,7 +54,7 @@
             android:padding="8dp"
             android:scaleType="centerCrop"
             android:src="@drawable/close"
-            app:tint="?white_color" />
+            app:tint="?white_color_contrast_fix" />
 
         <TextView
             android:id="@+id/item_document_title"

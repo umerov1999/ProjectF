@@ -5,6 +5,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.util.serializeble.retrofit.HttpCodeException
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -30,6 +31,9 @@ object ErrorLocalizer {
             }
             is HttpException -> {
                 context.getString(R.string.vk_servers_error, throwable.code())
+            }
+            is HttpCodeException -> {
+                context.getString(R.string.vk_servers_error, throwable.code)
             }
             else -> throwable.message.nonNullNoEmpty({ it }, { throwable.toString() })
         }

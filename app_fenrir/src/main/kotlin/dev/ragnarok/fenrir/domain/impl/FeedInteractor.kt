@@ -249,17 +249,17 @@ class FeedInteractor(
 
     override fun saveList(accountId: Int, title: String?, listIds: Collection<Int>): Single<Int> {
         return networker.vkDefault(accountId)
-            .newsfeed().saveList(title, listIds).map { response -> response }
+            .newsfeed().saveList(title, listIds)
     }
 
     override fun addBan(accountId: Int, listIds: Collection<Int>): Single<Int> {
         return networker.vkDefault(accountId)
-            .newsfeed().addBan(listIds).map { response -> response }
+            .newsfeed().addBan(listIds)
     }
 
     override fun deleteBan(accountId: Int, listIds: Collection<Int>): Single<Int> {
         return networker.vkDefault(accountId)
-            .newsfeed().deleteBan(listIds).map { response -> response }
+            .newsfeed().deleteBan(listIds)
     }
 
     override fun getBanned(accountId: Int): Single<List<Owner>> {
@@ -271,7 +271,7 @@ class FeedInteractor(
 
     override fun deleteList(accountId: Int, list_id: Int?): Single<Int> {
         return networker.vkDefault(accountId)
-            .newsfeed().deleteList(list_id).map { response -> response }
+            .newsfeed().deleteList(list_id)
     }
 
     override fun ignoreItem(
@@ -281,7 +281,7 @@ class FeedInteractor(
         item_id: Int?
     ): Single<Int> {
         return networker.vkDefault(accountId)
-            .newsfeed().ignoreItem(type, owner_id, item_id).map { response -> response }
+            .newsfeed().ignoreItem(type, owner_id, item_id)
     }
 
     override fun getCachedFeedLists(accountId: Int): Single<List<FeedList>> {

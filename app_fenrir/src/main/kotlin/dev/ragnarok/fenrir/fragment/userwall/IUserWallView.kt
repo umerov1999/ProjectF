@@ -37,9 +37,10 @@ interface IUserWallView : IWallView, IProgressView {
     )
 
     fun displayUserStatus(statusText: String?, swAudioIcon: Boolean)
-    fun InvalidateOptionsMenu()
+    fun invalidateOptionsMenu()
     fun displayBaseUserInfo(user: User)
     fun openUserDetails(accountId: Int, user: User, details: UserDetails)
     fun showAvatarUploadedMessage(accountId: Int, post: Post)
     fun doEditPhoto(uri: Uri)
+    fun showRegistrationDate(date: String)
 }

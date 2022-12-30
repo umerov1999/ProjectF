@@ -1,3 +1,5 @@
+#include <jni.h>
+
 extern "C" {
 #include "libswresample/swresample.h"
 #include "libavcodec/avcodec.h"
@@ -5,7 +7,7 @@ extern "C" {
 #include "libavutil/opt.h"
 }
 
-#include "log.h"
+#include "fenrir_native.h"
 
 #define ERRRET(str) {ret = false; LOGE("%s\n", str); goto out;}
 
@@ -289,8 +291,9 @@ static void av_log(void*, int level, const char *fmt, va_list vl)
 extern "C" {
 JNIEXPORT jboolean
 Java_dev_ragnarok_fenrir_module_encoder_ToMp4Audio_encodeToMp4(JNIEnv *env, jobject, jstring input,
-                                                               jstring output) {
-    //av_log_set_callback(av_log);
+                                                               jstring
+                                                               output) {
+//av_log_set_callback(av_log);
     char const *inputString = SafeGetStringUTFChars(env, input, nullptr);
     char const *outputString = SafeGetStringUTFChars(env, output, nullptr);
     bool ret = encode_to_mp4a(inputString, outputString);
@@ -298,8 +301,11 @@ Java_dev_ragnarok_fenrir_module_encoder_ToMp4Audio_encodeToMp4(JNIEnv *env, jobj
         env->ReleaseStringUTFChars(input, inputString);
     }
     if (outputString != nullptr) {
-        env->ReleaseStringUTFChars(output, outputString);
+        env->
+                ReleaseStringUTFChars(output, outputString
+        );
     }
-    return ret;
+    return
+            ret;
 }
 }

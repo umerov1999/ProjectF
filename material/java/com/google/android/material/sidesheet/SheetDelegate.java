@@ -17,8 +17,8 @@
 package com.google.android.material.sidesheet;
 
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import androidx.annotation.NonNull;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import com.google.android.material.sidesheet.Sheet.SheetEdge;
 import com.google.android.material.sidesheet.Sheet.StableSheetState;
 import com.google.android.material.sidesheet.SideSheetBehavior.StateSettlingTracker;
@@ -58,30 +58,6 @@ abstract class SheetDelegate {
       @NonNull View releasedChild, float xVelocity, float yVelocity);
 
   /**
-   * Sets the target sheet state from the {@link
-   * SideSheetBehavior#onNestedPreScroll(CoordinatorLayout, View, View, int, int, int[], int)}
-   * callback, based on scroll and position information provided by the method parameters.
-   */
-  abstract <V extends View> void setTargetStateOnNestedPreScroll(
-      @NonNull CoordinatorLayout coordinatorLayout,
-      @NonNull V child,
-      @NonNull View target,
-      int dx,
-      int dy,
-      @NonNull int[] consumed,
-      int type);
-
-  @StableSheetState
-  abstract <V extends View> int calculateTargetStateOnStopNestedScroll(@NonNull V child);
-
-  /**
-   * Whether the sheet has reached the expanded offset at the end of a nested scroll, used to
-   * determine when to set the {@link SideSheetBehavior.SheetState} to {@link
-   * SideSheetBehavior.SheetState#STATE_EXPANDED}.
-   */
-  abstract <V extends View> boolean hasReachedExpandedOffset(@NonNull V child);
-
-  /**
    * Whether the sheet should hide, based on the position of child, velocity of the drag event, and
    * {@link SideSheetBehavior#getHideThreshold()}.
    */
@@ -93,4 +69,17 @@ abstract class SheetDelegate {
    * this would return {@code child.getLeft()}.
    */
   abstract <V extends View> int getOutwardEdge(@NonNull V child);
+
+  /**
+   * Returns the calculated slide offset based on which edge of the screen the sheet is based on.
+   * The offset value increases as the sheet moves towards the outward edge.
+   *
+   * @return slide offset represented as a float value between 0 and 1. A value of 0 means that the
+   *     sheet is hidden and a value of 1 means that the sheet is fully expanded.
+   */
+  abstract float calculateSlideOffsetBasedOnOutwardEdge(int outwardEdge);
+
+  /** Set the coplanar sheet layout params depending on the screen size. */
+  abstract void updateCoplanarSiblingLayoutParams(
+      @NonNull MarginLayoutParams coplanarSiblingLayoutParams, int sheetLeft, int sheetRight);
 }

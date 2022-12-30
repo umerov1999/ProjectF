@@ -39,7 +39,7 @@ class AudioToMessageUploadable(
             networker.vkDefault(accountId)
                 .audio()
                 .uploadServer
-                .map { s -> s }
+                .map { it }
         } else {
             Single.just(initialServer)
         }

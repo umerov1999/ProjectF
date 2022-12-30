@@ -42,7 +42,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.io.OutputStreamWriter
-import java.nio.charset.StandardCharsets
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -68,7 +67,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
     }
 
     private fun readBase64(`val`: String): String {
-        return String(Base64.decode(`val`, Base64.DEFAULT), StandardCharsets.UTF_8)
+        return String(Base64.decode(`val`, Base64.DEFAULT), Charsets.UTF_8)
     }
 
     private fun getAvatarUrl(owner: Owner?, owner_id: Int): String {
@@ -481,7 +480,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             val output: OutputStream = FileOutputStream(html)
             val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
             output.write(bom)
-            output.write(main.toByteArray(StandardCharsets.UTF_8))
+            output.write(main.toByteArray(Charsets.UTF_8))
             output.flush()
             output.close()
             applicationContext.sendBroadcast(
@@ -590,7 +589,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     ), "json"
                 )
             )
-            val output = OutputStreamWriter(FileOutputStream(html), StandardCharsets.UTF_8)
+            val output = OutputStreamWriter(FileOutputStream(html), Charsets.UTF_8)
             val bom = charArrayOf('\ufeff')
             output.write(bom)
             var offset = 0

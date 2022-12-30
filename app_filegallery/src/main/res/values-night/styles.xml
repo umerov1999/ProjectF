@@ -33,7 +33,8 @@
         <item name="colorSurfaceInverse">#CCCCCC</item>
         <item name="colorOnSurfaceInverse">#090909</item>
 
-        <item name="white_color">#FFFFFF</item>
+        <item name="white_color_contrast_fix">#FFFFFF</item>
+        <item name="black_color_contrast_fix">#000000</item>
         <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
 
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.AppTheme.SmallComponent
@@ -246,7 +247,8 @@
         <item name="colorSecondary">#777777</item>
         <item name="colorOnPrimary">#000000</item>
         <item name="colorOnSecondary">#FFFFFF</item>
-        <item name="white_color">#000000</item>
+        <item name="white_color_contrast_fix">#000000</item>
+        <item name="black_color_contrast_fix">#000000</item>
         <item name="colorOnPrimaryContainer">#ECECEC</item>
         <item name="colorPrimaryContainer">#3A2C2D</item>
         <item name="colorPrimaryInverse">#524646</item>

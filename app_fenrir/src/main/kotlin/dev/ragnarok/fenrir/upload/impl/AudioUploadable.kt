@@ -30,7 +30,7 @@ class AudioUploadable(private val context: Context, private val networker: INetw
             networker.vkDefault(accountId)
                 .audio()
                 .uploadServer
-                .map { s -> s }
+                .map { it }
         } else {
             Single.just(initialServer)
         }

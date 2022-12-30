@@ -18,7 +18,6 @@ package com.google.android.material.sidesheet;
 
 import com.google.android.material.R;
 
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build.VERSION;
@@ -47,12 +46,12 @@ import com.google.android.material.sidesheet.Sheet.StableSheetState;
  * Base class for {@link android.app.Dialog}s styled as a sheet, to be used by sheet dialog
  * implementations such as side sheets and bottom sheets.
  */
-abstract class SheetDialog extends AppCompatDialog {
+abstract class SheetDialog<C extends SheetCallback> extends AppCompatDialog {
 
   private static final int COORDINATOR_LAYOUT_ID = R.id.coordinator;
   private static final int TOUCH_OUTSIDE_ID = R.id.touch_outside;
 
-  @Nullable private Sheet behavior;
+  @Nullable private Sheet<C> behavior;
   @Nullable private FrameLayout container;
   @Nullable private FrameLayout sheet;
 
@@ -134,15 +133,15 @@ abstract class SheetDialog extends AppCompatDialog {
    * or calling `dismiss()` from a `SideSheetDialogFragment`, tapping outside a dialog, etc...
    *
    * <p>The default animation to dismiss this dialog is a fade-out transition through a
-   * windowAnimation. Set {@link #setDismissWithAnimation(boolean)} to true if you want to utilize
-   * the sheet animation instead.
+   * windowAnimation. Set {@link #setDismissWithSheetAnimationEnabled(boolean)} to true if you want
+   * to utilize the sheet animation instead.
    *
    * <p>If this function is called from a swipe interaction, or dismissWithAnimation is false, then
    * keep the default behavior.
    */
   @Override
   public void cancel() {
-    Sheet behavior = getBehavior();
+    Sheet<C> behavior = getBehavior();
 
     if (!dismissWithAnimation || behavior.getState() == Sheet.STATE_HIDDEN) {
       super.cancel();
@@ -162,20 +161,20 @@ abstract class SheetDialog extends AppCompatDialog {
   }
 
   /**
-   * Set to perform the swipe away animation when dismissing instead of the window animation for the
-   * dialog.
+   * Set whether to perform the swipe away animation on the sheet when dismissing, rather than the
+   * window animation for the dialog.
    *
    * @param dismissWithAnimation True if swipe away animation should be used when dismissing.
    */
-  public void setDismissWithAnimation(boolean dismissWithAnimation) {
+  public void setDismissWithSheetAnimationEnabled(boolean dismissWithAnimation) {
     this.dismissWithAnimation = dismissWithAnimation;
   }
 
   /**
-   * Returns if dismissing will perform the swipe away animation on the sheet, rather than the
+   * Returns whether dismissing will perform the swipe away animation on the sheet, rather than the
    * window animation for the dialog.
    */
-  public boolean getDismissWithAnimation() {
+  public boolean isDismissWithSheetAnimationEnabled() {
     return dismissWithAnimation;
   }
 
@@ -185,8 +184,11 @@ abstract class SheetDialog extends AppCompatDialog {
       container = (FrameLayout) View.inflate(getContext(), getLayoutResId(), null);
       sheet = container.findViewById(getDialogId());
       behavior = getBehaviorFromSheet(sheet);
+      addSheetCancelOnHideCallback(behavior);
     }
   }
+
+  abstract void addSheetCancelOnHideCallback(Sheet<C> behavior);
 
   @NonNull
   private FrameLayout getContainer() {
@@ -205,7 +207,7 @@ abstract class SheetDialog extends AppCompatDialog {
   }
 
   @NonNull
-  Sheet getBehavior() {
+  Sheet<C> getBehavior() {
     if (this.behavior == null) {
       // The content hasn't been set, so the behavior doesn't exist yet. Let's create it.
       ensureContainerAndBehavior();
@@ -267,7 +269,7 @@ abstract class SheetDialog extends AppCompatDialog {
     return container;
   }
 
-  boolean shouldWindowCloseOnTouchOutside() {
+  private boolean shouldWindowCloseOnTouchOutside() {
     if (!canceledOnTouchOutsideSet) {
       TypedArray a =
           getContext().obtainStyledAttributes(new int[] {android.R.attr.windowCloseOnTouchOutside});
@@ -297,14 +299,14 @@ abstract class SheetDialog extends AppCompatDialog {
   }
 
   @LayoutRes
-  protected abstract int getLayoutResId();
+  abstract int getLayoutResId();
 
   @IdRes
-  protected abstract int getDialogId();
+  abstract int getDialogId();
 
   @NonNull
-  protected abstract Sheet getBehaviorFromSheet(@NonNull FrameLayout sheet);
+  abstract Sheet<C> getBehaviorFromSheet(@NonNull FrameLayout sheet);
 
   @StableSheetState
-  protected abstract int getStateOnStart();
+  abstract int getStateOnStart();
 }

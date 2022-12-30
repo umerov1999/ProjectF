@@ -274,7 +274,6 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         return networker.vkDefault(accountId)
             .audio()
             .removeFromPlaylist(ownerId, playlist_id, audio_ids)
-            .map { resultId -> resultId }
     }
 
     override fun addToPlaylist(
@@ -357,7 +356,6 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         return networker.vkDefault(accountId)
             .audio()
             .deletePlaylist(playlist_id, ownerId)
-            .map { resultId -> resultId }
     }
 
     override fun search(
@@ -405,7 +403,6 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
                     items.items
                 )
             }
-            .map { out -> out }
     }
 
     override fun searchPlaylists(

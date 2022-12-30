@@ -31,7 +31,6 @@ import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs
@@ -394,6 +393,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun show_notification(
         notification: NotificationCompat.Builder,
         id: Int,
@@ -560,7 +560,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         })
         try {
             val file = File(Environment.getExternalStorageDirectory(), "fenrir_fave_sync_log.txt")
-            FileOutputStream(file).write(log.toString().toByteArray(StandardCharsets.UTF_8))
+            FileOutputStream(file).write(log.toString().toByteArray(Charsets.UTF_8))
             applicationContext.sendBroadcast(
                 Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,

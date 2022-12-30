@@ -147,6 +147,7 @@ import dev.ragnarok.fenrir.model.drawer.AbsMenuItem
 import dev.ragnarok.fenrir.model.drawer.RecentChat
 import dev.ragnarok.fenrir.model.drawer.SectionMenuItem
 import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.module.thorvg.ThorVGRender
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceProvider
@@ -322,6 +323,19 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         }
         setTheme(currentStyle())
         Utils.prepareDensity(this)
+
+        if (FenrirNative.isNativeLoaded && getMainActivityTransform() == MainActivityTransforms.MAIN) {
+            ThorVGRender.registerColors(
+                mapOf(
+                    "primary_color" to CurrentTheme.getColorPrimary(this),
+                    "secondary_color" to CurrentTheme.getColorSecondary(this),
+                    "on_surface_color" to CurrentTheme.getColorOnSurface(this),
+                    "white_color_contrast_fix" to CurrentTheme.getColorWhiteContrastFix(this),
+                    "black_color_contrast_fix" to CurrentTheme.getColorBlackContrastFix(this)
+                )
+            )
+        }
+
         super.onCreate(savedInstanceState)
         isActivityDestroyed = false
         isZoomPhoto = Settings.get().other().isDo_zoom_photo

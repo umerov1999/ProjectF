@@ -11,8 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        app:loopAnimation="true"
-        tools:src="@drawable/ic_cat" />
+        app:loopAnimation="true" />
 
     <include
         android:id="@+id/runes_container"
@@ -84,7 +83,7 @@
                         android:padding="4dp"
                         android:src="@drawable/verified"
                         android:visibility="gone"
-                        app:tint="?white_color" />
+                        app:tint="?white_color_contrast_fix" />
 
                     <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
                         android:id="@+id/item_blacklisted"

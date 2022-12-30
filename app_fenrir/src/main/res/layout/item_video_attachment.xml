@@ -42,7 +42,7 @@
                 android:padding="6dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/video"
-                app:tint="?white_color" />
+                app:tint="?white_color_contrast_fix" />
 
             <TextView
                 android:id="@+id/item_video_album_count"

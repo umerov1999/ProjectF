@@ -33,7 +33,8 @@
         <item name="colorSurfaceInverse">#CCCCCC</item>
         <item name="colorOnSurfaceInverse">#090909</item>
 
-        <item name="white_color">#FFFFFF</item>
+        <item name="white_color_contrast_fix">#FFFFFF</item>
+        <item name="black_color_contrast_fix">#000000</item>
         <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
 
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.AppTheme.SmallComponent
@@ -295,7 +296,8 @@
         <item name="my_messages_secondary_bubble_color">#D4303030</item>
         <item name="icon_color_active">#86448AFF</item>
         <item name="icon_color_inactive">#88FF0000</item>
-        <item name="white_color">#000000</item>
+        <item name="white_color_contrast_fix">#000000</item>
+        <item name="black_color_contrast_fix">#000000</item>
         <item name="colorOnPrimaryContainer">#ECECEC</item>
         <item name="colorPrimaryContainer">#3A2C2D</item>
         <item name="colorPrimaryInverse">#524646</item>
@@ -1047,7 +1049,8 @@
         <item name="sticker_hint_color">#DD1E1E1E</item>
         <item name="quick_reply_icon_color">#FFF</item>
         <item name="dividerColor">#313131</item>
-        <item name="white_color">#FFFFFF</item>
+        <item name="white_color_contrast_fix">#FFFFFF</item>
+        <item name="black_color_contrast_fix">#000000</item>
         <item name="badgeStyle">@style/Theme.BadgeStyle</item>
         <item name="materialCardStyle">@style/CardViewMD2</item>
         <item name="materialCardBackgroundStyle">@drawable/background_rectangle_stroke_filled</item>

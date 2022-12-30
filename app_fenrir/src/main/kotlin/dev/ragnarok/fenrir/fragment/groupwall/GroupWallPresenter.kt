@@ -44,7 +44,7 @@ class GroupWallPresenter(
     }
 
     private fun resolveMenu() {
-        view?.InvalidateOptionsMenu()
+        view?.invalidateOptionsMenu()
     }
 
     private fun resolveCounters() {

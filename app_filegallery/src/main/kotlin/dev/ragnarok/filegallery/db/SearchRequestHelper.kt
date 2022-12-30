@@ -10,7 +10,7 @@ import dev.ragnarok.filegallery.db.column.TagDirsColumns
 import dev.ragnarok.filegallery.db.column.TagOwnerColumns
 
 class SearchRequestHelper(context: Context) :
-    SQLiteOpenHelper(context, "search_queries.sqlite", null, 1) {
+    SQLiteOpenHelper(context, "filegallery_cache.sqlite", null, 1) {
     override fun onCreate(db: SQLiteDatabase) {
         createSearchRequestTable(db)
         createTagOwnersTable(db)

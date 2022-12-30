@@ -114,6 +114,7 @@ class CatalogV2Section : Parcelable {
                         listContentType = s.data_type
                     }
                 } else {
+                    listContentType = null
                     op.add(s)
                 }
             }

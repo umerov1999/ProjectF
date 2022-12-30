@@ -33,4 +33,7 @@ interface IUtilsApi {
 
     @CheckResult
     fun customScript(code: String?): Single<Int>
+
+    @CheckResult
+    fun getServerTime(): Single<Long>
 }

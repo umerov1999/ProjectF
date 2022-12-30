@@ -47,7 +47,10 @@ class OtherVkRetrofitProvider @SuppressLint("CheckResult") constructor(private v
     override fun provideAuthRetrofit(): Single<RetrofitWrapper> {
         return Single.fromCallable {
             val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-                .readTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .callTimeout(15, TimeUnit.SECONDS)
                 .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                     val request =
                         chain.toRequestBuilder(false).vkHeader(true)
@@ -75,7 +78,10 @@ class OtherVkRetrofitProvider @SuppressLint("CheckResult") constructor(private v
     override fun provideAuthServiceRetrofit(): Single<RetrofitWrapper> {
         return Single.fromCallable {
             val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-                .readTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .callTimeout(15, TimeUnit.SECONDS)
                 .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                     val request =
                         chain.toRequestBuilder(false).vkHeader(true)
@@ -103,7 +109,10 @@ class OtherVkRetrofitProvider @SuppressLint("CheckResult") constructor(private v
     private fun createLocalServerRetrofit(): Retrofit {
         val localSettings = Settings.get().other().localServer
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .callTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request =
                     chain.toRequestBuilder(false).vkHeader(false).addHeader(
@@ -125,7 +134,7 @@ class OtherVkRetrofitProvider @SuppressLint("CheckResult") constructor(private v
                     formBuilder.add("password", it)
                 }
                 val request = original.newBuilder()
-                    .method("POST", formBuilder.build())
+                    .post(formBuilder.build())
                     .build()
                 chain.proceed(request)
             }).addInterceptor(UncompressDefaultInterceptor)
@@ -144,7 +153,10 @@ class OtherVkRetrofitProvider @SuppressLint("CheckResult") constructor(private v
 
     private fun createLongpollRetrofitInstance(): Retrofit {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(25, TimeUnit.SECONDS)
+            .connectTimeout(25, TimeUnit.SECONDS)
+            .writeTimeout(25, TimeUnit.SECONDS)
+            .callTimeout(25, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request =
                     chain.toRequestBuilder(false).vkHeader(true).addHeader(

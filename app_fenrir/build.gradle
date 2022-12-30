@@ -36,7 +36,6 @@ android {
         buildConfigField("String", "SERVICE_TOKEN", asStringVar(vk_service_token))
         buildConfigField("String", "FAKE_ABI", asStringVar(fake_abi))
         buildConfigField("String", "FAKE_DEVICE", asStringVar(fake_device))
-        buildConfigField("String", "FCM_SESSION_ID_GEN_URL", asStringVar(fcm_session_id_gen_url))
         buildConfigField("boolean", "MANAGE_SCOPED_STORAGE", "true")
         buildConfigField("boolean", "FORCE_DEVELOPER_MODE", is_developer_build ? "true" : "false")
 
@@ -128,7 +127,6 @@ dependencies {
     implementation("androidx.webkit:webkit:$webkitVersion")
     implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
     implementation("io.reactivex.rxjava3:rxjava:$rxJavaVersion")
-    implementation("com.google.firebase:firebase-database:$firebaseDatabaseVersion")
     implementation("com.google.firebase:firebase-datatransport:$firebaseDatatransportVersion")
     implementation("com.google.firebase:firebase-messaging:$firebaseMessagingVersion") {
         exclude group: "com.google.firebase", module: "firebase-installations"

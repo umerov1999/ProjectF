@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Yann Collet, Facebook, Inc.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  * All rights reserved.
  *
  * This source code is licensed under both the BSD-style license (found in the
@@ -164,16 +164,19 @@ size_t ZSTD_compressLiterals (ZSTD_hufCTables_t const* prevHuf,
     switch(lhSize)
     {
     case 3: /* 2 - 2 - 10 - 10 */
+        if (!singleStream) assert(srcSize >= MIN_LITERALS_FOR_4_STREAMS);
         {   U32 const lhc = hType + ((U32)(!singleStream) << 2) + ((U32)srcSize<<4) + ((U32)cLitSize<<14);
             MEM_writeLE24(ostart, lhc);
             break;
         }
     case 4: /* 2 - 2 - 14 - 14 */
+        assert(srcSize >= MIN_LITERALS_FOR_4_STREAMS);
         {   U32 const lhc = hType + (2 << 2) + ((U32)srcSize<<4) + ((U32)cLitSize<<18);
             MEM_writeLE32(ostart, lhc);
             break;
         }
     case 5: /* 2 - 2 - 18 - 18 */
+        assert(srcSize >= MIN_LITERALS_FOR_4_STREAMS);
         {   U32 const lhc = hType + (3 << 2) + ((U32)srcSize<<4) + ((U32)cLitSize<<22);
             MEM_writeLE32(ostart, lhc);
             ostart[4] = (BYTE)(cLitSize >> 10);

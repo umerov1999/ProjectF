@@ -210,21 +210,18 @@ class UtilsInteractor(
         return networker.vkDefault(accountId)
             .utils()
             .deleteFromLastShortened(key)
-            .map { out -> out }
     }
 
     override fun checkLink(accountId: Int, url: String?): Single<VKApiCheckedLink> {
         return networker.vkDefault(accountId)
             .utils()
             .checkLink(url)
-            .map { out -> out }
     }
 
     override fun joinChatByInviteLink(accountId: Int, link: String?): Single<VKApiChatResponse> {
         return networker.vkDefault(accountId)
             .utils()
             .joinChatByInviteLink(link)
-            .map { out -> out }
     }
 
     override fun getInviteLink(
@@ -235,13 +232,17 @@ class UtilsInteractor(
         return networker.vkDefault(accountId)
             .utils()
             .getInviteLink(peer_id, reset)
-            .map { out -> out }
     }
 
     override fun customScript(accountId: Int, code: String?): Single<Int> {
         return networker.vkDefault(accountId)
             .utils()
             .customScript(code)
-            .map { out -> out }
+    }
+
+    override fun getServerTime(accountId: Int): Single<Long> {
+        return networker.vkDefault(accountId)
+            .utils()
+            .getServerTime()
     }
 }

@@ -1936,15 +1936,16 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         requireActivity()
                     )
                     if (FenrirNative.isNativeLoaded) {
+                        anim.visibility = View.VISIBLE
                         anim.fromRes(
                             cbc.lottieRes,
-                            Utils.dp(cbc.widthHeight),
-                            Utils.dp(cbc.widthHeight),
-                            cbc.replacement
+                            Utils.dp(cbc.lottie_widthHeight),
+                            Utils.dp(cbc.lottie_widthHeight),
+                            cbc.lottie_replacement
                         )
                         anim.playAnimation()
                     } else {
-                        anim.setImageResource(cbc.iconRes)
+                        anim.visibility = View.GONE
                     }
                     MaterialAlertDialogBuilder(requireActivity())
                         .setView(view)

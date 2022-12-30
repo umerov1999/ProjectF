@@ -5,8 +5,7 @@
 #include <iostream>
 #include <list>
 #include <filesystem>
-#include "tools.h"
-#include "log.h"
+#include "fenrir_native.h"
 
 using namespace std;
 namespace fs = std::filesystem;

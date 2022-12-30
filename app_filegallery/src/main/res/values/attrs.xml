@@ -2,7 +2,9 @@
 <resources>
     <attr name="message_bubble_color" format="color" />
     <attr name="toast_background" format="color" />
-    <attr name="white_color" format="color" />
+    <attr name="white_color_contrast_fix" format="color" />
+    <attr name="black_color_contrast_fix" format="color" />
+
     <attr name="toolbar_left_icon_color" format="color" />
 
     <attr name="fab_secondary" format="reference" />

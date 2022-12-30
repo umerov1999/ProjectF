@@ -243,7 +243,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         }
     }
 
-    override fun InvalidateOptionsMenu() {
+    override fun invalidateOptionsMenu() {
         requireActivity().invalidateOptionsMenu()
     }
 

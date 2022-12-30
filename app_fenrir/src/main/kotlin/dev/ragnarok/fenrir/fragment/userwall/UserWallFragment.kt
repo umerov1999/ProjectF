@@ -348,6 +348,15 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         }
     }
 
+    override fun showRegistrationDate(date: String) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setIcon(R.drawable.dir_person)
+            .setMessage(date)
+            .setTitle(getString(R.string.registration_date))
+            .setCancelable(true)
+            .show()
+    }
+
     override fun displayCounters(
         friends: Int,
         mutual: Int,
@@ -559,7 +568,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         getMentionsPlace(accountId, ownerId).tryOpenWith(requireActivity())
     }
 
-    override fun InvalidateOptionsMenu() {
+    override fun invalidateOptionsMenu() {
         requireActivity().invalidateOptionsMenu()
     }
 

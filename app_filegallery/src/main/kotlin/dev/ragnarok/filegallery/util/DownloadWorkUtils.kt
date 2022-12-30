@@ -378,6 +378,7 @@ object DownloadWorkUtils {
                             output.flush()
                             output.close()
                             input.close()
+                            response.close()
                             File(file).delete()
                             mNotifyManager.cancel(
                                 id.toString(),
@@ -401,6 +402,7 @@ object DownloadWorkUtils {
                     output.flush()
                     output.close()
                     input.close()
+                    response.close()
                     if (UseMediaScanner) {
                         applicationContext.sendBroadcast(
                             Intent(

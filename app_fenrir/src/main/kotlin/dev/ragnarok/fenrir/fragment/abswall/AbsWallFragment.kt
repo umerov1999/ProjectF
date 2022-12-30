@@ -38,6 +38,7 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.*
 import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.module.thorvg.ThorVGRender
 import dev.ragnarok.fenrir.place.PlaceFactory.getAudiosPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getNarrativesPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerArticles
@@ -49,12 +50,9 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getWallAttachmentsPlace
 import dev.ragnarok.fenrir.place.PlaceUtil.goToPostCreation
 import dev.ragnarok.fenrir.place.PlaceUtil.goToPostEditor
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.AppPerms
+import dev.ragnarok.fenrir.util.*
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils.getCounterWithK
-import dev.ragnarok.fenrir.util.FindAttachmentType
-import dev.ragnarok.fenrir.util.HelperSimple
-import dev.ragnarok.fenrir.util.InputWallOffsetDialog
 import dev.ragnarok.fenrir.util.Utils.dp
 import dev.ragnarok.fenrir.util.Utils.is600dp
 import dev.ragnarok.fenrir.util.Utils.isLandscape
@@ -78,22 +76,32 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         Runes?.visibility = if (Settings.get()
                 .other().isRunes_show
         ) View.VISIBLE else View.GONE
+        if (!FenrirNative.isNativeLoaded) {
+            paganSymbol?.visibility = View.GONE
+            return
+        }
         val symbol = Settings.get().other().paganSymbol
         paganSymbol?.visibility = if (symbol != 0) View.VISIBLE else View.GONE
         if (symbol == 0) {
             return
         }
         val pic = Common.requirePaganSymbol(symbol, requireActivity())
-        if (pic.isAnimation && FenrirNative.isNativeLoaded) {
+        if (pic.isAnimation) {
             paganSymbol?.fromRes(
                 pic.lottieRes,
-                dp(pic.widthHeight),
-                dp(pic.widthHeight),
-                pic.replacement, pic.useMoveColor
+                dp(pic.lottie_widthHeight),
+                dp(pic.lottie_widthHeight),
+                pic.lottie_replacement, pic.lottie_useMoveColor
             )
             paganSymbol?.playAnimation()
         } else {
-            paganSymbol?.setImageResource(pic.iconRes)
+            paganSymbol?.setImageBitmap(
+                ThorVGRender.createBitmap(
+                    pic.iconRes,
+                    dp(pic.icon_width),
+                    dp(pic.icon_height)
+                )
+            )
         }
     }
 

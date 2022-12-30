@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "compress_lz4", "compress_lz4.vcxproj", "{92E88E66-DBF5-4936-9AFD-5E8947C9A5CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{92E88E66-DBF5-4936-9AFD-5E8947C9A5CB}.Release|x64.ActiveCfg = Release|x64
+		{92E88E66-DBF5-4936-9AFD-5E8947C9A5CB}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CAE7A1A6-8D9B-4A37-BAA6-286C03485BA6}
+	EndGlobalSection
+EndGlobal

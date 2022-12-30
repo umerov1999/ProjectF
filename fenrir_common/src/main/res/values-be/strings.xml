@@ -23,13 +23,15 @@
         <item>Чур</item>
         <item>Фаер</item>
         <item>Полымя</item>
+        <item>Валькірыя 1</item>
+        <item>Валькірыя 2</item>
         <item>[Рандом]</item>
     </string-array>
 
     <!-- Google Play-->
     <string name="developer">Распрацоўшчык: Памёр Арцём</string>
     <string name="first_pagan">Першы паганскі</string>
-    <string name="repo">Рэпазіторый: https://github.com/umerov1999/Fenrir-for-VK</string>
+    <string name="repo">Рэпазіторый: https://github.com/umerov1999/ProjectF</string>
     <string name="repo_local_server">Рэпазітар: https://github.com/umerov1999/FenrirMediaServer/releases</string>
 
     <string name="enabled_local_server">Уключаны</string>

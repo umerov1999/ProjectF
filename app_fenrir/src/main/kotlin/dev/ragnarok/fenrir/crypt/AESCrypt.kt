@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.crypt
 import android.util.Base64
 import android.util.Log
 import java.io.UnsupportedEncodingException
-import java.nio.charset.StandardCharsets
 import java.security.GeneralSecurityException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -53,7 +52,7 @@ object AESCrypt {
     @Throws(NoSuchAlgorithmException::class)
     private fun generateKey(password: String): SecretKeySpec {
         val digest = MessageDigest.getInstance(HASH_ALGORITHM)
-        val bytes = password.toByteArray(StandardCharsets.UTF_8)
+        val bytes = password.toByteArray(Charsets.UTF_8)
         digest.update(bytes, 0, bytes.size)
         val key = digest.digest()
         log("SHA-256 key ", key)
@@ -73,7 +72,7 @@ object AESCrypt {
         return try {
             val key = generateKey(password)
             log("message", message)
-            val cipherText = encrypt(key, ivBytes, message.toByteArray(StandardCharsets.UTF_8))
+            val cipherText = encrypt(key, ivBytes, message.toByteArray(Charsets.UTF_8))
 
             //NO_WRAP is important as was getting \n at the end
             val encoded = Base64.encodeToString(cipherText, Base64.NO_WRAP)
@@ -121,7 +120,7 @@ object AESCrypt {
             log("decodedCipherText", decodedCipherText)
             val decryptedBytes = decrypt(key, ivBytes, decodedCipherText)
             log("decryptedBytes", decryptedBytes)
-            val message = String(decryptedBytes, StandardCharsets.UTF_8)
+            val message = String(decryptedBytes, Charsets.UTF_8)
             log("message", message)
             message
         } catch (e: UnsupportedEncodingException) {

@@ -187,14 +187,17 @@ class CatalogV2ListPresenter(
         for (i in srt) {
             makeByUid(i, data.sections)
         }
-        view?.notifyDataSetChanged()
         var pos = 0
         for (i in 0 until data.sections?.size.orZero()) {
+            if (query.nonNullNoEmpty() && data.sections?.get(i)?.title.isNullOrEmpty()) {
+                data.sections?.get(i)?.updateTitle(query)
+            }
             if (data.sections?.get(i)?.id == data.default_section) {
                 pos = i
                 break
             }
         }
+        view?.notifyDataSetChanged()
         if (srt[0] == TYPE_CATALOG) {
             view?.setSection(pos)
         }

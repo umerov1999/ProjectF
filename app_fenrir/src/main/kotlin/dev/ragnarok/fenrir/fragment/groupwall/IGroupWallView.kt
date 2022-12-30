@@ -36,7 +36,7 @@ interface IGroupWallView : IWallView {
         narratives: Int
     )
 
-    fun InvalidateOptionsMenu()
+    fun invalidateOptionsMenu()
     interface IOptionMenuView {
         fun setControlVisible(visible: Boolean)
         fun setIsSubscribed(subscribed: Boolean)

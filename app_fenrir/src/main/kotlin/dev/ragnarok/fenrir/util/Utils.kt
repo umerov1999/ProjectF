@@ -14,7 +14,6 @@ import android.database.Cursor
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.os.Handler
 import android.os.Parcel
 import android.util.SparseArray
 import android.util.TypedValue
@@ -30,7 +29,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.Constants.USER_AGENT
@@ -63,15 +61,10 @@ import dev.ragnarok.fenrir.view.pager.*
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
 import okhttp3.*
-import okhttp3.Call
 import java.io.Closeable
 import java.io.IOException
-import java.text.DateFormat
-import java.text.ParseException
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -1064,9 +1057,10 @@ object Utils {
         proxyConfig: ProxyConfig?
     ): OkHttpDataSource.Factory {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(40, TimeUnit.SECONDS)
-            .connectTimeout(40, TimeUnit.SECONDS)
-            .writeTimeout(40, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .callTimeout(15, TimeUnit.SECONDS)
         applyProxyConfig(builder, proxyConfig)
         return OkHttpDataSource.Factory(builder.build()).setUserAgent(userAgent)
     }
@@ -1279,12 +1273,12 @@ object Utils {
             .subscribe { function.call() }
     }
 
-
     fun createOkHttp(timeouts: Int, compressIntercept: Boolean): OkHttpClient.Builder {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
             .connectTimeout(timeouts.toLong(), TimeUnit.SECONDS)
             .readTimeout(timeouts.toLong(), TimeUnit.SECONDS)
             .writeTimeout(timeouts.toLong(), TimeUnit.SECONDS)
+            .callTimeout(timeouts.toLong(), TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 chain.proceed(
                     chain.toRequestBuilder(false).vkHeader(true).addHeader(
@@ -1483,95 +1477,6 @@ object Utils {
             null
         } else info
     }
-
-
-    internal fun parseResponse(str: String, pattern: Pattern): String? {
-        val matcher = pattern.matcher(str)
-        return if (matcher.find()) {
-            matcher.group(1)
-        } else null
-    }
-
-
-    fun getRegistrationDate(context: Context, owner_id: Int) {
-        val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(30, TimeUnit.SECONDS)
-            .addInterceptor(Interceptor { chain: Interceptor.Chain ->
-                val request =
-                    chain.toRequestBuilder(false).vkHeader(true).addHeader(
-                        "User-Agent", USER_AGENT(
-                            AccountType.BY_TYPE
-                        )
-                    ).build()
-                chain.proceed(request)
-            })
-        applyProxyConfig(builder, proxySettings.activeProxy)
-        val request: Request = Request.Builder()
-            .url("https://vk.com/foaf.php?id=$owner_id").build()
-        builder.build().newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
-            }
-
-            @Throws(IOException::class)
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val resp = response.body.string()
-                    var result = context.getString(R.string.error)
-                    val locale = appLocale
-                    try {
-                        var registered: String? = null
-                        var auth: String? = null
-                        var changes: String? = null
-                        var tmp =
-                            parseResponse(resp, Pattern.compile("ya:created dc:date=\"(.*?)\""))
-                        if (tmp.nonNullNoEmpty()) {
-                            registered = DateFormat.getDateInstance(1).format(
-                                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(tmp)
-                                    ?: return
-                            )
-                        }
-                        tmp = parseResponse(
-                            resp,
-                            Pattern.compile("ya:lastLoggedIn dc:date=\"(.*?)\"")
-                        )
-                        if (tmp.nonNullNoEmpty()) {
-                            auth = DateFormat.getDateInstance(1).format(
-                                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(tmp)
-                                    ?: return
-                            )
-                        }
-                        tmp = parseResponse(resp, Pattern.compile("ya:modified dc:date=\"(.*?)\""))
-                        if (tmp.nonNullNoEmpty()) {
-                            changes = DateFormat.getDateInstance(1).format(
-                                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(tmp)
-                                    ?: return
-                            )
-                        }
-                        result = context.getString(
-                            R.string.registration_date_info,
-                            registered,
-                            auth,
-                            changes
-                        )
-                    } catch (e: ParseException) {
-                        e.printStackTrace()
-                    }
-                    val uiHandler = Handler(context.mainLooper)
-                    val finalResult = result
-                    uiHandler.post {
-                        MaterialAlertDialogBuilder(context)
-                            .setIcon(R.drawable.dir_person)
-                            .setMessage(finalResult)
-                            .setTitle(context.getString(R.string.registration_date))
-                            .setCancelable(true)
-                            .show()
-                    }
-                }
-            }
-        })
-    }
-
 
     fun createPageTransform(@Transformers_Types type: Int): ViewPager2.PageTransformer? {
         when (type) {

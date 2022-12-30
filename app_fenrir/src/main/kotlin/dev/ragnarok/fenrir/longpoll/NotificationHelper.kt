@@ -634,6 +634,7 @@ object NotificationHelper {
                 //MimeType = response.header("Content-Type", "image/jpeg");
                 output.flush()
                 input.close()
+                response.close()
             }
             urit = FileProvider.getUriForFile(mContext, Constants.FILE_PROVIDER_AUTHORITY, file)
             mContext.grantUriPermission(

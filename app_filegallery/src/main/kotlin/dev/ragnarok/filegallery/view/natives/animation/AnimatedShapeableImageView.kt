@@ -121,6 +121,7 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
                 val input = BufferedInputStream(bfr)
                 cache.writeTempCacheFile(key, input)
                 input.close()
+                response.close()
                 cache.renameTempFile(key)
             } catch (e: Exception) {
                 u.onSuccess(false)

@@ -5,10 +5,13 @@ import dev.ragnarok.fenrir.api.interfaces.IOtherApi
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
+import dev.ragnarok.fenrir.util.serializeble.retrofit.HttpCodeException
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
-import okhttp3.*
-import java.io.IOException
+import okhttp3.FormBody
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody
 
 class OtherApi(private val accountId: Int, private val provider: IVkRetrofitProvider) : IOtherApi {
     override fun rawRequest(
@@ -28,19 +31,21 @@ class OtherApi(private val accountId: Int, private val provider: IVkRetrofitProv
                                 "https://" + Settings.get()
                                     .other().get_Api_Domain() + "/method/" + method
                             )
-                            .method("POST", bodyBuilder.build())
+                            .post(bodyBuilder.build())
                             .build()
                         val call = client.newCall(request)
                         emitter.setCancellable { call.cancel() }
-                        call.enqueue(object : Callback {
-                            override fun onFailure(call: Call, e: IOException) {
-                                emitter.onError(e)
-                            }
-
-                            override fun onResponse(call: Call, response: Response) {
+                        try {
+                            val response = call.execute()
+                            if (!response.isSuccessful) {
+                                emitter.onError(HttpCodeException(response.code))
+                            } else {
                                 emitter.onSuccess(response)
                             }
-                        })
+                            response.close()
+                        } catch (e: Exception) {
+                            emitter.onError(e)
+                        }
                     }
             }
             .map {

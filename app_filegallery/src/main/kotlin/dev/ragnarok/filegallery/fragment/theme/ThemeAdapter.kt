@@ -13,7 +13,7 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorPrimary
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorSecondary
-import dev.ragnarok.filegallery.settings.CurrentTheme.getColorWhite
+import dev.ragnarok.filegallery.settings.CurrentTheme.getColorWhiteContrastFix
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.settings.theme.ThemeValue
 import dev.ragnarok.filegallery.util.Utils
@@ -77,7 +77,7 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
                     Utils.dp(120f),
                     intArrayOf(
                         0x333333,
-                        getColorWhite(holder.selected.context),
+                        getColorWhiteContrastFix(holder.selected.context),
                         0x777777,
                         getColorPrimary(holder.selected.context),
                         0x999999,
@@ -115,7 +115,7 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
                     Utils.dp(120f),
                     intArrayOf(
                         0x333333,
-                        getColorWhite(holder.selected.context),
+                        getColorWhiteContrastFix(holder.selected.context),
                         0x777777,
                         getColorPrimary(holder.selected.context),
                         0x999999,

@@ -64,8 +64,12 @@ object CurrentTheme {
         return getColorFromAttrs(R.attr.toast_background, context, "#FFFFFF")
     }
 
-    fun getColorWhite(context: Context): Int {
-        return getColorFromAttrs(R.attr.white_color, context, "#FFFFFF")
+    fun getColorWhiteContrastFix(context: Context): Int {
+        return getColorFromAttrs(R.attr.white_color_contrast_fix, context, "#FFFFFF")
+    }
+
+    fun getColorBlackContrastFix(context: Context): Int {
+        return getColorFromAttrs(R.attr.black_color_contrast_fix, context, "#000000")
     }
 
     fun getColorOnPrimary(context: Context): Int {

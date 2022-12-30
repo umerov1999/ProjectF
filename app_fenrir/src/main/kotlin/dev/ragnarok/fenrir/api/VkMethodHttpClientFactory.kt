@@ -56,9 +56,10 @@ class VkMethodHttpClientFactory : IVkMethodHttpClientFactory {
     ): OkHttpClient {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
             .addInterceptor(interceptor)
-            .readTimeout(40, TimeUnit.SECONDS)
-            .connectTimeout(40, TimeUnit.SECONDS)
-            .writeTimeout(40, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .callTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request = chain.toRequestBuilder(true).vkHeader(false)
                     .addHeader("User-Agent", Constants.USER_AGENT(interceptor.type)).build()
@@ -75,9 +76,10 @@ class VkMethodHttpClientFactory : IVkMethodHttpClientFactory {
         config: ProxyConfig?
     ): OkHttpClient {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(40, TimeUnit.SECONDS)
-            .connectTimeout(40, TimeUnit.SECONDS)
-            .writeTimeout(40, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .callTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request = chain.toRequestBuilder(true).vkHeader(false)
                     .addHeader("User-Agent", Constants.USER_AGENT(type)).build()

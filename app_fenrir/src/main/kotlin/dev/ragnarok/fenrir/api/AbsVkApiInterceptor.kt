@@ -77,7 +77,7 @@ abstract class AbsVkApiInterceptor(private val version: String) :
         }
         return chain.proceed(
             original.newBuilder()
-                .method("POST", formBuilder.build())
+                .post(formBuilder.build())
                 .build()
         )
     }

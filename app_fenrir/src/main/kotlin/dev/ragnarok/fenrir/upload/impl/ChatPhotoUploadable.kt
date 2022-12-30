@@ -29,7 +29,7 @@ class ChatPhotoUploadable(private val context: Context, private val networker: I
             networker.vkDefault(accountId)
                 .photos()
                 .getChatUploadServer(chat_id)
-                .map { s -> s }
+                .map { it }
         } else {
             Single.just(initialServer)
         }

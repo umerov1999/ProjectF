@@ -47,7 +47,6 @@ import dev.ragnarok.fenrir.util.toast.CustomToast
 import io.reactivex.rxjava3.disposables.Disposable
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.charset.StandardCharsets
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
@@ -126,7 +125,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
                             DeltaOwner.serializer(),
                             delta
                         ).toByteArray(
-                            StandardCharsets.UTF_8
+                            Charsets.UTF_8
                         )
                         out = FileOutputStream(file)
                         val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())

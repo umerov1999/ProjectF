@@ -23,6 +23,8 @@
         <item>Chur</item>
         <item>Fire</item>
         <item>Flame</item>
+        <item>Valkyrie 1</item>
+        <item>Valkyrie 2</item>
         <item>[Random]</item>
     </string-array>
 
@@ -50,12 +52,14 @@
         <item>20</item>
         <item>21</item>
         <item>22</item>
+        <item>23</item>
+        <item>24</item>
     </string-array>
 
     <!-- Google Play-->
     <string name="developer">Developer: Umerov Artyom</string>
     <string name="first_pagan">First pagan</string>
-    <string name="repo">Repository: https://github.com/umerov1999/Fenrir-for-VK</string>
+    <string name="repo">Repository: https://github.com/umerov1999/ProjectF</string>
     <string name="repo_local_server">Repository: https://github.com/umerov1999/FenrirMediaServer/releases</string>
     <string name="enabled_local_server">Enabled</string>
     <string name="reboot_pc_win">Reboot Win</string>

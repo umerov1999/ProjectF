@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-                android:textColor="?white_color"
+                android:textColor="?white_color_contrast_fix"
                 tools:text="3" />
 
         </LinearLayout>

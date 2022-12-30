@@ -1,0 +1,1 @@
+ls | xargs -I {} bash -c "../compress_lz4.elf '{}'"

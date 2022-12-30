@@ -31,7 +31,7 @@
                 android:contentDescription="@null"
                 android:scaleType="center"
                 android:src="@drawable/ic_log_vector"
-                app:tint="?white_color" />
+                app:tint="?white_color_contrast_fix" />
 
             <LinearLayout
                 android:layout_width="match_parent"

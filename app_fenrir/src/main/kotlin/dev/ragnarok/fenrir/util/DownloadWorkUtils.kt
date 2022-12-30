@@ -646,7 +646,7 @@ object DownloadWorkUtils {
             try {
                 FileOutputStream(file).use { output ->
                     if (url.isNullOrEmpty()) throw Exception(applicationContext.getString(R.string.null_image_link))
-                    val builder = Utils.createOkHttp(60, false)
+                    val builder = Utils.createOkHttp(180, false)
                     val request: Request = Request.Builder()
                         .url(url)
                         .build()
@@ -680,6 +680,7 @@ object DownloadWorkUtils {
                                     NotificationHelper.NOTIFICATION_DOWNLOADING
                                 )
                             }
+                            response.close()
                             return false
                         }
                         output.write(data, 0, bufferLength)
@@ -698,6 +699,7 @@ object DownloadWorkUtils {
                     output.flush()
                     output.close()
                     input.close()
+                    response.close()
                     if (UseMediaScanner) {
                         applicationContext.sendBroadcast(
                             Intent(

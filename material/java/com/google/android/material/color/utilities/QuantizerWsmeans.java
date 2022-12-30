@@ -21,9 +21,8 @@ import static java.lang.Math.min;
 
 import androidx.annotation.RestrictTo;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 // TODO(b/254603377): Use copybara to release material color utilities library directly to github.
 /**
@@ -76,10 +75,7 @@ public final class QuantizerWsmeans {
    */
   public static Map<Integer, Integer> quantize(
       int[] inputPixels, int[] startingClusters, int maxColors) {
-    // Uses a seeded random number generator to ensure consistent results.
-    Random random = new Random(0x42688);
-
-    Map<Integer, Integer> pixelToCount = new LinkedHashMap<>();
+    Map<Integer, Integer> pixelToCount = new HashMap<>();
     double[][] points = new double[inputPixels.length][];
     int[] pixels = new int[inputPixels.length];
     PointProvider pointProvider = new PointProviderLab();
@@ -125,7 +121,7 @@ public final class QuantizerWsmeans {
 
     int[] clusterIndices = new int[pointCount];
     for (int i = 0; i < pointCount; i++) {
-      clusterIndices[i] = random.nextInt(clusterCount);
+      clusterIndices[i] = (int) Math.floor(Math.random() * clusterCount);
     }
 
     int[][] indexMatrix = new int[clusterCount][];
@@ -219,7 +215,7 @@ public final class QuantizerWsmeans {
       }
     }
 
-    Map<Integer, Integer> argbToPopulation = new LinkedHashMap<>();
+    Map<Integer, Integer> argbToPopulation = new HashMap<>();
     for (int i = 0; i < clusterCount; i++) {
       int count = pixelCountSums[i];
       if (count == 0) {

@@ -23,13 +23,15 @@
         <item>Чур</item>
         <item>Файер</item>
         <item>Пламя</item>
+        <item>Валькирия 1</item>
+        <item>Валькирия 2</item>
         <item>[Рандом]</item>
     </string-array>
 
     <!-- Google Play-->
     <string name="developer">Разработчик: Умеров Артём</string>
     <string name="first_pagan">Первый языческий</string>
-    <string name="repo">Репозиторий: https://github.com/umerov1999/Fenrir-for-VK</string>
+    <string name="repo">Репозиторий: https://github.com/umerov1999/ProjectF</string>
     <string name="repo_local_server">Репозиторий: https://github.com/umerov1999/FenrirMediaServer/releases</string>
 
     <string name="enabled_local_server">Включен</string>

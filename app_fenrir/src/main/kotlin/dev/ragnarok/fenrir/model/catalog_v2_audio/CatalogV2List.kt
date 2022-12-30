@@ -63,6 +63,10 @@ class CatalogV2List : Parcelable {
             url = object_api.url
         }
 
+        fun updateTitle(title: String?) {
+            this.title = title
+        }
+
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             parcel.writeString(id)
             parcel.writeString(title)
