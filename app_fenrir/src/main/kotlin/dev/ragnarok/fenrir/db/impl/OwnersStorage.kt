@@ -526,6 +526,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             cv.put(GroupColumns.IS_CLOSED, dbo.closed)
             cv.put(GroupColumns.IS_BLACK_LISTED, dbo.isBlacklisted)
             cv.put(GroupColumns.IS_VERIFIED, dbo.isVerified)
+            cv.put(GroupColumns.HAS_UNSEEN_STORIES, dbo.hasUnseenStories)
             cv.put(GroupColumns.IS_ADMIN, dbo.isAdmin)
             cv.put(GroupColumns.ADMIN_LEVEL, dbo.adminLevel)
             cv.put(GroupColumns.IS_MEMBER, dbo.isMember)
@@ -562,6 +563,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             cv.put(UserColumns.IS_USER_BLACK_LIST, dbo.blacklisted_by_me)
             cv.put(UserColumns.IS_BLACK_LISTED, dbo.blacklisted)
             cv.put(UserColumns.IS_VERIFIED, dbo.isVerified)
+            cv.put(UserColumns.HAS_UNSEEN_STORIES, dbo.hasUnseenStories)
             cv.put(UserColumns.IS_CAN_ACCESS_CLOSED, dbo.isCan_access_closed)
             cv.put(UserColumns.MAIDEN_NAME, dbo.maiden_name)
             return cv
@@ -573,6 +575,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 .setScreenName(cursor.getString(GroupColumns.SCREEN_NAME))
                 .setClosed(cursor.getInt(GroupColumns.IS_CLOSED))
                 .setVerified(cursor.getBoolean(GroupColumns.IS_VERIFIED))
+                .setHasUnseenStories(cursor.getBoolean(GroupColumns.HAS_UNSEEN_STORIES))
                 .setBlacklisted(cursor.getBoolean(GroupColumns.IS_BLACK_LISTED))
                 .setAdmin(cursor.getBoolean(GroupColumns.IS_ADMIN))
                 .setAdminLevel(cursor.getInt(GroupColumns.ADMIN_LEVEL))
@@ -608,6 +611,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 .setBlacklisted_by_me(cursor.getBoolean(UserColumns.IS_USER_BLACK_LIST))
                 .setBlacklisted(cursor.getBoolean(UserColumns.IS_BLACK_LISTED))
                 .setVerified(cursor.getBoolean(UserColumns.IS_VERIFIED))
+                .setHasUnseenStories(cursor.getBoolean(UserColumns.HAS_UNSEEN_STORIES))
                 .setCan_access_closed(cursor.getBoolean(UserColumns.IS_CAN_ACCESS_CLOSED))
                 .setMaiden_name(cursor.getString(UserColumns.MAIDEN_NAME))
         }

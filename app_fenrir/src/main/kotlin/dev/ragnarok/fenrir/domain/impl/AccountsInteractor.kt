@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.domain.impl
 
 import android.content.Context
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiConversation
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
@@ -31,7 +31,7 @@ class AccountsInteractor(
     override fun getBanned(accountId: Int, count: Int, offset: Int): Single<BannedPart> {
         return networker.vkDefault(accountId)
             .account()
-            .getBanned(count, offset, Constants.MAIN_OWNER_FIELDS)
+            .getBanned(count, offset, Fields.FIELDS_BASE_OWNER)
             .map { items ->
                 val owners = Dto2Model.transformOwners(items.profiles, items.groups)
                 val result = ArrayList<Owner>(owners.size)

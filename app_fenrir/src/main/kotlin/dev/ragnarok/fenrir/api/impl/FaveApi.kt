@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.api.impl
 
 import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IFaveApi
@@ -8,7 +9,6 @@ import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.model.response.FavePageResponse
 import dev.ragnarok.fenrir.api.model.response.FavePostsResponse
 import dev.ragnarok.fenrir.api.services.IFaveService
-import dev.ragnarok.fenrir.db.column.UserColumns
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import io.reactivex.rxjava3.core.Single
 
@@ -38,7 +38,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     override fun getVideos(offset: Int?, count: Int?): Single<List<VKApiVideo>> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
-                service.getVideos(offset, count, "video", 1, UserColumns.API_FIELDS)
+                service.getVideos(offset, count, "video", 1, Fields.FIELDS_BASE_OWNER)
                     .map(extractResponseWithErrorHandling())
                     .flatMap { t ->
                         val temp = listEmptyIfNull(t.items)
@@ -54,7 +54,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     override fun getArticles(offset: Int?, count: Int?): Single<List<VKApiArticle>> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
-                service.getArticles(offset, count, "article", 1, UserColumns.API_FIELDS)
+                service.getArticles(offset, count, "article", 1, Fields.FIELDS_BASE_OWNER)
                     .map(extractResponseWithErrorHandling())
                     .flatMap { t ->
                         val temp = listEmptyIfNull(t.items)
@@ -80,7 +80,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
                     count,
                     "date",
                     1,
-                    UserColumns.API_FIELDS
+                    Fields.FIELDS_BASE_OWNER
                 )
                     .map(extractResponseWithErrorHandling())
             }
@@ -89,7 +89,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     override fun getPosts(offset: Int?, count: Int?): Single<FavePostsResponse> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
-                service.getPosts(offset, count, "post", 1, UserColumns.API_FIELDS)
+                service.getPosts(offset, count, "post", 1, Fields.FIELDS_BASE_OWNER)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -97,7 +97,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     override fun getLinks(offset: Int?, count: Int?): Single<Items<FaveLinkDto>> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
-                service.getLinks(offset, count, "link", 1, UserColumns.API_FIELDS)
+                service.getLinks(offset, count, "link", 1, Fields.FIELDS_BASE_OWNER)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -105,7 +105,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     override fun getProducts(offset: Int?, count: Int?): Single<List<VKApiMarket>> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
-                service.getProducts(offset, count, "product", 1, UserColumns.API_FIELDS)
+                service.getProducts(offset, count, "product", 1, Fields.FIELDS_BASE_OWNER)
                     .map(extractResponseWithErrorHandling())
                     .flatMap { t ->
                         val temp = listEmptyIfNull(t.items)

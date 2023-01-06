@@ -34,6 +34,8 @@ import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 class FavePagesAdapter(private var data: List<FavePage>, private val context: Context) :
     RecyclerView.Adapter<FavePagesAdapter.Holder>() {
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
+    private val storyTransformation: Transformation =
+        CurrentTheme.createTransformationStrokeForAvatar()
     private var recyclerView: RecyclerView? = null
     private var clickListener: ClickListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -85,7 +87,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
             val user = favePage.user
             displayAvatar(
                 holder.avatar,
-                transformation,
+                if (user?.hasUnseenStories == true) storyTransformation else transformation,
                 favePage.owner?.maxSquareAvatar,
                 Constants.PICASSO_TAG,
                 monochrome = user?.blacklisted == true
@@ -150,7 +152,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
             val group = favePage.group
             displayAvatar(
                 holder.avatar,
-                transformation,
+                if (group?.hasUnseenStories == true) storyTransformation else transformation,
                 favePage.owner?.maxSquareAvatar,
                 Constants.PICASSO_TAG
             )

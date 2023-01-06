@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.domain.impl
 
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.db.interfaces.IStorages
 import dev.ragnarok.fenrir.db.model.entity.TopicDboEntity
@@ -68,7 +68,7 @@ class BoardInteractor(
                 true,
                 null,
                 null,
-                Constants.MAIN_OWNER_FIELDS
+                Fields.FIELDS_BASE_OWNER
             )
             .flatMap { response ->
                 val dtos = listEmptyIfNull(response.items)

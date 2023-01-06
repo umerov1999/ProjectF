@@ -16,7 +16,7 @@
 #define ZSTD_LITFREQ_ADD    2   /* scaling factor for litFreq, so that frequencies adapt faster to new stats */
 #define ZSTD_MAX_PRICE     (1<<30)
 
-#define ZSTD_PREDEF_THRESHOLD 1024   /* if srcSize < ZSTD_PREDEF_THRESHOLD, symbols' cost is assumed static, directly determined by pre-defined distributions */
+#define ZSTD_PREDEF_THRESHOLD 8   /* if srcSize < ZSTD_PREDEF_THRESHOLD, symbols' cost is assumed static, directly determined by pre-defined distributions */
 
 
 /*-*************************************
@@ -65,7 +65,7 @@ MEM_STATIC U32 ZSTD_fracWeight(U32 rawStat)
 /* debugging function,
  * @return price in bytes as fractional value
  * for debug messages only */
-MEM_STATIC double ZSTD_fCost(U32 price)
+MEM_STATIC double ZSTD_fCost(int price)
 {
     return (double)price / (BITCOST_MULTIPLIER*8);
 }
@@ -96,14 +96,18 @@ static U32 sum_u32(const unsigned table[], size_t nbElts)
     return total;
 }
 
-static U32 ZSTD_downscaleStats(unsigned* table, U32 lastEltIndex, U32 shift)
+typedef enum { base_0possible=0, base_1guaranteed=1 } base_directive_e;
+
+static U32
+ZSTD_downscaleStats(unsigned* table, U32 lastEltIndex, U32 shift, base_directive_e base1)
 {
     U32 s, sum=0;
     DEBUGLOG(5, "ZSTD_downscaleStats (nbElts=%u, shift=%u)",
             (unsigned)lastEltIndex+1, (unsigned)shift );
     assert(shift < 30);
     for (s=0; s<lastEltIndex+1; s++) {
-        unsigned newStat = 1 + (table[s] >> shift);
+        unsigned const base = base1 ? 1 : (table[s]>0);
+        unsigned const newStat = base + (table[s] >> shift);
         sum += newStat;
         table[s] = newStat;
     }
@@ -120,7 +124,7 @@ static U32 ZSTD_scaleStats(unsigned* table, U32 lastEltIndex, U32 logTarget)
     DEBUGLOG(5, "ZSTD_scaleStats (nbElts=%u, target=%u)", (unsigned)lastEltIndex+1, (unsigned)logTarget);
     assert(logTarget < 30);
     if (factor <= 1) return prevsum;
-    return ZSTD_downscaleStats(table, lastEltIndex, ZSTD_highbit32(factor));
+    return ZSTD_downscaleStats(table, lastEltIndex, ZSTD_highbit32(factor), base_1guaranteed);
 }
 
 /* ZSTD_rescaleFreqs() :
@@ -202,14 +206,14 @@ ZSTD_rescaleFreqs(optState_t* const optPtr,
                     optPtr->offCodeSum += optPtr->offCodeFreq[of];
             }   }
 
-        } else {  /* huf.repeatMode != HUF_repeat_valid => presumed not a dictionary */
+        } else {  /* first block, no dictionary */
 
             assert(optPtr->litFreq != NULL);
             if (compressedLiterals) {
                 /* base initial cost of literals on direct frequency within src */
                 unsigned lit = MaxLit;
                 HIST_count_simple(optPtr->litFreq, &lit, src, srcSize);   /* use raw first block to init statistics */
-                optPtr->litSum = ZSTD_downscaleStats(optPtr->litFreq, MaxLit, 8);
+                optPtr->litSum = ZSTD_downscaleStats(optPtr->litFreq, MaxLit, 8, base_0possible);
             }
 
             {   unsigned const baseLLfreqs[MaxLL+1] = {
@@ -571,16 +575,17 @@ void ZSTD_updateTree(ZSTD_matchState_t* ms, const BYTE* ip, const BYTE* iend) {
     ZSTD_updateTree_internal(ms, ip, iend, ms->cParams.minMatch, ZSTD_noDict);
 }
 
-FORCE_INLINE_TEMPLATE
-U32 ZSTD_insertBtAndGetAllMatches (
-                    ZSTD_match_t* matches,   /* store result (found matches) in this table (presumed large enough) */
-                    ZSTD_matchState_t* ms,
-                    U32* nextToUpdate3,
-                    const BYTE* const ip, const BYTE* const iLimit, const ZSTD_dictMode_e dictMode,
-                    const U32 rep[ZSTD_REP_NUM],
-                    U32 const ll0,   /* tells if associated literal length is 0 or not. This value must be 0 or 1 */
-                    const U32 lengthToBeat,
-                    U32 const mls /* template */)
+FORCE_INLINE_TEMPLATE U32
+ZSTD_insertBtAndGetAllMatches (
+                ZSTD_match_t* matches,  /* store result (found matches) in this table (presumed large enough) */
+                ZSTD_matchState_t* ms,
+                U32* nextToUpdate3,
+                const BYTE* const ip, const BYTE* const iLimit,
+                const ZSTD_dictMode_e dictMode,
+                const U32 rep[ZSTD_REP_NUM],
+                const U32 ll0,  /* tells if associated literal length is 0 or not. This value must be 0 or 1 */
+                const U32 lengthToBeat,
+                const U32 mls /* template */)
 {
     const ZSTD_compressionParameters* const cParams = &ms->cParams;
     U32 const sufficient_len = MIN(cParams->targetLength, ZSTD_OPT_NUM -1);
@@ -1147,7 +1152,7 @@ ZSTD_compressBlock_opt_generic(ZSTD_matchState_t* ms,
                         U32 const matchPrice = ZSTD_getMatchPrice(offBase, pos, optStatePtr, optLevel);
                         U32 const sequencePrice = literalsPrice + matchPrice;
                         DEBUGLOG(7, "rPos:%u => set initial price : %.2f",
-                                    pos, ZSTD_fCost(sequencePrice));
+                                    pos, ZSTD_fCost((int)sequencePrice));
                         opt[pos].mlen = pos;
                         opt[pos].off = offBase;
                         opt[pos].litlen = litlen;

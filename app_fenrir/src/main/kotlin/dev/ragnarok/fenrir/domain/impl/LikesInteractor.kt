@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.domain.impl
 
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformOwner
@@ -30,7 +30,7 @@ class LikesInteractor(private val networker: INetworker) : ILikesInteractor {
                 offset,
                 count,
                 null,
-                Constants.MAIN_OWNER_FIELDS
+                Fields.FIELDS_BASE_OWNER
             )
             .map { response ->
                 val dtos = listEmptyIfNull(response.owners)

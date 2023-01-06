@@ -4,13 +4,16 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
@@ -21,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.squareup.picasso3.BitmapTarget
+import com.squareup.picasso3.Picasso
 import com.yalantis.ucrop.UCrop
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
@@ -57,6 +62,7 @@ import dev.ragnarok.fenrir.util.Utils.getVerifiedColor
 import dev.ragnarok.fenrir.util.Utils.setBackgroundTint
 import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
 import dev.ragnarok.fenrir.view.OnlineView
+import dev.ragnarok.fenrir.view.ProfileCoverDrawable
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import me.minetsh.imaging.IMGEditActivity
 import java.io.File
@@ -152,22 +158,11 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
             mHeaderHolder?.ivAvatar?.let {
                 val sks = with()
                     .load(photoUrl)
-                    .transform(CurrentTheme.createTransformationForAvatar())
+                    .transform(if (user.hasUnseenStories) CurrentTheme.createTransformationStrokeForAvatar() else CurrentTheme.createTransformationForAvatar())
                 if (user.blacklisted) {
                     sks.transform(MonochromeTransformation())
                 }
                 sks.into(it)
-            }
-            if (Settings.get().other().isShow_wall_cover) {
-                mHeaderHolder?.vgCover?.let {
-                    val sks = with()
-                        .load(photoUrl)
-                        .transform(BlurTransformation(6f, requireActivity()))
-                    if (user.blacklisted) {
-                        sks.transform(MonochromeTransformation())
-                    }
-                    sks.into(it)
-                }
             }
         }
         val donate_anim = Settings.get().other().donate_anim_set
@@ -259,6 +254,59 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
             mHeaderHolder?.blacklisted?.clearAnimationDrawable()
         }
         mHeaderHolder?.blacklisted?.visibility = if (user.blacklisted) View.VISIBLE else View.GONE
+    }
+
+    private val coverTarget = object : BitmapTarget {
+        override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
+            if (isAdded) {
+                mHeaderHolder?.vgCover?.let {
+                    ProfileCoverDrawable.setBitmap(
+                        it,
+                        bitmap,
+                        0.6f
+                    )
+                }
+            }
+        }
+
+        override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+        }
+
+        override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {
+            if (isAdded) {
+                mHeaderHolder?.vgCover?.background = null
+            }
+        }
+    }
+
+    override fun displayUserCover(blacklisted: Boolean, resource: String?, supportOpen: Boolean) {
+        if (!Settings.get().other().isShow_wall_cover) return
+        if (supportOpen) {
+            mHeaderHolder?.vgCover?.setOnLongClickListener {
+                val usr = presenter?.user
+                    ?: return@setOnLongClickListener false
+                getSingleURLPhotoPlace(
+                    resource,
+                    usr.fullName,
+                    "id" + usr.getObjectId()
+                ).tryOpenWith(requireActivity())
+                true
+            }
+        } else {
+            mHeaderHolder?.vgCover?.setOnLongClickListener {
+                false
+            }
+        }
+        with().cancelRequest(coverTarget)
+        if (resource.nonNullNoEmpty()) {
+            val sks = with()
+                .load(resource)
+                .transform(BlurTransformation(6f, requireActivity()))
+            if (blacklisted) {
+                sks.transform(MonochromeTransformation())
+            }
+            sks.into(coverTarget)
+        }
     }
 
     override fun openUserDetails(accountId: Int, user: User, details: UserDetails) {
@@ -655,7 +703,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
     }
 
     private inner class UserHeaderHolder(root: View) {
-        val vgCover: ImageView = root.findViewById(R.id.cover)
+        val vgCover: ViewGroup = root.findViewById(R.id.cover)
         val ivAvatar: ImageView = root.findViewById(R.id.avatar)
         val ivVerified: ImageView = root.findViewById(R.id.item_verified)
         val tvName: TextView = root.findViewById(R.id.fragment_user_profile_name)

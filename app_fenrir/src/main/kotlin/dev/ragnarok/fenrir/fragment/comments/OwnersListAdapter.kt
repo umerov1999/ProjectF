@@ -20,6 +20,9 @@ class OwnersListAdapter(context: Activity, private val data: ArrayList<Owner>) :
         context, R.layout.item_simple_owner, data
     ) {
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
+    private val transformationWithStory: Transformation =
+        CurrentTheme.createTransformationStrokeForAvatar()
+
     override fun getCount(): Int {
         return data.size
     }
@@ -40,7 +43,12 @@ class OwnersListAdapter(context: Activity, private val data: ArrayList<Owner>) :
         val holder = view.tag as ViewHolder
         val item = data[position]
         holder.tvName.text = item.fullName
-        displayAvatar(holder.ivAvatar, transformation, item.maxSquareAvatar, Constants.PICASSO_TAG)
+        displayAvatar(
+            holder.ivAvatar,
+            if (item.isHasUnseenStories) transformationWithStory else transformation,
+            item.maxSquareAvatar,
+            Constants.PICASSO_TAG
+        )
         holder.subtitle.setText(if (item is User) R.string.profile else R.string.community)
         return view
     }

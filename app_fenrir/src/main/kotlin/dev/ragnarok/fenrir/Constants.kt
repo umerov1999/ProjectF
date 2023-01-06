@@ -2,8 +2,6 @@ package dev.ragnarok.fenrir
 
 import android.content.res.Resources
 import android.os.Build
-import dev.ragnarok.fenrir.db.column.GroupColumns
-import dev.ragnarok.fenrir.db.column.UserColumns
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
@@ -11,7 +9,7 @@ import java.util.*
 
 object Constants {
     const val API_VERSION = "5.131"
-    const val DATABASE_FENRIR_VERSION = 22
+    const val DATABASE_FENRIR_VERSION = 25
     const val DATABASE_TEMPORARY_VERSION = 5
     const val EXPORT_SETTINGS_FORMAT = 1
     const val forceDeveloperMode = BuildConfig.FORCE_DEVELOPER_MODE
@@ -22,12 +20,11 @@ object Constants {
     val AUTH_VERSION = if (DEFAULT_ACCOUNT_TYPE == AccountType.KATE) API_VERSION else "5.122"
     const val FILE_PROVIDER_AUTHORITY: String = BuildConfig.APPLICATION_ID + ".file_provider"
     const val VK_ANDROID_APP_VERSION_NAME = "8.11"
-    const val VK_ANDROID_APP_VERSION_CODE = "15026"
+    const val VK_ANDROID_APP_VERSION_CODE = "15060"
     const val KATE_APP_VERSION_NAME = "96 lite"
     const val KATE_APP_VERSION_CODE = "529"
     const val API_ID: Int = BuildConfig.VK_API_APP_ID
     const val SECRET: String = BuildConfig.VK_CLIENT_SECRET
-    const val MAIN_OWNER_FIELDS = UserColumns.API_FIELDS + "," + GroupColumns.API_FIELDS
     const val PHOTOS_PATH = "DCIM/Fenrir"
     const val AUDIO_PLAYER_SERVICE_IDLE = 300000
     const val PIN_DIGITS_COUNT = 4

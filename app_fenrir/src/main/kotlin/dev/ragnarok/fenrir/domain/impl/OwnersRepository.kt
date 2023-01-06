@@ -1,16 +1,13 @@
 package dev.ragnarok.fenrir.domain.impl
 
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.api.model.VKApiStory
-import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.longpoll.UserIsOfflineUpdate
 import dev.ragnarok.fenrir.api.model.longpoll.UserIsOnlineUpdate
 import dev.ragnarok.fenrir.api.model.response.StoryBlockResponce
-import dev.ragnarok.fenrir.db.column.GroupColumns
-import dev.ragnarok.fenrir.db.column.UserColumns
 import dev.ragnarok.fenrir.db.interfaces.IOwnersStorage
 import dev.ragnarok.fenrir.db.model.UserPatch
 import dev.ragnarok.fenrir.db.model.entity.CommunityEntity
@@ -54,7 +51,6 @@ import dev.ragnarok.fenrir.util.Unixtime.now
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import dev.ragnarok.fenrir.util.Utils.stringJoin
 import dev.ragnarok.fenrir.util.VKOwnIds
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
@@ -193,7 +189,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
     override fun getStoryById(accountId: Int, stories: List<AccessIdPair>): Single<List<Story>> {
         return networker.vkDefault(accountId)
             .users()
-            .getStoryById(stories, 1, Constants.MAIN_OWNER_FIELDS)
+            .getStoryById(stories, 1, Fields.FIELDS_BASE_OWNER)
             .flatMap { story ->
                 val dtos = listEmptyIfNull(story.items)
                 val owners = transformOwners(story.profiles, story.groups)
@@ -220,7 +216,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
     override fun getStory(accountId: Int, owner_id: Int?): Single<List<Story>> {
         return networker.vkDefault(accountId)
             .users()
-            .getStory(owner_id, 1, Constants.MAIN_OWNER_FIELDS)
+            .getStory(owner_id, 1, Fields.FIELDS_BASE_OWNER)
             .flatMap { story ->
                 val dtos_multy = listEmptyIfNull(story.items)
                 val dtos: MutableList<VKApiStory> = ArrayList()
@@ -255,7 +251,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
     override fun searchStory(accountId: Int, q: String?, mentioned_id: Int?): Single<List<Story>> {
         return networker.vkDefault(accountId)
             .users()
-            .searchStory(q, mentioned_id, 1000, 1, Constants.MAIN_OWNER_FIELDS)
+            .searchStory(q, mentioned_id, 1000, 1, Fields.FIELDS_BASE_OWNER)
             .flatMap { story ->
                 val dtos_multy = listEmptyIfNull(story.items)
                 val dtos: MutableList<VKApiStory> = ArrayList()
@@ -292,7 +288,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             IOwnersRepository.MODE_CACHE -> return getCachedFullData(accountId, userId)
             IOwnersRepository.MODE_NET -> return networker.vkDefault(accountId)
                 .users()
-                .getUserWallInfo(userId, VKApiUser.ALL_FIELDS, null)
+                .getUserWallInfo(userId, Fields.FIELDS_FULL_USER, null)
                 .flatMap { user ->
                     val userEntity = mapUser(user)
                     val detailsEntity = mapUserDetails(user)
@@ -375,7 +371,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             IOwnersRepository.MODE_CACHE -> return getCachedGroupsFullData(accountId, communityId)
             IOwnersRepository.MODE_NET -> return networker.vkDefault(accountId)
                 .groups()
-                .getWallInfo(communityId.toString(), FIELDS_GROUPS_ALL)
+                .getWallInfo(communityId.toString(), Fields.FIELDS_FULL_GROUP)
                 .flatMap { dto ->
                     val community = mapCommunity(dto)
                     val details = mapCommunityDetails(dto)
@@ -398,7 +394,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             completable = completable.andThen(
                 networker.vkDefault(accountId)
                     .groups()
-                    .getById(dividedIds.gids, null, null, GroupColumns.API_FIELDS)
+                    .getById(dividedIds.gids, null, null, Fields.FIELDS_BASE_GROUP)
                     .flatMapCompletable { communities: List<VKApiCommunity>? ->
                         cache.storeCommunityDbos(
                             accountId,
@@ -409,7 +405,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         if (dividedIds.uids.nonNullNoEmpty()) {
             completable = completable.andThen(
                 networker.vkDefault(accountId)
-                    .users()[dividedIds.uids, null, UserColumns.API_FIELDS, null]
+                    .users()[dividedIds.uids, null, Fields.FIELDS_BASE_USER, null]
                     .flatMapCompletable {
                         cache.storeUserDbos(
                             accountId,
@@ -444,7 +440,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
                 override fun apply(orig: String): String {
                     return orig
                 }
-            }), GroupColumns.API_FIELDS, null, 1000]
+            }), Fields.FIELDS_BASE_GROUP, null, 1000]
             .map { obj -> listEmptyIfNull(obj.items) }
             .map { groups ->
                 val owners: MutableList<Owner> = ArrayList(groups.size)
@@ -533,7 +529,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         val sortOption = criteria.findOptionByKey<SpinnerOption>(PeopleSearchCriteria.KEY_SORT)
         val sort =
             if (sortOption?.value == null) null else sortOption.value?.id
-        val fields = UserColumns.API_FIELDS
+        val fields = Fields.FIELDS_BASE_USER
         val city = criteria.extractDatabaseEntryValueId(PeopleSearchCriteria.KEY_CITY)
         val country = criteria.extractDatabaseEntryValueId(PeopleSearchCriteria.KEY_COUNTRY)
         val hometown = criteria.extractTextValueFromOption(PeopleSearchCriteria.KEY_HOMETOWN)
@@ -725,29 +721,29 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
                     if (dbos.size == gids.size) {
                         return@flatMap Single.just(buildCommunitiesFromDbos(dbos))
                     }
-                    getActualComminitiesAndStore(accountId, gids)
+                    getActualCommunitiesAndStore(accountId, gids)
                 }
-            IOwnersRepository.MODE_NET -> return getActualComminitiesAndStore(accountId, gids)
+            IOwnersRepository.MODE_NET -> return getActualCommunitiesAndStore(accountId, gids)
         }
         throw IllegalArgumentException("Invalid mode: $mode")
     }
 
     private fun getActualUsersAndStore(accountId: Int, uids: Collection<Int>): Single<List<User>> {
         return networker.vkDefault(accountId)
-            .users()[uids, null, UserColumns.API_FIELDS, null]
+            .users()[uids, null, Fields.FIELDS_BASE_USER, null]
             .flatMap { dtos ->
                 cache.storeUserDbos(accountId, mapUsers(dtos))
                     .andThen(Single.just(transformUsers(dtos)))
             }
     }
 
-    private fun getActualComminitiesAndStore(
+    private fun getActualCommunitiesAndStore(
         accountId: Int,
         gids: List<Int>
     ): Single<List<Community>> {
         return networker.vkDefault(accountId)
             .groups()
-            .getById(gids, null, null, GroupColumns.API_FIELDS)
+            .getById(gids, null, null, Fields.FIELDS_BASE_GROUP)
             .flatMap { dtos ->
                 val communityEntities = mapCommunities(dtos)
                 val communities = transformCommunities(dtos)
@@ -817,46 +813,6 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
     }
 
     companion object {
-        private val FIELDS_GROUPS_ALL = stringJoin(
-            ",",
-            VKApiCommunity.IS_FAVORITE,
-            VKApiCommunity.IS_SUBSCRIBED,
-            VKApiCommunity.MAIN_ALBUM_ID,
-            VKApiCommunity.CAN_UPLOAD_DOC,
-            VKApiCommunity.CAN_CTARE_TOPIC,
-            VKApiCommunity.CAN_UPLOAD_VIDEO,
-            VKApiCommunity.BAN_INFO,
-            VKApiCommunity.CITY,
-            VKApiCommunity.COUNTRY,
-            VKApiCommunity.DESCRIPTION,
-            VKApiCommunity.WIKI_PAGE,
-            VKApiCommunity.MEMBERS_COUNT,
-            VKApiCommunity.COUNTERS,
-            VKApiCommunity.START_DATE,
-            VKApiCommunity.FINISH_DATE,
-            VKApiCommunity.CAN_POST,
-            VKApiCommunity.CAN_SEE_ALL_POSTS,
-            VKApiCommunity.STATUS,
-            VKApiCommunity.CONTACTS,
-            VKApiCommunity.LINKS,
-            VKApiCommunity.FIXED_POST,
-            VKApiCommunity.VERIFIED,
-            VKApiCommunity.BLACKLISTED,
-            VKApiCommunity.SITE,
-            VKApiCommunity.ACTIVITY,
-            "member_status",
-            "can_message",
-            "cover",
-            "chats_status",
-            "is_closed",
-            "is_member",
-            "type",
-            "photo_50",
-            "photo_100",
-            "photo_200",
-            "admin_level",
-            "menu"
-        )
         private val TO_BUNDLE_FUNCTION =
             BiFunction<List<User>, List<Community>, IOwnersBundle> { users: List<User>, communities: List<Community> ->
                 val bundle = SparseArrayOwnersBundle(users.size + communities.size)

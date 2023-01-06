@@ -3,9 +3,6 @@ package dev.ragnarok.fenrir.db.column
 import android.provider.BaseColumns
 
 object UserColumns : BaseColumns {
-    const val API_FIELDS =
-        "bdate,blacklisted,blacklisted_by_me,can_access_closed,can_post,can_see_all_posts,can_see_audio,can_write_private_message,domain,first_name,friend_status,is_closed,is_favorite,is_friend,is_subscribed,last_name,last_seen,maiden_name,online,online_app,online_mobile,photo_100,photo_200,photo_50,photo_max_orig,platform,screen_name,sex,status,verified"
-
     /**
      * The table name of books = "books"
      */
@@ -35,6 +32,7 @@ object UserColumns : BaseColumns {
     const val IS_CAN_ACCESS_CLOSED = "is_can_access_closed"
     const val IS_VERIFIED = "is_verified"
     const val MAIDEN_NAME = "maiden_name"
+    const val HAS_UNSEEN_STORIES = "has_unseen_stories"
 
     /**
      * The id of the user, includes tablename prefix
@@ -64,4 +62,5 @@ object UserColumns : BaseColumns {
     const val FULL_IS_VERIFIED = "$TABLENAME.$IS_VERIFIED"
     const val FULL_MAIDEN_NAME = "$TABLENAME.$MAIDEN_NAME"
     const val FULL_BDATE = "$TABLENAME.$BDATE"
+    const val FULL_HAS_UNSEEN_STORIES = "$TABLENAME.$HAS_UNSEEN_STORIES"
 }

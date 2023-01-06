@@ -1,9 +1,13 @@
 package dev.ragnarok.fenrir.api.impl
 
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IAccountApi
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.CountersDto
+import dev.ragnarok.fenrir.api.model.RefreshToken
+import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
+import dev.ragnarok.fenrir.api.model.VKApiProfileInfoResponse
 import dev.ragnarok.fenrir.api.model.response.AccountsBannedResponse
 import dev.ragnarok.fenrir.api.model.response.ContactsResponse
 import dev.ragnarok.fenrir.api.model.response.PushSettingsResponse
@@ -171,7 +175,7 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
         return provideService(IAccountService(), TokenType.USER)
             .flatMap { service ->
                 service
-                    .getContactList(offset, count, 1, VKApiUser.ALL_FIELDS)
+                    .getContactList(offset, count, 1, Fields.FIELDS_FULL_USER)
                     .map(extractResponseWithErrorHandling())
             }
     }

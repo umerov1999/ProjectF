@@ -117,6 +117,8 @@ class UserDetailsEntity {
         private set
     var isClosed: Boolean = false
         private set
+    var cover: Cover? = null
+        private set
 
     fun setClosed(closed: Boolean): UserDetailsEntity {
         this.isClosed = closed
@@ -140,6 +142,11 @@ class UserDetailsEntity {
 
     fun setMusic(music: String?): UserDetailsEntity {
         this.music = music
+        return this
+    }
+
+    fun setCover(cover: Cover?): UserDetailsEntity {
+        this.cover = cover
         return this
     }
 
@@ -415,6 +422,43 @@ class UserDetailsEntity {
 
         fun setType(type: String?): RelativeEntity {
             this.type = type
+            return this
+        }
+    }
+
+    @Keep
+    @Serializable
+    class Cover {
+        var isEnabled = false
+            private set
+        var images: ArrayList<CoverImage>? = null
+            private set
+
+        fun setImages(images: ArrayList<CoverImage>?): Cover {
+            this.images = images
+            return this
+        }
+
+        fun setEnabled(enabled: Boolean): Cover {
+            isEnabled = enabled
+            return this
+        }
+    }
+
+    @Keep
+    @Serializable
+    class CoverImage {
+        var url: String? = null
+            private set
+        var height = 0
+            private set
+        var width = 0
+            private set
+
+        operator fun set(url: String?, height: Int, width: Int): CoverImage {
+            this.url = url
+            this.height = height
+            this.width = width
             return this
         }
     }

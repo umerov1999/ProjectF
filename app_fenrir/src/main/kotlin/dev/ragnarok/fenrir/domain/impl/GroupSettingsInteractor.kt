@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.domain.impl
 
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.GroupSettingsDto
 import dev.ragnarok.fenrir.api.model.GroupSettingsDto.PublicCategory
@@ -134,7 +134,7 @@ class GroupSettingsInteractor(
         val nextFrom = IntNextFrom(startFrom.offset + count)
         return networker.vkDefault(accountId)
             .groups()
-            .getBanned(groupId, startFrom.offset, count, Constants.MAIN_OWNER_FIELDS, null)
+            .getBanned(groupId, startFrom.offset, count, Fields.FIELDS_BASE_OWNER, null)
             .map { obj -> obj.items.orEmpty() }
             .flatMap { items ->
                 val ids = VKOwnIds()
@@ -201,7 +201,7 @@ class GroupSettingsInteractor(
                 null,
                 null,
                 null,
-                Constants.MAIN_OWNER_FIELDS,
+                Fields.FIELDS_BASE_OWNER,
                 "managers"
             )
             .flatMap { items ->

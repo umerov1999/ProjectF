@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.api.impl
 
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.INewsfeedApi
@@ -217,7 +217,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
                 service
                     .getBanned(
                         1,
-                        Constants.MAIN_OWNER_FIELDS
+                        Fields.FIELDS_BASE_OWNER
                     )
                     .map(extractResponseWithErrorHandling())
             }

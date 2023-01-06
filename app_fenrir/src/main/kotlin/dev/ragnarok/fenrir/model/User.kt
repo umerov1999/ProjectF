@@ -40,6 +40,8 @@ class User : Owner, Identificable {
         private set
     var bdate: String? = null
         private set
+    var hasUnseenStories = false
+        private set
 
     @UserPlatform
     var platform = 0
@@ -97,6 +99,7 @@ class User : Owner, Identificable {
         verified = `in`.getBoolean()
         isCan_access_closed = `in`.getBoolean()
         bdate = `in`.readString()
+        hasUnseenStories = `in`.getBoolean()
     }
 
     internal constructor(`in`: ParcelNative) : super(`in`) {
@@ -124,6 +127,7 @@ class User : Owner, Identificable {
         verified = `in`.readBoolean()
         isCan_access_closed = `in`.readBoolean()
         bdate = `in`.readString()
+        hasUnseenStories = `in`.readBoolean()
     }
 
     @AbsModelType
@@ -161,6 +165,11 @@ class User : Owner, Identificable {
 
     fun setOnlineApp(onlineApp: Int): User {
         this.onlineApp = onlineApp
+        return this
+    }
+
+    fun setHasUnseenStories(hasUnseenStories: Boolean): User {
+        this.hasUnseenStories = hasUnseenStories
         return this
     }
 
@@ -245,6 +254,11 @@ class User : Owner, Identificable {
     override val isVerified: Boolean
         get() = verified || isDonated
 
+    override val isHasUnseenStories: Boolean
+        get() {
+            return hasUnseenStories
+        }
+
     fun setVerified(verified: Boolean): User {
         this.verified = verified
         return this
@@ -281,6 +295,7 @@ class User : Owner, Identificable {
         parcel.putBoolean(verified)
         parcel.putBoolean(isCan_access_closed)
         parcel.writeString(bdate)
+        parcel.putBoolean(hasUnseenStories)
     }
 
     override fun writeToParcelNative(dest: ParcelNative) {
@@ -309,6 +324,7 @@ class User : Owner, Identificable {
         dest.writeBoolean(verified)
         dest.writeBoolean(isCan_access_closed)
         dest.writeString(bdate)
+        dest.writeBoolean(hasUnseenStories)
     }
 
     override val ownerId: Int

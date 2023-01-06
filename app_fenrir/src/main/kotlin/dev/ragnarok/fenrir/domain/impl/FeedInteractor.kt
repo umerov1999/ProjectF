@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.domain.impl
 
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiNews
 import dev.ragnarok.fenrir.db.interfaces.IStorages
@@ -78,7 +78,7 @@ class FeedInteractor(
                 when (sourceIds) {
                     "likes" -> networker.vkDefault(accountId)
                         .newsfeed()
-                        .getFeedLikes(maxPhotos, startFrom, count, Constants.MAIN_OWNER_FIELDS)
+                        .getFeedLikes(maxPhotos, startFrom, count, Fields.FIELDS_BASE_OWNER)
                     "recommendation" -> networker.vkDefault(accountId)
                         .newsfeed()
                         .getRecommended(
@@ -87,7 +87,7 @@ class FeedInteractor(
                             maxPhotos,
                             startFrom,
                             count,
-                            Constants.MAIN_OWNER_FIELDS
+                            Fields.FIELDS_BASE_OWNER
                         )
                     else -> networker.vkDefault(accountId)
                         .newsfeed()
@@ -100,7 +100,7 @@ class FeedInteractor(
                             null,
                             startFrom,
                             count,
-                            Constants.MAIN_OWNER_FIELDS
+                            Fields.FIELDS_BASE_OWNER
                         )
                 }.flatMap { response ->
                     val nextFrom = response.nextFrom
@@ -148,7 +148,7 @@ class FeedInteractor(
                         "updates_full",
                         "updates_audios"
                     ).contains(sourceIds)
-                ) null else sourceIds, startFrom, count, Constants.MAIN_OWNER_FIELDS]
+                ) null else sourceIds, startFrom, count, Fields.FIELDS_BASE_OWNER]
                     .flatMap { response ->
                         val blockAds = Settings.get().other().isAd_block_story_news
                         val needStripRepost = Settings.get().other().isStrip_news_repost
@@ -225,7 +225,7 @@ class FeedInteractor(
                 if (startDateOption?.timeUnix == 0L) null else startDateOption?.timeUnix,
                 if (endDateOption?.timeUnix == 0L) null else endDateOption?.timeUnix,
                 startFrom,
-                Constants.MAIN_OWNER_FIELDS
+                Fields.FIELDS_BASE_OWNER
             )
             .flatMap { response ->
                 val dtos = listEmptyIfNull(response.items)

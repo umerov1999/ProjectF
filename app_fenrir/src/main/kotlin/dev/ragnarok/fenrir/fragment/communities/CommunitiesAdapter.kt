@@ -26,6 +26,8 @@ class CommunitiesAdapter(
     @StringRes titles: Array<Int?>
 ) : MultyDataAdapter<Community, CommunitiesAdapter.Holder>(dataWrappers, titles) {
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
+    private val transformationWithStory: Transformation =
+        CurrentTheme.createTransformationStrokeForAvatar()
     private var actionListener: ActionListener? = null
     override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): Holder {
         return Holder(
@@ -44,7 +46,7 @@ class CommunitiesAdapter(
         }
         displayAvatar(
             holder.ivAvatar,
-            transformation,
+            if (community.hasUnseenStories) transformationWithStory else transformation,
             community.maxSquareAvatar,
             Constants.PICASSO_TAG
         )

@@ -241,7 +241,8 @@ class FenrirContentProvider : ContentProvider() {
             Uri.parse("content://$AUTHORITY/$FRIEND_LISTS_PATH")
         private val KEYS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$KEYS_PATH")
         private const val AID = "aid"
-        private var sUsersProjectionMap: MutableMap<String, String> = HashMap()
+
+        private val sUsersProjectionMap: MutableMap<String, String>
         private val sMessagesProjectionMap: MutableMap<String, String>
         private val sMessagesAttachmentsProjectionMap: MutableMap<String, String>
         private val sPhotosProjectionMap: MutableMap<String, String>
@@ -276,6 +277,56 @@ class FenrirContentProvider : ContentProvider() {
         private val sFriendListsProjectionMap: MutableMap<String, String>
         private val sKeysProjectionMap: MutableMap<String, String>
 
+        /*
+        private fun testProjectionMapsArgs(vararg maps: MutableMap<String, String>) {
+            for (i in maps) {
+                for (s in i) {
+                    if (!s.value.contains(s.key)) {
+                        throw Exception("${s.key} = ${s.value}")
+                    }
+                }
+            }
+        }
+
+        fun testProjectionMaps() {
+            testProjectionMapsArgs(
+                sUsersProjectionMap,
+                sMessagesProjectionMap,
+                sMessagesAttachmentsProjectionMap,
+                sPhotosProjectionMap,
+                sPhotosExtendedProjectionMap,
+                sDialogsProjectionMap,
+                sPeersProjectionMap,
+                sDocsProjectionMap,
+                sVideosProjectionMap,
+                sPostsProjectionMap,
+                sPostsMessagesAttachmentsProjectionMap,
+                sGroupsProjectionMap,
+                sGroupsDetProjectionMap,
+                sCommentsProjectionMap,
+                sCommentsMessagesAttachmentsProjectionMap,
+                sPhotoAlbumsProjectionMap,
+                sNewsProjectionMap,
+                sVideoAlbumsProjectionMap,
+                sTopicsProjectionMap,
+                sNoticationsProjectionMap,
+                sUserDetProjectionMap,
+                sFavePhotosProjectionMap,
+                sFaveVideosProjectionMap,
+                sFaveUsersProjectionMap,
+                sFaveGroupsProjectionMap,
+                sFaveLinksProjectionMap,
+                sFavePostsProjectionMap,
+                sFaveArticlesProjectionMap,
+                sFaveProductsProjectionMap,
+                sCountriesProjectionMap,
+                sFeedListsProjectionMap,
+                sFriendListsProjectionMap,
+                sKeysProjectionMap,
+                sRelativeshipProjectionMap
+            )
+        }
+         */
 
         fun getKeysContentUriFor(aid: Int): Uri {
             return appendAccountId(KEYS_CONTENT_URI, aid)
@@ -517,6 +568,7 @@ class FenrirContentProvider : ContentProvider() {
 
         init {
             //Setup projection maps
+            sUsersProjectionMap = HashMap()
             sUsersProjectionMap[BaseColumns._ID] = UserColumns.FULL_ID
             sUsersProjectionMap[UserColumns.FIRST_NAME] = UserColumns.FULL_FIRST_NAME
             sUsersProjectionMap[UserColumns.LAST_NAME] =
@@ -530,6 +582,8 @@ class FenrirContentProvider : ContentProvider() {
             sUsersProjectionMap[UserColumns.PHOTO_200] = UserColumns.FULL_PHOTO_200
             sUsersProjectionMap[UserColumns.PHOTO_MAX] = UserColumns.FULL_PHOTO_MAX
             sUsersProjectionMap[UserColumns.LAST_SEEN] = UserColumns.FULL_LAST_SEEN
+            sUsersProjectionMap[UserColumns.HAS_UNSEEN_STORIES] =
+                UserColumns.FULL_HAS_UNSEEN_STORIES
             sUsersProjectionMap[UserColumns.PLATFORM] =
                 UserColumns.FULL_PLATFORM
             sUsersProjectionMap[UserColumns.USER_STATUS] = UserColumns.FULL_USER_STATUS
@@ -548,6 +602,7 @@ class FenrirContentProvider : ContentProvider() {
             sUsersProjectionMap[UserColumns.IS_VERIFIED] = UserColumns.FULL_IS_VERIFIED
             sUsersProjectionMap[UserColumns.MAIDEN_NAME] = UserColumns.FULL_MAIDEN_NAME
             sUsersProjectionMap[UserColumns.BDATE] = UserColumns.FULL_BDATE
+
             sRelativeshipProjectionMap = HashMap()
             sRelativeshipProjectionMap[BaseColumns._ID] = RelationshipColumns.FULL_ID
             sRelativeshipProjectionMap[RelationshipColumns.OBJECT_ID] =
@@ -573,6 +628,8 @@ class FenrirContentProvider : ContentProvider() {
                 UserColumns.FULL_PHOTO_200 + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_200
             sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_MAX] =
                 UserColumns.FULL_PHOTO_MAX + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_MAX
+            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_HAS_UNSEEN_STORIES] =
+                UserColumns.FULL_HAS_UNSEEN_STORIES + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_HAS_UNSEEN_STORIES
             sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_LAST_SEEN] =
                 UserColumns.FULL_LAST_SEEN + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_LAST_SEEN
             sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_PLATFORM] =
@@ -585,20 +642,21 @@ class FenrirContentProvider : ContentProvider() {
                 UserColumns.FULL_IS_FRIEND + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_IS_FRIEND
             sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_FRIEND_STATUS] =
                 UserColumns.FULL_FRIEND_STATUS + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_FRIEND_STATUS
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_WRITE_MESSAGE_STATUS] =
-                UserColumns.FULL_WRITE_MESSAGE_STATUS + " AS " + RelationshipColumns.FOREIGN_SUBJECT_WRITE_MESSAGE_STATUS
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_IS_USER_BLACK_LIST] =
-                UserColumns.FULL_IS_USER_BLACK_LIST + " AS " + RelationshipColumns.FOREIGN_SUBJECT_IS_USER_BLACK_LIST
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_IS_BLACK_LISTED] =
-                UserColumns.FULL_IS_BLACK_LISTED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_IS_BLACK_LISTED
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_IS_CAN_ACCESS_CLOSED] =
-                UserColumns.FULL_IS_CAN_ACCESS_CLOSED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_IS_CAN_ACCESS_CLOSED
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_IS_VERIFIED] =
-                UserColumns.FULL_IS_VERIFIED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_IS_VERIFIED
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_MAIDEN_NAME] =
-                UserColumns.FULL_MAIDEN_NAME + " AS " + RelationshipColumns.FOREIGN_SUBJECT_MAIDEN_NAME
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_BDATE] =
-                UserColumns.FULL_BDATE + " AS " + RelationshipColumns.FOREIGN_SUBJECT_BDATE
+            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_WRITE_MESSAGE_STATUS] =
+                UserColumns.FULL_WRITE_MESSAGE_STATUS + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_WRITE_MESSAGE_STATUS
+            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_IS_USER_BLACK_LIST] =
+                UserColumns.FULL_IS_USER_BLACK_LIST + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_IS_USER_BLACK_LIST
+            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_IS_BLACK_LISTED] =
+                UserColumns.FULL_IS_BLACK_LISTED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_IS_BLACK_LISTED
+            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_IS_CAN_ACCESS_CLOSED] =
+                UserColumns.FULL_IS_CAN_ACCESS_CLOSED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_IS_CAN_ACCESS_CLOSED
+            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_IS_VERIFIED] =
+                UserColumns.FULL_IS_VERIFIED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_IS_VERIFIED
+            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_MAIDEN_NAME] =
+                UserColumns.FULL_MAIDEN_NAME + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_MAIDEN_NAME
+            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_BDATE] =
+                UserColumns.FULL_BDATE + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_BDATE
+
             sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_NAME] =
                 GroupColumns.FULL_NAME + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_NAME
             sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_SCREEN_NAME] =
@@ -615,6 +673,8 @@ class FenrirContentProvider : ContentProvider() {
                 GroupColumns.FULL_IS_BLACK_LISTED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_BLACK_LISTED
             sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_VERIFIED] =
                 GroupColumns.FULL_IS_VERIFIED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_VERIFIED
+            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_HAS_UNSEEN_STORIES] =
+                GroupColumns.FULL_HAS_UNSEEN_STORIES + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_HAS_UNSEEN_STORIES
             sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_ADMIN] =
                 GroupColumns.FULL_IS_ADMIN + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_ADMIN
             sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_ADMIN_LEVEL] =
@@ -627,6 +687,7 @@ class FenrirContentProvider : ContentProvider() {
                 GroupColumns.FULL_MEMBER_STATUS + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_MEMBER_STATUS
             sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_TYPE] =
                 GroupColumns.FULL_TYPE + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_TYPE
+
             sMessagesProjectionMap = HashMap()
             sMessagesProjectionMap[MessageColumns._ID] = MessageColumns.FULL_ID
             sMessagesProjectionMap[MessageColumns.PEER_ID] = MessageColumns.FULL_PEER_ID
@@ -669,12 +730,14 @@ class FenrirContentProvider : ContentProvider() {
             sMessagesProjectionMap[MessageColumns.PAYLOAD] =
                 MessageColumns.FULL_PAYLOAD
             sMessagesProjectionMap[MessageColumns.KEYBOARD] = MessageColumns.FULL_KEYBOARD
+
             sMessagesAttachmentsProjectionMap = HashMap()
             sMessagesAttachmentsProjectionMap[BaseColumns._ID] = MessagesAttachmentsColumns.FULL_ID
             sMessagesAttachmentsProjectionMap[MessagesAttachmentsColumns.M_ID] =
                 MessagesAttachmentsColumns.FULL_M_ID
             sMessagesAttachmentsProjectionMap[MessagesAttachmentsColumns.DATA] =
                 MessagesAttachmentsColumns.FULL_DATA
+
             sPhotosProjectionMap = HashMap()
             sPhotosProjectionMap[BaseColumns._ID] =
                 PhotosColumns.FULL_ID
@@ -705,6 +768,7 @@ class FenrirContentProvider : ContentProvider() {
                 PhotosColumns.FULL_ACCESS_KEY
             sPhotosProjectionMap[PhotosColumns.DELETED] =
                 PhotosColumns.FULL_DELETED
+
             sPhotosExtendedProjectionMap = HashMap()
             sPhotosExtendedProjectionMap[BaseColumns._ID] =
                 PhotosExtendedColumns.FULL_ID
@@ -744,6 +808,7 @@ class FenrirContentProvider : ContentProvider() {
                 PhotosExtendedColumns.FULL_ACCESS_KEY
             sPhotosExtendedProjectionMap[PhotosExtendedColumns.DELETED] =
                 PhotosExtendedColumns.FULL_DELETED
+
             sDialogsProjectionMap = HashMap()
             sDialogsProjectionMap[BaseColumns._ID] =
                 DialogsColumns.FULL_ID
@@ -782,6 +847,7 @@ class FenrirContentProvider : ContentProvider() {
                 MessageColumns.FULL_ACTION + " AS " + DialogsColumns.FOREIGN_MESSAGE_ACTION
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_ENCRYPTED] =
                 MessageColumns.FULL_ENCRYPTED + " AS " + DialogsColumns.FOREIGN_MESSAGE_ENCRYPTED
+
             sPeersProjectionMap = HashMap()
             sPeersProjectionMap[BaseColumns._ID] = PeersColumns.FULL_ID
             sPeersProjectionMap[PeersColumns.UNREAD] =
@@ -803,6 +869,7 @@ class FenrirContentProvider : ContentProvider() {
             sPeersProjectionMap[PeersColumns.KEYBOARD] = PeersColumns.FULL_KEYBOARD
             sPeersProjectionMap[PeersColumns.MAJOR_ID] = PeersColumns.FULL_MAJOR_ID
             sPeersProjectionMap[PeersColumns.MINOR_ID] = PeersColumns.FULL_MINOR_ID
+
             sDocsProjectionMap = HashMap()
             sDocsProjectionMap[BaseColumns._ID] = DocColumns.FULL_ID
             sDocsProjectionMap[DocColumns.DOC_ID] = DocColumns.FULL_DOC_ID
@@ -818,6 +885,7 @@ class FenrirContentProvider : ContentProvider() {
             sDocsProjectionMap[DocColumns.DATE] = DocColumns.FULL_DATE
             sDocsProjectionMap[DocColumns.TYPE] = DocColumns.FULL_TYPE
             sDocsProjectionMap[DocColumns.ACCESS_KEY] = DocColumns.FULL_ACCESS_KEY
+
             sVideosProjectionMap = HashMap()
             sVideosProjectionMap[BaseColumns._ID] =
                 VideoColumns.FULL_ID
@@ -880,6 +948,7 @@ class FenrirContentProvider : ContentProvider() {
             sVideosProjectionMap[VideoColumns.CAN_EDIT] =
                 VideoColumns.FULL_CAN_EDIT
             sVideosProjectionMap[VideoColumns.CAN_ADD] = VideoColumns.FULL_CAN_ADD
+
             sPostsProjectionMap = HashMap()
             sPostsProjectionMap[BaseColumns._ID] = PostsColumns.FULL_ID
             sPostsProjectionMap[PostsColumns.POST_ID] =
@@ -920,6 +989,7 @@ class FenrirContentProvider : ContentProvider() {
                 PostsColumns.FULL_DELETED
             sPostsProjectionMap[PostsColumns.POST_SOURCE] = PostsColumns.FULL_POST_SOURCE
             sPostsProjectionMap[PostsColumns.VIEWS] = PostsColumns.FULL_VIEWS
+
             sPostsMessagesAttachmentsProjectionMap = HashMap()
             sPostsMessagesAttachmentsProjectionMap[BaseColumns._ID] =
                 WallAttachmentsColumns.FULL_ID
@@ -927,10 +997,13 @@ class FenrirContentProvider : ContentProvider() {
                 WallAttachmentsColumns.FULL_P_ID
             sPostsMessagesAttachmentsProjectionMap[WallAttachmentsColumns.DATA] =
                 WallAttachmentsColumns.FULL_DATA
+
             sGroupsProjectionMap = HashMap()
             sGroupsProjectionMap[BaseColumns._ID] = GroupColumns.FULL_ID
             sGroupsProjectionMap[GroupColumns.NAME] = GroupColumns.FULL_NAME
             sGroupsProjectionMap[GroupColumns.SCREEN_NAME] = GroupColumns.FULL_SCREEN_NAME
+            sGroupsProjectionMap[GroupColumns.HAS_UNSEEN_STORIES] =
+                GroupColumns.FULL_HAS_UNSEEN_STORIES
             sGroupsProjectionMap[GroupColumns.IS_CLOSED] =
                 GroupColumns.FULL_IS_CLOSED
             sGroupsProjectionMap[GroupColumns.IS_VERIFIED] = GroupColumns.FULL_IS_VERIFIED
@@ -950,6 +1023,7 @@ class FenrirContentProvider : ContentProvider() {
                 GroupColumns.FULL_CAN_ADD_TOPICS
             sGroupsProjectionMap[GroupColumns.TOPICS_ORDER] = GroupColumns.FULL_TOPICS_ORDER
             sGroupsProjectionMap[GroupColumns.IS_BLACK_LISTED] = GroupColumns.FULL_IS_BLACK_LISTED
+
             sCommentsProjectionMap = HashMap()
             sCommentsProjectionMap[BaseColumns._ID] = CommentsColumns.FULL_ID
             sCommentsProjectionMap[CommentsColumns.COMMENT_ID] = CommentsColumns.FULL_COMMENT_ID
@@ -981,6 +1055,7 @@ class FenrirContentProvider : ContentProvider() {
                 CommentsColumns.FULL_SOURCE_TYPE
             sCommentsProjectionMap[CommentsColumns.SOURCE_ACCESS_KEY] =
                 CommentsColumns.FULL_SOURCE_ACCESS_KEY
+
             sCommentsMessagesAttachmentsProjectionMap = HashMap()
             sCommentsMessagesAttachmentsProjectionMap[BaseColumns._ID] =
                 CommentsAttachmentsColumns.FULL_ID
@@ -988,6 +1063,7 @@ class FenrirContentProvider : ContentProvider() {
                 CommentsAttachmentsColumns.FULL_C_ID
             sCommentsMessagesAttachmentsProjectionMap[CommentsAttachmentsColumns.DATA] =
                 CommentsAttachmentsColumns.FULL_DATA
+
             sPhotoAlbumsProjectionMap = HashMap()
             sPhotoAlbumsProjectionMap[PhotoAlbumsColumns.ALBUM_ID] =
                 PhotoAlbumsColumns.FULL_ALBUM_ID
@@ -1027,6 +1103,7 @@ class FenrirContentProvider : ContentProvider() {
             //sPollProjectionMap.put(PollColumns.ANONYMOUS, PollColumns.FULL_ANONYMOUS);
             //sPollProjectionMap.put(PollColumns.IS_BOARD, PollColumns.FULL_IS_BOARD);
             //sPollProjectionMap.put(PollColumns.ANSWERS, PollColumns.FULL_ANSWERS);
+
             sNewsProjectionMap = HashMap()
             sNewsProjectionMap[BaseColumns._ID] = NewsColumns.FULL_ID
             sNewsProjectionMap[NewsColumns.TYPE] = NewsColumns.FULL_TYPE
@@ -1062,11 +1139,13 @@ class FenrirContentProvider : ContentProvider() {
             sNewsProjectionMap[NewsColumns.ATTACHMENTS_BLOB] =
                 NewsColumns.FULL_ATTACHMENTS_BLOB
             sNewsProjectionMap[NewsColumns.VIEWS] = NewsColumns.FULL_VIEWS
+
             sGroupsDetProjectionMap = HashMap()
             sGroupsDetProjectionMap[BaseColumns._ID] =
                 GroupsDetColumns.FULL_ID
             sGroupsDetProjectionMap[GroupsDetColumns.DATA] =
                 GroupsDetColumns.FULL_DATA
+
             sVideoAlbumsProjectionMap = HashMap()
             sVideoAlbumsProjectionMap[BaseColumns._ID] =
                 VideoAlbumsColumns.FULL_ID
@@ -1082,6 +1161,7 @@ class FenrirContentProvider : ContentProvider() {
             sVideoAlbumsProjectionMap[VideoAlbumsColumns.UPDATE_TIME] =
                 VideoAlbumsColumns.FULL_UPDATE_TIME
             sVideoAlbumsProjectionMap[VideoAlbumsColumns.PRIVACY] = VideoAlbumsColumns.FULL_PRIVACY
+
             sTopicsProjectionMap = HashMap()
             sTopicsProjectionMap[BaseColumns._ID] = TopicsColumns.FULL_ID
             sTopicsProjectionMap[TopicsColumns.TOPIC_ID] = TopicsColumns.FULL_TOPIC_ID
@@ -1103,15 +1183,18 @@ class FenrirContentProvider : ContentProvider() {
             sTopicsProjectionMap[TopicsColumns.LAST_COMMENT] = TopicsColumns.FULL_LAST_COMMENT
             sTopicsProjectionMap[TopicsColumns.ATTACHED_POLL] = TopicsColumns.FULL_ATTACHED_POLL
             //sTopicsProjectionMap.put(TopicsColumns.POLL_ID, TopicsColumns.FULL_POLL_ID);
+
             sNoticationsProjectionMap = HashMap()
             sNoticationsProjectionMap[BaseColumns._ID] = NotificationColumns.FULL_ID
             sNoticationsProjectionMap[NotificationColumns.DATE] =
                 NotificationColumns.FULL_DATE
             sNoticationsProjectionMap[NotificationColumns.CONTENT_PACK] =
                 NotificationColumns.FULL_CONTENT_PACK
+
             sUserDetProjectionMap = HashMap()
             sUserDetProjectionMap[BaseColumns._ID] = UsersDetColumns.FULL_ID
             sUserDetProjectionMap[UsersDetColumns.DATA] = UsersDetColumns.FULL_DATA
+
             sFavePhotosProjectionMap = HashMap()
             sFavePhotosProjectionMap[BaseColumns._ID] =
                 FavePhotosColumns.FULL_ID
@@ -1121,19 +1204,23 @@ class FenrirContentProvider : ContentProvider() {
                 FavePhotosColumns.FULL_POST_ID
             sFavePhotosProjectionMap[FavePhotosColumns.PHOTO] =
                 FavePhotosColumns.FULL_PHOTO
+
             sFaveVideosProjectionMap = HashMap()
             sFaveVideosProjectionMap[BaseColumns._ID] = FaveVideosColumns.FULL_ID
             sFaveVideosProjectionMap[FaveVideosColumns.VIDEO] =
                 FaveVideosColumns.FULL_VIDEO
+
             sFaveArticlesProjectionMap = HashMap()
             sFaveArticlesProjectionMap[BaseColumns._ID] =
                 FaveArticlesColumns.FULL_ID
             sFaveArticlesProjectionMap[FaveArticlesColumns.ARTICLE] =
                 FaveArticlesColumns.FULL_ARTICLE
+
             sFaveProductsProjectionMap = HashMap()
             sFaveProductsProjectionMap[BaseColumns._ID] = FaveProductColumns.FULL_ID
             sFaveProductsProjectionMap[FaveProductColumns.PRODUCT] =
                 FaveProductColumns.FULL_PRODUCT
+
             sFaveUsersProjectionMap = HashMap()
             sFaveUsersProjectionMap[BaseColumns._ID] =
                 FavePageColumns.FULL_ID
@@ -1141,6 +1228,7 @@ class FenrirContentProvider : ContentProvider() {
             sFaveUsersProjectionMap[FavePageColumns.DESCRIPTION] =
                 FavePageColumns.DESCRIPTION
             sFaveUsersProjectionMap[FavePageColumns.FAVE_TYPE] = FavePageColumns.FAVE_TYPE
+
             sFaveGroupsProjectionMap = HashMap()
             sFaveGroupsProjectionMap[BaseColumns._ID] =
                 FavePageColumns.FULL_GROUPS_ID
@@ -1148,6 +1236,7 @@ class FenrirContentProvider : ContentProvider() {
                 FavePageColumns.UPDATED_TIME
             sFaveGroupsProjectionMap[FavePageColumns.DESCRIPTION] = FavePageColumns.DESCRIPTION
             sFaveGroupsProjectionMap[FavePageColumns.FAVE_TYPE] = FavePageColumns.FAVE_TYPE
+
             sFaveLinksProjectionMap = HashMap()
             sFaveLinksProjectionMap[BaseColumns._ID] =
                 FaveLinksColumns.FULL_ID
@@ -1159,13 +1248,16 @@ class FenrirContentProvider : ContentProvider() {
                 FaveLinksColumns.FULL_DESCRIPTION
             sFaveLinksProjectionMap[FaveLinksColumns.PHOTO] =
                 FaveLinksColumns.FULL_PHOTO
+
             sFavePostsProjectionMap = HashMap()
             sFavePostsProjectionMap[BaseColumns._ID] =
                 FavePostsColumns.FULL_ID
             sFavePostsProjectionMap[FavePostsColumns.POST] = FavePostsColumns.FULL_POST
+
             sCountriesProjectionMap = HashMap()
             sCountriesProjectionMap[BaseColumns._ID] = CountriesColumns.FULL_ID
             sCountriesProjectionMap[CountriesColumns.NAME] = CountriesColumns.FULL_NAME
+
             sFeedListsProjectionMap = HashMap()
             sFeedListsProjectionMap[BaseColumns._ID] =
                 FeedListsColumns.FULL_ID
@@ -1174,6 +1266,7 @@ class FenrirContentProvider : ContentProvider() {
             sFeedListsProjectionMap[FeedListsColumns.NO_REPOSTS] = FeedListsColumns.FULL_NO_REPOSTS
             sFeedListsProjectionMap[FeedListsColumns.SOURCE_IDS] =
                 FeedListsColumns.FULL_SOURCE_IDS
+
             sFriendListsProjectionMap = HashMap()
             sFriendListsProjectionMap[BaseColumns._ID] = FriendListsColumns.FULL_ID
             sFriendListsProjectionMap[FriendListsColumns.USER_ID] =
@@ -1181,6 +1274,7 @@ class FenrirContentProvider : ContentProvider() {
             sFriendListsProjectionMap[FriendListsColumns.LIST_ID] = FriendListsColumns.FULL_LIST_ID
             sFriendListsProjectionMap[FriendListsColumns.NAME] =
                 FriendListsColumns.FULL_NAME
+
             sKeysProjectionMap = HashMap()
             sKeysProjectionMap[BaseColumns._ID] = KeyColumns.FULL_ID
             sKeysProjectionMap[KeyColumns.VERSION] = KeyColumns.FULL_VERSION
@@ -1196,6 +1290,8 @@ class FenrirContentProvider : ContentProvider() {
             sKeysProjectionMap[KeyColumns.OUT_KEY] = KeyColumns.FULL_OUT_KEY
             sKeysProjectionMap[KeyColumns.IN_KEY] =
                 KeyColumns.FULL_IN_KEY
+
+            //testProjectionMaps()
         }
     }
 

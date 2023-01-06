@@ -8,6 +8,7 @@ import androidx.annotation.StringRes
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.Includes.provideApplicationContext
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.model.local_json.ChatJsonResponse
@@ -375,7 +376,7 @@ class MessagesRepository(
         mode: Mode
     ): Single<Conversation> {
         val cached = getCachedConversation(accountId, peerId)
-        val actual = getActualConversaction(accountId, peerId)
+        val actual = getActualConversation(accountId, peerId)
         when (mode) {
             Mode.ANY -> return cached.flatMap { optional ->
                 if (optional.isEmpty) actual else Single.just(
@@ -408,10 +409,10 @@ class MessagesRepository(
             }
     }
 
-    private fun getActualConversaction(accountId: Int, peerId: Int): Single<Conversation> {
+    private fun getActualConversation(accountId: Int, peerId: Int): Single<Conversation> {
         return networker.vkDefault(accountId)
             .messages()
-            .getConversations(listOf(peerId), true, Constants.MAIN_OWNER_FIELDS)
+            .getConversations(listOf(peerId), true, Fields.FIELDS_BASE_OWNER)
             .flatMap { response ->
                 if (response.items.isNullOrEmpty()) {
                     return@flatMap Single.error<Conversation>(NotFoundException())
@@ -434,7 +435,7 @@ class MessagesRepository(
 
     override fun getConversation(accountId: Int, peerId: Int, mode: Mode): Flowable<Conversation> {
         val cached = getCachedConversation(accountId, peerId)
-        val actual = getActualConversaction(accountId, peerId)
+        val actual = getActualConversation(accountId, peerId)
         return when (mode) {
             Mode.ANY -> cached
                 .flatMap { optional ->
@@ -719,7 +720,7 @@ class MessagesRepository(
     ): Single<List<Message>> {
         return networker.vkDefault(accountId)
             .messages()
-            .getImportantMessages(offset, count, startMessageId, true, Constants.MAIN_OWNER_FIELDS)
+            .getImportantMessages(offset, count, startMessageId, true, Fields.FIELDS_BASE_OWNER)
             .flatMap { response ->
                 val dtos: MutableList<VKApiMessage> =
                     if (response.messages == null) mutableListOf() else listEmptyIfNullMutable(
@@ -796,7 +797,7 @@ class MessagesRepository(
                 startMessageId,
                 rev,
                 true,
-                Constants.MAIN_OWNER_FIELDS
+                Fields.FIELDS_BASE_OWNER
             )
             .flatMap { response ->
                 val dtos: MutableList<VKApiMessage> = listEmptyIfNullMutable(response.messages)
@@ -884,7 +885,7 @@ class MessagesRepository(
         val dialogsStore = storages.dialogs()
         return networker.vkDefault(accountId)
             .messages()
-            .getDialogs(null, count, startMessageId, true, Constants.MAIN_OWNER_FIELDS)
+            .getDialogs(null, count, startMessageId, true, Fields.FIELDS_BASE_OWNER)
             .map { response ->
                 if (startMessageId != null && safeCountOf(response.dialogs) > 0) {
                     // remove first item, because we will have duplicate with previous response
@@ -1110,7 +1111,7 @@ class MessagesRepository(
     ): Single<List<Conversation>> {
         return networker.vkDefault(accountId)
             .messages()
-            .searchConversations(q, count, 1, Constants.MAIN_OWNER_FIELDS)
+            .searchConversations(q, count, 1, Fields.FIELDS_BASE_OWNER)
             .flatMap { chattables ->
                 val conversations: List<VKApiConversation> =
                     listEmptyIfNull(chattables.conversations)
@@ -1182,7 +1183,7 @@ class MessagesRepository(
     override fun getChatUsers(accountId: Int, chatId: Int): Single<List<AppChatUser>> {
         return networker.vkDefault(accountId)
             .messages()
-            .getConversationMembers(Peer.fromChatId(chatId), Constants.MAIN_OWNER_FIELDS)
+            .getConversationMembers(Peer.fromChatId(chatId), Fields.FIELDS_BASE_OWNER)
             .flatMap { chatDto ->
                 val dtos: List<VKApiConversationMembers> =
                     listEmptyIfNull(chatDto.conversationMembers)

@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.domain.impl
 
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
-import dev.ragnarok.fenrir.db.column.GroupColumns
 import dev.ragnarok.fenrir.db.interfaces.IStorages
 import dev.ragnarok.fenrir.domain.ICommunitiesInteractor
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapCommunities
@@ -28,7 +28,7 @@ class CommunitiesInteractor(private val networker: INetworker, private val store
         store: Boolean
     ): Single<List<Community>> {
         return networker.vkDefault(accountId)
-            .groups()[userId, true, null, GroupColumns.API_FIELDS, offset, count]
+            .groups()[userId, true, null, Fields.FIELDS_BASE_GROUP, offset, count]
             .flatMap { items ->
                 val dtos = listEmptyIfNull(
                     items.items
@@ -60,7 +60,7 @@ class CommunitiesInteractor(private val networker: INetworker, private val store
             .search(
                 q,
                 type,
-                GroupColumns.API_FIELDS,
+                Fields.FIELDS_BASE_GROUP,
                 countryId,
                 cityId,
                 futureOnly,

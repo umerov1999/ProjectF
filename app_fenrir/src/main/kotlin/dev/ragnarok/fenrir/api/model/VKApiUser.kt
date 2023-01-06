@@ -216,11 +216,6 @@ class VKApiUser
     var screen_name: String? = null
 
     /**
-     * Nickname of user.
-     */
-    var nickname: String? = null
-
-    /**
      * User's activities
      */
     var activities: String? = null
@@ -349,25 +344,6 @@ class VKApiUser
     var blacklisted = false
 
     /**
-     * url фотографии пользователя, имеющей ширину 200 пикселей.
-     * В случае отсутствия у пользователя фотографии возвращается http://vk.com/images/camera_a.gif.
-     */
-    var photo_200_orig: String? = null
-
-    /**
-     * url фотографии пользователя, имеющей ширину 400 пикселей.
-     * Если у пользователя отсутствует фотография такого размера, ответ не будет содержать этого поля.
-     */
-    var photo_400_orig: String? = null
-
-    /**
-     * url квадратной фотографии пользователя с максимальной шириной.
-     * Может быть возвращена фотография, имеющая ширину как 200, так и 100 пикселей.
-     * В случае отсутствия у пользователя фотографии возвращается http://vk.com/images/camera_b.gif.
-     */
-    var photo_max: String? = null
-
-    /**
      * информация о том, известен ли номер мобильного телефона пользователя.
      * Возвращаемые значения: 1 — известен, 0 — не известен.
      * Рекомендуется использовать перед вызовом метода secure.sendSMSNotification.
@@ -389,12 +365,6 @@ class VKApiUser
      * любимая музыка.
      */
     var music: String? = null
-
-    /**
-     * информация о том, разрешено ли видеть чужие аудиозаписи на стене пользователя.
-     * Возвращаемые значения: 1 —разрешено, 0 — не разрешено.
-     */
-    var can_see_audio = false
 
     /**
      * информация о том, будет ли отправлено уведомление пользователю о заявке в друзья.
@@ -422,6 +392,10 @@ class VKApiUser
      * 1 – пользователь друг, 2 – пользователь не в друзьях.
      */
     var is_friend = false
+
+    var has_unseen_stories = false
+
+    var cover: VKApiCover? = null
 
     /**
      * статус дружбы с пользователем:
@@ -451,213 +425,6 @@ class VKApiUser
         }
     override val fullName: String
         get() = if (first_name.isNullOrEmpty() && last_name.isNullOrEmpty()) "[id $id]" else "$first_name $last_name"
-
-    object Field {
-        /**
-         * Field name for [.online] param.
-         */
-        const val ONLINE = "online"
-
-        /**
-         * Field name for [.online_mobile] param.
-         */
-        const val ONLINE_MOBILE = "online_mobile"
-
-        /**
-         * Field name for [.photo_50] param.
-         */
-        const val PHOTO_50 = "photo_50"
-
-        /**
-         * Field name for [.photo_100] param.
-         */
-        const val PHOTO_100 = "photo_100"
-
-        /**
-         * Field name for [.photo_200] param.
-         */
-        const val PHOTO_200 = "photo_200"
-
-        /**
-         * Filed last_seen from VK fields set
-         */
-        const val LAST_SEEN = "last_seen"
-
-        /**
-         * Filed photo_max_orig
-         */
-        const val PHOTO_MAX_ORIG = "photo_max_orig"
-
-        /**
-         * Filed photo_max_orig
-         */
-        const val STATUS = "status"
-
-        /**
-         * Filed bdate from VK fields set
-         */
-        const val BDATE = "bdate"
-
-        /**
-         * Filed city from VK fields set
-         */
-        const val CITY = "city"
-
-        /**
-         * Filed country from VK fields set
-         */
-        const val COUNTRY = "country"
-
-        /**
-         * Filed universities from VK fields set
-         */
-        const val UNIVERSITIES = "universities"
-
-        /**
-         * Filed schools from VK fields set
-         */
-        const val SCHOOLS = "schools"
-
-        /**
-         * Filed military from VK fields set
-         */
-        const val MILITARY = "military"
-
-        /**
-         * Filed military from VK fields set
-         */
-        const val CAREER = "career"
-
-        /**
-         * Filed activity from VK fields set
-         */
-        const val ACTIVITY = "activity"
-
-        /**
-         * Filed personal from VK fields set
-         */
-        const val PERSONAL = "personal"
-
-        /**
-         * Filed sex from VK fields set
-         */
-        const val SEX = "sex"
-
-        /**
-         * Filed site from VK fields set
-         */
-        const val SITE = "site"
-
-        /**
-         * Filed contacts from VK fields set
-         */
-        const val CONTACTS = "contacts"
-
-        /**
-         * Filed can_post from VK fields set
-         */
-        const val CAN_POST = "can_post"
-
-        /**
-         * Filed can_see_all_posts from VK fields set
-         */
-        const val CAN_SEE_ALL_POSTS = "can_see_all_posts"
-
-        /**
-         * Filed can_write_private_message from VK fields set
-         */
-        const val CAN_WRITE_PRIVATE_MESSAGE = "can_write_private_message"
-
-        /**
-         * Filed relation from VK fields set
-         */
-        const val RELATION = "relation"
-
-        /**
-         * Filed counters from VK fields set
-         */
-        const val COUNTERS = "counters"
-
-        /**
-         * Filed activities from VK fields set
-         */
-        const val ACTIVITIES = "activities"
-
-        /**
-         * Filed interests from VK fields set
-         */
-        const val INTERESTS = "interests"
-
-        /**
-         * Filed movies from VK fields set
-         */
-        const val MOVIES = "movies"
-
-        /**
-         * Filed tv from VK fields set
-         */
-        const val TV = "tv"
-
-        /**
-         * Filed books from VK fields set
-         */
-        const val BOOKS = "books"
-
-        /**
-         * Filed games from VK fields set
-         */
-        const val GAMES = "games"
-
-        /**
-         * Filed about from VK fields set
-         */
-        const val ABOUT = "about"
-
-        /**
-         * Filed quotes from VK fields set
-         */
-        const val QUOTES = "quotes"
-
-        /**
-         * Filed connections from VK fields set
-         */
-        const val CONNECTIONS = "connections"
-
-        /**
-         * Filed relatives from VK fields set
-         */
-        const val RELATIVES = "relatives"
-
-        /**
-         * Filed wall_default from VK fields set
-         */
-        const val WALL_DEFAULT = "wall_default"
-
-        /**
-         * Filed verified from VK fields set
-         */
-        const val VERIFIED = "verified"
-
-        /**
-         * Filed screen_name from VK fields set
-         */
-        const val SCREEN_NAME = "screen_name"
-
-        /**
-         * Filed blacklisted_by_me from VK fields set
-         */
-        const val BLACKLISTED_BY_ME = "blacklisted_by_me"
-
-        /**
-         * Filed blacklisted_by_me from VK fields set
-         */
-        const val DOMAIN = "domain"
-
-        /**
-         * Filed blacklisted_by_me from VK fields set
-         */
-        const val HOME_TOWN = "home_town"
-    }
 
     object Platform {
         const val MOBILE = 1
@@ -753,8 +520,6 @@ class VKApiUser
         const val FRIEND_STATUS_REQUEST_SENT = 1
         const val FRIEND_STATUS_HAS_INPUT_REQUEST = 2
         const val FRIEND_STATUS_IS_FRIEDND = 3
-        const val ALL_FIELDS =
-            "about,activities,bdate,blacklisted,blacklisted_by_me,books,can_access_closed,can_post,can_see_all_posts,can_see_audio,can_write_private_message,career,city,common_count,connections,contacts,counters,country,domain,first_name,education,friend_status,games,has_mobile,interests,is_closed,is_favorite,is_friend,is_subscribed,last_name,last_seen,maiden_name,military,movies,music,occupation,online,online_app,online_mobile,personal,photo_100,photo_200,photo_200_orig,photo_400_orig,photo_50,photo_id,photo_max,photo_max_orig,quotes,relation,relatives,schools,screen_name,sex,site,status,timezone,tv,universities,verified"
 
         fun create(id: Int): VKApiUser {
             val user = VKApiUser()

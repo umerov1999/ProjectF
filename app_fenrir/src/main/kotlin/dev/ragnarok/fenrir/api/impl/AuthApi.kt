@@ -54,7 +54,8 @@ class AuthApi(private val service: IDirectLoginSeviceProvider) : IAuthApi {
                                     NeedValidationException(
                                         response.validationType,
                                         response.redirect_uri,
-                                        response.validation_sid
+                                        response.validation_sid,
+                                        response.errorDescription
                                     )
                                 )
                             }

@@ -26,6 +26,8 @@ class UserEntity(val id: Int) {
         private set
     var bdate: String? = null
         private set
+    var hasUnseenStories = false
+        private set
 
     @get:UserPlatform
     @UserPlatform
@@ -56,6 +58,11 @@ class UserEntity(val id: Int) {
         private set
     var isCan_access_closed = false
         private set
+
+    fun setHasUnseenStories(hasUnseenStories: Boolean): UserEntity {
+        this.hasUnseenStories = hasUnseenStories
+        return this
+    }
 
     fun setBdate(bdate: String?): UserEntity {
         this.bdate = bdate

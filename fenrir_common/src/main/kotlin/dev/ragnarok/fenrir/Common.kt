@@ -96,7 +96,7 @@ object Common {
 
     @DrawableRes
     fun getSnowRes(paganSymbol: Int): Int {
-        if (paganSymbol == 16) {
+        if (paganSymbol == 15) {
             return R.drawable.ic_maple_leaf
         }
         return R.drawable.ic_snowflake

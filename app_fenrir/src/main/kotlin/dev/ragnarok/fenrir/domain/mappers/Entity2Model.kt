@@ -74,6 +74,7 @@ object Entity2Model {
             .setPhoto100(dbo.photo100)
             .setPhoto200(dbo.photo200)
             .setMembersCount(dbo.membersCount)
+            .setHasUnseenStories(dbo.hasUnseenStories)
     }
 
 
@@ -232,6 +233,25 @@ object Entity2Model {
         details.setBooks(dbo.books)
         details.setFavorite(dbo.isSetFavorite)
         details.setSubscribed(dbo.isSetSubscribed)
+        details.setCover(dbo.cover.requireNonNull({
+            val cover = UserDetails.Cover()
+                .setEnabled(it.isEnabled)
+                .setImages(ArrayList(safeCountOf(it.images)))
+            it.images.nonNullNoEmpty { pit ->
+                for (imageDto in pit) {
+                    cover.getImages()?.add(
+                        UserDetails.CoverImage(
+                            imageDto.url,
+                            imageDto.height,
+                            imageDto.width
+                        )
+                    )
+                }
+            }
+            cover
+        }, {
+            UserDetails.Cover().setEnabled(false)
+        }))
         return details
     }
 
@@ -328,6 +348,7 @@ object Entity2Model {
             .setCan_access_closed(entity.isCan_access_closed)
             .setMaiden_name(entity.maiden_name)
             .setBdate(entity.bdate)
+            .setHasUnseenStories(entity.hasUnseenStories)
     }
 
     fun map(entity: FavePageEntity): FavePage {
@@ -358,6 +379,7 @@ object Entity2Model {
             .setMemberStatus(entity.memberStatus)
             .setMembersCount(entity.membersCount)
             .setCommunityType(entity.type)
+            .setHasUnseenStories(entity.hasUnseenStories)
     }
 
 

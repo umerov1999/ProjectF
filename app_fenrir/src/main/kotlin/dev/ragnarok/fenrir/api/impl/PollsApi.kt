@@ -1,12 +1,12 @@
 package dev.ragnarok.fenrir.api.impl
 
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IPollsApi
 import dev.ragnarok.fenrir.api.model.VKApiPoll
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.services.IPollsService
-import dev.ragnarok.fenrir.db.column.UserColumns
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.serializeble.json.Json
 import io.reactivex.rxjava3.core.Single
@@ -90,7 +90,7 @@ internal class PollsApi(accountId: Int, provider: IServiceProvider) :
                     ids,
                     offset,
                     count,
-                    UserColumns.API_FIELDS,
+                    Fields.FIELDS_BASE_USER,
                     null
                 )
                     .map(extractResponseWithErrorHandling())

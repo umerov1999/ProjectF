@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.domain.impl
 
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.IAttachmentToken
 import dev.ragnarok.fenrir.db.interfaces.IStorages
@@ -151,7 +151,7 @@ class WallsRepository(
         wallFilter: Int
     ): Single<List<Post>> {
         return networker.vkDefault(accountId)
-            .wall()[ownerId, null, offset, count, convertToApiFilter(wallFilter), true, Constants.MAIN_OWNER_FIELDS]
+            .wall()[ownerId, null, offset, count, convertToApiFilter(wallFilter), true, Fields.FIELDS_BASE_OWNER]
             .flatMap { response ->
                 val owners = transformOwners(response.profiles, response.groups)
                 val dtos = listEmptyIfNull(response.posts)
@@ -182,7 +182,7 @@ class WallsRepository(
         needStore: Boolean
     ): Single<List<Post>> {
         return networker.vkDefault(accountId)
-            .wall()[ownerId, null, offset, count, convertToApiFilter(wallFilter), true, Constants.MAIN_OWNER_FIELDS]
+            .wall()[ownerId, null, offset, count, convertToApiFilter(wallFilter), true, Fields.FIELDS_BASE_OWNER]
             .flatMap { response ->
                 val owners = transformOwners(response.profiles, response.groups)
                 val dtos = listEmptyIfNull(response.posts)
@@ -310,7 +310,7 @@ class WallsRepository(
         val id = dev.ragnarok.fenrir.api.model.IdPair(postId, ownerId)
         return networker.vkDefault(accountId)
             .wall()
-            .getById(setOf(id), true, 5, Constants.MAIN_OWNER_FIELDS)
+            .getById(setOf(id), true, 5, Fields.FIELDS_BASE_OWNER)
             .flatMap { response ->
                 if (response.posts.isNullOrEmpty()) {
                     throw NotFoundException()
@@ -419,7 +419,7 @@ class WallsRepository(
         val cache = storages.wall()
         return networker.vkDefault(accountId)
             .wall()
-            .getById(singlePair(postId, ownerId), true, 5, Constants.MAIN_OWNER_FIELDS)
+            .getById(singlePair(postId, ownerId), true, 5, Fields.FIELDS_BASE_OWNER)
             .flatMap { response ->
                 if (safeCountOf(response.posts) != 1) {
                     throw NotFoundException()
@@ -458,7 +458,7 @@ class WallsRepository(
                 count,
                 offset,
                 true,
-                Constants.MAIN_OWNER_FIELDS
+                Fields.FIELDS_BASE_OWNER
             )
             .flatMap { response ->
                 val dtos = listEmptyIfNull(response.items)

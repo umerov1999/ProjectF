@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.domain.impl
 
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.VKApiComment
@@ -8,7 +8,6 @@ import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.db.AttachToType
-import dev.ragnarok.fenrir.db.column.GroupColumns
 import dev.ragnarok.fenrir.db.interfaces.IStorages
 import dev.ragnarok.fenrir.db.model.entity.CommentEntity
 import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
@@ -126,7 +125,7 @@ class CommentsInteractor(
         offset: Int
     ): Single<List<Comment>> {
         return networker.vkDefault(accountId)
-            .comments()["post", ownerId, postId, offset, 100, "desc", null, null, null, Constants.MAIN_OWNER_FIELDS]
+            .comments()["post", ownerId, postId, offset, 100, "desc", null, null, null, Fields.FIELDS_BASE_OWNER]
             .flatMap { response ->
                 val commentDtos =
                     response.main?.comments.orEmpty()
@@ -156,7 +155,7 @@ class CommentsInteractor(
     ): Single<CommentsBundle> {
         val type = commented.typeForStoredProcedure
         return networker.vkDefault(accountId)
-            .comments()[type, commented.sourceOwnerId, commented.sourceId, offset, count, sort, startCommentId, threadComment, commented.accessKey, Constants.MAIN_OWNER_FIELDS]
+            .comments()[type, commented.sourceOwnerId, commented.sourceId, offset, count, sort, startCommentId, threadComment, commented.accessKey, Fields.FIELDS_BASE_OWNER]
             .flatMap { response ->
                 val commentDtos =
                     response.main?.comments.orEmpty()
@@ -424,7 +423,7 @@ class CommentsInteractor(
         return ownersRepository.getBaseOwnerInfo(accountId, accountId, IOwnersRepository.MODE_ANY)
             .flatMap { owner ->
                 networker.vkDefault(accountId)
-                    .groups()[accountId, true, "admin,editor", GroupColumns.API_FIELDS, null, 1000]
+                    .groups()[accountId, true, "admin,editor", Fields.FIELDS_BASE_OWNER, null, 1000]
                     .map { obj -> obj.items.orEmpty() }
                     .map<List<Owner>> {
                         val owners: MutableList<Owner> = ArrayList(it.size + 1)
@@ -516,7 +515,7 @@ class CommentsInteractor(
                     100,
                     "desc",
                     true,
-                    Constants.MAIN_OWNER_FIELDS
+                    Fields.FIELDS_BASE_OWNER
                 )
                     .map { response ->
                         tempData.append(response, continueToCommentId)
@@ -653,7 +652,7 @@ class CommentsInteractor(
         val ownerId = commented.sourceOwnerId
         val sourceType = commented.sourceType
         return networker.vkDefault(accountId)
-            .comments()[type, commented.sourceOwnerId, commented.sourceId, 0, 1, null, commentId, commentThread, commented.accessKey, Constants.MAIN_OWNER_FIELDS]
+            .comments()[type, commented.sourceOwnerId, commented.sourceId, 0, 1, null, commentId, commentThread, commented.accessKey, Fields.FIELDS_BASE_OWNER]
             .flatMap { response ->
                 if (response.main == null || safeCountOf(response.main?.comments) != 1) {
                     throw NotFoundException()

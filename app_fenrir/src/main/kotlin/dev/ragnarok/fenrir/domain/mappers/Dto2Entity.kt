@@ -360,6 +360,7 @@ object Dto2Entity {
             .setPhoto100(community.photo_100)
             .setPhoto200(community.photo_200)
             .setMembersCount(community.members_count)
+            .setHasUnseenStories(community.has_unseen_stories)
     }
 
 
@@ -405,6 +406,7 @@ object Dto2Entity {
             .setVerified(user.verified)
             .setMaiden_name(user.maiden_name)
             .setBdate(user.bdate)
+            .setHasUnseenStories(user.has_unseen_stories)
     }
 
 
@@ -553,6 +555,22 @@ object Dto2Entity {
         dbo.setBooks(user.books)
         dbo.setFavorite(user.is_favorite)
         dbo.setSubscribed(user.is_subscribed)
+        dbo.setCover(user.cover.requireNonNull({
+            val cover = UserDetailsEntity.Cover()
+                .setEnabled(it.enabled)
+                .setImages(ArrayList(safeCountOf(it.images)))
+            it.images.requireNonNull { pit ->
+                for (imageDto in pit) {
+                    cover.images?.add(
+                        UserDetailsEntity.CoverImage()
+                            .set(imageDto.url, imageDto.height, imageDto.width)
+                    )
+                }
+            }
+            cover
+        }, {
+            UserDetailsEntity.Cover().setEnabled(false)
+        }))
         return dbo
     }
 

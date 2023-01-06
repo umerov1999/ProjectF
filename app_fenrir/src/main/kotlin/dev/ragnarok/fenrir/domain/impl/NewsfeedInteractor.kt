@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.domain.impl
 
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.CommentsDto
 import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.*
@@ -73,7 +73,7 @@ class NewsfeedInteractor(
             .newsfeed()
             .getComments(
                 count, filter, null, null, null,
-                1, startFrom, Constants.MAIN_OWNER_FIELDS
+                1, startFrom, Fields.FIELDS_BASE_OWNER
             )
             .flatMap { response ->
                 val owners = transformOwners(response.profiles, response.groups)

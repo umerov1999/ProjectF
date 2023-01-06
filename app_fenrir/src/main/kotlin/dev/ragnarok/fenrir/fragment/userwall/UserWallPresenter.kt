@@ -184,6 +184,22 @@ class UserWallPresenter(
         }
     }
 
+    private fun resolveCoverImage() {
+        details.getCover()?.getImages().ifNonNullNoEmpty({
+            var def = 0
+            var url: String? = null
+            for (i in it) {
+                if (i.getWidth() * i.getHeight() > def) {
+                    def = i.getWidth() * i.getHeight()
+                    url = i.getUrl()
+                }
+            }
+            view?.displayUserCover(user.blacklisted, url, true)
+        }, {
+            view?.displayUserCover(user.blacklisted, user.maxSquareAvatar, false)
+        })
+    }
+
     private fun resolveCounters() {
         view?.displayCounters(
             details.getFriendsCount(),
@@ -242,17 +258,18 @@ class UserWallPresenter(
         }
         if (details != null) {
             this.details = details
-            onUserDetalsUpdated()
+            onUserDetailsUpdated()
         }
         resolveStatusView()
         resolveMenu()
     }
 
-    private fun onUserDetalsUpdated() {
+    private fun onUserDetailsUpdated() {
         syncFilterCountersWithDetails()
         view?.notifyWallFiltersChanged()
         resolvePrimaryActionButton()
         resolveCounters()
+        resolveCoverImage()
     }
 
     private fun onUserInfoUpdated() {
@@ -288,6 +305,7 @@ class UserWallPresenter(
         resolveStatusView()
         resolveMenu()
         resolveProgressDialogView()
+        resolveCoverImage()
     }
 
     private fun createPostFilters(): List<PostFilter> {

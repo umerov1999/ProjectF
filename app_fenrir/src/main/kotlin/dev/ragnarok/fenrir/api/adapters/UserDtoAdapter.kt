@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.api.adapters
 
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.kJson
@@ -18,54 +19,54 @@ class UserDtoAdapter : AbsAdapter<VKApiUser>("VKApiUser") {
         val root = json.asJsonObject
         dto.id = optInt(root, "id")
         if (dto.id == 0) dto.id = optInt(root, "user_id")
-        dto.first_name = optString(root, "first_name")
-        dto.last_name = optString(root, "last_name")
-        dto.online = optBoolean(root, VKApiUser.Field.ONLINE)
-        dto.online_mobile = optBoolean(root, VKApiUser.Field.ONLINE_MOBILE)
-        dto.online_app = optInt(root, "online_app")
-        dto.photo_50 = optString(root, VKApiUser.Field.PHOTO_50, VKApiUser.CAMERA_50)
-        dto.photo_100 = optString(root, VKApiUser.Field.PHOTO_100)
-        dto.photo_200 = optString(root, VKApiUser.Field.PHOTO_200)
-        if (hasObject(root, VKApiUser.Field.LAST_SEEN)) {
-            val lastSeenRoot = root.getAsJsonObject(VKApiUser.Field.LAST_SEEN)
+        dto.first_name = optString(root, Fields.USER_FIELDS.FIRST_NAME)
+        dto.last_name = optString(root, Fields.USER_FIELDS.LAST_NAME)
+        dto.online = optBoolean(root, Fields.USER_FIELDS.ONLINE)
+        dto.online_mobile = optBoolean(root, Fields.USER_FIELDS.ONLINE_MOBILE)
+        dto.online_app = optInt(root, Fields.USER_FIELDS.ONLINE_APP)
+        dto.photo_50 = optString(root, Fields.USER_FIELDS.PHOTO_50, VKApiUser.CAMERA_50)
+        dto.photo_100 = optString(root, Fields.USER_FIELDS.PHOTO_100)
+        dto.photo_200 = optString(root, Fields.USER_FIELDS.PHOTO_200)
+        if (hasObject(root, Fields.USER_FIELDS.LAST_SEEN)) {
+            val lastSeenRoot = root.getAsJsonObject(Fields.USER_FIELDS.LAST_SEEN)
             dto.last_seen = optLong(lastSeenRoot, "time")
-            dto.platform = optInt(lastSeenRoot, "platform")
+            dto.platform = optInt(lastSeenRoot, Fields.USER_FIELDS.PLATFORM)
         }
-        dto.photo_max_orig = optString(root, VKApiUser.Field.PHOTO_MAX_ORIG)
-        dto.status = VKStringUtils.unescape(optString(root, VKApiUser.Field.STATUS))
-        dto.bdate = optString(root, VKApiUser.Field.BDATE)
-        if (hasObject(root, VKApiUser.Field.CITY)) {
-            dto.city = root[VKApiUser.Field.CITY]?.let {
+        dto.photo_max_orig = optString(root, Fields.USER_FIELDS.PHOTO_MAX_ORIG)
+        dto.status = VKStringUtils.unescape(optString(root, Fields.USER_FIELDS.STATUS))
+        dto.bdate = optString(root, Fields.USER_FIELDS.BDATE)
+        if (hasObject(root, Fields.USER_FIELDS.CITY)) {
+            dto.city = root[Fields.USER_FIELDS.CITY]?.let {
                 kJson.decodeFromJsonElement(VKApiCity.serializer(), it)
             }
         }
-        if (hasObject(root, VKApiUser.Field.COUNTRY)) {
+        if (hasObject(root, Fields.USER_FIELDS.COUNTRY)) {
             dto.country =
-                root[VKApiUser.Field.COUNTRY]?.let {
+                root[Fields.USER_FIELDS.COUNTRY]?.let {
                     kJson.decodeFromJsonElement(VKApiCountry.serializer(), it)
                 }
         }
         dto.universities = parseArray(
-            root[VKApiUser.Field.UNIVERSITIES],
+            root[Fields.USER_FIELDS.UNIVERSITIES],
             null,
             VKApiUniversity.serializer()
         )
         dto.schools =
-            parseArray(root[VKApiUser.Field.SCHOOLS], null, VKApiSchool.serializer())
+            parseArray(root[Fields.USER_FIELDS.SCHOOLS], null, VKApiSchool.serializer())
         dto.militaries =
-            parseArray(root[VKApiUser.Field.MILITARY], null, VKApiMilitary.serializer())
+            parseArray(root[Fields.USER_FIELDS.MILITARY], null, VKApiMilitary.serializer())
         dto.careers =
-            parseArray(root[VKApiUser.Field.CAREER], null, VKApiCareer.serializer())
+            parseArray(root[Fields.USER_FIELDS.CAREER], null, VKApiCareer.serializer())
 
         // status
-        dto.activity = optString(root, VKApiUser.Field.ACTIVITY)
+        dto.activity = optString(root, Fields.USER_FIELDS.ACTIVITY)
         if (hasObject(root, "status_audio")) {
             dto.status_audio = root["status_audio"]?.let {
                 kJson.decodeFromJsonElement(VKApiAudio.serializer(), it)
             }
         }
-        if (hasObject(root, VKApiUser.Field.PERSONAL)) {
-            val personal = root.getAsJsonObject(VKApiUser.Field.PERSONAL)
+        if (hasObject(root, Fields.USER_FIELDS.PERSONAL)) {
+            val personal = root.getAsJsonObject(Fields.USER_FIELDS.PERSONAL)
             dto.smoking = optInt(personal, "smoking")
             dto.alcohol = optInt(personal, "alcohol")
             dto.political = optInt(personal, "political")
@@ -83,8 +84,8 @@ class UserDtoAdapter : AbsAdapter<VKApiUser>("VKApiUser") {
         dto.facebook = optString(root, "facebook")
         dto.facebook_name = optString(root, "facebook_name")
         dto.livejournal = optString(root, "livejournal")
-        dto.site = optString(root, VKApiUser.Field.SITE)
-        dto.screen_name = optString(root, "screen_name", "id" + dto.id)
+        dto.site = optString(root, Fields.USER_FIELDS.SITE)
+        dto.screen_name = optString(root, Fields.USER_FIELDS.SCREEN_NAME, "id" + dto.id)
         dto.skype = optString(root, "skype")
         dto.mobile_phone = optString(root, "mobile_phone")
         dto.home_phone = optString(root, "home_phone")
@@ -92,52 +93,49 @@ class UserDtoAdapter : AbsAdapter<VKApiUser>("VKApiUser") {
         dto.instagram = optString(root, "instagram")
 
         // personal info
-        dto.about = optString(root, VKApiUser.Field.ABOUT)
-        dto.activities = optString(root, VKApiUser.Field.ACTIVITIES)
-        dto.books = optString(root, VKApiUser.Field.BOOKS)
-        dto.games = optString(root, VKApiUser.Field.GAMES)
-        dto.interests = optString(root, VKApiUser.Field.INTERESTS)
-        dto.movies = optString(root, VKApiUser.Field.MOVIES)
-        dto.quotes = optString(root, VKApiUser.Field.QUOTES)
-        dto.tv = optString(root, VKApiUser.Field.TV)
+        dto.about = optString(root, Fields.USER_FIELDS.ABOUT)
+        dto.activities = optString(root, Fields.USER_FIELDS.ACTIVITIES)
+        dto.books = optString(root, Fields.USER_FIELDS.BOOKS)
+        dto.games = optString(root, Fields.USER_FIELDS.GAMES)
+        dto.interests = optString(root, Fields.USER_FIELDS.INTERESTS)
+        dto.movies = optString(root, Fields.USER_FIELDS.MOVIES)
+        dto.quotes = optString(root, Fields.USER_FIELDS.QUOTES)
+        dto.tv = optString(root, Fields.USER_FIELDS.TV)
 
         // settings
-        dto.nickname = optString(root, "nickname")
-        dto.domain = optString(root, "domain")
-        dto.can_post = optBoolean(root, VKApiUser.Field.CAN_POST)
-        dto.can_see_all_posts = optBoolean(root, VKApiUser.Field.CAN_SEE_ALL_POSTS)
-        dto.blacklisted_by_me = optBoolean(root, VKApiUser.Field.BLACKLISTED_BY_ME)
-        dto.can_write_private_message = optBoolean(root, VKApiUser.Field.CAN_WRITE_PRIVATE_MESSAGE)
-        dto.wall_comments = optBoolean(root, VKApiUser.Field.WALL_DEFAULT)
+        dto.domain = optString(root, Fields.USER_FIELDS.DOMAIN)
+        dto.can_post = optBoolean(root, Fields.USER_FIELDS.CAN_POST)
+        dto.can_see_all_posts = optBoolean(root, Fields.USER_FIELDS.CAN_SEE_ALL_POSTS)
+        dto.blacklisted_by_me = optBoolean(root, Fields.USER_FIELDS.BLACKLISTED_BY_ME)
+        dto.can_write_private_message =
+            optBoolean(root, Fields.USER_FIELDS.CAN_WRITE_PRIVATE_MESSAGE)
+        dto.wall_comments = optBoolean(root, Fields.USER_FIELDS.WALL_DEFAULT)
         val deactivated = optString(root, "deactivated")
         dto.is_deleted = "deleted" == deactivated
         dto.is_banned = "banned" == deactivated
-        dto.wall_default_owner = "owner" == optString(root, VKApiUser.Field.WALL_DEFAULT)
-        dto.verified = optBoolean(root, VKApiUser.Field.VERIFIED)
-        dto.can_access_closed = optBoolean(root, "can_access_closed")
-        dto.is_closed = optBoolean(root, "is_closed")
+        dto.wall_default_owner = "owner" == optString(root, Fields.USER_FIELDS.WALL_DEFAULT)
+        dto.verified = optBoolean(root, Fields.USER_FIELDS.VERIFIED)
+        dto.can_access_closed = optBoolean(root, Fields.USER_FIELDS.CAN_ACCESS_CLOSED)
+        dto.is_closed = optBoolean(root, Fields.USER_FIELDS.IS_CLOSED)
 
         // other
-        dto.sex = optInt(root, VKApiUser.Field.SEX)
-        if (hasObject(root, VKApiUser.Field.COUNTERS)) {
+        dto.sex = optInt(root, Fields.USER_FIELDS.SEX)
+        if (hasObject(root, Fields.USER_FIELDS.COUNTERS)) {
             dto.counters =
-                root[VKApiUser.Field.COUNTERS]?.let {
+                root[Fields.USER_FIELDS.COUNTERS]?.let {
                     kJson.decodeFromJsonElement(VKApiUser.Counters.serializer(), it)
                 }
         }
-        dto.relation = optInt(root, VKApiUser.Field.RELATION)
+        dto.relation = optInt(root, Fields.USER_FIELDS.RELATION)
         dto.relatives = parseArray(
-            root[VKApiUser.Field.RELATIVES], emptyList(), VKApiUser.Relative.serializer()
+            root[Fields.USER_FIELDS.RELATIVES], emptyList(), VKApiUser.Relative.serializer()
         )
-        dto.home_town = optString(root, VKApiUser.Field.HOME_TOWN)
-        dto.photo_id = optString(root, "photo_id")
-        dto.blacklisted = optBoolean(root, "blacklisted")
-        dto.photo_200_orig = optString(root, "photo_200_orig")
-        dto.photo_400_orig = optString(root, "photo_400_orig")
-        dto.photo_max = optString(root, "photo_max")
-        dto.has_mobile = optBoolean(root, "has_mobile")
-        if (hasObject(root, "occupation")) {
-            dto.occupation = root["occupation"]?.let {
+        dto.home_town = optString(root, Fields.USER_FIELDS.HOME_TOWN)
+        dto.photo_id = optString(root, Fields.USER_FIELDS.PHOTO_ID)
+        dto.blacklisted = optBoolean(root, Fields.USER_FIELDS.BLACKLISTED)
+        dto.has_mobile = optBoolean(root, Fields.USER_FIELDS.HAS_MOBILE)
+        if (hasObject(root, Fields.USER_FIELDS.OCCUPATION)) {
+            dto.occupation = root[Fields.USER_FIELDS.OCCUPATION]?.let {
                 kJson.decodeFromJsonElement(VKApiUser.Occupation.serializer(), it)
             }
         }
@@ -145,16 +143,21 @@ class UserDtoAdapter : AbsAdapter<VKApiUser>("VKApiUser") {
             dto.relation_partner =
                 root["relation_partner"]?.let { deserialize(it) }
         }
-        dto.music = optString(root, "music")
-        dto.can_see_audio = optBoolean(root, "can_see_audio")
-        dto.can_send_friend_request = optBoolean(root, "can_send_friend_request")
-        dto.is_favorite = optBoolean(root, "is_favorite")
-        dto.is_subscribed = optBoolean(root, "is_subscribed")
-        dto.timezone = optInt(root, "timezone")
-        dto.maiden_name = optString(root, "maiden_name")
-        dto.is_friend = optBoolean(root, "is_friend")
-        dto.friend_status = optInt(root, "friend_status")
+        dto.music = optString(root, Fields.USER_FIELDS.MUSIC)
+        dto.can_send_friend_request = optBoolean(root, Fields.USER_FIELDS.CAN_SEND_FRIEND_REQUEST)
+        dto.is_favorite = optBoolean(root, Fields.USER_FIELDS.IS_FAVORITE)
+        dto.is_subscribed = optBoolean(root, Fields.USER_FIELDS.IS_SUBSCRIBED)
+        dto.timezone = optInt(root, Fields.USER_FIELDS.TIMEZONE)
+        dto.maiden_name = optString(root, Fields.USER_FIELDS.MAIDEN_NAME)
+        dto.is_friend = optBoolean(root, Fields.USER_FIELDS.IS_FRIEND)
+        dto.friend_status = optInt(root, Fields.USER_FIELDS.FRIEND_STATUS)
         dto.role = optString(root, "role")
+        dto.has_unseen_stories = optBoolean(root, Fields.USER_FIELDS.HAS_UNSEEN_STORIES)
+        if (hasObject(root, Fields.USER_FIELDS.COVER)) {
+            dto.cover = root[Fields.USER_FIELDS.COVER]?.let {
+                kJson.decodeFromJsonElement(VKApiCover.serializer(), it)
+            }
+        }
         return dto
     }
 

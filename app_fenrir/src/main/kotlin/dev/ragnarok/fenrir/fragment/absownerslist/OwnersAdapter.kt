@@ -27,6 +27,8 @@ import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
 class OwnersAdapter(private val mContext: Context, private var mData: List<Owner>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
+    private val transformationWithStory: Transformation =
+        CurrentTheme.createTransformationStrokeForAvatar()
     private var mClickListener: ClickListener? = null
     private var longClickListener: LongClickListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -63,7 +65,7 @@ class OwnersAdapter(private val mContext: Context, private var mData: List<Owner
         with()
             .load(community.maxSquareAvatar)
             .tag(Constants.PICASSO_TAG)
-            .transform(transformation)
+            .transform(if (community.hasUnseenStories) transformationWithStory else transformation)
             .into(holder.ivAvatar)
         holder.itemView.setOnClickListener {
             mClickListener?.onOwnerClick(community)
@@ -93,7 +95,7 @@ class OwnersAdapter(private val mContext: Context, private var mData: List<Owner
         val avaUrl = user.maxSquareAvatar
         displayAvatar(
             holder.avatar,
-            transformation,
+            if (user.hasUnseenStories) transformationWithStory else transformation,
             avaUrl,
             Constants.PICASSO_TAG,
             monochrome = user.blacklisted

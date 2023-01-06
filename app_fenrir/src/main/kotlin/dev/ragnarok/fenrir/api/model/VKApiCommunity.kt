@@ -90,11 +90,6 @@ class VKApiCommunity
     var description: String? = null
 
     /**
-     * Name of the home wiki-page of the community.
-     */
-    var wiki_page: String? = null
-
-    /**
      * Number of community members.
      */
     var members_count = 0
@@ -194,6 +189,7 @@ class VKApiCommunity
      * информация о том, может ли текущий пользователь написать сообщение сообществу. Возможные значения:
      */
     var can_message = false
+    var has_unseen_stories = false
     var cover: VKApiCover? = null
 
     /**
@@ -330,103 +326,7 @@ class VKApiCommunity
         const val TYPE_EVENT = "event"
         const val PHOTO_50 = "http://vk.com/images/community_50.gif"
         const val PHOTO_100 = "http://vk.com/images/community_100.gif"
-        const val IS_FAVORITE = "is_favorite"
-        const val IS_SUBSCRIBED = "is_subscribed"
-        const val MAIN_ALBUM_ID = "main_album_id"
-        const val CAN_UPLOAD_DOC = "can_upload_doc"
-        const val CAN_CTARE_TOPIC = "can_upload_video"
-        const val CAN_UPLOAD_VIDEO = "can_create_topic"
-        const val BAN_INFO = "ban_info"
 
-        /**
-         * Filed city from VK fields set
-         */
-        const val CITY = "city"
-
-        /**
-         * Filed country from VK fields set
-         */
-        const val COUNTRY = "country"
-
-        /**
-         * Filed description from VK fields set
-         */
-        const val DESCRIPTION = "description"
-
-        /**
-         * Filed wiki_page from VK fields set
-         */
-        const val WIKI_PAGE = "wiki_page"
-
-        /**
-         * Filed members_count from VK fields set
-         */
-        const val MEMBERS_COUNT = "members_count"
-
-        /**
-         * Filed counters from VK fields set
-         */
-        const val COUNTERS = "counters"
-
-        /**
-         * Filed start_date from VK fields set
-         */
-        const val START_DATE = "start_date"
-
-        /**
-         * Filed end_date from VK fields set
-         */
-        const val FINISH_DATE = "finish_date"
-
-        /**
-         * Filed can_post from VK fields set
-         */
-        const val CAN_POST = "can_post"
-
-        /**
-         * Filed can_see_all_posts from VK fields set
-         */
-        const val CAN_SEE_ALL_POSTS = "can_see_all_posts"
-
-        /**
-         * Filed status from VK fields set
-         */
-        const val STATUS = "status"
-
-        /**
-         * Filed contacts from VK fields set
-         */
-        const val CONTACTS = "contacts"
-
-        /**
-         * Filed links from VK fields set
-         */
-        const val LINKS = "links"
-
-        /**
-         * Filed fixed_post from VK fields set
-         */
-        const val FIXED_POST = "fixed_post"
-
-        /**
-         * Filed verified from VK fields set
-         */
-        const val VERIFIED = "verified"
-
-        /**
-         * Filed blacklisted from VK fields set
-         */
-        const val BLACKLISTED = "blacklisted"
-
-        /**
-         * Filed site from VK fields set
-         */
-        const val SITE = "site"
-
-        /**
-         * Filed activity from VK fields set
-         */
-        const val ACTIVITY = "activity"
         fun create(id: Int): VKApiCommunity {
             val community = VKApiCommunity()
             community.id = id

@@ -21,6 +21,7 @@ class DBHelper private constructor(context: Context, aid: Int) :
         }
     }
 
+    /*
     private fun insertColumn(
         db: SQLiteDatabase,
         tableName: String,
@@ -34,21 +35,7 @@ class DBHelper private constructor(context: Context, aid: Int) :
     private fun dropColumn(db: SQLiteDatabase, tableName: String, column: String) {
         db.execSQL("ALTER TABLE $tableName DROP COLUMN $column;")
     }
-
-    private fun createKeysTableIfNotExist(db: SQLiteDatabase) {
-        val sql = "CREATE TABLE IF NOT EXISTS [" + KeyColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + KeyColumns.VERSION + "] INTEGER, " +
-                "  [" + KeyColumns.PEER_ID + "] INTEGER, " +
-                "  [" + KeyColumns.SESSION_ID + "] INTEGER, " +
-                "  [" + KeyColumns.DATE + "] INTEGER, " +
-                "  [" + KeyColumns.START_SESSION_MESSAGE_ID + "] INTEGER, " +
-                "  [" + KeyColumns.END_SESSION_MESSAGE_ID + "] INTEGER, " +
-                "  [" + KeyColumns.OUT_KEY + "] TEXT, " +
-                "  [" + KeyColumns.IN_KEY + "] TEXT," +
-                "  CONSTRAINT [] UNIQUE ([" + KeyColumns.SESSION_ID + "]) ON CONFLICT REPLACE);"
-        db.execSQL(sql)
-    }
+     */
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion != Constants.DATABASE_FENRIR_VERSION) {
@@ -152,6 +139,21 @@ class DBHelper private constructor(context: Context, aid: Int) :
         db.execSQL("DROP TABLE IF EXISTS " + FriendListsColumns.TABLENAME)
         db.setTransactionSuccessful()
         db.endTransaction()
+    }
+
+    private fun createKeysTableIfNotExist(db: SQLiteDatabase) {
+        val sql = "CREATE TABLE IF NOT EXISTS [" + KeyColumns.TABLENAME + "] (\n" +
+                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "  [" + KeyColumns.VERSION + "] INTEGER, " +
+                "  [" + KeyColumns.PEER_ID + "] INTEGER, " +
+                "  [" + KeyColumns.SESSION_ID + "] INTEGER, " +
+                "  [" + KeyColumns.DATE + "] INTEGER, " +
+                "  [" + KeyColumns.START_SESSION_MESSAGE_ID + "] INTEGER, " +
+                "  [" + KeyColumns.END_SESSION_MESSAGE_ID + "] INTEGER, " +
+                "  [" + KeyColumns.OUT_KEY + "] TEXT, " +
+                "  [" + KeyColumns.IN_KEY + "] TEXT," +
+                "  CONSTRAINT [] UNIQUE ([" + KeyColumns.SESSION_ID + "]) ON CONFLICT REPLACE);"
+        db.execSQL(sql)
     }
 
     private fun createZeroMessageProtectionTriggers(db: SQLiteDatabase) {
@@ -597,6 +599,7 @@ class DBHelper private constructor(context: Context, aid: Int) :
                 " [" + UserColumns.IS_BLACK_LISTED + "] BOOLEAN, " +
                 " [" + UserColumns.IS_CAN_ACCESS_CLOSED + "] BOOLEAN, " +
                 " [" + UserColumns.IS_VERIFIED + "] BOOLEAN, " +
+                " [" + UserColumns.HAS_UNSEEN_STORIES + "] BOOLEAN, " +
                 " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
@@ -696,6 +699,7 @@ class DBHelper private constructor(context: Context, aid: Int) :
                 " [" + GroupColumns.CAN_ADD_TOPICS + "] BOOLEAN, " +
                 " [" + GroupColumns.TOPICS_ORDER + "] BOOLEAN, " +
                 " [" + GroupColumns.IS_BLACK_LISTED + "] BOOLEAN, " +
+                " [" + GroupColumns.HAS_UNSEEN_STORIES + "] BOOLEAN, " +
                 " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }

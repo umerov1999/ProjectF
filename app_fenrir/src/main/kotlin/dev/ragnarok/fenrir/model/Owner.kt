@@ -64,6 +64,10 @@ sealed class Owner : AbsModel, ParcelNative.ParcelableNative {
         get() {
             throw UnsupportedOperationException()
         }
+    open val isHasUnseenStories: Boolean
+        get() {
+            throw UnsupportedOperationException()
+        }
 
     companion object {
         fun readOwnerFromParcel(`in`: Parcel): Owner? {

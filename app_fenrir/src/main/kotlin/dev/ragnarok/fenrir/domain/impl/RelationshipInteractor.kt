@@ -1,8 +1,7 @@
 package dev.ragnarok.fenrir.domain.impl
 
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
-import dev.ragnarok.fenrir.db.column.UserColumns
 import dev.ragnarok.fenrir.db.interfaces.IStorages
 import dev.ragnarok.fenrir.domain.IRelationshipInteractor
 import dev.ragnarok.fenrir.domain.IRelationshipInteractor.DeletedCodes
@@ -46,7 +45,7 @@ class RelationshipInteractor(
                 null,
                 offset,
                 count,
-                Constants.MAIN_OWNER_FIELDS,
+                Fields.FIELDS_BASE_OWNER,
                 filter
             )
             .flatMap { items ->
@@ -90,7 +89,7 @@ class RelationshipInteractor(
     ): Single<List<User>> {
         val order = if (accountId == objectId) "hints" else null
         return networker.vkDefault(accountId)
-            .friends()[objectId, order, null, count, offset, UserColumns.API_FIELDS, null]
+            .friends()[objectId, order, null, count, offset, Fields.FIELDS_BASE_USER, null]
             .map { items -> listEmptyIfNull(items.items) }
             .flatMap { dtos ->
                 val dbos = mapUsers(dtos)
@@ -111,7 +110,7 @@ class RelationshipInteractor(
             if (accountId == objectId) "hints" else null // hints (сортировка по популярности) доступна только для своих друзей
         return networker.vkDefault(accountId)
             .friends()
-            .getOnline(objectId, order, count, offset, UserColumns.API_FIELDS)
+            .getOnline(objectId, order, count, offset, Fields.FIELDS_BASE_USER)
             .map { response -> listEmptyIfNull(response.profiles) }
             .map { obj -> transformUsers(obj) }
     }
@@ -119,7 +118,7 @@ class RelationshipInteractor(
     override fun getRecommendations(accountId: Int, count: Int?): Single<List<User>> {
         return networker.vkDefault(accountId)
             .friends()
-            .getRecommendations(count, UserColumns.API_FIELDS, null)
+            .getRecommendations(count, Fields.FIELDS_BASE_USER, null)
             .map { response -> listEmptyIfNull(response.items) }
             .map { obj -> transformUsers(obj) }
     }
@@ -132,7 +131,7 @@ class RelationshipInteractor(
     ): Single<List<User>> {
         return networker.vkDefault(accountId)
             .users()
-            .getFollowers(objectId, offset, count, UserColumns.API_FIELDS, null)
+            .getFollowers(objectId, offset, count, Fields.FIELDS_BASE_USER, null)
             .map { items -> listEmptyIfNull(items.items) }
             .flatMap { dtos ->
                 val dbos = mapUsers(dtos)
@@ -151,7 +150,7 @@ class RelationshipInteractor(
     ): Single<List<User>> {
         return networker.vkDefault(accountId)
             .users()
-            .getRequests(offset, count, 1, 1, UserColumns.API_FIELDS)
+            .getRequests(offset, count, 1, 1, Fields.FIELDS_BASE_USER)
             .map { items -> listEmptyIfNull(items.items) }
             .flatMap { dtos ->
                 val dbos = mapUsers(dtos)
@@ -174,7 +173,7 @@ class RelationshipInteractor(
     ): Single<List<User>> {
         return networker.vkDefault(accountId)
             .friends()
-            .getMutual(accountId, objectId, count, offset, UserColumns.API_FIELDS)
+            .getMutual(accountId, objectId, count, offset, Fields.FIELDS_BASE_USER)
             .map { obj -> transformUsers(obj) }
     }
 
@@ -187,7 +186,7 @@ class RelationshipInteractor(
     ): Single<Pair<List<User>, Int>> {
         return networker.vkDefault(accountId)
             .friends()
-            .search(userId, q, UserColumns.API_FIELDS, null, offset, count)
+            .search(userId, q, Fields.FIELDS_BASE_USER, null, offset, count)
             .map { items ->
                 val users = transformUsers(listEmptyIfNull(items.items))
                 create(users, items.count)

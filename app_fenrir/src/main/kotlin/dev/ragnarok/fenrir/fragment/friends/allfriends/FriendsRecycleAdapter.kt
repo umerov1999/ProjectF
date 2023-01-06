@@ -24,6 +24,8 @@ import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
 class FriendsRecycleAdapter(private var data: List<UsersPart>, private val context: Context) :
     RecyclerView.Adapter<FriendsRecycleAdapter.Holder>() {
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
+    private val transformationWithStory: Transformation =
+        CurrentTheme.createTransformationStrokeForAvatar()
     private var group = false
     private var listener: Listener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -49,7 +51,12 @@ class FriendsRecycleAdapter(private var data: List<UsersPart>, private val conte
         if (onlineIcon != null) {
             holder.online.setImageResource(onlineIcon)
         }
-        displayAvatar(holder.avatar, transformation, user.maxSquareAvatar, Constants.PICASSO_TAG)
+        displayAvatar(
+            holder.avatar,
+            if (user.hasUnseenStories) transformationWithStory else transformation,
+            user.maxSquareAvatar,
+            Constants.PICASSO_TAG
+        )
         holder.itemView.setOnClickListener {
             listener?.onUserClick(user)
         }

@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.api.adapters
 
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.kJson
@@ -18,14 +19,14 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
         val root = json.asJsonObject
         val dto = VKApiCommunity()
         dto.id = optInt(root, "id")
-        dto.name = optString(root, "name")
+        dto.name = optString(root, Fields.GROUP_FIELDS.NAME)
         dto.screen_name = optString(
             root,
-            "screen_name",
+            Fields.GROUP_FIELDS.SCREEN_NAME,
             String.format(Locale.getDefault(), "club%d", abs(dto.id))
         )
-        if (hasObject(root, "menu")) {
-            val pMenu = root.getAsJsonObject("menu")
+        if (hasObject(root, Fields.GROUP_FIELDS.MENU)) {
+            val pMenu = root.getAsJsonObject(Fields.GROUP_FIELDS.MENU)
             if (hasArray(pMenu, "items")) {
                 dto.menu = ArrayList()
                 for (i in pMenu.getAsJsonArray("items").orEmpty()) {
@@ -57,15 +58,15 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
                 }
             }
         }
-        dto.is_closed = optInt(root, "is_closed")
-        dto.is_admin = optBoolean(root, "is_admin")
-        dto.admin_level = optInt(root, "admin_level")
-        dto.is_member = optBoolean(root, "is_member")
-        dto.member_status = optInt(root, "member_status")
-        dto.photo_50 = optString(root, "photo_50", VKApiCommunity.PHOTO_50)
-        dto.photo_100 = optString(root, "photo_100", VKApiCommunity.PHOTO_100)
-        dto.photo_200 = optString(root, "photo_200", null)
-        when (optString(root, "type", "group")) {
+        dto.is_closed = optInt(root, Fields.GROUP_FIELDS.IS_CLOSED)
+        dto.is_admin = optBoolean(root, Fields.GROUP_FIELDS.IS_ADMIN)
+        dto.admin_level = optInt(root, Fields.GROUP_FIELDS.ADMIN_LEVEL)
+        dto.is_member = optBoolean(root, Fields.GROUP_FIELDS.IS_MEMBER)
+        dto.member_status = optInt(root, Fields.GROUP_FIELDS.MEMBER_STATUS)
+        dto.photo_50 = optString(root, Fields.GROUP_FIELDS.PHOTO_50, VKApiCommunity.PHOTO_50)
+        dto.photo_100 = optString(root, Fields.GROUP_FIELDS.PHOTO_100, VKApiCommunity.PHOTO_100)
+        dto.photo_200 = optString(root, Fields.GROUP_FIELDS.PHOTO_200, null)
+        when (optString(root, Fields.GROUP_FIELDS.TYPE, "group")) {
             VKApiCommunity.TYPE_GROUP -> {
                 dto.type = VKApiCommunity.Type.GROUP
             }
@@ -76,75 +77,75 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
                 dto.type = VKApiCommunity.Type.EVENT
             }
         }
-        if (hasObject(root, VKApiCommunity.CITY)) {
-            dto.city = root[VKApiCommunity.CITY]?.let {
+        if (hasObject(root, Fields.GROUP_FIELDS.CITY)) {
+            dto.city = root[Fields.GROUP_FIELDS.CITY]?.let {
                 kJson.decodeFromJsonElement(VKApiCity.serializer(), it)
             }
         }
-        if (hasObject(root, VKApiCommunity.COUNTRY)) {
+        if (hasObject(root, Fields.GROUP_FIELDS.COUNTRY)) {
             dto.country =
-                root[VKApiCommunity.COUNTRY]?.let {
+                root[Fields.GROUP_FIELDS.COUNTRY]?.let {
                     kJson.decodeFromJsonElement(VKApiCountry.serializer(), it)
                 }
         }
-        if (hasObject(root, VKApiCommunity.BAN_INFO)) {
-            val banInfo = root.getAsJsonObject(VKApiCommunity.BAN_INFO)
+        if (hasObject(root, Fields.GROUP_FIELDS.BAN_INFO)) {
+            val banInfo = root.getAsJsonObject(Fields.GROUP_FIELDS.BAN_INFO)
             dto.blacklisted = true
             dto.ban_end_date = optLong(banInfo, "end_date")
             dto.ban_comment = optString(banInfo, "comment")
         }
-        dto.description = optString(root, VKApiCommunity.DESCRIPTION)
-        dto.wiki_page = optString(root, VKApiCommunity.WIKI_PAGE)
-        dto.members_count = optInt(root, VKApiCommunity.MEMBERS_COUNT)
-        if (hasObject(root, VKApiCommunity.COUNTERS)) {
-            val counters = root.getAsJsonObject(VKApiCommunity.COUNTERS)
+        dto.description = optString(root, Fields.GROUP_FIELDS.DESCRIPTION)
+        dto.members_count = optInt(root, Fields.GROUP_FIELDS.MEMBERS_COUNT)
+        if (hasObject(root, Fields.GROUP_FIELDS.COUNTERS)) {
+            val counters = root.getAsJsonObject(Fields.GROUP_FIELDS.COUNTERS)
             dto.counters = counters?.let {
                 kJson.decodeFromJsonElement(VKApiCommunity.Counters.serializer(), it)
             }
         }
-        if (hasObject(root, "chats_status")) {
+        if (hasObject(root, Fields.GROUP_FIELDS.CHATS_STATUS)) {
             if (dto.counters == null) {
                 dto.counters = VKApiCommunity.Counters()
             }
             dto.counters?.chats = optInt(
-                root.getAsJsonObject("chats_status"),
+                root.getAsJsonObject(Fields.GROUP_FIELDS.CHATS_STATUS),
                 "count",
                 VKApiCommunity.Counters.NO_COUNTER
             )
         }
-        dto.start_date = optLong(root, VKApiCommunity.START_DATE)
-        dto.finish_date = optLong(root, VKApiCommunity.FINISH_DATE)
-        dto.can_post = optBoolean(root, VKApiCommunity.CAN_POST)
-        dto.can_see_all_posts = optBoolean(root, VKApiCommunity.CAN_SEE_ALL_POSTS)
-        dto.can_upload_doc = optBoolean(root, VKApiCommunity.CAN_UPLOAD_DOC)
-        dto.can_upload_video = optBoolean(root, VKApiCommunity.CAN_UPLOAD_VIDEO)
-        dto.can_create_topic = optBoolean(root, VKApiCommunity.CAN_CTARE_TOPIC)
-        dto.is_favorite = optBoolean(root, VKApiCommunity.IS_FAVORITE)
-        dto.is_subscribed = optBoolean(root, VKApiCommunity.IS_SUBSCRIBED)
-        dto.status = VKStringUtils.unescape(optString(root, VKApiCommunity.STATUS))
+        dto.start_date = optLong(root, Fields.GROUP_FIELDS.START_DATE)
+        dto.finish_date = optLong(root, Fields.GROUP_FIELDS.FINISH_DATE)
+        dto.can_post = optBoolean(root, Fields.GROUP_FIELDS.CAN_POST)
+        dto.can_see_all_posts = optBoolean(root, Fields.GROUP_FIELDS.CAN_SEE_ALL_POSTS)
+        dto.can_upload_doc = optBoolean(root, Fields.GROUP_FIELDS.CAN_UPLOAD_DOC)
+        dto.can_upload_video = optBoolean(root, Fields.GROUP_FIELDS.CAN_UPLOAD_VIDEO)
+        dto.can_create_topic = optBoolean(root, Fields.GROUP_FIELDS.CAN_CREATE_TOPIC)
+        dto.is_favorite = optBoolean(root, Fields.GROUP_FIELDS.IS_FAVORITE)
+        dto.is_subscribed = optBoolean(root, Fields.GROUP_FIELDS.IS_SUBSCRIBED)
+        dto.status = VKStringUtils.unescape(optString(root, Fields.GROUP_FIELDS.STATUS))
         if (hasObject(root, "status_audio")) {
             dto.status_audio = root["status_audio"]?.let {
                 kJson.decodeFromJsonElement(VKApiAudio.serializer(), it)
             }
         }
         dto.contacts = parseArray(
-            root.getAsJsonArray(VKApiCommunity.CONTACTS),
+            root.getAsJsonArray(Fields.GROUP_FIELDS.CONTACTS),
             null,
             VKApiCommunity.Contact.serializer()
         )
         dto.links = parseArray(
-            root.getAsJsonArray(VKApiCommunity.LINKS),
+            root.getAsJsonArray(Fields.GROUP_FIELDS.LINKS),
             null,
             VKApiCommunity.Link.serializer()
         )
-        dto.fixed_post = optInt(root, VKApiCommunity.FIXED_POST)
-        dto.main_album_id = optInt(root, VKApiCommunity.MAIN_ALBUM_ID)
-        dto.verified = optBoolean(root, VKApiCommunity.VERIFIED)
-        dto.site = optString(root, VKApiCommunity.SITE)
-        dto.activity = optString(root, VKApiCommunity.ACTIVITY)
-        dto.can_message = optBoolean(root, "can_message")
-        if (hasObject(root, "cover")) {
-            dto.cover = root["cover"]?.let {
+        dto.fixed_post = optInt(root, Fields.GROUP_FIELDS.FIXED_POST)
+        dto.main_album_id = optInt(root, Fields.GROUP_FIELDS.MAIN_ALBUM_ID)
+        dto.verified = optBoolean(root, Fields.GROUP_FIELDS.VERIFIED)
+        dto.site = optString(root, Fields.GROUP_FIELDS.SITE)
+        dto.activity = optString(root, Fields.GROUP_FIELDS.ACTIVITY)
+        dto.can_message = optBoolean(root, Fields.GROUP_FIELDS.CAN_MESSAGE)
+        dto.has_unseen_stories = optBoolean(root, Fields.GROUP_FIELDS.HAS_UNSEEN_STORIES)
+        if (hasObject(root, Fields.GROUP_FIELDS.COVER)) {
+            dto.cover = root[Fields.GROUP_FIELDS.COVER]?.let {
                 kJson.decodeFromJsonElement(VKApiCover.serializer(), it)
             }
         }

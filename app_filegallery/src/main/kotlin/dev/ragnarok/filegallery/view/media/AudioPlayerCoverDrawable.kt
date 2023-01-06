@@ -177,7 +177,7 @@ class AudioPlayerCoverDrawable(private val bitmap: Bitmap) : Drawable() {
         val pMin = bitmap.height.coerceAtMost(bitmap.width)
         rBmp.left = (bitmap.width - pMin) / 2
         rBmp.top = (bitmap.height - pMin) / 2
-        rBmp.right = pMin - rBmp.left
-        rBmp.bottom = pMin - rBmp.top
+        rBmp.right = bitmap.width - rBmp.left
+        rBmp.bottom = bitmap.height - rBmp.top
     }
 }

@@ -47,6 +47,8 @@ class Community : Owner {
         private set
     var isBlacklisted = false
         private set
+    var hasUnseenStories = false
+        private set
 
     constructor(id: Int) : super(OwnerType.COMMUNITY) {
         this.id = id
@@ -68,6 +70,7 @@ class Community : Owner {
         photo200 = `in`.readString()
         verified = `in`.getBoolean()
         isBlacklisted = `in`.getBoolean()
+        hasUnseenStories = `in`.getBoolean()
     }
 
     internal constructor(`in`: ParcelNative) : super(`in`) {
@@ -86,6 +89,7 @@ class Community : Owner {
         photo200 = `in`.readString()
         verified = `in`.readBoolean()
         isBlacklisted = `in`.readBoolean()
+        hasUnseenStories = `in`.readBoolean()
     }
 
     override val ownerId: Int
@@ -108,6 +112,7 @@ class Community : Owner {
         parcel.writeString(photo200)
         parcel.putBoolean(verified)
         parcel.putBoolean(isBlacklisted)
+        parcel.putBoolean(hasUnseenStories)
     }
 
     override fun writeToParcelNative(dest: ParcelNative) {
@@ -127,6 +132,7 @@ class Community : Owner {
         dest.writeString(photo200)
         dest.writeBoolean(verified)
         dest.writeBoolean(isBlacklisted)
+        dest.writeBoolean(hasUnseenStories)
     }
 
     @AbsModelType
@@ -141,6 +147,11 @@ class Community : Owner {
 
     fun setScreenName(screenName: String?): Community {
         this.screenName = screenName
+        return this
+    }
+
+    fun setHasUnseenStories(hasUnseenStories: Boolean): Community {
+        this.hasUnseenStories = hasUnseenStories
         return this
     }
 
@@ -218,6 +229,11 @@ class Community : Owner {
     override val isVerified: Boolean
         get() {
             return verified || isDonated
+        }
+
+    override val isHasUnseenStories: Boolean
+        get() {
+            return hasUnseenStories
         }
 
     fun setVerified(verified: Boolean): Community {

@@ -107,6 +107,7 @@ object Dto2Model {
             .setPhoto100(community.photo_100)
             .setPhoto200(community.photo_200)
             .setMembersCount(community.members_count)
+            .setHasUnseenStories(community.has_unseen_stories)
     }
 
     fun transform(dto: VKApiGiftItem): GiftItem {
@@ -217,6 +218,7 @@ object Dto2Model {
             .setBdate(user.bdate)
             .setVerified(user.verified)
             .setMaiden_name(user.maiden_name)
+            .setHasUnseenStories(user.has_unseen_stories)
     }
 
     fun transform(accountUid: Int, update: AddMessageUpdate): VKApiMessage {

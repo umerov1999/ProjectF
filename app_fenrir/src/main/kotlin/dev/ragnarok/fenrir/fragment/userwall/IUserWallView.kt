@@ -43,4 +43,5 @@ interface IUserWallView : IWallView, IProgressView {
     fun showAvatarUploadedMessage(accountId: Int, post: Post)
     fun doEditPhoto(uri: Uri)
     fun showRegistrationDate(date: String)
+    fun displayUserCover(blacklisted: Boolean, resource: String?, supportOpen: Boolean)
 }

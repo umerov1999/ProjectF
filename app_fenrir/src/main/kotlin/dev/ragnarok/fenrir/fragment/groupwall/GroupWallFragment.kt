@@ -2,7 +2,9 @@ package dev.ragnarok.fenrir.fragment.groupwall
 
 import android.app.Activity
 import android.content.DialogInterface
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.*
@@ -17,6 +19,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textview.MaterialTextView
+import com.squareup.picasso3.BitmapTarget
+import com.squareup.picasso3.Picasso
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
@@ -54,6 +58,7 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.dp
 import dev.ragnarok.fenrir.util.Utils.getVerifiedColor
 import dev.ragnarok.fenrir.util.Utils.setBackgroundTint
+import dev.ragnarok.fenrir.view.ProfileCoverDrawable
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import kotlin.math.abs
 
@@ -91,9 +96,9 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
                     url = i.getUrl()
                 }
             }
-            displayCommunityCover(community.isBlacklisted, url)
+            displayCommunityCover(community.isBlacklisted, url, true)
         }, {
-            displayCommunityCover(community.isBlacklisted, community.maxSquareAvatar)
+            displayCommunityCover(community.isBlacklisted, community.maxSquareAvatar, false)
         })
         val statusText: String? = if (details.getStatusAudio() != null) {
             details.getStatusAudio()?.artistAndTitle
@@ -180,7 +185,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
             mHeaderHolder?.ivAvatar?.let {
                 val sks = with()
                     .load(photoUrl)
-                    .transform(CurrentTheme.createTransformationForAvatar())
+                    .transform(if (community.hasUnseenStories) CurrentTheme.createTransformationStrokeForAvatar() else CurrentTheme.createTransformationForAvatar())
                 if (community.isBlacklisted) {
                     sks.transform(MonochromeTransformation())
                 }
@@ -228,18 +233,54 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         LinkHelper.openUrl(requireActivity(), accountId, link, false)
     }
 
-    private fun displayCommunityCover(blacklisted: Boolean, resource: String?) {
-        if (!Settings.get().other().isShow_wall_cover) return
-        if (resource.nonNullNoEmpty()) {
-            mHeaderHolder?.vgCover?.let {
-                val sks = with()
-                    .load(resource)
-                    .transform(BlurTransformation(6f, requireActivity()))
-                if (blacklisted) {
-                    sks.transform(MonochromeTransformation())
+    private val coverTarget = object : BitmapTarget {
+        override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
+            if (isAdded) {
+                mHeaderHolder?.vgCover?.let {
+                    ProfileCoverDrawable.setBitmap(
+                        it,
+                        bitmap,
+                        0.6f
+                    )
                 }
-                sks.into(it)
             }
+        }
+
+        override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+        }
+
+        override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {
+            if (isAdded) {
+                mHeaderHolder?.vgCover?.background = null
+            }
+        }
+    }
+
+    private fun displayCommunityCover(
+        blacklisted: Boolean,
+        resource: String?,
+        supportOpen: Boolean
+    ) {
+        if (!Settings.get().other().isShow_wall_cover) return
+        if (supportOpen) {
+            mHeaderHolder?.vgCover?.setOnLongClickListener {
+                presenter?.fireAvatarPhotoClick(resource, null)
+                true
+            }
+        } else {
+            mHeaderHolder?.vgCover?.setOnLongClickListener {
+                false
+            }
+        }
+        with().cancelRequest(coverTarget)
+        if (resource.nonNullNoEmpty()) {
+            val sks = with()
+                .load(resource)
+                .transform(BlurTransformation(6f, requireActivity()))
+            if (blacklisted) {
+                sks.transform(MonochromeTransformation())
+            }
+            sks.into(coverTarget)
         }
     }
 
@@ -512,7 +553,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
 
     private inner class GroupHeaderHolder(root: View) {
         val blacklisted: RLottieImageView = root.findViewById(R.id.item_blacklisted)
-        val vgCover: ImageView = root.findViewById(R.id.cover)
+        val vgCover: ViewGroup = root.findViewById(R.id.cover)
         val ivAvatar: ImageView = root.findViewById(R.id.header_group_avatar)
         val ivVerified: ImageView = root.findViewById(R.id.item_verified)
         val bDonate: RLottieImageView = root.findViewById(R.id.donated_anim)

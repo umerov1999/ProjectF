@@ -29,6 +29,13 @@ class CommunityEntity(val id: Int) {
         private set
     var isBlacklisted = false
         private set
+    var hasUnseenStories = false
+        private set
+
+    fun setHasUnseenStories(hasUnseenStories: Boolean): CommunityEntity {
+        this.hasUnseenStories = hasUnseenStories
+        return this
+    }
 
     fun setName(name: String?): CommunityEntity {
         this.name = name

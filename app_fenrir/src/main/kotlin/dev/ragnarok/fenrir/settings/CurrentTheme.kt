@@ -13,6 +13,8 @@ import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.picasso.transforms.EllipseTransformation
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
+import dev.ragnarok.fenrir.picasso.transforms.stroke.EllipseStrokeTransformation
+import dev.ragnarok.fenrir.picasso.transforms.stroke.RoundStrokeTransformation
 import dev.ragnarok.fenrir.util.Utils.setColorFilter
 import dev.ragnarok.fenrir.view.media.PathAnimator
 import java.io.File
@@ -108,6 +110,17 @@ object CurrentTheme {
             AvatarStyle.OVAL -> EllipseTransformation()
             AvatarStyle.CIRCLE -> RoundTransformation()
             else -> RoundTransformation()
+        }
+    }
+
+    fun createTransformationStrokeForAvatar(): Transformation {
+        val style = Settings.get()
+            .ui()
+            .avatarStyle
+        return when (style) {
+            AvatarStyle.OVAL -> EllipseStrokeTransformation(Color.parseColor("#447bba"))
+            AvatarStyle.CIRCLE -> RoundStrokeTransformation(Color.parseColor("#447bba"))
+            else -> RoundStrokeTransformation(Color.parseColor("#447bba"))
         }
     }
 

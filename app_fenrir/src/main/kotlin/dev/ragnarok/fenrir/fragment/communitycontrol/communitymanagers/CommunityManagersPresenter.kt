@@ -5,9 +5,9 @@ import dev.ragnarok.fenrir.Includes.networkInterfaces
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.Includes.stores
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.api.model.VKApiUser
-import dev.ragnarok.fenrir.db.column.UserColumns
 import dev.ragnarok.fenrir.domain.IGroupSettingsInteractor
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.impl.GroupSettingsInteractor
@@ -65,7 +65,7 @@ class CommunityManagersPresenter(accountId: Int, groupId: Community, savedInstan
         val Ids: MutableList<Int> = ArrayList(contacts.size)
         for (it in contacts) Ids.add(it.getUserId())
         appendDisposable(
-            networkInterfaces.vkDefault(accountId).users()[Ids, null, UserColumns.API_FIELDS, null]
+            networkInterfaces.vkDefault(accountId).users()[Ids, null, Fields.FIELDS_BASE_USER, null]
                 .fromIOToMain()
                 .subscribe({ t: List<VKApiUser>? ->
                     val users = listEmptyIfNull(t)

@@ -53,6 +53,12 @@ class BlurTransformation(
     override fun transform(source: RequestHandler.Result.Bitmap): RequestHandler.Result.Bitmap {
         var src = source.bitmap
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (mRadius <= 0) {
+                return RequestHandler.Result.Bitmap(
+                    src, source.loadedFrom,
+                    source.exifRotation
+                )
+            }
             return RequestHandler.Result.Bitmap(
                 BlurTransformationNew.blur(mRadius, src)!!,
                 source.loadedFrom,
@@ -76,6 +82,9 @@ class BlurTransformation(
     override fun localTransform(source: Bitmap?): Bitmap? {
         var src = source ?: return null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (mRadius <= 0) {
+                return src
+            }
             return BlurTransformationNew.blur(mRadius, src)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && src.config == Bitmap.Config.HARDWARE) {

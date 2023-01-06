@@ -85,15 +85,24 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
             } else {
                 val type = t.validationType
                 val sid = t.sid
-                if ("2fa_sms".equals(type, ignoreCase = true) || "2fa_libverify".equals(
+                when {
+                    "2fa_sms".equals(type, ignoreCase = true) || "2fa_libverify".equals(
                         type,
                         ignoreCase = true
-                    )
-                ) {
-                    requireSmsCode = true
-                    RedirectUrl = t.validationURL
-                } else if ("2fa_app".equals(type, ignoreCase = true)) {
-                    requireAppCode = true
+                    ) -> {
+                        requireSmsCode = true
+                        RedirectUrl = t.validationURL
+                    }
+                    "2fa_app".equals(type, ignoreCase = true) -> {
+                        requireAppCode = true
+                    }
+                    else -> {
+                        showError(t)
+                        RedirectUrl = t.validationURL
+                        if (!RedirectUrl.isNullOrEmpty()) {
+                            onValidate()
+                        }
+                    }
                 }
                 if (!sid.isNullOrEmpty()) {
                     appendDisposable(networker.vkAuth()
