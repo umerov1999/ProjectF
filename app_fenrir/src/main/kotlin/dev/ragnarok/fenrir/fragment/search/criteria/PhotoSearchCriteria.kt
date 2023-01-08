@@ -21,7 +21,7 @@ class PhotoSearchCriteria : BaseSearchCriteria {
         appendOption(SimpleDateOption(KEY_END_TIME, R.string.date_to, true))
     }
 
-    internal constructor(`in`: Parcel) : super(`in`)
+    internal constructor(parcel: Parcel) : super(parcel)
 
     override fun describeContents(): Int {
         return 0
@@ -42,8 +42,8 @@ class PhotoSearchCriteria : BaseSearchCriteria {
         @JvmField
         val CREATOR: Parcelable.Creator<PhotoSearchCriteria> =
             object : Parcelable.Creator<PhotoSearchCriteria> {
-                override fun createFromParcel(`in`: Parcel): PhotoSearchCriteria {
-                    return PhotoSearchCriteria(`in`)
+                override fun createFromParcel(parcel: Parcel): PhotoSearchCriteria {
+                    return PhotoSearchCriteria(parcel)
                 }
 
                 override fun newArray(size: Int): Array<PhotoSearchCriteria?> {

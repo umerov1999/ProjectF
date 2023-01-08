@@ -24,8 +24,8 @@ class SimpleBooleanOption : BaseOption {
         this.checked = checked
     }
 
-    internal constructor(`in`: Parcel) : super(`in`) {
-        checked = `in`.getBoolean()
+    internal constructor(parcel: Parcel) : super(parcel) {
+        checked = parcel.getBoolean()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

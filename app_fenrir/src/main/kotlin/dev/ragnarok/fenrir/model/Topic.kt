@@ -40,21 +40,21 @@ class Topic : AbsModel {
         this.ownerId = ownerId
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        title = `in`.readString()
-        creationTime = `in`.readLong()
-        createdByOwnerId = `in`.readInt()
-        lastUpdateTime = `in`.readLong()
-        updatedByOwnerId = `in`.readInt()
-        isClosed = `in`.getBoolean()
-        isFixed = `in`.getBoolean()
-        commentsCount = `in`.readInt()
-        firstCommentBody = `in`.readString()
-        lastCommentBody = `in`.readString()
-        creator = `in`.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.get()
-        updater = `in`.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.get()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        title = parcel.readString()
+        creationTime = parcel.readLong()
+        createdByOwnerId = parcel.readInt()
+        lastUpdateTime = parcel.readLong()
+        updatedByOwnerId = parcel.readInt()
+        isClosed = parcel.getBoolean()
+        isFixed = parcel.getBoolean()
+        commentsCount = parcel.readInt()
+        firstCommentBody = parcel.readString()
+        lastCommentBody = parcel.readString()
+        creator = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.get()
+        updater = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.get()
     }
 
     @AbsModelType

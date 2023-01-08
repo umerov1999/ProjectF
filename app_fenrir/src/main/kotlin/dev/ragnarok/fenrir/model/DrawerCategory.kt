@@ -21,9 +21,9 @@ class DrawerCategory : Parcelable {
         this.active = active
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readString()!!
-        active = `in`.getBoolean()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readString()!!
+        active = parcel.getBoolean()
     }
 
     @StringRes

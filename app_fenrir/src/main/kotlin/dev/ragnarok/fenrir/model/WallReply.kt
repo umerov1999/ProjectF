@@ -25,14 +25,14 @@ class WallReply : AbsModel, Identificable {
     var attachments: Attachments? = null
         private set
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        fromId = `in`.readInt()
-        postId = `in`.readInt()
-        ownerId = `in`.readInt()
-        text = `in`.readString()
-        attachments = `in`.readTypedObjectCompat(Attachments.CREATOR)
-        author = readOwner(`in`)
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        fromId = parcel.readInt()
+        postId = parcel.readInt()
+        ownerId = parcel.readInt()
+        text = parcel.readString()
+        attachments = parcel.readTypedObjectCompat(Attachments.CREATOR)
+        author = readOwner(parcel)
     }
 
     constructor()

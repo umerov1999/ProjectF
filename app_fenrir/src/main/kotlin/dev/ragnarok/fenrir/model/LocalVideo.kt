@@ -20,14 +20,14 @@ class LocalVideo : Parcelable, Comparable<LocalVideo>, ISelectable {
         this.data = data
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readLong()
-        data = Uri.parse(`in`.readString())
-        selected = `in`.getBoolean()
-        index = `in`.readInt()
-        size = `in`.readLong()
-        duration = `in`.readInt()
-        title = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readLong()
+        data = Uri.parse(parcel.readString())
+        selected = parcel.getBoolean()
+        index = parcel.readInt()
+        size = parcel.readLong()
+        duration = parcel.readInt()
+        title = parcel.readString()
     }
 
     override fun describeContents(): Int {

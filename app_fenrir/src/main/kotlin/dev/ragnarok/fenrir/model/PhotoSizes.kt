@@ -24,30 +24,30 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
     private var w: Size? = null
 
     constructor()
-    internal constructor(`in`: ParcelNative) {
-        s = `in`.readParcelable(Size.NativeCreator)
-        m = `in`.readParcelable(Size.NativeCreator)
-        x = `in`.readParcelable(Size.NativeCreator)
-        o = `in`.readParcelable(Size.NativeCreator)
-        p = `in`.readParcelable(Size.NativeCreator)
-        q = `in`.readParcelable(Size.NativeCreator)
-        r = `in`.readParcelable(Size.NativeCreator)
-        y = `in`.readParcelable(Size.NativeCreator)
-        z = `in`.readParcelable(Size.NativeCreator)
-        w = `in`.readParcelable(Size.NativeCreator)
+    internal constructor(parcel: ParcelNative) {
+        s = parcel.readParcelable(Size.NativeCreator)
+        m = parcel.readParcelable(Size.NativeCreator)
+        x = parcel.readParcelable(Size.NativeCreator)
+        o = parcel.readParcelable(Size.NativeCreator)
+        p = parcel.readParcelable(Size.NativeCreator)
+        q = parcel.readParcelable(Size.NativeCreator)
+        r = parcel.readParcelable(Size.NativeCreator)
+        y = parcel.readParcelable(Size.NativeCreator)
+        z = parcel.readParcelable(Size.NativeCreator)
+        w = parcel.readParcelable(Size.NativeCreator)
     }
 
-    internal constructor(`in`: Parcel) {
-        s = `in`.readTypedObjectCompat(Size.CREATOR)
-        m = `in`.readTypedObjectCompat(Size.CREATOR)
-        x = `in`.readTypedObjectCompat(Size.CREATOR)
-        o = `in`.readTypedObjectCompat(Size.CREATOR)
-        p = `in`.readTypedObjectCompat(Size.CREATOR)
-        q = `in`.readTypedObjectCompat(Size.CREATOR)
-        r = `in`.readTypedObjectCompat(Size.CREATOR)
-        y = `in`.readTypedObjectCompat(Size.CREATOR)
-        z = `in`.readTypedObjectCompat(Size.CREATOR)
-        w = `in`.readTypedObjectCompat(Size.CREATOR)
+    internal constructor(parcel: Parcel) {
+        s = parcel.readTypedObjectCompat(Size.CREATOR)
+        m = parcel.readTypedObjectCompat(Size.CREATOR)
+        x = parcel.readTypedObjectCompat(Size.CREATOR)
+        o = parcel.readTypedObjectCompat(Size.CREATOR)
+        p = parcel.readTypedObjectCompat(Size.CREATOR)
+        q = parcel.readTypedObjectCompat(Size.CREATOR)
+        r = parcel.readTypedObjectCompat(Size.CREATOR)
+        y = parcel.readTypedObjectCompat(Size.CREATOR)
+        z = parcel.readTypedObjectCompat(Size.CREATOR)
+        w = parcel.readTypedObjectCompat(Size.CREATOR)
     }
 
     fun getS(): Size? {
@@ -258,16 +258,16 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
             this.url = url
         }
 
-        internal constructor(`in`: ParcelNative) {
-            width = `in`.readInt()
-            height = `in`.readInt()
-            url = `in`.readString()
+        internal constructor(parcel: ParcelNative) {
+            width = parcel.readInt()
+            height = parcel.readInt()
+            url = parcel.readString()
         }
 
-        internal constructor(`in`: Parcel) {
-            width = `in`.readInt()
-            height = `in`.readInt()
-            url = `in`.readString()
+        internal constructor(parcel: Parcel) {
+            width = parcel.readInt()
+            height = parcel.readInt()
+            url = parcel.readString()
         }
 
         fun getW(): Int {
@@ -297,8 +297,8 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         companion object {
             @JvmField
             val CREATOR: Parcelable.Creator<Size> = object : Parcelable.Creator<Size> {
-                override fun createFromParcel(`in`: Parcel): Size {
-                    return Size(`in`)
+                override fun createFromParcel(parcel: Parcel): Size {
+                    return Size(parcel)
                 }
 
                 override fun newArray(size: Int): Array<Size?> {
@@ -318,8 +318,8 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<PhotoSizes> = object : Parcelable.Creator<PhotoSizes> {
-            override fun createFromParcel(`in`: Parcel): PhotoSizes {
-                return PhotoSizes(`in`)
+            override fun createFromParcel(parcel: Parcel): PhotoSizes {
+                return PhotoSizes(parcel)
             }
 
             override fun newArray(size: Int): Array<PhotoSizes?> {

@@ -22,18 +22,18 @@ class AppChatUser : Parcelable, Identificable {
         this.invitedBy = invitedBy
     }
 
-    internal constructor(`in`: Parcel) {
+    internal constructor(parcel: Parcel) {
         inviter =
-            `in`.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
+            parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
                 .get()
         member =
-            `in`.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
+            parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
                 .get()
-        invitedBy = `in`.readInt()
-        canRemove = `in`.getBoolean()
-        join_date = `in`.readLong()
-        isAdmin = `in`.getBoolean()
-        isOwner = `in`.getBoolean()
+        invitedBy = parcel.readInt()
+        canRemove = parcel.getBoolean()
+        join_date = parcel.readLong()
+        isAdmin = parcel.getBoolean()
+        isOwner = parcel.getBoolean()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

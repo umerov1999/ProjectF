@@ -8,8 +8,8 @@ class SelectProfileCriteria : Parcelable {
     @OwnerType
     private var ownerType: Int
 
-    internal constructor(`in`: Parcel) {
-        ownerType = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        ownerType = parcel.readInt()
     }
 
     constructor() {

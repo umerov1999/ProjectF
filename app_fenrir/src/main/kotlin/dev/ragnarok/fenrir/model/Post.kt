@@ -69,39 +69,42 @@ class Post : AbsModel, Cloneable {
         private set
     var copyright: Copyright? = null
         private set
+    var isDonut = false
+        private set
 
-    internal constructor(`in`: Parcel) {
-        dbid = `in`.readInt()
-        vkid = `in`.readInt()
-        ownerId = `in`.readInt()
-        authorId = `in`.readInt()
-        author = Owner.readOwnerFromParcel(authorId, `in`)
-        date = `in`.readLong()
-        text = `in`.readString()
-        replyOwnerId = `in`.readInt()
-        replyPostId = `in`.readInt()
-        isFriendsOnly = `in`.getBoolean()
-        commentsCount = `in`.readInt()
-        isCanPostComment = `in`.getBoolean()
-        likesCount = `in`.readInt()
-        isCanLike = `in`.getBoolean()
-        repostCount = `in`.readInt()
-        isCanRepost = `in`.getBoolean()
-        isUserReposted = `in`.getBoolean()
-        postType = `in`.readInt()
-        attachments = `in`.readTypedObjectCompat(Attachments.CREATOR)
-        signerId = `in`.readInt()
-        creatorId = `in`.readInt()
-        creator = `in`.readTypedObjectCompat(User.CREATOR)
-        isCanPin = `in`.getBoolean()
-        isPinned = `in`.getBoolean()
-        copyHierarchy = `in`.createTypedArrayList(CREATOR)
-        isDeleted = `in`.getBoolean()
-        source = `in`.readTypedObjectCompat(PostSource.CREATOR)
-        viewCount = `in`.readInt()
-        isCanEdit = `in`.getBoolean()
-        isFavorite = `in`.getBoolean()
-        copyright = `in`.readTypedObjectCompat(Copyright.CREATOR)
+    internal constructor(parcel: Parcel) {
+        dbid = parcel.readInt()
+        vkid = parcel.readInt()
+        ownerId = parcel.readInt()
+        authorId = parcel.readInt()
+        author = Owner.readOwnerFromParcel(authorId, parcel)
+        date = parcel.readLong()
+        text = parcel.readString()
+        replyOwnerId = parcel.readInt()
+        replyPostId = parcel.readInt()
+        isFriendsOnly = parcel.getBoolean()
+        commentsCount = parcel.readInt()
+        isCanPostComment = parcel.getBoolean()
+        likesCount = parcel.readInt()
+        isCanLike = parcel.getBoolean()
+        repostCount = parcel.readInt()
+        isCanRepost = parcel.getBoolean()
+        isUserReposted = parcel.getBoolean()
+        postType = parcel.readInt()
+        attachments = parcel.readTypedObjectCompat(Attachments.CREATOR)
+        signerId = parcel.readInt()
+        creatorId = parcel.readInt()
+        creator = parcel.readTypedObjectCompat(User.CREATOR)
+        isCanPin = parcel.getBoolean()
+        isPinned = parcel.getBoolean()
+        copyHierarchy = parcel.createTypedArrayList(CREATOR)
+        isDeleted = parcel.getBoolean()
+        source = parcel.readTypedObjectCompat(PostSource.CREATOR)
+        viewCount = parcel.readInt()
+        isCanEdit = parcel.getBoolean()
+        isFavorite = parcel.getBoolean()
+        copyright = parcel.readTypedObjectCompat(Copyright.CREATOR)
+        isDonut = parcel.getBoolean()
     }
 
     constructor()
@@ -128,6 +131,11 @@ class Post : AbsModel, Cloneable {
 
     fun setCopyright(copyright: Copyright?): Post {
         this.copyright = copyright
+        return this
+    }
+
+    fun setIsDonut(isDonut: Boolean): Post {
+        this.isDonut = isDonut
         return this
     }
 
@@ -312,6 +320,7 @@ class Post : AbsModel, Cloneable {
         parcel.putBoolean(isCanEdit)
         parcel.putBoolean(isFavorite)
         parcel.writeTypedObjectCompat(copyright, flags)
+        parcel.putBoolean(isDonut)
     }
 
     /**

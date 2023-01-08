@@ -12,10 +12,10 @@ class AudioArtist : AbsModel {
         this.id = id
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readString()
-        name = `in`.readString()
-        photo = `in`.createTypedArrayList(AudioArtistImage.CREATOR)
+    internal constructor(parcel: Parcel) {
+        id = parcel.readString()
+        name = parcel.readString()
+        photo = parcel.createTypedArrayList(AudioArtistImage.CREATOR)
     }
 
     @AbsModelType
@@ -81,10 +81,10 @@ class AudioArtist : AbsModel {
             this.height = height
         }
 
-        internal constructor(`in`: Parcel) {
-            url = `in`.readString()
-            width = `in`.readInt()
-            height = `in`.readInt()
+        internal constructor(parcel: Parcel) {
+            url = parcel.readString()
+            width = parcel.readInt()
+            height = parcel.readInt()
         }
 
         override fun describeContents(): Int {

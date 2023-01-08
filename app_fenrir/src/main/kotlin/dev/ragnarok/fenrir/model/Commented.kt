@@ -24,11 +24,11 @@ class Commented : Parcelable {
         this.accessKey = accessKey
     }
 
-    internal constructor(`in`: Parcel) {
-        sourceId = `in`.readInt()
-        sourceOwnerId = `in`.readInt()
-        sourceType = `in`.readInt()
-        accessKey = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        sourceId = parcel.readInt()
+        sourceOwnerId = parcel.readInt()
+        sourceType = parcel.readInt()
+        accessKey = parcel.readString()
     }
 
     fun setAccessKey(accessKey: String?): Commented {

@@ -12,9 +12,9 @@ class ResolveDomailResponse : Parcelable {
 
     @Suppress("UNUSED")
     constructor()
-    internal constructor(`in`: Parcel) {
-        type = `in`.readString()
-        object_id = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        type = parcel.readString()
+        object_id = parcel.readString()
     }
 
     fun parse(jsonObject: JSONObject): ResolveDomailResponse {

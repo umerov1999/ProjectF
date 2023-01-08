@@ -20,12 +20,12 @@ class FaveLink : AbsModel {
         this.id = id
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readString()
-        url = `in`.readString()
-        title = `in`.readString()
-        description = `in`.readString()
-        photo = `in`.readTypedObjectCompat(Photo.CREATOR)
+    internal constructor(parcel: Parcel) {
+        id = parcel.readString()
+        url = parcel.readString()
+        title = parcel.readString()
+        description = parcel.readString()
+        photo = parcel.readTypedObjectCompat(Photo.CREATOR)
     }
 
     @AbsModelType

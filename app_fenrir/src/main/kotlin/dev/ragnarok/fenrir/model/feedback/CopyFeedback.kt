@@ -16,9 +16,9 @@ class CopyFeedback : Feedback {
         private set
 
     constructor(@FeedbackType type: Int) : super(type)
-    internal constructor(`in`: Parcel) : super(`in`) {
-        what = readModel(`in`)
-        owners = readOwners(`in`)
+    internal constructor(parcel: Parcel) : super(parcel) {
+        what = readModel(parcel)
+        owners = readOwners(parcel)
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

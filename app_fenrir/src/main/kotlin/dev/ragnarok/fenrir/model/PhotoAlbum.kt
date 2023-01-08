@@ -26,20 +26,20 @@ class PhotoAlbum : AbsModel, ISomeones {
         this.ownerId = ownerId
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        size = `in`.readInt()
-        title = `in`.readString()
-        description = `in`.readString()
-        canUpload = `in`.getBoolean()
-        updatedTime = `in`.readLong()
-        createdTime = `in`.readLong()
-        sizes = `in`.readTypedObjectCompat(PhotoSizes.CREATOR)
-        uploadByAdminsOnly = `in`.getBoolean()
-        commentsDisabled = `in`.getBoolean()
-        privacyView = `in`.readTypedObjectCompat(SimplePrivacy.CREATOR)
-        privacyComment = `in`.readTypedObjectCompat(SimplePrivacy.CREATOR)
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        size = parcel.readInt()
+        title = parcel.readString()
+        description = parcel.readString()
+        canUpload = parcel.getBoolean()
+        updatedTime = parcel.readLong()
+        createdTime = parcel.readLong()
+        sizes = parcel.readTypedObjectCompat(PhotoSizes.CREATOR)
+        uploadByAdminsOnly = parcel.getBoolean()
+        commentsDisabled = parcel.getBoolean()
+        privacyView = parcel.readTypedObjectCompat(SimplePrivacy.CREATOR)
+        privacyComment = parcel.readTypedObjectCompat(SimplePrivacy.CREATOR)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

@@ -472,6 +472,7 @@ object Model2Entity {
             .setCanLike(post.isCanLike)
             .setCanEdit(post.isCanEdit)
             .setCanPublish(post.isCanRepost)
+            .setIsDonut(post.isDonut)
             .setRepostCount(post.repostCount)
             .setUserReposted(post.isUserReposted)
             .setPostType(post.postType)

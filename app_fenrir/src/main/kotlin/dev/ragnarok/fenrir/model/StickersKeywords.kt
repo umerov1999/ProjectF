@@ -7,10 +7,10 @@ class StickersKeywords : Parcelable {
     private val keywords: List<String>?
     private val stickers: List<Sticker>?
 
-    internal constructor(`in`: Parcel) {
+    internal constructor(parcel: Parcel) {
         keywords = ArrayList()
-        `in`.readStringList(keywords)
-        stickers = `in`.createTypedArrayList(Sticker.CREATOR)
+        parcel.readStringList(keywords)
+        stickers = parcel.createTypedArrayList(Sticker.CREATOR)
     }
 
     constructor(keywords: List<String>?, stickers: List<Sticker>?) {

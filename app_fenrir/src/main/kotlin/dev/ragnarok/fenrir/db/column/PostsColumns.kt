@@ -26,6 +26,7 @@ object PostsColumns : BaseColumns {
     const val SIGNED_ID = "signer_id"
     const val CREATED_BY = "created_by"
     const val CAN_PIN = "can_pin"
+    const val IS_DONUT = "is_donut"
     const val IS_PINNED = "is_pinned"
     const val IS_FAVORITE = "is_favorite"
     const val DELETED = "deleted"
@@ -61,4 +62,5 @@ object PostsColumns : BaseColumns {
     const val FULL_POST_SOURCE = "$TABLENAME.$POST_SOURCE"
     const val FULL_VIEWS = "$TABLENAME.$VIEWS"
     const val FULL_IS_FAVORITE = "$TABLENAME.$IS_FAVORITE"
+    const val FULL_IS_DONUT = "$TABLENAME.$IS_DONUT"
 }

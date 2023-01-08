@@ -28,7 +28,7 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
         initialServer: UploadServer?,
         listener: PercentagePublisher?
     ): Single<UploadResult<Audio>> {
-        var `is`: InputStream? = null
+        var inputStream: InputStream? = null
         val local_settings = Settings.get().other().localServer
         return try {
             var server_url = firstNonEmptyString(
@@ -40,12 +40,12 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
             }
             val uri = upload.fileUri
             val file = File(uri!!.path!!)
-            `is` = if (file.isFile) {
+            inputStream = if (file.isFile) {
                 FileInputStream(file)
             } else {
                 context.contentResolver.openInputStream(uri)
             }
-            if (`is` == null) {
+            if (inputStream == null) {
                 return Single.error(
                     NotFoundException(
                         "Unable to open InputStream, URI: $uri"
@@ -57,8 +57,8 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
             )
             val finalServer_url = server_url
             networker.uploads()
-                .remotePlayAudioRx(server_url, filename, `is`, listener)
-                .doFinally(safelyCloseAction(`is`))
+                .remotePlayAudioRx(server_url, filename, inputStream, listener)
+                .doFinally(safelyCloseAction(inputStream))
                 .flatMap { dto ->
                     Single.just(
                         UploadResult(
@@ -69,7 +69,7 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
                     )
                 }
         } catch (e: Exception) {
-            safelyClose(`is`)
+            safelyClose(inputStream)
             Single.error(e)
         }
     }

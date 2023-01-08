@@ -12,9 +12,9 @@ class DatabaseIdRange : Parcelable {
         this.last = last
     }
 
-    internal constructor(`in`: Parcel) {
-        first = `in`.readInt()
-        last = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        first = parcel.readInt()
+        last = parcel.readInt()
     }
 
     override fun toString(): String {

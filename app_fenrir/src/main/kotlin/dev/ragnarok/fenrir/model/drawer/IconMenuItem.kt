@@ -17,8 +17,8 @@ class IconMenuItem : SectionMenuItem {
         this.icon = icon
     }
 
-    internal constructor(`in`: Parcel) : super(`in`) {
-        icon = `in`.readInt()
+    internal constructor(parcel: Parcel) : super(parcel) {
+        icon = parcel.readInt()
     }
 
     override fun describeContents(): Int {

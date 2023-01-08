@@ -30,18 +30,18 @@ class WikiPage : AbsModel {
         this.ownerId = ownerId
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        creatorId = `in`.readInt()
-        title = `in`.readString()
-        source = `in`.readString()
-        editionTime = `in`.readLong()
-        creationTime = `in`.readLong()
-        parent = `in`.readString()
-        parent2 = `in`.readString()
-        views = `in`.readInt()
-        viewUrl = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        creatorId = parcel.readInt()
+        title = parcel.readString()
+        source = parcel.readString()
+        editionTime = parcel.readLong()
+        creationTime = parcel.readLong()
+        parent = parcel.readString()
+        parent2 = parcel.readString()
+        views = parcel.readInt()
+        viewUrl = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

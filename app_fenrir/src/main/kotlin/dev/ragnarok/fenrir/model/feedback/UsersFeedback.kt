@@ -11,8 +11,8 @@ class UsersFeedback : Feedback {
         private set
 
     constructor(@FeedbackType type: Int) : super(type)
-    internal constructor(`in`: Parcel) : super(`in`) {
-        owners = readOwners(`in`)
+    internal constructor(parcel: Parcel) : super(parcel) {
+        owners = readOwners(parcel)
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

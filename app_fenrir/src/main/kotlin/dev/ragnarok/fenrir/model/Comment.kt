@@ -90,25 +90,25 @@ class Comment : AbsModel, Identificable {
         this.commented = commented
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        fromId = `in`.readInt()
-        date = `in`.readLong()
-        text = `in`.readString()
-        replyToUser = `in`.readInt()
-        replyToComment = `in`.readInt()
-        likesCount = `in`.readInt()
-        isUserLikes = `in`.getBoolean()
-        isCanLike = `in`.getBoolean()
-        isCanEdit = `in`.getBoolean()
-        attachments = `in`.readTypedObjectCompat(Attachments.CREATOR)
-        commented = `in`.readTypedObjectCompat(Commented.CREATOR)!!
-        author = readOwner(`in`)
-        dbid = `in`.readInt()
-        isDeleted = `in`.getBoolean()
-        threadsCount = `in`.readInt()
-        threads = `in`.createTypedArrayList(CREATOR)
-        pid = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        fromId = parcel.readInt()
+        date = parcel.readLong()
+        text = parcel.readString()
+        replyToUser = parcel.readInt()
+        replyToComment = parcel.readInt()
+        likesCount = parcel.readInt()
+        isUserLikes = parcel.getBoolean()
+        isCanLike = parcel.getBoolean()
+        isCanEdit = parcel.getBoolean()
+        attachments = parcel.readTypedObjectCompat(Attachments.CREATOR)
+        commented = parcel.readTypedObjectCompat(Commented.CREATOR)!!
+        author = readOwner(parcel)
+        dbid = parcel.readInt()
+        isDeleted = parcel.getBoolean()
+        threadsCount = parcel.readInt()
+        threads = parcel.createTypedArrayList(CREATOR)
+        pid = parcel.readInt()
     }
 
     @AbsModelType

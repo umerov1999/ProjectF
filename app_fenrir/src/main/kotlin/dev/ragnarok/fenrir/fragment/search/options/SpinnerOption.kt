@@ -11,9 +11,9 @@ class SpinnerOption : BaseOption {
     lateinit var available: ArrayList<Entry>
 
     constructor(key: Int, title: Int, active: Boolean) : super(SPINNER, key, title, active)
-    internal constructor(`in`: Parcel) : super(`in`) {
-        value = `in`.readTypedObjectCompat(Entry.CREATOR)
-        available = `in`.createTypedArrayList(Entry.CREATOR)!!
+    internal constructor(parcel: Parcel) : super(parcel) {
+        value = parcel.readTypedObjectCompat(Entry.CREATOR)
+        available = parcel.createTypedArrayList(Entry.CREATOR)!!
     }
 
     @Throws(CloneNotSupportedException::class)
@@ -64,9 +64,9 @@ class SpinnerOption : BaseOption {
             this.name = name
         }
 
-        internal constructor(`in`: Parcel) {
-            id = `in`.readInt()
-            name = `in`.readInt()
+        internal constructor(parcel: Parcel) {
+            id = parcel.readInt()
+            name = parcel.readInt()
         }
 
         @Throws(CloneNotSupportedException::class)

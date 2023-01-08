@@ -10,8 +10,8 @@ class WallSearchCriteria : BaseSearchCriteria {
         this.ownerId = ownerId
     }
 
-    internal constructor(`in`: Parcel) : super(`in`) {
-        ownerId = `in`.readInt()
+    internal constructor(parcel: Parcel) : super(parcel) {
+        ownerId = parcel.readInt()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

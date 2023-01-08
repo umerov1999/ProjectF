@@ -122,12 +122,12 @@ abstract class RecyclerBindableAdapter<T, VH : RecyclerView.ViewHolder>(private 
         }
     }
 
-    fun indexOf(`object`: T): Int {
-        return items.indexOf(`object`)
+    fun indexOf(obj: T): Int {
+        return items.indexOf(obj)
     }
 
-    fun indexOfAdapter(`object`: T): Int {
-        val ret = items.indexOf(`object`)
+    fun indexOfAdapter(obj: T): Int {
+        val ret = items.indexOf(obj)
         return if (ret == -1) {
             ret
         } else {

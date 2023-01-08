@@ -17,13 +17,13 @@ class Event : AbsModel {
         this.id = id
     }
 
-    internal constructor(`in`: Parcel) {
+    internal constructor(parcel: Parcel) {
         Owner
-        id = `in`.readInt()
-        button_text = `in`.readString()
-        text = `in`.readString()
+        id = parcel.readInt()
+        button_text = parcel.readString()
+        text = parcel.readString()
         subject =
-            Owner.readOwnerFromParcel(id, `in`)
+            Owner.readOwnerFromParcel(id, parcel)
     }
 
     @AbsModelType

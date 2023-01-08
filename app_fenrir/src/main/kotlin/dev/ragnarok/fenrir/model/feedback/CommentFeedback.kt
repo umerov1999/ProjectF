@@ -16,9 +16,9 @@ class CommentFeedback : Feedback {
         private set
 
     constructor(@FeedbackType type: Int) : super(type)
-    internal constructor(`in`: Parcel) : super(`in`) {
-        commentOf = readModel(`in`)
-        comment = `in`.readTypedObjectCompat(Comment.CREATOR)
+    internal constructor(parcel: Parcel) : super(parcel) {
+        commentOf = readModel(parcel)
+        comment = parcel.readTypedObjectCompat(Comment.CREATOR)
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

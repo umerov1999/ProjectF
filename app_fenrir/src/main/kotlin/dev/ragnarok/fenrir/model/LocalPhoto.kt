@@ -13,11 +13,11 @@ class LocalPhoto : Parcelable, Comparable<LocalPhoto>, ISelectable {
     private var index = 0
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        imageId = `in`.readLong()
-        fullImageUri = Uri.parse(`in`.readString())
-        selected = `in`.getBoolean()
-        index = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        imageId = parcel.readLong()
+        fullImageUri = Uri.parse(parcel.readString())
+        selected = parcel.getBoolean()
+        index = parcel.readInt()
     }
 
     override fun describeContents(): Int {

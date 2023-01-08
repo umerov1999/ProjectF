@@ -12,10 +12,10 @@ class TagOwner : Parcelable {
         private set
 
     constructor()
-    constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        name = `in`.readString()
-        count = `in`.readInt()
+    constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        name = parcel.readString()
+        count = parcel.readInt()
     }
 
     override fun describeContents(): Int {

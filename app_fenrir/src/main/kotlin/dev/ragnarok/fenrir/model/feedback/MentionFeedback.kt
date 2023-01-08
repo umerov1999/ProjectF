@@ -16,8 +16,8 @@ class MentionFeedback : Feedback {
 
     // one of FeedbackType.MENTION
     constructor(@FeedbackType type: Int) : super(type)
-    internal constructor(`in`: Parcel) : super(`in`) {
-        where = readModel(`in`)
+    internal constructor(parcel: Parcel) : super(parcel) {
+        where = readModel(parcel)
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

@@ -66,8 +66,8 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
         return mNotifyManager
     }
 
-    private fun readBase64(`val`: String): String {
-        return String(Base64.decode(`val`, Base64.DEFAULT), Charsets.UTF_8)
+    private fun readBase64(value: String): String {
+        return String(Base64.decode(value, Base64.DEFAULT), Charsets.UTF_8)
     }
 
     private fun getAvatarUrl(owner: Owner?, owner_id: Int): String {

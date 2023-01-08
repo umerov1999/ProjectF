@@ -38,21 +38,21 @@ class Market : AbsModel {
         this.owner_id = owner_id
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        owner_id = `in`.readInt()
-        access_key = `in`.readString()
-        isIs_favorite = `in`.getBoolean()
-        weight = `in`.readInt()
-        availability = `in`.readInt()
-        date = `in`.readLong()
-        title = `in`.readString()
-        description = `in`.readString()
-        price = `in`.readString()
-        dimensions = `in`.readString()
-        thumb_photo = `in`.readString()
-        sku = `in`.readString()
-        photos = `in`.createTypedArrayList(Photo.CREATOR)
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        owner_id = parcel.readInt()
+        access_key = parcel.readString()
+        isIs_favorite = parcel.getBoolean()
+        weight = parcel.readInt()
+        availability = parcel.readInt()
+        date = parcel.readLong()
+        title = parcel.readString()
+        description = parcel.readString()
+        price = parcel.readString()
+        dimensions = parcel.readString()
+        thumb_photo = parcel.readString()
+        sku = parcel.readString()
+        photos = parcel.createTypedArrayList(Photo.CREATOR)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

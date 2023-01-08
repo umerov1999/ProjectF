@@ -10,8 +10,8 @@ class StringNextFrom : AbsNextFrom {
         this.nextFrom = nextFrom
     }
 
-    internal constructor(`in`: Parcel) {
-        nextFrom = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        nextFrom = parcel.readString()
     }
 
     override fun describeContents(): Int {

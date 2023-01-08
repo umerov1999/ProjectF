@@ -19,12 +19,12 @@ class Chat : AbsModel {
         this.id = id
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        title = `in`.readString()
-        photo50 = `in`.readString()
-        photo100 = `in`.readString()
-        photo200 = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        title = parcel.readString()
+        photo50 = parcel.readString()
+        photo100 = parcel.readString()
+        photo200 = parcel.readString()
     }
 
     @AbsModelType

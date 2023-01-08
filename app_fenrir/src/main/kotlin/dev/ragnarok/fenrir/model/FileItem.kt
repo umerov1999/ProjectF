@@ -32,14 +32,14 @@ class FileItem : Parcelable {
         this.modification = modification
     }
 
-    internal constructor(`in`: Parcel) {
-        isDir = `in`.getBoolean()
-        file_name = `in`.readString()!!
-        file_path = `in`.readString()!!
-        parent_name = `in`.readString()
-        parent_path = `in`.readString()
-        modification = `in`.readLong()
-        size = `in`.readLong()
+    internal constructor(parcel: Parcel) {
+        isDir = parcel.getBoolean()
+        file_name = parcel.readString()!!
+        file_path = parcel.readString()!!
+        parent_name = parcel.readString()
+        parent_path = parcel.readString()
+        modification = parcel.readLong()
+        size = parcel.readLong()
     }
 
     override fun toString(): String {

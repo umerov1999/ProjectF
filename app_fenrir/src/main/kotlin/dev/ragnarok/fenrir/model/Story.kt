@@ -33,30 +33,30 @@ class Story : AbsModel, ParcelNative.ParcelableNative {
         private set
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        date = `in`.readLong()
-        expires = `in`.readLong()
-        isIs_expired = `in`.getBoolean()
-        accessKey = `in`.readString()
-        target_url = `in`.readString()
-        video = `in`.readTypedObjectCompat(Video.CREATOR)
-        photo = `in`.readTypedObjectCompat(Photo.CREATOR)
-        owner = readOwner(`in`)
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        date = parcel.readLong()
+        expires = parcel.readLong()
+        isIs_expired = parcel.getBoolean()
+        accessKey = parcel.readString()
+        target_url = parcel.readString()
+        video = parcel.readTypedObjectCompat(Video.CREATOR)
+        photo = parcel.readTypedObjectCompat(Photo.CREATOR)
+        owner = readOwner(parcel)
     }
 
-    internal constructor(`in`: ParcelNative) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        date = `in`.readLong()
-        expires = `in`.readLong()
-        isIs_expired = `in`.readBoolean()
-        accessKey = `in`.readString()
-        target_url = `in`.readString()
-        video = `in`.readParcelable(Video.NativeCreator)
-        photo = `in`.readParcelable(Photo.NativeCreator)
-        owner = readOwner(`in`)
+    internal constructor(parcel: ParcelNative) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        date = parcel.readLong()
+        expires = parcel.readLong()
+        isIs_expired = parcel.readBoolean()
+        accessKey = parcel.readString()
+        target_url = parcel.readString()
+        video = parcel.readParcelable(Video.NativeCreator)
+        photo = parcel.readParcelable(Photo.NativeCreator)
+        owner = readOwner(parcel)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -162,8 +162,8 @@ class Story : AbsModel, ParcelNative.ParcelableNative {
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<Story> = object : Parcelable.Creator<Story> {
-            override fun createFromParcel(`in`: Parcel): Story {
-                return Story(`in`)
+            override fun createFromParcel(parcel: Parcel): Story {
+                return Story(parcel)
             }
 
             override fun newArray(size: Int): Array<Story?> {

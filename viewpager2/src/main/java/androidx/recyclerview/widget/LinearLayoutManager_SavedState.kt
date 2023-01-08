@@ -15,10 +15,10 @@ class LinearLayoutManager_SavedState : Parcelable {
 
     @Suppress("unused")
     constructor()
-    internal constructor(`in`: Parcel) {
-        mAnchorPosition = `in`.readInt()
-        mAnchorOffset = `in`.readInt()
-        mAnchorLayoutFromEnd = `in`.readInt() != 0
+    internal constructor(parcel: Parcel) {
+        mAnchorPosition = parcel.readInt()
+        mAnchorOffset = parcel.readInt()
+        mAnchorLayoutFromEnd = parcel.readInt() != 0
     }
 
     constructor(other: LinearLayoutManager_SavedState) {
@@ -49,8 +49,8 @@ class LinearLayoutManager_SavedState : Parcelable {
         @JvmField
         val CREATOR: Parcelable.Creator<LinearLayoutManager_SavedState> =
             object : Parcelable.Creator<LinearLayoutManager_SavedState> {
-                override fun createFromParcel(`in`: Parcel): LinearLayoutManager_SavedState {
-                    return LinearLayoutManager_SavedState(`in`)
+                override fun createFromParcel(parcel: Parcel): LinearLayoutManager_SavedState {
+                    return LinearLayoutManager_SavedState(parcel)
                 }
 
                 override fun newArray(size: Int): Array<LinearLayoutManager_SavedState?> {

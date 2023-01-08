@@ -27,20 +27,20 @@ class GroupSettings : Parcelable {
         availableCategories = emptyList()
     }
 
-    internal constructor(`in`: Parcel) {
-        title = `in`.readString()
-        description = `in`.readString()
-        address = `in`.readString()
-        category = `in`.readTypedObjectCompat(IdOption.CREATOR)
-        subcategory = `in`.readTypedObjectCompat(IdOption.CREATOR)
-        availableCategories = `in`.createTypedArrayList(IdOption.CREATOR)
-        website = `in`.readString()
-        feedbackCommentsEnabled = `in`.getBoolean()
-        obsceneFilterEnabled = `in`.getBoolean()
-        obsceneStopwordsEnabled = `in`.getBoolean()
-        obsceneWords = `in`.readString()
-        access = `in`.readInt()
-        age = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        title = parcel.readString()
+        description = parcel.readString()
+        address = parcel.readString()
+        category = parcel.readTypedObjectCompat(IdOption.CREATOR)
+        subcategory = parcel.readTypedObjectCompat(IdOption.CREATOR)
+        availableCategories = parcel.createTypedArrayList(IdOption.CREATOR)
+        website = parcel.readString()
+        feedbackCommentsEnabled = parcel.getBoolean()
+        obsceneFilterEnabled = parcel.getBoolean()
+        obsceneStopwordsEnabled = parcel.getBoolean()
+        obsceneWords = parcel.readString()
+        access = parcel.readInt()
+        age = parcel.readInt()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

@@ -16,11 +16,11 @@ class PostSource : Parcelable {
         this.url = url
     }
 
-    internal constructor(`in`: Parcel) {
-        type = `in`.readInt()
-        platform = `in`.readString()
-        data = `in`.readInt()
-        url = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        type = parcel.readInt()
+        platform = parcel.readString()
+        data = parcel.readInt()
+        url = parcel.readString()
     }
 
     fun getUrl(): String? {

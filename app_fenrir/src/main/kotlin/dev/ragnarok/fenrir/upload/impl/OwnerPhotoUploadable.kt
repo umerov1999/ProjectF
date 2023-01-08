@@ -38,16 +38,16 @@ class OwnerPhotoUploadable(
             Single.just(initialServer)
         }
         return serverSingle.flatMap { server ->
-            var `is`: InputStream? = null
+            var inputStream: InputStream? = null
             try {
-                `is` = UploadUtils.openStream(context, upload.fileUri, upload.size)
+                inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 networker.uploads()
                     .uploadOwnerPhotoRx(
                         server.url ?: throw NotFoundException("upload url empty"),
-                        `is`!!,
+                        inputStream!!,
                         listener
                     )
-                    .doFinally { safelyClose(`is`) }
+                    .doFinally { safelyClose(inputStream) }
                     .flatMap { dto ->
                         networker.vkDefault(accountId)
                             .photos()
@@ -63,7 +63,7 @@ class OwnerPhotoUploadable(
                             }
                     }
             } catch (e: Exception) {
-                safelyClose(`is`)
+                safelyClose(inputStream)
                 Single.error(e)
             }
         }

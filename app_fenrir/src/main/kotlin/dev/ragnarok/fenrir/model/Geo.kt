@@ -18,13 +18,13 @@ class Geo : AbsModel {
         private set
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        latitude = `in`.readString()
-        longitude = `in`.readString()
-        title = `in`.readString()
-        address = `in`.readString()
-        country = `in`.readInt()
-        id = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        latitude = parcel.readString()
+        longitude = parcel.readString()
+        title = parcel.readString()
+        address = parcel.readString()
+        country = parcel.readInt()
+        id = parcel.readInt()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

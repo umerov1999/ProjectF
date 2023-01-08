@@ -22,16 +22,16 @@ class VoiceMessage : AbsModel {
         this.ownerId = ownerId
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        duration = `in`.readInt()
-        waveform = `in`.createByteArray()
-        linkOgg = `in`.readString()
-        linkMp3 = `in`.readString()
-        accessKey = `in`.readString()
-        transcript = `in`.readString()
-        showTranscript = `in`.getBoolean()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        duration = parcel.readInt()
+        waveform = parcel.createByteArray()
+        linkOgg = parcel.readString()
+        linkMp3 = parcel.readString()
+        accessKey = parcel.readString()
+        transcript = parcel.readString()
+        showTranscript = parcel.getBoolean()
     }
 
     @AbsModelType

@@ -20,9 +20,9 @@ class Text : Parcelable {
         this.text = text
     }
 
-    internal constructor(`in`: Parcel) {
-        res = readObjectInteger(`in`)
-        text = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        res = readObjectInteger(parcel)
+        text = parcel.readString()
     }
 
     fun getText(context: Context): String? {

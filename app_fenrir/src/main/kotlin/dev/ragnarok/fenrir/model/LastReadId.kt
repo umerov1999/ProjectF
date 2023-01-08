@@ -14,8 +14,8 @@ class LastReadId(private var outgoing: Int, private var incoming: Int) {
         return incoming
     }
 
-    fun setIncoming(`in`: Int): LastReadId {
-        incoming = `in`
+    fun setIncoming(parcel: Int): LastReadId {
+        incoming = parcel
         return this
     }
 }

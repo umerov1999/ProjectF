@@ -41,21 +41,21 @@ class Document : AbsModel {
         this.ownerId = ownerId
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        title = `in`.readString()
-        size = `in`.readLong()
-        ext = `in`.readString()
-        url = `in`.readString()
-        date = `in`.readLong()
-        type = `in`.readInt()
-        accessKey = `in`.readString()
-        photoPreview = `in`.readTypedObjectCompat(PhotoSizes.CREATOR)
-        videoPreview = `in`.readTypedObjectCompat(VideoPreview.CREATOR)
-        graffiti = `in`.readTypedObjectCompat(Graffiti.CREATOR)
-        msgId = `in`.readInt()
-        msgPeerId = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        title = parcel.readString()
+        size = parcel.readLong()
+        ext = parcel.readString()
+        url = parcel.readString()
+        date = parcel.readLong()
+        type = parcel.readInt()
+        accessKey = parcel.readString()
+        photoPreview = parcel.readTypedObjectCompat(PhotoSizes.CREATOR)
+        videoPreview = parcel.readTypedObjectCompat(VideoPreview.CREATOR)
+        graffiti = parcel.readTypedObjectCompat(Graffiti.CREATOR)
+        msgId = parcel.readInt()
+        msgPeerId = parcel.readInt()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -175,10 +175,10 @@ class Document : AbsModel {
             private set
 
         constructor()
-        internal constructor(`in`: Parcel) {
-            src = `in`.readString()
-            width = `in`.readInt()
-            height = `in`.readInt()
+        internal constructor(parcel: Parcel) {
+            src = parcel.readString()
+            width = parcel.readInt()
+            height = parcel.readInt()
         }
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -233,11 +233,11 @@ class Document : AbsModel {
             private set
 
         constructor()
-        internal constructor(`in`: Parcel) {
-            src = `in`.readString()
-            width = `in`.readInt()
-            height = `in`.readInt()
-            fileSize = `in`.readLong()
+        internal constructor(parcel: Parcel) {
+            src = parcel.readString()
+            width = parcel.readInt()
+            height = parcel.readInt()
+            fileSize = parcel.readLong()
         }
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {

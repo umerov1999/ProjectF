@@ -624,8 +624,8 @@ object NotificationHelper {
                                 " " + response.message
                     )
                 }
-                val `is` = response.body.byteStream()
-                val input = BufferedInputStream(`is`)
+                val inputStream = response.body.byteStream()
+                val input = BufferedInputStream(inputStream)
                 val data = ByteArray(80 * 1024)
                 var bufferLength: Int
                 while (input.read(data).also { bufferLength = it } != -1) {

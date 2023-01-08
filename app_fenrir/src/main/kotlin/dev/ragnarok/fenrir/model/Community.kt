@@ -54,42 +54,42 @@ class Community : Owner {
         this.id = id
     }
 
-    internal constructor(`in`: Parcel) : super(`in`) {
-        id = `in`.readInt()
-        fullName = `in`.readString()
-        screenName = `in`.readString()
-        closed = `in`.readInt()
-        isAdmin = `in`.getBoolean()
-        adminLevel = `in`.readInt()
-        isMember = `in`.getBoolean()
-        membersCount = `in`.readInt()
-        memberStatus = `in`.readInt()
-        communityType = `in`.readInt()
-        photo50 = `in`.readString()
-        photo100 = `in`.readString()
-        photo200 = `in`.readString()
-        verified = `in`.getBoolean()
-        isBlacklisted = `in`.getBoolean()
-        hasUnseenStories = `in`.getBoolean()
+    internal constructor(parcel: Parcel) : super(parcel) {
+        id = parcel.readInt()
+        fullName = parcel.readString()
+        screenName = parcel.readString()
+        closed = parcel.readInt()
+        isAdmin = parcel.getBoolean()
+        adminLevel = parcel.readInt()
+        isMember = parcel.getBoolean()
+        membersCount = parcel.readInt()
+        memberStatus = parcel.readInt()
+        communityType = parcel.readInt()
+        photo50 = parcel.readString()
+        photo100 = parcel.readString()
+        photo200 = parcel.readString()
+        verified = parcel.getBoolean()
+        isBlacklisted = parcel.getBoolean()
+        hasUnseenStories = parcel.getBoolean()
     }
 
-    internal constructor(`in`: ParcelNative) : super(`in`) {
-        id = `in`.readInt()
-        fullName = `in`.readString()
-        screenName = `in`.readString()
-        closed = `in`.readInt()
-        isAdmin = `in`.readBoolean()
-        adminLevel = `in`.readInt()
-        isMember = `in`.readBoolean()
-        membersCount = `in`.readInt()
-        memberStatus = `in`.readInt()
-        communityType = `in`.readInt()
-        photo50 = `in`.readString()
-        photo100 = `in`.readString()
-        photo200 = `in`.readString()
-        verified = `in`.readBoolean()
-        isBlacklisted = `in`.readBoolean()
-        hasUnseenStories = `in`.readBoolean()
+    internal constructor(parcel: ParcelNative) : super(parcel) {
+        id = parcel.readInt()
+        fullName = parcel.readString()
+        screenName = parcel.readString()
+        closed = parcel.readInt()
+        isAdmin = parcel.readBoolean()
+        adminLevel = parcel.readInt()
+        isMember = parcel.readBoolean()
+        membersCount = parcel.readInt()
+        memberStatus = parcel.readInt()
+        communityType = parcel.readInt()
+        photo50 = parcel.readString()
+        photo100 = parcel.readString()
+        photo200 = parcel.readString()
+        verified = parcel.readBoolean()
+        isBlacklisted = parcel.readBoolean()
+        hasUnseenStories = parcel.readBoolean()
     }
 
     override val ownerId: Int
@@ -244,8 +244,8 @@ class Community : Owner {
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<Community> = object : Parcelable.Creator<Community> {
-            override fun createFromParcel(`in`: Parcel): Community {
-                return Community(`in`)
+            override fun createFromParcel(parcel: Parcel): Community {
+                return Community(parcel)
             }
 
             override fun newArray(size: Int): Array<Community?> {

@@ -14,8 +14,8 @@ class MessageSearchCriteria : BaseSearchCriteria {
         //appendOption(new SimpleBooleanOption(1, R.string.photo, true));
     }
 
-    internal constructor(`in`: Parcel) : super(`in`) {
-        peerId = readObjectInteger(`in`)
+    internal constructor(parcel: Parcel) : super(parcel) {
+        peerId = readObjectInteger(parcel)
     }
 
     fun setPeerId(peerId: Int?): MessageSearchCriteria {

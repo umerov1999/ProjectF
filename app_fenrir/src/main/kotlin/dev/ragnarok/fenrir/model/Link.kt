@@ -24,15 +24,15 @@ class Link : AbsModel {
         private set
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        url = `in`.readString()
-        title = `in`.readString()
-        caption = `in`.readString()
-        description = `in`.readString()
-        previewPhoto = `in`.readString()
-        photo = `in`.readTypedObjectCompat(Photo.CREATOR)
-        msgId = `in`.readInt()
-        msgPeerId = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        url = parcel.readString()
+        title = parcel.readString()
+        caption = parcel.readString()
+        description = parcel.readString()
+        previewPhoto = parcel.readString()
+        photo = parcel.readTypedObjectCompat(Photo.CREATOR)
+        msgId = parcel.readInt()
+        msgPeerId = parcel.readInt()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

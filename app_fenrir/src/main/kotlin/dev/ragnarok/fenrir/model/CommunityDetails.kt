@@ -1,6 +1,13 @@
 package dev.ragnarok.fenrir.model
 
-class CommunityDetails {
+import android.os.Parcel
+import android.os.Parcelable
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.putBoolean
+import dev.ragnarok.fenrir.readTypedObjectCompat
+import dev.ragnarok.fenrir.writeTypedObjectCompat
+
+class CommunityDetails : Parcelable {
     private var allWallCount = 0
     private var ownerWallCount = 0
     private var postponedWallCount = 0
@@ -24,6 +31,33 @@ class CommunityDetails {
     private var cover: Cover? = null
     private var description: String? = null
     private var menu: List<Menu>? = null
+
+    constructor()
+    constructor(parcel: Parcel) {
+        allWallCount = parcel.readInt()
+        ownerWallCount = parcel.readInt()
+        postponedWallCount = parcel.readInt()
+        suggestedWallCount = parcel.readInt()
+        donutWallCount = parcel.readInt()
+        canMessage = parcel.getBoolean()
+        isFavorite = parcel.getBoolean()
+        isSubscribed = parcel.getBoolean()
+        topicsCount = parcel.readInt()
+        docsCount = parcel.readInt()
+        photosCount = parcel.readInt()
+        audiosCount = parcel.readInt()
+        videosCount = parcel.readInt()
+        articlesCount = parcel.readInt()
+        productsCount = parcel.readInt()
+        chatsCount = parcel.readInt()
+        productServicesCount = parcel.readInt()
+        narrativesCount = parcel.readInt()
+        status = parcel.readString()
+        statusAudio = parcel.readTypedObjectCompat(Audio.CREATOR)
+        cover = parcel.readTypedObjectCompat(Cover.CREATOR)
+        description = parcel.readString()
+        menu = parcel.createTypedArrayList(Menu.CREATOR)
+    }
 
     fun setProductServicesCount(productServicesCount: Int): CommunityDetails {
         this.productServicesCount = productServicesCount
@@ -232,9 +266,15 @@ class CommunityDetails {
         return this
     }
 
-    class Cover {
+    class Cover() : Parcelable {
         private var enabled = false
         private var images: ArrayList<CoverImage>? = null
+
+        constructor(parcel: Parcel) : this() {
+            enabled = parcel.getBoolean()
+            images = parcel.createTypedArrayList(CoverImage.CREATOR)
+        }
+
         fun getImages(): ArrayList<CoverImage>? {
             return images
         }
@@ -252,9 +292,35 @@ class CommunityDetails {
             this.enabled = enabled
             return this
         }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.putBoolean(enabled)
+            parcel.writeTypedList(images)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<Cover> {
+            override fun createFromParcel(parcel: Parcel): Cover {
+                return Cover(parcel)
+            }
+
+            override fun newArray(size: Int): Array<Cover?> {
+                return arrayOfNulls(size)
+            }
+        }
     }
 
-    class CoverImage(private val url: String?, private val height: Int, private val width: Int) {
+    class CoverImage(private val url: String?, private val height: Int, private val width: Int) :
+        Parcelable {
+        constructor(parcel: Parcel) : this(
+            parcel.readString(),
+            parcel.readInt(),
+            parcel.readInt()
+        )
+
         fun getHeight(): Int {
             return height
         }
@@ -266,6 +332,26 @@ class CommunityDetails {
         fun getUrl(): String? {
             return url
         }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeString(url)
+            parcel.writeInt(height)
+            parcel.writeInt(width)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<CoverImage> {
+            override fun createFromParcel(parcel: Parcel): CoverImage {
+                return CoverImage(parcel)
+            }
+
+            override fun newArray(size: Int): Array<CoverImage?> {
+                return arrayOfNulls(size)
+            }
+        }
     }
 
     class Menu(
@@ -274,5 +360,75 @@ class CommunityDetails {
         val title: String?,
         val type: String?,
         val cover: String?
-    )
+    ) : Parcelable {
+        constructor(parcel: Parcel) : this(
+            parcel.readInt(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readString()
+        )
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(id)
+            parcel.writeString(url)
+            parcel.writeString(title)
+            parcel.writeString(type)
+            parcel.writeString(cover)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<Menu> {
+            override fun createFromParcel(parcel: Parcel): Menu {
+                return Menu(parcel)
+            }
+
+            override fun newArray(size: Int): Array<Menu?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(allWallCount)
+        parcel.writeInt(ownerWallCount)
+        parcel.writeInt(postponedWallCount)
+        parcel.writeInt(suggestedWallCount)
+        parcel.writeInt(donutWallCount)
+        parcel.putBoolean(canMessage)
+        parcel.putBoolean(isFavorite)
+        parcel.putBoolean(isSubscribed)
+        parcel.writeInt(topicsCount)
+        parcel.writeInt(docsCount)
+        parcel.writeInt(photosCount)
+        parcel.writeInt(audiosCount)
+        parcel.writeInt(videosCount)
+        parcel.writeInt(articlesCount)
+        parcel.writeInt(productsCount)
+        parcel.writeInt(chatsCount)
+        parcel.writeInt(productServicesCount)
+        parcel.writeInt(narrativesCount)
+        parcel.writeString(status)
+        parcel.writeTypedObjectCompat(statusAudio, flags)
+        parcel.writeTypedObjectCompat(cover, flags)
+        parcel.writeString(description)
+        parcel.writeTypedList(menu)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<CommunityDetails> {
+        override fun createFromParcel(parcel: Parcel): CommunityDetails {
+            return CommunityDetails(parcel)
+        }
+
+        override fun newArray(size: Int): Array<CommunityDetails?> {
+            return arrayOfNulls(size)
+        }
+    }
 }

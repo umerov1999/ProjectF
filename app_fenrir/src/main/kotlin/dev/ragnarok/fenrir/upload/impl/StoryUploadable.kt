@@ -37,16 +37,16 @@ class StoryUploadable(private val context: Context, private val networker: INetw
             Single.just(initialServer)
         }
         return serverSingle.flatMap { server ->
-            var `is`: InputStream? = null
+            var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
                 val file = File(uri!!.path!!)
-                `is` = if (file.isFile) {
+                inputStream = if (file.isFile) {
                     FileInputStream(file)
                 } else {
                     context.contentResolver.openInputStream(uri)
                 }
-                if (`is` == null) {
+                if (inputStream == null) {
                     return@flatMap Single.error<UploadResult<Story>>(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
@@ -58,11 +58,11 @@ class StoryUploadable(private val context: Context, private val networker: INetw
                     .uploadStoryRx(
                         server.url ?: throw NotFoundException("upload url empty"),
                         filename,
-                        `is`,
+                        inputStream,
                         listener,
                         upload.destination.messageMethod == MessageMethod.VIDEO
                     )
-                    .doFinally(safelyCloseAction(`is`))
+                    .doFinally(safelyCloseAction(inputStream))
                     .flatMap { dto ->
                         networker
                             .vkDefault(accountId)
@@ -86,7 +86,7 @@ class StoryUploadable(private val context: Context, private val networker: INetw
                             }
                     }
             } catch (e: Exception) {
-                safelyClose(`is`)
+                safelyClose(inputStream)
                 Single.error(e)
             }
         }

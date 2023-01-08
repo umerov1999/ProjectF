@@ -16,13 +16,13 @@ class PhotoAlbumEditor : Parcelable {
     private var uploadByAdminsOnly = false
 
     private constructor()
-    internal constructor(`in`: Parcel) {
-        title = `in`.readString()
-        description = `in`.readString()
-        privacyView = `in`.readTypedObjectCompat(Privacy.CREATOR)
-        privacyComment = `in`.readTypedObjectCompat(Privacy.CREATOR)
-        commentsDisabled = `in`.getBoolean()
-        uploadByAdminsOnly = `in`.getBoolean()
+    internal constructor(parcel: Parcel) {
+        title = parcel.readString()
+        description = parcel.readString()
+        privacyView = parcel.readTypedObjectCompat(Privacy.CREATOR)
+        privacyComment = parcel.readTypedObjectCompat(Privacy.CREATOR)
+        commentsDisabled = parcel.getBoolean()
+        uploadByAdminsOnly = parcel.getBoolean()
     }
 
     fun getTitle(): String? {
@@ -96,8 +96,8 @@ class PhotoAlbumEditor : Parcelable {
         @JvmField
         val CREATOR: Parcelable.Creator<PhotoAlbumEditor> =
             object : Parcelable.Creator<PhotoAlbumEditor> {
-                override fun createFromParcel(`in`: Parcel): PhotoAlbumEditor {
-                    return PhotoAlbumEditor(`in`)
+                override fun createFromParcel(parcel: Parcel): PhotoAlbumEditor {
+                    return PhotoAlbumEditor(parcel)
                 }
 
                 override fun newArray(size: Int): Array<PhotoAlbumEditor?> {

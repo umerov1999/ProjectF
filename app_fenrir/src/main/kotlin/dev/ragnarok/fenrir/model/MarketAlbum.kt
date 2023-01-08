@@ -19,14 +19,14 @@ class MarketAlbum : AbsModel {
         this.owner_id = owner_id
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        owner_id = `in`.readInt()
-        access_key = `in`.readString()
-        count = `in`.readInt()
-        updated_time = `in`.readLong()
-        title = `in`.readString()
-        photo = `in`.readTypedObjectCompat(Photo.CREATOR)
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        owner_id = parcel.readInt()
+        access_key = parcel.readString()
+        count = parcel.readInt()
+        updated_time = parcel.readLong()
+        title = parcel.readString()
+        photo = parcel.readTypedObjectCompat(Photo.CREATOR)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

@@ -20,7 +20,7 @@ class AudioSearchCriteria : BaseSearchCriteria {
         appendOption(SimpleBooleanOption(KEY_SEARCH_WITH_LYRICS, R.string.with_lyrics, true))
     }
 
-    internal constructor(`in`: Parcel) : super(`in`)
+    internal constructor(parcel: Parcel) : super(parcel)
 
     @Throws(CloneNotSupportedException::class)
     public override fun clone(): AudioSearchCriteria {
@@ -37,8 +37,8 @@ class AudioSearchCriteria : BaseSearchCriteria {
         @JvmField
         val CREATOR: Parcelable.Creator<AudioSearchCriteria> =
             object : Parcelable.Creator<AudioSearchCriteria> {
-                override fun createFromParcel(`in`: Parcel): AudioSearchCriteria {
-                    return AudioSearchCriteria(`in`)
+                override fun createFromParcel(parcel: Parcel): AudioSearchCriteria {
+                    return AudioSearchCriteria(parcel)
                 }
 
                 override fun newArray(size: Int): Array<AudioSearchCriteria?> {

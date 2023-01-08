@@ -141,8 +141,8 @@ class PeopleSearchCriteria : BaseSearchCriteria {
         appendOption(fromListOption)
     }
 
-    internal constructor(`in`: Parcel) : super(`in`) {
-        groupId = readObjectInteger(`in`)
+    internal constructor(parcel: Parcel) : super(parcel) {
+        groupId = readObjectInteger(parcel)
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -202,8 +202,8 @@ class PeopleSearchCriteria : BaseSearchCriteria {
         @JvmField
         val CREATOR: Parcelable.Creator<PeopleSearchCriteria> =
             object : Parcelable.Creator<PeopleSearchCriteria> {
-                override fun createFromParcel(`in`: Parcel): PeopleSearchCriteria {
-                    return PeopleSearchCriteria(`in`)
+                override fun createFromParcel(parcel: Parcel): PeopleSearchCriteria {
+                    return PeopleSearchCriteria(parcel)
                 }
 
                 override fun newArray(size: Int): Array<PeopleSearchCriteria?> {

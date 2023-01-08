@@ -17,19 +17,19 @@ open class BaseSearchCriteria : Parcelable, Cloneable {
         options = ArrayList(optionsCount)
     }
 
-    protected constructor(`in`: Parcel) {
-        query = `in`.readString()
-        val optionsSize = `in`.readInt()
+    protected constructor(parcel: Parcel) {
+        query = parcel.readString()
+        val optionsSize = parcel.readInt()
         options = ArrayList(optionsSize)
         for (i in 0 until optionsSize) {
-            when (`in`.readInt()) {
-                BaseOption.DATABASE -> `in`.readTypedObjectCompat(DatabaseOption.CREATOR)
-                BaseOption.SIMPLE_BOOLEAN -> `in`.readTypedObjectCompat(SimpleBooleanOption.CREATOR)
-                BaseOption.SIMPLE_TEXT -> `in`.readTypedObjectCompat(SimpleTextOption.CREATOR)
-                BaseOption.SIMPLE_NUMBER -> `in`.readTypedObjectCompat(SimpleNumberOption.CREATOR)
-                BaseOption.SPINNER -> `in`.readTypedObjectCompat(SpinnerOption.CREATOR)
-                BaseOption.GPS -> `in`.readTypedObjectCompat(SimpleGPSOption.CREATOR)
-                BaseOption.DATE_TIME -> `in`.readTypedObjectCompat(SimpleDateOption.CREATOR)
+            when (parcel.readInt()) {
+                BaseOption.DATABASE -> parcel.readTypedObjectCompat(DatabaseOption.CREATOR)
+                BaseOption.SIMPLE_BOOLEAN -> parcel.readTypedObjectCompat(SimpleBooleanOption.CREATOR)
+                BaseOption.SIMPLE_TEXT -> parcel.readTypedObjectCompat(SimpleTextOption.CREATOR)
+                BaseOption.SIMPLE_NUMBER -> parcel.readTypedObjectCompat(SimpleNumberOption.CREATOR)
+                BaseOption.SPINNER -> parcel.readTypedObjectCompat(SpinnerOption.CREATOR)
+                BaseOption.GPS -> parcel.readTypedObjectCompat(SimpleGPSOption.CREATOR)
+                BaseOption.DATE_TIME -> parcel.readTypedObjectCompat(SimpleDateOption.CREATOR)
                 else -> throw IllegalArgumentException("Unknown option type !!!")
             }?.let { options.add(it) }
         }

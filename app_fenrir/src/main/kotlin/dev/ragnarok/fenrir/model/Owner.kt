@@ -15,12 +15,12 @@ sealed class Owner : AbsModel, ParcelNative.ParcelableNative {
         this.ownerType = ownerType
     }
 
-    constructor(`in`: Parcel) {
-        ownerType = `in`.readInt()
+    constructor(parcel: Parcel) {
+        ownerType = parcel.readInt()
     }
 
-    constructor(`in`: ParcelNative) {
-        ownerType = `in`.readInt()
+    constructor(parcel: ParcelNative) {
+        ownerType = parcel.readInt()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -70,15 +70,15 @@ sealed class Owner : AbsModel, ParcelNative.ParcelableNative {
         }
 
     companion object {
-        fun readOwnerFromParcel(`in`: Parcel): Owner? {
-            val ownerType = `in`.readInt()
-            return if (ownerType == OwnerType.COMMUNITY) `in`.readTypedObjectCompat(Community.CREATOR) else `in`.readTypedObjectCompat(
+        fun readOwnerFromParcel(parcel: Parcel): Owner? {
+            val ownerType = parcel.readInt()
+            return if (ownerType == OwnerType.COMMUNITY) parcel.readTypedObjectCompat(Community.CREATOR) else parcel.readTypedObjectCompat(
                 User.CREATOR
             )
         }
 
-        fun readOwnerFromParcel(id: Int, `in`: Parcel): Owner? {
-            return if (id <= 0) `in`.readTypedObjectCompat(Community.CREATOR) else `in`.readTypedObjectCompat(
+        fun readOwnerFromParcel(id: Int, parcel: Parcel): Owner? {
+            return if (id <= 0) parcel.readTypedObjectCompat(Community.CREATOR) else parcel.readTypedObjectCompat(
                 User.CREATOR
             )
         }

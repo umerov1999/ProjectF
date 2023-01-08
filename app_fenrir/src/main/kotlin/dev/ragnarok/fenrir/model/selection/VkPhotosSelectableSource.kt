@@ -16,9 +16,9 @@ class VkPhotosSelectableSource : AbsSelectableSource {
         this.ownerId = ownerId
     }
 
-    internal constructor(`in`: Parcel) : super(`in`) {
-        accountId = `in`.readInt()
-        ownerId = `in`.readInt()
+    internal constructor(parcel: Parcel) : super(parcel) {
+        accountId = parcel.readInt()
+        ownerId = parcel.readInt()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

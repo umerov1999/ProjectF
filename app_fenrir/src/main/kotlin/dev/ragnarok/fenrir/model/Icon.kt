@@ -16,9 +16,9 @@ class Icon : Parcelable {
         this.url = url
     }
 
-    internal constructor(`in`: Parcel) {
-        res = readObjectInteger(`in`)
-        url = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        res = readObjectInteger(parcel)
+        url = parcel.readString()
     }
 
     val isRemote: Boolean
@@ -36,8 +36,8 @@ class Icon : Parcelable {
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<Icon> = object : Parcelable.Creator<Icon> {
-            override fun createFromParcel(`in`: Parcel): Icon {
-                return Icon(`in`)
+            override fun createFromParcel(parcel: Parcel): Icon {
+                return Icon(parcel)
             }
 
             override fun newArray(size: Int): Array<Icon?> {

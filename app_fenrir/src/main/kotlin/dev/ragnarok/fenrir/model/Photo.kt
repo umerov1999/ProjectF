@@ -52,48 +52,48 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         private set
 
     constructor()
-    internal constructor(`in`: ParcelNative) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        albumId = `in`.readInt()
-        width = `in`.readInt()
-        height = `in`.readInt()
-        sizes = `in`.readParcelable(PhotoSizes.NativeCreator)
-        text = `in`.readString()
-        date = `in`.readLong()
-        isUserLikes = `in`.readBoolean()
-        isCanComment = `in`.readBoolean()
-        likesCount = `in`.readInt()
-        commentsCount = `in`.readInt()
-        tagsCount = `in`.readInt()
-        accessKey = `in`.readString()
-        isDeleted = `in`.readBoolean()
-        postId = `in`.readInt()
-        repostsCount = `in`.readInt()
-        msgId = `in`.readInt()
-        msgPeerId = `in`.readInt()
+    internal constructor(parcel: ParcelNative) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        albumId = parcel.readInt()
+        width = parcel.readInt()
+        height = parcel.readInt()
+        sizes = parcel.readParcelable(PhotoSizes.NativeCreator)
+        text = parcel.readString()
+        date = parcel.readLong()
+        isUserLikes = parcel.readBoolean()
+        isCanComment = parcel.readBoolean()
+        likesCount = parcel.readInt()
+        commentsCount = parcel.readInt()
+        tagsCount = parcel.readInt()
+        accessKey = parcel.readString()
+        isDeleted = parcel.readBoolean()
+        postId = parcel.readInt()
+        repostsCount = parcel.readInt()
+        msgId = parcel.readInt()
+        msgPeerId = parcel.readInt()
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        albumId = `in`.readInt()
-        width = `in`.readInt()
-        height = `in`.readInt()
-        sizes = `in`.readTypedObjectCompat(PhotoSizes.CREATOR)
-        text = `in`.readString()
-        date = `in`.readLong()
-        isUserLikes = `in`.getBoolean()
-        isCanComment = `in`.getBoolean()
-        likesCount = `in`.readInt()
-        commentsCount = `in`.readInt()
-        tagsCount = `in`.readInt()
-        accessKey = `in`.readString()
-        isDeleted = `in`.getBoolean()
-        postId = `in`.readInt()
-        repostsCount = `in`.readInt()
-        msgId = `in`.readInt()
-        msgPeerId = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        albumId = parcel.readInt()
+        width = parcel.readInt()
+        height = parcel.readInt()
+        sizes = parcel.readTypedObjectCompat(PhotoSizes.CREATOR)
+        text = parcel.readString()
+        date = parcel.readLong()
+        isUserLikes = parcel.getBoolean()
+        isCanComment = parcel.getBoolean()
+        likesCount = parcel.readInt()
+        commentsCount = parcel.readInt()
+        tagsCount = parcel.readInt()
+        accessKey = parcel.readString()
+        isDeleted = parcel.getBoolean()
+        postId = parcel.readInt()
+        repostsCount = parcel.readInt()
+        msgId = parcel.readInt()
+        msgPeerId = parcel.readInt()
     }
 
     @AbsModelType
@@ -272,8 +272,8 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<Photo> = object : Parcelable.Creator<Photo> {
-            override fun createFromParcel(`in`: Parcel): Photo {
-                return Photo(`in`)
+            override fun createFromParcel(parcel: Parcel): Photo {
+                return Photo(parcel)
             }
 
             override fun newArray(size: Int): Array<Photo?> {

@@ -53,15 +53,15 @@ class ExchangeMessage : Parcelable {
         keyLocationPolicy = builder.keyLocationPolicy
     }
 
-    internal constructor(`in`: Parcel) {
-        version = `in`.readInt()
-        sessionId = `in`.readLong()
-        publicKey = `in`.readString()
-        aesKey = `in`.readString()
-        @SessionState val s = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        version = parcel.readInt()
+        sessionId = parcel.readLong()
+        publicKey = parcel.readString()
+        aesKey = parcel.readString()
+        @SessionState val s = parcel.readInt()
         senderSessionState = s
-        errorCode = `in`.readInt()
-        @KeyLocationPolicy val klp = readObjectInteger(`in`)
+        errorCode = parcel.readInt()
+        @KeyLocationPolicy val klp = readObjectInteger(parcel)
         keyLocationPolicy = klp
     }
 

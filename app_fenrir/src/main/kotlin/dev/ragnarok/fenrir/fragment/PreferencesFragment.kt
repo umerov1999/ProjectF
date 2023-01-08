@@ -1005,8 +1005,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.chat_background
                 getString()?.let { enableChatPhotoBackground(it.toInt()) }
                 onSelectionChange {
-                    val `val` = it
-                    val index = `val`.toInt()
+                    val index = it.toInt()
                     enableChatPhotoBackground(index)
                 }
             }

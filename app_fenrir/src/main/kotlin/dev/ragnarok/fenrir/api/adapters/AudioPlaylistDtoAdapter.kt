@@ -31,8 +31,8 @@ class AudioPlaylistDtoAdapter : AbsAdapter<VKApiAudioPlaylist>("VKApiAudioPlayli
                     continue
                 }
                 if (isFirst) isFirst = false else build.append(", ")
-                val `val` = optString(i.asJsonObject, "name")
-                if (`val` != null) build.append(`val`)
+                val value = optString(i.asJsonObject, "name")
+                if (value != null) build.append(value)
             }
             album.genre = build.toString()
         }

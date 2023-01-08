@@ -20,10 +20,10 @@ class Manager : Parcelable {
         this.role = role
     }
 
-    internal constructor(`in`: Parcel) {
-        user = `in`.readTypedObjectCompat(User.CREATOR)
-        isDisplayAsContact = `in`.getBoolean()
-        role = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        user = parcel.readTypedObjectCompat(User.CREATOR)
+        isDisplayAsContact = parcel.getBoolean()
+        role = parcel.readString()
     }
 
     fun setContactInfo(contactInfo: ContactInfo?): Manager {

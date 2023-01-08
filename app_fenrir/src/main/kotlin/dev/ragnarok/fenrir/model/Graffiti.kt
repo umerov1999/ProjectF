@@ -18,13 +18,13 @@ class Graffiti : AbsModel {
         private set
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        owner_id = `in`.readInt()
-        url = `in`.readString()
-        width = `in`.readInt()
-        height = `in`.readInt()
-        access_key = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        owner_id = parcel.readInt()
+        url = parcel.readString()
+        width = parcel.readInt()
+        height = parcel.readInt()
+        access_key = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

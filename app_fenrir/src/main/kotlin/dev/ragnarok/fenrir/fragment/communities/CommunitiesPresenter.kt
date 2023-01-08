@@ -375,12 +375,12 @@ class CommunitiesPresenter(accountId: Int, private val userId: Int, savedInstanc
                 ?.contains(lower) == true
         }
 
-        internal fun exist(data: DataWrapper<Community>?, `in`: Community?): Boolean {
-            if (data == null || `in` == null) {
+        internal fun exist(data: DataWrapper<Community>?, community: Community?): Boolean {
+            if (data == null || community == null) {
                 return false
             }
             for (i in 0 until data.size()) {
-                if (data.get()[i].ownerId == `in`.ownerId) {
+                if (data.get()[i].ownerId == community.ownerId) {
                     return true
                 }
             }

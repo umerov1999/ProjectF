@@ -29,26 +29,26 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
     private var isLocal = false
 
     constructor()
-    internal constructor(`in`: ParcelNative) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        photo_url = `in`.readString()
-        preview_url = `in`.readString()
-        text = `in`.readString()
-        date = `in`.readLong()
-        isLocal = `in`.readBoolean()
-        isGif = `in`.readBoolean()
+    internal constructor(parcel: ParcelNative) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        photo_url = parcel.readString()
+        preview_url = parcel.readString()
+        text = parcel.readString()
+        date = parcel.readLong()
+        isLocal = parcel.readBoolean()
+        isGif = parcel.readBoolean()
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        photo_url = `in`.readString()
-        preview_url = `in`.readString()
-        text = `in`.readString()
-        date = `in`.readLong()
-        isLocal = `in`.getBoolean()
-        isGif = `in`.getBoolean()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        photo_url = parcel.readString()
+        preview_url = parcel.readString()
+        text = parcel.readString()
+        date = parcel.readLong()
+        isLocal = parcel.getBoolean()
+        isGif = parcel.getBoolean()
     }
 
     fun setGif(gif: Boolean): Photo {
@@ -137,8 +137,8 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<Photo> = object : Parcelable.Creator<Photo> {
-            override fun createFromParcel(`in`: Parcel): Photo {
-                return Photo(`in`)
+            override fun createFromParcel(parcel: Parcel): Photo {
+                return Photo(parcel)
             }
 
             override fun newArray(size: Int): Array<Photo?> {

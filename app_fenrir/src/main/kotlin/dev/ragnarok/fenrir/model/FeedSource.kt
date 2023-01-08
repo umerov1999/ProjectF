@@ -28,11 +28,11 @@ class FeedSource : Entry, Parcelable {
         this.custom = custom
     }
 
-    internal constructor(`in`: Parcel) {
-        value = `in`.readString()
-        title = `in`.readTypedObjectCompat(Text.CREATOR)
-        active = `in`.getBoolean()
-        custom = `in`.getBoolean()
+    internal constructor(parcel: Parcel) {
+        value = parcel.readString()
+        title = parcel.readTypedObjectCompat(Text.CREATOR)
+        active = parcel.getBoolean()
+        custom = parcel.getBoolean()
     }
 
     fun getValue(): String? {

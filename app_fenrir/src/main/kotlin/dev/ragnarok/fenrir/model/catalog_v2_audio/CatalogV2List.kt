@@ -81,8 +81,8 @@ class CatalogV2List : Parcelable {
             @JvmField
             val CREATOR: Parcelable.Creator<CatalogV2ListItem> =
                 object : Parcelable.Creator<CatalogV2ListItem> {
-                    override fun createFromParcel(`in`: Parcel): CatalogV2ListItem {
-                        return CatalogV2ListItem(`in`)
+                    override fun createFromParcel(parcel: Parcel): CatalogV2ListItem {
+                        return CatalogV2ListItem(parcel)
                     }
 
                     override fun newArray(size: Int): Array<CatalogV2ListItem?> {

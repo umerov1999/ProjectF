@@ -12,9 +12,9 @@ class Token : Parcelable {
         this.accessToken = accessToken
     }
 
-    internal constructor(`in`: Parcel) {
-        ownerId = `in`.readInt()
-        accessToken = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        ownerId = parcel.readInt()
+        accessToken = parcel.readString()
     }
 
     override fun describeContents(): Int {

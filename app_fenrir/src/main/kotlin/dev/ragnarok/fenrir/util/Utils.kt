@@ -1211,8 +1211,8 @@ object Utils {
     }
 
 
-    fun safeObjectCall(`object`: Any?, function: SafeCallInt) {
-        if (`object` != null) {
+    fun safeObjectCall(obj: Any?, function: SafeCallInt) {
+        if (obj != null) {
             function.call()
         }
     }

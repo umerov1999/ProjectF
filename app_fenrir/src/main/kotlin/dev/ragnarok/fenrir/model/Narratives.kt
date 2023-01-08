@@ -20,11 +20,11 @@ class Narratives : Parcelable {
         this.owner_id = owner_id
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        owner_id = `in`.readInt()
-        title = `in`.readString()
-        cover = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        owner_id = parcel.readInt()
+        title = parcel.readString()
+        cover = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, i: Int) {

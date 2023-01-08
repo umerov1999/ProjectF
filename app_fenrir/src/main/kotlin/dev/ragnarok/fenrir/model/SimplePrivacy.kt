@@ -15,14 +15,14 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
         this.entries = entries
     }
 
-    internal constructor(`in`: Parcel) {
-        type = `in`.readString()
-        entries = `in`.createTypedArrayList(Entry.CREATOR)
+    internal constructor(parcel: Parcel) {
+        type = parcel.readString()
+        entries = parcel.createTypedArrayList(Entry.CREATOR)
     }
 
-    internal constructor(`in`: ParcelNative) {
-        type = `in`.readString()
-        entries = `in`.readParcelableList(Entry.NativeCreator)
+    internal constructor(parcel: ParcelNative) {
+        type = parcel.readString()
+        entries = parcel.readParcelableList(Entry.NativeCreator)
     }
 
     fun getType(): String? {
@@ -58,16 +58,16 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
             this.allowed = allowed
         }
 
-        internal constructor(`in`: Parcel) {
-            type = `in`.readInt()
-            id = `in`.readInt()
-            allowed = `in`.getBoolean()
+        internal constructor(parcel: Parcel) {
+            type = parcel.readInt()
+            id = parcel.readInt()
+            allowed = parcel.getBoolean()
         }
 
-        internal constructor(`in`: ParcelNative) {
-            type = `in`.readInt()
-            id = `in`.readInt()
-            allowed = `in`.readBoolean()
+        internal constructor(parcel: ParcelNative) {
+            type = parcel.readInt()
+            id = parcel.readInt()
+            allowed = parcel.readBoolean()
         }
 
         fun getType(): Int {
@@ -118,8 +118,8 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
 
             @JvmField
             val CREATOR: Parcelable.Creator<Entry> = object : Parcelable.Creator<Entry> {
-                override fun createFromParcel(`in`: Parcel): Entry {
-                    return Entry(`in`)
+                override fun createFromParcel(parcel: Parcel): Entry {
+                    return Entry(parcel)
                 }
 
                 override fun newArray(size: Int): Array<Entry?> {
@@ -140,8 +140,8 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
         @JvmField
         val CREATOR: Parcelable.Creator<SimplePrivacy> =
             object : Parcelable.Creator<SimplePrivacy> {
-                override fun createFromParcel(`in`: Parcel): SimplePrivacy {
-                    return SimplePrivacy(`in`)
+                override fun createFromParcel(parcel: Parcel): SimplePrivacy {
+                    return SimplePrivacy(parcel)
                 }
 
                 override fun newArray(size: Int): Array<SimplePrivacy?> {

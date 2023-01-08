@@ -18,8 +18,8 @@ class SimpleNumberOption : BaseOption {
         this.value = value
     }
 
-    internal constructor(`in`: Parcel) : super(`in`) {
-        value = readObjectInteger(`in`)
+    internal constructor(parcel: Parcel) : super(parcel) {
+        value = readObjectInteger(parcel)
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

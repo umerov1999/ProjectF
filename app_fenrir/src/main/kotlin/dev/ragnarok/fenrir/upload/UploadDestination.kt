@@ -20,11 +20,11 @@ open class UploadDestination : Parcelable {
         messageMethod = message_method
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        method = `in`.readInt()
-        messageMethod = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        method = parcel.readInt()
+        messageMethod = parcel.readInt()
     }
 
     override fun describeContents(): Int {
@@ -77,8 +77,8 @@ open class UploadDestination : Parcelable {
         @JvmField
         val CREATOR: Parcelable.Creator<UploadDestination> =
             object : Parcelable.Creator<UploadDestination> {
-                override fun createFromParcel(`in`: Parcel): UploadDestination {
-                    return UploadDestination(`in`)
+                override fun createFromParcel(parcel: Parcel): UploadDestination {
+                    return UploadDestination(parcel)
                 }
 
                 override fun newArray(size: Int): Array<UploadDestination?> {

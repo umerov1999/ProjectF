@@ -51,28 +51,28 @@ class FileRemote : Parcelable, ParcelNative.ParcelableNative {
 
     @Suppress("UNUSED")
     constructor()
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        owner_Id = `in`.readInt()
-        file_name = `in`.readString()
-        type = `in`.readInt()
-        modification_time = `in`.readLong()
-        size = `in`.readLong()
-        url = `in`.readString()
-        preview_url = `in`.readString()
-        isSelected = `in`.getBoolean()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        owner_Id = parcel.readInt()
+        file_name = parcel.readString()
+        type = parcel.readInt()
+        modification_time = parcel.readLong()
+        size = parcel.readLong()
+        url = parcel.readString()
+        preview_url = parcel.readString()
+        isSelected = parcel.getBoolean()
     }
 
-    internal constructor(`in`: ParcelNative) {
-        id = `in`.readInt()
-        owner_Id = `in`.readInt()
-        file_name = `in`.readString()
-        type = `in`.readInt()
-        modification_time = `in`.readLong()
-        size = `in`.readLong()
-        url = `in`.readString()
-        preview_url = `in`.readString()
-        isSelected = `in`.readBoolean()
+    internal constructor(parcel: ParcelNative) {
+        id = parcel.readInt()
+        owner_Id = parcel.readInt()
+        file_name = parcel.readString()
+        type = parcel.readInt()
+        modification_time = parcel.readLong()
+        size = parcel.readLong()
+        url = parcel.readString()
+        preview_url = parcel.readString()
+        isSelected = parcel.readBoolean()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -151,8 +151,8 @@ class FileRemote : Parcelable, ParcelNative.ParcelableNative {
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<FileRemote> = object : Parcelable.Creator<FileRemote> {
-            override fun createFromParcel(`in`: Parcel): FileRemote {
-                return FileRemote(`in`)
+            override fun createFromParcel(parcel: Parcel): FileRemote {
+                return FileRemote(parcel)
             }
 
             override fun newArray(size: Int): Array<FileRemote?> {

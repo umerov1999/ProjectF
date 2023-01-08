@@ -30,16 +30,16 @@ class Article : AbsModel {
         ownerId = owner_id
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        ownerName = `in`.readString()
-        uRL = `in`.readString()
-        title = `in`.readString()
-        subTitle = `in`.readString()
-        accessKey = `in`.readString()
-        photo = `in`.readTypedObjectCompat(Photo.CREATOR)
-        isFavorite = `in`.getBoolean()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        ownerName = parcel.readString()
+        uRL = parcel.readString()
+        title = parcel.readString()
+        subTitle = parcel.readString()
+        accessKey = parcel.readString()
+        photo = parcel.readTypedObjectCompat(Photo.CREATOR)
+        isFavorite = parcel.getBoolean()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

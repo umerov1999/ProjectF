@@ -28,14 +28,14 @@ class ContactConversation : Parcelable {
         this.id = id
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        title = `in`.readString()
-        isContact = `in`.getBoolean()
-        photo = `in`.readString()
-        phone = `in`.readString()
-        lastSeen = `in`.readLong()
-        last_seen_status = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        title = parcel.readString()
+        isContact = parcel.getBoolean()
+        photo = parcel.readString()
+        phone = parcel.readString()
+        lastSeen = parcel.readLong()
+        last_seen_status = parcel.readString()
     }
 
     fun setIsContact(value: Boolean): ContactConversation {

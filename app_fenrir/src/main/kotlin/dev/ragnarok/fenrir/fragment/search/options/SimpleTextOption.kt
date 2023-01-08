@@ -7,8 +7,8 @@ class SimpleTextOption : BaseOption {
     var value: String? = null
 
     constructor(key: Int, title: Int, active: Boolean) : super(SIMPLE_TEXT, key, title, active)
-    internal constructor(`in`: Parcel) : super(`in`) {
-        value = `in`.readString()
+    internal constructor(parcel: Parcel) : super(parcel) {
+        value = parcel.readString()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

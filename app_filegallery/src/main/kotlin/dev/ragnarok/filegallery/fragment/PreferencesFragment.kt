@@ -753,10 +753,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                             File("/")
                         }
                     val ou = StringBuilder()
-                    ou.append("mkdir mnt/media")
-                    ou.append("\r\n")
-                    ou.append("mkdir mnt/media/0")
-                    ou.append("\r\n")
+                    ou.append("mkdir mnt/media\r\n")
+                    ou.append("mkdir mnt/media/0\r\n")
+                    var countCopy = 0
                     path.list(FilenameFilter { dir: File, filename: String ->
                         val sel = File(dir, filename)
                         if (sel.absolutePath == File(
@@ -805,10 +804,11 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         ) {
                             return@FilenameFilter false
                         }
-                        ou.append("adb pull -a \"/storage/emulated/0/${filename}\" \"mnt/media/0/${filename}\" > \"${filename}.txt\"")
-                        ou.append("\r\n")
+                        countCopy++
+                        ou.append("adb pull -a \"/storage/emulated/0/${filename}\" \"mnt/media/0/${filename}\" > \"${filename}.txt\"\r\n")
                         true
                     })
+                    ou.append("\r\n-------Total $countCopy members-------\r\n")
                     var out: FileOutputStream? = null
                     try {
                         val file = File(Environment.getExternalStorageDirectory(), "to_adb.sh")

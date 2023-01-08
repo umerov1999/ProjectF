@@ -14,9 +14,9 @@ class WallEditorAttrs : Parcelable {
         this.editor = ParcelableOwnerWrapper(editor)
     }
 
-    internal constructor(`in`: Parcel) {
-        owner = `in`.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
-        editor = `in`.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
+    internal constructor(parcel: Parcel) {
+        owner = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
+        editor = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
     }
 
     fun getOwner(): Owner {

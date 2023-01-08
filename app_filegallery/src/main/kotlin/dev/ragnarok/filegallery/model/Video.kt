@@ -30,28 +30,28 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
         private set
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        title = `in`.readString()
-        description = `in`.readString()
-        link = `in`.readString()
-        date = `in`.readLong()
-        image = `in`.readString()
-        isRepeat = `in`.getBoolean()
-        duration = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        title = parcel.readString()
+        description = parcel.readString()
+        link = parcel.readString()
+        date = parcel.readLong()
+        image = parcel.readString()
+        isRepeat = parcel.getBoolean()
+        duration = parcel.readInt()
     }
 
-    internal constructor(`in`: ParcelNative) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        title = `in`.readString()
-        description = `in`.readString()
-        link = `in`.readString()
-        date = `in`.readLong()
-        image = `in`.readString()
-        isRepeat = `in`.readBoolean()
-        duration = `in`.readInt()
+    internal constructor(parcel: ParcelNative) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        title = parcel.readString()
+        description = parcel.readString()
+        link = parcel.readString()
+        date = parcel.readLong()
+        image = parcel.readString()
+        isRepeat = parcel.readBoolean()
+        duration = parcel.readInt()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -130,8 +130,8 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<Video> = object : Parcelable.Creator<Video> {
-            override fun createFromParcel(`in`: Parcel): Video {
-                return Video(`in`)
+            override fun createFromParcel(parcel: Parcel): Video {
+                return Video(parcel)
             }
 
             override fun newArray(size: Int): Array<Video?> {

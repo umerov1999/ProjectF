@@ -24,12 +24,12 @@ class Privacy : Parcelable, Cloneable {
         disallowedLists = ArrayList()
     }
 
-    internal constructor(`in`: Parcel) {
-        type = `in`.readString()!!
-        allowedUsers = `in`.createTypedArrayList(User.CREATOR)!!
-        disallowedUsers = `in`.createTypedArrayList(User.CREATOR)!!
-        allowedLists = `in`.createTypedArrayList(FriendList.CREATOR)!!
-        disallowedLists = `in`.createTypedArrayList(FriendList.CREATOR)!!
+    internal constructor(parcel: Parcel) {
+        type = parcel.readString()!!
+        allowedUsers = parcel.createTypedArrayList(User.CREATOR)!!
+        disallowedUsers = parcel.createTypedArrayList(User.CREATOR)!!
+        allowedLists = parcel.createTypedArrayList(FriendList.CREATOR)!!
+        disallowedLists = parcel.createTypedArrayList(FriendList.CREATOR)!!
     }
 
     override fun describeContents(): Int {

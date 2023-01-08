@@ -16,10 +16,10 @@ open class SectionMenuItem : AbsMenuItem {
         this.title = title
     }
 
-    protected constructor(`in`: Parcel) : super(`in`) {
-        section = `in`.readInt()
-        title = `in`.readInt()
-        count = `in`.readInt()
+    protected constructor(parcel: Parcel) : super(parcel) {
+        section = parcel.readInt()
+        title = parcel.readInt()
+        count = parcel.readInt()
     }
 
     override fun hashCode(): Int {

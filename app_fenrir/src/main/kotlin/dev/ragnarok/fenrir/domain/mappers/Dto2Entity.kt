@@ -1036,6 +1036,7 @@ object Dto2Entity {
             .setCreatedBy(dto.created_by)
             .setCanPin(dto.can_pin)
             .setPinned(dto.is_pinned)
+            .setIsDonut(dto.is_donut)
             .setDeleted(false) // cant be deleted
             .setViews(dto.views)
             .setCopyright(dto.copyright?.let { PostDboEntity.CopyrightDboEntity(it.name, it.link) })

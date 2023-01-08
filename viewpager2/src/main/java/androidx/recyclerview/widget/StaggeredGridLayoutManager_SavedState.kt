@@ -23,24 +23,24 @@ class StaggeredGridLayoutManager_SavedState : Parcelable {
     var mLastLayoutRTL = false
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        mAnchorPosition = `in`.readInt()
-        mVisibleAnchorPosition = `in`.readInt()
-        mSpanOffsetsSize = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        mAnchorPosition = parcel.readInt()
+        mVisibleAnchorPosition = parcel.readInt()
+        mSpanOffsetsSize = parcel.readInt()
         if (mSpanOffsetsSize > 0) {
             mSpanOffsets = IntArray(mSpanOffsetsSize)
-            `in`.readIntArray(mSpanOffsets!!)
+            parcel.readIntArray(mSpanOffsets!!)
         }
-        mSpanLookupSize = `in`.readInt()
+        mSpanLookupSize = parcel.readInt()
         if (mSpanLookupSize > 0) {
             mSpanLookup = IntArray(mSpanLookupSize)
-            `in`.readIntArray(mSpanLookup!!)
+            parcel.readIntArray(mSpanLookup!!)
         }
-        mReverseLayout = `in`.readInt() != 0
-        mAnchorLayoutFromEnd = `in`.readInt() != 0
-        mLastLayoutRTL = `in`.readInt() != 0
+        mReverseLayout = parcel.readInt() != 0
+        mAnchorLayoutFromEnd = parcel.readInt() != 0
+        mLastLayoutRTL = parcel.readInt() != 0
         val fullSpanItems: ArrayList<FullSpanItem>? =
-            `in`.createTypedArrayList(FullSpanItem.CREATOR)
+            parcel.createTypedArrayList(FullSpanItem.CREATOR)
         mFullSpanItems = fullSpanItems
     }
 
@@ -97,8 +97,8 @@ class StaggeredGridLayoutManager_SavedState : Parcelable {
         @JvmField
         val CREATOR: Parcelable.Creator<StaggeredGridLayoutManager_SavedState> =
             object : Parcelable.Creator<StaggeredGridLayoutManager_SavedState> {
-                override fun createFromParcel(`in`: Parcel): StaggeredGridLayoutManager_SavedState {
-                    return StaggeredGridLayoutManager_SavedState(`in`)
+                override fun createFromParcel(parcel: Parcel): StaggeredGridLayoutManager_SavedState {
+                    return StaggeredGridLayoutManager_SavedState(parcel)
                 }
 
                 override fun newArray(size: Int): Array<StaggeredGridLayoutManager_SavedState?> {
@@ -122,14 +122,14 @@ class FullSpanItem : Parcelable {
     // view is still on the screen after scroll stops, we have to recalculate layout
     var mHasUnwantedGapAfter = false
 
-    constructor(`in`: Parcel) {
-        mPosition = `in`.readInt()
-        mGapDir = `in`.readInt()
-        mHasUnwantedGapAfter = `in`.readInt() != 0
-        val spanCount = `in`.readInt()
+    constructor(parcel: Parcel) {
+        mPosition = parcel.readInt()
+        mGapDir = parcel.readInt()
+        mHasUnwantedGapAfter = parcel.readInt() != 0
+        val spanCount = parcel.readInt()
         if (spanCount > 0) {
             mGapPerSpan = IntArray(spanCount)
-            `in`.readIntArray(mGapPerSpan!!)
+            parcel.readIntArray(mGapPerSpan!!)
         }
     }
 
@@ -169,8 +169,8 @@ class FullSpanItem : Parcelable {
         @JvmField
         val CREATOR: Parcelable.Creator<FullSpanItem> =
             object : Parcelable.Creator<FullSpanItem> {
-                override fun createFromParcel(`in`: Parcel): FullSpanItem {
-                    return FullSpanItem(`in`)
+                override fun createFromParcel(parcel: Parcel): FullSpanItem {
+                    return FullSpanItem(parcel)
                 }
 
                 override fun newArray(size: Int): Array<FullSpanItem?> {

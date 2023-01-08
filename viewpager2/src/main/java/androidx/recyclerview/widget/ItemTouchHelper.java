@@ -347,6 +347,12 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
         mOverdrawChildPosition = -1;
         releaseVelocityTracker();
         stopGestureDetection();
+    }
+
+    private void startGestureDetection() {
+        mItemTouchHelperGestureListener = new ItemTouchHelperGestureListener();
+        mGestureDetector = new GestureDetectorCompat(mRecyclerView.getContext(),
+                mItemTouchHelperGestureListener);
     }    /**
      * When user drags a view to the edge, we start scrolling the LayoutManager as long as View
      * is partially out of bounds.
@@ -364,12 +370,6 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
             }
         }
     };
-
-    private void startGestureDetection() {
-        mItemTouchHelperGestureListener = new ItemTouchHelperGestureListener();
-        mGestureDetector = new GestureDetectorCompat(mRecyclerView.getContext(),
-                mItemTouchHelperGestureListener);
-    }
 
     private void stopGestureDetection() {
         if (mItemTouchHelperGestureListener != null) {
@@ -1028,6 +1028,74 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
             }
         }
         return null;
+    }
+
+    @SuppressWarnings("WeakerAccess") /* synthetic access */
+    void updateDxDy(MotionEvent ev, int directionFlags, int pointerIndex) {
+        float x = ev.getX(pointerIndex);
+        float y = ev.getY(pointerIndex);
+
+        // Calculate the distance moved
+        mDx = x - mInitialTouchX;
+        mDy = y - mInitialTouchY;
+        if ((directionFlags & LEFT) == 0) {
+            mDx = Math.max(0, mDx);
+        }
+        if ((directionFlags & RIGHT) == 0) {
+            mDx = Math.min(0, mDx);
+        }
+        if ((directionFlags & UP) == 0) {
+            mDy = Math.max(0, mDy);
+        }
+        if ((directionFlags & DOWN) == 0) {
+            mDy = Math.min(0, mDy);
+        }
+    }
+
+    private int swipeIfNecessary(ViewHolder viewHolder) {
+        if (mActionState == ACTION_STATE_DRAG) {
+            return 0;
+        }
+        int originalMovementFlags = mCallback.getMovementFlags(mRecyclerView, viewHolder);
+        int absoluteMovementFlags = mCallback.convertToAbsoluteDirection(
+                originalMovementFlags,
+                ViewCompat.getLayoutDirection(mRecyclerView));
+        int flags = (absoluteMovementFlags
+                & ACTION_MODE_SWIPE_MASK) >> (ACTION_STATE_SWIPE * DIRECTION_FLAG_COUNT);
+        if (flags == 0) {
+            return 0;
+        }
+        int originalFlags = (originalMovementFlags
+                & ACTION_MODE_SWIPE_MASK) >> (ACTION_STATE_SWIPE * DIRECTION_FLAG_COUNT);
+        int swipeDir;
+        if (Math.abs(mDx) > Math.abs(mDy)) {
+            if ((swipeDir = checkHorizontalSwipe(viewHolder, flags)) > 0) {
+                // if swipe dir is not in original flags, it should be the relative direction
+                if ((originalFlags & swipeDir) == 0) {
+                    // convert to relative
+                    return Callback.convertToRelativeDirection(swipeDir,
+                            ViewCompat.getLayoutDirection(mRecyclerView));
+                }
+                return swipeDir;
+            }
+            if ((swipeDir = checkVerticalSwipe(viewHolder, flags)) > 0) {
+                return swipeDir;
+            }
+        } else {
+            if ((swipeDir = checkVerticalSwipe(viewHolder, flags)) > 0) {
+                return swipeDir;
+            }
+            if ((swipeDir = checkHorizontalSwipe(viewHolder, flags)) > 0) {
+                // if swipe dir is not in original flags, it should be the relative direction
+                if ((originalFlags & swipeDir) == 0) {
+                    // convert to relative
+                    return Callback.convertToRelativeDirection(swipeDir,
+                            ViewCompat.getLayoutDirection(mRecyclerView));
+                }
+                return swipeDir;
+            }
+        }
+        return 0;
     }    private final OnItemTouchListener mOnItemTouchListener = new OnItemTouchListener() {
         @Override
         public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView,
@@ -1141,74 +1209,6 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
             select(null, ACTION_STATE_IDLE);
         }
     };
-
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-    void updateDxDy(MotionEvent ev, int directionFlags, int pointerIndex) {
-        float x = ev.getX(pointerIndex);
-        float y = ev.getY(pointerIndex);
-
-        // Calculate the distance moved
-        mDx = x - mInitialTouchX;
-        mDy = y - mInitialTouchY;
-        if ((directionFlags & LEFT) == 0) {
-            mDx = Math.max(0, mDx);
-        }
-        if ((directionFlags & RIGHT) == 0) {
-            mDx = Math.min(0, mDx);
-        }
-        if ((directionFlags & UP) == 0) {
-            mDy = Math.max(0, mDy);
-        }
-        if ((directionFlags & DOWN) == 0) {
-            mDy = Math.min(0, mDy);
-        }
-    }
-
-    private int swipeIfNecessary(ViewHolder viewHolder) {
-        if (mActionState == ACTION_STATE_DRAG) {
-            return 0;
-        }
-        int originalMovementFlags = mCallback.getMovementFlags(mRecyclerView, viewHolder);
-        int absoluteMovementFlags = mCallback.convertToAbsoluteDirection(
-                originalMovementFlags,
-                ViewCompat.getLayoutDirection(mRecyclerView));
-        int flags = (absoluteMovementFlags
-                & ACTION_MODE_SWIPE_MASK) >> (ACTION_STATE_SWIPE * DIRECTION_FLAG_COUNT);
-        if (flags == 0) {
-            return 0;
-        }
-        int originalFlags = (originalMovementFlags
-                & ACTION_MODE_SWIPE_MASK) >> (ACTION_STATE_SWIPE * DIRECTION_FLAG_COUNT);
-        int swipeDir;
-        if (Math.abs(mDx) > Math.abs(mDy)) {
-            if ((swipeDir = checkHorizontalSwipe(viewHolder, flags)) > 0) {
-                // if swipe dir is not in original flags, it should be the relative direction
-                if ((originalFlags & swipeDir) == 0) {
-                    // convert to relative
-                    return Callback.convertToRelativeDirection(swipeDir,
-                            ViewCompat.getLayoutDirection(mRecyclerView));
-                }
-                return swipeDir;
-            }
-            if ((swipeDir = checkVerticalSwipe(viewHolder, flags)) > 0) {
-                return swipeDir;
-            }
-        } else {
-            if ((swipeDir = checkVerticalSwipe(viewHolder, flags)) > 0) {
-                return swipeDir;
-            }
-            if ((swipeDir = checkHorizontalSwipe(viewHolder, flags)) > 0) {
-                // if swipe dir is not in original flags, it should be the relative direction
-                if ((originalFlags & swipeDir) == 0) {
-                    // convert to relative
-                    return Callback.convertToRelativeDirection(swipeDir,
-                            ViewCompat.getLayoutDirection(mRecyclerView));
-                }
-                return swipeDir;
-            }
-        }
-        return 0;
-    }
 
     private int checkHorizontalSwipe(ViewHolder viewHolder, int flags) {
         if ((flags & (LEFT | RIGHT)) != 0) {

@@ -19,12 +19,12 @@ class ChatConfig : Parcelable {
         models = ModelsBundle()
     }
 
-    internal constructor(`in`: Parcel) {
-        closeOnSend = `in`.getBoolean()
-        models = `in`.readTypedObjectCompat(ModelsBundle.CREATOR)!!
-        initialText = `in`.readString()
-        uploadFiles = `in`.createTypedArrayList(Uri.CREATOR)
-        uploadFilesMimeType = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        closeOnSend = parcel.getBoolean()
+        models = parcel.readTypedObjectCompat(ModelsBundle.CREATOR)!!
+        initialText = parcel.readString()
+        uploadFiles = parcel.createTypedArrayList(Uri.CREATOR)
+        uploadFilesMimeType = parcel.readString()
     }
 
     fun getModels(): ModelsBundle {

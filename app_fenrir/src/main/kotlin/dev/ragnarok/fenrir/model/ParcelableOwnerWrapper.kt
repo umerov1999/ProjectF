@@ -20,28 +20,28 @@ class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
         isNull = owner == null
     }
 
-    internal constructor(`in`: Parcel) {
-        type = `in`.readInt()
-        isNull = `in`.getBoolean()
+    internal constructor(parcel: Parcel) {
+        type = parcel.readInt()
+        isNull = parcel.getBoolean()
         owner = if (!isNull) {
             if (type == OwnerType.USER) {
-                `in`.readTypedObjectCompat(User.CREATOR)
+                parcel.readTypedObjectCompat(User.CREATOR)
             } else {
-                `in`.readTypedObjectCompat(Community.CREATOR)
+                parcel.readTypedObjectCompat(Community.CREATOR)
             }
         } else {
             null
         }
     }
 
-    internal constructor(`in`: ParcelNative) {
-        type = `in`.readInt()
-        isNull = `in`.readBoolean()
+    internal constructor(parcel: ParcelNative) {
+        type = parcel.readInt()
+        isNull = parcel.readBoolean()
         owner = if (!isNull) {
             if (type == OwnerType.USER) {
-                `in`.readParcelable(User.NativeCreator)
+                parcel.readParcelable(User.NativeCreator)
             } else {
-                `in`.readParcelable(Community.NativeCreator)
+                parcel.readParcelable(Community.NativeCreator)
             }
         } else {
             null
@@ -76,8 +76,8 @@ class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
         @JvmField
         val CREATOR: Parcelable.Creator<ParcelableOwnerWrapper> =
             object : Parcelable.Creator<ParcelableOwnerWrapper> {
-                override fun createFromParcel(`in`: Parcel): ParcelableOwnerWrapper {
-                    return ParcelableOwnerWrapper(`in`)
+                override fun createFromParcel(parcel: Parcel): ParcelableOwnerWrapper {
+                    return ParcelableOwnerWrapper(parcel)
                 }
 
                 override fun newArray(size: Int): Array<ParcelableOwnerWrapper?> {
@@ -98,16 +98,16 @@ class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
             return ParcelableOwnerWrapper(owner)
         }
 
-        fun readOwner(`in`: ParcelNative): Owner? {
-            return `in`.readParcelable(NativeCreator)?.get()
+        fun readOwner(parcel: ParcelNative): Owner? {
+            return parcel.readParcelable(NativeCreator)?.get()
         }
 
         fun writeOwner(dest: ParcelNative, owner: Owner?) {
             dest.writeParcelable(ParcelableOwnerWrapper(owner))
         }
 
-        fun readOwner(`in`: Parcel): Owner? {
-            return `in`.readTypedObjectCompat(CREATOR)
+        fun readOwner(parcel: Parcel): Owner? {
+            return parcel.readTypedObjectCompat(CREATOR)
                 ?.get()
         }
 
@@ -115,15 +115,15 @@ class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
             dest.writeTypedObjectCompat(ParcelableOwnerWrapper(owner), flags)
         }
 
-        fun readOwners(`in`: Parcel): List<Owner>? {
-            val isNull = `in`.getBoolean()
+        fun readOwners(parcel: Parcel): List<Owner>? {
+            val isNull = parcel.getBoolean()
             if (isNull) {
                 return null
             }
-            val ownersCount = `in`.readInt()
+            val ownersCount = parcel.readInt()
             val owners: MutableList<Owner> = ArrayList(ownersCount)
             for (i in 0 until ownersCount) {
-                readOwner(`in`)?.let { owners.add(it) }
+                readOwner(parcel)?.let { owners.add(it) }
             }
             return owners
         }
@@ -140,15 +140,15 @@ class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
             }
         }
 
-        fun readOwners(`in`: ParcelNative): List<Owner>? {
-            val isNull = `in`.readBoolean()
+        fun readOwners(parcel: ParcelNative): List<Owner>? {
+            val isNull = parcel.readBoolean()
             if (isNull) {
                 return null
             }
-            val ownersCount = `in`.readInt()
+            val ownersCount = parcel.readInt()
             val owners: MutableList<Owner> = ArrayList(ownersCount)
             for (i in 0 until ownersCount) {
-                readOwner(`in`)?.let { owners.add(it) }
+                readOwner(parcel)?.let { owners.add(it) }
             }
             return owners
         }

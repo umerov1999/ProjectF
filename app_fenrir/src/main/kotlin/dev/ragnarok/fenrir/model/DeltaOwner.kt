@@ -36,10 +36,10 @@ class DeltaOwner : Parcelable {
         return this
     }
 
-    internal constructor(`in`: Parcel) {
-        time = `in`.readLong()
-        ownerId = `in`.readInt()
-        content = `in`.createTypedArrayList(DeltaOwnerList.CREATOR) ?: ArrayList()
+    internal constructor(parcel: Parcel) {
+        time = parcel.readLong()
+        ownerId = parcel.readInt()
+        content = parcel.createTypedArrayList(DeltaOwnerList.CREATOR) ?: ArrayList()
     }
 
     override fun writeToParcel(parcel: Parcel, i: Int) {
@@ -71,9 +71,9 @@ class DeltaOwner : Parcelable {
         @Suppress("unused")
         constructor()
 
-        internal constructor(`in`: Parcel) {
-            name = `in`.readString()
-            ownerList = ParcelableOwnerWrapper.readOwners(`in`) ?: ArrayList()
+        internal constructor(parcel: Parcel) {
+            name = parcel.readString()
+            ownerList = ParcelableOwnerWrapper.readOwners(parcel) ?: ArrayList()
         }
 
         override fun writeToParcel(parcel: Parcel, i: Int) {

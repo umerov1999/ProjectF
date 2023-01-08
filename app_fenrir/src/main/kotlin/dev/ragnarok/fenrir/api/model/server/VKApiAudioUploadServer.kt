@@ -16,8 +16,8 @@ class VKApiAudioUploadServer : Parcelable, UploadServer {
         this.url = url
     }
 
-    internal constructor(`in`: Parcel) {
-        url = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        url = parcel.readString()
     }
 
     override fun describeContents(): Int {

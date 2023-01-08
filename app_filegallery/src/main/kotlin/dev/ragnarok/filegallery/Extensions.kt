@@ -431,10 +431,13 @@ inline fun <reified T : Parcelable> Parcel.readTypedObjectCompat(c: Parcelable.C
     }
 }
 
-inline fun <reified T : Parcelable> Parcel.writeTypedObjectCompat(`val`: T?, parcelableFlags: Int) {
-    if (`val` != null) {
+inline fun <reified T : Parcelable> Parcel.writeTypedObjectCompat(
+    parcel: T?,
+    parcelableFlags: Int
+) {
+    if (parcel != null) {
         writeInt(1)
-        `val`.writeToParcel(this, parcelableFlags)
+        parcel.writeToParcel(this, parcelableFlags)
     } else {
         writeInt(0)
     }
@@ -486,9 +489,9 @@ inline fun <reified T : Parcelable> Intent.getParcelableArrayListExtraCompat(key
 }
 
 fun Parcel.putBoolean(value: Boolean) {
-    writeInt(if (value) 1 else 0)
+    writeByte(if (value) 1 else 0)
 }
 
 fun Parcel.getBoolean(): Boolean {
-    return readInt() != 0
+    return readByte() != 0.toByte()
 }

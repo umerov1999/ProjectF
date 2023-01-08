@@ -1015,6 +1015,7 @@ object Entity2Model {
             .setCanEdit(dbo.isCanEdit)
             .setFavorite(dbo.isFavorite)
             .setCanPin(dbo.isCanPin)
+            .setIsDonut(dbo.isDonut)
             .setPinned(dbo.isPinned)
             .setViewCount(dbo.views)
             .setCopyright(dbo.copyright?.let { Post.Copyright(it.name, it.link) })

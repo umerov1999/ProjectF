@@ -26,9 +26,9 @@ class DatabaseOption : BaseOption {
         this.type = type
     }
 
-    internal constructor(`in`: Parcel) : super(`in`) {
-        type = `in`.readInt()
-        value = `in`.readTypedObjectCompat(Entry.CREATOR)
+    internal constructor(parcel: Parcel) : super(parcel) {
+        type = parcel.readInt()
+        value = parcel.readTypedObjectCompat(Entry.CREATOR)
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -77,9 +77,9 @@ class DatabaseOption : BaseOption {
             this.title = title
         }
 
-        internal constructor(`in`: Parcel) {
-            id = `in`.readInt()
-            title = `in`.readString()
+        internal constructor(parcel: Parcel) {
+            id = parcel.readInt()
+            title = parcel.readString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -130,8 +130,8 @@ class DatabaseOption : BaseOption {
         @JvmField
         val CREATOR: Parcelable.Creator<DatabaseOption> =
             object : Parcelable.Creator<DatabaseOption> {
-                override fun createFromParcel(`in`: Parcel): DatabaseOption {
-                    return DatabaseOption(`in`)
+                override fun createFromParcel(parcel: Parcel): DatabaseOption {
+                    return DatabaseOption(parcel)
                 }
 
                 override fun newArray(size: Int): Array<DatabaseOption?> {

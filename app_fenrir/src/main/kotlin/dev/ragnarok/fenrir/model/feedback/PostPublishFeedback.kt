@@ -11,8 +11,8 @@ class PostPublishFeedback : Feedback {
         private set
 
     constructor(@FeedbackType type: Int) : super(type)
-    internal constructor(`in`: Parcel) : super(`in`) {
-        post = `in`.readTypedObjectCompat(Post.CREATOR)
+    internal constructor(parcel: Parcel) : super(parcel) {
+        post = parcel.readTypedObjectCompat(Post.CREATOR)
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

@@ -13,7 +13,7 @@ class NewsFeedCriteria : BaseSearchCriteria {
         appendOption(SimpleDateOption(KEY_END_TIME, R.string.date_to, true))
     }
 
-    internal constructor(`in`: Parcel) : super(`in`)
+    internal constructor(parcel: Parcel) : super(parcel)
 
     override fun describeContents(): Int {
         return 0
@@ -27,8 +27,8 @@ class NewsFeedCriteria : BaseSearchCriteria {
         @JvmField
         val CREATOR: Parcelable.Creator<NewsFeedCriteria> =
             object : Parcelable.Creator<NewsFeedCriteria> {
-                override fun createFromParcel(`in`: Parcel): NewsFeedCriteria {
-                    return NewsFeedCriteria(`in`)
+                override fun createFromParcel(parcel: Parcel): NewsFeedCriteria {
+                    return NewsFeedCriteria(parcel)
                 }
 
                 override fun newArray(size: Int): Array<NewsFeedCriteria?> {

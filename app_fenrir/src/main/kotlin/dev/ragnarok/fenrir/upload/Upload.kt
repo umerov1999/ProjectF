@@ -56,16 +56,16 @@ open class Upload : AbsModel, Identificable {
         id = incrementedUploadId
     }
 
-    internal constructor(`in`: Parcel) {
-        accountId = `in`.readInt()
-        id = `in`.readInt()
-        fileUri = `in`.readTypedObjectCompat(Uri.CREATOR)
-        destination = `in`.readTypedObjectCompat(UploadDestination.CREATOR)!!
-        size = `in`.readInt()
-        status = `in`.readInt()
-        progress = `in`.readInt()
-        errorText = `in`.readString()
-        fileId = readObjectLong(`in`)
+    internal constructor(parcel: Parcel) {
+        accountId = parcel.readInt()
+        id = parcel.readInt()
+        fileUri = parcel.readTypedObjectCompat(Uri.CREATOR)
+        destination = parcel.readTypedObjectCompat(UploadDestination.CREATOR)!!
+        size = parcel.readInt()
+        status = parcel.readInt()
+        progress = parcel.readInt()
+        errorText = parcel.readString()
+        fileId = readObjectLong(parcel)
     }
 
     fun setAutoCommit(autoCommit: Boolean): Upload {
@@ -172,8 +172,8 @@ open class Upload : AbsModel, Identificable {
 
         @JvmField
         val CREATOR: Parcelable.Creator<Upload> = object : Parcelable.Creator<Upload> {
-            override fun createFromParcel(`in`: Parcel): Upload {
-                return Upload(`in`)
+            override fun createFromParcel(parcel: Parcel): Upload {
+                return Upload(parcel)
             }
 
             override fun newArray(size: Int): Array<Upload?> {

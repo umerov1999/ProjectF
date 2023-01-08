@@ -21,13 +21,13 @@ open class BaseOption : Parcelable, Cloneable {
         parentDependencyKey = NO_DEPENDENCY
     }
 
-    protected constructor(`in`: Parcel) {
-        optionType = `in`.readInt()
-        key = `in`.readInt()
-        active = `in`.getBoolean()
-        title = `in`.readInt()
-        parentDependencyKey = `in`.readInt()
-        childDependencies = `in`.createIntArray()
+    protected constructor(parcel: Parcel) {
+        optionType = parcel.readInt()
+        key = parcel.readInt()
+        active = parcel.getBoolean()
+        title = parcel.readInt()
+        parentDependencyKey = parcel.readInt()
+        childDependencies = parcel.createIntArray()
     }
 
     fun makeChildDependencies(vararg childs: Int) {
@@ -89,8 +89,8 @@ open class BaseOption : Parcelable, Cloneable {
 
         @JvmField
         val CREATOR: Parcelable.Creator<BaseOption> = object : Parcelable.Creator<BaseOption> {
-            override fun createFromParcel(`in`: Parcel): BaseOption {
-                return BaseOption(`in`)
+            override fun createFromParcel(parcel: Parcel): BaseOption {
+                return BaseOption(parcel)
             }
 
             override fun newArray(size: Int): Array<BaseOption?> {

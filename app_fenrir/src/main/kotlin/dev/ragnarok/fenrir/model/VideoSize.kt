@@ -14,9 +14,9 @@ class VideoSize : Parcelable {
         this.height = height
     }
 
-    internal constructor(`in`: Parcel) {
-        width = `in`.readInt()
-        height = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        width = parcel.readInt()
+        height = parcel.readInt()
     }
 
     override fun describeContents(): Int {

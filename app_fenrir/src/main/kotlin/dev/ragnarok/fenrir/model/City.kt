@@ -20,12 +20,12 @@ class City : Parcelable {
         this.title = title
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        title = `in`.readString()
-        isImportant = `in`.getBoolean()
-        area = `in`.readString()
-        region = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        title = parcel.readString()
+        isImportant = parcel.getBoolean()
+        area = parcel.readString()
+        region = parcel.readString()
     }
 
     fun setImportant(important: Boolean): City {

@@ -19,9 +19,9 @@ open class AbsMenuItem : Parcelable {
         this.type = type
     }
 
-    protected constructor(`in`: Parcel) {
-        type = `in`.readInt()
-        isSelected = `in`.getBoolean()
+    protected constructor(parcel: Parcel) {
+        type = parcel.readInt()
+        isSelected = parcel.getBoolean()
     }
 
     override fun describeContents(): Int {

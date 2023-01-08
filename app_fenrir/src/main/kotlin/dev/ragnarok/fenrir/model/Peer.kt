@@ -17,10 +17,10 @@ class Peer : Parcelable {
         this.id = id
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        title = `in`.readString()
-        avaUrl = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        title = parcel.readString()
+        avaUrl = parcel.readString()
     }
 
     fun getTitle(): String? {
@@ -60,8 +60,8 @@ class Peer : Parcelable {
         // Для сообщества: -id сообщества.
         @JvmField
         val CREATOR: Parcelable.Creator<Peer> = object : Parcelable.Creator<Peer> {
-            override fun createFromParcel(`in`: Parcel): Peer {
-                return Peer(`in`)
+            override fun createFromParcel(parcel: Parcel): Peer {
+                return Peer(parcel)
             }
 
             override fun newArray(size: Int): Array<Peer?> {

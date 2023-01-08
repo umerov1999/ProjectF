@@ -18,11 +18,11 @@ class Banned : Parcelable {
         this.info = info
     }
 
-    internal constructor(`in`: Parcel) {
-        val wrapper = `in`.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)
+    internal constructor(parcel: Parcel) {
+        val wrapper = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)
         banned = wrapper?.get()!!
-        admin = `in`.readTypedObjectCompat(User.CREATOR)!!
-        info = `in`.readTypedObjectCompat(Info.CREATOR)!!
+        admin = parcel.readTypedObjectCompat(User.CREATOR)!!
+        info = parcel.readTypedObjectCompat(Info.CREATOR)!!
     }
 
     override fun describeContents(): Int {
@@ -47,12 +47,12 @@ class Banned : Parcelable {
         var isCommentVisible = false
             private set
 
-        internal constructor(`in`: Parcel) {
-            date = `in`.readLong()
-            reason = `in`.readInt()
-            comment = `in`.readString()
-            endDate = `in`.readLong()
-            isCommentVisible = `in`.getBoolean()
+        internal constructor(parcel: Parcel) {
+            date = parcel.readLong()
+            reason = parcel.readInt()
+            comment = parcel.readString()
+            endDate = parcel.readLong()
+            isCommentVisible = parcel.getBoolean()
         }
 
         constructor()

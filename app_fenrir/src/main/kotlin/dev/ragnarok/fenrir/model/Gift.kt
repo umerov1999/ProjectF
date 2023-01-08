@@ -19,13 +19,13 @@ class Gift : AbsModel {
     var privacy = 0
         private set
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        fromId = `in`.readInt()
-        message = `in`.readString()
-        date = `in`.readLong()
-        giftItem = `in`.readTypedObjectCompat(GiftItem.CREATOR)
-        privacy = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        fromId = parcel.readInt()
+        message = parcel.readString()
+        date = parcel.readLong()
+        giftItem = parcel.readTypedObjectCompat(GiftItem.CREATOR)
+        privacy = parcel.readInt()
     }
 
     @AbsModelType

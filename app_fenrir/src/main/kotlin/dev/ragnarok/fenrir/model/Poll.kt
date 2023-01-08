@@ -41,25 +41,25 @@ class Poll : AbsModel {
     var photo: String? = null
         private set
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        creationTime = `in`.readLong()
-        question = `in`.readString()
-        voteCount = `in`.readInt()
-        myAnswerIds = `in`.createLongArray()
-        isAnonymous = `in`.getBoolean()
-        answers = `in`.createTypedArrayList(Answer.CREATOR)
-        isBoard = `in`.getBoolean()
-        isClosed = `in`.getBoolean()
-        authorId = `in`.readInt()
-        isCanVote = `in`.getBoolean()
-        isCanEdit = `in`.getBoolean()
-        isCanReport = `in`.getBoolean()
-        isCanShare = `in`.getBoolean()
-        endDate = `in`.readLong()
-        isMultiple = `in`.getBoolean()
-        photo = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        creationTime = parcel.readLong()
+        question = parcel.readString()
+        voteCount = parcel.readInt()
+        myAnswerIds = parcel.createLongArray()
+        isAnonymous = parcel.getBoolean()
+        answers = parcel.createTypedArrayList(Answer.CREATOR)
+        isBoard = parcel.getBoolean()
+        isClosed = parcel.getBoolean()
+        authorId = parcel.readInt()
+        isCanVote = parcel.getBoolean()
+        isCanEdit = parcel.getBoolean()
+        isCanReport = parcel.getBoolean()
+        isCanShare = parcel.getBoolean()
+        endDate = parcel.readLong()
+        isMultiple = parcel.getBoolean()
+        photo = parcel.readString()
     }
 
     constructor(id: Int, ownerId: Int) {
@@ -190,11 +190,11 @@ class Poll : AbsModel {
             this.id = id
         }
 
-        internal constructor(`in`: Parcel) {
-            id = `in`.readLong()
-            text = `in`.readString()
-            voteCount = `in`.readInt()
-            rate = `in`.readDouble()
+        internal constructor(parcel: Parcel) {
+            id = parcel.readLong()
+            text = parcel.readString()
+            voteCount = parcel.readInt()
+            rate = parcel.readDouble()
         }
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {

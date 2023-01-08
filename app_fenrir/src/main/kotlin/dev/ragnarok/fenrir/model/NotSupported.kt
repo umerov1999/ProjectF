@@ -8,9 +8,9 @@ class NotSupported : AbsModel {
     private var body: String? = null
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        type = `in`.readString()
-        body = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        type = parcel.readString()
+        body = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

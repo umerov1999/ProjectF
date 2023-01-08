@@ -19,14 +19,14 @@ class VideoAlbum : AbsModel {
         this.ownerId = ownerId
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        title = `in`.readString()
-        count = `in`.readInt()
-        updatedTime = `in`.readLong()
-        image = `in`.readString()
-        privacy = `in`.readTypedObjectCompat(SimplePrivacy.CREATOR)
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        title = parcel.readString()
+        count = parcel.readInt()
+        updatedTime = parcel.readLong()
+        image = parcel.readString()
+        privacy = parcel.readTypedObjectCompat(SimplePrivacy.CREATOR)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

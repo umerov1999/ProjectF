@@ -13,11 +13,11 @@ class GiftItem : AbsModel {
     var thumb48: String? = null
         private set
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        thumb256 = `in`.readString()
-        thumb96 = `in`.readString()
-        thumb48 = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        thumb256 = parcel.readString()
+        thumb96 = parcel.readString()
+        thumb48 = parcel.readString()
     }
 
     @AbsModelType

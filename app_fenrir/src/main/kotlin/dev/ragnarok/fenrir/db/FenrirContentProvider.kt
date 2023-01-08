@@ -974,6 +974,8 @@ class FenrirContentProvider : ContentProvider() {
                 PostsColumns.FULL_CAN_EDIT
             sPostsProjectionMap[PostsColumns.IS_FAVORITE] =
                 PostsColumns.FULL_IS_FAVORITE
+            sPostsProjectionMap[PostsColumns.IS_DONUT] =
+                PostsColumns.FULL_IS_DONUT
             sPostsProjectionMap[PostsColumns.REPOSTS_COUNT] =
                 PostsColumns.FULL_REPOSTS_COUNT
             sPostsProjectionMap[PostsColumns.USER_REPOSTED] =

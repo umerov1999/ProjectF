@@ -12,8 +12,8 @@ class VKApiOwnerPhotoUploadServer : Parcelable, UploadServer {
 
     @Suppress("UNUSED")
     constructor()
-    internal constructor(`in`: Parcel) {
-        url = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        url = parcel.readString()
     }
 
     override fun describeContents(): Int {

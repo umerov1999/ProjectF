@@ -26,14 +26,14 @@ class TagDir : Parcelable {
     var isSelected = false
 
     constructor()
-    constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        owner_id = `in`.readInt()
-        name = `in`.readString()
-        path = `in`.readString()
-        type = `in`.readInt()
-        size = `in`.readLong()
-        isSelected = `in`.getBoolean()
+    constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        owner_id = parcel.readInt()
+        name = parcel.readString()
+        path = parcel.readString()
+        type = parcel.readInt()
+        size = parcel.readLong()
+        isSelected = parcel.getBoolean()
     }
 
     override fun describeContents(): Int {

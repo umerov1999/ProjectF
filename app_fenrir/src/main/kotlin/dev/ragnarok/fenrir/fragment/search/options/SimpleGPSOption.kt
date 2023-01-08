@@ -8,9 +8,9 @@ class SimpleGPSOption : BaseOption {
     var long_gps = 0.0
 
     constructor(key: Int, title: Int, active: Boolean) : super(GPS, key, title, active)
-    internal constructor(`in`: Parcel) : super(`in`) {
-        lat_gps = `in`.readDouble()
-        long_gps = `in`.readDouble()
+    internal constructor(parcel: Parcel) : super(parcel) {
+        lat_gps = parcel.readDouble()
+        long_gps = parcel.readDouble()
     }
 
     fun simpleGPS(): String {

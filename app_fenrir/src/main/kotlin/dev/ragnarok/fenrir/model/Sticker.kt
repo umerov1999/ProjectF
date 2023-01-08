@@ -23,12 +23,12 @@ class Sticker : AbsModel {
         this.id = id
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        images = `in`.createTypedArrayList(Image.CREATOR)
-        imagesWithBackground = `in`.createTypedArrayList(Image.CREATOR)
-        animations = `in`.createTypedArrayList(Animation.CREATOR)
-        animationUrl = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        images = parcel.createTypedArrayList(Image.CREATOR)
+        imagesWithBackground = parcel.createTypedArrayList(Image.CREATOR)
+        animations = parcel.createTypedArrayList(Animation.CREATOR)
+        animationUrl = parcel.readString()
     }
 
     @AbsModelType
@@ -139,10 +139,10 @@ class Sticker : AbsModel {
             this.height = height
         }
 
-        internal constructor(`in`: Parcel) {
-            url = `in`.readString()
-            width = `in`.readInt()
-            height = `in`.readInt()
+        internal constructor(parcel: Parcel) {
+            url = parcel.readString()
+            width = parcel.readInt()
+            height = parcel.readInt()
         }
 
         override fun describeContents(): Int {
@@ -179,9 +179,9 @@ class Sticker : AbsModel {
             this.type = type
         }
 
-        internal constructor(`in`: Parcel) {
-            url = `in`.readString()
-            type = `in`.readString()
+        internal constructor(parcel: Parcel) {
+            url = parcel.readString()
+            type = parcel.readString()
         }
 
         override fun describeContents(): Int {

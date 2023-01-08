@@ -10,7 +10,7 @@ class NoIconMenuItem : SectionMenuItem {
         @StringRes title: Int
     ) : super(TYPE_WITHOUT_ICON, section, title)
 
-    internal constructor(`in`: Parcel) : super(`in`)
+    internal constructor(parcel: Parcel) : super(parcel)
 
     override fun describeContents(): Int {
         return 0

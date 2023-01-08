@@ -92,46 +92,46 @@ class Message : AbsModel, Identificable, ISelectable {
         this.id = id
     }
 
-    internal constructor(`in`: Parcel) {
-        accountId = `in`.readInt()
-        id = `in`.readInt()
-        body = `in`.readString()
-        decryptedBody = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        accountId = parcel.readInt()
+        id = parcel.readInt()
+        body = parcel.readString()
+        decryptedBody = parcel.readString()
         //this.title = in.readString();
-        peerId = `in`.readInt()
-        senderId = `in`.readInt()
-        isOut = `in`.getBoolean()
-        isImportant = `in`.getBoolean()
-        @MessageStatus val tStatus = `in`.readInt()
+        peerId = parcel.readInt()
+        senderId = parcel.readInt()
+        isOut = parcel.getBoolean()
+        isImportant = parcel.getBoolean()
+        @MessageStatus val tStatus = parcel.readInt()
         status = tStatus
-        @CryptStatus val cs = `in`.readInt()
+        @CryptStatus val cs = parcel.readInt()
         cryptStatus = cs
-        date = `in`.readLong()
-        isSelected = `in`.getBoolean()
-        isDeleted = `in`.getBoolean()
-        isDeletedForAll = `in`.getBoolean()
-        attachments = `in`.readTypedObjectCompat(Attachments.CREATOR)
-        fwd = `in`.createTypedArrayList(CREATOR)
-        originalId = `in`.readInt()
-        @ChatAction val tmpChatAction = `in`.readInt()
+        date = parcel.readLong()
+        isSelected = parcel.getBoolean()
+        isDeleted = parcel.getBoolean()
+        isDeletedForAll = parcel.getBoolean()
+        attachments = parcel.readTypedObjectCompat(Attachments.CREATOR)
+        fwd = parcel.createTypedArrayList(CREATOR)
+        originalId = parcel.readInt()
+        @ChatAction val tmpChatAction = parcel.readInt()
         action = tmpChatAction
-        actionMid = `in`.readInt()
-        actionEmail = `in`.readString()
-        actionText = `in`.readString()
-        photo50 = `in`.readString()
-        photo100 = `in`.readString()
-        photo200 = `in`.readString()
+        actionMid = parcel.readInt()
+        actionEmail = parcel.readString()
+        actionText = parcel.readString()
+        photo50 = parcel.readString()
+        photo100 = parcel.readString()
+        photo200 = parcel.readString()
         actionUser =
-            `in`.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
+            parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
                 .get()
-        sender = Owner.readOwnerFromParcel(senderId, `in`)
-        randomId = `in`.readLong()
-        extras = readIntStringMap(`in`)
-        forwardMessagesCount = `in`.readInt()
-        isHasAttachments = `in`.getBoolean()
-        updateTime = `in`.readLong()
-        payload = `in`.readString()
-        keyboard = `in`.readTypedObjectCompat(Keyboard.CREATOR)
+        sender = Owner.readOwnerFromParcel(senderId, parcel)
+        randomId = parcel.readLong()
+        extras = readIntStringMap(parcel)
+        forwardMessagesCount = parcel.readInt()
+        isHasAttachments = parcel.getBoolean()
+        updateTime = parcel.readLong()
+        payload = parcel.readString()
+        keyboard = parcel.readTypedObjectCompat(Keyboard.CREATOR)
     }
 
     @AbsModelType

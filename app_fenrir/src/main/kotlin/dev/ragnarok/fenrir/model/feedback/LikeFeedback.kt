@@ -17,9 +17,9 @@ class LikeFeedback : Feedback {
 
     // one of FeedbackType.LIKE_PHOTO, FeedbackType.LIKE_POST, FeedbackType.LIKE_VIDEO
     constructor(@FeedbackType type: Int) : super(type)
-    internal constructor(`in`: Parcel) : super(`in`) {
-        liked = readModel(`in`)
-        owners = readOwners(`in`)
+    internal constructor(parcel: Parcel) : super(parcel) {
+        liked = readModel(parcel)
+        owners = readOwners(parcel)
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

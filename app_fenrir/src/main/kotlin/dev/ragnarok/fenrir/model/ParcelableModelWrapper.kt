@@ -17,26 +17,26 @@ class ParcelableModelWrapper : Parcelable {
         @JvmField
         val CREATOR: Parcelable.Creator<ParcelableModelWrapper> =
             object : Parcelable.Creator<ParcelableModelWrapper> {
-                override fun createFromParcel(`in`: Parcel): ParcelableModelWrapper {
-                    return ParcelableModelWrapper(`in`)
+                override fun createFromParcel(parcel: Parcel): ParcelableModelWrapper {
+                    return ParcelableModelWrapper(parcel)
                 }
 
                 override fun newArray(size: Int): Array<ParcelableModelWrapper?> {
                     return arrayOfNulls(size)
                 }
             }
-        private val TYPES: ArrayMap<Int, (`in`: Parcel) -> AbsModel?> = ArrayMap(43)
+        private val TYPES: ArrayMap<Int, (parcel: Parcel) -> AbsModel?> = ArrayMap(43)
 
         fun wrap(model: AbsModel): ParcelableModelWrapper {
             return ParcelableModelWrapper(model)
         }
 
-        fun readModel(`in`: Parcel): AbsModel? {
-            val ex = `in`.getBoolean()
+        fun readModel(parcel: Parcel): AbsModel? {
+            val ex = parcel.getBoolean()
             if (!ex) {
                 return null
             }
-            return `in`.readTypedObjectCompat(CREATOR)
+            return parcel.readTypedObjectCompat(CREATOR)
                 ?.get()
         }
 
@@ -61,15 +61,15 @@ class ParcelableModelWrapper : Parcelable {
             }
         }
 
-        fun readModels(`in`: Parcel): ArrayList<AbsModel>? {
-            val ex = `in`.getBoolean()
+        fun readModels(parcel: Parcel): ArrayList<AbsModel>? {
+            val ex = parcel.getBoolean()
             if (!ex) {
                 return null
             }
-            val sz = `in`.readInt()
+            val sz = parcel.readInt()
             val ret: ArrayList<AbsModel> = ArrayList(sz)
             for (i in 0 until sz) {
-                ret.add((`in`.readTypedObjectCompat(CREATOR) ?: return null).get())
+                ret.add((parcel.readTypedObjectCompat(CREATOR) ?: return null).get())
             }
             return ret
         }
@@ -139,9 +139,9 @@ class ParcelableModelWrapper : Parcelable {
         this.model = model
     }
 
-    internal constructor(`in`: Parcel) {
-        val index = `in`.readInt()
-        model = TYPES[index]!!.invoke(`in`)!!
+    internal constructor(parcel: Parcel) {
+        val index = parcel.readInt()
+        model = TYPES[index]!!.invoke(parcel)!!
     }
 
     override fun describeContents(): Int {

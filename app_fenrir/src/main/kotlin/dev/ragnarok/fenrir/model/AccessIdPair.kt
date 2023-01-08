@@ -14,10 +14,10 @@ class AccessIdPair : Parcelable {
         this.accessKey = accessKey
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        accessKey = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        accessKey = parcel.readString()
     }
 
     fun getId(): Int {

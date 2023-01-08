@@ -110,6 +110,8 @@ class VKApiPost : VKApiAttachment, Commentable, Likeable, Copyable {
      */
     var is_pinned = false
 
+    var is_donut = false
+
     /**
      * List of history of the reposts.
      */

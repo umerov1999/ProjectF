@@ -218,8 +218,8 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
             return try {
                 mediaMetadataRetriever.setDataSource(context, oo)
                 val cover = mediaMetadataRetriever.embeddedPicture ?: return null
-                val `is`: InputStream = ByteArrayInputStream(cover)
-                var bitmap = BitmapFactory.decodeStream(`is`)
+                val inputStream: InputStream = ByteArrayInputStream(cover)
+                var bitmap = BitmapFactory.decodeStream(inputStream)
                 if (bitmap != null) {
                     bitmap = Bitmap.createScaledBitmap(bitmap, 256, 256, false)
                 }

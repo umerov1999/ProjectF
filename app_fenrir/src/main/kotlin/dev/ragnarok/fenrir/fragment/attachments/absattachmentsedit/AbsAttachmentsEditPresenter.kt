@@ -77,8 +77,8 @@ abstract class AbsAttachmentsEditPresenter<V : IBaseAttachmentsEditView> interna
             }
             if (info != null) {
                 val entry = info.second
-                val `object` = entry.attachment as Upload
-                if (`object`.status != Upload.STATUS_UPLOADING) {
+                val obj = entry.attachment as Upload
+                if (obj.status != Upload.STATUS_UPLOADING) {
                     continue
                 }
                 view?.updateProgressAtIndex(
@@ -389,8 +389,8 @@ abstract class AbsAttachmentsEditPresenter<V : IBaseAttachmentsEditView> interna
         private const val SAVE_CURRENT_PHOTO_CAMERA_URI = "save_current_photo_camera_uri"
         fun createFrom(objects: List<Upload>?): List<AttachmentEntry> {
             val data: MutableList<AttachmentEntry> = ArrayList(objects?.size ?: 0)
-            for (`object` in objects.orEmpty()) {
-                data.add(AttachmentEntry(true, `object`))
+            for (obj in objects.orEmpty()) {
+                data.add(AttachmentEntry(true, obj))
             }
             return data
         }

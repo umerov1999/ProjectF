@@ -42,8 +42,8 @@ class VideoSearchCriteria : BaseSearchCriteria {
         appendOption(SimpleNumberOption(KEY_DURATION_TO, R.string.max_duration, true))
     }
 
-    internal constructor(`in`: Parcel) : super(`in`) {
-        action = `in`.readString()
+    internal constructor(parcel: Parcel) : super(parcel) {
+        action = parcel.readString()
     }
 
     override fun describeContents(): Int {
@@ -77,8 +77,8 @@ class VideoSearchCriteria : BaseSearchCriteria {
         @JvmField
         val CREATOR: Parcelable.Creator<VideoSearchCriteria> =
             object : Parcelable.Creator<VideoSearchCriteria> {
-                override fun createFromParcel(`in`: Parcel): VideoSearchCriteria {
-                    return VideoSearchCriteria(`in`)
+                override fun createFromParcel(parcel: Parcel): VideoSearchCriteria {
+                    return VideoSearchCriteria(parcel)
                 }
 
                 override fun newArray(size: Int): Array<VideoSearchCriteria?> {

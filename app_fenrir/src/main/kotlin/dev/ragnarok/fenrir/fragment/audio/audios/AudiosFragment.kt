@@ -205,7 +205,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
                     if (tracks.isNotEmpty()) {
                         CheckDirectory(Settings.get().other().musicDir)
                         val account_id = presenter?.accountId ?: Settings.get().accounts().current
-                        var `object` = WorkManager.getInstance(requireActivity()).beginWith(
+                        var obj = WorkManager.getInstance(requireActivity()).beginWith(
                             makeDownloadRequestAudio(
                                 tracks[0], account_id
                             )
@@ -221,9 +221,9 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
                                 }
                                 Requests.add(makeDownloadRequestAudio(i, account_id))
                             }
-                            `object` = `object`.then(Requests)
+                            obj = obj.then(Requests)
                         }
-                        `object`.enqueue()
+                        obj.enqueue()
                     }
                 } else {
                     val curr = currentAudio

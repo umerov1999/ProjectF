@@ -48,16 +48,16 @@ class Photo2AlbumUploadable(
                 .map { it }
         }
         return serverSingle.flatMap { server ->
-            var `is`: InputStream? = null
+            var inputStream: InputStream? = null
             try {
-                `is` = UploadUtils.openStream(context, upload.fileUri, upload.size)
+                inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 networker.uploads()
                     .uploadPhotoToAlbumRx(
                         server.url ?: throw NotFoundException("upload url empty"),
-                        `is`!!,
+                        inputStream!!,
                         listener
                     )
-                    .doFinally(safelyCloseAction(`is`))
+                    .doFinally(safelyCloseAction(inputStream))
                     .flatMap { dto ->
                         var latitude: Double? = null
                         var longitude: Double? = null
@@ -102,7 +102,7 @@ class Photo2AlbumUploadable(
                             }
                     }
             } catch (e: Exception) {
-                safelyClose(`is`)
+                safelyClose(inputStream)
                 Single.error(e)
             }
         }

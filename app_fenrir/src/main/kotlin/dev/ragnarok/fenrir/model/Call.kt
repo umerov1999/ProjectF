@@ -16,11 +16,11 @@ class Call : AbsModel {
         private set
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        initiator_id = `in`.readInt()
-        receiver_id = `in`.readInt()
-        time = `in`.readLong()
-        state = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        initiator_id = parcel.readInt()
+        receiver_id = parcel.readInt()
+        time = parcel.readLong()
+        state = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

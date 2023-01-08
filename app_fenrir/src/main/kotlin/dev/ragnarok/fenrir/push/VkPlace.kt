@@ -70,38 +70,38 @@ open class VkPlace {
         private val PATTERN_VIDEO_COMMENT = Pattern.compile("video_comment(-?\\d+)_(\\d+)")
         private val PATTERN_WALL = Pattern.compile("wall(-?\\d+)_(\\d+)")
         private val PATTERN_WALL_COMMENT = Pattern.compile("wall_comment(-?\\d+)_(\\d+)")
-        fun parse(`object`: String?): VkPlace? {
-            var matcher = `object`?.let { PATTERN_PHOTO.matcher(it) }
+        fun parse(obj: String?): VkPlace? {
+            var matcher = obj?.let { PATTERN_PHOTO.matcher(it) }
             if (matcher?.find() == true) {
                 val ownerId = matcher.group(1)?.toInt() ?: return null
                 val photoId = matcher.group(2)?.toInt() ?: return null
                 return Photo(ownerId, photoId)
             }
-            matcher = `object`?.let { PATTERN_PHOTO_COMMENT.matcher(it) }
+            matcher = obj?.let { PATTERN_PHOTO_COMMENT.matcher(it) }
             if (matcher?.find() == true) {
                 val ownerId = matcher.group(1)?.toInt() ?: return null
                 val photoId = matcher.group(2)?.toInt() ?: return null
                 return PhotoComment(ownerId, photoId)
             }
-            matcher = `object`?.let { PATTERN_WALL.matcher(it) }
+            matcher = obj?.let { PATTERN_WALL.matcher(it) }
             if (matcher?.find() == true) {
                 val ownerId = matcher.group(1)?.toInt() ?: return null
                 val postId = matcher.group(2)?.toInt() ?: return null
                 return WallPost(ownerId, postId)
             }
-            matcher = `object`?.let { PATTERN_WALL_COMMENT.matcher(it) }
+            matcher = obj?.let { PATTERN_WALL_COMMENT.matcher(it) }
             if (matcher?.find() == true) {
                 val ownerId = matcher.group(1)?.toInt() ?: return null
                 val postId = matcher.group(2)?.toInt() ?: return null
                 return WallComment(ownerId, postId)
             }
-            matcher = `object`?.let { PATTERN_VIDEO.matcher(it) }
+            matcher = obj?.let { PATTERN_VIDEO.matcher(it) }
             if (matcher?.find() == true) {
                 val ownerId = matcher.group(1)?.toInt() ?: return null
                 val videoId = matcher.group(2)?.toInt() ?: return null
                 return Video(ownerId, videoId)
             }
-            matcher = `object`?.let { PATTERN_VIDEO_COMMENT.matcher(it) }
+            matcher = obj?.let { PATTERN_VIDEO_COMMENT.matcher(it) }
             if (matcher?.find() == true) {
                 val ownerId = matcher.group(1)?.toInt() ?: return null
                 val videoId = matcher.group(2)?.toInt() ?: return null

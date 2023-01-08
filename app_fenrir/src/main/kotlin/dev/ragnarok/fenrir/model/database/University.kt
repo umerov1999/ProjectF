@@ -12,9 +12,9 @@ class University : Parcelable {
         this.title = title
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        title = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        title = parcel.readString()
     }
 
     override fun describeContents(): Int {

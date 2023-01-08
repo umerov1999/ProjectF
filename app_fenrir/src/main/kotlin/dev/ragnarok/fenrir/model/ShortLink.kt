@@ -18,13 +18,13 @@ class ShortLink : AbsModel {
         private set
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        short_url = `in`.readString()
-        url = `in`.readString()
-        timestamp = `in`.readLong()
-        key = `in`.readString()
-        views = `in`.readInt()
-        access_key = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        short_url = parcel.readString()
+        url = parcel.readString()
+        timestamp = parcel.readLong()
+        key = parcel.readString()
+        views = parcel.readInt()
+        access_key = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

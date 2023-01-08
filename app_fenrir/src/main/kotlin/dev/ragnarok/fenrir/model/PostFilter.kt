@@ -18,11 +18,11 @@ class PostFilter : Entry, Parcelable {
         this.title = title
     }
 
-    internal constructor(`in`: Parcel) {
-        mode = `in`.readInt()
-        title = `in`.readString()!!
-        active = `in`.getBoolean()
-        count = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        mode = parcel.readInt()
+        title = parcel.readString()!!
+        active = parcel.getBoolean()
+        count = parcel.readInt()
     }
 
     fun getTitle(): String {

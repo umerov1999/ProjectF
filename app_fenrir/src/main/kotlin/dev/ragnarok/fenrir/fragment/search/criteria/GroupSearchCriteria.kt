@@ -55,7 +55,7 @@ class GroupSearchCriteria : BaseSearchCriteria {
         appendOption(futureOnly)
     }
 
-    internal constructor(`in`: Parcel) : super(`in`)
+    internal constructor(parcel: Parcel) : super(parcel)
 
     override fun describeContents(): Int {
         return 0
@@ -79,8 +79,8 @@ class GroupSearchCriteria : BaseSearchCriteria {
         @JvmField
         val CREATOR: Parcelable.Creator<GroupSearchCriteria> =
             object : Parcelable.Creator<GroupSearchCriteria> {
-                override fun createFromParcel(`in`: Parcel): GroupSearchCriteria {
-                    return GroupSearchCriteria(`in`)
+                override fun createFromParcel(parcel: Parcel): GroupSearchCriteria {
+                    return GroupSearchCriteria(parcel)
                 }
 
                 override fun newArray(size: Int): Array<GroupSearchCriteria?> {

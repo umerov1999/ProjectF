@@ -25,16 +25,16 @@ class AttachmentEntry : Parcelable {
         id = ID_GEN.incrementAndGet()
     }
 
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
         if (id > ID_GEN.toInt()) {
             ID_GEN.set(id)
         }
-        optionalId = `in`.readInt()
-        isCanDelete = `in`.getBoolean()
-        isAccompanying = `in`.getBoolean()
+        optionalId = parcel.readInt()
+        isCanDelete = parcel.getBoolean()
+        isAccompanying = parcel.getBoolean()
         val wrapper: ParcelableModelWrapper =
-            `in`.readTypedObjectCompat(ParcelableModelWrapper.CREATOR)!!
+            parcel.readTypedObjectCompat(ParcelableModelWrapper.CREATOR)!!
         attachment = wrapper.get()
     }
 

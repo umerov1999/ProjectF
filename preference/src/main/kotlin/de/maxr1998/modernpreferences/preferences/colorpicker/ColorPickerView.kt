@@ -502,8 +502,8 @@ class ColorPickerView : View {
         FLOWER, CIRCLE;
 
         companion object {
-            fun toInt(`val`: WHEEL_TYPE?): Int {
-                when (`val`) {
+            fun toInt(value: WHEEL_TYPE?): Int {
+                when (value) {
                     FLOWER -> return 0
                     CIRCLE -> return 1
                     else -> {}

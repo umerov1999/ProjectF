@@ -34,16 +34,16 @@ class ChatPhotoUploadable(private val context: Context, private val networker: I
             Single.just(initialServer)
         }
         return serverSingle.flatMap { server ->
-            var `is`: InputStream? = null
+            var inputStream: InputStream? = null
             try {
-                `is` = UploadUtils.openStream(context, upload.fileUri, upload.size)
+                inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 networker.uploads()
                     .uploadChatPhotoRx(
                         server.url ?: throw NotFoundException("upload url empty"),
-                        `is`!!,
+                        inputStream!!,
                         listener
                     )
-                    .doFinally { safelyClose(`is`) }
+                    .doFinally { safelyClose(inputStream) }
                     .flatMap { dto ->
                         networker.vkDefault(accountId)
                             .photos()
@@ -67,7 +67,7 @@ class ChatPhotoUploadable(private val context: Context, private val networker: I
                             }
                     }
             } catch (e: Exception) {
-                safelyClose(`is`)
+                safelyClose(inputStream)
                 Single.error(e)
             }
         }

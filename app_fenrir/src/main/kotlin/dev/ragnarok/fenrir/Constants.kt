@@ -9,7 +9,7 @@ import java.util.*
 
 object Constants {
     const val API_VERSION = "5.131"
-    const val DATABASE_FENRIR_VERSION = 25
+    const val DATABASE_FENRIR_VERSION = 26
     const val DATABASE_TEMPORARY_VERSION = 5
     const val EXPORT_SETTINGS_FORMAT = 1
     const val forceDeveloperMode = BuildConfig.FORCE_DEVELOPER_MODE

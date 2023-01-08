@@ -95,10 +95,10 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
         groupId: Int?,
         markAsAds: Boolean?
     ): Single<RepostReponse> {
-        val `object` = "wall" + postOwnerId + "_" + postId
+        val obj = "wall" + postOwnerId + "_" + postId
         return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
-                service.repost(`object`, message, groupId, integerFromBoolean(markAsAds))
+                service.repost(obj, message, groupId, integerFromBoolean(markAsAds))
                     .map(extractResponseWithErrorHandling())
             }
     }

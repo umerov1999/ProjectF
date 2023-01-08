@@ -22,6 +22,8 @@ import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
 class BirthDayAdapter(private val mContext: Context, private var mData: List<BirthDay>) :
     RecyclerView.Adapter<BirthDayAdapter.BirthDayHolder>() {
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
+    private val transformationWithStory: Transformation =
+        CurrentTheme.createTransformationStrokeForAvatar()
     private var mClickListener: ClickListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BirthDayHolder {
         return BirthDayHolder(
@@ -56,7 +58,7 @@ class BirthDayAdapter(private val mContext: Context, private var mData: List<Bir
         val avaUrl = user.maxSquareAvatar
         displayAvatar(
             holder.avatar,
-            transformation,
+            if (user.hasUnseenStories) transformationWithStory else transformation,
             avaUrl,
             Constants.PICASSO_TAG,
             monochrome = user.blacklisted

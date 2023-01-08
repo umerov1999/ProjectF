@@ -15,9 +15,9 @@ class TagFull : Parcelable {
 
 
     constructor()
-    constructor(`in`: Parcel) {
-        name = `in`.readString()
-        dirs = `in`.createTypedArrayList(TagDirEntry.CREATOR)
+    constructor(parcel: Parcel) {
+        name = parcel.readString()
+        dirs = parcel.createTypedArrayList(TagDirEntry.CREATOR)
     }
 
     override fun describeContents(): Int {
@@ -55,10 +55,10 @@ class TagFull : Parcelable {
             private set
 
         constructor()
-        constructor(`in`: Parcel) {
-            name = `in`.readString()
-            path = `in`.readString()
-            type = `in`.readInt()
+        constructor(parcel: Parcel) {
+            name = parcel.readString()
+            path = parcel.readString()
+            type = parcel.readInt()
         }
 
         override fun describeContents(): Int {
@@ -100,8 +100,8 @@ class TagFull : Parcelable {
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<TagFull> = object : Parcelable.Creator<TagFull> {
-            override fun createFromParcel(`in`: Parcel): TagFull {
-                return TagFull(`in`)
+            override fun createFromParcel(parcel: Parcel): TagFull {
+                return TagFull(parcel)
             }
 
             override fun newArray(size: Int): Array<TagFull?> {

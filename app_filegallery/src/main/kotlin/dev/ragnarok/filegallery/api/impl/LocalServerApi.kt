@@ -224,11 +224,11 @@ internal class LocalServerApi(private val service: ILocalServerServiceProvider) 
     override fun remotePlayAudioRx(
         server: String,
         filename: String?,
-        `is`: InputStream,
+        inputStream: InputStream,
         listener: PercentagePublisher?
     ): Single<BaseResponse<Int>> {
         val body = ProgressRequestBody(
-            `is`, wrapPercentageListener(listener),
+            inputStream, wrapPercentageListener(listener),
             "*/*".toMediaTypeOrNull()
         )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("audio", filename, body)

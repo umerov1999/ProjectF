@@ -23,10 +23,10 @@ class VKApiUploadServer : Parcelable, UploadServer {
      */
     var user_id = 0
 
-    internal constructor(`in`: Parcel) {
-        url = `in`.readString()
-        album_id = `in`.readInt()
-        user_id = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        url = parcel.readString()
+        album_id = parcel.readInt()
+        user_id = parcel.readInt()
     }
 
     @Suppress("UNUSED")

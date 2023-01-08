@@ -17,9 +17,9 @@ class MentionCommentFeedback : Feedback {
 
     // one of FeedbackType.MENTION_COMMENT_POST, FeedbackType.MENTION_COMMENT_PHOTO, FeedbackType.MENTION_COMMENT_VIDEO
     constructor(@FeedbackType type: Int) : super(type)
-    internal constructor(`in`: Parcel) : super(`in`) {
-        where = `in`.readTypedObjectCompat(Comment.CREATOR)
-        commentOf = readModel(`in`)
+    internal constructor(parcel: Parcel) : super(parcel) {
+        where = parcel.readTypedObjectCompat(Comment.CREATOR)
+        commentOf = readModel(parcel)
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

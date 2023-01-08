@@ -10,8 +10,8 @@ class FwdMessages : AbsModel {
         this.fwds = fwds
     }
 
-    internal constructor(`in`: Parcel) {
-        fwds = `in`.createTypedArrayList(Message.CREATOR)!!
+    internal constructor(parcel: Parcel) {
+        fwds = parcel.createTypedArrayList(Message.CREATOR)!!
     }
 
     @AbsModelType

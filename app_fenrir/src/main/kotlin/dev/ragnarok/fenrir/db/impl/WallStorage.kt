@@ -329,6 +329,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
             .setViews(cursor.getInt(PostsColumns.VIEWS))
             .setCanEdit(cursor.getBoolean(PostsColumns.CAN_EDIT))
             .setFavorite(cursor.getBoolean(PostsColumns.IS_FAVORITE))
+            .setIsDonut(cursor.getBoolean(PostsColumns.IS_DONUT))
         val postSourceText =
             cursor.getBlob(PostsColumns.POST_SOURCE)
         if (postSourceText.nonNullNoEmpty()) {
@@ -441,6 +442,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
             cv.put(PostsColumns.CREATED_BY, dbo.createdBy)
             cv.put(PostsColumns.CAN_PIN, dbo.isCanPin)
             cv.put(PostsColumns.IS_PINNED, dbo.isPinned)
+            cv.put(PostsColumns.IS_DONUT, dbo.isDonut)
             cv.put(PostsColumns.DELETED, dbo.isDeleted)
             val attachmentsCount = safeCountOf(dbo.getAttachments())
             val copiesCount = safeCountOf(dbo.copyHierarchy)

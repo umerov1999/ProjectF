@@ -43,14 +43,16 @@ class Photo2MessageUploadable(
                 .messagesUploadServer.map { it }
         }
         return serverSingle.flatMap { server ->
-            var `is`: InputStream? = null
+            var inputStream: InputStream? = null
             try {
-                `is` = UploadUtils.openStream(context, upload.fileUri, upload.size)
+                inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 networker.uploads()
                     .uploadPhotoToMessageRx(
-                        server.url ?: throw NotFoundException("upload url empty"), `is`!!, listener
+                        server.url ?: throw NotFoundException("upload url empty"),
+                        inputStream!!,
+                        listener
                     )
-                    .doFinally(safelyCloseAction(`is`))
+                    .doFinally(safelyCloseAction(inputStream))
                     .flatMap { dto ->
                         networker.vkDefault(accountId)
                             .photos()
@@ -78,7 +80,7 @@ class Photo2MessageUploadable(
                             }
                     }
             } catch (e: Exception) {
-                safelyClose(`is`)
+                safelyClose(inputStream)
                 Single.error(e)
             }
         }

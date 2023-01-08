@@ -15,8 +15,8 @@ class ModelsBundle : Parcelable, Iterable<AbsModel> {
         wrappers = ArrayList(capacity)
     }
 
-    internal constructor(`in`: Parcel) {
-        wrappers = `in`.createTypedArrayList(ParcelableModelWrapper.CREATOR)!!
+    internal constructor(parcel: Parcel) {
+        wrappers = parcel.createTypedArrayList(ParcelableModelWrapper.CREATOR)!!
     }
 
     fun size(): Int {

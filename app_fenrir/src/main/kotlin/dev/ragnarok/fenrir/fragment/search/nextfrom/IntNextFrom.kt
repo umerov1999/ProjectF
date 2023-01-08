@@ -10,8 +10,8 @@ class IntNextFrom : AbsNextFrom {
         offset = initValue
     }
 
-    internal constructor(`in`: Parcel) {
-        offset = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        offset = parcel.readInt()
     }
 
     override fun describeContents(): Int {

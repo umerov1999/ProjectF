@@ -672,6 +672,7 @@ class DBHelper private constructor(context: Context, aid: Int) :
                 "  [" + PostsColumns.CREATED_BY + "] INTEGER, " +
                 "  [" + PostsColumns.CAN_PIN + "] BOOLEAN, " +
                 "  [" + PostsColumns.IS_PINNED + "] BOOLEAN, " +
+                "  [" + PostsColumns.IS_DONUT + "] BOOLEAN, " +
                 "  [" + PostsColumns.DELETED + "] BOOLEAN, " +
                 "  [" + PostsColumns.POST_SOURCE + "] BLOB, " +
                 "  [" + PostsColumns.COPYRIGHT_BLOB + "] BLOB, " +

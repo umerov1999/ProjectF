@@ -19,10 +19,10 @@ abstract class Feedback : Parcelable {
         this.type = type
     }
 
-    protected constructor(`in`: Parcel) {
-        type = `in`.readInt()
-        date = `in`.readLong()
-        reply = `in`.readTypedObjectCompat(Comment.CREATOR)
+    protected constructor(parcel: Parcel) {
+        type = parcel.readInt()
+        date = parcel.readLong()
+        reply = parcel.readTypedObjectCompat(Comment.CREATOR)
     }
 
     fun setDate(date: Long): Feedback {

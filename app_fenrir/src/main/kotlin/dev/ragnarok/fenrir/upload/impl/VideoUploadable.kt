@@ -38,16 +38,16 @@ class VideoUploadable(private val context: Context, private val networker: INetw
             )
             .map<UploadServer> { s: VKApiVideosUploadServer -> s }
         return serverSingle.flatMap { server ->
-            var `is`: InputStream? = null
+            var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
                 val file = File(uri!!.path!!)
-                `is` = if (file.isFile) {
+                inputStream = if (file.isFile) {
                     FileInputStream(file)
                 } else {
                     context.contentResolver.openInputStream(uri)
                 }
-                if (`is` == null) {
+                if (inputStream == null) {
                     return@flatMap Single.error<UploadResult<Video>>(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
@@ -59,10 +59,10 @@ class VideoUploadable(private val context: Context, private val networker: INetw
                     .uploadVideoRx(
                         server.url ?: throw NotFoundException("upload url empty"),
                         filename,
-                        `is`,
+                        inputStream,
                         listener
                     )
-                    .doFinally(safelyCloseAction(`is`))
+                    .doFinally(safelyCloseAction(inputStream))
                     .flatMap { dto ->
                         val result = UploadResult(
                             server, Video().setId(dto.video_id).setOwnerId(dto.owner_id).setTitle(
@@ -74,7 +74,7 @@ class VideoUploadable(private val context: Context, private val networker: INetw
                         Single.just(result)
                     }
             } catch (e: Exception) {
-                safelyClose(`is`)
+                safelyClose(inputStream)
                 Single.error(e)
             }
         }

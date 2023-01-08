@@ -17,14 +17,14 @@ class Keyboard : Parcelable {
         private set
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        one_time = `in`.getBoolean()
-        inline = `in`.getBoolean()
-        author_id = `in`.readInt()
-        val size = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        one_time = parcel.getBoolean()
+        inline = parcel.getBoolean()
+        author_id = parcel.readInt()
+        val size = parcel.readInt()
         buttons = ArrayList(size)
         for (i in 0 until size) {
-            `in`.createTypedArrayList(Button.CREATOR)?.let { buttons?.add(i, it) }
+            parcel.createTypedArrayList(Button.CREATOR)?.let { buttons?.add(i, it) }
         }
     }
 
@@ -79,12 +79,12 @@ class Keyboard : Parcelable {
             private set
 
         constructor()
-        internal constructor(`in`: Parcel) {
-            color = `in`.readString()
-            type = `in`.readString()
-            label = `in`.readString()
-            link = `in`.readString()
-            payload = `in`.readString()
+        internal constructor(parcel: Parcel) {
+            color = parcel.readString()
+            type = parcel.readString()
+            label = parcel.readString()
+            link = parcel.readString()
+            payload = parcel.readString()
         }
 
         fun setColor(color: String?): Button {

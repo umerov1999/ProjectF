@@ -37,24 +37,24 @@ class Dialog : Identificable, Parcelable {
     private var minor_id = 0
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        peerId = `in`.readInt()
-        title = `in`.readString()
-        unreadCount = `in`.readInt()
-        photo50 = `in`.readString()
-        photo100 = `in`.readString()
-        photo200 = `in`.readString()
-        message = `in`.readTypedObjectCompat(Message.CREATOR)
-        val interlocutorIsNull = `in`.getBoolean()
+    internal constructor(parcel: Parcel) {
+        peerId = parcel.readInt()
+        title = parcel.readString()
+        unreadCount = parcel.readInt()
+        photo50 = parcel.readString()
+        photo100 = parcel.readString()
+        photo200 = parcel.readString()
+        message = parcel.readTypedObjectCompat(Message.CREATOR)
+        val interlocutorIsNull = parcel.getBoolean()
         if (!interlocutorIsNull) {
-            interlocutor = Owner.readOwnerFromParcel(`in`)
+            interlocutor = Owner.readOwnerFromParcel(parcel)
         }
-        lastMessageId = `in`.readInt()
-        inRead = `in`.readInt()
-        outRead = `in`.readInt()
-        major_id = `in`.readInt()
-        minor_id = `in`.readInt()
-        isGroupChannel = `in`.getBoolean()
+        lastMessageId = parcel.readInt()
+        inRead = parcel.readInt()
+        outRead = parcel.readInt()
+        major_id = parcel.readInt()
+        minor_id = parcel.readInt()
+        isGroupChannel = parcel.getBoolean()
     }
 
     fun setPeerId(peerId: Int): Dialog {

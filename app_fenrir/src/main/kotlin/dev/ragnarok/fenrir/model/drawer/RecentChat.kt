@@ -35,11 +35,11 @@ class RecentChat : AbsMenuItem {
         this.iconUrl = iconUrl
     }
 
-    internal constructor(`in`: Parcel) : super(`in`) {
-        aid = `in`.readInt()
-        peerId = `in`.readInt()
-        title = `in`.readString()
-        iconUrl = `in`.readString()
+    internal constructor(parcel: Parcel) : super(parcel) {
+        aid = parcel.readInt()
+        peerId = parcel.readInt()
+        title = parcel.readString()
+        iconUrl = parcel.readString()
     }
 
     override fun equals(other: Any?): Boolean {

@@ -1165,6 +1165,7 @@ object Dto2Model {
             .setCreatorId(dto.created_by)
             .setCanEdit(dto.can_edit)
             .setFavorite(dto.is_favorite)
+            .setIsDonut(dto.is_donut)
             .setCanPin(dto.can_pin)
             .setPinned(dto.is_pinned)
             .setViewCount(dto.views)

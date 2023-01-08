@@ -36,19 +36,19 @@ class Audio : Parcelable {
     var downloadIndicator = false
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        ownerId = `in`.readInt()
-        artist = `in`.readString()
-        title = `in`.readString()
-        duration = `in`.readInt()
-        url = `in`.readString()
-        isAnimationNow = `in`.getBoolean()
-        isSelected = `in`.getBoolean()
-        isLocal = `in`.getBoolean()
-        isLocalServer = `in`.getBoolean()
-        downloadIndicator = `in`.getBoolean()
-        thumb_image = `in`.readString()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        ownerId = parcel.readInt()
+        artist = parcel.readString()
+        title = parcel.readString()
+        duration = parcel.readInt()
+        url = parcel.readString()
+        isAnimationNow = parcel.getBoolean()
+        isSelected = parcel.getBoolean()
+        isLocal = parcel.getBoolean()
+        isLocalServer = parcel.getBoolean()
+        downloadIndicator = parcel.getBoolean()
+        thumb_image = parcel.readString()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -137,8 +137,8 @@ class Audio : Parcelable {
     companion object {
         @JvmField
         val CREATOR: Parcelable.Creator<Audio> = object : Parcelable.Creator<Audio> {
-            override fun createFromParcel(`in`: Parcel): Audio {
-                return Audio(`in`)
+            override fun createFromParcel(parcel: Parcel): Audio {
+                return Audio(parcel)
             }
 
             override fun newArray(size: Int): Array<Audio?> {

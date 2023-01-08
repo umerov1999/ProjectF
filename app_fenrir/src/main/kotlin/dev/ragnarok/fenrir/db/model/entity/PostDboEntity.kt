@@ -40,6 +40,8 @@ class PostDboEntity : DboEntity() {
         private set
     var isFavorite = false
         private set
+    var isDonut = false
+        private set
     var isCanPublish = false
         private set
     var repostCount = 0
@@ -113,6 +115,11 @@ class PostDboEntity : DboEntity() {
 
     fun setReplyPostId(replyPostId: Int): PostDboEntity {
         this.replyPostId = replyPostId
+        return this
+    }
+
+    fun setIsDonut(isDonut: Boolean): PostDboEntity {
+        this.isDonut = isDonut
         return this
     }
 

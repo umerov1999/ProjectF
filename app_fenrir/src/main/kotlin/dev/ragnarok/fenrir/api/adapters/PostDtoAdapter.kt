@@ -88,6 +88,12 @@ class PostDtoAdapter : AbsAdapter<VKApiPost>("VKApiPost") {
                     kJson.decodeFromJsonElement(VKApiAttachments.serializer(), it)
                 }
         }
+        if (hasObject(root, "donut")) {
+            val donut = root.getAsJsonObject("donut")
+            dto.is_donut = optBoolean(donut, "is_donut")
+        } else {
+            dto.is_donut = false
+        }
         dto.can_edit = optBoolean(root, "can_edit")
         dto.is_favorite = optBoolean(root, "is_favorite")
         dto.signer_id = optInt(root, "signer_id")

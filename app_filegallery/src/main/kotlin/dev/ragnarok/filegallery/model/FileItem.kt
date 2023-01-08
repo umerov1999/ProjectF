@@ -41,17 +41,17 @@ class FileItem : Parcelable {
         this.modification = modification
     }
 
-    constructor(`in`: Parcel) {
-        type = `in`.readInt()
-        file_name = `in`.readString()
-        file_path = `in`.readString()
-        parent_name = `in`.readString()
-        parent_path = `in`.readString()
-        modification = `in`.readLong()
-        size = `in`.readLong()
-        isCanRead = `in`.getBoolean()
-        isSelected = `in`.getBoolean()
-        isHasTag = `in`.getBoolean()
+    constructor(parcel: Parcel) {
+        type = parcel.readInt()
+        file_name = parcel.readString()
+        file_path = parcel.readString()
+        parent_name = parcel.readString()
+        parent_path = parcel.readString()
+        modification = parcel.readLong()
+        size = parcel.readLong()
+        isCanRead = parcel.getBoolean()
+        isSelected = parcel.getBoolean()
+        isHasTag = parcel.getBoolean()
     }
 
     fun checkTag(): FileItem {

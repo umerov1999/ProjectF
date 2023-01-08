@@ -20,21 +20,21 @@ class AudioPlaylist : AbsModel {
     private var original_owner_id = 0
 
     constructor()
-    internal constructor(`in`: Parcel) {
-        id = `in`.readInt()
-        owner_id = `in`.readInt()
-        count = `in`.readInt()
-        update_time = `in`.readLong()
-        Year = `in`.readInt()
-        artist_name = `in`.readString()
-        genre = `in`.readString()
-        title = `in`.readString()
-        description = `in`.readString()
-        thumb_image = `in`.readString()
-        access_key = `in`.readString()
-        original_access_key = `in`.readString()
-        original_id = `in`.readInt()
-        original_owner_id = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        id = parcel.readInt()
+        owner_id = parcel.readInt()
+        count = parcel.readInt()
+        update_time = parcel.readLong()
+        Year = parcel.readInt()
+        artist_name = parcel.readString()
+        genre = parcel.readString()
+        title = parcel.readString()
+        description = parcel.readString()
+        thumb_image = parcel.readString()
+        access_key = parcel.readString()
+        original_access_key = parcel.readString()
+        original_id = parcel.readInt()
+        original_owner_id = parcel.readInt()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

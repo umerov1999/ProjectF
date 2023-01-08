@@ -77,7 +77,7 @@ interface ILocalServerApi {
     fun remotePlayAudioRx(
         server: String,
         filename: String?,
-        `is`: InputStream,
+        inputStream: InputStream,
         listener: PercentagePublisher?
     ): Single<BaseResponse<Int>>
 }

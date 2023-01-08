@@ -17,21 +17,21 @@ interface IUploadApi {
     fun uploadAudioRx(
         server: String,
         filename: String?,
-        `is`: InputStream,
+        inputStream: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadAudioDto>
 
     fun remotePlayAudioRx(
         server: String,
         filename: String?,
-        `is`: InputStream,
+        inputStream: InputStream,
         listener: PercentagePublisher?
     ): Single<BaseResponse<Int>>
 
     fun uploadStoryRx(
         server: String,
         filename: String?,
-        `is`: InputStream,
+        inputStream: InputStream,
         listener: PercentagePublisher?,
         isVideo: Boolean
     ): Single<BaseResponse<UploadStoryDto>>
@@ -63,7 +63,7 @@ interface IUploadApi {
 
     fun uploadPhotoToMessageRx(
         server: String,
-        `is`: InputStream,
+        inputStream: InputStream,
         listener: PercentagePublisher?
     ): Single<UploadPhotoToMessageDto>
 

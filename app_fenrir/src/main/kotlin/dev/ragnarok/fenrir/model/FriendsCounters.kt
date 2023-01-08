@@ -16,11 +16,11 @@ class FriendsCounters : Parcelable {
         this.mutual = mutual
     }
 
-    internal constructor(`in`: Parcel) {
-        all = `in`.readInt()
-        online = `in`.readInt()
-        followers = `in`.readInt()
-        mutual = `in`.readInt()
+    internal constructor(parcel: Parcel) {
+        all = parcel.readInt()
+        online = parcel.readInt()
+        followers = parcel.readInt()
+        mutual = parcel.readInt()
     }
 
     fun getAll(): Int {

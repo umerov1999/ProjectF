@@ -21,12 +21,12 @@ class SelectablePhotoWrapper : Parcelable, Comparable<SelectablePhotoWrapper>, I
         this.photo = photo
     }
 
-    internal constructor(`in`: Parcel) {
-        photo = `in`.readTypedObjectCompat(Photo.CREATOR)!!
-        isSelected = `in`.getBoolean()
-        index = `in`.readInt()
-        current = `in`.getBoolean()
-        isDownloaded = `in`.getBoolean()
+    internal constructor(parcel: Parcel) {
+        photo = parcel.readTypedObjectCompat(Photo.CREATOR)!!
+        isSelected = parcel.getBoolean()
+        index = parcel.readInt()
+        current = parcel.getBoolean()
+        isDownloaded = parcel.getBoolean()
     }
 
     fun setDownloaded(downloaded: Boolean): SelectablePhotoWrapper {

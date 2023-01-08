@@ -1574,17 +1574,17 @@ class MessagesRepository(
             return docsApi.getMessagesUploadServer(dbo.peerId, "audio_message")
                 .flatMap { server ->
                     val file = File(filePath!!)
-                    val `is` = arrayOfNulls<InputStream>(1)
+                    val inputStream = arrayOfNulls<InputStream>(1)
                     try {
-                        `is`[0] = FileInputStream(file)
+                        inputStream[0] = FileInputStream(file)
                         return@flatMap networker.uploads()
                             .uploadDocumentRx(
                                 server.url ?: throw NotFoundException("upload url empty"),
                                 file.name,
-                                `is`[0]!!,
+                                inputStream[0]!!,
                                 null
                             )
-                            .doFinally(safelyCloseAction(`is`[0]))
+                            .doFinally(safelyCloseAction(inputStream[0]))
                             .flatMap { uploadDto ->
                                 docsApi
                                     .save(uploadDto.file, null, null)
@@ -1602,7 +1602,7 @@ class MessagesRepository(
                                     }
                             }
                     } catch (e: FileNotFoundException) {
-                        safelyClose(`is`[0])
+                        safelyClose(inputStream[0])
                         return@flatMap Single.error<Optional<IAttachmentToken>>(e)
                     }
                 }

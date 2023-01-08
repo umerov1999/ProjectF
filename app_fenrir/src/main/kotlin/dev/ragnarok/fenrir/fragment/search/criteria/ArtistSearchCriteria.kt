@@ -5,15 +5,15 @@ import android.os.Parcelable
 
 class ArtistSearchCriteria : BaseSearchCriteria {
     constructor(query: String?) : super(query)
-    internal constructor(`in`: Parcel) : super(`in`)
+    internal constructor(parcel: Parcel) : super(parcel)
 
     override fun describeContents(): Int {
         return 0
     }
 
     companion object CREATOR : Parcelable.Creator<ArtistSearchCriteria> {
-        override fun createFromParcel(`in`: Parcel): ArtistSearchCriteria {
-            return ArtistSearchCriteria(`in`)
+        override fun createFromParcel(parcel: Parcel): ArtistSearchCriteria {
+            return ArtistSearchCriteria(parcel)
         }
 
         override fun newArray(size: Int): Array<ArtistSearchCriteria?> {
