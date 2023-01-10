@@ -38,6 +38,7 @@
         android:allowAudioPlaybackCapture="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -48,7 +49,7 @@
         android:supportsRtl="false"
         android:theme="@style/App.DayNight"
         android:usesCleartextTraffic="true"
-        tools:targetApi="s">
+        tools:targetApi="tiramisu">
 
         <activity
             android:name="dev.ragnarok.filegallery.activity.MainActivity"

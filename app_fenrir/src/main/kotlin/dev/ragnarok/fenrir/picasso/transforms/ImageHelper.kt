@@ -6,55 +6,69 @@ import android.os.Build
 object ImageHelper {
     fun getRoundedBitmap(workBitmap: Bitmap?): Bitmap? {
         workBitmap ?: return null
-        var bitmap = workBitmap
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && bitmap.config == Bitmap.Config.HARDWARE) {
-            val tmpBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-            bitmap.recycle()
-            bitmap = tmpBitmap
-            if (bitmap == null) {
-                return null
-            }
+        val bitmapWidth = workBitmap.width
+        val bitmapHeight = workBitmap.height
+        val isHardware =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && workBitmap.config == Bitmap.Config.HARDWARE
+
+        var output: Bitmap? = null
+        val canvas: Canvas
+        var obj: Picture? = null
+        if (isHardware) {
+            obj = Picture()
+            canvas = obj.beginRecording(bitmapWidth, bitmapHeight)
+        } else {
+            output = Bitmap.createBitmap(bitmapWidth, bitmapHeight, workBitmap.config)
+            canvas = Canvas(output)
         }
-        val output = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(output)
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
-        paint.shader = BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
-        canvas.drawOval(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat(), paint)
-        if (bitmap != output) {
-            bitmap.recycle()
+        paint.shader = BitmapShader(workBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+        canvas.drawOval(0f, 0f, bitmapWidth.toFloat(), bitmapHeight.toFloat(), paint)
+        workBitmap.recycle()
+        if (isHardware && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            obj?.endRecording()
+            output =
+                obj?.let { Bitmap.createBitmap(it, it.width, it.height, Bitmap.Config.HARDWARE) }
         }
         return output
     }
 
     fun getEllipseBitmap(workBitmap: Bitmap?, angle: Float): Bitmap? {
         workBitmap ?: return null
-        var bitmap = workBitmap
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && bitmap.config == Bitmap.Config.HARDWARE) {
-            val tmpBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-            bitmap.recycle()
-            bitmap = tmpBitmap
-            if (bitmap == null) {
-                return null
-            }
+        val bitmapWidth = workBitmap.width
+        val bitmapHeight = workBitmap.height
+        val isHardware =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && workBitmap.config == Bitmap.Config.HARDWARE
+
+        var output: Bitmap? = null
+        val canvas: Canvas
+        var obj: Picture? = null
+        if (isHardware) {
+            obj = Picture()
+            canvas = obj.beginRecording(bitmapWidth, bitmapHeight)
+        } else {
+            output = Bitmap.createBitmap(bitmapWidth, bitmapHeight, workBitmap.config)
+            canvas = Canvas(output)
         }
-        val output = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(output)
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
-        paint.shader = BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
-        val pth = (bitmap.width + bitmap.height).toFloat() / 2
+        paint.shader = BitmapShader(workBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+        val pth = (bitmapWidth + bitmapHeight).toFloat() / 2
         canvas.drawRoundRect(
             0f,
             0f,
-            bitmap.width.toFloat(),
-            bitmap.height.toFloat(),
+            bitmapWidth.toFloat(),
+            bitmapHeight.toFloat(),
             pth * angle,
             pth * angle,
             paint
         )
-        if (bitmap != output) {
-            bitmap.recycle()
+        workBitmap.recycle()
+        if (isHardware && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            obj?.endRecording()
+            output =
+                obj?.let { Bitmap.createBitmap(it, it.width, it.height, Bitmap.Config.HARDWARE) }
         }
         return output
     }

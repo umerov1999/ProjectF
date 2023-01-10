@@ -180,6 +180,7 @@ class KeyExchangeService : Service() {
         }
         mUtilsInteractor.getServerTime(accountId)
             .fromIOToMain()
+            .delay(1500, TimeUnit.MILLISECONDS)
             .subscribe({
                 val session = KeyExchangeSession.createOutSession(
                     it, accountId, peerId, keyLocationPolicy

@@ -4,6 +4,7 @@ import android.content.Context
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.api.rest.HttpException
 import dev.ragnarok.filegallery.nonNullNoEmpty
+import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -14,7 +15,7 @@ object ErrorLocalizer {
             is SocketTimeoutException -> {
                 context.getString(R.string.error_timeout_message)
             }
-            is UnknownHostException -> {
+            is ConnectException, is UnknownHostException -> {
                 context.getString(R.string.error_unknown_host)
             }
             is HttpException -> {

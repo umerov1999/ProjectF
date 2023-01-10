@@ -14,4 +14,5 @@ interface IRequestsView : IMvpView, IErrorView {
     fun showUserWall(accountId: Int, user: User)
     fun showRefreshing(refreshing: Boolean)
     fun showNotRequests(data: List<Owner>, accountId: Int, ownerId: Int)
+    fun updateCount(count: Int)
 }

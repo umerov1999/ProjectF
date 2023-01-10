@@ -69,6 +69,7 @@ class RequestsPresenter(accountId: Int, private val userId: Int, savedInstanceSt
     override fun onGuiCreated(viewHost: IRequestsView) {
         super.onGuiCreated(viewHost)
         viewHost.displayData(data, isSearchNow)
+        viewHost.updateCount(allData.size)
         resolveSwipeRefreshAvailability()
     }
 
@@ -129,6 +130,7 @@ class RequestsPresenter(accountId: Int, private val userId: Int, savedInstanceSt
         }
         offset += if (isNotFriendShow) 1000 else 200
         resolveRefreshingView()
+        view?.updateCount(allData.size)
     }
 
     private fun loadAllCachedData() {
@@ -335,7 +337,6 @@ class RequestsPresenter(accountId: Int, private val userId: Int, savedInstanceSt
         private const val SEARCH_CACHE = 1
         private const val SEARCH_WEB = 2
         private const val WEB_SEARCH_DELAY = 1000
-        private const val WEB_SEARCH_COUNT_PER_LOAD = 100
         internal fun allow(user: User, preparedQ: String): Boolean {
             val full = user.fullName.lowercase(Locale.getDefault())
             return full.contains(preparedQ)

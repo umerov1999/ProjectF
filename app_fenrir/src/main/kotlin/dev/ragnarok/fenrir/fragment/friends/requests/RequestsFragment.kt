@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.textview.MaterialTextView
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -31,14 +32,16 @@ class RequestsFragment : BaseMvpFragment<RequestsPresenter, IRequestsView>(),
     FriendsRecycleAdapter.Listener, IRequestsView {
     private var mAdapter: FriendsRecycleAdapter? = null
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
+    private var mCount: MaterialTextView? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
-        val root = inflater.inflate(R.layout.fragment_friends, container, false)
+        val root = inflater.inflate(R.layout.fragment_requests, container, false)
         val mRecyclerView: RecyclerView = root.findViewById(R.id.list)
+        mCount = root.findViewById(R.id.count_data)
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener {
             presenter?.fireRefresh()
@@ -77,6 +80,15 @@ class RequestsFragment : BaseMvpFragment<RequestsPresenter, IRequestsView>(),
         mAdapter?.setListener(this)
         mRecyclerView.adapter = mAdapter
         return root
+    }
+
+    override fun updateCount(count: Int) {
+        if (count <= 0) {
+            mCount?.visibility = View.GONE
+        } else {
+            mCount?.visibility = View.VISIBLE
+        }
+        mCount?.text = getString(R.string.people_count, count)
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<RequestsPresenter> {
