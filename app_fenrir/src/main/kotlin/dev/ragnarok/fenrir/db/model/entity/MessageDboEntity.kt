@@ -30,7 +30,7 @@ class MessageDboEntity : DboEntity() {
         private set
     var forwardCount = 0
         private set
-    var isHasAttachmens = false
+    var isHasAttachments = false
         private set
     var keyboard: KeyboardEntity? = null
         private set
@@ -130,8 +130,8 @@ class MessageDboEntity : DboEntity() {
         return this
     }
 
-    fun setHasAttachmens(hasAttachmens: Boolean): MessageDboEntity {
-        isHasAttachmens = hasAttachmens
+    fun setHasAttachments(hasAttachments: Boolean): MessageDboEntity {
+        isHasAttachments = hasAttachments
         return this
     }
 

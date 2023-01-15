@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.realtime
 
-import dev.ragnarok.fenrir.api.model.Identificable
 import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.interfaces.Identificable
 import dev.ragnarok.fenrir.model.Message
 
 class TmpResult(id: Int, accountId: Int, capacity: Int) {
@@ -45,7 +45,7 @@ class TmpResult(id: Int, accountId: Int, capacity: Int) {
         return msg
     }
 
-    fun setMissingIds(ids: Collection<Int?>): TmpResult {
+    fun setMissingIds(ids: Collection<Int>): TmpResult {
         for (msg in data) {
             msg.setAlreadyExists(!ids.contains(msg.getObjectId()))
         }

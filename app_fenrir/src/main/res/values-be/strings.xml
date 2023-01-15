@@ -130,7 +130,7 @@
     <string name="call_message">[званок]</string>
     <string name="doc_message">[дакумент]</string>
     <string name="gift_message">[падарунак]</string>
-    <string name="graffity_message">[графіці]</string>
+    <string name="graffiti_message">[графіці]</string>
     <string name="photo_message">[фота]</string>
     <string name="video_message">[відэа]</string>
     <string name="wall_message">[рэпост]</string>
@@ -1441,7 +1441,7 @@
     <string name="geo">Месца</string>
     <string name="input_call">Выходны званок</string>
     <string name="output_call">Уваходны званок</string>
-    <string name="graffity">Графіці</string>
+    <string name="graffiti">Графіці</string>
     <string name="download_photo_tap">Спампоўваць фота па доўгім націску</string>
     <string name="photo_album">Фота Альбом</string>
     <string name="custom_second_message_color">Другі колер выходнага паведамлення</string>
@@ -1715,4 +1715,5 @@
     <string name="turn_on">Уключыць</string>
     <string name="photos_with_user">Фатаграфіі з карыстальнікам</string>
     <string name="wall_photos">Фатаграфіі на сцяне</string>
+    <string name="block_or_delete">Заблакаваць падпісчыка? Рэжым захавацца на сесію</string>
 </resources>

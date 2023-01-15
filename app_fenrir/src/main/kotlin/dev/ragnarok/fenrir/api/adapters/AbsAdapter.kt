@@ -212,6 +212,26 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             }
         }
 
+        fun getFirstLong(json: JsonObject?, fallback: Long, vararg names: String): Long {
+            contract {
+                returns(true) implies (json != null)
+            }
+            json ?: return fallback
+            return try {
+                for (name in names) {
+                    val element = json[name]
+                    if (element is JsonPrimitive) {
+                        return element.longOrNull ?: fallback
+                    }
+                }
+                fallback
+            } catch (e: Exception) {
+                if (Constants.IS_DEBUG) {
+                    e.printStackTrace()
+                }
+                fallback
+            }
+        }
 
         @JvmOverloads
         fun optLong(array: JsonArray?, index: Int, fallback: Long = 0L): Long {
@@ -345,7 +365,6 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             }
         }
 
-
         fun optIntArray(root: JsonObject?, name: String, fallback: IntArray?): IntArray? {
             contract {
                 returns(true) implies (root != null)
@@ -363,7 +382,6 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
                 fallback
             }
         }
-
 
         fun optIntArray(array: JsonArray?, index: Int, fallback: IntArray?): IntArray? {
             contract {
@@ -384,6 +402,57 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
                 }
                 fallback
             }
+        }
+
+        fun optLongArray(root: JsonObject?, name: String, fallback: LongArray?): LongArray? {
+            contract {
+                returns(true) implies (root != null)
+            }
+            root ?: return fallback
+            return try {
+                val element = root[name]
+                if (!checkArray(element)) {
+                    fallback
+                } else parseLongArray(element.jsonArray)
+            } catch (e: Exception) {
+                if (Constants.IS_DEBUG) {
+                    e.printStackTrace()
+                }
+                fallback
+            }
+        }
+
+        fun optLongArray(array: JsonArray?, index: Int, fallback: LongArray?): LongArray? {
+            contract {
+                returns(true) implies (array != null)
+            }
+            array ?: return fallback
+            return try {
+                if (index < 0 || index >= array.size) {
+                    return fallback
+                }
+                val array_r = array[index]
+                if (!checkArray(array_r)) {
+                    fallback
+                } else parseLongArray(array_r.jsonArray)
+            } catch (e: Exception) {
+                if (Constants.IS_DEBUG) {
+                    e.printStackTrace()
+                }
+                fallback
+            }
+        }
+
+        private fun parseLongArray(array: JsonArray?): LongArray {
+            contract {
+                returns(true) implies (array != null)
+            }
+            array ?: return LongArray(0)
+            val list = LongArray(array.size)
+            for (i in 0 until array.size) {
+                list[i] = array[i].jsonPrimitive.long
+            }
+            return list
         }
 
         private fun parseIntArray(array: JsonArray?): IntArray {

@@ -6,6 +6,7 @@ import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import java.io.InterruptedIOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -15,13 +16,20 @@ object ErrorLocalizer {
 
     fun localizeThrowable(context: Context, throwable: Throwable?): String {
         throwable ?: return "null"
-        if (throwable is ApiException) {
-            val error = throwable.error
-            return api().getMessage(context, error.errorCode, error.errorMsg) ?: "null"
-        }
         return when (throwable) {
+            is ApiException -> {
+                val error = throwable.error
+                api().getMessage(context, error.errorCode, error.errorMsg) ?: "null"
+            }
             is SocketTimeoutException -> {
                 context.getString(R.string.error_timeout_message)
+            }
+            is InterruptedIOException -> {
+                if ("timeout" == throwable.message || "executor rejected" == throwable.message) {
+                    context.getString(R.string.error_timeout_message)
+                } else {
+                    throwable.message.nonNullNoEmpty({ it }, { throwable.toString() })
+                }
             }
             is ConnectException, is UnknownHostException -> {
                 context.getString(R.string.error_unknown_host)

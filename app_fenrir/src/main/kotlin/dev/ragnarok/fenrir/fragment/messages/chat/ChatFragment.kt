@@ -205,7 +205,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         parentFragmentManager.setFragmentResultListener(
             MessageAttachmentsFragment.MESSAGE_CLOSE_ONLY,
             this
-        ) { _, _ -> presenter?.fireSendClickFromAttachmens() }
+        ) { _, _ -> presenter?.fireSendClickFromAttachments() }
         parentFragmentManager.setFragmentResultListener(
             MessageAttachmentsFragment.MESSAGE_SYNC_ATTACHMENTS,
             this

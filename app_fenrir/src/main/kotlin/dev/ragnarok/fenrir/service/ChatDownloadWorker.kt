@@ -90,8 +90,8 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
         } else chat_title
     }
 
-    private fun getAvatarTag(PeerId: Int): String {
-        return "avatar_id_" + if (PeerId < 0) "club" else "" + abs(PeerId)
+    private fun getAvatarTag(peerId: Int): String {
+        return "avatar_id_" + if (peerId < 0) "club" else "" + abs(peerId)
     }
 
     private fun Build_Message(i: Message, isSub: Boolean): String {

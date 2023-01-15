@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.api.model
 
 import dev.ragnarok.fenrir.api.adapters.AudioPlaylistDtoAdapter
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.IIdComparable
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import kotlinx.serialization.Serializable
 
 @Serializable(with = AudioPlaylistDtoAdapter::class)

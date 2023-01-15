@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.db.model.entity.StickerSetEntity
 import dev.ragnarok.fenrir.db.model.entity.StickersKeywordsEntity
 import dev.ragnarok.fenrir.domain.IStickersInteractor
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapSticker
-import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapStikerSet
+import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapStickerSet
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildStickerFromDbo
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.map
 import dev.ragnarok.fenrir.domain.mappers.MapUtil.mapAll
@@ -47,7 +47,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
                         )
                     }).setActive(true).setPurchased(true)
                 val ret =
-                    mapAllMutable(list) { mapStikerSet(it) }
+                    mapAllMutable(list) { mapStickerSet(it) }
                 ret.add(temp)
                 storage.storeStickerSets(accountId, ret)
             }

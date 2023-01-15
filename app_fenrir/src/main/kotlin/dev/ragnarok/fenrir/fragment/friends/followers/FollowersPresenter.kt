@@ -101,7 +101,7 @@ class FollowersPresenter(accountId: Int, private val userId: Int, savedInstanceS
             }
             val add_followers = ArrayList<Owner>()
             for (i in users) {
-                if (indexOfOwner(data, i.getObjectId()) == -1) {
+                if (indexOf(data, i.getObjectId()) == -1) {
                     add_followers.add(i)
                 }
             }

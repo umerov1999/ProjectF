@@ -27,16 +27,16 @@ class TempDataHelper(context: Context) :
     }
 
     private fun createStickerSetTable(db: SQLiteDatabase) {
-        val sql = "CREATE TABLE IF NOT EXISTS [" + StikerSetColumns.TABLENAME + "] (\n" +
+        val sql = "CREATE TABLE IF NOT EXISTS [" + StickerSetColumns.TABLENAME + "] (\n" +
                 " [" + BaseColumns._ID + "] INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE, " +
-                " [" + StikerSetColumns.ACCOUNT_ID + "] INTEGER, " +
-                " [" + StikerSetColumns.POSITION + "] INTEGER, " +
-                " [" + StikerSetColumns.TITLE + "] TEXT, " +
-                " [" + StikerSetColumns.ICON + "] BLOB, " +
-                " [" + StikerSetColumns.PURCHASED + "] BOOLEAN, " +
-                " [" + StikerSetColumns.PROMOTED + "] BOOLEAN, " +
-                " [" + StikerSetColumns.ACTIVE + "] BOOLEAN, " +
-                " [" + StikerSetColumns.STICKERS + "] BLOB, " +
+                " [" + StickerSetColumns.ACCOUNT_ID + "] INTEGER, " +
+                " [" + StickerSetColumns.POSITION + "] INTEGER, " +
+                " [" + StickerSetColumns.TITLE + "] TEXT, " +
+                " [" + StickerSetColumns.ICON + "] BLOB, " +
+                " [" + StickerSetColumns.PURCHASED + "] BOOLEAN, " +
+                " [" + StickerSetColumns.PROMOTED + "] BOOLEAN, " +
+                " [" + StickerSetColumns.ACTIVE + "] BOOLEAN, " +
+                " [" + StickerSetColumns.STICKERS + "] BLOB, " +
                 " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
@@ -139,7 +139,7 @@ class TempDataHelper(context: Context) :
         db.execSQL("DROP TABLE IF EXISTS " + LogColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + ShortcutColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + AudioColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + StikerSetColumns.TABLENAME)
+        db.execSQL("DROP TABLE IF EXISTS " + StickerSetColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + StickersKeywordsColumns.TABLENAME)
         onCreate(db)
     }

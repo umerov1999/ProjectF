@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
 import dev.ragnarok.fenrir.*
-import dev.ragnarok.fenrir.api.model.Identificable
+import dev.ragnarok.fenrir.api.model.interfaces.Identificable
 import dev.ragnarok.fenrir.util.ParcelUtils.readIntStringMap
 import dev.ragnarok.fenrir.util.ParcelUtils.writeIntStringMap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
@@ -390,8 +390,8 @@ class Message : AbsModel, Identificable, ISelectable {
         get() = status == MessageStatus.SENT
     val isSticker: Boolean
         get() = safeCountOf(attachments?.stickers) > 0
-    val isGraffity: Boolean
-        get() = safeCountOf(attachments?.graffity) > 0
+    val isGraffiti: Boolean
+        get() = safeCountOf(attachments?.graffiti) > 0
     val isCall: Boolean
         get() = safeCountOf(attachments?.calls) > 0
     val isGift: Boolean
@@ -412,8 +412,8 @@ class Message : AbsModel, Identificable, ISelectable {
                 isSticker -> {
                     return MessageType.STICKER
                 }
-                isGraffity -> {
-                    return MessageType.GRAFFITY
+                isGraffiti -> {
+                    return MessageType.GRAFFITI
                 }
                 isCall -> {
                     return MessageType.CALL

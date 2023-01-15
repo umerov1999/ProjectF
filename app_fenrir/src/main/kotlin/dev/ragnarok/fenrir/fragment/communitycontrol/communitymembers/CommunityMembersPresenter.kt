@@ -75,13 +75,13 @@ class CommunityMembersPresenter(
         if (do_scan && isNotFriendShow) {
             val not_members = ArrayList<Owner>()
             for (i in mMembers) {
-                if (Utils.indexOfOwner(data, i.ownerId) == -1) {
+                if (Utils.indexOf(data, i.ownerId) == -1) {
                     not_members.add(i)
                 }
             }
             val add_members = ArrayList<Owner>()
             for (i in data) {
-                if (Utils.indexOfOwner(mMembers, i.ownerId) == -1) {
+                if (Utils.indexOf(mMembers, i.ownerId) == -1) {
                     add_members.add(i)
                 }
             }

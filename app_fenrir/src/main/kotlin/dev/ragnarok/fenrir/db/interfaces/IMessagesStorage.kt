@@ -35,7 +35,7 @@ interface IMessagesStorage : IStorage {
     fun findDraftMessage(accountId: Int, peerId: Int): Maybe<DraftMessage>
 
     @CheckResult
-    fun saveDraftMessageBody(acocuntId: Int, peerId: Int, body: String?): Single<Int>
+    fun saveDraftMessageBody(accountId: Int, peerId: Int, body: String?): Single<Int>
 
     //@CheckResult
     //Maybe<Integer> getDraftMessageId(int accountId, int peerId);
@@ -61,17 +61,17 @@ interface IMessagesStorage : IStorage {
     //Completable updateMessageFlag(int accountId, int messageId, Collection<Pair<Integer, Boolean>> values);
     @CheckResult
     fun deleteMessage(accountId: Int, messageId: Int): Single<Boolean>
-    fun findLastSentMessageIdForPeer(accounId: Int, peerId: Int): Single<Optional<Int>>
+    fun findLastSentMessageIdForPeer(accountId: Int, peerId: Int): Single<Optional<Int>>
     fun findMessagesByIds(
         accountId: Int,
         ids: List<Int>,
-        withAtatchments: Boolean,
+        withAttachments: Boolean,
         withForwardMessages: Boolean
     ): Single<List<MessageDboEntity>>
 
     fun findFirstUnsentMessage(
         accountIds: Collection<Int>,
-        withAtatchments: Boolean,
+        withAttachments: Boolean,
         withForwardMessages: Boolean
     ): Single<Optional<Pair<Int, MessageDboEntity>>>
 

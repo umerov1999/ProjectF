@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.api.interfaces
 
 import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.UploadChatPhotoResponse
 import dev.ragnarok.fenrir.api.model.response.UploadOwnerPhotoResponse
@@ -100,7 +101,7 @@ interface IPhotosApi {
 
     @CheckResult
     operator fun get(
-        ownerId: Int?, albumId: String?, photoIds: Collection<Int?>?, rev: Boolean?,
+        ownerId: Int?, albumId: String?, photoIds: Collection<Int>?, rev: Boolean?,
         offset: Int?, count: Int?
     ): Single<Items<VKApiPhoto>>
 
@@ -130,7 +131,7 @@ interface IPhotosApi {
 
     @CheckResult
     fun getAlbums(
-        ownerId: Int?, albumIds: Collection<Int?>?, offset: Int?,
+        ownerId: Int?, albumIds: Collection<Int>?, offset: Int?,
         count: Int?, needSystem: Boolean?, needCovers: Boolean?
     ): Single<Items<VKApiPhotoAlbum>>
 

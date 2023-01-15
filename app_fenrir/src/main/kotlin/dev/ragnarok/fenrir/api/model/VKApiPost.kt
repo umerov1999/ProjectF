@@ -1,6 +1,10 @@
 package dev.ragnarok.fenrir.api.model
 
 import dev.ragnarok.fenrir.api.adapters.PostDtoAdapter
+import dev.ragnarok.fenrir.api.model.interfaces.Commentable
+import dev.ragnarok.fenrir.api.model.interfaces.Copyable
+import dev.ragnarok.fenrir.api.model.interfaces.Likeable
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import kotlinx.serialization.Serializable

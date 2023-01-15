@@ -22,6 +22,10 @@ class MentionCommentFeedback : Feedback {
         commentOf = readModel(parcel)
     }
 
+    override fun getModelType(): Int {
+        return FeedbackModelType.MODEL_MENTIONCOMMENT_FEEDBACK
+    }
+
     override fun writeToParcel(dest: Parcel, flags: Int) {
         super.writeToParcel(dest, flags)
         dest.writeTypedObjectCompat(where, flags)

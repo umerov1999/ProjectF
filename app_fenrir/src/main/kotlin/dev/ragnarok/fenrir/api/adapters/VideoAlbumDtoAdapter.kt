@@ -22,7 +22,7 @@ class VideoAlbumDtoAdapter : AbsAdapter<VKApiVideoAlbum>("VKApiVideoAlbum") {
         album.owner_id = optInt(root, "owner_id")
         album.title = optString(root, "title")
         album.count = optInt(root, "count")
-        album.updated_time = optInt(root, "updated_time").toLong()
+        album.updated_time = optLong(root, "updated_time")
         if (hasObject(root, "privacy_view")) {
             album.privacy =
                 root["privacy_view"]?.let {

@@ -1,83 +1,94 @@
 package dev.ragnarok.fenrir.api.model
 
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
+
 object AttachmentsTokenCreator {
     fun ofDocument(id: Int, ownerId: Int, accessKey: String?): IAttachmentToken {
-        return AttachmentToken("doc", id, ownerId, accessKey)
+        return AttachmentTokens.AttachmentToken("doc", id, ownerId, accessKey)
     }
 
     fun ofAudio(id: Int, ownerId: Int, accessKey: String?): IAttachmentToken {
-        return AttachmentToken("audio", id, ownerId, accessKey)
+        return AttachmentTokens.AttachmentToken("audio", id, ownerId, accessKey)
     }
 
     fun ofLink(url: String?): IAttachmentToken {
-        return LinkAttachmentToken(url)
+        return AttachmentTokens.LinkAttachmentToken(url)
     }
 
     fun ofArticle(id: Int, ownerId: Int, accessKey: String?): IAttachmentToken {
-        return AttachmentToken("article", id, ownerId, accessKey)
+        return AttachmentTokens.AttachmentToken("article", id, ownerId, accessKey)
     }
 
     fun ofStory(id: Int, ownerId: Int, accessKey: String?): IAttachmentToken {
-        return AttachmentToken("story", id, ownerId, accessKey)
+        return AttachmentTokens.AttachmentToken("story", id, ownerId, accessKey)
     }
 
     fun ofPhotoAlbum(id: Int, ownerId: Int): IAttachmentToken {
-        return AttachmentToken("album", id, ownerId)
+        return AttachmentTokens.AttachmentToken("album", id, ownerId)
     }
 
     fun ofAudioPlaylist(id: Int, ownerId: Int, accessKey: String?): IAttachmentToken {
-        return AttachmentToken("audio_playlist", id, ownerId, accessKey)
+        return AttachmentTokens.AttachmentToken("audio_playlist", id, ownerId, accessKey)
     }
 
-    fun ofGraffity(id: Int, ownerId: Int, accessKey: String?): IAttachmentToken {
-        return AttachmentToken("graffiti", id, ownerId, accessKey)
+    fun ofGraffiti(id: Int, ownerId: Int, accessKey: String?): IAttachmentToken {
+        return AttachmentTokens.AttachmentToken("graffiti", id, ownerId, accessKey)
     }
 
-    fun ofCall(initiator_id: Int, receiver_id: Int, state: String?, time: Long): IAttachmentToken {
-        return AttachmentToken("call", initiator_id, receiver_id, state + "_" + time)
+    fun ofCall(
+        initiator_id: Int,
+        receiver_id: Int,
+        state: String?,
+        time: Long
+    ): IAttachmentToken {
+        return AttachmentTokens.AttachmentTokenStringSpecial(
+            "call",
+            initiator_id.toString(),
+            receiver_id.toString() + "_{$state}_$time"
+        )
     }
 
     fun ofGeo(latitude: String?, longitude: String?): IAttachmentToken {
-        return AttachmentToken("geo", latitude.hashCode(), longitude.hashCode())
+        return AttachmentTokens.AttachmentToken("geo", latitude.hashCode(), longitude.hashCode())
     }
 
     fun ofPhoto(id: Int, ownerId: Int, accessKey: String?): IAttachmentToken {
-        return AttachmentToken("photo", id, ownerId, accessKey)
+        return AttachmentTokens.AttachmentToken("photo", id, ownerId, accessKey)
     }
 
     fun ofPoll(id: Int, ownerId: Int): IAttachmentToken {
-        return AttachmentToken("poll", id, ownerId)
+        return AttachmentTokens.AttachmentToken("poll", id, ownerId)
     }
 
     fun ofWallReply(id: Int, ownerId: Int): IAttachmentToken {
-        return AttachmentToken("wall_reply", id, ownerId)
+        return AttachmentTokens.AttachmentToken("wall_reply", id, ownerId)
     }
 
     fun ofPost(id: Int, ownerId: Int): IAttachmentToken {
-        return AttachmentToken("wall", id, ownerId)
+        return AttachmentTokens.AttachmentToken("wall", id, ownerId)
     }
 
     fun ofError(type: String?, data: String?): IAttachmentToken {
-        return AttachmentToken("error", type.hashCode(), data.hashCode())
+        return AttachmentTokens.AttachmentToken("error", type.hashCode(), data.hashCode())
     }
 
     fun ofEvent(id: Int, button_text: String?): IAttachmentToken {
-        return AttachmentToken("event", id, button_text.hashCode())
+        return AttachmentTokens.AttachmentToken("event", id, button_text.hashCode())
     }
 
     fun ofMarket(id: Int, ownerId: Int, accessKey: String?): IAttachmentToken {
-        return AttachmentToken("market", id, ownerId, accessKey)
+        return AttachmentTokens.AttachmentToken("market", id, ownerId, accessKey)
     }
 
     fun ofMarketAlbum(id: Int, ownerId: Int, accessKey: String?): IAttachmentToken {
-        return AttachmentToken("market_album", id, ownerId, accessKey)
+        return AttachmentTokens.AttachmentToken("market_album", id, ownerId, accessKey)
     }
 
     fun ofVideo(id: Int, ownerId: Int, accessKey: String?): IAttachmentToken {
-        return AttachmentToken("video", id, ownerId, accessKey)
+        return AttachmentTokens.AttachmentToken("video", id, ownerId, accessKey)
     }
 
     fun ofArtist(id: String?): IAttachmentToken {
-        return AttachmentTokenString("artist", id)
+        return AttachmentTokens.AttachmentTokenForArtist("artist", id)
     }
 }

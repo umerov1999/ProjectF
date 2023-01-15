@@ -133,7 +133,7 @@ class DialogsAdapter(private val mContext: Context, private var mDialogs: List<D
                 MessageType.CALL -> mContext.getString(R.string.call_message)
                 MessageType.DOC -> mContext.getString(R.string.doc_message)
                 MessageType.GIFT -> mContext.getString(R.string.gift_message)
-                MessageType.GRAFFITY -> mContext.getString(R.string.graffity_message)
+                MessageType.GRAFFITI -> mContext.getString(R.string.graffiti_message)
                 MessageType.PHOTO -> mContext.getString(R.string.photo_message)
                 MessageType.STICKER -> mContext.getString(R.string.sticker_message)
                 MessageType.VIDEO -> mContext.getString(R.string.video_message)

@@ -17,7 +17,7 @@ import java.lang.ref.WeakReference
 
 class StickersKeyWordsAdapter(private val context: Context, private var stickers: List<Sticker>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val isNightStiker: Boolean =
+    private val isNightSticker: Boolean =
         Settings.get().ui().isStickers_by_theme && Settings.get().ui().isDarkModeEnabled(
             context
         )
@@ -47,7 +47,7 @@ class StickersKeyWordsAdapter(private val context: Context, private var stickers
         val item = stickers[position]
         val normalHolder = holder as StickerHolder
         normalHolder.root.visibility = View.VISIBLE
-        val url = item.getImage(256, isNightStiker).url
+        val url = item.getImage(256, isNightSticker).url
         if (url.isNullOrEmpty()) {
             with().cancelRequest(normalHolder.root)
             normalHolder.root.setImageResource(R.drawable.ic_avatar_unknown)

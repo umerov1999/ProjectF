@@ -56,7 +56,7 @@ class AttachmentsViewBinder(
     private val mNoactiveWaveFormColor: Int
     private val mVoiceSharedHolders: SharedHolders<VoiceHolder> = SharedHolders(true)
     private val mAttachmentsActionCallback: OnAttachmentsActionCallback?
-    private val isNightStiker: Boolean
+    private val isNightSticker: Boolean
     private val expandVoiceTranscript: Boolean
     private var mVoiceActionListener: VoiceActionListener? = null
     private var mOnHashTagClickListener: EmojiconTextView.OnHashTagClickListener? = null
@@ -308,7 +308,7 @@ class AttachmentsViewBinder(
         val sticker = stickers[0]
         val prefferedStickerSize = Utils.dpToPx(PREFFERED_STICKER_SIZE.toFloat(), mContext)
             .toInt()
-        val image = sticker.getImage(256, isNightStiker)
+        val image = sticker.getImage(256, isNightSticker)
         val horisontal = image.height.orZero() < image.width.orZero()
         val proporsion = image.width.orZero().toDouble() / image.height.toDouble()
         val finalWidth: Float
@@ -324,7 +324,7 @@ class AttachmentsViewBinder(
         imageView.layoutParams.width = finalWidth.toInt()
         if (sticker.isAnimated) {
             imageView.fromNet(
-                sticker.getAnimationByType(if (isNightStiker) "dark" else "light"),
+                sticker.getAnimationByType(if (isNightSticker) "dark" else "light"),
                 Utils.createOkHttp(5, true),
                 finalWidth.toInt(),
                 finalHeihgt.toInt()
@@ -567,7 +567,7 @@ class AttachmentsViewBinder(
                 val tvDetails = itemView.findViewById<TextView>(R.id.item_document_ext_size)
                 val tvPostText: EmojiconTextView = itemView.findViewById(R.id.item_message_text)
                 val ivPhotoT: ShapeableImageView = itemView.findViewById(R.id.item_document_image)
-                val ivGraffity = itemView.findViewById<ImageView>(R.id.item_document_graffity)
+                val ivGraffiti = itemView.findViewById<ImageView>(R.id.item_document_graffiti)
                 val ivPhoto_Post = itemView.findViewById<ImageView>(R.id.item_post_avatar_image)
                 val ivType = itemView.findViewById<ImageView>(R.id.item_document_type)
                 val tvShowMore = itemView.findViewById<TextView>(R.id.item_post_show_more)
@@ -651,7 +651,7 @@ class AttachmentsViewBinder(
                 attachmentsRoot.visibility = View.GONE
                 itemView.setOnClickListener { openDocLink(doc) }
                 ivPhoto_Post.visibility = View.GONE
-                ivGraffity.visibility = View.GONE
+                ivGraffiti.visibility = View.GONE
                 when (doc.type) {
                     AttachmentsTypes.DOC -> if (imageUrl != null) {
                         ivType.visibility = View.GONE
@@ -662,12 +662,12 @@ class AttachmentsViewBinder(
                         ivPhotoT.visibility = View.GONE
                         ivType.setImageResource(R.drawable.file)
                     }
-                    AttachmentsTypes.GRAFFITY -> {
+                    AttachmentsTypes.GRAFFITI -> {
                         ivPhotoT.visibility = View.GONE
                         if (imageUrl != null) {
                             ivType.visibility = View.GONE
-                            ivGraffity.visibility = View.VISIBLE
-                            displayAvatar(ivGraffity, null, imageUrl, Constants.PICASSO_TAG)
+                            ivGraffiti.visibility = View.VISIBLE
+                            displayAvatar(ivGraffiti, null, imageUrl, Constants.PICASSO_TAG)
                         } else {
                             ivType.visibility = View.VISIBLE
                             ivType.setImageResource(R.drawable.counter)
@@ -1104,7 +1104,7 @@ class AttachmentsViewBinder(
         mAttachmentsActionCallback = attachmentsActionCallback
         mActiveWaveFormColor = CurrentTheme.getColorPrimary(mContext)
         mNoactiveWaveFormColor = Utils.adjustAlpha(mActiveWaveFormColor, 0.5f)
-        isNightStiker =
+        isNightSticker =
             Settings.get().ui().isStickers_by_theme && Settings.get().ui().isDarkModeEnabled(
                 mContext
             )

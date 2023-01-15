@@ -467,7 +467,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         if (offlineUpdates.nonNullNoEmpty()) {
             for (update in offlineUpdates) {
                 val lastSeeenUnixtime =
-                    if (update.isTimeout) now() - 5 * 60 else update.timestamp.toLong()
+                    if (update.isTimeout) now() - 5 * 60 else update.timestamp
                 patches.add(
                     UserPatch(update.userId).setOnlineUpdate(
                         UserPatch.Online(

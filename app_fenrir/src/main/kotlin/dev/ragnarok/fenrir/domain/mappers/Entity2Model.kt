@@ -509,7 +509,7 @@ object Entity2Model {
             .setOut(dbo.isOut)
             .setStatus(dbo.status)
             .setDate(dbo.date)
-            .setHasAttachments(dbo.isHasAttachmens)
+            .setHasAttachments(dbo.isHasAttachments)
             .setForwardMessagesCount(dbo.forwardCount)
             .setDeleted(dbo.isDeleted)
             .setDeletedForAll(dbo.isDeletedForAll)
@@ -581,7 +581,7 @@ object Entity2Model {
                 return mapPhotoAlbum(dboEntity)
             }
             is GraffitiDboEntity -> {
-                return buildGraffityFromDbo(dboEntity)
+                return buildGraffitiFromDbo(dboEntity)
             }
             is AudioPlaylistDboEntity -> {
                 return buildAudioPlaylistFromDbo(dboEntity)
@@ -927,7 +927,7 @@ object Entity2Model {
             .setVideo(dbo.video?.let { buildVideoFromDbo(it) })
     }
 
-    private fun buildGraffityFromDbo(dto: GraffitiDboEntity): Graffiti {
+    private fun buildGraffitiFromDbo(dto: GraffitiDboEntity): Graffiti {
         return Graffiti().setId(dto.id)
             .setOwner_id(dto.owner_id)
             .setAccess_key(dto.access_key)

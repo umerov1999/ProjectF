@@ -32,6 +32,11 @@ interface IFriendsApi {
     ): Single<Items<VKApiUser>>
 
     @CheckResult
+    fun deleteSubscriber(
+        subscriber_id: Int
+    ): Single<Int>
+
+    @CheckResult
     fun getLists(userId: Int?, returnSystem: Boolean?): Single<Items<VKApiFriendList>>
 
     @CheckResult

@@ -8,4 +8,9 @@ import kotlinx.serialization.Serializable
 open class VkResponse {
     @SerialName("error")
     var error: Error? = null
+
+    /*
+    @SerialName("execute_errors")
+    var executeErrors: List<Error>? = null
+     */
 }

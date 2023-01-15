@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.api.model
 
+import dev.ragnarok.fenrir.api.model.interfaces.Identificable
 import dev.ragnarok.fenrir.orZero
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

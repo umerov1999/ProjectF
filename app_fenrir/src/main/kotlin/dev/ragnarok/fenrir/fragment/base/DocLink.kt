@@ -22,7 +22,7 @@ class DocLink(val attachment: AbsModel) {
                 AttachmentsTypes.POST -> return (attachment as Post).authorPhoto
                 AttachmentsTypes.EVENT -> return (attachment as Event).subjectPhoto
                 AttachmentsTypes.WALL_REPLY -> return (attachment as WallReply).authorPhoto
-                AttachmentsTypes.GRAFFITY -> return (attachment as Graffiti).url
+                AttachmentsTypes.GRAFFITI -> return (attachment as Graffiti).url
                 AttachmentsTypes.STORY -> return (attachment as Story).owner?.maxSquareAvatar
                 AttachmentsTypes.ALBUM -> {
                     val album = attachment as PhotoAlbum
@@ -230,7 +230,7 @@ class DocLink(val attachment: AbsModel) {
                     return AttachmentsTypes.AUDIO_PLAYLIST
                 }
                 AbsModelType.MODEL_GRAFFITI -> {
-                    return AttachmentsTypes.GRAFFITY
+                    return AttachmentsTypes.GRAFFITI
                 }
                 AbsModelType.MODEL_PHOTO_ALBUM -> {
                     return AttachmentsTypes.ALBUM

@@ -2,6 +2,10 @@ package dev.ragnarok.fenrir.api.model
 
 import dev.ragnarok.fenrir.api.adapters.VideoDtoAdapter
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.IIdComparable
+import dev.ragnarok.fenrir.api.model.interfaces.Commentable
+import dev.ragnarok.fenrir.api.model.interfaces.Copyable
+import dev.ragnarok.fenrir.api.model.interfaces.Likeable
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import kotlinx.serialization.Serializable
 
 /**

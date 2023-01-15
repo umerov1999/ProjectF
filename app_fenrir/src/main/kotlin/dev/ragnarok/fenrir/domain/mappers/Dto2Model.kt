@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.domain.mappers
 
 import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.model.VKApiConversation.CurrentKeyboard
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import dev.ragnarok.fenrir.api.model.longpoll.AddMessageUpdate
 import dev.ragnarok.fenrir.api.model.response.FavePageResponse
 import dev.ragnarok.fenrir.api.util.VKStringUtils.unescape
@@ -586,7 +587,7 @@ object Dto2Model {
         }
         dto.attachments.requireNonNull {
             comment.setAttachments(buildAttachments(it, owners))
-            //comment.setHasAttachmens(comment.getAttachments().count());
+            //comment.setHasAttachments(comment.getAttachments().count());
         }
         return comment
     }
@@ -714,7 +715,7 @@ object Dto2Model {
             .setAuthor(owners.getById(dto.from_id))
         dto.attachments.requireNonNull {
             comment.setAttachments(buildAttachments(it, owners))
-            //comment.setHasAttachmens(comment.getAttachments().count());
+            //comment.setHasAttachments(comment.getAttachments().count());
         }
         return comment
     }
@@ -1101,7 +1102,7 @@ object Dto2Model {
                 VKApiAttachment.TYPE_AUDIO_PLAYLIST -> attachments.prepareAudioPlaylists().add(
                     transform(attachment as VKApiAudioPlaylist)
                 )
-                VKApiAttachment.TYPE_GRAFFITI -> attachments.prepareGraffity()
+                VKApiAttachment.TYPE_GRAFFITI -> attachments.prepareGraffiti()
                     .add(transform(attachment as VKApiGraffiti))
                 VKApiAttachment.TYPE_POLL -> attachments.preparePolls()
                     .add(transform(attachment as VKApiPoll))

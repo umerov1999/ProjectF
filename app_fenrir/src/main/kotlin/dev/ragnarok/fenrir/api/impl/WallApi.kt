@@ -3,8 +3,8 @@ package dev.ragnarok.fenrir.api.impl
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IWallApi
-import dev.ragnarok.fenrir.api.model.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.IdPair
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.*
 import dev.ragnarok.fenrir.api.services.IWallService
 import io.reactivex.rxjava3.core.Single

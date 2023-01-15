@@ -5,4 +5,11 @@ class InputMessagesSetReadUpdate :
     var peerId = 0
     var localId = 0
     var unreadCount = 0
+
+    fun set(peerId: Int, localId: Int, unreadCount: Int): InputMessagesSetReadUpdate {
+        this.peerId = peerId
+        this.localId = localId
+        this.unreadCount = unreadCount
+        return this
+    }
 }

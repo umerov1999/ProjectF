@@ -123,6 +123,12 @@ class RelationshipInteractor(
             .map { obj -> transformUsers(obj) }
     }
 
+    override fun deleteSubscriber(accountId: Int, subscriber_id: Int): Single<Int> {
+        return networker.vkDefault(accountId)
+            .friends()
+            .deleteSubscriber(subscriber_id)
+    }
+
     override fun getFollowers(
         accountId: Int,
         objectId: Int,

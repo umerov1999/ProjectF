@@ -4,6 +4,7 @@ import android.content.Context
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.adapters.AudioDtoAdapter
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.IIdComparable
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import kotlinx.serialization.Serializable
 
 /**

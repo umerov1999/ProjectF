@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.api.model
 
 import dev.ragnarok.fenrir.api.adapters.GeoDtoAdapter
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import kotlinx.serialization.Serializable
 
 @Serializable(with = GeoDtoAdapter::class)

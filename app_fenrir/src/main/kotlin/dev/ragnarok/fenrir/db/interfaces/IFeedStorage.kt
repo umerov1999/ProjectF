@@ -17,6 +17,6 @@ interface IFeedStorage : IStorage {
         clearBeforeStore: Boolean
     ): Single<IntArray>
 
-    fun storeLists(accountid: Int, entities: List<FeedListEntity>): Completable
+    fun storeLists(accountId: Int, entities: List<FeedListEntity>): Completable
     fun getAllLists(criteria: FeedSourceCriteria): Single<List<FeedListEntity>>
 }

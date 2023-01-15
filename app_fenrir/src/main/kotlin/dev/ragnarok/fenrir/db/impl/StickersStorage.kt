@@ -5,8 +5,8 @@ import android.database.Cursor
 import android.provider.BaseColumns
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.db.TempDataHelper
+import dev.ragnarok.fenrir.db.column.StickerSetColumns
 import dev.ragnarok.fenrir.db.column.StickersKeywordsColumns
-import dev.ragnarok.fenrir.db.column.StikerSetColumns
 import dev.ragnarok.fenrir.db.interfaces.IStickersStorage
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerSetEntity
@@ -30,10 +30,10 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()
             try {
-                val whereDel = StikerSetColumns.ACCOUNT_ID + " = ?"
-                db.delete(StikerSetColumns.TABLENAME, whereDel, arrayOf(accountId.toString()))
+                val whereDel = StickerSetColumns.ACCOUNT_ID + " = ?"
+                db.delete(StickerSetColumns.TABLENAME, whereDel, arrayOf(accountId.toString()))
                 for ((i, entity) in sets.withIndex()) {
-                    db.insert(StikerSetColumns.TABLENAME, null, createCv(accountId, entity, i))
+                    db.insert(StickerSetColumns.TABLENAME, null, createCv(accountId, entity, i))
                 }
                 db.setTransactionSuccessful()
                 db.endTransaction()
@@ -47,13 +47,13 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
     }
 
     override fun clearAccount(accountId: Int): Completable {
-        Settings.get().other().del_last_stikers_sync(accountId)
+        Settings.get().other().del_last_stickers_sync(accountId)
         return Completable.create { e: CompletableEmitter ->
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()
             try {
-                val whereDel = StikerSetColumns.ACCOUNT_ID + " = ?"
-                db.delete(StikerSetColumns.TABLENAME, whereDel, arrayOf(accountId.toString()))
+                val whereDel = StickerSetColumns.ACCOUNT_ID + " = ?"
+                db.delete(StickerSetColumns.TABLENAME, whereDel, arrayOf(accountId.toString()))
                 val whereDelK = StickersKeywordsColumns.ACCOUNT_ID + " = ?"
                 db.delete(
                     StickersKeywordsColumns.TABLENAME,
@@ -104,10 +104,10 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         return Single.create { e: SingleEmitter<List<StickerSetEntity>> ->
             val start = System.currentTimeMillis()
             val where =
-                "${StikerSetColumns.ACCOUNT_ID} = ? AND ${StikerSetColumns.PURCHASED} = ? AND ${StikerSetColumns.ACTIVE} = ?"
+                "${StickerSetColumns.ACCOUNT_ID} = ? AND ${StickerSetColumns.PURCHASED} = ? AND ${StickerSetColumns.ACTIVE} = ?"
             val args = arrayOf(accountId.toString(), "1", "1")
             val cursor = TempDataHelper.helper.readableDatabase.query(
-                StikerSetColumns.TABLENAME,
+                StickerSetColumns.TABLENAME,
                 COLUMNS_STICKER_SET,
                 where,
                 args,
@@ -165,14 +165,14 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
     companion object {
         private val COLUMNS_STICKER_SET = arrayOf(
             BaseColumns._ID,
-            StikerSetColumns.ACCOUNT_ID,
-            StikerSetColumns.POSITION,
-            StikerSetColumns.TITLE,
-            StikerSetColumns.ICON,
-            StikerSetColumns.PURCHASED,
-            StikerSetColumns.PROMOTED,
-            StikerSetColumns.ACTIVE,
-            StikerSetColumns.STICKERS
+            StickerSetColumns.ACCOUNT_ID,
+            StickerSetColumns.POSITION,
+            StickerSetColumns.TITLE,
+            StickerSetColumns.ICON,
+            StickerSetColumns.PURCHASED,
+            StickerSetColumns.PROMOTED,
+            StickerSetColumns.ACTIVE,
+            StickerSetColumns.STICKERS
         )
         private val KEYWORDS_STICKER_COLUMNS = arrayOf(
             BaseColumns._ID,
@@ -188,31 +188,31 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         internal fun createCv(accountId: Int, entity: StickerSetEntity, pos: Int): ContentValues {
             val cv = ContentValues()
             cv.put(BaseColumns._ID, entity.id)
-            cv.put(StikerSetColumns.ACCOUNT_ID, accountId)
-            cv.put(StikerSetColumns.POSITION, pos)
+            cv.put(StickerSetColumns.ACCOUNT_ID, accountId)
+            cv.put(StickerSetColumns.POSITION, pos)
             entity.icon.ifNonNull({
                 cv.put(
-                    StikerSetColumns.ICON,
+                    StickerSetColumns.ICON,
                     MsgPack.encodeToByteArrayEx(
                         ListSerializer(StickerSetEntity.Img.serializer()),
                         it
                     )
                 )
             }, {
-                cv.putNull(StikerSetColumns.ICON)
+                cv.putNull(StickerSetColumns.ICON)
             })
-            cv.put(StikerSetColumns.TITLE, entity.title)
-            cv.put(StikerSetColumns.PURCHASED, entity.isPurchased)
-            cv.put(StikerSetColumns.PROMOTED, entity.isPromoted)
-            cv.put(StikerSetColumns.ACTIVE, entity.isActive)
+            cv.put(StickerSetColumns.TITLE, entity.title)
+            cv.put(StickerSetColumns.PURCHASED, entity.isPurchased)
+            cv.put(StickerSetColumns.PROMOTED, entity.isPromoted)
+            cv.put(StickerSetColumns.ACTIVE, entity.isActive)
 
             entity.stickers.ifNonNull({
                 cv.put(
-                    StikerSetColumns.STICKERS,
+                    StickerSetColumns.STICKERS,
                     MsgPack.encodeToByteArrayEx(ListSerializer(StickerDboEntity.serializer()), it)
                 )
             }, {
-                cv.putNull(StikerSetColumns.STICKERS)
+                cv.putNull(StickerSetColumns.STICKERS)
             })
             return cv
         }
@@ -245,8 +245,8 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         }
 
         internal fun mapStickerSet(cursor: Cursor): StickerSetEntity {
-            val stickersJson = cursor.getBlob(StikerSetColumns.STICKERS)
-            val iconJson = cursor.getBlob(StikerSetColumns.ICON)
+            val stickersJson = cursor.getBlob(StickerSetColumns.STICKERS)
+            val iconJson = cursor.getBlob(StickerSetColumns.ICON)
             return StickerSetEntity(cursor.getInt(BaseColumns._ID))
                 .setStickers(
                     if (stickersJson == null) null else MsgPack.decodeFromByteArrayEx(
@@ -254,9 +254,9 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                         stickersJson
                     )
                 )
-                .setActive(cursor.getBoolean(StikerSetColumns.ACTIVE))
-                .setPurchased(cursor.getBoolean(StikerSetColumns.PURCHASED))
-                .setPromoted(cursor.getBoolean(StikerSetColumns.PROMOTED))
+                .setActive(cursor.getBoolean(StickerSetColumns.ACTIVE))
+                .setPurchased(cursor.getBoolean(StickerSetColumns.PURCHASED))
+                .setPromoted(cursor.getBoolean(StickerSetColumns.PROMOTED))
                 .setIcon(
                     if (iconJson == null) null else MsgPack.decodeFromByteArrayEx(
                         ListSerializer(
@@ -264,8 +264,8 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                         ), iconJson
                     )
                 )
-                .setPosition(cursor.getInt(StikerSetColumns.POSITION))
-                .setTitle(cursor.getString(StikerSetColumns.TITLE))
+                .setPosition(cursor.getInt(StickerSetColumns.POSITION))
+                .setTitle(cursor.getString(StickerSetColumns.TITLE))
         }
 
         internal fun mapStickersKeywords(cursor: Cursor): StickersKeywordsEntity {

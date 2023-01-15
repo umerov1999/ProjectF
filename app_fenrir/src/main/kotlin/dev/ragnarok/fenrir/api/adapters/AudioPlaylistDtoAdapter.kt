@@ -20,7 +20,7 @@ class AudioPlaylistDtoAdapter : AbsAdapter<VKApiAudioPlaylist>("VKApiAudioPlayli
         album.title = optString(root, "title")
         album.access_key = optString(root, "access_key")
         album.description = optString(root, "description")
-        album.update_time = optInt(root, "update_time").toLong()
+        album.update_time = optLong(root, "update_time")
         album.Year = optInt(root, "year")
         if (hasArray(root, "genres")) {
             val build = StringBuilder()

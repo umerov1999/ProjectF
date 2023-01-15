@@ -36,7 +36,7 @@ class AccountsInteractor(
                 val owners = Dto2Model.transformOwners(items.profiles, items.groups)
                 val result = ArrayList<Owner>(owners.size)
                 for (i in items.items.orEmpty()) {
-                    val ip = Utils.findOwnerIndexById(owners, i)
+                    val ip = Utils.findIndexById(owners, i)
                     if (ip < 0) {
                         continue
                     }

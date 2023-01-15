@@ -130,7 +130,7 @@
     <string name="call_message">[звонок]</string>
     <string name="doc_message">[документ]</string>
     <string name="gift_message">[подарок]</string>
-    <string name="graffity_message">[граффити]</string>
+    <string name="graffiti_message">[граффити]</string>
     <string name="photo_message">[фото]</string>
     <string name="video_message">[видео]</string>
     <string name="wall_message">[репост]</string>
@@ -1443,7 +1443,7 @@
     <string name="geo">Место</string>
     <string name="input_call">Исходящий звонок</string>
     <string name="output_call">Входящий звонок</string>
-    <string name="graffity">Граффити</string>
+    <string name="graffiti">Граффити</string>
     <string name="download_photo_tap">Скачивать фото по долгому нажатию</string>
     <string name="photo_album">Фото Альбом</string>
     <string name="custom_second_message_color">Второй цвет исходящего сообщения</string>
@@ -1717,4 +1717,5 @@
     <string name="turn_on">Включить</string>
     <string name="photos_with_user">Фотографии с пользователем</string>
     <string name="wall_photos">Фотографии на стене</string>
+    <string name="block_or_delete">Заблокировать подписчика? Режим сохраниться на сессию</string>
 </resources>

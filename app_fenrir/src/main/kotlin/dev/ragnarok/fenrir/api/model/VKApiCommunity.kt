@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.api.model
 
 import dev.ragnarok.fenrir.api.adapters.CommunityDtoAdapter
+import dev.ragnarok.fenrir.api.model.interfaces.Identificable
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import kotlinx.serialization.Serializable
 

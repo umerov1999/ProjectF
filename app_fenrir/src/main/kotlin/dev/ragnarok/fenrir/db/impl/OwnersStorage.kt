@@ -495,11 +495,11 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
 
         fun appendUsersInsertOperation(
             operations: MutableList<ContentProviderOperation>,
-            accouuntId: Int,
+            accountId: Int,
             dbos: List<UserEntity>?
         ) {
             dbos ?: return
-            val uri = getUserContentUriFor(accouuntId)
+            val uri = getUserContentUriFor(accountId)
             for (dbo in dbos) {
                 appendUserInsertOperation(operations, uri, dbo)
             }
@@ -508,11 +508,11 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
 
         fun appendCommunitiesInsertOperation(
             operations: MutableList<ContentProviderOperation>,
-            accouuntId: Int,
+            accountId: Int,
             dbos: List<CommunityEntity>?
         ) {
             dbos ?: return
-            val uri = getGroupsContentUriFor(accouuntId)
+            val uri = getGroupsContentUriFor(accountId)
             for (dbo in dbos) {
                 appendCommunityInsertOperation(operations, uri, dbo)
             }

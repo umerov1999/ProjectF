@@ -41,7 +41,7 @@ import dev.ragnarok.fenrir.activity.qr.CustomQRCodeWriter
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
 import dev.ragnarok.fenrir.api.ProxyUtil.applyProxyConfig
-import dev.ragnarok.fenrir.api.model.Identificable
+import dev.ragnarok.fenrir.api.model.interfaces.Identificable
 import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.media.exo.OkHttpDataSource
@@ -75,6 +75,7 @@ object Utils {
     private val reload_news: MutableList<Int> = LinkedList()
     private val reload_dialogs: MutableList<Int> = LinkedList()
     private val cachedMyStickers: MutableList<LocalSticker> = ArrayList()
+    var follower_kick_mode = false
     private val displaySize = Point()
     private var device_id: String? = null
     var density = 1f
@@ -122,10 +123,10 @@ object Utils {
 
 
     fun needReloadStickers(account_id: Int): Boolean {
-        Settings.get().other().get_last_stikers_sync(account_id).let {
+        Settings.get().other().get_last_stickers_sync(account_id).let {
             if (it <= 0 || (System.currentTimeMillis() / 1000L) - it > 900) {
                 Settings.get().other()
-                    .set_last_stikers_sync(account_id, System.currentTimeMillis() / 1000L)
+                    .set_last_stickers_sync(account_id, System.currentTimeMillis() / 1000L)
                 return true
             }
         }
@@ -499,16 +500,6 @@ object Utils {
         return -1
     }
 
-    fun findOwnerIndexById(data: List<Owner>?, id: Int): Int {
-        data ?: return -1
-        for (i in data.indices) {
-            if (data[i].ownerId == id) {
-                return i
-            }
-        }
-        return -1
-    }
-
     fun <T : ISomeones> findIndexById(data: List<T?>?, id: Int, ownerId: Int): Int {
         data ?: return -1
         for (i in data.indices) {
@@ -670,24 +661,12 @@ object Utils {
         return -1
     }
 
-
     fun indexOfOwner(data: List<Owner>?, o: Owner?): Int {
         if (data == null || o == null) {
             return -1
         }
         for (i in data.indices) {
             if (data[i].ownerId == o.ownerId) {
-                return i
-            }
-        }
-        return -1
-    }
-
-
-    fun indexOfOwner(data: List<Owner>?, id: Int): Int {
-        data ?: return -1
-        for (i in data.indices) {
-            if (data[i].ownerId == id) {
                 return i
             }
         }

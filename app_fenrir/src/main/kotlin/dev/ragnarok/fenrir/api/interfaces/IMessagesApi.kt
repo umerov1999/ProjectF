@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.api.interfaces
 
 import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.*
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
@@ -44,7 +45,7 @@ interface IMessagesApi {
     fun editChat(chatId: Int, title: String?): Single<Boolean>
 
     @CheckResult
-    fun createChat(userIds: Collection<Int?>?, title: String?): Single<Int>
+    fun createChat(userIds: Collection<Int>, title: String?): Single<Int>
 
     @CheckResult
     fun deleteDialog(peerId: Int): Single<ConversationDeleteResult>

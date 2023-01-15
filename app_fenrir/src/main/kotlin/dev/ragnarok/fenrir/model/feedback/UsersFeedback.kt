@@ -20,6 +20,10 @@ class UsersFeedback : Feedback {
         writeOwners(dest, flags, owners)
     }
 
+    override fun getModelType(): Int {
+        return FeedbackModelType.MODEL_USERS_FEEDBACK
+    }
+
     override fun describeContents(): Int {
         return 0
     }

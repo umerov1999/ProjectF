@@ -19,7 +19,7 @@ import androidx.annotation.IntDef
     AttachmentsTypes.TOPIC,
     AttachmentsTypes.AUDIO_MESSAGE,
     AttachmentsTypes.GIFT,
-    AttachmentsTypes.GRAFFITY,
+    AttachmentsTypes.GRAFFITI,
     AttachmentsTypes.ALBUM,
     AttachmentsTypes.NOT_SUPPORTED,
     AttachmentsTypes.WALL_REPLY,
@@ -49,7 +49,7 @@ annotation class AttachmentsTypes {
         const val TOPIC = 14
         const val AUDIO_MESSAGE = 15
         const val GIFT = 16
-        const val GRAFFITY = 17
+        const val GRAFFITI = 17
         const val ALBUM = 18
         const val NOT_SUPPORTED = 19
         const val WALL_REPLY = 20

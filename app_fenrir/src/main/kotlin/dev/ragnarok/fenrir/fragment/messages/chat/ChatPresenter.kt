@@ -16,10 +16,10 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.activity.ActivityUtils
-import dev.ragnarok.fenrir.api.model.AttachmentToken
+import dev.ragnarok.fenrir.api.model.AttachmentTokens
 import dev.ragnarok.fenrir.api.model.AttachmentsTokenCreator
-import dev.ragnarok.fenrir.api.model.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.crypt.AesKeyPair
 import dev.ragnarok.fenrir.crypt.KeyExchangeService
 import dev.ragnarok.fenrir.crypt.KeyLocationPolicy
@@ -1381,7 +1381,7 @@ class ChatPresenter(
 
     private fun canEdit(message: Message): Boolean {
         return message.isOut && Unixtime.now() - message.date < 24 * 60 * 60
-                && !message.isSticker && !message.isVoiceMessage && !message.isGraffity && !message.isCall
+                && !message.isSticker && !message.isVoiceMessage && !message.isGraffiti && !message.isCall
     }
 
     private fun canChangePin(): Boolean {
@@ -2231,7 +2231,7 @@ class ChatPresenter(
             .fromIOToMain()
             .subscribe({
                 if (it.nonEmpty()) {
-                    val kk = it.get() as AttachmentToken
+                    val kk = it.get() as AttachmentTokens.AttachmentToken
                     if (!file.isAnimated) {
                         val graffiti = Graffiti().setId(kk.id).setOwner_id(kk.ownerId)
                             .setAccess_key(kk.accessKey)
@@ -2307,7 +2307,7 @@ class ChatPresenter(
         }
     }
 
-    fun fireSendClickFromAttachmens() {
+    fun fireSendClickFromAttachments() {
         fireSendClick()
     }
 

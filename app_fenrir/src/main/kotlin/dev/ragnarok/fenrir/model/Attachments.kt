@@ -43,7 +43,7 @@ class Attachments : Parcelable, Cloneable {
         private set
     var audioPlaylists: ArrayList<AudioPlaylist>? = null
         private set
-    var graffity: ArrayList<Graffiti>? = null
+    var graffiti: ArrayList<Graffiti>? = null
         private set
     var photoAlbums: ArrayList<PhotoAlbum>? = null
         private set
@@ -78,7 +78,7 @@ class Attachments : Parcelable, Cloneable {
         calls = parcel.createTypedArrayList(Call.CREATOR)
         geos = parcel.createTypedArrayList(Geo.CREATOR)
         audioPlaylists = parcel.createTypedArrayList(AudioPlaylist.CREATOR)
-        graffity = parcel.createTypedArrayList(Graffiti.CREATOR)
+        graffiti = parcel.createTypedArrayList(Graffiti.CREATOR)
         photoAlbums = parcel.createTypedArrayList(PhotoAlbum.CREATOR)
         notSupported = parcel.createTypedArrayList(NotSupported.CREATOR)
         events = parcel.createTypedArrayList(Event.CREATOR)
@@ -105,7 +105,7 @@ class Attachments : Parcelable, Cloneable {
         dest.writeTypedList(calls)
         dest.writeTypedList(geos)
         dest.writeTypedList(audioPlaylists)
-        dest.writeTypedList(graffity)
+        dest.writeTypedList(graffiti)
         dest.writeTypedList(photoAlbums)
         dest.writeTypedList(notSupported)
         dest.writeTypedList(events)
@@ -199,7 +199,7 @@ class Attachments : Parcelable, Cloneable {
                 return
             }
             AbsModelType.MODEL_GRAFFITI -> {
-                prepareGraffity().add(model as Graffiti)
+                prepareGraffiti().add(model as Graffiti)
                 return
             }
             AbsModelType.MODEL_POLL -> {
@@ -279,7 +279,7 @@ class Attachments : Parcelable, Cloneable {
         wallReplies.nonNullNoEmpty {
             result.addAll(it)
         }
-        graffity.nonNullNoEmpty {
+        graffiti.nonNullNoEmpty {
             result.addAll(it)
         }
         polls.nonNullNoEmpty {
@@ -406,11 +406,11 @@ class Attachments : Parcelable, Cloneable {
         return audioPlaylists!!
     }
 
-    fun prepareGraffity(): ArrayList<Graffiti> {
-        if (graffity == null) {
-            graffity = ArrayList(1)
+    fun prepareGraffiti(): ArrayList<Graffiti> {
+        if (graffiti == null) {
+            graffiti = ArrayList(1)
         }
-        return graffity!!
+        return graffiti!!
     }
 
     fun prepareDocs(): ArrayList<Document> {
@@ -477,7 +477,7 @@ class Attachments : Parcelable, Cloneable {
             calls,
             geos,
             audioPlaylists,
-            graffity,
+            graffiti,
             polls,
             pages,
             voiceMessages,
@@ -505,7 +505,7 @@ class Attachments : Parcelable, Cloneable {
             calls,
             geos,
             audioPlaylists,
-            graffity,
+            graffiti,
             polls,
             pages,
             voiceMessages,
@@ -607,8 +607,8 @@ class Attachments : Parcelable, Cloneable {
                 result.add(DocLink(playlist))
             }
         }
-        if (graffity != null) {
-            for (graff in graffity.orEmpty()) {
+        if (graffiti != null) {
+            for (graff in graffiti.orEmpty()) {
                 result.add(DocLink(graff))
             }
         }
@@ -666,7 +666,7 @@ class Attachments : Parcelable, Cloneable {
         clone.calls = cloneListAsArrayList(calls)
         clone.geos = cloneListAsArrayList(geos)
         clone.audioPlaylists = cloneListAsArrayList(audioPlaylists)
-        clone.graffity = cloneListAsArrayList(graffity)
+        clone.graffiti = cloneListAsArrayList(graffiti)
         clone.polls = cloneListAsArrayList(polls)
         clone.pages = cloneListAsArrayList(pages)
         clone.voiceMessages = cloneListAsArrayList(voiceMessages)
@@ -720,8 +720,8 @@ class Attachments : Parcelable, Cloneable {
         if (audioPlaylists != null) {
             line = line + " audio_playlists=" + safeCountOf(audioPlaylists)
         }
-        if (graffity != null) {
-            line = line + " graffity=" + safeCountOf(graffity)
+        if (graffiti != null) {
+            line = line + " graffiti=" + safeCountOf(graffiti)
         }
         if (polls != null) {
             line = line + " polls=" + safeCountOf(polls)

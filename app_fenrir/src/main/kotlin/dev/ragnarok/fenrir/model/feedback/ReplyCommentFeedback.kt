@@ -24,6 +24,10 @@ class ReplyCommentFeedback : Feedback {
         feedbackComment = parcel.readTypedObjectCompat(Comment.CREATOR)
     }
 
+    override fun getModelType(): Int {
+        return FeedbackModelType.MODEL_REPLYCOMMENT_FEEDBACK
+    }
+
     override fun writeToParcel(dest: Parcel, flags: Int) {
         super.writeToParcel(dest, flags)
         writeModel(dest, flags, commentsOf)

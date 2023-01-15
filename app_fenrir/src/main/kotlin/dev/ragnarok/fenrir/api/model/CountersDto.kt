@@ -31,10 +31,4 @@ class CountersDto {
 
     @SerialName("notifications")
     var notifications = 0
-
-    @SerialName("sdk")
-    var sdk = 0
-
-    @SerialName("app_requests")
-    var app_requests = 0
 }

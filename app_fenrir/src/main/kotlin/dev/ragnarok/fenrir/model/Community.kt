@@ -223,6 +223,10 @@ class Community : Owner {
         return 0
     }
 
+    override fun getObjectId(): Int {
+        return -abs(id)
+    }
+
     override val isDonated: Boolean
         get() = isValueAssigned(ownerId, CheckDonate.donatedOwnersLocal)
 

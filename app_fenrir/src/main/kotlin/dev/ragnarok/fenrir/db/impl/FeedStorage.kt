@@ -106,9 +106,9 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
         }
     }
 
-    override fun storeLists(accountid: Int, entities: List<FeedListEntity>): Completable {
+    override fun storeLists(accountId: Int, entities: List<FeedListEntity>): Completable {
         return Completable.create { e: CompletableEmitter ->
-            val uri = getFeedListsContentUriFor(accountid)
+            val uri = getFeedListsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             operations.add(
                 ContentProviderOperation.newDelete(uri)

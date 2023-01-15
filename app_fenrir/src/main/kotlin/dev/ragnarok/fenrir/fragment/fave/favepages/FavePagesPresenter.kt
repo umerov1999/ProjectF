@@ -179,7 +179,7 @@ class FavePagesPresenter(accountId: Int, isUser: Boolean, savedInstanceState: Bu
     }
 
     private fun onUserRemoved(accountId: Int, ownerId: Int) {
-        if (accountId != accountId) {
+        if (accountId != ownerId) {
             return
         }
         val index = findIndexById(pages, abs(ownerId))

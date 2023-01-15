@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.api.model
 
 import dev.ragnarok.fenrir.api.adapters.TopicDtoAdapter
+import dev.ragnarok.fenrir.api.model.interfaces.Commentable
 import kotlinx.serialization.Serializable
 
 /**

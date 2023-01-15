@@ -15,6 +15,9 @@ abstract class Feedback : Parcelable {
     var reply: Comment? = null
         private set
 
+    @FeedbackModelType
+    abstract fun getModelType(): Int
+
     constructor(@FeedbackType type: Int) {
         this.type = type
     }

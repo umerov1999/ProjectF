@@ -11,6 +11,7 @@ import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.local_json.ChatJsonResponse
 import dev.ragnarok.fenrir.api.model.longpoll.*
 import dev.ragnarok.fenrir.crypt.CryptHelper.encryptWithAes
@@ -344,9 +345,13 @@ class MessagesRepository(
         }
         if (resetUpdates.nonNullNoEmpty()) {
             for (update in resetUpdates) {
+                val patch = PeerPatch(update.peerId).withInRead(update.localId)
+                    .withUnreadCount(update.unreadCount)
+                if (update.peerId == accountId) {
+                    patch.withOutRead(update.localId)
+                }
                 patches.add(
-                    PeerPatch(update.peerId).withInRead(update.localId)
-                        .withUnreadCount(update.unreadCount)
+                    patch
                 )
                 tryCancelNotificationForPeer(provideApplicationContext(), accountId, update.peerId)
             }
@@ -958,7 +963,7 @@ class MessagesRepository(
         ids: List<Int>
     ): Single<List<Message>> {
         return storages.messages()
-            .findMessagesByIds(accountId, ids, withAtatchments = true, withForwardMessages = true)
+            .findMessagesByIds(accountId, ids, withAttachments = true, withForwardMessages = true)
             .compose(entities2Models(accountId))
             .compose(decryptor.withMessagesDecryption(accountId))
     }
@@ -1019,7 +1024,7 @@ class MessagesRepository(
                                 storages.messages()
                                     .findMessagesByIds(
                                         accountId, listOf(resultMid),
-                                        withAtatchments = true, withForwardMessages = true
+                                        withAttachments = true, withForwardMessages = true
                                     )
                                     .compose(entities2Models(accountId))
                                     .map { messages ->
@@ -1072,7 +1077,7 @@ class MessagesRepository(
     override fun sendUnsentMessage(accountIds: Collection<Int>): Single<SentMsg> {
         val store = storages.messages()
         return store
-            .findFirstUnsentMessage(accountIds, withAtatchments = true, withForwardMessages = false)
+            .findFirstUnsentMessage(accountIds, withAttachments = true, withForwardMessages = false)
             .flatMap { optional ->
                 if (optional.isEmpty) {
                     return@flatMap Single.error<SentMsg>(NotFoundException())

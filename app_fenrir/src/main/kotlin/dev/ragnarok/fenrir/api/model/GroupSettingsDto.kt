@@ -9,7 +9,6 @@ class GroupSettingsDto {
     var title: String? = null
     var description: String? = null
     var address: String? = null
-    var place: Place? = null
     var country_id = 0
     var city_id = 0
 
@@ -56,48 +55,6 @@ class GroupSettingsDto {
     var website: String? = null
     var age_limits = 0
     var market: Market? = null
-
-    @Serializable
-    class Place {
-        @SerialName("id")
-        var id = 0
-
-        @SerialName("title")
-        var title: String? = null
-
-        @SerialName("latitude")
-        var latitude = 0.0
-
-        @SerialName("longitude")
-        var longitude = 0.0
-
-        @SerialName("created")
-        var created: Long = 0
-
-        @SerialName("icon")
-        var icon: String? = null
-
-        @SerialName("group_id")
-        var group_id = 0
-
-        @SerialName("group_photo")
-        var group_photo: String? = null
-
-        @SerialName("checkins")
-        var checkins = 0
-
-        @SerialName("type")
-        var type = 0
-
-        @SerialName("country")
-        var country = 0
-
-        @SerialName("city")
-        var city = 0
-
-        @SerialName("address")
-        var address: String? = null
-    }
 
     @Serializable
     class PublicCategory {

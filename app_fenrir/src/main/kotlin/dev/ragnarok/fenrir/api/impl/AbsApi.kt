@@ -5,8 +5,8 @@ import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.api.*
 import dev.ragnarok.fenrir.api.model.Captcha
 import dev.ragnarok.fenrir.api.model.Error
-import dev.ragnarok.fenrir.api.model.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.Params
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.VkResponse
 import dev.ragnarok.fenrir.api.rest.HttpException

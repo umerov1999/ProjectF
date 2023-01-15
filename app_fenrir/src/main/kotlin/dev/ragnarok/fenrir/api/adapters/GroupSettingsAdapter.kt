@@ -20,11 +20,6 @@ class GroupSettingsAdapter : AbsAdapter<GroupSettingsDto>("GroupSettingsDto") {
         dto.title = optString(root, "title")
         dto.description = optString(root, "description")
         dto.address = optString(root, "address")
-        if (hasObject(root, "place")) {
-            dto.place = root["place"]?.let {
-                kJson.decodeFromJsonElement(GroupSettingsDto.Place.serializer(), it)
-            }
-        }
         dto.country_id = optInt(root, "country_id")
         dto.city_id = optInt(root, "city_id")
         dto.wall = optInt(root, "wall")

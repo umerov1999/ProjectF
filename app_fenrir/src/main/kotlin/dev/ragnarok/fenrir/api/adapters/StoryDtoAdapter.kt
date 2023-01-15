@@ -18,8 +18,8 @@ class StoryDtoAdapter : AbsAdapter<VKApiStory>("VKApiStory") {
         val root = json.asJsonObject
         story.id = optInt(root, "id")
         story.owner_id = optInt(root, "owner_id")
-        story.date = optInt(root, "owner_id").toLong()
-        story.expires_at = optInt(root, "expires_at").toLong()
+        story.date = optLong(root, "owner_id")
+        story.expires_at = optLong(root, "expires_at")
         story.is_expired = optBoolean(root, "is_expired")
         story.is_ads = optBoolean(root, "is_ads")
         if (hasObject(root, "photo")) {

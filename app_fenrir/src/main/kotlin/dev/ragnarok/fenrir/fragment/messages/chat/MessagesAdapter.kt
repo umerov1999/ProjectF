@@ -53,7 +53,7 @@ class MessagesAdapter(
     private val selectedDrawable: ShapeDrawable = ShapeDrawable(OvalShape())
     private val unreadColor: Int
     private val disable_read: Boolean
-    private val isNightStiker: Boolean
+    private val isNightSticker: Boolean
     private val ownerLinkAdapter: OwnerLinkSpanFactory.ActionListener =
         object : LinkActionAdapter() {
             override fun onOwnerClick(ownerId: Int) {
@@ -78,7 +78,7 @@ class MessagesAdapter(
         val message = getItem(position)
         when (type) {
             TYPE_SERVICE -> bindServiceHolder(viewHolder as ServiceMessageHolder, message, position)
-            TYPE_GRAFFITY_FRIEND, TYPE_GRAFFITY_MY, TYPE_MY_MESSAGE, TYPE_FRIEND_MESSAGE -> bindNormalMessage(
+            TYPE_GRAFFITI_FRIEND, TYPE_GRAFFITI_MY, TYPE_MY_MESSAGE, TYPE_FRIEND_MESSAGE -> bindNormalMessage(
                 viewHolder as MessageHolder,
                 message,
                 position
@@ -111,13 +111,13 @@ class MessagesAdapter(
         val sticker = message.attachments?.stickers?.get(0)
         if (sticker?.isAnimated == true) {
             holder.sticker.fromNet(
-                sticker.getAnimationByType(if (isNightStiker) "dark" else "light"),
+                sticker.getAnimationByType(if (isNightSticker) "dark" else "light"),
                 Utils.createOkHttp(5, true),
                 Utils.dp(128f),
                 Utils.dp(128f)
             )
         } else {
-            val image = sticker?.getImage(256, isNightStiker)
+            val image = sticker?.getImage(256, isNightSticker)
             image?.url.ifNonNullNoEmpty({
                 with()
                     .load(it)
@@ -300,7 +300,7 @@ class MessagesAdapter(
                 message.body
             CryptStatus.DECRYPTED -> displayedBody = message.decryptedBody
         }
-        if (!message.isGraffity) {
+        if (!message.isGraffiti) {
             when (message.cryptStatus) {
                 CryptStatus.ENCRYPTED, CryptStatus.DECRYPT_FAILED -> holder.bubble.setNonGradientColor(
                     Color.parseColor("#D4ff0000")
@@ -414,7 +414,7 @@ class MessagesAdapter(
 
     override fun viewHolder(view: View, type: Int): RecyclerView.ViewHolder {
         when (type) {
-            TYPE_GRAFFITY_FRIEND, TYPE_GRAFFITY_MY, TYPE_MY_MESSAGE, TYPE_FRIEND_MESSAGE -> return MessageHolder(
+            TYPE_GRAFFITI_FRIEND, TYPE_GRAFFITI_MY, TYPE_MY_MESSAGE, TYPE_FRIEND_MESSAGE -> return MessageHolder(
                 view
             )
             TYPE_SERVICE -> return ServiceMessageHolder(view)
@@ -428,8 +428,8 @@ class MessagesAdapter(
         when (type) {
             TYPE_MY_MESSAGE -> return R.layout.item_message_my
             TYPE_FRIEND_MESSAGE -> return R.layout.item_message_friend
-            TYPE_GRAFFITY_MY -> return R.layout.item_message_graffity_my
-            TYPE_GRAFFITY_FRIEND -> return R.layout.item_message_graffity_friend
+            TYPE_GRAFFITI_MY -> return R.layout.item_message_graffiti_my
+            TYPE_GRAFFITI_FRIEND -> return R.layout.item_message_graffiti_friend
             TYPE_SERVICE -> return R.layout.item_service_message
             TYPE_STICKER_FRIEND -> return R.layout.item_message_friend_sticker
             TYPE_STICKER_MY -> return R.layout.item_message_my_sticker
@@ -447,8 +447,8 @@ class MessagesAdapter(
         if (m.isSticker) {
             return if (m.isOut) TYPE_STICKER_MY else TYPE_STICKER_FRIEND
         }
-        if (m.isGraffity) {
-            return if (m.isOut) TYPE_GRAFFITY_MY else TYPE_GRAFFITY_FRIEND
+        if (m.isGraffiti) {
+            return if (m.isOut) TYPE_GRAFFITI_MY else TYPE_GRAFFITI_FRIEND
         }
         if (m.isGift) {
             return if (m.isOut) TYPE_GIFT_MY else TYPE_GIFT_FRIEND
@@ -601,8 +601,8 @@ class MessagesAdapter(
         private const val TYPE_STICKER_FRIEND = 5
         private const val TYPE_GIFT_MY = 6
         private const val TYPE_GIFT_FRIEND = 7
-        private const val TYPE_GRAFFITY_MY = 8
-        private const val TYPE_GRAFFITY_FRIEND = 9
+        private const val TYPE_GRAFFITI_MY = 8
+        private const val TYPE_GRAFFITI_FRIEND = 9
         private val DATE = Date()
     }
 
@@ -610,7 +610,7 @@ class MessagesAdapter(
         selectedDrawable.paint.color = CurrentTheme.getColorPrimary(context)
         unreadColor = CurrentTheme.getMessageUnreadColor(context)
         this.disable_read = disable_read
-        isNightStiker =
+        isNightSticker =
             Settings.get().ui().isStickers_by_theme && Settings.get().ui().isDarkModeEnabled(
                 context
             )

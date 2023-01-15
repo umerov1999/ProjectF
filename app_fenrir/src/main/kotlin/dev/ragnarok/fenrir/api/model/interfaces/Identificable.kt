@@ -1,4 +1,4 @@
-package dev.ragnarok.fenrir.api.model
+package dev.ragnarok.fenrir.api.model.interfaces
 
 /**
  * Describes objects that contains an "id" field.

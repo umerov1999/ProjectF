@@ -5,7 +5,7 @@ import androidx.annotation.IntDef
 @IntDef(
     MessageType.NO,
     MessageType.STICKER,
-    MessageType.GRAFFITY,
+    MessageType.GRAFFITI,
     MessageType.CALL,
     MessageType.GIFT,
     MessageType.VOICE,
@@ -23,7 +23,7 @@ annotation class MessageType {
     companion object {
         const val NO = 0
         const val STICKER = 1
-        const val GRAFFITY = 2
+        const val GRAFFITI = 2
         const val CALL = 3
         const val GIFT = 4
         const val VOICE = 5

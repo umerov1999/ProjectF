@@ -3,7 +3,11 @@ package dev.ragnarok.fenrir.api.impl
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IVideoApi
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.AccessIdPair
+import dev.ragnarok.fenrir.api.model.Items
+import dev.ragnarok.fenrir.api.model.VKApiVideo
+import dev.ragnarok.fenrir.api.model.VKApiVideoAlbum
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.SearchVideoResponse
 import dev.ragnarok.fenrir.api.services.IVideoService

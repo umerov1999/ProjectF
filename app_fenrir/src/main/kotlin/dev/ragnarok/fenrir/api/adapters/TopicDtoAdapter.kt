@@ -23,7 +23,7 @@ class TopicDtoAdapter : AbsAdapter<VKApiTopic>("VKApiTopic") {
         dto.title = optString(root, "title")
         dto.created = optLong(root, "created")
         dto.created_by = optInt(root, "created_by")
-        dto.updated = optInt(root, "updated").toLong()
+        dto.updated = optLong(root, "updated")
         dto.updated_by = optInt(root, "updated_by")
         dto.is_closed = optBoolean(root, "is_closed")
         dto.is_fixed = optBoolean(root, "is_fixed")

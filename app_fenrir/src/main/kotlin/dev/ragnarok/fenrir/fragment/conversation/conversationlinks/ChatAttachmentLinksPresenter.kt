@@ -3,8 +3,8 @@ package dev.ragnarok.fenrir.fragment.conversation.conversationlinks
 import android.os.Bundle
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.Apis.get
-import dev.ragnarok.fenrir.api.model.VKApiAttachment
 import dev.ragnarok.fenrir.api.model.VKApiLink
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model
 import dev.ragnarok.fenrir.fragment.conversation.abschatattachments.BaseChatAttachmentsPresenter
 import dev.ragnarok.fenrir.model.Link

@@ -4,6 +4,7 @@ import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.model.feedback.Copies
 import dev.ragnarok.fenrir.api.model.feedback.UserArray
 import dev.ragnarok.fenrir.api.model.feedback.VKApiUsersFeedback
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.nonNullNoEmpty

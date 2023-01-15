@@ -28,7 +28,7 @@
         app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
 
     <ImageView
-        android:id="@+id/item_document_graffity"
+        android:id="@+id/item_document_graffiti"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"

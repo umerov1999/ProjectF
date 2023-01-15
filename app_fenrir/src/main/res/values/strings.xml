@@ -292,7 +292,7 @@
     <string name="call_message">[call]</string>
     <string name="doc_message">[document]</string>
     <string name="gift_message">[gift]</string>
-    <string name="graffity_message">[graffiti]</string>
+    <string name="graffiti_message">[graffiti]</string>
     <string name="photo_message">[photo]</string>
     <string name="video_message">[video]</string>
     <string name="wall_message">[repost]</string>
@@ -1688,7 +1688,7 @@
     <string name="geo">Geo</string>
     <string name="input_call">Outgoing call</string>
     <string name="output_call">Incoming call</string>
-    <string name="graffity">Graffiti</string>
+    <string name="graffiti">Graffiti</string>
     <string name="download_photo_tap">Download pictures by long press</string>
     <string name="photo_album">Photo Album</string>
     <string name="custom_second_message_color">Second color of outgoing message</string>
@@ -1962,4 +1962,5 @@
     <string name="turn_on">Turn on</string>
     <string name="photos_with_user">Photos with user</string>
     <string name="wall_photos">Photos on Wall</string>
+    <string name="block_or_delete">Block a subscriber? Mode save per session</string>
 </resources>

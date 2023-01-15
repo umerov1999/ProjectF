@@ -63,7 +63,7 @@ object Model2Entity {
             .setDeleted(message.isDeleted)
             .setDeletedForAll(message.isDeletedForAll)
             .setForwardCount(message.forwardMessagesCount)
-            .setHasAttachmens(message.isHasAttachments)
+            .setHasAttachments(message.isHasAttachments)
             .setStatus(message.status)
             .setOriginalId(message.originalId)
             .setAction(message.action)
@@ -179,8 +179,8 @@ object Model2Entity {
             entities
         )
         mapAndAdd(
-            attachments.graffity,
-            { buildGraffityDbo(it) },
+            attachments.graffiti,
+            { buildGraffitiDbo(it) },
             entities
         )
         mapAndAdd(
@@ -274,7 +274,7 @@ object Model2Entity {
                     entities.add(buildWallReplyDbo(model as WallReply))
                 }
                 AbsModelType.MODEL_GRAFFITI -> {
-                    entities.add(buildGraffityDbo(model as Graffiti))
+                    entities.add(buildGraffitiDbo(model as Graffiti))
                 }
                 AbsModelType.MODEL_POLL -> {
                     entities.add(buildPollDbo(model as Poll))
@@ -447,7 +447,7 @@ object Model2Entity {
             })
     }
 
-    private fun buildGraffityDbo(dbo: Graffiti): GraffitiDboEntity {
+    private fun buildGraffitiDbo(dbo: Graffiti): GraffitiDboEntity {
         return GraffitiDboEntity().setId(dbo.id)
             .setOwner_id(dbo.owner_id)
             .setAccess_key(dbo.access_key)

@@ -169,7 +169,7 @@ class AttachmentsBottomSheetAdapter(
     }
 
     private fun bindGraffiti(holder: EntryHolder, graffiti: Graffiti) {
-        holder.title.setText(R.string.graffity)
+        holder.title.setText(R.string.graffiti)
         val photoLink = graffiti.url
         holder.progress.visibility = View.INVISIBLE
         holder.Retry.visibility = View.GONE

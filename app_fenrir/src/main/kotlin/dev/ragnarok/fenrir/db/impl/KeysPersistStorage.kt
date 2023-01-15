@@ -31,9 +31,9 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
 
     override fun saveKeyPair(pair: AesKeyPair): Completable {
         return Completable.create { e: CompletableEmitter ->
-            val alreaadyExist = findKeyPairFor(pair.accountId, pair.sessionId)
+            val alreadyExist = findKeyPairFor(pair.accountId, pair.sessionId)
                 .blockingGet()
-            if (alreaadyExist != null) {
+            if (alreadyExist != null) {
                 e.tryOnError(DatabaseException("Key pair with the session ID is already in the database"))
                 return@create
             }

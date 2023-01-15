@@ -4,6 +4,7 @@ import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IMessagesApi
 import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.*
 import dev.ragnarok.fenrir.api.services.IMessageService
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
@@ -110,7 +111,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun createChat(userIds: Collection<Int?>?, title: String?): Single<Int> {
+    override fun createChat(userIds: Collection<Int>, title: String?): Single<Int> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service

@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.model
 
 import androidx.annotation.Keep
-import dev.ragnarok.fenrir.api.model.Identificable
+import dev.ragnarok.fenrir.api.model.interfaces.Identificable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

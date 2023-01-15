@@ -34,6 +34,7 @@ interface IRelationshipInteractor {
     ): Single<List<User>>
 
     fun getRecommendations(accountId: Int, count: Int?): Single<List<User>>
+    fun deleteSubscriber(accountId: Int, subscriber_id: Int): Single<Int>
     fun getFollowers(accountId: Int, objectId: Int, count: Int, offset: Int): Single<List<User>>
     fun getMutualFriends(
         accountId: Int,

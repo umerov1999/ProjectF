@@ -27,6 +27,10 @@ class CopyFeedback : Feedback {
         writeOwners(dest, flags, owners)
     }
 
+    override fun getModelType(): Int {
+        return FeedbackModelType.MODEL_COPY_FEEDBACK
+    }
+
     override fun describeContents(): Int {
         return 0
     }

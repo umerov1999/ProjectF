@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.domain.mappers
 
 import dev.ragnarok.fenrir.api.model.AttachmentsTokenCreator
-import dev.ragnarok.fenrir.api.model.IAttachmentToken
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.model.*
 
 object Model2Dto {
@@ -47,7 +47,7 @@ object Model2Dto {
                 return AttachmentsTokenCreator.ofStory(model.id, model.ownerId, model.accessKey)
             }
             is Graffiti -> {
-                return AttachmentsTokenCreator.ofGraffity(
+                return AttachmentsTokenCreator.ofGraffiti(
                     model.id,
                     model.owner_id,
                     model.access_key

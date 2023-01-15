@@ -95,6 +95,16 @@ class IFriendsService : IServiceRest() {
         )
     }
 
+    fun deleteSubscriber(
+        subscriber_id: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "friends.deleteSubscriber", form(
+                "subscriber_id" to subscriber_id,
+            ), baseInt
+        )
+    }
+
     //https://vk.com/dev/friends.search
     fun search(
         userId: Int,

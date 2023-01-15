@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.model.BannedPart
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
-import dev.ragnarok.fenrir.util.Utils.findOwnerIndexById
+import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 
 class UserBannedPresenter(accountId: Int, savedInstanceState: Bundle?) :
@@ -21,7 +21,7 @@ class UserBannedPresenter(accountId: Int, savedInstanceState: Bundle?) :
     private var endOfContent = false
     private var loadinNow = false
     private fun onOwnerRemoved(id: Int) {
-        val index = findOwnerIndexById(owners, id)
+        val index = findIndexById(owners, id)
         if (index != -1) {
             owners.removeAt(index)
             view?.notifyItemRemoved(

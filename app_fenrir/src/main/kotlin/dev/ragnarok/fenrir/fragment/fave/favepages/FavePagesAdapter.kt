@@ -69,8 +69,8 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
             holder.ivMonitor.visibility = View.VISIBLE
             holder.ivMonitor.fromRes(
                 dev.ragnarok.fenrir_common.R.raw.eye,
-                Utils.dp(48f),
-                Utils.dp(48f),
+                Utils.dp(24f),
+                Utils.dp(24f),
                 intArrayOf(
                     0x333333,
                     Color.parseColor("#ffffff"),
@@ -83,6 +83,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
             holder.ivMonitor.visibility = View.GONE
             holder.ivMonitor.clearAnimationDrawable()
         }
+        holder.blacklisted.clearColorFilter()
         if (favePage.type == FavePageType.USER) {
             val user = favePage.user
             displayAvatar(
@@ -110,13 +111,13 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
             } else if (user?.isFriend == true && Utils.hasMarshmallow() && FenrirNative.isNativeLoaded) {
                 holder.blacklisted.visibility = View.VISIBLE
                 holder.blacklisted.fromRes(
-                    dev.ragnarok.fenrir_common.R.raw.infinity,
+                    dev.ragnarok.fenrir_common.R.raw.is_friend,
                     Utils.dp(48f),
                     Utils.dp(48f),
                     intArrayOf(
-                        0x333333,
+                        0x000000,
                         getColorPrimary(context),
-                        0x777777,
+                        0xffffff,
                         getColorSecondary(context)
                     )
                 )

@@ -62,8 +62,8 @@ class PostDownload(private val context: Context) {
         return if (owner.fullName.isNullOrEmpty()) "wall_${post.ownerId}_${post.vkid}" else owner.fullName + "_${post.ownerId}_${post.vkid}"
     }
 
-    private fun getAvatarTag(PeerId: Int): String {
-        return "avatar_id_" + if (PeerId < 0) "club" else "" + abs(PeerId)
+    private fun getAvatarTag(peerId: Int): String {
+        return "avatar_id_" + if (peerId < 0) "club" else "" + abs(peerId)
     }
 
     private fun Build_Post(accountId: Int, owner: Owner, i: Post, isSub: Boolean): String {

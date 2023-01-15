@@ -209,7 +209,7 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
 
     companion object {
         private const val KEY_ACCOUNT_UIDS = "account_uids"
-        private const val KEY_CURRENT = "current_account_id"
+        private const val KEY_CURRENT = "current_account_id_int"
         internal fun tokenKeyFor(uid: Int): String {
             return "token$uid"
         }

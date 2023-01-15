@@ -22,6 +22,10 @@ class LikeFeedback : Feedback {
         owners = readOwners(parcel)
     }
 
+    override fun getModelType(): Int {
+        return FeedbackModelType.MODEL_LIKE_FEEDBACK
+    }
+
     override fun writeToParcel(dest: Parcel, flags: Int) {
         super.writeToParcel(dest, flags)
         writeModel(dest, flags, liked)

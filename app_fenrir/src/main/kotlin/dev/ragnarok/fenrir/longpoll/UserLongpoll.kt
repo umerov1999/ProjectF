@@ -119,6 +119,9 @@ internal class UserLongpoll(
     private fun fixUpdates(updates: VkApiLongpollUpdates) {
         updates.add_message_updates.nonNullNoEmpty {
             for (update in it) {
+                if (update.peerId == accountId) {
+                    update.isOut = true
+                }
                 if (update.isOut) {
                     update.from = accountId
                 }

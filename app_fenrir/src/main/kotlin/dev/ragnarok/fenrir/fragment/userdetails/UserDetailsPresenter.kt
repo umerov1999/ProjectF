@@ -314,14 +314,14 @@ class UserDetailsPresenter(
             details.getBooks()
         )
         val beliefs = Section(Text(R.string.beliefs))
-        if (getPolitivalViewRes(details.getPolitical()) != null) {
+        if (getPoliticalViewRes(details.getPolitical()) != null) {
             items.add(
                 AdvancedItem(26, Text(R.string.political_views))
                     .setSection(beliefs)
                     .setIcon(R.drawable.ic_profile_personal)
                     .setSubtitle(
                         Text(
-                            getPolitivalViewRes(
+                            getPoliticalViewRes(
                                 details.getPolitical()
                             )
                         )
@@ -599,7 +599,7 @@ class UserDetailsPresenter(
             }
         }
 
-        internal fun getPolitivalViewRes(political: Int): Int? {
+        internal fun getPoliticalViewRes(political: Int): Int? {
             return when (political) {
                 1 -> R.string.political_views_communist
                 2 -> R.string.political_views_socialist

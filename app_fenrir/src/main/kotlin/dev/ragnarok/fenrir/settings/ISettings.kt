@@ -130,9 +130,9 @@ interface ISettings {
         fun isEnable_dirs_files_count(): Boolean
         fun get_last_audio_sync(): Long
         fun set_last_audio_sync(time: Long)
-        fun get_last_stikers_sync(accountId: Int): Long
-        fun del_last_stikers_sync(accountId: Int)
-        fun set_last_stikers_sync(accountId: Int, time: Long)
+        fun get_last_stickers_sync(accountId: Int): Long
+        fun del_last_stickers_sync(accountId: Int)
+        fun set_last_stickers_sync(accountId: Int, time: Long)
         val isOngoing_player_notification: Boolean
         fun reloadOwnerChangesMonitor()
         fun isOwnerInChangesMonitor(ownerId: Int): Boolean
@@ -269,8 +269,8 @@ interface ISettings {
     }
 
     interface IRecentChats {
-        operator fun get(acountid: Int): MutableList<RecentChat>
-        fun store(accountid: Int, chats: List<RecentChat>)
+        operator fun get(accountId: Int): MutableList<RecentChat>
+        fun store(accountId: Int, chats: List<RecentChat>)
     }
 
     interface IDrawerSettings {

@@ -1,9 +1,9 @@
 package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.api.adapters.AttachmentsDtoAdapter.Companion.parse
-import dev.ragnarok.fenrir.api.model.VKApiAttachment
 import dev.ragnarok.fenrir.api.model.VKApiAttachments
 import dev.ragnarok.fenrir.api.model.VKApiNotSupported
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 

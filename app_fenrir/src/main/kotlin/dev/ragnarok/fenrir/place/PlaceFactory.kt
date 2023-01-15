@@ -155,14 +155,14 @@ object PlaceFactory {
     }
 
 
-    fun getShowComunityInfoPlace(accountId: Int, community: Community?): Place {
+    fun getShowCommunityInfoPlace(accountId: Int, community: Community?): Place {
         return Place(Place.COMMUNITY_INFO)
             .withIntExtra(Extra.ACCOUNT_ID, accountId)
             .withParcelableExtra(Extra.OWNER, community)
     }
 
 
-    fun getShowComunityLinksInfoPlace(accountId: Int, community: Community?): Place {
+    fun getShowCommunityLinksInfoPlace(accountId: Int, community: Community?): Place {
         return Place(Place.COMMUNITY_INFO_LINKS)
             .withIntExtra(Extra.ACCOUNT_ID, accountId)
             .withParcelableExtra(Extra.OWNER, community)

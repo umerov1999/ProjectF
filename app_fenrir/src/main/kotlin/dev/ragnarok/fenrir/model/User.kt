@@ -4,7 +4,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.Keep
 import dev.ragnarok.fenrir.*
-import dev.ragnarok.fenrir.api.model.Identificable
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
@@ -16,7 +15,7 @@ import kotlin.math.abs
 @Keep
 @Serializable
 @SerialName("user")
-class User : Owner, Identificable {
+class User : Owner {
     private val id: Int
     var firstName: String? = null
         private set
@@ -335,7 +334,7 @@ class User : Owner, Identificable {
     }
 
     override fun getObjectId(): Int {
-        return id
+        return abs(id)
     }
 
     override fun get100photoOrSmaller(): String? {

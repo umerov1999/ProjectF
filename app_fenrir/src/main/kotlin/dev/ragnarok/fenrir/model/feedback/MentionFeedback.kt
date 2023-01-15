@@ -25,6 +25,10 @@ class MentionFeedback : Feedback {
         writeModel(dest, flags, where)
     }
 
+    override fun getModelType(): Int {
+        return FeedbackModelType.MODEL_MENTION_FEEDBACK
+    }
+
     override fun describeContents(): Int {
         return 0
     }

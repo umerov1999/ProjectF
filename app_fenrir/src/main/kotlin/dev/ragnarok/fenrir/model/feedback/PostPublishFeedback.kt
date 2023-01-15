@@ -20,6 +20,10 @@ class PostPublishFeedback : Feedback {
         dest.writeTypedObjectCompat(post, flags)
     }
 
+    override fun getModelType(): Int {
+        return FeedbackModelType.MODEL_POSTPUBLISH_FEEDBACK
+    }
+
     override fun describeContents(): Int {
         return 0
     }

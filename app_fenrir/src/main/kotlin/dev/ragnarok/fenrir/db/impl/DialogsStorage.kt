@@ -466,7 +466,7 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
             .setBody(cursor.getString(DialogsColumns.FOREIGN_MESSAGE_BODY))
             .setDate(cursor.getLong(DialogsColumns.FOREIGN_MESSAGE_DATE))
             .setOut(cursor.getBoolean(DialogsColumns.FOREIGN_MESSAGE_OUT))
-            .setHasAttachmens(cursor.getBoolean(DialogsColumns.FOREIGN_MESSAGE_HAS_ATTACHMENTS))
+            .setHasAttachments(cursor.getBoolean(DialogsColumns.FOREIGN_MESSAGE_HAS_ATTACHMENTS))
             .setForwardCount(cursor.getInt(DialogsColumns.FOREIGN_MESSAGE_FWD_COUNT))
             .setAction(action)
             .setEncrypted(encrypted)

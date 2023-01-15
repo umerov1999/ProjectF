@@ -4,6 +4,7 @@ import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IPhotosApi
 import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.UploadChatPhotoResponse
 import dev.ragnarok.fenrir.api.model.response.UploadOwnerPhotoResponse
@@ -296,7 +297,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun get(
-        ownerId: Int?, albumId: String?, photoIds: Collection<Int?>?,
+        ownerId: Int?, albumId: String?, photoIds: Collection<Int>?,
         rev: Boolean?, offset: Int?, count: Int?
     ): Single<Items<VKApiPhoto>> {
         val photos = join(photoIds, ",")
@@ -355,7 +356,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getAlbums(
-        ownerId: Int?, albumIds: Collection<Int?>?,
+        ownerId: Int?, albumIds: Collection<Int>?,
         offset: Int?, count: Int?, needSystem: Boolean?,
         needCovers: Boolean?
     ): Single<Items<VKApiPhotoAlbum>> {

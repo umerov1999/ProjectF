@@ -5,6 +5,9 @@ import dev.ragnarok.fenrir.api.model.VKApiConversation.CurrentKeyboard
 import dev.ragnarok.fenrir.api.model.VKApiSticker.VKApiAnimation
 import dev.ragnarok.fenrir.api.model.VKApiStickerSet.Product
 import dev.ragnarok.fenrir.api.model.feedback.*
+import dev.ragnarok.fenrir.api.model.interfaces.Commentable
+import dev.ragnarok.fenrir.api.model.interfaces.Likeable
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import dev.ragnarok.fenrir.api.model.response.FavePageResponse
 import dev.ragnarok.fenrir.crypt.CryptHelper.analizeMessageBody
 import dev.ragnarok.fenrir.crypt.MessageType
@@ -673,7 +676,7 @@ object Dto2Entity {
                 )
             })
         if (news.hasAttachments()) {
-            entity.setAttachments(news.attachments?.let { mapAttachemntsList(it) })
+            entity.setAttachments(news.attachments?.let { mapAttachmentsList(it) })
         } else {
             entity.setAttachments(null)
         }
@@ -695,7 +698,7 @@ object Dto2Entity {
     ): CommentEntity {
         var attachmentsEntities: List<DboEntity>? = null
         comment.attachments.requireNonNull {
-            attachmentsEntities = mapAttachemntsList(it)
+            attachmentsEntities = mapAttachmentsList(it)
         }
         return CommentEntity().set(sourceId, sourceOwnerId, sourceType, sourceAccessKey, comment.id)
             .setFromId(comment.from_id)
@@ -853,7 +856,7 @@ object Dto2Entity {
         return null
     }
 
-    private fun mapAttachemntsList(attachments: VKApiAttachments): List<DboEntity>? {
+    private fun mapAttachmentsList(attachments: VKApiAttachments): List<DboEntity>? {
         val entries = attachments.entryList()
         if (entries.isEmpty()) {
             return null
@@ -892,7 +895,7 @@ object Dto2Entity {
                 return mapStory(dto as VKApiStory)
             }
             VKApiAttachment.TYPE_GRAFFITI -> {
-                return mapGraffity(dto as VKApiGraffiti)
+                return mapGraffiti(dto as VKApiGraffiti)
             }
             VKApiAttachment.TYPE_ALBUM -> {
                 return buildPhotoAlbumDbo(dto as VKApiPhotoAlbum)
@@ -1045,7 +1048,7 @@ object Dto2Entity {
             dbo.setSource(SourceDbo().set(source.type, source.platform, source.data, source.url))
         }
         if (dto.hasAttachments()) {
-            dbo.setAttachments(dto.attachments?.let { mapAttachemntsList(it) })
+            dbo.setAttachments(dto.attachments?.let { mapAttachmentsList(it) })
         } else {
             dbo.setAttachments(null)
         }
@@ -1089,7 +1092,7 @@ object Dto2Entity {
     }
 
 
-    fun mapStikerSet(dto: Product): StickerSetEntity {
+    fun mapStickerSet(dto: Product): StickerSetEntity {
         return StickerSetEntity(dto.id)
             .setTitle(dto.title)
             .setPromoted(dto.promoted)
@@ -1174,7 +1177,7 @@ object Dto2Entity {
     }
 
     private fun mapWallReply(dto: VKApiWallReply): WallReplyDboEntity {
-        val attachmentsEntities: List<DboEntity>? = dto.attachments?.let { mapAttachemntsList(it) }
+        val attachmentsEntities: List<DboEntity>? = dto.attachments?.let { mapAttachmentsList(it) }
         return WallReplyDboEntity().setId(dto.id)
             .setOwnerId(dto.owner_id)
             .setAttachments(attachmentsEntities)
@@ -1183,7 +1186,7 @@ object Dto2Entity {
             .setText(dto.text)
     }
 
-    private fun mapGraffity(dto: VKApiGraffiti): GraffitiDboEntity {
+    private fun mapGraffiti(dto: VKApiGraffiti): GraffitiDboEntity {
         return GraffitiDboEntity().setId(dto.id)
             .setOwner_id(dto.owner_id)
             .setAccess_key(dto.access_key)
@@ -1310,7 +1313,7 @@ object Dto2Entity {
             .setDeleted(dto.deleted)
             .setDeletedForAll(false) // cant be deleted for all?
             .setForwardCount(safeCountOf(dto.fwd_messages))
-            .setHasAttachmens(dto.attachments != null && dto.attachments?.nonEmpty() == true)
+            .setHasAttachments(dto.attachments != null && dto.attachments?.nonEmpty() == true)
             .setStatus(MessageStatus.SENT) // only sent can be
             .setOriginalId(dto.id)
             .setAction(Message.fromApiChatAction(dto.action))
@@ -1323,8 +1326,8 @@ object Dto2Entity {
             .setRandomId(randomId)
             .setUpdateTime(dto.update_time)
             .setPayload(dto.payload)
-        if (entity.isHasAttachmens) {
-            entity.setAttachments(dto.attachments?.let { mapAttachemntsList(it) })
+        if (entity.isHasAttachments) {
+            entity.setAttachments(dto.attachments?.let { mapAttachmentsList(it) })
         } else {
             entity.setAttachments(null)
         }

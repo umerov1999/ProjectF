@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.model
 
-import dev.ragnarok.fenrir.api.model.Identificable
+import dev.ragnarok.fenrir.api.model.interfaces.Identificable
 
 class FavePage(private val id: Int) : Identificable {
     var description: String? = null

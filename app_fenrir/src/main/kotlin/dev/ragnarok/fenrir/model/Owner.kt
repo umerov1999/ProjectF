@@ -1,13 +1,14 @@
 package dev.ragnarok.fenrir.model
 
 import android.os.Parcel
+import dev.ragnarok.fenrir.api.model.interfaces.Identificable
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class Owner : AbsModel, ParcelNative.ParcelableNative {
+sealed class Owner : AbsModel, Identificable, ParcelNative.ParcelableNative {
     @OwnerType
     val ownerType: Int
 

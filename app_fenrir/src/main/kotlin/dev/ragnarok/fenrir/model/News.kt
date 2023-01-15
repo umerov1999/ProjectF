@@ -156,9 +156,6 @@ class News : AbsModel {
     var copyright: Copyright? = null
         private set
 
-    @Transient
-    var tag: Any? = null
-        private set
     var viewCount = 0
         private set
 
@@ -195,11 +192,6 @@ class News : AbsModel {
     @AbsModelType
     override fun getModelType(): Int {
         return AbsModelType.MODEL_NEWS
-    }
-
-    fun setTag(tag: Any?): News {
-        this.tag = tag
-        return this
     }
 
     fun setCopyright(copyright: Copyright?): News {

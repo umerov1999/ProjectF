@@ -27,6 +27,10 @@ class CommentFeedback : Feedback {
         dest.writeTypedObjectCompat(comment, flags)
     }
 
+    override fun getModelType(): Int {
+        return FeedbackModelType.MODEL_COMMENT_FEEDBACK
+    }
+
     override fun describeContents(): Int {
         return 0
     }

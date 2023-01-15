@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.api.model.feedback
 
-import dev.ragnarok.fenrir.api.model.Copyable
+import dev.ragnarok.fenrir.api.model.interfaces.Copyable
 import kotlinx.serialization.Serializable
 
 @Serializable

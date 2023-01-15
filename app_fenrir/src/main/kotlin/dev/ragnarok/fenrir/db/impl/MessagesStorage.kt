@@ -86,9 +86,9 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
         }
     }
 
-    override fun findLastSentMessageIdForPeer(accounId: Int, peerId: Int): Single<Optional<Int>> {
+    override fun findLastSentMessageIdForPeer(accountId: Int, peerId: Int): Single<Optional<Int>> {
         return Single.create { emitter: SingleEmitter<Optional<Int>> ->
-            val uri = getMessageContentUriFor(accounId)
+            val uri = getMessageContentUriFor(accountId)
             val projection = arrayOf(MessageColumns._ID)
             val where = MessageColumns.PEER_ID + " = ?" +
                     " AND " + MessageColumns.STATUS + " = ?" +
@@ -336,7 +336,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
         cancelable: Cancelable
     ): MessageDboEntity {
         val dbo = baseMapDbo(cursor)
-        if (withAttachments && dbo.isHasAttachmens) {
+        if (withAttachments && dbo.isHasAttachments) {
             val attachments = stores
                 .attachments()
                 .getAttachmentsDbosSync(accountId, AttachToType.MESSAGE, dbo.id, cancelable)
@@ -385,16 +385,16 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
         }
     }
 
-    override fun saveDraftMessageBody(acocuntId: Int, peerId: Int, body: String?): Single<Int> {
+    override fun saveDraftMessageBody(accountId: Int, peerId: Int, body: String?): Single<Int> {
         return Single.create { e: SingleEmitter<Int> ->
             val start = System.currentTimeMillis()
-            val uri = getMessageContentUriFor(acocuntId)
+            val uri = getMessageContentUriFor(accountId)
             val cv = ContentValues()
             cv.put(MessageColumns.BODY, body)
             cv.put(MessageColumns.PEER_ID, peerId)
             cv.put(MessageColumns.STATUS, MessageStatus.EDITING)
             val cr = contentResolver
-            var existDraftMessageId = findDraftMessageId(acocuntId, peerId)
+            var existDraftMessageId = findDraftMessageId(accountId, peerId)
             //.blockingGet();
             if (existDraftMessageId != null) {
                 cr.update(
@@ -604,7 +604,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
     override fun findMessagesByIds(
         accountId: Int,
         ids: List<Int>,
-        withAtatchments: Boolean,
+        withAttachments: Boolean,
         withForwardMessages: Boolean
     ): Single<List<MessageDboEntity>> {
         return Single.create { emitter: SingleEmitter<List<MessageDboEntity>> ->
@@ -632,7 +632,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                     val dbo = fullMapDbo(
                         accountId,
                         cursor,
-                        withAtatchments,
+                        withAttachments,
                         withForwardMessages,
                         cancelable
                     )
@@ -647,7 +647,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
 
     override fun findFirstUnsentMessage(
         accountIds: Collection<Int>,
-        withAtatchments: Boolean,
+        withAttachments: Boolean,
         withForwardMessages: Boolean
     ): Single<Optional<Pair<Int, MessageDboEntity>>> {
         return Single.create { emitter: SingleEmitter<Optional<Pair<Int, MessageDboEntity>>> ->
@@ -666,7 +666,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                         entity = fullMapDbo(
                             accountId,
                             cursor,
-                            withAtatchments,
+                            withAttachments,
                             withForwardMessages,
                             object : Cancelable {
                                 override val isOperationCancelled: Boolean
@@ -759,7 +759,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             cv.put(MessageColumns.IMPORTANT, dbo.isImportant)
             cv.put(MessageColumns.DELETED, dbo.isDeleted)
             cv.put(MessageColumns.FORWARD_COUNT, dbo.forwardCount)
-            cv.put(MessageColumns.HAS_ATTACHMENTS, dbo.isHasAttachmens)
+            cv.put(MessageColumns.HAS_ATTACHMENTS, dbo.isHasAttachments)
             cv.put(MessageColumns.STATUS, dbo.status)
             cv.put(MessageColumns.ORIGINAL_ID, dbo.originalId)
             cv.put(MessageColumns.ACTION, dbo.action)
@@ -805,7 +805,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                 builder.withValueBackReference(MessageColumns.ATTACH_TO, attachToIndex)
             }
             val index = addToListAndReturnIndex(target, builder.build())
-            if (dbo.isHasAttachmens) {
+            if (dbo.isHasAttachments) {
                 dbo.getAttachments().nonNullNoEmpty {
                     for (attachmentEntity in it) {
                         appendAttachOperationWithBackReference(
@@ -861,7 +861,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                 .setOut(cursor.getBoolean(MessageColumns.OUT))
                 .setStatus(status)
                 .setDate(cursor.getLong(MessageColumns.DATE))
-                .setHasAttachmens(cursor.getBoolean(MessageColumns.HAS_ATTACHMENTS))
+                .setHasAttachments(cursor.getBoolean(MessageColumns.HAS_ATTACHMENTS))
                 .setForwardCount(cursor.getInt(MessageColumns.FORWARD_COUNT))
                 .setDeleted(cursor.getBoolean(MessageColumns.DELETED))
                 .setDeletedForAll(cursor.getBoolean(MessageColumns.DELETED_FOR_ALL)) //.setTitle(cursor.getString(MessageColumns.TITLE))

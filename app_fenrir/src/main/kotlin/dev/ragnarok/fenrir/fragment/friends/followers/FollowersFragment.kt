@@ -1,6 +1,8 @@
 package dev.ragnarok.fenrir.fragment.friends.followers
 
+import android.content.DialogInterface
 import android.os.Bundle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.DeltaOwnerActivity
@@ -8,6 +10,7 @@ import dev.ragnarok.fenrir.fragment.absownerslist.AbsOwnersListFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.model.DeltaOwner
 import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.util.Utils
 
 class FollowersFragment : AbsOwnersListFragment<FollowersPresenter, IFollowersView>(),
     IFollowersView {
@@ -30,6 +33,18 @@ class FollowersFragment : AbsOwnersListFragment<FollowersPresenter, IFollowersVi
     }
 
     override fun onLongClick(owner: Owner): Boolean {
+        if (!Utils.follower_kick_mode) {
+            MaterialAlertDialogBuilder(requireActivity()).setIcon(R.drawable.report_red)
+                .setTitle(R.string.select)
+                .setMessage(R.string.block_or_delete)
+                .setPositiveButton(R.string.block_user) { _: DialogInterface?, _: Int ->
+                    Utils.follower_kick_mode = true
+                    presenter?.removeFollower(owner)
+                }
+                .setCancelable(true).show()
+            return true
+        }
+
         presenter?.removeFollower(
             owner
         )

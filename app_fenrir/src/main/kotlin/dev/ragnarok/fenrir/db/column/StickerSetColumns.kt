@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.db.column
 
 import android.provider.BaseColumns
 
-object StikerSetColumns : BaseColumns {
+object StickerSetColumns : BaseColumns {
     const val TABLENAME = "sticker_set"
     const val ACCOUNT_ID = "account_id"
     const val POSITION = "position"

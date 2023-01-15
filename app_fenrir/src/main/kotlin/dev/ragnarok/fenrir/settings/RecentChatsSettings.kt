@@ -9,10 +9,10 @@ import dev.ragnarok.fenrir.settings.ISettings.IRecentChats
 
 internal class RecentChatsSettings(app: Context) : IRecentChats {
     private val app: Context = app.applicationContext
-    override fun get(acountid: Int): MutableList<RecentChat> {
+    override fun get(accountId: Int): MutableList<RecentChat> {
         val recentChats: MutableList<RecentChat> = ArrayList()
         val stringSet = getPreferences(app)
-            .getStringSet(recentChatKeyFor(acountid), null)
+            .getStringSet(recentChatKeyFor(accountId), null)
         if (stringSet.nonNullNoEmpty()) {
             for (s in stringSet) {
                 try {
@@ -25,15 +25,15 @@ internal class RecentChatsSettings(app: Context) : IRecentChats {
         return recentChats
     }
 
-    override fun store(accountid: Int, chats: List<RecentChat>) {
+    override fun store(accountId: Int, chats: List<RecentChat>) {
         val target: MutableSet<String> = LinkedHashSet()
         for (item in chats) {
-            if (item.aid != accountid) continue
+            if (item.aid != accountId) continue
             target.add(kJson.encodeToString(RecentChat.serializer(), item))
         }
         getPreferences(app)
             .edit()
-            .putStringSet(recentChatKeyFor(accountid), target)
+            .putStringSet(recentChatKeyFor(accountId), target)
             .apply()
     }
 

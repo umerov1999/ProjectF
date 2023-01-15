@@ -100,6 +100,16 @@ internal class FriendsApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
+    override fun deleteSubscriber(
+        subscriber_id: Int
+    ): Single<Int> {
+        return provideService(IFriendsService(), TokenType.USER)
+            .flatMap { service ->
+                service.deleteSubscriber(subscriber_id)
+                    .map(extractResponseWithErrorHandling())
+            }
+    }
+
     override fun getLists(userId: Int?, returnSystem: Boolean?): Single<Items<VKApiFriendList>> {
         return provideService(IFriendsService(), TokenType.USER)
             .flatMap { service ->

@@ -47,8 +47,8 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getDocumentsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getGroupChatsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getMarketAlbumPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getMarketPlace
-import dev.ragnarok.fenrir.place.PlaceFactory.getShowComunityInfoPlace
-import dev.ragnarok.fenrir.place.PlaceFactory.getShowComunityLinksInfoPlace
+import dev.ragnarok.fenrir.place.PlaceFactory.getShowCommunityInfoPlace
+import dev.ragnarok.fenrir.place.PlaceFactory.getShowCommunityLinksInfoPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleURLPhotoPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getTopicsPlace
 import dev.ragnarok.fenrir.settings.AvatarStyle
@@ -443,11 +443,11 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
     }
 
     override fun goToShowCommunityInfo(accountId: Int, community: Community) {
-        getShowComunityInfoPlace(accountId, community).tryOpenWith(requireActivity())
+        getShowCommunityInfoPlace(accountId, community).tryOpenWith(requireActivity())
     }
 
     override fun goToShowCommunityLinksInfo(accountId: Int, community: Community) {
-        getShowComunityLinksInfoPlace(accountId, community).tryOpenWith(requireActivity())
+        getShowCommunityLinksInfoPlace(accountId, community).tryOpenWith(requireActivity())
     }
 
     override fun goToShowCommunityAboutInfo(accountId: Int, details: CommunityDetails) {

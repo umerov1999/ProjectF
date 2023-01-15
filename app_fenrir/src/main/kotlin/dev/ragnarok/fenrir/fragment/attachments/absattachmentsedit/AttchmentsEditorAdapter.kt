@@ -175,7 +175,7 @@ class AttchmentsEditorAdapter(
     }
 
     private fun bindGraffiti(holder: ViewHolder, graffiti: Graffiti) {
-        holder.tvTitle.setText(R.string.graffity)
+        holder.tvTitle.setText(R.string.graffiti)
         val photoLink = graffiti.url
         if (photoLink.nonNullNoEmpty()) {
             with()

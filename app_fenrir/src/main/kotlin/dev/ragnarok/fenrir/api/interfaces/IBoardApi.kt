@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.api.interfaces
 
 import androidx.annotation.CheckResult
-import dev.ragnarok.fenrir.api.model.IAttachmentToken
+import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.TopicsResponse
 import io.reactivex.rxjava3.core.Single

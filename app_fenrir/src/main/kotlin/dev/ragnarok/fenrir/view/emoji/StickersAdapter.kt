@@ -18,7 +18,7 @@ import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 
 class StickersAdapter(private val context: Context, private val stickers: StickerSet) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val isNightStiker: Boolean =
+    private val isNightSticker: Boolean =
         Settings.get().ui().isStickers_by_theme && Settings.get().ui().isDarkModeEnabled(
             context
         )
@@ -66,7 +66,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
             TYPE_ANIMATED -> {
                 val animatedHolder = holder as StickerAnimatedHolder
                 animatedHolder.animation.fromNet(
-                    item?.getAnimationByType(if (isNightStiker) "dark" else "light"),
+                    item?.getAnimationByType(if (isNightSticker) "dark" else "light"),
                     Utils.createOkHttp(5, true),
                     Utils.dp(128f),
                     Utils.dp(128f)
@@ -86,7 +86,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
             TYPE_IMAGE -> {
                 val normalHolder = holder as StickerHolder
                 normalHolder.image.visibility = View.VISIBLE
-                val url = item?.getImage(256, isNightStiker)?.url
+                val url = item?.getImage(256, isNightSticker)?.url
                 if (url.isNullOrEmpty()) {
                     with().cancelRequest(normalHolder.image)
                     normalHolder.image.setImageResource(R.drawable.ic_avatar_unknown)
@@ -105,7 +105,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
             else -> {
                 val animatedHolder = holder as StickerAnimatedHolder
                 animatedHolder.animation.fromNet(
-                    item?.getAnimationByType(if (isNightStiker) "dark" else "light"),
+                    item?.getAnimationByType(if (isNightSticker) "dark" else "light"),
                     Utils.createOkHttp(5, true),
                     Utils.dp(128f),
                     Utils.dp(128f)

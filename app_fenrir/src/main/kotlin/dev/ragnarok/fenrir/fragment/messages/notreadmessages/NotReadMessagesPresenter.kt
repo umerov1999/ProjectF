@@ -216,9 +216,9 @@ class NotReadMessagesPresenter(
         }
     }
 
-    private fun onMessagesDeleteSuccessfully(ids: Collection<Int?>) {
+    private fun onMessagesDeleteSuccessfully(ids: Collection<Int>) {
         for (id in ids) {
-            val message = findById(id ?: return)
+            val message = findById(id)
             message?.setDeleted(true)
         }
         safeNotifyDataChanged()

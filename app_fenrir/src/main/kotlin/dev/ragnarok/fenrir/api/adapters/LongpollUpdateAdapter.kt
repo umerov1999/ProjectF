@@ -47,7 +47,7 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
                 val u = UserIsOnlineUpdate()
                 u.userId = -optInt(array, 1)
                 u.platform = optInt(array, 2)
-                u.timestamp = optInt(array, 3)
+                u.timestamp = optLong(array, 3)
                 u.app_id = optInt(array, 4)
                 return u
             }
@@ -55,7 +55,7 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
                 val u1 = UserIsOfflineUpdate()
                 u1.userId = -optInt(array, 1)
                 u1.isTimeout = optInt(array, 2) != 0
-                u1.timestamp = optInt(array, 3)
+                u1.timestamp = optLong(array, 3)
                 u1.app_id = optInt(array, 4)
                 return u1
             }

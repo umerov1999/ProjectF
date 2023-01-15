@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.api.model
 
+import dev.ragnarok.fenrir.api.model.interfaces.IUserActivityPoint
 import kotlinx.serialization.Serializable
 
 /**
