@@ -20,12 +20,12 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class PostShareDialog : DialogFragment() {
     private val compositeDisposable = CompositeDisposable()
-    private var mAccountId = 0
+    private var mAccountId = 0L
     private var mPost: Post? = null
     private var mAdapter: MenuAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mAccountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+        mAccountId = requireArguments().getLong(Extra.ACCOUNT_ID)
         mPost = requireArguments().getParcelableCompat(Extra.POST)
     }
 
@@ -37,11 +37,11 @@ class PostShareDialog : DialogFragment() {
     private fun onItemClick(item: Item) {
         val data = Bundle()
         val method = item.key
-        data.putInt(Extra.ACCOUNT_ID, mAccountId)
+        data.putLong(Extra.ACCOUNT_ID, mAccountId)
         data.putInt(EXTRA_METHOD, method)
         data.putParcelable(Extra.POST, mPost)
         if (method == Methods.REPOST_GROUP) {
-            data.putInt(EXTRA_OWNER_ID, item.extra)
+            data.putLong(EXTRA_OWNER_ID, item.extra)
         }
         parentFragmentManager.setFragmentResult(REQUEST_POST_SHARE, data)
         dismissAllowingStateLoss()
@@ -116,9 +116,9 @@ class PostShareDialog : DialogFragment() {
         const val REQUEST_POST_SHARE = "request_post_share"
         private const val EXTRA_METHOD = "share-method"
         private const val EXTRA_OWNER_ID = "share-owner-id"
-        fun newInstance(accountId: Int, post: Post): PostShareDialog {
+        fun newInstance(accountId: Long, post: Post): PostShareDialog {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.POST, post)
             val fragment = PostShareDialog()
             fragment.arguments = args
@@ -134,14 +134,14 @@ class PostShareDialog : DialogFragment() {
             return data.getParcelableCompat(Extra.POST)
         }
 
-        fun extractAccountId(data: Bundle): Int {
+        fun extractAccountId(data: Bundle): Long {
             assertTrue(data.containsKey(Extra.ACCOUNT_ID))
-            return data.getInt(Extra.ACCOUNT_ID)
+            return data.getLong(Extra.ACCOUNT_ID)
         }
 
-        fun extractOwnerId(data: Bundle): Int {
+        fun extractOwnerId(data: Bundle): Long {
             assertTrue(data.containsKey(EXTRA_OWNER_ID))
-            return data.getInt(EXTRA_OWNER_ID)
+            return data.getLong(EXTRA_OWNER_ID)
         }
     }
 }

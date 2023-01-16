@@ -94,7 +94,7 @@ class CommunityManagersFragment :
         return object : IPresenterFactory<CommunityManagersPresenter> {
             override fun create(): CommunityManagersPresenter {
                 return CommunityManagersPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.GROUP_ID)!!,
                     saveInstanceState
                 )
@@ -114,15 +114,15 @@ class CommunityManagersFragment :
         mAdapter?.setData(managers)
     }
 
-    override fun goToManagerEditing(accountId: Int, groupId: Int, manager: Manager) {
+    override fun goToManagerEditing(accountId: Long, groupId: Long, manager: Manager) {
         getCommunityManagerEditPlace(accountId, groupId, manager).tryOpenWith(requireActivity())
     }
 
-    override fun showUserProfile(accountId: Int, user: User) {
+    override fun showUserProfile(accountId: Long, user: User) {
         getOwnerWallPlace(accountId, user).tryOpenWith(requireActivity())
     }
 
-    override fun startSelectProfilesActivity(accountId: Int, groupId: Int) {
+    override fun startSelectProfilesActivity(accountId: Long, groupId: Long) {
         val criteria = PeopleSearchCriteria("").setGroupId(groupId)
         val c = SelectProfileCriteria()
         val place = getSingleTabSearchPlace(accountId, SearchContentType.PEOPLE, criteria)
@@ -130,7 +130,11 @@ class CommunityManagersFragment :
         requestSelectProfile.launch(intent)
     }
 
-    override fun startAddingUsersToManagers(accountId: Int, groupId: Int, users: ArrayList<User>) {
+    override fun startAddingUsersToManagers(
+        accountId: Long,
+        groupId: Long,
+        users: ArrayList<User>
+    ) {
         getCommunityManagerAddPlace(accountId, groupId, users).tryOpenWith(requireActivity())
     }
 
@@ -148,9 +152,9 @@ class CommunityManagersFragment :
 
     companion object {
 
-        fun newInstance(accountId: Int, groupId: Community?): CommunityManagersFragment {
+        fun newInstance(accountId: Long, groupId: Community?): CommunityManagersFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.GROUP_ID, groupId)
             val fragment = CommunityManagersFragment()
             fragment.arguments = args

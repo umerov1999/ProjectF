@@ -23,7 +23,7 @@ import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.disposables.Disposable
 
 class AudioDuplicatePresenter(
-    private val accountId: Int,
+    private val accountId: Long,
     private val new_audio: Audio,
     private val old_audio: Audio,
     savedInstanceState: Bundle?

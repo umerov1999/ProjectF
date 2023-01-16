@@ -215,7 +215,7 @@ class CatalogV2SectionFragment :
         return object : IPresenterFactory<CatalogV2SectionPresenter> {
             override fun create(): CatalogV2SectionPresenter {
                 return CatalogV2SectionPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getString(Extra.SECTION_ID)!!,
                     saveInstanceState
                 )
@@ -245,12 +245,12 @@ class CatalogV2SectionFragment :
     companion object {
         const val EXTRA_IN_TABS_CONTAINER = "in_tabs_container"
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             sectionId: String,
             isHideToolbar: Boolean
         ): CatalogV2SectionFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putString(Extra.SECTION_ID, sectionId)
             args.putBoolean(EXTRA_IN_TABS_CONTAINER, isHideToolbar)
             val fragment = CatalogV2SectionFragment()
@@ -258,9 +258,9 @@ class CatalogV2SectionFragment :
             return fragment
         }
 
-        fun buildArgs(accountId: Int, sectionId: String): Bundle {
+        fun buildArgs(accountId: Long, sectionId: String): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putString(Extra.SECTION_ID, sectionId)
             args.putBoolean(EXTRA_IN_TABS_CONTAINER, false)
             return args

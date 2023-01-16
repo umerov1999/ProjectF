@@ -20,8 +20,8 @@ import dev.ragnarok.fenrir.util.Utils.findIndexByPredicate
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 
 class CommunityBlacklistPresenter(
-    accountId: Int,
-    private val groupId: Int,
+    accountId: Long,
+    private val groupId: Long,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<ICommunityBlacklistView>(accountId, savedInstanceState) {
     private val data: MutableList<Banned>

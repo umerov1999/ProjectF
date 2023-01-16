@@ -13,20 +13,20 @@ import io.reactivex.rxjava3.core.Single
 interface IVideoApi {
     @CheckResult
     fun getComments(
-        ownerId: Int?, videoId: Int, needLikes: Boolean?,
+        ownerId: Long?, videoId: Int, needLikes: Boolean?,
         startCommentId: Int?, offset: Int?, count: Int?, sort: String?,
         extended: Boolean?, fields: String?
     ): Single<DefaultCommentsResponse>
 
     @CheckResult
-    fun addVideo(targetId: Int?, videoId: Int?, ownerId: Int?): Single<Int>
+    fun addVideo(targetId: Long?, videoId: Int?, ownerId: Long?): Single<Int>
 
     @CheckResult
-    fun deleteVideo(videoId: Int?, ownerId: Int?, targetId: Int?): Single<Int>
+    fun deleteVideo(videoId: Int?, ownerId: Long?, targetId: Long?): Single<Int>
 
     @CheckResult
     fun getAlbums(
-        ownerId: Int?,
+        ownerId: Long?,
         offset: Int?,
         count: Int?,
         needSystem: Boolean?
@@ -34,8 +34,8 @@ interface IVideoApi {
 
     @CheckResult
     fun getAlbumsByVideo(
-        target_id: Int?,
-        owner_id: Int?,
+        target_id: Long?,
+        owner_id: Long?,
         video_id: Int?
     ): Single<Items<VKApiVideoAlbum>>
 
@@ -47,32 +47,32 @@ interface IVideoApi {
     ): Single<SearchVideoResponse>
 
     @CheckResult
-    fun restoreComment(ownerId: Int?, commentId: Int): Single<Boolean>
+    fun restoreComment(ownerId: Long?, commentId: Int): Single<Boolean>
 
     @CheckResult
-    fun deleteComment(ownerId: Int?, commentId: Int): Single<Boolean>
+    fun deleteComment(ownerId: Long?, commentId: Int): Single<Boolean>
 
     @CheckResult
     operator fun get(
-        ownerId: Int?, ids: Collection<AccessIdPair>?, albumId: Int?,
+        ownerId: Long?, ids: Collection<AccessIdPair>?, albumId: Int?,
         count: Int?, offset: Int?, extended: Boolean?
     ): Single<Items<VKApiVideo>>
 
     @CheckResult
     fun createComment(
-        ownerId: Int, videoId: Int, message: String?,
+        ownerId: Long, videoId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?, fromGroup: Boolean?,
         replyToComment: Int?, stickerId: Int?, uniqueGeneratedId: Int?
     ): Single<Int>
 
     @CheckResult
     fun editComment(
-        ownerId: Int,
+        ownerId: Long,
         commentId: Int,
         message: String?,
         attachments: Collection<IAttachmentToken>?
     ): Single<Boolean>
 
     @CheckResult
-    fun edit(ownerId: Int, video_id: Int, name: String?, desc: String?): Single<Boolean>
+    fun edit(ownerId: Long, video_id: Int, name: String?, desc: String?): Single<Boolean>
 }

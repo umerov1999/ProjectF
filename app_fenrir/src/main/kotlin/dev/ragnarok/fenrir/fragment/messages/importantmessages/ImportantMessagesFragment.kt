@@ -111,11 +111,11 @@ class ImportantMessagesFragment :
         mAdapter?.notifyItemBindableChanged(index)
     }
 
-    override fun onAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onAvatarClick(message: Message, userId: Long, position: Int) {
         onOpenOwner(userId)
     }
 
-    override fun onLongAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onLongAvatarClick(message: Message, userId: Long, position: Int) {
         onOpenOwner(userId)
     }
 
@@ -126,7 +126,7 @@ class ImportantMessagesFragment :
     }
 
     override fun onBotKeyboardClick(button: Keyboard.Button) {}
-    override fun goToMessagesLookup(accountId: Int, peerId: Int, messageId: Int) {
+    override fun goToMessagesLookup(accountId: Long, peerId: Long, messageId: Int) {
         getMessagesLookupPlace(accountId, peerId, messageId, null).tryOpenWith(requireActivity())
     }
 
@@ -153,7 +153,7 @@ class ImportantMessagesFragment :
         mAdapter?.notifyItemRangeInserted(position, count)
     }
 
-    override fun forwardMessages(accountId: Int, messages: ArrayList<Message>) {
+    override fun forwardMessages(accountId: Long, messages: ArrayList<Message>) {
         startForSendAttachments(requireActivity(), accountId, FwdMessages(messages))
     }
 
@@ -246,7 +246,7 @@ class ImportantMessagesFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ImportantMessagesPresenter> {
         return object : IPresenterFactory<ImportantMessagesPresenter> {
             override fun create(): ImportantMessagesPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 return ImportantMessagesPresenter(accountId, saveInstanceState)
             }
         }
@@ -263,7 +263,7 @@ class ImportantMessagesFragment :
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Int,
+        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         presenter?.fireVoicePlayButtonClick(
@@ -404,9 +404,9 @@ class ImportantMessagesFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int): ImportantMessagesFragment {
+        fun newInstance(accountId: Long): ImportantMessagesFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val mFragment = ImportantMessagesFragment()
             mFragment.arguments = args
             return mFragment

@@ -81,7 +81,7 @@ class AudioRecyclerAdapter(
     private var iSSelectMode: Boolean
     private var mClickListener: ClickListener? = null
     private var currAudio: Audio?
-    internal fun deleteTrack(accountId: Int, audio: Audio, position: Int) {
+    internal fun deleteTrack(accountId: Long, audio: Audio, position: Int) {
         audioListDisposable = if (playlist_id == null) {
             mAudioInteractor.delete(accountId, audio.id, audio.ownerId).fromIOToMain().subscribe(
                 {
@@ -105,14 +105,14 @@ class AudioRecyclerAdapter(
         }
     }
 
-    internal fun addTrack(accountId: Int, audio: Audio) {
+    internal fun addTrack(accountId: Long, audio: Audio) {
         audioListDisposable = mAudioInteractor.add(accountId, audio, null).fromIOToMain().subscribe(
             { createCustomToast(mContext).showToast(R.string.added) }) { t ->
             createCustomToast(mContext).showToastThrowable(t)
         }
     }
 
-    internal fun getMp3AndBitrate(accountId: Int, audio: Audio) {
+    internal fun getMp3AndBitrate(accountId: Long, audio: Audio) {
         val mode = audio.needRefresh()
         if (mode.first) {
             audioListDisposable =

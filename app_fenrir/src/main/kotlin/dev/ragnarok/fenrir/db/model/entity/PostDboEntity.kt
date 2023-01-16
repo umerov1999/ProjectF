@@ -10,17 +10,17 @@ import kotlinx.serialization.Serializable
 class PostDboEntity : DboEntity() {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var dbid = NO_STORED
         private set
-    var fromId = 0
+    var fromId = 0L
         private set
     var date: Long = 0
         private set
     var text: String? = null
         private set
-    var replyOwnerId = 0
+    var replyOwnerId = 0L
         private set
     var replyPostId = 0
         private set
@@ -52,9 +52,9 @@ class PostDboEntity : DboEntity() {
         private set
     var attachmentsCount = 0
         private set
-    var signedId = 0
+    var signedId = 0L
         private set
-    var createdBy = 0
+    var createdBy = 0L
         private set
     var isCanPin = false
         private set
@@ -72,7 +72,7 @@ class PostDboEntity : DboEntity() {
     var copyHierarchy: List<PostDboEntity>? = null
         private set
 
-    operator fun set(id: Int, ownerId: Int): PostDboEntity {
+    operator fun set(id: Int, ownerId: Long): PostDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this
@@ -93,7 +93,7 @@ class PostDboEntity : DboEntity() {
         return this
     }
 
-    fun setFromId(fromId: Int): PostDboEntity {
+    fun setFromId(fromId: Long): PostDboEntity {
         this.fromId = fromId
         return this
     }
@@ -108,7 +108,7 @@ class PostDboEntity : DboEntity() {
         return this
     }
 
-    fun setReplyOwnerId(replyOwnerId: Int): PostDboEntity {
+    fun setReplyOwnerId(replyOwnerId: Long): PostDboEntity {
         this.replyOwnerId = replyOwnerId
         return this
     }
@@ -178,12 +178,12 @@ class PostDboEntity : DboEntity() {
         return this
     }
 
-    fun setSignedId(signedId: Int): PostDboEntity {
+    fun setSignedId(signedId: Long): PostDboEntity {
         this.signedId = signedId
         return this
     }
 
-    fun setCreatedBy(createdBy: Int): PostDboEntity {
+    fun setCreatedBy(createdBy: Long): PostDboEntity {
         this.createdBy = createdBy
         return this
     }

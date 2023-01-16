@@ -207,7 +207,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
             requestFeed();
         }
     }*/
-    override fun onAvatarClick(ownerId: Int) {
+    override fun onAvatarClick(ownerId: Long) {
         super.onOwnerClick(ownerId)
     }
 
@@ -230,7 +230,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
             .apply(requireActivity())
     }
 
-    override fun onOwnerClick(ownerId: Int) {
+    override fun onOwnerClick(ownerId: Long) {
         onOpenOwner(ownerId)
     }
 
@@ -295,7 +295,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         return true
     }
 
-    override fun goToLikes(accountId: Int, type: String?, ownerId: Int, id: Int) {
+    override fun goToLikes(accountId: Long, type: String?, ownerId: Long, id: Int) {
         getLikesCopiesPlace(
             accountId,
             type,
@@ -305,7 +305,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         ).tryOpenWith(requireActivity())
     }
 
-    override fun goToReposts(accountId: Int, type: String?, ownerId: Int, id: Int) {
+    override fun goToReposts(accountId: Long, type: String?, ownerId: Long, id: Int) {
         getLikesCopiesPlace(
             accountId,
             type,
@@ -315,7 +315,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         ).tryOpenWith(requireActivity())
     }
 
-    override fun goToPostComments(accountId: Int, postId: Int, ownerId: Int) {
+    override fun goToPostComments(accountId: Long, postId: Int, ownerId: Long) {
         val commented = Commented(postId, ownerId, CommentedType.POST, null)
         getCommentsPlace(accountId, commented, null).tryOpenWith(requireActivity())
     }
@@ -513,7 +513,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         return object : IPresenterFactory<FeedPresenter> {
             override fun create(): FeedPresenter {
                 return FeedPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }
@@ -521,13 +521,13 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
     }
 
     companion object {
-        fun buildArgs(accountId: Int): Bundle {
+        fun buildArgs(accountId: Long): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             return args
         }
 
-        fun newInstance(accountId: Int): FeedFragment {
+        fun newInstance(accountId: Long): FeedFragment {
             return newInstance(buildArgs(accountId))
         }
 

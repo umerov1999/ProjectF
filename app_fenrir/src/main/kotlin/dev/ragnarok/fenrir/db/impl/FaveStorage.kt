@@ -4,7 +4,6 @@ import android.content.ContentProviderOperation
 import android.content.ContentValues
 import android.database.Cursor
 import android.provider.BaseColumns
-import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.Includes.stores
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getFaveArticlesContentUriFor
@@ -18,6 +17,10 @@ import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getFaveVideosConte
 import dev.ragnarok.fenrir.db.column.*
 import dev.ragnarok.fenrir.db.interfaces.IFaveStorage
 import dev.ragnarok.fenrir.db.model.entity.*
+import dev.ragnarok.fenrir.getBlob
+import dev.ragnarok.fenrir.getLong
+import dev.ragnarok.fenrir.getString
+import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.model.criteria.*
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
@@ -48,7 +51,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
     }
 
     override fun storePosts(
-        accountId: Int,
+        accountId: Long,
         posts: List<PostDboEntity>,
         owners: OwnerEntities?,
         clearBeforeStore: Boolean
@@ -84,7 +87,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         }
     }
 
-    override fun getFaveLinks(accountId: Int): Single<List<FaveLinkEntity>> {
+    override fun getFaveLinks(accountId: Long): Single<List<FaveLinkEntity>> {
         return Single.create { e: SingleEmitter<List<FaveLinkEntity>> ->
             val uri = getFaveLinksContentUriFor(accountId)
             val cursor = contentResolver.query(uri, null, null, null, null)
@@ -102,7 +105,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         }
     }
 
-    override fun removeLink(accountId: Int, id: String?): Completable {
+    override fun removeLink(accountId: Long, id: String?): Completable {
         return Completable.fromAction {
             val uri = getFaveLinksContentUriFor(accountId)
             val where = FaveLinksColumns.LINK_ID + " LIKE ?"
@@ -112,7 +115,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
     }
 
     override fun storeLinks(
-        accountId: Int,
+        accountId: Long,
         entities: List<FaveLinkEntity>,
         clearBefore: Boolean
     ): Completable {
@@ -154,7 +157,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         }
     }
 
-    override fun removePage(accountId: Int, ownerId: Int, isUser: Boolean): Completable {
+    override fun removePage(accountId: Long, ownerId: Long, isUser: Boolean): Completable {
         return Completable.fromAction {
             val uri =
                 if (isUser) getFaveUsersContentUriFor(accountId) else getFaveGroupsContentUriFor(
@@ -166,7 +169,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         }
     }
 
-    override fun getFaveUsers(accountId: Int): Single<List<FavePageEntity>> {
+    override fun getFaveUsers(accountId: Long): Single<List<FavePageEntity>> {
         return Single.create { e: SingleEmitter<List<FavePageEntity>> ->
             val uri = getFaveUsersContentUriFor(accountId)
             val cursor = contentResolver.query(uri, null, null, null, null)
@@ -184,7 +187,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         }
     }
 
-    override fun getFaveGroups(accountId: Int): Single<List<FavePageEntity>> {
+    override fun getFaveGroups(accountId: Long): Single<List<FavePageEntity>> {
         return Single.create { e: SingleEmitter<List<FavePageEntity>> ->
             val uri = getFaveGroupsContentUriFor(accountId)
             val cursor = contentResolver.query(uri, null, null, null, null)
@@ -203,7 +206,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
     }
 
     override fun storePhotos(
-        accountId: Int,
+        accountId: Long,
         photos: List<PhotoDboEntity>,
         clearBeforeStore: Boolean
     ): Single<IntArray> {
@@ -378,7 +381,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
     }
 
     override fun storeVideos(
-        accountId: Int,
+        accountId: Long,
         videos: List<VideoDboEntity>,
         clearBeforeStore: Boolean
     ): Single<IntArray> {
@@ -420,7 +423,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
     }
 
     override fun storeArticles(
-        accountId: Int,
+        accountId: Long,
         articles: List<ArticleDboEntity>,
         clearBeforeStore: Boolean
     ): Single<IntArray> {
@@ -462,7 +465,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
     }
 
     override fun storeProducts(
-        accountId: Int,
+        accountId: Long,
         products: List<MarketDboEntity>,
         clearBeforeStore: Boolean
     ): Single<IntArray> {
@@ -504,7 +507,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
     }
 
     override fun storePages(
-        accountId: Int,
+        accountId: Long,
         users: List<FavePageEntity>,
         clearBeforeStore: Boolean
     ): Completable {
@@ -536,7 +539,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
     }
 
     override fun storeGroups(
-        accountId: Int,
+        accountId: Long,
         groups: List<FavePageEntity>,
         clearBeforeStore: Boolean
     ): Completable {
@@ -591,36 +594,36 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             return cv
         }
 
-        private fun mapUser(accountId: Int, id: Int): UserEntity? {
+        private fun mapUser(accountId: Long, id: Long): UserEntity? {
             return stores.owners().findUserDboById(accountId, id).blockingGet().get()
         }
 
-        private fun mapGroup(accountId: Int, id: Int): CommunityEntity? {
+        private fun mapGroup(accountId: Long, id: Long): CommunityEntity? {
             return stores.owners().findCommunityDboById(accountId, abs(id)).blockingGet().get()
         }
 
-        internal fun mapFaveUserDbo(cursor: Cursor, accountId: Int): FavePageEntity {
-            return FavePageEntity(cursor.getInt(BaseColumns._ID))
+        internal fun mapFaveUserDbo(cursor: Cursor, accountId: Long): FavePageEntity {
+            return FavePageEntity(cursor.getLong(BaseColumns._ID))
                 .setDescription(cursor.getString(FavePageColumns.DESCRIPTION))
                 .setUpdateDate(cursor.getLong(FavePageColumns.UPDATED_TIME))
                 .setFaveType(cursor.getString(FavePageColumns.FAVE_TYPE))
                 .setUser(
                     mapUser(
                         accountId,
-                        cursor.getInt(BaseColumns._ID)
+                        cursor.getLong(BaseColumns._ID)
                     )
                 )
         }
 
-        internal fun mapFaveGroupDbo(cursor: Cursor, accountId: Int): FavePageEntity {
-            return FavePageEntity(cursor.getInt(BaseColumns._ID))
+        internal fun mapFaveGroupDbo(cursor: Cursor, accountId: Long): FavePageEntity {
+            return FavePageEntity(cursor.getLong(BaseColumns._ID))
                 .setDescription(cursor.getString(FavePageColumns.DESCRIPTION))
                 .setUpdateDate(cursor.getLong(FavePageColumns.UPDATED_TIME))
                 .setFaveType(cursor.getString(FavePageColumns.FAVE_TYPE))
                 .setGroup(
                     mapGroup(
                         accountId,
-                        cursor.getInt(BaseColumns._ID)
+                        cursor.getLong(BaseColumns._ID)
                     )
                 )
         }

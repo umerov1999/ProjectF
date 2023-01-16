@@ -27,14 +27,14 @@ import dev.ragnarok.fenrir.util.Utils.createPageTransform
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
 class VideosTabsFragment : BaseFragment(), MenuProvider {
-    var accountId = 0
+    var accountId = 0L
         private set
-    private var ownerId = 0
+    private var ownerId = 0L
     private var action: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-        ownerId = requireArguments().getInt(Extra.OWNER_ID)
+        accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        ownerId = requireArguments().getLong(Extra.OWNER_ID)
         action = requireArguments().getString(Extra.ACTION)
     }
 
@@ -161,15 +161,15 @@ class VideosTabsFragment : BaseFragment(), MenuProvider {
         const val LOCAL_SERVER = -1
         const val VIDEOS = 0
         const val ALBUMS = 1
-        fun buildArgs(accountId: Int, ownerId: Int, action: String?): Bundle {
+        fun buildArgs(accountId: Long, ownerId: Long, action: String?): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putString(Extra.ACTION, action)
             return args
         }
 
-        fun newInstance(accountId: Int, ownerId: Int, action: String?): VideosTabsFragment {
+        fun newInstance(accountId: Long, ownerId: Long, action: String?): VideosTabsFragment {
             return newInstance(buildArgs(accountId, ownerId, action))
         }
 

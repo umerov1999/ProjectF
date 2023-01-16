@@ -219,7 +219,7 @@ class NotReadMessagesFragment :
         mHeaderHelper?.switchToState(downHeaderState)
     }
 
-    override fun forwardMessages(accountId: Int, messages: ArrayList<Message>) {
+    override fun forwardMessages(accountId: Long, messages: ArrayList<Message>) {
         startForSendAttachments(requireActivity(), accountId, FwdMessages(messages))
     }
 
@@ -241,7 +241,7 @@ class NotReadMessagesFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<NotReadMessagesPresenter> {
         return object : IPresenterFactory<NotReadMessagesPresenter> {
             override fun create(): NotReadMessagesPresenter {
-                val aid = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val focusTo = requireArguments().getInt(Extra.FOCUS_TO)
                 val incoming = requireArguments().getInt(Extra.INCOMING)
                 val outgoing = requireArguments().getInt(Extra.OUTGOING)
@@ -260,7 +260,7 @@ class NotReadMessagesFragment :
         }
     }
 
-    override fun onAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onAvatarClick(message: Message, userId: Long, position: Int) {
         if (mActionView?.isVisible == true) {
             presenter?.fireMessageClick(
                 message,
@@ -273,7 +273,7 @@ class NotReadMessagesFragment :
         }
     }
 
-    override fun onLongAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onLongAvatarClick(message: Message, userId: Long, position: Int) {
         if (mActionView?.isVisible == true) {
             presenter?.fireMessageClick(
                 message,
@@ -490,7 +490,7 @@ class NotReadMessagesFragment :
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Int,
+        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         presenter?.fireVoicePlayButtonClick(
@@ -515,7 +515,7 @@ class NotReadMessagesFragment :
 
     companion object {
         fun buildArgs(
-            accountId: Int,
+            accountId: Long,
             focusMessageId: Int,
             incoming: Int,
             outgoing: Int,
@@ -523,7 +523,7 @@ class NotReadMessagesFragment :
             peer: Peer
         ): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putInt(Extra.FOCUS_TO, focusMessageId)
             args.putInt(Extra.INCOMING, incoming)
             args.putInt(Extra.OUTGOING, outgoing)

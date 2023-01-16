@@ -282,7 +282,7 @@ object VkLinkParser {
             if (matcher.find()) {
                 val groupId = matcher.group(1)
                 if (groupId != null) {
-                    return BoardLink(groupId.toInt())
+                    return BoardLink(groupId.toLong())
                 }
             }
         } catch (ignored: Exception) {
@@ -308,7 +308,7 @@ object VkLinkParser {
         }
         if (ownerId != null) {
             if (albumId != null) {
-                return PhotoAlbumLink(ownerId.toInt(), albumId.toInt())
+                return PhotoAlbumLink(ownerId.toLong(), albumId.toInt())
             }
         }
         return null
@@ -321,7 +321,7 @@ object VkLinkParser {
         }
         val ownerId = matcher.group(1)
         if (ownerId != null) {
-            return PhotoAlbumsLink(ownerId.toInt())
+            return PhotoAlbumsLink(ownerId.toLong())
         }
         return null
     }
@@ -337,7 +337,7 @@ object VkLinkParser {
         try {
             if (matcher.find()) {
                 val chat = matcher.group(1)
-                val id = matcher.group(2)?.toInt()
+                val id = matcher.group(2)?.toLong()
                 val isChat = chat.nonNullNoEmpty()
                 return (if (isChat) id?.let { Peer.fromChatId(it) } else id?.let {
                     Peer.fromOwnerId(
@@ -352,7 +352,7 @@ object VkLinkParser {
                 matcher = patterns.PATTERN_DIALOG2.matcher(string)
                 if (matcher.find()) {
                     val chat = matcher.group(1)
-                    val id = matcher.group(2)?.toInt()
+                    val id = matcher.group(2)?.toLong()
                     val isChat = "chat" == chat
                     return (if (isChat) id?.let { Peer.fromChatId(it) } else id?.let {
                         Peer.fromOwnerId(
@@ -388,7 +388,7 @@ object VkLinkParser {
         try {
             if (matcher.find()) {
                 matcher.group(2)?.let {
-                    return OwnerLink(-abs(it.toInt()))
+                    return OwnerLink(-abs(it.toLong()))
                 }
             }
         } catch (ignored: Exception) {
@@ -420,7 +420,7 @@ object VkLinkParser {
         val matcher = patterns.PATTERN_PHOTO.matcher(string)
         try {
             if (matcher.find()) {
-                val ownerId = matcher.group(5)?.toInt()
+                val ownerId = matcher.group(5)?.toLong()
                 val photoId = matcher.group(6)?.toInt()
                 photoId?.let {
                     if (ownerId != null) {
@@ -438,7 +438,7 @@ object VkLinkParser {
         val matcher = patterns.PATTERN_PHOTOS.matcher(string)
         try {
             if (matcher.find()) {
-                return matcher.group(1)?.let { PhotoAlbumsLink(it.toInt()) }
+                return matcher.group(1)?.let { PhotoAlbumsLink(it.toLong()) }
             }
         } catch (ignored: Exception) {
         }
@@ -471,7 +471,7 @@ object VkLinkParser {
         val matcher = patterns.PATTERN_PROFILE_ID.matcher(string)
         try {
             if (matcher.find()) {
-                return matcher.group(2)?.let { OwnerLink(it.toInt()) }
+                return matcher.group(2)?.let { OwnerLink(it.toLong()) }
             }
         } catch (ignored: Exception) {
         }
@@ -484,7 +484,7 @@ object VkLinkParser {
             if (matcher.find()) {
                 return matcher.group(2)?.let {
                     matcher.group(1)
-                        ?.let { it1 -> TopicLink(it.toInt(), it1.toInt()) }
+                        ?.let { it1 -> TopicLink(it.toInt(), it1.toLong()) }
                 }
             }
         } catch (ignored: Exception) {
@@ -498,7 +498,7 @@ object VkLinkParser {
             if (matcher.find()) {
                 return matcher.group(1)
                     ?.let {
-                        matcher.group(2)?.let { it1 -> VideoAlbumLink(it.toInt(), it1.toInt()) }
+                        matcher.group(2)?.let { it1 -> VideoAlbumLink(it.toLong(), it1.toInt()) }
                     }
             }
         } catch (ignored: NumberFormatException) {
@@ -508,7 +508,7 @@ object VkLinkParser {
             if (matcher.find()) {
                 return matcher.group(1)
                     ?.let {
-                        VideosLink(it.toInt())
+                        VideosLink(it.toLong())
                     }
             }
         } catch (ignored: NumberFormatException) {
@@ -523,7 +523,7 @@ object VkLinkParser {
                 return matcher.group(1)?.let {
                     matcher.group(2)?.let { it1 ->
                         VideoLink(
-                            it.toInt(),
+                            it.toLong(),
                             it1.toInt(),
                             parseAccessKey(string)
                         )
@@ -538,7 +538,7 @@ object VkLinkParser {
                 return matcher.group(6)?.let {
                     matcher.group(7)?.let { it1 ->
                         VideoLink(
-                            it.toInt(),
+                            it.toLong(),
                             it1.toInt(),
                             parseAccessKey(string)
                         )
@@ -567,7 +567,7 @@ object VkLinkParser {
             if (matcher.find()) {
                 return matcher.group(1)
                     ?.let {
-                        matcher.group(2)?.let { it1 -> AudioTrackLink(it.toInt(), it1.toInt()) }
+                        matcher.group(2)?.let { it1 -> AudioTrackLink(it.toLong(), it1.toInt()) }
                     }
             }
         } catch (ignored: NumberFormatException) {
@@ -582,7 +582,7 @@ object VkLinkParser {
                 return matcher.group(1)?.let {
                     matcher.group(2)?.let { it1 ->
                         AudioPlaylistLink(
-                            it.toInt(),
+                            it.toLong(),
                             it1.toInt(),
                             matcher.group(3)
                         )
@@ -601,7 +601,7 @@ object VkLinkParser {
                 return matcher.group(1)?.let {
                     matcher.group(2)?.let { it1 ->
                         AudioPlaylistLink(
-                            it.toInt(),
+                            it.toLong(),
                             it1.toInt(),
                             matcher.group(3)
                         )
@@ -635,7 +635,7 @@ object VkLinkParser {
         val matcher = patterns.PATTERN_AUDIOS.matcher(string)
         return if (!matcher.find()) {
             null
-        } else matcher.group(1)?.let { AudiosLink(it.toInt()) }
+        } else matcher.group(1)?.let { AudiosLink(it.toLong()) }
     }
 
     private fun parseArtists(string: String): AbsLink? {
@@ -652,7 +652,7 @@ object VkLinkParser {
                 return matcher.group(1)?.let {
                     matcher.group(2)?.let { it1 ->
                         DocLink(
-                            it.toInt(),
+                            it.toLong(),
                             it1.toInt(),
                             parseAccessKey(string)
                         )
@@ -668,7 +668,7 @@ object VkLinkParser {
         val matcher = patterns.PATTERN_WALL.matcher(string)
         return if (!matcher.find()) {
             null
-        } else matcher.group(1)?.let { WallLink(it.toInt()) }
+        } else matcher.group(1)?.let { WallLink(it.toLong()) }
     }
 
     private fun parsePoll(string: String): AbsLink? {
@@ -677,7 +677,7 @@ object VkLinkParser {
             if (matcher.find()) {
                 return matcher.group(1)?.let {
                     matcher.group(2)
-                        ?.let { it1 -> PollLink(it.toInt(), it1.toInt()) }
+                        ?.let { it1 -> PollLink(it.toLong(), it1.toInt()) }
                 }
             }
         } catch (ignored: Exception) {
@@ -695,7 +695,7 @@ object VkLinkParser {
                 matcher.group(3)?.let { it2 ->
                     matcher.group(4)?.let { it3 ->
                         WallCommentThreadLink(
-                            it.toInt(),
+                            it.toLong(),
                             it1.toInt(),
                             it2.toInt(),
                             it3.toInt()
@@ -716,7 +716,7 @@ object VkLinkParser {
             matcher.group(2)?.let { it1 ->
                 matcher.group(3)?.let { it2 ->
                     WallCommentLink(
-                        it.toInt(),
+                        it.toLong(),
                         it1.toInt(),
                         it2.toInt()
                     )
@@ -732,7 +732,7 @@ object VkLinkParser {
             null
         } else matcher.group(1)?.let {
             matcher.group(2)
-                ?.let { it1 -> WallPostLink(it.toInt(), it1.toInt()) }
+                ?.let { it1 -> WallPostLink(it.toLong(), it1.toInt()) }
         }
     }
 
@@ -742,7 +742,7 @@ object VkLinkParser {
             null
         } else matcher.group(1)?.let {
             matcher.group(2)
-                ?.let { it1 -> WallPostLink(it.toInt(), it1.toInt()) }
+                ?.let { it1 -> WallPostLink(it.toLong(), it1.toInt()) }
         }
     }
 

@@ -10,12 +10,12 @@ import dev.ragnarok.fenrir.model.Owner
 interface ICommunityBanEditView : IMvpView, IErrorView, IProgressView,
     IToastView {
     fun displayUserInfo(user: Owner)
-    fun displayBanStatus(adminId: Int, adminName: String?, endDate: Long)
+    fun displayBanStatus(adminId: Long, adminName: String?, endDate: Long)
     fun displayBlockFor(blockFor: String?)
     fun displayReason(reason: String?)
     fun diplayComment(comment: String?)
     fun setShowCommentChecked(checked: Boolean)
     fun goBack()
     fun displaySelectOptionDialog(requestCode: Int, options: List<IdOption>)
-    fun openProfile(accountId: Int, owner: Owner)
+    fun openProfile(accountId: Long, owner: Owner)
 }

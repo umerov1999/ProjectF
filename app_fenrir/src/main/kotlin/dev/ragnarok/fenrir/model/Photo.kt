@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
     private var id = 0
-    override var ownerId = 0
+    override var ownerId = 0L
         private set
     var albumId = 0
         private set
@@ -48,13 +48,13 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         private set
     var msgId = 0
         private set
-    var msgPeerId = 0
+    var msgPeerId = 0L
         private set
 
     constructor()
     internal constructor(parcel: ParcelNative) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         albumId = parcel.readInt()
         width = parcel.readInt()
         height = parcel.readInt()
@@ -71,12 +71,12 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         postId = parcel.readInt()
         repostsCount = parcel.readInt()
         msgId = parcel.readInt()
-        msgPeerId = parcel.readInt()
+        msgPeerId = parcel.readLong()
     }
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         albumId = parcel.readInt()
         width = parcel.readInt()
         height = parcel.readInt()
@@ -93,7 +93,7 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         postId = parcel.readInt()
         repostsCount = parcel.readInt()
         msgId = parcel.readInt()
-        msgPeerId = parcel.readInt()
+        msgPeerId = parcel.readLong()
     }
 
     @AbsModelType
@@ -110,7 +110,7 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): Photo {
+    fun setOwnerId(ownerId: Long): Photo {
         this.ownerId = ownerId
         return this
     }
@@ -199,7 +199,7 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun setMsgPeerId(msgPeerId: Int): Photo {
+    fun setMsgPeerId(msgPeerId: Long): Photo {
         this.msgPeerId = msgPeerId
         return this
     }
@@ -210,7 +210,7 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeInt(albumId)
         parcel.writeInt(width)
         parcel.writeInt(height)
@@ -227,7 +227,7 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         parcel.writeInt(postId)
         parcel.writeInt(repostsCount)
         parcel.writeInt(msgId)
-        parcel.writeInt(msgPeerId)
+        parcel.writeLong(msgPeerId)
     }
 
     fun generateWebLink(): String {
@@ -243,13 +243,13 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + ownerId
+        result = 31 * result + ownerId.hashCode()
         return result
     }
 
     override fun writeToParcelNative(dest: ParcelNative) {
         dest.writeInt(id)
-        dest.writeInt(ownerId)
+        dest.writeLong(ownerId)
         dest.writeInt(albumId)
         dest.writeInt(width)
         dest.writeInt(height)
@@ -266,7 +266,7 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         dest.writeInt(postId)
         dest.writeInt(repostsCount)
         dest.writeInt(msgId)
-        dest.writeInt(msgPeerId)
+        dest.writeLong(msgPeerId)
     }
 
     companion object {

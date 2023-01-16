@@ -12,7 +12,7 @@ import io.reactivex.rxjava3.core.Single
 class DatabaseInteractor(private val cache: IDatabaseStore, private val networker: INetworker) :
     IDatabaseInteractor {
     override fun getChairs(
-        accountId: Int,
+        accountId: Long,
         facultyId: Int,
         count: Int,
         offset: Int
@@ -30,7 +30,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
             }
     }
 
-    override fun getCountries(accountId: Int, ignoreCache: Boolean): Single<List<Country>> {
+    override fun getCountries(accountId: Long, ignoreCache: Boolean): Single<List<Country>> {
         return if (ignoreCache) {
             networker.vkDefault(accountId)
                 .database()
@@ -76,7 +76,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
     }
 
     override fun getCities(
-        accountId: Int,
+        accountId: Long,
         countryId: Int,
         q: String?,
         needAll: Boolean,
@@ -102,7 +102,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
     }
 
     override fun getFaculties(
-        accountId: Int,
+        accountId: Long,
         universityId: Int,
         count: Int,
         offset: Int
@@ -120,7 +120,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
             }
     }
 
-    override fun getSchoolClasses(accountId: Int, countryId: Int): Single<List<SchoolClazz>> {
+    override fun getSchoolClasses(accountId: Long, countryId: Int): Single<List<SchoolClazz>> {
         return networker.vkDefault(accountId)
             .database()
             .getSchoolClasses(countryId)
@@ -134,7 +134,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
     }
 
     override fun getSchools(
-        accountId: Int,
+        accountId: Long,
         cityId: Int,
         q: String?,
         count: Int,
@@ -154,7 +154,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
     }
 
     override fun getUniversities(
-        accountId: Int,
+        accountId: Long,
         filter: String?,
         cityId: Int?,
         countyId: Int?,

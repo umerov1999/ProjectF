@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Gift
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class GiftsPresenter(accountId: Int, private val owner_id: Int, savedInstanceState: Bundle?) :
+class GiftsPresenter(accountId: Long, private val owner_id: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IGiftsView>(accountId, savedInstanceState) {
     private val ownersRepository: IOwnersRepository = owners
     private val mGifts: ArrayList<Gift> = ArrayList()
@@ -93,7 +93,7 @@ class GiftsPresenter(accountId: Int, private val owner_id: Int, savedInstanceSta
         }
     }
 
-    fun fireOpenWall(ownerId: Int) {
+    fun fireOpenWall(ownerId: Long) {
         view?.onOpenWall(accountId, ownerId)
     }
 

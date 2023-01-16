@@ -154,9 +154,9 @@ class PhotoAllCommentFragment :
         return object : IPresenterFactory<PhotoAllCommentPresenter> {
             override fun create(): PhotoAllCommentPresenter {
                 return PhotoAllCommentPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
-                    ), requireArguments().getInt(Extra.OWNER_ID), saveInstanceState
+                    ), requireArguments().getLong(Extra.OWNER_ID), saveInstanceState
                 )
             }
         }
@@ -177,14 +177,14 @@ class PhotoAllCommentFragment :
             .apply(requireActivity())
     }
 
-    override fun onReplyToOwnerClick(ownerId: Int, commentId: Int) {
+    override fun onReplyToOwnerClick(ownerId: Long, commentId: Int) {
         presenter?.fireReplyToOwnerClick(
             commentId
         )
     }
 
     override fun onRestoreComment(commentId: Int) {}
-    override fun onAvatarClick(ownerId: Int) {
+    override fun onAvatarClick(ownerId: Long) {
         onOpenOwner(ownerId)
     }
 
@@ -309,10 +309,10 @@ class PhotoAllCommentFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int, ownerId: Int): PhotoAllCommentFragment {
+        fun newInstance(accountId: Long, ownerId: Long): PhotoAllCommentFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = PhotoAllCommentFragment()
             fragment.arguments = args
             return fragment

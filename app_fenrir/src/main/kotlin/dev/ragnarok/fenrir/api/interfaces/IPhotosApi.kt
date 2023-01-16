@@ -11,53 +11,53 @@ import io.reactivex.rxjava3.core.Single
 
 interface IPhotosApi {
     @CheckResult
-    fun deleteAlbum(albumId: Int, groupId: Int?): Single<Boolean>
+    fun deleteAlbum(albumId: Int, groupId: Long?): Single<Boolean>
 
     @CheckResult
-    fun restore(ownerId: Int?, photoId: Int): Single<Boolean>
+    fun restore(ownerId: Long?, photoId: Int): Single<Boolean>
 
     @CheckResult
-    fun delete(ownerId: Int?, photoId: Int): Single<Boolean>
+    fun delete(ownerId: Long?, photoId: Int): Single<Boolean>
 
     @CheckResult
-    fun deleteComment(ownerId: Int?, commentId: Int): Single<Boolean>
+    fun deleteComment(ownerId: Long?, commentId: Int): Single<Boolean>
 
     @CheckResult
-    fun restoreComment(ownerId: Int?, commentId: Int): Single<Boolean>
+    fun restoreComment(ownerId: Long?, commentId: Int): Single<Boolean>
 
     @CheckResult
     fun editComment(
-        ownerId: Int?, commentId: Int, message: String?,
+        ownerId: Long?, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
     ): Single<Boolean>
 
     @CheckResult
     fun createAlbum(
-        title: String?, groupId: Int?, description: String?,
+        title: String?, groupId: Long?, description: String?,
         privacyView: VKApiPrivacy?, privacyComment: VKApiPrivacy?,
         uploadByAdminsOnly: Boolean?, commentsDisabled: Boolean?
     ): Single<VKApiPhotoAlbum>
 
     @CheckResult
     fun editAlbum(
-        albumId: Int, title: String?, description: String?, ownerId: Int?,
+        albumId: Int, title: String?, description: String?, ownerId: Long?,
         privacyView: VKApiPrivacy?, privacyComment: VKApiPrivacy?,
         uploadByAdminsOnly: Boolean?, commentsDisabled: Boolean?
     ): Single<Boolean>
 
     @CheckResult
-    fun copy(ownerId: Int, photoId: Int, accessKey: String?): Single<Int>
+    fun copy(ownerId: Long, photoId: Int, accessKey: String?): Single<Int>
 
     @CheckResult
     fun createComment(
-        ownerId: Int?, photoId: Int, fromGroup: Boolean?, message: String?,
+        ownerId: Long?, photoId: Int, fromGroup: Boolean?, message: String?,
         replyToComment: Int?, attachments: Collection<IAttachmentToken>?,
         stickerId: Int?, accessKey: String?, generatedUniqueId: Int?
     ): Single<Int>
 
     @CheckResult
     fun getComments(
-        ownerId: Int?, photoId: Int, needLikes: Boolean?,
+        ownerId: Long?, photoId: Int, needLikes: Boolean?,
         startCommentId: Int?, offset: Int?, count: Int?, sort: String?,
         accessKey: String?, extended: Boolean?, fields: String?
     ): Single<DefaultCommentsResponse>
@@ -66,7 +66,7 @@ interface IPhotosApi {
     fun getById(ids: Collection<AccessIdPair>): Single<List<VKApiPhoto>>
 
     @CheckResult
-    fun getUploadServer(albumId: Int, groupId: Int?): Single<VKApiUploadServer>
+    fun getUploadServer(albumId: Int, groupId: Long?): Single<VKApiUploadServer>
 
     @CheckResult
     fun saveOwnerPhoto(
@@ -76,38 +76,38 @@ interface IPhotosApi {
     ): Single<UploadOwnerPhotoResponse>
 
     @CheckResult
-    fun getOwnerPhotoUploadServer(ownerId: Int?): Single<VKApiOwnerPhotoUploadServer>
+    fun getOwnerPhotoUploadServer(ownerId: Long?): Single<VKApiOwnerPhotoUploadServer>
 
     @CheckResult
-    fun getChatUploadServer(chat_id: Int?): Single<VKApiChatPhotoUploadServer>
+    fun getChatUploadServer(chat_id: Long?): Single<VKApiChatPhotoUploadServer>
 
     @CheckResult
     fun setChatPhoto(file: String?): Single<UploadChatPhotoResponse>
 
     @CheckResult
     fun saveWallPhoto(
-        userId: Int?, groupId: Int?, photo: String?, server: Int,
+        userId: Long?, groupId: Long?, photo: String?, server: Int,
         hash: String?, latitude: Double?, longitude: Double?, caption: String?
     ): Single<List<VKApiPhoto>>
 
     @CheckResult
-    fun getWallUploadServer(groupId: Int?): Single<VKApiWallUploadServer>
+    fun getWallUploadServer(groupId: Long?): Single<VKApiWallUploadServer>
 
     @CheckResult
     fun save(
-        albumId: Int, groupId: Int?, server: Int, photosList: String?, hash: String?,
+        albumId: Int, groupId: Long?, server: Int, photosList: String?, hash: String?,
         latitude: Double?, longitude: Double?, caption: String?
     ): Single<List<VKApiPhoto>>
 
     @CheckResult
     operator fun get(
-        ownerId: Int?, albumId: String?, photoIds: Collection<Int>?, rev: Boolean?,
+        ownerId: Long?, albumId: String?, photoIds: Collection<Int>?, rev: Boolean?,
         offset: Int?, count: Int?
     ): Single<Items<VKApiPhoto>>
 
     @CheckResult
     fun getUsersPhoto(
-        ownerId: Int?,
+        ownerId: Long?,
         extended: Int?,
         sort: Int?,
         offset: Int?,
@@ -116,7 +116,7 @@ interface IPhotosApi {
 
     @CheckResult
     fun getAll(
-        ownerId: Int?,
+        ownerId: Long?,
         extended: Int?,
         photo_sizes: Int?,
         offset: Int?,
@@ -131,16 +131,16 @@ interface IPhotosApi {
 
     @CheckResult
     fun getAlbums(
-        ownerId: Int?, albumIds: Collection<Int>?, offset: Int?,
+        ownerId: Long?, albumIds: Collection<Int>?, offset: Int?,
         count: Int?, needSystem: Boolean?, needCovers: Boolean?
     ): Single<Items<VKApiPhotoAlbum>>
 
     @CheckResult
-    fun getTags(ownerId: Int?, photo_id: Int?, access_key: String?): Single<List<VKApiPhotoTags>>
+    fun getTags(ownerId: Long?, photo_id: Int?, access_key: String?): Single<List<VKApiPhotoTags>>
 
     @CheckResult
     fun getAllComments(
-        ownerId: Int?,
+        ownerId: Long?,
         album_id: Int?,
         need_likes: Int?,
         offset: Int?,

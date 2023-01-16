@@ -15,5 +15,5 @@ class VKApiFeedList {
     var no_reposts = false
 
     @SerialName("source_ids")
-    var source_ids: IntArray? = null
+    var source_ids: LongArray? = null
 }

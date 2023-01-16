@@ -12,7 +12,7 @@ class FeedbackVKOfficial {
     var footer: String? = null
     var header: String? = null
     var header_owner_avatar_url: String? = null
-    var header_owner_id: Int? = null
+    var header_owner_id: Long? = null
     var text: String? = null
     var iconURL: String? = null
     var iconType: String? = null
@@ -55,8 +55,8 @@ class FeedbackVKOfficial {
     @Keep
     @Serializable
     @SerialName("action_message")
-    class ActionMessage(private val peerId: Int, private val messageId: Int) : Action() {
-        fun getPeerId(): Int {
+    class ActionMessage(private val peerId: Long, private val messageId: Int) : Action() {
+        fun getPeerId(): Long {
             return peerId
         }
 

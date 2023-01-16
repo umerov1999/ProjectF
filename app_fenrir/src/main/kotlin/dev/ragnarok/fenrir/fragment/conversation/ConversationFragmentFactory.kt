@@ -30,10 +30,10 @@ object ConversationFragmentFactory {
         return fragment
     }
 
-    fun buildArgs(accountId: Int, peerId: Int, type: String?): Bundle {
+    fun buildArgs(accountId: Long, peerId: Long, type: String?): Bundle {
         val bundle = Bundle()
-        bundle.putInt(Extra.ACCOUNT_ID, accountId)
-        bundle.putInt(Extra.PEER_ID, peerId)
+        bundle.putLong(Extra.ACCOUNT_ID, accountId)
+        bundle.putLong(Extra.PEER_ID, peerId)
         bundle.putString(Extra.TYPE, type)
         return bundle
     }

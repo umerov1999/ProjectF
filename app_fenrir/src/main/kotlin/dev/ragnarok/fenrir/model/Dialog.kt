@@ -4,12 +4,12 @@ import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
 import dev.ragnarok.fenrir.*
-import dev.ragnarok.fenrir.api.model.interfaces.Identificable
+import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 
-class Dialog : Identificable, Parcelable {
-    var peerId = 0
+class Dialog : IdentificableOwner, Parcelable {
+    var peerId = 0L
         private set
     private var title: String? = null
     var unreadCount = 0
@@ -38,7 +38,7 @@ class Dialog : Identificable, Parcelable {
 
     constructor()
     internal constructor(parcel: Parcel) {
-        peerId = parcel.readInt()
+        peerId = parcel.readLong()
         title = parcel.readString()
         unreadCount = parcel.readInt()
         photo50 = parcel.readString()
@@ -57,7 +57,7 @@ class Dialog : Identificable, Parcelable {
         isGroupChannel = parcel.getBoolean()
     }
 
-    fun setPeerId(peerId: Int): Dialog {
+    fun setPeerId(peerId: Long): Dialog {
         this.peerId = peerId
         return this
     }
@@ -235,7 +235,7 @@ class Dialog : Identificable, Parcelable {
         return this
     }
 
-    override fun getObjectId(): Int {
+    override fun getOwnerObjectId(): Long {
         return peerId
     }
 
@@ -244,7 +244,7 @@ class Dialog : Identificable, Parcelable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(peerId)
+        dest.writeLong(peerId)
         dest.writeString(title)
         dest.writeInt(unreadCount)
         dest.writeString(photo50)

@@ -10,5 +10,5 @@ interface IFriendsByPhonesView : IMvpView, IErrorView, IToastView {
     fun notifyDataAdded(position: Int, count: Int)
     fun displayLoading(loading: Boolean)
     fun notifyDataSetChanged()
-    fun showChat(accountId: Int, owner: ContactConversation)
+    fun showChat(accountId: Long, owner: ContactConversation)
 }

@@ -10,8 +10,8 @@ interface IChatMembersView : IMvpView, IErrorView {
     fun notifyItemRemoved(position: Int)
     fun notifyDataSetChanged()
     fun notifyDataAdded(position: Int, count: Int)
-    fun openUserWall(accountId: Int, user: Owner)
+    fun openUserWall(accountId: Long, user: Owner)
     fun displayRefreshing(refreshing: Boolean)
-    fun startSelectUsersActivity(accountId: Int)
+    fun startSelectUsersActivity(accountId: Long)
     fun setIsOwner(isOwner: Boolean)
 }

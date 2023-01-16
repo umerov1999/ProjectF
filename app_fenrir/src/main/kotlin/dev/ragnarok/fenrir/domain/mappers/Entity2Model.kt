@@ -39,10 +39,10 @@ object Entity2Model {
             .setCommentsCount(dbo.commentsCount)
             .setFirstCommentBody(dbo.firstComment)
             .setLastCommentBody(dbo.lastComment)
-        if (dbo.updatedBy != 0) {
+        if (dbo.updatedBy != 0L) {
             topic.setUpdater(owners.getById(dbo.updatedBy))
         }
-        if (dbo.creatorId != 0) {
+        if (dbo.creatorId != 0L) {
             topic.setCreator(owners.getById(dbo.creatorId))
         }
         return topic
@@ -130,7 +130,7 @@ object Entity2Model {
         return details
     }
 
-    private fun buildUserArray(users: List<Int>, owners: IOwnersBundle): List<User> {
+    private fun buildUserArray(users: List<Long>, owners: IOwnersBundle): List<User> {
         val data: MutableList<User> = ArrayList(safeCountOf(users))
         for (pair in users) {
             val dt = owners.getById(pair)
@@ -212,7 +212,7 @@ object Entity2Model {
         details.setSchools(mapAll(dbo.schools, Entity2Model::map))
         details.setRelatives(mapAll(dbo.relatives) { orig -> map(orig, owners) })
         details.setRelation(dbo.relation)
-        details.setRelationPartner(if (dbo.relationPartnerId != 0) owners.getById(dbo.relationPartnerId) else null)
+        details.setRelationPartner(if (dbo.relationPartnerId != 0L) owners.getById(dbo.relationPartnerId) else null)
         details.setLanguages(dbo.languages)
         details.setPolitical(dbo.political)
         details.setPeopleMain(dbo.peopleMain)
@@ -306,7 +306,7 @@ object Entity2Model {
             .setFrom(entity.from)
             .setUntil(entity.until)
             .setPosition(entity.position)
-            .setGroup(if (entity.groupId == 0) null else bundle.getById(-entity.groupId) as Community)
+            .setGroup(if (entity.groupId == 0L) null else bundle.getById(-entity.groupId) as Community)
     }
 
     fun map(entity: CountryDboEntity): Country {
@@ -449,7 +449,11 @@ object Entity2Model {
     }
 
 
-    fun buildDialogFromDbo(accountId: Int, entity: DialogDboEntity, owners: IOwnersBundle): Dialog {
+    fun buildDialogFromDbo(
+        accountId: Long,
+        entity: DialogDboEntity,
+        owners: IOwnersBundle
+    ): Dialog {
         val message = entity.message?.let { message(accountId, it, owners) }
         val dialog = Dialog()
             .setLastMessageId(entity.lastMessageId)
@@ -500,7 +504,7 @@ object Entity2Model {
     }
 
 
-    fun message(accountId: Int, dbo: MessageDboEntity, owners: IOwnersBundle): Message {
+    fun message(accountId: Long, dbo: MessageDboEntity, owners: IOwnersBundle): Message {
         val message = Message(dbo.id)
             .setAccountId(accountId)
             .setBody(dbo.body)
@@ -528,7 +532,7 @@ object Entity2Model {
             .setUpdateTime(dbo.updateTime)
             .setPayload(dbo.payload)
             .setKeyboard(buildKeyboardFromDbo(dbo.keyboard))
-        if (dbo.actionMemberId != 0) {
+        if (dbo.actionMemberId != 0L) {
             message.setActionUser(owners.getById(dbo.actionMemberId))
         }
         if (dbo.getAttachments().nonNullNoEmpty()) {
@@ -1214,10 +1218,10 @@ object Entity2Model {
 
     fun fillCommentOwnerIds(ids: VKOwnIds, dbo: CommentEntity?) {
         if (dbo != null) {
-            if (dbo.fromId != 0) {
+            if (dbo.fromId != 0L) {
                 ids.append(dbo.fromId)
             }
-            if (dbo.replyToUserId != 0) {
+            if (dbo.replyToUserId != 0L) {
                 ids.append(dbo.replyToUserId)
             }
             if (dbo.getAttachments() != null) {

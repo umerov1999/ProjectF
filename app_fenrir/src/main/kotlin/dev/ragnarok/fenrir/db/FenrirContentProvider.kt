@@ -328,57 +328,57 @@ class FenrirContentProvider : ContentProvider() {
         }
          */
 
-        fun getKeysContentUriFor(aid: Int): Uri {
+        fun getKeysContentUriFor(aid: Long): Uri {
             return appendAccountId(KEYS_CONTENT_URI, aid)
         }
 
 
-        fun getGroupsDetContentUriFor(aid: Int): Uri {
+        fun getGroupsDetContentUriFor(aid: Long): Uri {
             return appendAccountId(GROUPS_DET_CONTENT_URI, aid)
         }
 
 
-        fun getFavePostsContentUriFor(aid: Int): Uri {
+        fun getFavePostsContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_POSTS_CONTENT_URI, aid)
         }
 
 
-        fun getFaveLinksContentUriFor(aid: Int): Uri {
+        fun getFaveLinksContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_LINKS_CONTENT_URI, aid)
         }
 
 
-        fun getFavePhotosContentUriFor(aid: Int): Uri {
+        fun getFavePhotosContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_PHOTOS_CONTENT_URI, aid)
         }
 
 
-        fun getFaveUsersContentUriFor(aid: Int): Uri {
+        fun getFaveUsersContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_PAGES_CONTENT_URI, aid)
         }
 
 
-        fun getFaveGroupsContentUriFor(aid: Int): Uri {
+        fun getFaveGroupsContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_GROUPS_CONTENT_URI, aid)
         }
 
 
-        fun getFaveVideosContentUriFor(aid: Int): Uri {
+        fun getFaveVideosContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_VIDEOS_CONTENT_URI, aid)
         }
 
 
-        fun getFaveArticlesContentUriFor(aid: Int): Uri {
+        fun getFaveArticlesContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_ARTICLES_CONTENT_URI, aid)
         }
 
 
-        fun getFaveProductsContentUriFor(aid: Int): Uri {
+        fun getFaveProductsContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_PRODUCTS_CONTENT_URI, aid)
         }
 
 
-        fun getTopicsContentUriFor(aid: Int): Uri {
+        fun getTopicsContentUriFor(aid: Long): Uri {
             return appendAccountId(TOPICS_CONTENT_URI, aid)
         }
 
@@ -386,120 +386,120 @@ class FenrirContentProvider : ContentProvider() {
         //    return appendAccountId(POLL_CONTENT_URI, aid);
         //}
 
-        fun getMessagesAttachmentsContentUriFor(aid: Int): Uri {
+        fun getMessagesAttachmentsContentUriFor(aid: Long): Uri {
             return appendAccountId(MESSAGES_ATTACHMENTS_CONTENT_URI, aid)
         }
 
 
-        fun getPostsAttachmentsContentUriFor(aid: Int): Uri {
+        fun getPostsAttachmentsContentUriFor(aid: Long): Uri {
             return appendAccountId(POSTS_ATTACHMENTS_CONTENT_URI, aid)
         }
 
 
-        fun getPostsContentUriFor(aid: Int): Uri {
+        fun getPostsContentUriFor(aid: Long): Uri {
             return appendAccountId(POSTS_CONTENT_URI, aid)
         }
 
 
-        fun getVideosContentUriFor(aid: Int): Uri {
+        fun getVideosContentUriFor(aid: Long): Uri {
             return appendAccountId(VIDEOS_CONTENT_URI, aid)
         }
 
 
-        fun getVideoAlbumsContentUriFor(aid: Int): Uri {
+        fun getVideoAlbumsContentUriFor(aid: Long): Uri {
             return appendAccountId(VIDEO_ALBUMS_CONTENT_URI, aid)
         }
 
 
-        fun getDocsContentUriFor(aid: Int): Uri {
+        fun getDocsContentUriFor(aid: Long): Uri {
             return appendAccountId(DOCS_CONTENT_URI, aid)
         }
 
 
-        fun getPhotosContentUriFor(aid: Int): Uri {
+        fun getPhotosContentUriFor(aid: Long): Uri {
             return appendAccountId(PHOTOS_CONTENT_URI, aid)
         }
 
-        fun getPhotosExtendedContentUriFor(aid: Int): Uri {
+        fun getPhotosExtendedContentUriFor(aid: Long): Uri {
             return appendAccountId(PHOTOS_EXTENDED_CONTENT_URI, aid)
         }
 
 
-        fun getCommentsContentUriFor(aid: Int): Uri {
+        fun getCommentsContentUriFor(aid: Long): Uri {
             return appendAccountId(COMMENTS_CONTENT_URI, aid)
         }
 
 
-        fun getCommentsAttachmentsContentUriFor(aid: Int): Uri {
+        fun getCommentsAttachmentsContentUriFor(aid: Long): Uri {
             return appendAccountId(COMMENTS_ATTACHMENTS_CONTENT_URI, aid)
         }
 
 
-        fun getDialogsContentUriFor(aid: Int): Uri {
+        fun getDialogsContentUriFor(aid: Long): Uri {
             return appendAccountId(DIALOGS_CONTENT_URI, aid)
         }
 
 
-        fun getPeersContentUriFor(aid: Int): Uri {
+        fun getPeersContentUriFor(aid: Long): Uri {
             return appendAccountId(PEERS_CONTENT_URI, aid)
         }
 
 
-        fun getRelativeshipContentUriFor(aid: Int): Uri {
+        fun getRelativeshipContentUriFor(aid: Long): Uri {
             return appendAccountId(RELATIVESHIP_CONTENT_URI, aid)
         }
 
 
-        fun getUserContentUriFor(aid: Int): Uri {
+        fun getUserContentUriFor(aid: Long): Uri {
             return appendAccountId(USER_CONTENT_URI, aid)
         }
 
 
-        fun getUserDetContentUriFor(aid: Int): Uri {
+        fun getUserDetContentUriFor(aid: Long): Uri {
             return appendAccountId(USER_DET_CONTENT_URI, aid)
         }
 
 
-        fun getGroupsContentUriFor(aid: Int): Uri {
+        fun getGroupsContentUriFor(aid: Long): Uri {
             return appendAccountId(GROUPS_CONTENT_URI, aid)
         }
 
 
-        fun getNewsContentUriFor(aid: Int): Uri {
+        fun getNewsContentUriFor(aid: Long): Uri {
             return appendAccountId(NEWS_CONTENT_URI, aid)
         }
 
 
-        fun getMessageContentUriFor(aid: Int): Uri {
+        fun getMessageContentUriFor(aid: Long): Uri {
             return appendAccountId(MESSAGE_CONTENT_URI, aid)
         }
 
 
-        fun getCountriesContentUriFor(aid: Int): Uri {
+        fun getCountriesContentUriFor(aid: Long): Uri {
             return appendAccountId(COUNTRIES_CONTENT_URI, aid)
         }
 
 
-        fun getNotificationsContentUriFor(aid: Int): Uri {
+        fun getNotificationsContentUriFor(aid: Long): Uri {
             return appendAccountId(NOTIFICATIONS_CONTENT_URI, aid)
         }
 
 
-        fun getFeedListsContentUriFor(aid: Int): Uri {
+        fun getFeedListsContentUriFor(aid: Long): Uri {
             return appendAccountId(FEED_LISTS_CONTENT_URI, aid)
         }
 
 
-        fun getPhotoAlbumsContentUriFor(aid: Int): Uri {
+        fun getPhotoAlbumsContentUriFor(aid: Long): Uri {
             return appendAccountId(PHOTO_ALBUMS_CONTENT_URI, aid)
         }
 
 
-        fun getFriendListsContentUriFor(aid: Int): Uri {
+        fun getFriendListsContentUriFor(aid: Long): Uri {
             return appendAccountId(FRIEND_LISTS_CONTENT_URI, aid)
         }
 
-        private fun appendAccountId(uri: Uri, aid: Int): Uri {
+        private fun appendAccountId(uri: Uri, aid: Long): Uri {
             return Uri.Builder()
                 .scheme(uri.scheme)
                 .authority(uri.authority)
@@ -1301,15 +1301,15 @@ class FenrirContentProvider : ContentProvider() {
         return true
     }
 
-    private fun getDbHelper(aid: Int): DBHelper {
+    private fun getDbHelper(aid: Long): DBHelper {
         return DBHelper.getInstance(context!!, aid)
     }
 
-    private fun extractAidFromUri(uri: Uri): Int {
+    private fun extractAidFromUri(uri: Uri): Long {
         val said = uri.getQueryParameter(AID)
         require(said.nonNullNoEmpty()) { "AID query parameter not found, uri: $uri" }
-        val targetAid = said.toInt()
-        require(targetAid != 0) { "Invalid account id=0, uri: $uri" }
+        val targetAid = said.toLong()
+        require(targetAid != 0L) { "Invalid account id=0, uri: $uri" }
         return targetAid
     }
 
@@ -1318,7 +1318,7 @@ class FenrirContentProvider : ContentProvider() {
      * Потому что будет открыватся транзакция только к одной базе данных
      */
     private fun validateUris(operations: List<ContentProviderOperation>) {
-        var aid: Int? = null
+        var aid: Long? = null
         for (operation in operations) {
             val uri: Uri = operation.uri
             if (aid == null) {
@@ -1502,8 +1502,8 @@ class FenrirContentProvider : ContentProvider() {
         }
         safeNotifyChange(resultUri)
         if (matchUri == URI_MESSAGES && values != null) {
-            val peerId: Int = values.getAsInteger(MessageColumns.PEER_ID)
-            val dUri: Uri = ContentUris.withAppendedId(DIALOGS_CONTENT_URI, peerId.toLong())
+            val peerId: Long = values.getAsLong(MessageColumns.PEER_ID)
+            val dUri: Uri = ContentUris.withAppendedId(DIALOGS_CONTENT_URI, peerId)
             safeNotifyChange(dUri)
         }
         return resultUri

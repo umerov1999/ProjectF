@@ -21,7 +21,7 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 
 class CommunityInfoContactsPresenter(
-    accountId: Int,
+    accountId: Long,
     groupId: Community,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<ICommunityInfoContactsView>(accountId, savedInstanceState) {
@@ -31,7 +31,7 @@ class CommunityInfoContactsPresenter(
     private var loadingNow = false
     private fun onManagerActionReceived(manager: Manager) {
         val index =
-            Utils.findIndexByPredicate(data) { m -> m.user?.getObjectId() == manager.user?.getObjectId() }
+            Utils.findIndexByPredicate(data) { m -> m.user?.getOwnerObjectId() == manager.user?.getOwnerObjectId() }
         val removing = manager.role.isNullOrEmpty()
         if (index != -1) {
             if (removing) {
@@ -55,7 +55,7 @@ class CommunityInfoContactsPresenter(
         }
     }
 
-    private fun findByIdU(contacts: List<ContactInfo>, user_id: Int): ContactInfo? {
+    private fun findByIdU(contacts: List<ContactInfo>, user_id: Long): ContactInfo? {
         for (element in contacts) {
             if (element.getUserId() == user_id) {
                 return element
@@ -65,7 +65,7 @@ class CommunityInfoContactsPresenter(
     }
 
     private fun onContactsReceived(contacts: List<ContactInfo>) {
-        val Ids: MutableList<Int> = ArrayList(contacts.size)
+        val Ids: MutableList<Long> = ArrayList(contacts.size)
         for (it in contacts) Ids.add(it.getUserId())
         appendDisposable(
             networkInterfaces.vkDefault(accountId).users()[Ids, null, Fields.FIELDS_BASE_USER, null]

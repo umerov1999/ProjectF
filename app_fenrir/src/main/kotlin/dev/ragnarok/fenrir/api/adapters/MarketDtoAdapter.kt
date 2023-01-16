@@ -16,7 +16,7 @@ class MarketDtoAdapter : AbsAdapter<VKApiMarket>("VKApiMarket") {
         val dto = VKApiMarket()
         val root = json.asJsonObject
         dto.id = optInt(root, "id")
-        dto.owner_id = optInt(root, "owner_id")
+        dto.owner_id = optLong(root, "owner_id")
         dto.weight = optInt(root, "weight")
         dto.availability = optInt(root, "availability")
         dto.date = optLong(root, "date")

@@ -2,10 +2,10 @@ package dev.ragnarok.fenrir.model
 
 import dev.ragnarok.fenrir.nonNullNoEmpty
 
-class WriteText(val accountId: Int, peerId: Int, from_ids: IntArray?, val isText: Boolean) {
-    val peerId: Int
-    private val from_ids: MutableList<Int>
-    fun getFrom_ids(): List<Int> {
+class WriteText(val accountId: Long, peerId: Long, from_ids: LongArray?, val isText: Boolean) {
+    val peerId: Long
+    private val from_ids: MutableList<Long>
+    fun getFrom_ids(): List<Long> {
         return from_ids
     }
 

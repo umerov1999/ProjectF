@@ -14,5 +14,5 @@ interface IBaseSearchView<T> : IMvpView, IErrorView, IToastView,
     fun notifyItemChanged(index: Int)
     fun notifyDataAdded(position: Int, count: Int)
     fun showLoading(loading: Boolean)
-    fun displayFilter(accountId: Int, options: ArrayList<BaseOption>)
+    fun displayFilter(accountId: Long, options: ArrayList<BaseOption>)
 }

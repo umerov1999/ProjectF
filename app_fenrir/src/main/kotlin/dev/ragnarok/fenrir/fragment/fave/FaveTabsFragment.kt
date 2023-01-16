@@ -30,12 +30,12 @@ import dev.ragnarok.fenrir.util.Utils.createPageTransform
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
 class FaveTabsFragment : BaseFragment() {
-    var accountId = 0
+    var accountId = 0L
         private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+        accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
     }
 
     override fun onCreateView(
@@ -184,14 +184,14 @@ class FaveTabsFragment : BaseFragment() {
         private const val TAB_PRODUCTS = 5
         private const val TAB_PHOTOS = 6
         private const val TAB_VIDEOS = 7
-        fun buildArgs(accountId: Int, tab: Int): Bundle {
+        fun buildArgs(accountId: Long, tab: Int): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putInt(Extra.TAB, tab)
             return args
         }
 
-        fun newInstance(accountId: Int, tab: Int): FaveTabsFragment {
+        fun newInstance(accountId: Long, tab: Int): FaveTabsFragment {
             return newInstance(buildArgs(accountId, tab))
         }
 

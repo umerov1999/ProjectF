@@ -20,7 +20,7 @@ class Link : AbsModel {
         private set
     var msgId = 0
         private set
-    var msgPeerId = 0
+    var msgPeerId = 0L
         private set
 
     constructor()
@@ -32,7 +32,7 @@ class Link : AbsModel {
         previewPhoto = parcel.readString()
         photo = parcel.readTypedObjectCompat(Photo.CREATOR)
         msgId = parcel.readInt()
-        msgPeerId = parcel.readInt()
+        msgPeerId = parcel.readLong()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -43,7 +43,7 @@ class Link : AbsModel {
         parcel.writeString(previewPhoto)
         parcel.writeTypedObjectCompat(photo, flags)
         parcel.writeInt(msgId)
-        parcel.writeInt(msgPeerId)
+        parcel.writeLong(msgPeerId)
     }
 
     @AbsModelType
@@ -86,7 +86,7 @@ class Link : AbsModel {
         return this
     }
 
-    fun setMsgPeerId(msgPeerId: Int): Link {
+    fun setMsgPeerId(msgPeerId: Long): Link {
         this.msgPeerId = msgPeerId
         return this
     }

@@ -18,7 +18,7 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.core.Single
 
 class ArtistSearchPresenter(
-    accountId: Int,
+    accountId: Long,
     criteria: ArtistSearchCriteria?,
     savedInstanceState: Bundle?
 ) : AbsSearchPresenter<IArtistSearchView, ArtistSearchCriteria, VKApiArtist, IntNextFrom>(
@@ -40,7 +40,7 @@ class ArtistSearchPresenter(
     }
 
     override fun doSearch(
-        accountId: Int,
+        accountId: Long,
         criteria: ArtistSearchCriteria,
         startFrom: IntNextFrom
     ): Single<Pair<List<VKApiArtist>, IntNextFrom>> {

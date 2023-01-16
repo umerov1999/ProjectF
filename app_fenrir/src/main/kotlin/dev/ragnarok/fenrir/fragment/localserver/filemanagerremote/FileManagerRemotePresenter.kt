@@ -213,7 +213,7 @@ class FileManagerRemotePresenter(
         loadFiles()
     }
 
-    fun scrollTo(id: Int, ownerId: Int): Boolean {
+    fun scrollTo(id: Int, ownerId: Long): Boolean {
         var ret = false
         val list = if (q == null) fileList else fileListSearch
         for (i in list.indices) {

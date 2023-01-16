@@ -132,7 +132,7 @@ class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditP
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<EditPhotoAlbumPresenter> {
         return object : IPresenterFactory<EditPhotoAlbumPresenter> {
             override fun create(): EditPhotoAlbumPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 if (requireArguments().containsKey(Extra.ALBUM)) {
                     val abum: PhotoAlbum = requireArguments().getParcelableCompat(Extra.ALBUM)!!
                     val editor: PhotoAlbumEditor =
@@ -145,7 +145,7 @@ class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditP
                         saveInstanceState
                     )
                 } else {
-                    val ownerId = requireArguments().getInt(Extra.OWNER_ID)
+                    val ownerId = requireArguments().getLong(Extra.OWNER_ID)
                     return EditPhotoAlbumPresenter(
                         accountId,
                         ownerId,
@@ -187,18 +187,18 @@ class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditP
 
     companion object {
         private const val EXTRA_EDITOR = "editor"
-        fun buildArgsForEdit(aid: Int, album: PhotoAlbum, editor: PhotoAlbumEditor): Bundle {
+        fun buildArgsForEdit(aid: Long, album: PhotoAlbum, editor: PhotoAlbumEditor): Bundle {
             val bundle = Bundle()
             bundle.putParcelable(EXTRA_EDITOR, editor)
             bundle.putParcelable(Extra.ALBUM, album)
-            bundle.putInt(Extra.ACCOUNT_ID, aid)
+            bundle.putLong(Extra.ACCOUNT_ID, aid)
             return bundle
         }
 
-        fun buildArgsForCreate(aid: Int, ownerId: Int): Bundle {
+        fun buildArgsForCreate(aid: Long, ownerId: Long): Bundle {
             val bundle = Bundle()
-            bundle.putInt(Extra.OWNER_ID, ownerId)
-            bundle.putInt(Extra.ACCOUNT_ID, aid)
+            bundle.putLong(Extra.OWNER_ID, ownerId)
+            bundle.putLong(Extra.ACCOUNT_ID, aid)
             return bundle
         }
 

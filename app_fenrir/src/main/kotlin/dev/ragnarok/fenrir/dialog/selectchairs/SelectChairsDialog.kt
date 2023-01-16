@@ -85,10 +85,10 @@ class SelectChairsDialog : AccountDependencyDialogFragment(), ChairsAdapter.List
 
     companion object {
         private const val COUNT_PER_REQUEST = 1000
-        fun newInstance(aid: Int, chairId: Int, additional: Bundle?): SelectChairsDialog {
+        fun newInstance(aid: Long, chairId: Int, additional: Bundle?): SelectChairsDialog {
             val args = additional ?: Bundle()
             args.putInt(Extra.CHAIR_ID, chairId)
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             val selectCityDialog = SelectChairsDialog()
             selectCityDialog.arguments = args
             return selectCityDialog

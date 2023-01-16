@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable(with = AudioPlaylistDtoAdapter::class)
 class VKApiAudioPlaylist : VKApiAttachment, IIdComparable {
     var id = 0
-    var owner_id = 0
+    var owner_id = 0L
     var count = 0
     var update_time: Long = 0
     var Year = 0
@@ -20,7 +20,7 @@ class VKApiAudioPlaylist : VKApiAttachment, IIdComparable {
     var access_key: String? = null
     var original_access_key: String? = null
     var original_id = 0
-    var original_owner_id = 0
+    var original_owner_id = 0L
     override fun getType(): String {
         return VKApiAttachment.TYPE_AUDIO_PLAYLIST
     }

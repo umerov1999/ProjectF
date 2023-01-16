@@ -21,12 +21,12 @@ class VKApiUploadServer : Parcelable, UploadServer {
     /**
      * идентификатор пользователя, от чьего имени будет загружено фото
      */
-    var user_id = 0
+    var user_id = 0L
 
     internal constructor(parcel: Parcel) {
         url = parcel.readString()
         album_id = parcel.readInt()
-        user_id = parcel.readInt()
+        user_id = parcel.readLong()
     }
 
     @Suppress("UNUSED")
@@ -39,7 +39,7 @@ class VKApiUploadServer : Parcelable, UploadServer {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeString(url)
         dest.writeInt(album_id)
-        dest.writeInt(user_id)
+        dest.writeLong(user_id)
     }
 
     override fun toString(): String {

@@ -19,18 +19,18 @@ interface ICommentsView : IAttachmentsPlacesView, IMvpView, IErrorView,
     fun displayAttachmentsCount(count: Int)
     fun setButtonSendAvailable(available: Boolean)
     fun openAttachmentsManager(
-        accountId: Int,
+        accountId: Long,
         draftCommentId: Int,
-        sourceOwnerId: Int,
+        sourceOwnerId: Long,
         draftCommentBody: String?
     )
 
     fun setupReplyViews(replyTo: String?)
     fun replaceBodySelectionTextTo(replyText: String?)
-    fun goToCommentEdit(accountId: Int, comment: Comment, commemtId: Int?)
-    fun goToWallPost(accountId: Int, postId: Int, postOwnerId: Int)
-    fun goToVideoPreview(accountId: Int, videoId: Int, videoOwnerId: Int)
-    fun banUser(accountId: Int, groupId: Int, user: User)
+    fun goToCommentEdit(accountId: Long, comment: Comment, commemtId: Int?)
+    fun goToWallPost(accountId: Long, postId: Int, postOwnerId: Long)
+    fun goToVideoPreview(accountId: Long, videoId: Int, videoOwnerId: Long)
+    fun banUser(accountId: Long, groupId: Long, user: User)
     fun displayAuthorAvatar(url: String?)
     fun showAuthorSelectDialog(owners: List<Owner>)
     fun scrollToPosition(position: Int)

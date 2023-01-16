@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.util.DownloadWorkUtils.doDownloadDoc
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 
 class GifPagerPresenter(
-    accountId: Int,
+    accountId: Long,
     private val mDocuments: ArrayList<Document>,
     private var mCurrentIndex: Int,
     savedInstanceState: Bundle?

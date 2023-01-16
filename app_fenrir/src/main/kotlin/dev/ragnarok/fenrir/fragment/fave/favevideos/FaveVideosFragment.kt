@@ -103,7 +103,7 @@ class FaveVideosFragment : BaseMvpFragment<FaveVideosPresenter, IFaveVideosView>
         mSwipeRefreshLayout?.post { mSwipeRefreshLayout?.isRefreshing = refreshing }
     }
 
-    override fun goToPreview(accountId: Int, video: Video) {
+    override fun goToPreview(accountId: Long, video: Video) {
         getVideoPreviewPlace(accountId, video)
             .tryOpenWith(requireActivity())
     }
@@ -112,7 +112,7 @@ class FaveVideosFragment : BaseMvpFragment<FaveVideosPresenter, IFaveVideosView>
         return object : IPresenterFactory<FaveVideosPresenter> {
             override fun create(): FaveVideosPresenter {
                 return FaveVideosPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
                     ), saveInstanceState
                 )
@@ -121,9 +121,9 @@ class FaveVideosFragment : BaseMvpFragment<FaveVideosPresenter, IFaveVideosView>
     }
 
     companion object {
-        fun newInstance(accountId: Int): FaveVideosFragment {
+        fun newInstance(accountId: Long): FaveVideosFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = FaveVideosFragment()
             fragment.arguments = args
             return fragment

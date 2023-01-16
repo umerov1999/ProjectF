@@ -120,8 +120,8 @@ class CommunityBanEditFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunityBanEditPresenter> {
         return object : IPresenterFactory<CommunityBanEditPresenter> {
             override fun create(): CommunityBanEditPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val groupId = requireArguments().getInt(Extra.GROUP_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val groupId = requireArguments().getLong(Extra.GROUP_ID)
                 val banned: Banned? = requireArguments().getParcelableCompat(Extra.BANNED)
                 if (banned != null) {
                     return CommunityBanEditPresenter(
@@ -163,7 +163,7 @@ class CommunityBanEditFragment :
                 safelySetText(mDomain, "@" + user.domain)
             }
             user is User -> {
-                safelySetText(mDomain, "@id" + user.getObjectId())
+                safelySetText(mDomain, "@id" + user.getOwnerObjectId())
             }
             user is Community -> {
                 safelySetText(mDomain, "@club" + user.id)
@@ -171,7 +171,7 @@ class CommunityBanEditFragment :
         }
     }
 
-    override fun displayBanStatus(adminId: Int, adminName: String?, endDate: Long) {
+    override fun displayBanStatus(adminId: Long, adminName: String?, endDate: Long) {
         mBanStatus?.let {
             try {
                 val context = it.context
@@ -222,32 +222,32 @@ class CommunityBanEditFragment :
             .show()
     }
 
-    override fun openProfile(accountId: Int, owner: Owner) {
+    override fun openProfile(accountId: Long, owner: Owner) {
         getOwnerWallPlace(accountId, owner).tryOpenWith(requireActivity())
     }
 
     companion object {
-        fun newInstance(accountId: Int, groupId: Int, banned: Banned?): CommunityBanEditFragment {
+        fun newInstance(accountId: Long, groupId: Long, banned: Banned?): CommunityBanEditFragment {
             return newInstance(accountId, groupId, banned, null)
         }
 
         fun newInstance(
-            accountId: Int,
-            groupId: Int,
+            accountId: Long,
+            groupId: Long,
             users: ArrayList<User>?
         ): CommunityBanEditFragment {
             return newInstance(accountId, groupId, null, users)
         }
 
         private fun newInstance(
-            accountId: Int,
-            groupId: Int,
+            accountId: Long,
+            groupId: Long,
             banned: Banned?,
             users: ArrayList<User>?
         ): CommunityBanEditFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.GROUP_ID, groupId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.GROUP_ID, groupId)
             args.putParcelableArrayList(Extra.USERS, users)
             args.putParcelable(Extra.BANNED, banned)
             val fragment = CommunityBanEditFragment()

@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Keep
 @Serializable
 class ContactConversation : Parcelable {
-    val id: Int
+    val id: Long
     var title: String? = null
         private set
     var photo: String? = null
@@ -24,12 +24,12 @@ class ContactConversation : Parcelable {
     var isContact: Boolean = false
         private set
 
-    constructor(id: Int) {
+    constructor(id: Long) {
         this.id = id
     }
 
     internal constructor(parcel: Parcel) {
-        id = parcel.readInt()
+        id = parcel.readLong()
         title = parcel.readString()
         isContact = parcel.getBoolean()
         photo = parcel.readString()
@@ -73,7 +73,7 @@ class ContactConversation : Parcelable {
     }
 
     override fun writeToParcel(parcel: Parcel, i: Int) {
-        parcel.writeInt(id)
+        parcel.writeLong(id)
         parcel.writeString(title)
         parcel.putBoolean(isContact)
         parcel.writeString(photo)

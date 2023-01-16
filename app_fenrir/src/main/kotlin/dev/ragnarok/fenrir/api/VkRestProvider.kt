@@ -17,7 +17,7 @@ class VkRestProvider(
     private val restCacheLock = Any()
     private val serviceRestLock = Any()
 
-    private val restCache = Collections.synchronizedMap(HashMap<Int, SimplePostHttp>(1))
+    private val restCache = Collections.synchronizedMap(HashMap<Long, SimplePostHttp>(1))
 
     @Volatile
     private var serviceRest: SimplePostHttp? = null
@@ -30,7 +30,7 @@ class VkRestProvider(
         }
     }
 
-    override fun provideNormalRest(accountId: Int): Single<SimplePostHttp> {
+    override fun provideNormalRest(accountId: Long): Single<SimplePostHttp> {
         return Single.fromCallable {
             var rest: SimplePostHttp?
             synchronized(restCacheLock) {
@@ -48,7 +48,7 @@ class VkRestProvider(
         }
     }
 
-    override fun provideCustomRest(accountId: Int, token: String): Single<SimplePostHttp> {
+    override fun provideCustomRest(accountId: Long, token: String): Single<SimplePostHttp> {
         return Single.fromCallable {
             val client = clientFactory.createCustomVkHttpClient(
                 accountId,
@@ -75,7 +75,7 @@ class VkRestProvider(
         }
     }
 
-    override fun provideNormalHttpClient(accountId: Int): Single<OkHttpClient.Builder> {
+    override fun provideNormalHttpClient(accountId: Long): Single<OkHttpClient.Builder> {
         return Single.fromCallable {
             clientFactory.createDefaultVkHttpClient(
                 accountId,

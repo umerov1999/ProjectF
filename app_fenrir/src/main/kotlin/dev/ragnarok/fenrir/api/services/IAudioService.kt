@@ -79,7 +79,7 @@ class IAudioService : IServiceRest() {
     //https://vk.com/dev/audio.restore
     fun restore(
         audioId: Int,
-        ownerId: Int?
+        ownerId: Long?
     ): Single<BaseResponse<VKApiAudio>> {
         return rest.request(
             "audio.restore",
@@ -91,7 +91,7 @@ class IAudioService : IServiceRest() {
     //https://vk.com/dev/audio.delete
     fun delete(
         audioId: Int,
-        ownerId: Int
+        ownerId: Long
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "audio.delete",
@@ -103,8 +103,8 @@ class IAudioService : IServiceRest() {
     //https://vk.com/dev/audio.add
     fun add(
         audioId: Int,
-        ownerId: Int,
-        groupId: Int?,
+        ownerId: Long,
+        groupId: Long?,
         accessKey: String?
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -132,7 +132,7 @@ class IAudioService : IServiceRest() {
     //https://vk.com/dev/audio.get
     operator fun get(
         playlist_id: Int?,
-        ownerId: Int?,
+        ownerId: Long?,
         offset: Int?,
         count: Int?,
         accessKey: String?
@@ -175,7 +175,7 @@ class IAudioService : IServiceRest() {
     }
 
     fun getRecommendations(
-        user_id: Int?,
+        user_id: Long?,
         count: Int?
     ): Single<BaseResponse<Items<VKApiAudio>>> {
         return rest.request(
@@ -224,7 +224,7 @@ class IAudioService : IServiceRest() {
     }
 
     fun getPlaylists(
-        owner_id: Int,
+        owner_id: Long,
         offset: Int,
         count: Int
     ): Single<BaseResponse<Items<VKApiAudioPlaylist>>> {
@@ -241,7 +241,7 @@ class IAudioService : IServiceRest() {
 
     fun deletePlaylist(
         playlist_id: Int,
-        ownerId: Int
+        ownerId: Long
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "audio.deletePlaylist",
@@ -252,7 +252,7 @@ class IAudioService : IServiceRest() {
 
     fun followPlaylist(
         playlist_id: Int,
-        ownerId: Int,
+        ownerId: Long,
         accessKey: String?
     ): Single<BaseResponse<VKApiAudioPlaylist>> {
         return rest.request(
@@ -264,7 +264,7 @@ class IAudioService : IServiceRest() {
 
     fun clonePlaylist(
         playlist_id: Int,
-        ownerId: Int
+        ownerId: Long
     ): Single<BaseResponse<VKApiAudioPlaylist>> {
         return rest.request(
             "audio.savePlaylistAsCopy",
@@ -275,7 +275,7 @@ class IAudioService : IServiceRest() {
 
     fun getPlaylistById(
         playlist_id: Int,
-        ownerId: Int,
+        ownerId: Long,
         accessKey: String?
     ): Single<BaseResponse<VKApiAudioPlaylist>> {
         return rest.request(
@@ -313,7 +313,7 @@ class IAudioService : IServiceRest() {
     }
 
     fun edit(
-        ownerId: Int,
+        ownerId: Long,
         audioId: Int,
         artist: String?,
         title: String?,
@@ -333,7 +333,7 @@ class IAudioService : IServiceRest() {
     }
 
     fun createPlaylist(
-        ownerId: Int,
+        ownerId: Long,
         title: String?,
         description: String?
     ): Single<BaseResponse<VKApiAudioPlaylist>> {
@@ -345,7 +345,7 @@ class IAudioService : IServiceRest() {
     }
 
     fun editPlaylist(
-        ownerId: Int,
+        ownerId: Long,
         playlist_id: Int,
         title: String?,
         description: String?
@@ -362,7 +362,7 @@ class IAudioService : IServiceRest() {
     }
 
     fun removeFromPlaylist(
-        ownerId: Int,
+        ownerId: Long,
         playlist_id: Int,
         audio_ids: String?
     ): Single<BaseResponse<Int>> {
@@ -374,7 +374,7 @@ class IAudioService : IServiceRest() {
     }
 
     fun addToPlaylist(
-        ownerId: Int,
+        ownerId: Long,
         playlist_id: Int,
         audio_ids: String?
     ): Single<BaseResponse<List<AddToPlaylistResponse>>> {
@@ -386,7 +386,7 @@ class IAudioService : IServiceRest() {
     }
 
     fun reorder(
-        ownerId: Int,
+        ownerId: Long,
         audio_id: Int,
         before: Int?,
         after: Int?
@@ -408,7 +408,7 @@ class IAudioService : IServiceRest() {
     }
 
     fun getCatalogV2Sections(
-        owner_id: Int,
+        owner_id: Long,
         need_blocks: Int,
         url: String?
     ): Single<BaseResponse<VKApiCatalogV2ListResponse>> {

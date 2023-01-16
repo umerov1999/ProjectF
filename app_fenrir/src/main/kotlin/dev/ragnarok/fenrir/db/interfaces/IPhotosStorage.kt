@@ -8,19 +8,19 @@ import io.reactivex.rxjava3.core.Single
 
 interface IPhotosStorage : IStorage {
     fun insertPhotosRx(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         photos: List<PhotoDboEntity>,
         clearBefore: Boolean
     ): Completable
 
     fun findPhotosByCriteriaRx(criteria: PhotoCriteria): Single<List<PhotoDboEntity>>
-    fun applyPatch(accountId: Int, ownerId: Int, photoId: Int, patch: PhotoPatch): Completable
+    fun applyPatch(accountId: Long, ownerId: Long, photoId: Int, patch: PhotoPatch): Completable
 
     fun insertPhotosExtendedRx(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         photos: List<PhotoDboEntity>,
         clearBefore: Boolean

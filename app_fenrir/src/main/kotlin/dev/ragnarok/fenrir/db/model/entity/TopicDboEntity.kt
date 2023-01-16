@@ -10,17 +10,17 @@ import kotlinx.serialization.Serializable
 class TopicDboEntity : DboEntity() {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var title: String? = null
         private set
     var createdTime: Long = 0
         private set
-    var creatorId = 0
+    var creatorId = 0L
         private set
     var lastUpdateTime: Long = 0
         private set
-    var updatedBy = 0
+    var updatedBy = 0L
         private set
     var isClosed = false
         private set
@@ -35,7 +35,7 @@ class TopicDboEntity : DboEntity() {
     var poll: PollDboEntity? = null
         private set
 
-    operator fun set(id: Int, ownerId: Int): TopicDboEntity {
+    operator fun set(id: Int, ownerId: Long): TopicDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this
@@ -51,7 +51,7 @@ class TopicDboEntity : DboEntity() {
         return this
     }
 
-    fun setCreatorId(creatorId: Int): TopicDboEntity {
+    fun setCreatorId(creatorId: Long): TopicDboEntity {
         this.creatorId = creatorId
         return this
     }
@@ -61,7 +61,7 @@ class TopicDboEntity : DboEntity() {
         return this
     }
 
-    fun setUpdatedBy(updatedBy: Int): TopicDboEntity {
+    fun setUpdatedBy(updatedBy: Long): TopicDboEntity {
         this.updatedBy = updatedBy
         return this
     }

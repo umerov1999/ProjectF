@@ -27,8 +27,8 @@ class NewsfeedCommentDtoAdapter : AbsAdapter<Dto>("Dto") {
             "topic" -> {
                 val topic = VKApiTopic()
                 topic.id = optInt(root, "post_id")
-                if (root.has("to_id")) topic.owner_id = optInt(root, "to_id") else topic.owner_id =
-                    optInt(root, "source_id")
+                if (root.has("to_id")) topic.owner_id = optLong(root, "to_id") else topic.owner_id =
+                    optLong(root, "source_id")
                 topic.title = optString(root, "text")
                 topic.comments =
                     root["comments"]?.let {

@@ -82,8 +82,8 @@ class AllFriendsFragment : BaseMvpFragment<AllFriendsPresenter, IAllFriendsView>
         return object : IPresenterFactory<AllFriendsPresenter> {
             override fun create(): AllFriendsPresenter {
                 return AllFriendsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.USER_ID), saveInstanceState
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.USER_ID), saveInstanceState
                 )
             }
         }
@@ -106,7 +106,7 @@ class AllFriendsFragment : BaseMvpFragment<AllFriendsPresenter, IAllFriendsView>
         mAdapter?.notifyItemRangeInserted(position, count)
     }
 
-    override fun showUserWall(accountId: Int, user: User) {
+    override fun showUserWall(accountId: Long, user: User) {
         getOwnerWallPlace(accountId, user).tryOpenWith(requireActivity())
     }
 
@@ -117,8 +117,8 @@ class AllFriendsFragment : BaseMvpFragment<AllFriendsPresenter, IAllFriendsView>
     override fun showModFriends(
         add: List<Owner>,
         remove: List<Owner>,
-        accountId: Int,
-        ownerId: Int
+        accountId: Long,
+        ownerId: Long
     ) {
         if (add.isEmpty() && remove.isEmpty()) {
             return
@@ -146,10 +146,10 @@ class AllFriendsFragment : BaseMvpFragment<AllFriendsPresenter, IAllFriendsView>
 
     companion object {
 
-        fun newInstance(accountId: Int, userId: Int): AllFriendsFragment {
+        fun newInstance(accountId: Long, userId: Long): AllFriendsFragment {
             val args = Bundle()
-            args.putInt(Extra.USER_ID, userId)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.USER_ID, userId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val allFriendsFragment = AllFriendsFragment()
             allFriendsFragment.arguments = args
             return allFriendsFragment

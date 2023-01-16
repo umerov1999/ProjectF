@@ -5,7 +5,7 @@ import android.os.Parcelable
 
 class Commented : Parcelable {
     val sourceId: Int
-    val sourceOwnerId: Int
+    val sourceOwnerId: Long
 
     @CommentedType
     val sourceType: Int
@@ -14,7 +14,7 @@ class Commented : Parcelable {
 
     constructor(
         sourceId: Int,
-        sourceOwnerId: Int,
+        sourceOwnerId: Long,
         @CommentedType sourceType: Int,
         accessKey: String?
     ) {
@@ -26,7 +26,7 @@ class Commented : Parcelable {
 
     internal constructor(parcel: Parcel) {
         sourceId = parcel.readInt()
-        sourceOwnerId = parcel.readInt()
+        sourceOwnerId = parcel.readLong()
         sourceType = parcel.readInt()
         accessKey = parcel.readString()
     }
@@ -58,7 +58,7 @@ class Commented : Parcelable {
 
     override fun hashCode(): Int {
         var result = sourceId
-        result = 31 * result + sourceOwnerId
+        result = 31 * result + sourceOwnerId.hashCode()
         result = 31 * result + sourceType
         return result
     }
@@ -78,7 +78,7 @@ class Commented : Parcelable {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(sourceId)
-        dest.writeInt(sourceOwnerId)
+        dest.writeLong(sourceOwnerId)
         dest.writeInt(sourceType)
         dest.writeString(accessKey)
     }

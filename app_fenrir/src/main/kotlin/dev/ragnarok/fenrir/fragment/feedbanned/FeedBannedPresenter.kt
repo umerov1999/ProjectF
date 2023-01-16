@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class FeedBannedPresenter(
-    accountId: Int,
+    accountId: Long,
     savedInstanceState: Bundle?
 ) :
     SimpleOwnersPresenter<ISimpleOwnersView>(accountId, savedInstanceState) {

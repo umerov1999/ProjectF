@@ -56,7 +56,7 @@ class MessagesAdapter(
     private val isNightSticker: Boolean
     private val ownerLinkAdapter: OwnerLinkSpanFactory.ActionListener =
         object : LinkActionAdapter() {
-            override fun onOwnerClick(ownerId: Int) {
+            override fun onOwnerClick(ownerId: Long) {
                 attachmentsActionCallback.onOpenOwner(ownerId)
             }
         }
@@ -494,8 +494,8 @@ class MessagesAdapter(
     }
 
     interface OnMessageActionListener {
-        fun onAvatarClick(message: Message, userId: Int, position: Int)
-        fun onLongAvatarClick(message: Message, userId: Int, position: Int)
+        fun onAvatarClick(message: Message, userId: Long, position: Int)
+        fun onLongAvatarClick(message: Message, userId: Long, position: Int)
         fun onRestoreClick(message: Message, position: Int)
         fun onBotKeyboardClick(button: Keyboard.Button)
         fun onMessageLongClick(message: Message, position: Int): Boolean

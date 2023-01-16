@@ -12,18 +12,18 @@ interface IPhotosLocalServerView : IMvpView, IErrorView {
     fun notifyDataAdded(position: Int, count: Int)
     fun displayLoading(loading: Boolean)
     fun displayGallery(
-        accountId: Int,
+        accountId: Long,
         albumId: Int,
-        ownerId: Int,
+        ownerId: Long,
         source: TmpSource,
         position: Int,
         reversed: Boolean
     )
 
     fun displayGalleryUnSafe(
-        accountId: Int,
+        accountId: Long,
         albumId: Int,
-        ownerId: Int,
+        ownerId: Long,
         parcelNativePointer: Long,
         position: Int,
         reversed: Boolean

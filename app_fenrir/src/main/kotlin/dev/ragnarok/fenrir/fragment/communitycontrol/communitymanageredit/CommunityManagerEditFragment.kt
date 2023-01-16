@@ -140,8 +140,8 @@ class CommunityManagerEditFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunityManagerEditPresenter> {
         return object : IPresenterFactory<CommunityManagerEditPresenter> {
             override fun create(): CommunityManagerEditPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val groupId = requireArguments().getInt(Extra.GROUP_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val groupId = requireArguments().getLong(Extra.GROUP_ID)
                 val users: List<User>? =
                     requireArguments().getParcelableArrayListCompat(Extra.USERS)
                 val manager: Manager? = requireArguments().getParcelableCompat(Extra.MANAGER)
@@ -191,11 +191,11 @@ class CommunityManagerEditFragment :
         if (user.domain.nonNullNoEmpty()) {
             safelySetText(mDomain, "@" + user.domain)
         } else {
-            safelySetText(mDomain, "@id" + user.getObjectId())
+            safelySetText(mDomain, "@id" + user.getOwnerObjectId())
         }
     }
 
-    override fun showUserProfile(accountId: Int, user: User) {
+    override fun showUserProfile(accountId: Long, user: User) {
         getOwnerWallPlace(accountId, user).tryOpenWith(requireActivity())
     }
 
@@ -252,13 +252,13 @@ class CommunityManagerEditFragment :
 
     companion object {
         fun newInstance(
-            accountId: Int,
-            groupId: Int,
+            accountId: Long,
+            groupId: Long,
             users: ArrayList<User>?
         ): CommunityManagerEditFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.GROUP_ID, groupId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.GROUP_ID, groupId)
             args.putParcelableArrayList(Extra.USERS, users)
             val fragment = CommunityManagerEditFragment()
             fragment.arguments = args
@@ -266,13 +266,13 @@ class CommunityManagerEditFragment :
         }
 
         fun newInstance(
-            accountId: Int,
-            groupId: Int,
+            accountId: Long,
+            groupId: Long,
             manager: Manager?
         ): CommunityManagerEditFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.GROUP_ID, groupId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.GROUP_ID, groupId)
             args.putParcelable(Extra.MANAGER, manager)
             val fragment = CommunityManagerEditFragment()
             fragment.arguments = args

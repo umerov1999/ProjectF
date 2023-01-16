@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.model
 
-class MessageUpdate(private val accountId: Int, private val messageId: Int) {
+class MessageUpdate(private val accountId: Long, private val messageId: Int) {
     private var statusUpdate: StatusUpdate? = null
     private var importantUpdate: ImportantUpdate? = null
     private var deleteUpdate: DeleteUpdate? = null
@@ -20,7 +20,7 @@ class MessageUpdate(private val accountId: Int, private val messageId: Int) {
         this.importantUpdate = importantUpdate
     }
 
-    fun getAccountId(): Int {
+    fun getAccountId(): Long {
         return accountId
     }
 

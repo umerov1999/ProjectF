@@ -10,7 +10,7 @@ interface IFavePagesView : IMvpView, IErrorView {
     fun notifyDataSetChanged()
     fun notifyDataAdded(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
-    fun openOwnerWall(accountId: Int, owner: Owner)
-    fun openMention(accountId: Int, owner: Owner)
+    fun openOwnerWall(accountId: Long, owner: Owner)
+    fun openMention(accountId: Long, owner: Owner)
     fun notifyItemRemoved(index: Int)
 }

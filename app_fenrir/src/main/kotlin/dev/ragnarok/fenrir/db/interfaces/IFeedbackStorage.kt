@@ -8,7 +8,7 @@ import io.reactivex.rxjava3.core.Single
 
 interface IFeedbackStorage : IStorage {
     fun insert(
-        accountId: Int,
+        accountId: Long,
         dbos: List<FeedbackEntity>,
         owners: OwnerEntities?,
         clearBefore: Boolean
@@ -17,7 +17,7 @@ interface IFeedbackStorage : IStorage {
     fun findByCriteria(criteria: NotificationsCriteria): Single<List<FeedbackEntity>>
 
     fun insertOfficial(
-        accountId: Int,
+        accountId: Long,
         dbos: List<FeedbackVKOfficial>,
         clearBefore: Boolean
     ): Single<IntArray>

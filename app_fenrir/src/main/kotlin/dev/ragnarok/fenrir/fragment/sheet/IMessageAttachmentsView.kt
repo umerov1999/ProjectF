@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.model.ModelsBundle
 interface IMessageAttachmentsView : IMvpView, IErrorView, IToastView {
     fun displayAttachments(entries: List<AttachmentEntry>)
     fun notifyDataAdded(positionStart: Int, count: Int)
-    fun addPhoto(accountId: Int, ownerId: Int)
+    fun addPhoto(accountId: Long, ownerId: Long)
     fun notifyEntryRemoved(index: Int)
     fun displaySelectUploadPhotoSizeDialog(photos: List<LocalPhoto>)
     fun displayCropPhotoDialog(uri: Uri)
@@ -22,7 +22,7 @@ interface IMessageAttachmentsView : IMvpView, IErrorView, IToastView {
     fun requestCameraPermission()
     fun startCamera(fileUri: Uri)
     fun syncAccompanyingWithParent(accompanying: ModelsBundle)
-    fun startAddDocumentActivity(accountId: Int)
-    fun startAddVideoActivity(accountId: Int, ownerId: Int)
-    fun startAddAudioActivity(accountId: Int)
+    fun startAddDocumentActivity(accountId: Long)
+    fun startAddVideoActivity(accountId: Long, ownerId: Long)
+    fun startAddAudioActivity(accountId: Long)
 }

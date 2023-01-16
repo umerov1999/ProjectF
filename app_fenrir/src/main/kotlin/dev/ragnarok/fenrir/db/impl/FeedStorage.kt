@@ -60,7 +60,7 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
     }
 
     override fun store(
-        accountId: Int,
+        accountId: Long,
         data: List<NewsDboEntity>,
         owners: OwnerEntities?,
         clearBeforeStore: Boolean
@@ -106,7 +106,7 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
         }
     }
 
-    override fun storeLists(accountId: Int, entities: List<FeedListEntity>): Completable {
+    override fun storeLists(accountId: Long, entities: List<FeedListEntity>): Completable {
         return Completable.create { e: CompletableEmitter ->
             val uri = getFeedListsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
@@ -162,21 +162,21 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
         val dbo = NewsDboEntity()
         if (friendString.nonNullNoEmpty()) {
             val strArray = friendString.split(Regex(",")).toTypedArray()
-            val intArray = ArrayList<Int>(strArray.size)
+            val longArray = ArrayList<Long>(strArray.size)
             for (i in strArray.indices) {
-                intArray.add(strArray[i].toInt())
+                longArray.add(strArray[i].toLong())
             }
-            dbo.setFriendsTags(intArray)
+            dbo.setFriendsTags(longArray)
         } else {
             dbo.setFriendsTags(null)
         }
         dbo.setType(cursor.getString(NewsColumns.TYPE))
-            .setSourceId(cursor.getInt(NewsColumns.SOURCE_ID))
+            .setSourceId(cursor.getLong(NewsColumns.SOURCE_ID))
             .setDate(cursor.getLong(NewsColumns.DATE))
             .setPostId(cursor.getInt(NewsColumns.POST_ID))
             .setPostType(cursor.getString(NewsColumns.POST_TYPE))
             .setFinalPost(cursor.getBoolean(NewsColumns.FINAL_POST))
-            .setCopyOwnerId(cursor.getInt(NewsColumns.COPY_OWNER_ID))
+            .setCopyOwnerId(cursor.getLong(NewsColumns.COPY_OWNER_ID))
             .setCopyPostId(cursor.getInt(NewsColumns.COPY_POST_ID))
             .setCopyPostDate(cursor.getLong(NewsColumns.COPY_POST_DATE))
             .setText(cursor.getString(NewsColumns.TEXT))
@@ -295,12 +295,12 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
             val entity = FeedListEntity(id).setTitle(title)
             val sources =
                 cursor.getString(FeedListsColumns.SOURCE_IDS)
-            var sourceIds: IntArray? = null
+            var sourceIds: LongArray? = null
             if (sources.nonNullNoEmpty()) {
                 val ids = sources.split(Regex(",")).toTypedArray()
-                sourceIds = IntArray(ids.size)
+                sourceIds = LongArray(ids.size)
                 for (i in ids.indices) {
-                    sourceIds[i] = ids[i].toInt()
+                    sourceIds[i] = ids[i].toLong()
                 }
             }
             return entity.setSourceIds(sourceIds)

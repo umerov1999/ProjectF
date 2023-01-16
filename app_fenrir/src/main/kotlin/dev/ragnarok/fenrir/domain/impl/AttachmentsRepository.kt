@@ -24,7 +24,7 @@ class AttachmentsRepository(
     private val addPublishSubject: PublishSubject<IAddEvent> = PublishSubject.create()
     private val removePublishSubject: PublishSubject<IRemoveEvent> = PublishSubject.create()
     override fun remove(
-        accountId: Int,
+        accountId: Long,
         type: Int,
         attachToId: Int,
         generatedAttachmentId: Int
@@ -38,7 +38,7 @@ class AttachmentsRepository(
     }
 
     override fun attach(
-        accountId: Int,
+        accountId: Long,
         attachToType: Int,
         attachToDbid: Int,
         models: List<AbsModel>
@@ -59,7 +59,7 @@ class AttachmentsRepository(
     }
 
     override fun getAttachmentsWithIds(
-        accountId: Int,
+        accountId: Long,
         attachToType: Int,
         attachToDbid: Int
     ): Single<List<Pair<Int, AbsModel>>> {
@@ -91,20 +91,20 @@ class AttachmentsRepository(
     }
 
     private class AddEvent(
-        accountId: Int,
+        accountId: Long,
         @AttachToType attachToType: Int,
         attachToId: Int,
         override val attachments: List<Pair<Int, AbsModel>>
     ) : Event(accountId, attachToType, attachToId), IAddEvent
 
     private open class Event(
-        override val accountId: Int,
+        override val accountId: Long,
         @AttachToType override val attachToType: Int,
         override val attachToId: Int
     ) : IBaseEvent
 
     private inner class RemoveEvent(
-        accountId: Int,
+        accountId: Long,
         @AttachToType attachToType: Int,
         attachToId: Int,
         override val generatedId: Int

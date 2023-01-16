@@ -5,7 +5,7 @@ import android.os.Parcelable
 
 class AudioPlaylist : AbsModel {
     private var id = 0
-    private var owner_id = 0
+    private var owner_id = 0L
     private var count = 0
     private var update_time: Long = 0
     private var Year = 0
@@ -17,12 +17,12 @@ class AudioPlaylist : AbsModel {
     private var access_key: String? = null
     private var original_access_key: String? = null
     private var original_id = 0
-    private var original_owner_id = 0
+    private var original_owner_id = 0L
 
     constructor()
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        owner_id = parcel.readInt()
+        owner_id = parcel.readLong()
         count = parcel.readInt()
         update_time = parcel.readLong()
         Year = parcel.readInt()
@@ -34,12 +34,12 @@ class AudioPlaylist : AbsModel {
         access_key = parcel.readString()
         original_access_key = parcel.readString()
         original_id = parcel.readInt()
-        original_owner_id = parcel.readInt()
+        original_owner_id = parcel.readLong()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(owner_id)
+        parcel.writeLong(owner_id)
         parcel.writeInt(count)
         parcel.writeLong(update_time)
         parcel.writeInt(Year)
@@ -51,7 +51,7 @@ class AudioPlaylist : AbsModel {
         parcel.writeString(access_key)
         parcel.writeString(original_access_key)
         parcel.writeInt(original_id)
-        parcel.writeInt(original_owner_id)
+        parcel.writeLong(original_owner_id)
     }
 
     @AbsModelType
@@ -68,11 +68,11 @@ class AudioPlaylist : AbsModel {
         return this
     }
 
-    fun getOwnerId(): Int {
+    fun getOwnerId(): Long {
         return owner_id
     }
 
-    fun setOwnerId(ownerId: Int): AudioPlaylist {
+    fun setOwnerId(ownerId: Long): AudioPlaylist {
         owner_id = ownerId
         return this
     }
@@ -176,11 +176,11 @@ class AudioPlaylist : AbsModel {
         return this
     }
 
-    fun getOriginal_owner_id(): Int {
+    fun getOriginal_owner_id(): Long {
         return original_owner_id
     }
 
-    fun setOriginal_owner_id(original_owner_id: Int): AudioPlaylist {
+    fun setOriginal_owner_id(original_owner_id: Long): AudioPlaylist {
         this.original_owner_id = original_owner_id
         return this
     }
@@ -196,7 +196,7 @@ class AudioPlaylist : AbsModel {
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + owner_id
+        result = 31 * result + owner_id.hashCode()
         return result
     }
 

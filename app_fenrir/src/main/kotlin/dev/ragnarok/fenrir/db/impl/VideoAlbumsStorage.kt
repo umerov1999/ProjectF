@@ -55,8 +55,8 @@ internal class VideoAlbumsStorage(base: AppStorages) : AbsStorage(base), IVideoA
     }
 
     override fun insertData(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         data: List<VideoAlbumDboEntity>,
         invalidateBefore: Boolean
     ): Completable {
@@ -89,7 +89,7 @@ internal class VideoAlbumsStorage(base: AppStorages) : AbsStorage(base), IVideoA
 
     private fun mapAlbum(cursor: Cursor): VideoAlbumDboEntity {
         val id = cursor.getInt(VideoAlbumsColumns.ALBUM_ID)
-        val ownerId = cursor.getInt(VideoAlbumsColumns.OWNER_ID)
+        val ownerId = cursor.getLong(VideoAlbumsColumns.OWNER_ID)
         var privacyEntity: PrivacyEntity? = null
         val privacyJson = cursor.getBlob(VideoAlbumsColumns.PRIVACY)
         if (privacyJson.nonNullNoEmpty()) {

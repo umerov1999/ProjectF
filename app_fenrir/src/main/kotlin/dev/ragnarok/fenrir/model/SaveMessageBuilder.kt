@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.model
 import dev.ragnarok.fenrir.crypt.KeyLocationPolicy
 import java.io.File
 
-class SaveMessageBuilder(private val accountId: Int, private val peerId: Int) {
+class SaveMessageBuilder(private val accountId: Long, private val peerId: Long) {
     private var attachments: MutableList<AbsModel>? = null
     private var forwardMessages: List<Message>? = null
     private var body: String? = null
@@ -52,11 +52,11 @@ class SaveMessageBuilder(private val accountId: Int, private val peerId: Int) {
         return this
     }
 
-    fun getAccountId(): Int {
+    fun getAccountId(): Long {
         return accountId
     }
 
-    fun getPeerId(): Int {
+    fun getPeerId(): Long {
         return peerId
     }
 

@@ -326,7 +326,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
 
     private fun onClearKeysClick(allAccount: Boolean) {
         if (allAccount) {
-            val accountIds: Collection<Int> = Settings.get()
+            val accountIds: Collection<Long> = Settings.get()
                 .accounts()
                 .registered
             for (accountId in accountIds) {
@@ -344,7 +344,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
             .showToastSuccessBottom(R.string.deleted)
     }
 
-    private fun removeKeysFor(accountId: Int) {
+    private fun removeKeysFor(accountId: Long) {
         Stores.instance
             .keys(KeyLocationPolicy.PERSIST)
             .deleteAll(accountId)

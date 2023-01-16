@@ -422,7 +422,7 @@ object DownloadWorkUtils {
     fun doDownloadAudio(
         context: Context,
         audio: Audio,
-        account_id: Int,
+        account_id: Long,
         Force: Boolean,
         isLocal: Boolean
     ): Int {
@@ -477,7 +477,7 @@ object DownloadWorkUtils {
             data.putString(ExtraDwn.DIR, result_filename.path)
             data.putString(ExtraDwn.FILE, result_filename.file)
             data.putString(ExtraDwn.EXT, result_filename.ext)
-            data.putInt(ExtraDwn.ACCOUNT, account_id)
+            data.putLong(ExtraDwn.ACCOUNT, account_id)
             data.putBoolean(ExtraDwn.NEED_UPDATE_TAG, !isLocal)
             downloadWork.setInputData(data.build())
             WorkManager.getInstance(context).enqueue(downloadWork.build())
@@ -489,7 +489,7 @@ object DownloadWorkUtils {
     }
 
 
-    fun makeDownloadRequestAudio(audio: Audio, account_id: Int): OneTimeWorkRequest {
+    fun makeDownloadRequestAudio(audio: Audio, account_id: Long): OneTimeWorkRequest {
         val result_filename = DownloadInfo(
             makeLegalFilename(audio.artist + " - " + audio.title, null),
             Settings.get().other().musicDir,
@@ -501,7 +501,7 @@ object DownloadWorkUtils {
         data.putString(ExtraDwn.DIR, result_filename.path)
         data.putString(ExtraDwn.FILE, result_filename.file)
         data.putString(ExtraDwn.EXT, result_filename.ext)
-        data.putInt(ExtraDwn.ACCOUNT, account_id)
+        data.putLong(ExtraDwn.ACCOUNT, account_id)
         data.putBoolean(ExtraDwn.NEED_UPDATE_TAG, true)
         downloadWork.setInputData(data.build())
 
@@ -872,7 +872,7 @@ object DownloadWorkUtils {
                 inputData.getByteArray(ExtraDwn.URL)!!
             )
             val account_id =
-                inputData.getInt(ExtraDwn.ACCOUNT, ISettings.IAccountsSettings.INVALID_ID)
+                inputData.getLong(ExtraDwn.ACCOUNT, ISettings.IAccountsSettings.INVALID_ID)
 
             val mode = audio.needRefresh()
             if (mode.first) {

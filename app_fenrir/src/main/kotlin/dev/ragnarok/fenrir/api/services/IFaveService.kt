@@ -61,7 +61,7 @@ class IFaveService : IServiceRest() {
     }
 
     fun getOwnerPublishedArticles(
-        owner_id: Int?,
+        owner_id: Long?,
         offset: Int?,
         count: Int?,
         sort_by: String?,
@@ -151,8 +151,8 @@ class IFaveService : IServiceRest() {
     }
 
     fun addPage(
-        userId: Int?,
-        groupId: Int?
+        userId: Long?,
+        groupId: Long?
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "fave.addPage", form(
@@ -163,7 +163,7 @@ class IFaveService : IServiceRest() {
     }
 
     fun addVideo(
-        owner_id: Int?,
+        owner_id: Long?,
         id: Int?,
         access_key: String?
     ): Single<BaseResponse<Int>> {
@@ -182,7 +182,7 @@ class IFaveService : IServiceRest() {
 
     fun addProduct(
         id: Int,
-        owner_id: Int,
+        owner_id: Long,
         access_key: String?
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -195,7 +195,7 @@ class IFaveService : IServiceRest() {
     }
 
     fun addPost(
-        owner_id: Int?,
+        owner_id: Long?,
         id: Int?,
         access_key: String?
     ): Single<BaseResponse<Int>> {
@@ -210,8 +210,8 @@ class IFaveService : IServiceRest() {
 
     //https://vk.com/dev/fave.removePage
     fun removePage(
-        userId: Int?,
-        groupId: Int?
+        userId: Long?,
+        groupId: Long?
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "fave.removePage", form(
@@ -226,7 +226,7 @@ class IFaveService : IServiceRest() {
     }
 
     fun removeArticle(
-        owner_id: Int?,
+        owner_id: Long?,
         article_id: Int?
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -239,7 +239,7 @@ class IFaveService : IServiceRest() {
 
     fun removeProduct(
         id: Int?,
-        owner_id: Int?
+        owner_id: Long?
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "fave.removeProduct", form(
@@ -250,7 +250,7 @@ class IFaveService : IServiceRest() {
     }
 
     fun removePost(
-        owner_id: Int?,
+        owner_id: Long?,
         id: Int?
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -262,7 +262,7 @@ class IFaveService : IServiceRest() {
     }
 
     fun removeVideo(
-        owner_id: Int?,
+        owner_id: Long?,
         id: Int?
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -275,7 +275,7 @@ class IFaveService : IServiceRest() {
 
     fun pushFirst(
         code: String?,
-        ownerId: Int
+        ownerId: Long
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "execute", form(

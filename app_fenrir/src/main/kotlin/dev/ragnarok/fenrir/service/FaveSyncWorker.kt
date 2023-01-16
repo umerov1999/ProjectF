@@ -94,7 +94,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
     private val PATTERN_WALL: Pattern = Pattern.compile("fenrir_wall_(-?\\d*)_aid_(-?\\d*)")
 
     @SuppressLint("CheckResult")
-    private fun fetchInfo(id: Int, accountId: Int, log: StringBuilder) {
+    private fun fetchInfo(id: Long, accountId: Long, log: StringBuilder) {
         log.append("###$accountId###$id\r\n")
 
         try {
@@ -508,12 +508,12 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         for (i in shortcutList) {
             curr++
             val matcher = PATTERN_WALL.matcher(i.action)
-            var sid = 0
-            var saccount_id = 0
+            var sid = 0L
+            var saccount_id = 0L
             try {
                 if (matcher.find()) {
-                    sid = matcher.group(1)?.toInt() ?: continue
-                    saccount_id = matcher.group(2)?.toInt() ?: continue
+                    sid = matcher.group(1)?.toLong() ?: continue
+                    saccount_id = matcher.group(2)?.toLong() ?: continue
                 }
             } catch (e: Exception) {
                 log.append("+++++++++++++++REGEX_SHORTCUT++++++++++++++++++++++++\r\n")

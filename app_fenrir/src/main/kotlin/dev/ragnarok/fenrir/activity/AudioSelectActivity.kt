@@ -15,12 +15,12 @@ class AudioSelectActivity : NoMainActivity(), PlaceProvider {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedInstanceState ?: run {
-            val accountId = (intent.extras ?: return@run).getInt(Extra.ACCOUNT_ID)
+            val accountId = (intent.extras ?: return@run).getLong(Extra.ACCOUNT_ID)
             attachInitialFragment(accountId)
         }
     }
 
-    private fun attachInitialFragment(accountId: Int) {
+    private fun attachInitialFragment(accountId: Long) {
         val fragment = AudioSelectTabsFragment.newInstance(accountId)
         supportFragmentManager
             .beginTransaction()
@@ -57,7 +57,7 @@ class AudioSelectActivity : NoMainActivity(), PlaceProvider {
          * @param accountId От чьего имени получать
          */
 
-        fun createIntent(context: Context, accountId: Int): Intent {
+        fun createIntent(context: Context, accountId: Long): Intent {
             return Intent(context, AudioSelectActivity::class.java)
                 .putExtra(Extra.ACCOUNT_ID, accountId)
         }

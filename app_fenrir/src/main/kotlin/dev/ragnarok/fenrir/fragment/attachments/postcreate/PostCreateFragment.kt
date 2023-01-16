@@ -25,8 +25,8 @@ class PostCreateFragment : AbsPostEditFragment<PostCreatePresenter, IPostCreateV
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PostCreatePresenter> {
         return object : IPresenterFactory<PostCreatePresenter> {
             override fun create(): PostCreatePresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val ownerId = requireArguments().getInt(Extra.OWNER_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
                 @EditingPostType val type = requireArguments().getInt(EXTRA_EDITING_TYPE)
                 val bundle: ModelsBundle? = requireArguments().getParcelableCompat(Extra.BUNDLE)
                 val attrs: WallEditorAttrs = requireArguments().getParcelableCompat(Extra.ATTRS)!!
@@ -117,15 +117,15 @@ class PostCreateFragment : AbsPostEditFragment<PostCreatePresenter, IPostCreateV
         }
 
         fun buildArgs(
-            accountId: Int, ownerId: Int, @EditingPostType editingType: Int,
+            accountId: Long, ownerId: Long, @EditingPostType editingType: Int,
             bundle: ModelsBundle?, attrs: WallEditorAttrs,
             streams: ArrayList<Uri>?, body: String?, mime: String?
         ): Bundle {
             val args = Bundle()
             args.putInt(EXTRA_EDITING_TYPE, editingType)
             args.putParcelableArrayList(EXTRA_STREAMS, streams)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putString(Extra.BODY, body)
             args.putParcelable(Extra.BUNDLE, bundle)
             args.putParcelable(Extra.ATTRS, attrs)

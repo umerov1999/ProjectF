@@ -33,7 +33,7 @@ import io.reactivex.rxjava3.core.SingleEmitter
 
 internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
     override fun storeWallEntities(
-        accountId: Int, posts: List<PostDboEntity>,
+        accountId: Long, posts: List<PostDboEntity>,
         owners: OwnerEntities?, clearWall: IClearWallTask?
     ): Single<IntArray> {
         return Single.create { emitter: SingleEmitter<IntArray> ->
@@ -69,7 +69,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         }
     }
 
-    override fun replacePost(accountId: Int, post: PostDboEntity): Single<Int> {
+    override fun replacePost(accountId: Long, post: PostDboEntity): Single<Int> {
         return Single.create { e: SingleEmitter<Int> ->
             val uri = getPostsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
@@ -97,7 +97,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         }
     }
 
-    private fun insertNew(accountId: Int, vkId: Int, ownerId: Int, authorId: Int): Single<Int> {
+    private fun insertNew(accountId: Long, vkId: Int, ownerId: Long, authorId: Long): Single<Int> {
         return Single.fromCallable {
             val uri = getPostsContentUriFor(accountId)
             val cv = ContentValues()
@@ -110,8 +110,8 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
     }
 
     override fun getEditingPost(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         @EditingPostType type: Int,
         includeAttachment: Boolean
     ): Single<PostDboEntity> {
@@ -129,7 +129,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
             }
     }
 
-    override fun deletePost(accountId: Int, dbid: Int): Completable {
+    override fun deletePost(accountId: Long, dbid: Int): Completable {
         return Completable.create { e: CompletableEmitter ->
             contentResolver.delete(
                 getPostsContentUriFor(accountId),
@@ -139,7 +139,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         }
     }
 
-    override fun findPostById(accountId: Int, dbid: Int): Single<Optional<PostDboEntity>> {
+    override fun findPostById(accountId: Long, dbid: Int): Single<Optional<PostDboEntity>> {
         return Single.create { e: SingleEmitter<Optional<PostDboEntity>> ->
             val cancelable = object : Cancelable {
                 override val isOperationCancelled: Boolean
@@ -166,8 +166,8 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
     }
 
     override fun findPostById(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         vkpostId: Int,
         includeAttachment: Boolean
     ): Single<Optional<PostDboEntity>> {
@@ -228,7 +228,12 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         }
     }
 
-    override fun update(accountId: Int, ownerId: Int, postId: Int, update: PostPatch): Completable {
+    override fun update(
+        accountId: Long,
+        ownerId: Long,
+        postId: Int,
+        update: PostPatch
+    ): Completable {
         return Completable.create { e: CompletableEmitter ->
             val cv = ContentValues()
             update.deletePatch.requireNonNull {
@@ -252,7 +257,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         }
     }
 
-    override fun invalidatePost(accountId: Int, postVkid: Int, postOwnerId: Int): Completable {
+    override fun invalidatePost(accountId: Long, postVkid: Int, postOwnerId: Long): Completable {
         return Completable.fromAction {
             val uri = getPostsContentUriFor(accountId)
             val where = PostsColumns.POST_ID + " = ? AND " + PostsColumns.OWNER_ID + " = ?"
@@ -293,7 +298,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
     }
 
     private fun mapDbo(
-        accountId: Int,
+        accountId: Long,
         cursor: Cursor,
         includeAttachments: Boolean,
         forceAttachments: Boolean,
@@ -303,13 +308,13 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         val attachmentsCount =
             cursor.getInt(PostsColumns.ATTACHMENTS_COUNT)
         val postId = cursor.getInt(PostsColumns.POST_ID)
-        val ownerId = cursor.getInt(PostsColumns.OWNER_ID)
+        val ownerId = cursor.getLong(PostsColumns.OWNER_ID)
         val dbo = PostDboEntity().set(postId, ownerId)
             .setDbid(dbid)
-            .setFromId(cursor.getInt(PostsColumns.FROM_ID))
+            .setFromId(cursor.getLong(PostsColumns.FROM_ID))
             .setDate(cursor.getLong(PostsColumns.DATE))
             .setText(cursor.getString(PostsColumns.TEXT))
-            .setReplyOwnerId(cursor.getInt(PostsColumns.REPLY_OWNER_ID))
+            .setReplyOwnerId(cursor.getLong(PostsColumns.REPLY_OWNER_ID))
             .setReplyPostId(cursor.getInt(PostsColumns.REPLY_POST_ID))
             .setFriendsOnly(cursor.getBoolean(PostsColumns.FRIENDS_ONLY))
             .setCommentsCount(cursor.getInt(PostsColumns.COMMENTS_COUNT))
@@ -321,8 +326,8 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
             .setCanPublish(cursor.getBoolean(PostsColumns.CAN_PUBLISH))
             .setUserReposted(cursor.getBoolean(PostsColumns.USER_REPOSTED))
             .setPostType(cursor.getInt(PostsColumns.POST_TYPE))
-            .setSignedId(cursor.getInt(PostsColumns.SIGNED_ID))
-            .setCreatedBy(cursor.getInt(PostsColumns.CREATED_BY))
+            .setSignedId(cursor.getLong(PostsColumns.SIGNED_ID))
+            .setCreatedBy(cursor.getLong(PostsColumns.CREATED_BY))
             .setCanPin(cursor.getBoolean(PostsColumns.CAN_PIN))
             .setPinned(cursor.getBoolean(PostsColumns.IS_PINNED))
             .setDeleted(cursor.getBoolean(PostsColumns.DELETED))
@@ -367,7 +372,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         return dbo
     }
 
-    private fun operationForClearWall(accountId: Int, ownerId: Int): ContentProviderOperation {
+    private fun operationForClearWall(accountId: Long, ownerId: Long): ContentProviderOperation {
         val where = PostsColumns.OWNER_ID + " = ? " +
                 " AND " + PostsColumns.POST_ID + " != ? " +
                 " AND " + PostsColumns.POST_ID + " != ?"
@@ -391,7 +396,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         private const val TEMP_POST_ID = -2
         internal fun appendDboAttachmentsAndCopies(
             dbo: PostDboEntity, operations: MutableList<ContentProviderOperation>,
-            accountId: Int, mainPostHeaderIndex: Int
+            accountId: Long, mainPostHeaderIndex: Int
         ) {
             dbo.getAttachments().nonNullNoEmpty {
                 for (attachmentEntity in it) {

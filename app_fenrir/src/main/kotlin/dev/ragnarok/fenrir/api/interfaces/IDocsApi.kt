@@ -10,10 +10,10 @@ import io.reactivex.rxjava3.core.Single
 
 interface IDocsApi {
     @CheckResult
-    fun delete(ownerId: Int?, docId: Int): Single<Boolean>
+    fun delete(ownerId: Long?, docId: Int): Single<Boolean>
 
     @CheckResult
-    fun add(ownerId: Int, docId: Int, accessKey: String?): Single<Int>
+    fun add(ownerId: Long, docId: Int, accessKey: String?): Single<Int>
 
     @CheckResult
     fun getById(pairs: Collection<AccessIdPair>): Single<List<VKApiDoc>>
@@ -25,21 +25,21 @@ interface IDocsApi {
     fun save(file: String?, title: String?, tags: String?): Single<VKApiDoc.Entry>
 
     @CheckResult
-    fun getUploadServer(groupId: Int?): Single<VKApiDocsUploadServer>
+    fun getUploadServer(groupId: Long?): Single<VKApiDocsUploadServer>
 
     @CheckResult
-    fun getMessagesUploadServer(peerId: Int?, type: String?): Single<VKApiDocsUploadServer>
+    fun getMessagesUploadServer(peerId: Long?, type: String?): Single<VKApiDocsUploadServer>
 
     @CheckResult
     fun getVideoServer(
         isPrivate: Int?,
-        group_id: Int?,
+        group_id: Long?,
         name: String?
     ): Single<VKApiVideosUploadServer>
 
     @CheckResult
     operator fun get(
-        ownerId: Int?,
+        ownerId: Long?,
         count: Int?,
         offset: Int?,
         type: Int?

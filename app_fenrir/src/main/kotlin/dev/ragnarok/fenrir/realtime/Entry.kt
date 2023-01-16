@@ -4,7 +4,7 @@ import dev.ragnarok.fenrir.api.model.longpoll.AddMessageUpdate
 import dev.ragnarok.fenrir.longpoll.FullAndNonFullUpdates
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 
-class Entry(val accountId: Int, val id: Int, val isIgnoreIfExists: Boolean) {
+class Entry(val accountId: Long, val id: Int, val isIgnoreIfExists: Boolean) {
     val updates: FullAndNonFullUpdates = FullAndNonFullUpdates()
     fun has(id: Int): Boolean {
         if (updates.hasNonFullMessages()) {

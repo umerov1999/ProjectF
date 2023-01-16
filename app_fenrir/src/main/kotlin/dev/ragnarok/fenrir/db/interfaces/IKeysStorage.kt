@@ -12,17 +12,17 @@ interface IKeysStorage : IStorage {
     fun saveKeyPair(pair: AesKeyPair): Completable
 
     @CheckResult
-    fun getAll(accountId: Int): Single<List<AesKeyPair>>
+    fun getAll(accountId: Long): Single<List<AesKeyPair>>
 
     @CheckResult
-    fun getKeys(accountId: Int, peerId: Int): Single<List<AesKeyPair>>
+    fun getKeys(accountId: Long, peerId: Long): Single<List<AesKeyPair>>
 
     @CheckResult
-    fun findLastKeyPair(accountId: Int, peerId: Int): Single<Optional<AesKeyPair>>
+    fun findLastKeyPair(accountId: Long, peerId: Long): Single<Optional<AesKeyPair>>
 
     @CheckResult
-    fun findKeyPairFor(accountId: Int, sessionId: Long): Maybe<AesKeyPair>
+    fun findKeyPairFor(accountId: Long, sessionId: Long): Maybe<AesKeyPair>
 
     @CheckResult
-    fun deleteAll(accountId: Int): Completable
+    fun deleteAll(accountId: Long): Completable
 }

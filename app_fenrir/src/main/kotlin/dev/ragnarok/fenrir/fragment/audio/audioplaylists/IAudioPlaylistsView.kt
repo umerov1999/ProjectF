@@ -11,6 +11,6 @@ interface IAudioPlaylistsView : IMvpView, IErrorView, IToastView {
     fun notifyItemRemoved(position: Int)
     fun notifyDataAdded(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
-    fun doAddAudios(accountId: Int)
+    fun doAddAudios(accountId: Long)
     fun showHelper()
 }

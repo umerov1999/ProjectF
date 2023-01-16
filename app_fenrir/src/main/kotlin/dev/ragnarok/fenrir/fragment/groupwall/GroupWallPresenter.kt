@@ -22,8 +22,8 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import kotlin.math.abs
 
 class GroupWallPresenter(
-    accountId: Int,
-    ownerId: Int,
+    accountId: Long,
+    ownerId: Long,
     pCommunity: Community?,
     private val context: Context,
     savedInstanceState: Bundle?

@@ -72,7 +72,7 @@ class FaveLinksFragment : BaseMvpFragment<FaveLinksPresenter, IFaveLinksView>(),
         )
     }
 
-    override fun openLink(accountId: Int, link: FaveLink) {
+    override fun openLink(accountId: Long, link: FaveLink) {
         openLinkInBrowser(requireActivity(), link.url)
     }
 
@@ -118,7 +118,7 @@ class FaveLinksFragment : BaseMvpFragment<FaveLinksPresenter, IFaveLinksView>(),
         return object : IPresenterFactory<FaveLinksPresenter> {
             override fun create(): FaveLinksPresenter {
                 return FaveLinksPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
                     ), saveInstanceState
                 )
@@ -128,9 +128,9 @@ class FaveLinksFragment : BaseMvpFragment<FaveLinksPresenter, IFaveLinksView>(),
 
     companion object {
 
-        fun newInstance(accountId: Int): FaveLinksFragment {
+        fun newInstance(accountId: Long): FaveLinksFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = FaveLinksFragment()
             fragment.arguments = args
             return fragment

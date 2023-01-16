@@ -97,8 +97,8 @@ class WallSearchCommentsAttachmentsFragment :
         return object : IPresenterFactory<WallSearchCommentsAttachmentsPresenter> {
             override fun create(): WallSearchCommentsAttachmentsPresenter {
                 return WallSearchCommentsAttachmentsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     requireArguments().getIntegerArrayList(Extra.POST_ID)!!,
                     saveInstanceState
                 )
@@ -142,7 +142,7 @@ class WallSearchCommentsAttachmentsFragment :
         mAdapter?.notifyItemChanged(index + (mAdapter?.headersCount ?: 0))
     }
 
-    override fun goToPost(accountId: Int, ownerId: Int, postId: Int) {
+    override fun goToPost(accountId: Long, ownerId: Long, postId: Int) {
         getPostPreviewPlace(accountId, postId, ownerId).tryOpenWith(requireActivity())
     }
 
@@ -151,14 +151,14 @@ class WallSearchCommentsAttachmentsFragment :
         recyclerView?.smoothScrollToPosition(adapterPosition)
     }
 
-    override fun onReplyToOwnerClick(ownerId: Int, commentId: Int) {
+    override fun onReplyToOwnerClick(ownerId: Long, commentId: Int) {
         presenter?.fireReplyToOwnerClick(
             commentId
         )
     }
 
     override fun onRestoreComment(commentId: Int) {}
-    override fun onAvatarClick(ownerId: Int) {
+    override fun onAvatarClick(ownerId: Long) {
         onOwnerClick(ownerId)
     }
 
@@ -175,10 +175,10 @@ class WallSearchCommentsAttachmentsFragment :
     }
 
     companion object {
-        fun buildArgs(accountId: Int, ownerId: Int, posts: ArrayList<Int>): Bundle {
+        fun buildArgs(accountId: Long, ownerId: Long, posts: ArrayList<Int>): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putIntegerArrayList(Extra.POST_ID, posts)
             return args
         }

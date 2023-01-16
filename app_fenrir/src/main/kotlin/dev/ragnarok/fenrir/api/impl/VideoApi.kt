@@ -13,10 +13,10 @@ import dev.ragnarok.fenrir.api.model.response.SearchVideoResponse
 import dev.ragnarok.fenrir.api.services.IVideoService
 import io.reactivex.rxjava3.core.Single
 
-internal class VideoApi(accountId: Int, provider: IServiceProvider) :
+internal class VideoApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IVideoApi {
     override fun getComments(
-        ownerId: Int?, videoId: Int, needLikes: Boolean?, startCommentId: Int?, offset: Int?,
+        ownerId: Long?, videoId: Int, needLikes: Boolean?, startCommentId: Int?, offset: Int?,
         count: Int?, sort: String?, extended: Boolean?, fields: String?
     ): Single<DefaultCommentsResponse> {
         return provideService(IVideoService(), TokenType.USER)
@@ -37,7 +37,7 @@ internal class VideoApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun addVideo(targetId: Int?, videoId: Int?, ownerId: Int?): Single<Int> {
+    override fun addVideo(targetId: Long?, videoId: Int?, ownerId: Long?): Single<Int> {
         return provideService(IVideoService(), TokenType.USER)
             .flatMap { service ->
                 service.addVideo(targetId, videoId, ownerId)
@@ -45,7 +45,7 @@ internal class VideoApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun deleteVideo(videoId: Int?, ownerId: Int?, targetId: Int?): Single<Int> {
+    override fun deleteVideo(videoId: Int?, ownerId: Long?, targetId: Long?): Single<Int> {
         return provideService(IVideoService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteVideo(videoId, ownerId, targetId)
@@ -54,7 +54,7 @@ internal class VideoApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getAlbums(
-        ownerId: Int?,
+        ownerId: Long?,
         offset: Int?,
         count: Int?,
         needSystem: Boolean?
@@ -67,8 +67,8 @@ internal class VideoApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getAlbumsByVideo(
-        target_id: Int?,
-        owner_id: Int?,
+        target_id: Long?,
+        owner_id: Long?,
         video_id: Int?
     ): Single<Items<VKApiVideoAlbum>> {
         return provideService(IVideoService(), TokenType.USER)
@@ -103,7 +103,7 @@ internal class VideoApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun restoreComment(ownerId: Int?, commentId: Int): Single<Boolean> {
+    override fun restoreComment(ownerId: Long?, commentId: Int): Single<Boolean> {
         return provideService(IVideoService(), TokenType.USER)
             .flatMap { service ->
                 service.restoreComment(ownerId, commentId)
@@ -112,7 +112,7 @@ internal class VideoApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun deleteComment(ownerId: Int?, commentId: Int): Single<Boolean> {
+    override fun deleteComment(ownerId: Long?, commentId: Int): Single<Boolean> {
         return provideService(IVideoService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteComment(ownerId, commentId)
@@ -123,7 +123,7 @@ internal class VideoApi(accountId: Int, provider: IServiceProvider) :
 
     override
     operator fun get(
-        ownerId: Int?, ids: Collection<AccessIdPair>?, albumId: Int?,
+        ownerId: Long?, ids: Collection<AccessIdPair>?, albumId: Int?,
         count: Int?, offset: Int?, extended: Boolean?
     ): Single<Items<VKApiVideo>> {
         val videos =
@@ -136,7 +136,7 @@ internal class VideoApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun createComment(
-        ownerId: Int, videoId: Int, message: String?,
+        ownerId: Long, videoId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?, fromGroup: Boolean?,
         replyToComment: Int?, stickerId: Int?, uniqueGeneratedId: Int?
     ): Single<Int> {
@@ -156,7 +156,7 @@ internal class VideoApi(accountId: Int, provider: IServiceProvider) :
 
     override
     fun editComment(
-        ownerId: Int, commentId: Int, message: String?,
+        ownerId: Long, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
     ): Single<Boolean> {
         return provideService(IVideoService(), TokenType.USER)
@@ -175,7 +175,7 @@ internal class VideoApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override
-    fun edit(ownerId: Int, video_id: Int, name: String?, desc: String?): Single<Boolean> {
+    fun edit(ownerId: Long, video_id: Int, name: String?, desc: String?): Single<Boolean> {
         return provideService(IVideoService(), TokenType.USER)
             .flatMap { service ->
                 service.edit(ownerId, video_id, name, desc)

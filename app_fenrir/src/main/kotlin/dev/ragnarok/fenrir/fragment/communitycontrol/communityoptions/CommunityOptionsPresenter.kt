@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class CommunityOptionsPresenter(
-    accountId: Int,
+    accountId: Long,
     private val community: Community,
     private val settings: GroupSettings,
     savedInstanceState: Bundle?

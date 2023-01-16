@@ -18,7 +18,7 @@ import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class FaveLinksPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFaveLinksView>(accountId, savedInstanceState) {
     private val faveInteractor: IFaveInteractor
     private val links: MutableList<FaveLink>
@@ -135,7 +135,7 @@ class FaveLinksPresenter(accountId: Int, savedInstanceState: Bundle?) :
             })
     }
 
-    private fun onLinkRemoved(accountId: Int, id: String) {
+    private fun onLinkRemoved(accountId: Long, id: String) {
         if (accountId != accountId) {
             return
         }

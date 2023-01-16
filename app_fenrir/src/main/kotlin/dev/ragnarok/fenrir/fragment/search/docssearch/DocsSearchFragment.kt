@@ -44,7 +44,7 @@ class DocsSearchFragment :
         return object : IPresenterFactory<DocsSearchPresenter> {
             override fun create(): DocsSearchPresenter {
                 return DocsSearchPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.CRITERIA),
                     saveInstanceState
                 )
@@ -55,12 +55,12 @@ class DocsSearchFragment :
     companion object {
 
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             initialCriteria: DocumentSearchCriteria?
         ): DocsSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = DocsSearchFragment()
             fragment.arguments = args
             return fragment

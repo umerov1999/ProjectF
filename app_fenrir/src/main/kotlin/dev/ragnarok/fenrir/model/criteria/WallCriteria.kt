@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.model.criteria
 
 import dev.ragnarok.fenrir.db.DatabaseIdRange
 
-class WallCriteria(val accountId: Int, val ownerId: Int) : Criteria() {
+class WallCriteria(val accountId: Long, val ownerId: Long) : Criteria() {
     var range: DatabaseIdRange? = null
         private set
     var mode: Int

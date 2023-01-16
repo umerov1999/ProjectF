@@ -11,7 +11,7 @@ import io.reactivex.rxjava3.core.Single
 class IDocsService : IServiceRest() {
     //https://vk.com/dev/docs.delete
     fun delete(
-        ownerId: Int?,
+        ownerId: Long?,
         docId: Int
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -31,7 +31,7 @@ class IDocsService : IServiceRest() {
      * @return the ID of the created document.
      */
     fun add(
-        ownerId: Int,
+        ownerId: Long,
         docId: Int,
         accessKey: String?
     ): Single<BaseResponse<Int>> {
@@ -107,7 +107,7 @@ class IDocsService : IServiceRest() {
      * @return an object with an upload_url field. After the document is uploaded, use the [.save] method.
      */
     fun getMessagesUploadServer(
-        peer_id: Int?,
+        peer_id: Long?,
         type: String?
     ): Single<BaseResponse<VKApiDocsUploadServer>> {
         return rest.request(
@@ -118,7 +118,7 @@ class IDocsService : IServiceRest() {
         )
     }
 
-    fun getUploadServer(groupId: Int?): Single<BaseResponse<VKApiDocsUploadServer>> {
+    fun getUploadServer(groupId: Long?): Single<BaseResponse<VKApiDocsUploadServer>> {
         return rest.request(
             "docs.getUploadServer",
             form("group_id" to groupId),
@@ -128,7 +128,7 @@ class IDocsService : IServiceRest() {
 
     fun getVideoServer(
         is_private: Int?,
-        group_id: Int?,
+        group_id: Long?,
         name: String?
     ): Single<BaseResponse<VKApiVideosUploadServer>> {
         return rest.request(
@@ -160,7 +160,7 @@ class IDocsService : IServiceRest() {
      * @return Returns the total results number in count field and an array of objects describing documents in items field
      */
     operator fun get(
-        ownerId: Int?,
+        ownerId: Long?,
         count: Int?,
         offset: Int?,
         type: Int?

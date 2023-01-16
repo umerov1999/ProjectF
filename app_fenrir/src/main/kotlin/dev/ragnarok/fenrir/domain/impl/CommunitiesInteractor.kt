@@ -14,15 +14,15 @@ import io.reactivex.rxjava3.core.Single
 
 class CommunitiesInteractor(private val networker: INetworker, private val stores: IStorages) :
     ICommunitiesInteractor {
-    override fun getCachedData(accountId: Int, userId: Int): Single<List<Community>> {
+    override fun getCachedData(accountId: Long, userId: Long): Single<List<Community>> {
         return stores.relativeship()
             .getCommunities(accountId, userId)
             .map { obj -> buildCommunitiesFromDbos(obj) }
     }
 
     override fun getActual(
-        accountId: Int,
-        userId: Int,
+        accountId: Long,
+        userId: Long,
         count: Int,
         offset: Int,
         store: Boolean
@@ -45,7 +45,7 @@ class CommunitiesInteractor(private val networker: INetworker, private val store
     }
 
     override fun search(
-        accountId: Int,
+        accountId: Long,
         q: String?,
         type: String?,
         countryId: Int?,
@@ -77,14 +77,14 @@ class CommunitiesInteractor(private val networker: INetworker, private val store
             }
     }
 
-    override fun join(accountId: Int, groupId: Int): Completable {
+    override fun join(accountId: Long, groupId: Long): Completable {
         return networker.vkDefault(accountId)
             .groups()
             .join(groupId, null)
             .ignoreElement()
     }
 
-    override fun leave(accountId: Int, groupId: Int): Completable {
+    override fun leave(accountId: Long, groupId: Long): Completable {
         return networker.vkDefault(accountId)
             .groups()
             .leave(groupId)

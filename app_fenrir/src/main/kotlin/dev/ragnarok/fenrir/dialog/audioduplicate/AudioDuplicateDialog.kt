@@ -195,7 +195,7 @@ class AudioDuplicateDialog :
         return object : IPresenterFactory<AudioDuplicatePresenter> {
             override fun create(): AudioDuplicatePresenter {
                 return AudioDuplicatePresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.NEW)!!,
                     requireArguments().getParcelableCompat(Extra.OLD)!!,
                     saveInstanceState
@@ -219,7 +219,7 @@ class AudioDuplicateDialog :
         const val REQUEST_CODE_AUDIO_DUPLICATE = "request_audio_duplicate"
 
         @Suppress("DEPRECATION")
-        private fun getAudioContent(context: Context, filePath: String, accountId: Int): Audio? {
+        private fun getAudioContent(context: Context, filePath: String, accountId: Long): Audio? {
             val AUDIO_PROJECTION = arrayOf(
                 BaseColumns._ID,
                 MediaStore.MediaColumns.DURATION,
@@ -268,13 +268,13 @@ class AudioDuplicateDialog :
 
         fun newInstance(
             context: Context,
-            aid: Int,
+            aid: Long,
             new_audio: Audio?,
             old_audio: String
         ): AudioDuplicateDialog? {
             val old = getAudioContent(context, old_audio, aid) ?: return null
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             args.putParcelable(Extra.NEW, new_audio)
             args.putParcelable(Extra.OLD, old)
             val dialog = AudioDuplicateDialog()

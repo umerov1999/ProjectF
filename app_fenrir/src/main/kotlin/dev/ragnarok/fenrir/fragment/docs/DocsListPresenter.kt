@@ -37,12 +37,12 @@ import dev.ragnarok.fenrir.util.Utils.shareLink
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 
 class DocsListPresenter(
-    accountId: Int,
-    ownerId: Int,
+    accountId: Long,
+    ownerId: Long,
     action: String?,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IDocListView>(accountId, savedInstanceState) {
-    private val mOwnerId: Int = ownerId
+    private val mOwnerId: Long = ownerId
     private val mLoader = DisposableHolder<Int>()
     private val mDocuments: MutableList<Document>
     private val mAction: String?

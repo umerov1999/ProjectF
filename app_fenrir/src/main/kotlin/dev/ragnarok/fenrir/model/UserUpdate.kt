@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.model
 
 
-class UserUpdate(val accountId: Int, val userId: Int) {
+class UserUpdate(val accountId: Long, val userId: Long) {
 
     var status: Status? = null
 

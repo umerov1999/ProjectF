@@ -4,7 +4,7 @@ import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.settings.Settings
 
 class DefaultVkApiInterceptor internal constructor(
-    override val accountId: Int,
+    override val accountId: Long,
     v: String
 ) : AbsVkApiInterceptor(
     v

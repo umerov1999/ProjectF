@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.db.model
 
-class UserPatch(val userId: Int) {
+class UserPatch(val userId: Long) {
     var status: Status? = null
         private set
     var online: Online? = null

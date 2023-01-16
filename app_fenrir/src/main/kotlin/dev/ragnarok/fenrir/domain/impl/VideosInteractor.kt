@@ -29,8 +29,8 @@ import io.reactivex.rxjava3.core.Single
 class VideosInteractor(private val networker: INetworker, private val cache: IStorages) :
     IVideosInteractor {
     override fun get(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         count: Int,
         offset: Int
@@ -53,7 +53,11 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
             }
     }
 
-    override fun getCachedVideos(accountId: Int, ownerId: Int, albumId: Int): Single<List<Video>> {
+    override fun getCachedVideos(
+        accountId: Long,
+        ownerId: Long,
+        albumId: Int
+    ): Single<List<Video>> {
         val criteria = VideoCriteria(accountId, ownerId, albumId)
         return cache.videos()
             .findByCriteria(criteria)
@@ -67,8 +71,8 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun getById(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         videoId: Int,
         accessKey: String?,
         cache: Boolean
@@ -95,9 +99,9 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun addToMy(
-        accountId: Int,
-        targetOwnerId: Int,
-        videoOwnerId: Int,
+        accountId: Long,
+        targetOwnerId: Long,
+        videoOwnerId: Long,
         videoId: Int
     ): Completable {
         return networker.vkDefault(accountId)
@@ -107,8 +111,8 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun edit(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         video_id: Int,
         name: String?,
         desc: String?
@@ -119,7 +123,12 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
             .ignoreElement()
     }
 
-    override fun delete(accountId: Int, videoId: Int?, ownerId: Int?, targetId: Int?): Completable {
+    override fun delete(
+        accountId: Long,
+        videoId: Int?,
+        ownerId: Long?,
+        targetId: Long?
+    ): Completable {
         return networker.vkDefault(accountId)
             .video()
             .deleteVideo(videoId, ownerId, targetId)
@@ -127,8 +136,8 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun checkAndAddLike(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         videoId: Int,
         accessKey: String?
     ): Single<Int> {
@@ -136,15 +145,15 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
             .likes().checkAndAddLike("video", ownerId, videoId, accessKey)
     }
 
-    override fun isLiked(accountId: Int, ownerId: Int, videoId: Int): Single<Boolean> {
+    override fun isLiked(accountId: Long, ownerId: Long, videoId: Int): Single<Boolean> {
         return networker.vkDefault(accountId)
             .likes()
             .isLiked("video", ownerId, videoId)
     }
 
     override fun likeOrDislike(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         videoId: Int,
         accessKey: String?,
         like: Boolean
@@ -162,7 +171,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         }
     }
 
-    override fun getCachedAlbums(accountId: Int, ownerId: Int): Single<List<VideoAlbum>> {
+    override fun getCachedAlbums(accountId: Long, ownerId: Long): Single<List<VideoAlbum>> {
         val criteria = VideoAlbumCriteria(accountId, ownerId)
         return cache.videoAlbums()
             .findByCriteria(criteria)
@@ -176,9 +185,9 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun getAlbumsByVideo(
-        accountId: Int,
-        target_id: Int,
-        owner_id: Int,
+        accountId: Long,
+        target_id: Long,
+        owner_id: Long,
         video_id: Int
     ): Single<List<VideoAlbum>> {
         return networker.vkDefault(accountId)
@@ -198,8 +207,8 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun getActualAlbums(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         count: Int,
         offset: Int
     ): Single<List<VideoAlbum>> {
@@ -224,7 +233,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun search(
-        accountId: Int,
+        accountId: Long,
         criteria: VideoSearchCriteria,
         count: Int,
         offset: Int

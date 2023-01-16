@@ -35,8 +35,8 @@ class KeyExchangeCommitActivity : AppCompatActivity() {
         setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_key_exchange_commit)
-        val accountId = (intent.extras ?: return).getInt(Extra.ACCOUNT_ID)
-        val peerId = (intent.extras ?: return).getInt(Extra.PEER_ID)
+        val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
+        val peerId = (intent.extras ?: return).getLong(Extra.PEER_ID)
         val user: User = intent.getParcelableExtraCompat(Extra.OWNER) ?: return
         val messageId = (intent.extras ?: return).getInt(Extra.MESSAGE_ID)
         val message: ExchangeMessage = intent.getParcelableExtraCompat(Extra.MESSAGE) ?: return
@@ -79,8 +79,8 @@ class KeyExchangeCommitActivity : AppCompatActivity() {
 
         fun createIntent(
             context: Context,
-            accountId: Int,
-            peerId: Int,
+            accountId: Long,
+            peerId: Long,
             user: User,
             messageId: Int,
             message: ExchangeMessage

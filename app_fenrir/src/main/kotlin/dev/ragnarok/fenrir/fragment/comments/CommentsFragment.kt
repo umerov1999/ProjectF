@@ -169,7 +169,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommentsPresenter> {
         return object : IPresenterFactory<CommentsPresenter> {
             override fun create(): CommentsPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val commented: Commented = requireArguments().getParcelableCompat(Extra.COMMENTED)!!
                 var focusTo: Int? = null
                 var ThreadComment: Int? = null
@@ -251,9 +251,9 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
     }
 
     override fun openAttachmentsManager(
-        accountId: Int,
+        accountId: Long,
         draftCommentId: Int,
-        sourceOwnerId: Int,
+        sourceOwnerId: Long,
         draftCommentBody: String?
     ) {
         getCommentCreatePlace(accountId, draftCommentId, sourceOwnerId, draftCommentBody)
@@ -285,7 +285,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         }
     }
 
-    override fun goToCommentEdit(accountId: Int, comment: Comment, commemtId: Int?) {
+    override fun goToCommentEdit(accountId: Long, comment: Comment, commemtId: Int?) {
         getEditCommentPlace(accountId, comment, commemtId)
             .setFragmentListener(CommentEditFragment.REQUEST_COMMENT_EDIT) { _: String?, result: Bundle ->
                 val comment1: Comment? = result.getParcelableCompat(
@@ -300,17 +300,17 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
             .tryOpenWith(requireActivity())
     }
 
-    override fun goToWallPost(accountId: Int, postId: Int, postOwnerId: Int) {
+    override fun goToWallPost(accountId: Long, postId: Int, postOwnerId: Long) {
         getPostPreviewPlace(accountId, postId, postOwnerId).tryOpenWith(requireActivity())
     }
 
-    override fun goToVideoPreview(accountId: Int, videoId: Int, videoOwnerId: Int) {
+    override fun goToVideoPreview(accountId: Long, videoId: Int, videoOwnerId: Long) {
         getVideoPreviewPlace(accountId, videoOwnerId, videoId, null, null).tryOpenWith(
             requireActivity()
         )
     }
 
-    override fun banUser(accountId: Int, groupId: Int, user: User) {
+    override fun banUser(accountId: Long, groupId: Long, user: User) {
         getCommunityAddBanPlace(accountId, groupId, singletonArrayList(user)).tryOpenWith(
             requireActivity()
         )
@@ -427,7 +427,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         presenter?.fireAttachClick()
     }
 
-    override fun onReplyToOwnerClick(ownerId: Int, commentId: Int) {
+    override fun onReplyToOwnerClick(ownerId: Long, commentId: Int) {
         presenter?.fireReplyToOwnerClick(
             commentId
         )
@@ -439,7 +439,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         )
     }
 
-    override fun onAvatarClick(ownerId: Int) {
+    override fun onAvatarClick(ownerId: Long) {
         onOpenOwner(ownerId)
     }
 
@@ -451,7 +451,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
     }
 
     override fun populateCommentContextMenu(comment: Comment) {
-        if (comment.fromId == 0) {
+        if (comment.fromId == 0L) {
             return
         }
         val menus = ModalBottomSheetDialogFragment.Builder()
@@ -702,13 +702,13 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         }
 
         fun buildArgs(
-            accountId: Int,
+            accountId: Long,
             commented: Commented?,
             focusToComment: Int?,
             CommentThread: Int?
         ): Bundle {
             val bundle = Bundle()
-            bundle.putInt(Extra.ACCOUNT_ID, accountId)
+            bundle.putLong(Extra.ACCOUNT_ID, accountId)
             bundle.putParcelable(Extra.COMMENTED, commented)
             if (focusToComment != null) {
                 bundle.putInt(EXTRA_AT_COMMENT_OBJECT, focusToComment)

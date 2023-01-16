@@ -9,8 +9,8 @@ import io.reactivex.rxjava3.core.Single
 
 class IGroupsService : IServiceRest() {
     fun editManager(
-        groupId: Int,
-        userId: Int,
+        groupId: Long,
+        userId: Long,
         role: String?,
         isContact: Int?,
         contactPosition: String?,
@@ -31,7 +31,7 @@ class IGroupsService : IServiceRest() {
     }
 
     fun edit(
-        groupId: Int,
+        groupId: Long,
         title: String?,
         description: String?,
         screen_name: String?,
@@ -63,8 +63,8 @@ class IGroupsService : IServiceRest() {
     }
 
     fun unban(
-        groupId: Int,
-        ownerId: Int
+        groupId: Long,
+        ownerId: Long
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "groups.unban", form(
@@ -75,7 +75,7 @@ class IGroupsService : IServiceRest() {
     }
 
     fun getMarketAlbums(
-        owner_id: Int,
+        owner_id: Long,
         offset: Int,
         count: Int
     ): Single<BaseResponse<Items<VKApiMarketAlbum>>> {
@@ -89,7 +89,7 @@ class IGroupsService : IServiceRest() {
     }
 
     fun getMarket(
-        owner_id: Int,
+        owner_id: Long,
         album_id: Int?,
         offset: Int,
         count: Int,
@@ -107,7 +107,7 @@ class IGroupsService : IServiceRest() {
     }
 
     fun getMarketServices(
-        owner_id: Int,
+        owner_id: Long,
         offset: Int,
         count: Int,
         extended: Int?
@@ -135,8 +135,8 @@ class IGroupsService : IServiceRest() {
     }
 
     fun ban(
-        groupId: Int,
-        ownerId: Int,
+        groupId: Long,
+        ownerId: Long,
         endDate: Long?,
         reason: Int?,
         comment: String?,
@@ -154,7 +154,7 @@ class IGroupsService : IServiceRest() {
         )
     }
 
-    fun getSettings(groupId: Int): Single<BaseResponse<GroupSettingsDto>> {
+    fun getSettings(groupId: Long): Single<BaseResponse<GroupSettingsDto>> {
         return rest.request(
             "groups.getSettings",
             form("group_id" to groupId),
@@ -164,11 +164,11 @@ class IGroupsService : IServiceRest() {
 
     //https://vk.com/dev/groups.getBanned
     fun getBanned(
-        groupId: Int,
+        groupId: Long,
         offset: Int?,
         count: Int?,
         fields: String?,
-        userId: Int?
+        userId: Long?
     ): Single<BaseResponse<Items<VKApiBanned>>> {
         return rest.request(
             "groups.getBanned", form(
@@ -244,7 +244,7 @@ class IGroupsService : IServiceRest() {
         )
     }
 
-    fun getLongPollServer(groupId: Int): Single<BaseResponse<GroupLongpollServer>> {
+    fun getLongPollServer(groupId: Long): Single<BaseResponse<GroupLongpollServer>> {
         return rest.request(
             "groups.getLongPollServer",
             form("group_id" to groupId),
@@ -253,13 +253,13 @@ class IGroupsService : IServiceRest() {
     }
 
     //https://vk.com/dev/groups.leave
-    fun leave(groupId: Int): Single<BaseResponse<Int>> {
+    fun leave(groupId: Long): Single<BaseResponse<Int>> {
         return rest.request("groups.leave", form("group_id" to groupId), baseInt)
     }
 
     //https://vk.com/dev/groups.join
     fun join(
-        groupId: Int,
+        groupId: Long,
         notSure: Int?
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -272,7 +272,7 @@ class IGroupsService : IServiceRest() {
 
     //https://vk.com/dev/groups.get
     operator fun get(
-        userId: Int?,
+        userId: Long?,
         extended: Int?,
         filter: String?,
         fields: String?,
@@ -315,7 +315,7 @@ class IGroupsService : IServiceRest() {
     }
 
     fun getChats(
-        groupId: Int,
+        groupId: Long,
         offset: Int?,
         count: Int?
     ): Single<BaseResponse<Items<VKApiGroupChats>>> {

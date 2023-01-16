@@ -204,8 +204,8 @@ class AudiosRecommendationFragment :
         return object : IPresenterFactory<AudiosRecommendationPresenter> {
             override fun create(): AudiosRecommendationPresenter {
                 return AudiosRecommendationPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     requireArguments().getBoolean(Extra.TOP),
                     requireArguments().getInt(Extra.ID),
                     saveInstanceState
@@ -241,14 +241,14 @@ class AudiosRecommendationFragment :
     companion object {
         const val EXTRA_IN_TABS_CONTAINER = "in_tabs_container"
         fun newInstance(
-            accountId: Int,
-            ownerId: Int,
+            accountId: Long,
+            ownerId: Long,
             top: Boolean,
             option_menu_id: Int
         ): AudiosRecommendationFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putBoolean(Extra.TOP, top)
             args.putInt(Extra.ID, option_menu_id)
             val fragment = AudiosRecommendationFragment()

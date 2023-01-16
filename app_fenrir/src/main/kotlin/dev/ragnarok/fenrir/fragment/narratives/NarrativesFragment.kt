@@ -94,7 +94,7 @@ class NarrativesFragment : BaseMvpFragment<NarrativesPresenter, INarrativesView>
         mSwipeRefreshLayout?.post { mSwipeRefreshLayout?.isRefreshing = refreshing }
     }
 
-    override fun onNarrativesOpen(accountId: Int, stories: ArrayList<Story>) {
+    override fun onNarrativesOpen(accountId: Long, stories: ArrayList<Story>) {
         PlaceFactory.getHistoryVideoPreviewPlace(accountId, stories, 0)
             .tryOpenWith(requireActivity())
     }
@@ -103,10 +103,10 @@ class NarrativesFragment : BaseMvpFragment<NarrativesPresenter, INarrativesView>
         return object : IPresenterFactory<NarrativesPresenter> {
             override fun create(): NarrativesPresenter {
                 return NarrativesPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
                     ),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     requireActivity(),
                     saveInstanceState
                 )
@@ -136,10 +136,10 @@ class NarrativesFragment : BaseMvpFragment<NarrativesPresenter, INarrativesView>
     }
 
     companion object {
-        fun newInstance(accountId: Int, ownerId: Int): NarrativesFragment {
+        fun newInstance(accountId: Long, ownerId: Long): NarrativesFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = NarrativesFragment()
             fragment.arguments = args
             return fragment

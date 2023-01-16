@@ -77,7 +77,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
     }
     private val ownerLinkAdapter: OwnerLinkSpanFactory.ActionListener =
         object : LinkActionAdapter() {
-            override fun onOwnerClick(ownerId: Int) {
+            override fun onOwnerClick(ownerId: Long) {
                 presenter?.fireOwnerClick(
                     ownerId
                 )
@@ -229,7 +229,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         ).tryOpenWith(requireActivity())
     }
 
-    override fun openVKURL(accountId: Int, link: String) {
+    override fun openVKURL(accountId: Long, link: String) {
         LinkHelper.openUrl(requireActivity(), accountId, link, false)
     }
 
@@ -291,8 +291,8 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<GroupWallPresenter> {
         return object : IPresenterFactory<GroupWallPresenter> {
             override fun create(): GroupWallPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val ownerId = requireArguments().getInt(Extra.OWNER_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
                 val wrapper: ParcelableOwnerWrapper? =
                     requireArguments().getParcelableCompat(Extra.OWNER)
                 return GroupWallPresenter(
@@ -337,17 +337,17 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         }
     }
 
-    override fun openTopics(accountId: Int, ownerId: Int, owner: Owner?) {
+    override fun openTopics(accountId: Long, ownerId: Long, owner: Owner?) {
         getTopicsPlace(accountId, ownerId)
             .withParcelableExtra(Extra.OWNER, owner)
             .tryOpenWith(requireActivity())
     }
 
-    override fun openCommunityMembers(accountId: Int, groupId: Int) {
+    override fun openCommunityMembers(accountId: Long, groupId: Long) {
         PlaceFactory.getCommunityMembersPlace(accountId, groupId).tryOpenWith(requireActivity())
     }
 
-    override fun openDocuments(accountId: Int, ownerId: Int, owner: Owner?) {
+    override fun openDocuments(accountId: Long, ownerId: Long, owner: Owner?) {
         getDocumentsPlace(accountId, ownerId, DocsListPresenter.ACTION_SHOW)
             .withParcelableExtra(Extra.OWNER, owner)
             .tryOpenWith(requireActivity())
@@ -435,22 +435,22 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
     }
 
     override fun goToCommunityControl(
-        accountId: Int,
+        accountId: Long,
         community: Community,
         settings: GroupSettings?
     ) {
         getCommunityControlPlace(accountId, community, settings).tryOpenWith(requireActivity())
     }
 
-    override fun goToShowCommunityInfo(accountId: Int, community: Community) {
+    override fun goToShowCommunityInfo(accountId: Long, community: Community) {
         getShowCommunityInfoPlace(accountId, community).tryOpenWith(requireActivity())
     }
 
-    override fun goToShowCommunityLinksInfo(accountId: Int, community: Community) {
+    override fun goToShowCommunityLinksInfo(accountId: Long, community: Community) {
         getShowCommunityLinksInfoPlace(accountId, community).tryOpenWith(requireActivity())
     }
 
-    override fun goToShowCommunityAboutInfo(accountId: Int, details: CommunityDetails) {
+    override fun goToShowCommunityAboutInfo(accountId: Long, details: CommunityDetails) {
         if (details.getDescription().isNullOrEmpty()) {
             return
         }
@@ -472,11 +472,11 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
             .show()
     }
 
-    override fun goToGroupChats(accountId: Int, community: Community) {
+    override fun goToGroupChats(accountId: Long, community: Community) {
         getGroupChatsPlace(accountId, abs(community.id)).tryOpenWith(requireActivity())
     }
 
-    override fun startLoginCommunityActivity(groupId: Int) {
+    override fun startLoginCommunityActivity(groupId: Long) {
         val intent = createIntent(
             requireActivity(),
             "2685278",
@@ -486,7 +486,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         requestCommunity.launch(intent)
     }
 
-    override fun openCommunityDialogs(accountId: Int, groupId: Int, subtitle: String?) {
+    override fun openCommunityDialogs(accountId: Long, groupId: Long, subtitle: String?) {
         getDialogsPlace(accountId, -groupId, subtitle).tryOpenWith(requireActivity())
     }
 
@@ -526,11 +526,11 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         menu.findItem(R.id.action_community_control).isVisible = optionMenuView.pControlVisible
     }
 
-    override fun openProducts(accountId: Int, ownerId: Int, owner: Owner?) {
+    override fun openProducts(accountId: Long, ownerId: Long, owner: Owner?) {
         getMarketAlbumPlace(accountId, ownerId).tryOpenWith(requireActivity())
     }
 
-    override fun openProductServices(accountId: Int, ownerId: Int) {
+    override fun openProductServices(accountId: Long, ownerId: Long) {
         getMarketPlace(accountId, ownerId, 0, true).tryOpenWith(requireActivity())
     }
 

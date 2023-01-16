@@ -9,7 +9,11 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Poll
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 
-class CreatePollPresenter(accountId: Int, private val mOwnerId: Int, savedInstanceState: Bundle?) :
+class CreatePollPresenter(
+    accountId: Long,
+    private val mOwnerId: Long,
+    savedInstanceState: Bundle?
+) :
     AccountDependencyPresenter<ICreatePollView>(accountId, savedInstanceState) {
     private val pollInteractor: IPollInteractor = InteractorFactory.createPollInteractor()
     private var mQuestion: String? = null

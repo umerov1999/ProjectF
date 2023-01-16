@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 class StoryDboEntity : DboEntity() {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var date: Long = 0
         private set
@@ -42,7 +42,7 @@ class StoryDboEntity : DboEntity() {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): StoryDboEntity {
+    fun setOwnerId(ownerId: Long): StoryDboEntity {
         this.ownerId = ownerId
         return this
     }

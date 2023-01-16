@@ -11,7 +11,7 @@ interface IAllFriendsView : IMvpView, IErrorView {
     fun setSwipeRefreshEnabled(enabled: Boolean)
     fun displayData(data: List<UsersPart>, grouping: Boolean)
     fun notifyItemRangeInserted(position: Int, count: Int)
-    fun showUserWall(accountId: Int, user: User)
+    fun showUserWall(accountId: Long, user: User)
     fun showRefreshing(refreshing: Boolean)
-    fun showModFriends(add: List<Owner>, remove: List<Owner>, accountId: Int, ownerId: Int)
+    fun showModFriends(add: List<Owner>, remove: List<Owner>, accountId: Long, ownerId: Long)
 }

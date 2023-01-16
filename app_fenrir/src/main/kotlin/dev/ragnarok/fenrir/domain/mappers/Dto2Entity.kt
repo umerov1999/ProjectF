@@ -368,7 +368,7 @@ object Dto2Entity {
 
 
     fun mapFavePage(favePage: FavePageResponse): FavePageEntity {
-        var id = 0
+        var id = 0L
         favePage.user.requireNonNull {
             id = it.id
         }
@@ -691,7 +691,7 @@ object Dto2Entity {
 
     fun mapComment(
         sourceId: Int,
-        sourceOwnerId: Int,
+        sourceOwnerId: Long,
         sourceType: Int,
         sourceAccessKey: String?,
         comment: VKApiComment
@@ -728,7 +728,7 @@ object Dto2Entity {
 
     private fun mapComments(
         sourceId: Int,
-        sourceOwnerId: Int,
+        sourceOwnerId: Long,
         sourceType: Int,
         sourceAccessKey: String?,
         comments: List<VKApiComment>?
@@ -1472,7 +1472,7 @@ object Dto2Entity {
 
     private class CEntity(
         val id: Int,
-        val ownerId: Int,
+        val ownerId: Long,
         val type: Int,
         val accessKey: String?,
         val dboEntity: DboEntity

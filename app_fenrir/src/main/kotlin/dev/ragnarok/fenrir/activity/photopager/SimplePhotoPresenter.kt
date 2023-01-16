@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.util.Utils
 
 class SimplePhotoPresenter(
     photos: ArrayList<Photo>, index: Int, needToRefreshData: Boolean,
-    accountId: Int, context: Context, savedInstanceState: Bundle?
+    accountId: Long, context: Context, savedInstanceState: Bundle?
 ) : PhotoPagerPresenter(photos, accountId, !needToRefreshData, context, savedInstanceState) {
     private var mDataRefreshSuccessfull = false
     private fun refreshData() {

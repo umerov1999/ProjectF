@@ -17,8 +17,8 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class WallAudiosAttachmentsPresenter(
-    accountId: Int,
-    private val owner_id: Int,
+    accountId: Long,
+    private val owner_id: Long,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<IWallAudiosAttachmentsView>(accountId, savedInstanceState) {
     private val mAudios: ArrayList<Post> = ArrayList()

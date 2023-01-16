@@ -8,48 +8,48 @@ import io.reactivex.rxjava3.core.Single
 
 interface IRelativeshipStorage : IStorage {
     fun storeFriendsList(
-        accountId: Int,
-        userId: Int,
+        accountId: Long,
+        userId: Long,
         data: Collection<FriendListEntity>
     ): Completable
 
     fun storeFriends(
-        accountId: Int,
+        accountId: Long,
         users: List<UserEntity>,
-        objectId: Int,
+        objectId: Long,
         clearBeforeStore: Boolean
     ): Completable
 
     fun storeFollowers(
-        accountId: Int,
+        accountId: Long,
         users: List<UserEntity>,
-        objectId: Int,
+        objectId: Long,
         clearBeforeStore: Boolean
     ): Completable
 
     fun storeRequests(
-        accountId: Int,
+        accountId: Long,
         users: List<UserEntity>,
-        objectId: Int,
+        objectId: Long,
         clearBeforeStore: Boolean
     ): Completable
 
     fun storeGroupMembers(
-        accountId: Int,
+        accountId: Long,
         users: List<UserEntity>,
-        objectId: Int,
+        objectId: Long,
         clearBeforeStore: Boolean
     ): Completable
 
-    fun getFriends(accountId: Int, objectId: Int): Single<List<UserEntity>>
-    fun getGroupMembers(accountId: Int, groupId: Int): Single<List<UserEntity>>
-    fun getFollowers(accountId: Int, objectId: Int): Single<List<UserEntity>>
-    fun getRequests(accountId: Int): Single<List<UserEntity>>
-    fun getCommunities(accountId: Int, ownerId: Int): Single<List<CommunityEntity>>
+    fun getFriends(accountId: Long, objectId: Long): Single<List<UserEntity>>
+    fun getGroupMembers(accountId: Long, groupId: Long): Single<List<UserEntity>>
+    fun getFollowers(accountId: Long, objectId: Long): Single<List<UserEntity>>
+    fun getRequests(accountId: Long): Single<List<UserEntity>>
+    fun getCommunities(accountId: Long, ownerId: Long): Single<List<CommunityEntity>>
     fun storeComminities(
-        accountId: Int,
+        accountId: Long,
         communities: List<CommunityEntity>,
-        userId: Int,
+        userId: Long,
         invalidateBefore: Boolean
     ): Completable
 }

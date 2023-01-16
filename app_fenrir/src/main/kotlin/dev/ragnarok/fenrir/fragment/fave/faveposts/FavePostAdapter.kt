@@ -201,7 +201,7 @@ class FavePostAdapter(
     }
 
     interface ClickListener {
-        fun onAvatarClick(ownerId: Int)
+        fun onAvatarClick(ownerId: Long)
         fun onShareClick(post: Post)
         fun onPostClick(post: Post)
         fun onCommentsClick(post: Post)
@@ -275,7 +275,7 @@ class FavePostAdapter(
     init {
         clickListener = adapterListener
         mLinkActionAdapter = object : LinkActionAdapter() {
-            override fun onOwnerClick(ownerId: Int) {
+            override fun onOwnerClick(ownerId: Long) {
                 clickListener.onAvatarClick(ownerId)
             }
         }

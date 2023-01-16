@@ -11,12 +11,12 @@ import io.reactivex.rxjava3.core.Single
 interface IFeedStorage : IStorage {
     fun findByCriteria(criteria: FeedCriteria): Single<List<NewsDboEntity>>
     fun store(
-        accountId: Int,
+        accountId: Long,
         data: List<NewsDboEntity>,
         owners: OwnerEntities?,
         clearBeforeStore: Boolean
     ): Single<IntArray>
 
-    fun storeLists(accountId: Int, entities: List<FeedListEntity>): Completable
+    fun storeLists(accountId: Long, entities: List<FeedListEntity>): Completable
     fun getAllLists(criteria: FeedSourceCriteria): Single<List<FeedListEntity>>
 }

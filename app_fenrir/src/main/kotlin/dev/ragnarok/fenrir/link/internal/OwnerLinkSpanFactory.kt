@@ -5,6 +5,7 @@ import android.text.Spanned
 import android.text.style.ClickableSpan
 import android.view.View
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.safeCountOfMultiple
 import java.util.*
@@ -103,12 +104,12 @@ object OwnerLinkSpanFactory {
         return Spannable.Factory.getInstance().newSpannable(input)
     }
 
-    private fun toInt(str: String?, pow_n: Int): Int {
+    private fun toLong(str: String?, pow_n: Int): Long {
         if (str.isNullOrEmpty()) {
             return Settings.get().accounts().current
         }
         try {
-            return str.toInt() * pow_n
+            return str.toLong() * pow_n
         } catch (ignored: NumberFormatException) {
         }
         return Settings.get().accounts().current
@@ -125,9 +126,9 @@ object OwnerLinkSpanFactory {
             val club = "club" == matcher.group(1)
             link.start = matcher.start()
             link.end = matcher.end()
-            link.replyToOwner = toInt(matcher.group(2), if (club) -1 else 1)
-            link.topicOwnerId = toInt(matcher.group(3), 1)
-            link.replyToCommentId = toInt(matcher.group(4), 1)
+            link.replyToOwner = toLong(matcher.group(2), if (club) -1 else 1)
+            link.topicOwnerId = toLong(matcher.group(3), 1)
+            link.replyToCommentId = matcher.group(4)?.toInt().orZero()
             link.targetLine = matcher.group(5)
             links.add(link)
         }
@@ -142,7 +143,7 @@ object OwnerLinkSpanFactory {
                 links = ArrayList(1)
             }
             val club = "club" == matcher.group(1)
-            val ownerId = toInt(matcher.group(2), if (club) -1 else 1)
+            val ownerId = toLong(matcher.group(2), if (club) -1 else 1)
             val name = matcher.group(3)
             name?.let { OwnerLink(matcher.start(), matcher.end(), ownerId, it) }
                 ?.let { links.add(it) }
@@ -208,13 +209,13 @@ object OwnerLinkSpanFactory {
         }
     }
 
-    fun genOwnerLink(ownerId: Int, title: String?): String {
+    fun genOwnerLink(ownerId: Long, title: String?): String {
         return "[" + (if (ownerId > 0) "id" else "club") + abs(ownerId) + "|" + title + "]"
     }
 
     interface ActionListener {
         fun onTopicLinkClicked(link: TopicLink)
-        fun onOwnerClick(ownerId: Int)
+        fun onOwnerClick(ownerId: Long)
         fun onOtherClick(URL: String)
     }
 

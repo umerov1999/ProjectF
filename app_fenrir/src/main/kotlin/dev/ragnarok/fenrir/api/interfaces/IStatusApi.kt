@@ -5,5 +5,5 @@ import io.reactivex.rxjava3.core.Single
 
 interface IStatusApi {
     @CheckResult
-    operator fun set(text: String?, groupId: Int?): Single<Boolean>
+    operator fun set(text: String?, groupId: Long?): Single<Boolean>
 }

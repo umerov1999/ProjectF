@@ -54,7 +54,7 @@ class PhotoSearchFragment :
         return object : IPresenterFactory<PhotoSearchPresenter> {
             override fun create(): PhotoSearchPresenter {
                 return PhotoSearchPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.CRITERIA),
                     saveInstanceState
                 )
@@ -62,7 +62,7 @@ class PhotoSearchFragment :
         }
     }
 
-    override fun displayGallery(accountId: Int, photos: ArrayList<Photo>, position: Int) {
+    override fun displayGallery(accountId: Long, photos: ArrayList<Photo>, position: Int) {
         getSimpleGalleryPlace(accountId, photos, position, false).setActivityResultLauncher(
             requestPhotoUpdate
         ).tryOpenWith(requireActivity())
@@ -79,12 +79,12 @@ class PhotoSearchFragment :
 
 
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             initialCriteria: PhotoSearchCriteria?
         ): PhotoSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = PhotoSearchFragment()
             fragment.arguments = args
             return fragment

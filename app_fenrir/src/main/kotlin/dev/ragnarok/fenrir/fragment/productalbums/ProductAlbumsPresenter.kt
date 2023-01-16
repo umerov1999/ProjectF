@@ -11,8 +11,8 @@ import dev.ragnarok.fenrir.model.MarketAlbum
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class ProductAlbumsPresenter(
-    accountId: Int,
-    private val owner_id: Int,
+    accountId: Long,
+    private val owner_id: Long,
     private val context: Context,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IProductAlbumsView>(accountId, savedInstanceState) {

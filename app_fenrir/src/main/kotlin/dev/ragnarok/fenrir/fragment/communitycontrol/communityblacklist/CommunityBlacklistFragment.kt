@@ -79,8 +79,8 @@ class CommunityBlacklistFragment :
         return object : IPresenterFactory<CommunityBlacklistPresenter> {
             override fun create(): CommunityBlacklistPresenter {
                 return CommunityBlacklistPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.GROUP_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.GROUP_ID),
                     saveInstanceState
                 )
             }
@@ -111,11 +111,11 @@ class CommunityBlacklistFragment :
         }
     }
 
-    override fun openBanEditor(accountId: Int, groupId: Int, banned: Banned) {
+    override fun openBanEditor(accountId: Long, groupId: Long, banned: Banned) {
         getCommunityBanEditPlace(accountId, groupId, banned).tryOpenWith(requireActivity())
     }
 
-    override fun startSelectProfilesActivity(accountId: Int, groupId: Int) {
+    override fun startSelectProfilesActivity(accountId: Long, groupId: Long) {
         val criteria = PeopleSearchCriteria("")
             .setGroupId(groupId)
         val c = SelectProfileCriteria()
@@ -124,7 +124,7 @@ class CommunityBlacklistFragment :
         requestSelectProfile.launch(intent)
     }
 
-    override fun addUsersToBan(accountId: Int, groupId: Int, users: ArrayList<User>) {
+    override fun addUsersToBan(accountId: Long, groupId: Long, users: ArrayList<User>) {
         getCommunityAddBanPlace(accountId, groupId, users).tryOpenWith(requireActivity())
     }
 
@@ -153,10 +153,10 @@ class CommunityBlacklistFragment :
 
     companion object {
 
-        fun newInstance(accountId: Int, groupdId: Int): CommunityBlacklistFragment {
+        fun newInstance(accountId: Long, groupdId: Long): CommunityBlacklistFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.GROUP_ID, groupdId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.GROUP_ID, groupdId)
             val fragment = CommunityBlacklistFragment()
             fragment.arguments = args
             return fragment

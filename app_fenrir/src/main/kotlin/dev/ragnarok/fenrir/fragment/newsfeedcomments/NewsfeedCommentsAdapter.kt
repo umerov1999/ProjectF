@@ -224,7 +224,7 @@ class NewsfeedCommentsAdapter(
             holder.commentLikeCounter,
             ColorStateList.valueOf(if (comment.isUserLikes) iconColorActive else colorTextSecondary)
         )
-        if (comment.fromId != 0) {
+        if (comment.fromId != 0L) {
             addOwnerAvatarClickHandling(holder.commentAvatar, comment.fromId)
         }
     }

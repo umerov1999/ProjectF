@@ -10,5 +10,5 @@ interface IMessagesDecryptor {
      * @param accountId идентификатор аккаунта
      * @return RX-трансформер
      */
-    fun withMessagesDecryption(accountId: Int): SingleTransformer<List<Message>, List<Message>>
+    fun withMessagesDecryption(accountId: Long): SingleTransformer<List<Message>, List<Message>>
 }

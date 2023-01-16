@@ -10,7 +10,7 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Community
 
 class CommunityInfoLinksPresenter(
-    accountId: Int,
+    accountId: Long,
     private val groupId: Community,
     savedInstanceState: Bundle?
 ) :

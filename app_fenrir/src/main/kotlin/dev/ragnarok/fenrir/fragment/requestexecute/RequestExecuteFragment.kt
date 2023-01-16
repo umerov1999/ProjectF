@@ -67,7 +67,7 @@ class RequestExecuteFragment : BaseMvpFragment<RequestExecutePresenter, IRequest
         return object : IPresenterFactory<RequestExecutePresenter> {
             override fun create(): RequestExecutePresenter {
                 return RequestExecutePresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
                     ), saveInstanceState
                 )
@@ -106,9 +106,9 @@ class RequestExecuteFragment : BaseMvpFragment<RequestExecutePresenter, IRequest
     }
 
     companion object {
-        fun newInstance(accountId: Int): RequestExecuteFragment {
+        fun newInstance(accountId: Long): RequestExecuteFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = RequestExecuteFragment()
             fragment.arguments = args
             return fragment

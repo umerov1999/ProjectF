@@ -35,7 +35,7 @@ class PeopleSearchFragment :
         return object : IPresenterFactory<PeopleSearchPresenter> {
             override fun create(): PeopleSearchPresenter {
                 return PeopleSearchPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.CRITERIA),
                     saveInstanceState
                 )
@@ -49,18 +49,18 @@ class PeopleSearchFragment :
         )
     }
 
-    override fun openUserWall(accountId: Int, user: User) {
+    override fun openUserWall(accountId: Long, user: User) {
         getOwnerWallPlace(accountId, user).tryOpenWith(requireActivity())
     }
 
     companion object {
 
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             initialCriteria: PeopleSearchCriteria?
         ): PeopleSearchFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, initialCriteria)
             val fragment = PeopleSearchFragment()
             fragment.arguments = args

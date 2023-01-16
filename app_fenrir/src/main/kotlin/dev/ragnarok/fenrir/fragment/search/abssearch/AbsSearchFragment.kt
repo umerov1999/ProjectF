@@ -102,7 +102,7 @@ abstract class AbsSearchFragment<P : AbsSearchPresenter<V, *, T, *>, V : IBaseSe
         presenter?.fireOpenFilterClick()
     }
 
-    override fun displayFilter(accountId: Int, options: ArrayList<BaseOption>) {
+    override fun displayFilter(accountId: Long, options: ArrayList<BaseOption>) {
         val fragment = FilterEditFragment.newInstance(accountId, options)
         fragment.show(parentFragmentManager, "filter-edit")
     }

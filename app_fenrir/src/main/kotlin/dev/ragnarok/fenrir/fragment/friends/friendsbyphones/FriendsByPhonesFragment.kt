@@ -256,7 +256,7 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FriendsByPhonesPresenter> {
         return object : IPresenterFactory<FriendsByPhonesPresenter> {
             override fun create(): FriendsByPhonesPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 return FriendsByPhonesPresenter(accountId, requireActivity(), saveInstanceState)
             }
         }
@@ -280,7 +280,7 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
         return true
     }
 
-    override fun showChat(accountId: Int, owner: ContactConversation) {
+    override fun showChat(accountId: Long, owner: ContactConversation) {
         PlaceFactory.getChatPlace(
             accountId,
             accountId,
@@ -295,13 +295,13 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
             return fragment
         }
 
-        fun newInstance(accountId: Int): FriendsByPhonesFragment {
+        fun newInstance(accountId: Long): FriendsByPhonesFragment {
             return newInstance(buildArgs(accountId))
         }
 
-        fun buildArgs(accountId: Int): Bundle {
+        fun buildArgs(accountId: Long): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             return args
         }
     }

@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.model.criteria
 
 import dev.ragnarok.fenrir.db.DatabaseIdRange
 
-class NotificationsCriteria(val accountId: Int) : Criteria() {
+class NotificationsCriteria(val accountId: Long) : Criteria() {
     var range: DatabaseIdRange? = null
         private set
 
@@ -20,7 +20,7 @@ class NotificationsCriteria(val accountId: Int) : Criteria() {
     }
 
     override fun hashCode(): Int {
-        var result = accountId
+        var result = accountId.hashCode()
         result = 31 * result + if (range != null) range.hashCode() else 0
         return result
     }

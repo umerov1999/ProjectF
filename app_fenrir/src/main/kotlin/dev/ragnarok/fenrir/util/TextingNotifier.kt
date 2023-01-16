@@ -7,11 +7,11 @@ import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
-class TextingNotifier(private val accountId: Int) {
+class TextingNotifier(private val accountId: Long) {
     private var lastNotifyTime: Long = 0
     private var isRequestNow = false
     private var disposable = Disposable.disposed()
-    fun notifyAboutTyping(peerId: Int) {
+    fun notifyAboutTyping(peerId: Long) {
         if (!canNotifyNow()) {
             return
         }
@@ -31,7 +31,7 @@ class TextingNotifier(private val accountId: Int) {
     }
 
     companion object {
-        internal fun createNotifier(accountId: Int, peerId: Int): Completable {
+        internal fun createNotifier(accountId: Long, peerId: Long): Completable {
             return get()
                 .vkDefault(accountId)
                 .messages()

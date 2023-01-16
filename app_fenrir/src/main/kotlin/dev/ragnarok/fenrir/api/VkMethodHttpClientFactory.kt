@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 
 class VkMethodHttpClientFactory : IVkMethodHttpClientFactory {
     override fun createDefaultVkHttpClient(
-        accountId: Int,
+        accountId: Long,
         config: ProxyConfig?
     ): OkHttpClient.Builder {
         return createDefaultVkApiOkHttpClient(
@@ -25,7 +25,7 @@ class VkMethodHttpClientFactory : IVkMethodHttpClientFactory {
     }
 
     override fun createCustomVkHttpClient(
-        accountId: Int,
+        accountId: Long,
         token: String,
         config: ProxyConfig?
     ): OkHttpClient.Builder {

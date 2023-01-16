@@ -17,7 +17,7 @@ class ChatJsonResponseDtoAdapter : AbsAdapter<ChatJsonResponse>("ChatJsonRespons
         val root = json.asJsonObject
         story.type = optString(root, "type")
         story.page_avatar = optString(root, "page_avatar")
-        story.page_id = optInt(root, "page_id")
+        story.page_id = optLong(root, "page_id")
         story.page_instagram = optString(root, "page_instagram")
         story.page_phone_number = optString(root, "page_phone_number")
         story.page_site = optString(root, "page_site")

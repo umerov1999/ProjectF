@@ -7,21 +7,21 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class VideoAlbum : AbsModel {
     private val id: Int
-    private val ownerId: Int
+    private val ownerId: Long
     private var title: String? = null
     private var count = 0
     private var updatedTime: Long = 0
     private var image: String? = null
     private var privacy: SimplePrivacy? = null
 
-    constructor(id: Int, ownerId: Int) {
+    constructor(id: Int, ownerId: Long) {
         this.id = id
         this.ownerId = ownerId
     }
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         title = parcel.readString()
         count = parcel.readInt()
         updatedTime = parcel.readLong()
@@ -31,7 +31,7 @@ class VideoAlbum : AbsModel {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeString(title)
         parcel.writeInt(count)
         parcel.writeLong(updatedTime)
@@ -48,7 +48,7 @@ class VideoAlbum : AbsModel {
         return id
     }
 
-    fun getOwnerId(): Int {
+    fun getOwnerId(): Long {
         return ownerId
     }
 

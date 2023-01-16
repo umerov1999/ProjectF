@@ -4,20 +4,20 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class FriendList : Parcelable {
-    private val id: Int
+    private val id: Long
     private val name: String?
 
-    constructor(id: Int, name: String?) {
+    constructor(id: Long, name: String?) {
         this.id = id
         this.name = name
     }
 
     internal constructor(parcel: Parcel) {
-        id = parcel.readInt()
+        id = parcel.readLong()
         name = parcel.readString()
     }
 
-    fun getId(): Int {
+    fun getId(): Long {
         return id
     }
 
@@ -30,7 +30,7 @@ class FriendList : Parcelable {
     }
 
     override fun writeToParcel(parcel: Parcel, i: Int) {
-        parcel.writeInt(id)
+        parcel.writeLong(id)
         parcel.writeString(name)
     }
 

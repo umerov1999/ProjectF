@@ -19,7 +19,7 @@ class PhotoAlbumDtoAdapter : AbsAdapter<VKApiPhotoAlbum>("VKApiPhotoAlbum") {
         val root = json.asJsonObject
         album.id = optInt(root, "id")
         album.thumb_id = optInt(root, "thumb_id")
-        album.owner_id = optInt(root, "owner_id")
+        album.owner_id = optLong(root, "owner_id")
         album.title = optString(root, "title")
         album.description = optString(root, "description")
         album.created = optLong(root, "created")

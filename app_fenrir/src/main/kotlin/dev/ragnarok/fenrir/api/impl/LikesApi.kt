@@ -8,10 +8,10 @@ import dev.ragnarok.fenrir.api.model.response.LikesListResponse
 import dev.ragnarok.fenrir.api.services.ILikesService
 import io.reactivex.rxjava3.core.Single
 
-internal class LikesApi(accountId: Int, provider: IServiceProvider) :
+internal class LikesApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), ILikesApi {
     override fun getList(
-        type: String?, ownerId: Int?, itemId: Int?, pageUrl: String?,
+        type: String?, ownerId: Long?, itemId: Int?, pageUrl: String?,
         filter: String?, friendsOnly: Boolean?, offset: Int?,
         count: Int?, skipOwn: Boolean?, fields: String?
     ): Single<LikesListResponse> {
@@ -28,7 +28,7 @@ internal class LikesApi(accountId: Int, provider: IServiceProvider) :
 
     override fun delete(
         type: String?,
-        ownerId: Int?,
+        ownerId: Long?,
         itemId: Int,
         accessKey: String?
     ): Single<Int> {
@@ -40,7 +40,7 @@ internal class LikesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun add(type: String?, ownerId: Int?, itemId: Int, accessKey: String?): Single<Int> {
+    override fun add(type: String?, ownerId: Long?, itemId: Int, accessKey: String?): Single<Int> {
         return provideService(ILikesService(), TokenType.USER)
             .flatMap { service ->
                 service.add(type, ownerId, itemId, accessKey)
@@ -49,7 +49,7 @@ internal class LikesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun isLiked(type: String?, ownerId: Int?, itemId: Int): Single<Boolean> {
+    override fun isLiked(type: String?, ownerId: Long?, itemId: Int): Single<Boolean> {
         return provideService(ILikesService(), TokenType.USER)
             .flatMap { service ->
                 service.isLiked(type, ownerId, itemId)
@@ -60,7 +60,7 @@ internal class LikesApi(accountId: Int, provider: IServiceProvider) :
 
     override fun checkAndAddLike(
         type: String?,
-        ownerId: Int?,
+        ownerId: Long?,
         itemId: Int,
         accessKey: String?
     ): Single<Int> {

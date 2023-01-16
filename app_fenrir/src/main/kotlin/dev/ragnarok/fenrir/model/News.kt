@@ -23,7 +23,7 @@ class News : AbsModel {
     /**
      * идентификатор источника новости (положительный — новость пользователя, отрицательный — новость группы);
      */
-    var sourceId = 0
+    var sourceId = 0L
         private set
     var source: Owner? = null
         private set
@@ -44,7 +44,7 @@ class News : AbsModel {
      * находится в записях со стен, если сообщение является копией сообщения с чужой стены,
      * и содержит идентификатор владельца стены, у которого было скопировано сообщение;
      */
-    var copyOwnerId = 0
+    var copyOwnerId = 0L
         private set
 
     /**
@@ -162,11 +162,11 @@ class News : AbsModel {
     constructor()
     internal constructor(parcel: Parcel) {
         type = parcel.readString()
-        sourceId = parcel.readInt()
+        sourceId = parcel.readLong()
         source = Owner.readOwnerFromParcel(sourceId, parcel)
         postType = parcel.readString()
         isFinalPost = parcel.getBoolean()
-        copyOwnerId = parcel.readInt()
+        copyOwnerId = parcel.readLong()
         copyPostId = parcel.readInt()
         copyPostDate = parcel.readLong()
         date = parcel.readLong()
@@ -204,7 +204,7 @@ class News : AbsModel {
         return this
     }
 
-    fun setSourceId(sourceId: Int): News {
+    fun setSourceId(sourceId: Long): News {
         this.sourceId = sourceId
         return this
     }
@@ -224,7 +224,7 @@ class News : AbsModel {
         return this
     }
 
-    fun setCopyOwnerId(copyOwnerId: Int): News {
+    fun setCopyOwnerId(copyOwnerId: Long): News {
         this.copyOwnerId = copyOwnerId
         return this
     }
@@ -358,11 +358,11 @@ class News : AbsModel {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(type)
-        parcel.writeInt(sourceId)
+        parcel.writeLong(sourceId)
         parcel.writeTypedObjectCompat(source, flags)
         parcel.writeString(postType)
         parcel.putBoolean(isFinalPost)
-        parcel.writeInt(copyOwnerId)
+        parcel.writeLong(copyOwnerId)
         parcel.writeInt(copyPostId)
         parcel.writeLong(copyPostDate)
         parcel.writeLong(date)

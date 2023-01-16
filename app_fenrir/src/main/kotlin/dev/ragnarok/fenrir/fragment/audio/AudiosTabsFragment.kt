@@ -28,13 +28,13 @@ import dev.ragnarok.fenrir.util.Utils.createPageTransform
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
 class AudiosTabsFragment : BaseFragment(), MenuProvider {
-    var accountId = 0
+    var accountId = 0L
         private set
-    private var ownerId = 0
+    private var ownerId = 0L
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-        ownerId = requireArguments().getInt(Extra.OWNER_ID)
+        accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        ownerId = requireArguments().getLong(Extra.OWNER_ID)
     }
 
     override fun onCreateView(
@@ -203,14 +203,14 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
         const val PLAYLISTS = -3
         const val MY_RECOMMENDATIONS = -2
         const val MY_AUDIO = -1
-        fun buildArgs(accountId: Int, ownerId: Int): Bundle {
+        fun buildArgs(accountId: Long, ownerId: Long): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             return args
         }
 
-        fun newInstance(accountId: Int, ownerId: Int): AudiosTabsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): AudiosTabsFragment {
             return newInstance(buildArgs(accountId, ownerId))
         }
 

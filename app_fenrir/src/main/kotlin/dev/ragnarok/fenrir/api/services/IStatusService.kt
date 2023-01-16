@@ -14,7 +14,7 @@ class IStatusService : IServiceRest() {
      */
     operator fun set(
         text: String?,
-        groupId: Int?
+        groupId: Long?
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "status.set", form(

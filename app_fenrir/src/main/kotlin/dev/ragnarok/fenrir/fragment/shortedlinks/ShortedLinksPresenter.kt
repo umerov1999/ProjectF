@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.util.Unixtime.now
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class ShortedLinksPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class ShortedLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IShortedLinksView>(accountId, savedInstanceState) {
     private val links: MutableList<ShortLink>
     private val fInteractor: IUtilsInteractor

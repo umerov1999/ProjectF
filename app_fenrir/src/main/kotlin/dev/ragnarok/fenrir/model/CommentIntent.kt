@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.model
 
-class CommentIntent(private val authorId: Int) {
+class CommentIntent(private val authorId: Long) {
     private var message: String? = null
     private var replyToComment: Int? = null
     private var draftMessageId: Int? = null
@@ -24,7 +24,7 @@ class CommentIntent(private val authorId: Int) {
         return this
     }
 
-    fun getAuthorId(): Int {
+    fun getAuthorId(): Long {
         return authorId
     }
 

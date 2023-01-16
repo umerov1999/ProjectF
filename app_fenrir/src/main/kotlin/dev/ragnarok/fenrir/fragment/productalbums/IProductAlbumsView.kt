@@ -9,5 +9,5 @@ interface IProductAlbumsView : IMvpView, IErrorView {
     fun notifyDataSetChanged()
     fun notifyDataAdded(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
-    fun onMarketAlbumOpen(accountId: Int, market_album: MarketAlbum)
+    fun onMarketAlbumOpen(accountId: Long, market_album: MarketAlbum)
 }

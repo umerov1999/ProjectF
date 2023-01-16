@@ -17,7 +17,7 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.core.Single
 
 class AudioPlaylistSearchPresenter(
-    accountId: Int,
+    accountId: Long,
     criteria: AudioPlaylistSearchCriteria?,
     savedInstanceState: Bundle?
 ) : AbsSearchPresenter<IAudioPlaylistSearchView, AudioPlaylistSearchCriteria, AudioPlaylist, IntNextFrom>(
@@ -46,7 +46,7 @@ class AudioPlaylistSearchPresenter(
     }
 
     override fun doSearch(
-        accountId: Int,
+        accountId: Long,
         criteria: AudioPlaylistSearchCriteria,
         startFrom: IntNextFrom
     ): Single<Pair<List<AudioPlaylist>, IntNextFrom>> {

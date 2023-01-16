@@ -11,7 +11,7 @@ import io.reactivex.rxjava3.core.Completable
 class LongPollEventSaver {
     private val messagesInteractor: IMessagesRepository = messages
     private val ownersRepository: IOwnersRepository = owners
-    fun save(accountId: Int, updates: VkApiLongpollUpdates): Completable {
+    fun save(accountId: Long, updates: VkApiLongpollUpdates): Completable {
         var completable = Completable.complete()
         if (updates.output_messages_set_read_updates.nonNullNoEmpty() || updates.input_messages_set_read_updates.nonNullNoEmpty()) {
             completable = completable.andThen(

@@ -21,7 +21,7 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 
 class WallPostPresenter(
-    accountId: Int, private val postId: Int, private val ownerId: Int, post: Post?,
+    accountId: Long, private val postId: Int, private val ownerId: Long, post: Post?,
     owner: Owner?, private val context: Context, savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<IWallPostView>(accountId, savedInstanceState) {
     private val wallInteractor: IWallsRepository = walls

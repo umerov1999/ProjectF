@@ -5,7 +5,7 @@ class FeedListEntity(val id: Int) {
         private set
     var isNoReposts = false
         private set
-    var sourceIds: IntArray? = null
+    var sourceIds: LongArray? = null
         private set
 
     fun setTitle(title: String?): FeedListEntity {
@@ -18,7 +18,7 @@ class FeedListEntity(val id: Int) {
         return this
     }
 
-    fun setSourceIds(sourceIds: IntArray?): FeedListEntity {
+    fun setSourceIds(sourceIds: LongArray?): FeedListEntity {
         this.sourceIds = sourceIds
         return this
     }

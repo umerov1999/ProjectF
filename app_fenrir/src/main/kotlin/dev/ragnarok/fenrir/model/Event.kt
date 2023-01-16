@@ -5,7 +5,7 @@ import android.os.Parcelable
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Event : AbsModel {
-    val id: Int
+    val id: Long
     var button_text: String? = null
         private set
     var text: String? = null
@@ -13,13 +13,13 @@ class Event : AbsModel {
     var subject: Owner? = null
         private set
 
-    constructor(id: Int) {
+    constructor(id: Long) {
         this.id = id
     }
 
     internal constructor(parcel: Parcel) {
         Owner
-        id = parcel.readInt()
+        id = parcel.readLong()
         button_text = parcel.readString()
         text = parcel.readString()
         subject =
@@ -32,7 +32,7 @@ class Event : AbsModel {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(id)
+        parcel.writeLong(id)
         parcel.writeString(button_text)
         parcel.writeString(text)
         parcel.writeTypedObjectCompat(subject, flags)

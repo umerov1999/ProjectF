@@ -11,13 +11,13 @@ import io.reactivex.rxjava3.core.Single
 interface IFriendsApi {
     @CheckResult
     fun getOnline(
-        userId: Int, order: String?, count: Int,
+        userId: Long, order: String?, count: Int,
         offset: Int, fields: String?
     ): Single<OnlineFriendsResponse>
 
     @CheckResult
     operator fun get(
-        userId: Int?, order: String?, listId: Int?, count: Int?, offset: Int?,
+        userId: Long?, order: String?, listId: Int?, count: Int?, offset: Int?,
         fields: String?, nameCase: String?
     ): Single<Items<VKApiUser>>
 
@@ -33,28 +33,28 @@ interface IFriendsApi {
 
     @CheckResult
     fun deleteSubscriber(
-        subscriber_id: Int
+        subscriber_id: Long
     ): Single<Int>
 
     @CheckResult
-    fun getLists(userId: Int?, returnSystem: Boolean?): Single<Items<VKApiFriendList>>
+    fun getLists(userId: Long?, returnSystem: Boolean?): Single<Items<VKApiFriendList>>
 
     @CheckResult
-    fun delete(userId: Int): Single<DeleteFriendResponse>
+    fun delete(userId: Long): Single<DeleteFriendResponse>
 
     @CheckResult
-    fun add(userId: Int, text: String?, follow: Boolean?): Single<Int>
+    fun add(userId: Long, text: String?, follow: Boolean?): Single<Int>
 
     @CheckResult
     fun search(
-        userId: Int, query: String?, fields: String?, nameCase: String?,
+        userId: Long, query: String?, fields: String?, nameCase: String?,
         offset: Int?, count: Int?
     ): Single<Items<VKApiUser>>
 
     @CheckResult
     fun getMutual(
-        sourceUid: Int?,
-        targetUid: Int,
+        sourceUid: Long?,
+        targetUid: Long,
         count: Int,
         offset: Int,
         fields: String?

@@ -31,7 +31,7 @@ import dev.ragnarok.fenrir.util.ShortcutUtils.addDynamicShortcut
 import dev.ragnarok.fenrir.util.ShortcutUtils.createChatShortcutRx
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import dev.ragnarok.fenrir.util.Utils.idsListOf
+import dev.ragnarok.fenrir.util.Utils.idsListOfOwner
 import dev.ragnarok.fenrir.util.Utils.indexOf
 import dev.ragnarok.fenrir.util.Utils.isHiddenAccount
 import dev.ragnarok.fenrir.util.Utils.isHiddenCurrent
@@ -44,8 +44,8 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.*
 
 class DialogsPresenter(
-    accountId: Int,
-    initialDialogsOwnerId: Int,
+    accountId: Long,
+    initialDialogsOwnerId: Long,
     models: ModelsBundle?,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IDialogsView>(accountId, savedInstanceState, true) {
@@ -56,14 +56,14 @@ class DialogsPresenter(
     private val netDisposable = CompositeDisposable()
     private val cacheLoadingDisposable = CompositeDisposable()
     private val models: ModelsBundle?
-    private var dialogsOwnerId = 0
+    private var dialogsOwnerId = 0L
     private var endOfContent = false
     private var netLoadingNow = false
     private var cacheNowLoading = false
     private var needAskWhenGuiReady = false
     override fun saveState(outState: Bundle) {
         super.saveState(outState)
-        outState.putInt(SAVE_DIALOGS_OWNER_ID, dialogsOwnerId)
+        outState.putLong(SAVE_DIALOGS_OWNER_ID, dialogsOwnerId)
     }
 
     override fun onGuiCreated(viewHost: IDialogsView) {
@@ -158,7 +158,7 @@ class DialogsPresenter(
         )
     }
 
-    private fun onDialogRemovedSuccessfully(accountId: Int, peeId: Int) {
+    private fun onDialogRemovedSuccessfully(accountId: Long, peeId: Long) {
         view?.showSnackbar(
             R.string.deleted,
             true
@@ -166,7 +166,7 @@ class DialogsPresenter(
         onDialogDeleted(accountId, peeId)
     }
 
-    private fun removeDialog(peeId: Int) {
+    private fun removeDialog(peeId: Long) {
         val accountId = dialogsOwnerId
         appendDisposable(messagesInteractor.deleteDialog(accountId, peeId)
             .fromIOToMain()
@@ -307,8 +307,8 @@ class DialogsPresenter(
     }
 
     private fun onActualMessagePeerMessageReceived(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         update: PeerUpdate,
         messageOptional: Optional<Message>
     ) {
@@ -367,7 +367,7 @@ class DialogsPresenter(
         }
     }
 
-    private fun onDialogDeleted(accountId: Int, peerId: Int) {
+    private fun onDialogDeleted(accountId: Long, peerId: Long) {
         if (dialogsOwnerId != accountId) {
             return
         }
@@ -466,7 +466,7 @@ class DialogsPresenter(
         val accountId = accountId
         appendDisposable(messagesInteractor.createGroupChat(
             accountId,
-            idsListOf(users),
+            idsListOfOwner(users),
             targetTitle
         )
             .fromIOToMain()
@@ -480,7 +480,7 @@ class DialogsPresenter(
             })
     }
 
-    private fun onGroupChatCreated(chatId: Int, title: String?) {
+    private fun onGroupChatCreated(chatId: Long, title: String?) {
         view?.goToChat(
             accountId,
             dialogsOwnerId,
@@ -503,7 +503,7 @@ class DialogsPresenter(
             view?.goToChat(
                 accountId,
                 dialogsOwnerId,
-                Peer.fromUserId(user.getObjectId()),
+                Peer.fromUserId(user.getOwnerObjectId()),
                 user.fullName,
                 user.maxSquareAvatar
             )
@@ -547,7 +547,7 @@ class DialogsPresenter(
         )
     }
 
-    override fun afterAccountChange(oldAccountId: Int, newAccountId: Int) {
+    override fun afterAccountChange(oldAccountId: Long, newAccountId: Long) {
         super.afterAccountChange(oldAccountId, newAccountId)
 
         // если на экране диалоги группы, то ничего не трогаем
@@ -594,7 +594,7 @@ class DialogsPresenter(
 
     fun fireAddToLauncherShortcuts(dialog: Dialog) {
         assertPositive(dialogsOwnerId)
-        val peer = Peer(dialog.getObjectId())
+        val peer = Peer(dialog.getOwnerObjectId())
             .setAvaUrl(dialog.imageUrl)
             .setTitle(dialog.getDisplayTitle(applicationContext))
         val completable = addDynamicShortcut(applicationContext, dialogsOwnerId, peer)
@@ -626,7 +626,7 @@ class DialogsPresenter(
     }
 
     fun fireContextViewCreated(contextView: IContextView, dialog: Dialog) {
-        val isHide = Settings.get().security().isHiddenDialog(dialog.getObjectId())
+        val isHide = Settings.get().security().isHiddenDialog(dialog.getOwnerObjectId())
         contextView.setCanDelete(true)
         contextView.setCanRead(!isHiddenCurrent && !dialog.isLastMessageOut && dialog.lastMessageId != dialog.inRead)
         contextView.setCanAddToHomescreen(dialogsOwnerId > 0 && !isHide)
@@ -666,7 +666,7 @@ class DialogsPresenter(
     init {
         this.models = models
         dialogs = ArrayList()
-        dialogsOwnerId = savedInstanceState?.getInt(SAVE_DIALOGS_OWNER_ID)
+        dialogsOwnerId = savedInstanceState?.getLong(SAVE_DIALOGS_OWNER_ID)
             ?: initialDialogsOwnerId
         messagesInteractor = messages
         accountsInteractor = InteractorFactory.createAccountInteractor()

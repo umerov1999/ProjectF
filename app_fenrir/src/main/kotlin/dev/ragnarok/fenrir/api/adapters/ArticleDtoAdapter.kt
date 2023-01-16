@@ -18,7 +18,7 @@ class ArticleDtoAdapter : AbsAdapter<VKApiArticle>("VKApiArticle") {
         val article = VKApiArticle()
         val root = json.jsonObject
         article.id = optInt(root, "id")
-        article.owner_id = optInt(root, "owner_id")
+        article.owner_id = optLong(root, "owner_id")
         article.owner_name = optString(root, "owner_name")
         article.title = optString(root, "title")
         article.subtitle = optString(root, "subtitle")

@@ -21,15 +21,15 @@ import kotlin.math.abs
 class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> {
     private val networker: INetworker
     private val editing: Boolean
-    private val ownerId: Int
+    private val ownerId: Long
     private val context: Context
     private val editor: PhotoAlbumEditor
     private var album: PhotoAlbum? = null
     private var stepsHost: CreatePhotoAlbumStepsHost? = null
 
     constructor(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         context: Context,
         savedInstanceState: Bundle?
     ) : super(accountId, savedInstanceState) {
@@ -42,7 +42,7 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
     }
 
     constructor(
-        accountId: Int,
+        accountId: Long,
         album: PhotoAlbum,
         editor: PhotoAlbumEditor,
         context: Context,

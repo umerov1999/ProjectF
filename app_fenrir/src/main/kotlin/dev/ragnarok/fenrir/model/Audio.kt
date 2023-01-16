@@ -22,7 +22,7 @@ import kotlinx.serialization.Serializable
 class Audio : AbsModel {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var artist: String? = null
         private set
@@ -38,7 +38,7 @@ class Audio : AbsModel {
         private set
     var albumId = 0
         private set
-    var album_owner_id = 0
+    var album_owner_id = 0L
         private set
     var album_access_key: String? = null
         private set
@@ -71,7 +71,7 @@ class Audio : AbsModel {
     constructor()
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         artist = parcel.readString()
         title = parcel.readString()
         duration = parcel.readInt()
@@ -79,7 +79,7 @@ class Audio : AbsModel {
         lyricsId = parcel.readInt()
         date = parcel.readLong()
         albumId = parcel.readInt()
-        album_owner_id = parcel.readInt()
+        album_owner_id = parcel.readLong()
         album_access_key = parcel.readString()
         genre = parcel.readInt()
         accessKey = parcel.readString()
@@ -132,7 +132,7 @@ class Audio : AbsModel {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeString(artist)
         parcel.writeString(title)
         parcel.writeInt(duration)
@@ -140,7 +140,7 @@ class Audio : AbsModel {
         parcel.writeInt(lyricsId)
         parcel.writeLong(date)
         parcel.writeInt(albumId)
-        parcel.writeInt(album_owner_id)
+        parcel.writeLong(album_owner_id)
         parcel.writeString(album_access_key)
         parcel.writeInt(genre)
         parcel.writeString(accessKey)
@@ -173,7 +173,7 @@ class Audio : AbsModel {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): Audio {
+    fun setOwnerId(ownerId: Long): Audio {
         this.ownerId = ownerId
         return this
     }
@@ -232,7 +232,7 @@ class Audio : AbsModel {
         return this
     }
 
-    fun setAlbum_owner_id(album_owner_id: Int): Audio {
+    fun setAlbum_owner_id(album_owner_id: Long): Audio {
         this.album_owner_id = album_owner_id
         return this
     }
@@ -326,14 +326,14 @@ class Audio : AbsModel {
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + ownerId
+        result = 31 * result + ownerId.hashCode()
         return result
     }
 
     @Keep
     @Serializable
     class AudioCommentTag {
-        constructor(owner_id: Int, id: Int, lyricText: String?) {
+        constructor(owner_id: Long, id: Int, lyricText: String?) {
             this.owner_id = owner_id
             this.id = id
             this.lyricText = lyricText
@@ -343,12 +343,12 @@ class Audio : AbsModel {
             }
         }
 
-        constructor(owner_id: Int, id: Int) {
+        constructor(owner_id: Long, id: Int) {
             this.owner_id = owner_id
             this.id = id
         }
 
-        var owner_id: Int = 0
+        var owner_id: Long = 0
         var id: Int = 0
         var lyricText: String? = null
         fun toText(): String {

@@ -21,7 +21,7 @@ class VKApiVideoAlbum {
     /**
      * ID of the user or community that owns the album.
      */
-    var owner_id = 0
+    var owner_id = 0L
     var count = 0
 
     /**

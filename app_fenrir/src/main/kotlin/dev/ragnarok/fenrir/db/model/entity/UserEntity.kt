@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.db.model.entity
 import dev.ragnarok.fenrir.model.Sex
 import dev.ragnarok.fenrir.model.UserPlatform
 
-class UserEntity(val id: Int) {
+class UserEntity(val id: Long) {
     var firstName: String? = null
         private set
     var lastName: String? = null

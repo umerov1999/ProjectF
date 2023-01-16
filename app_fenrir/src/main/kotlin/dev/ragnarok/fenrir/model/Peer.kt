@@ -8,17 +8,17 @@ import dev.ragnarok.fenrir.settings.Settings.get
 import kotlin.math.abs
 
 class Peer : Parcelable {
-    val id: Int
+    val id: Long
     private var title: String? = null
     var avaUrl: String? = null
         private set
 
-    constructor(id: Int) {
+    constructor(id: Long) {
         this.id = id
     }
 
     internal constructor(parcel: Parcel) {
-        id = parcel.readInt()
+        id = parcel.readLong()
         title = parcel.readString()
         avaUrl = parcel.readString()
     }
@@ -48,7 +48,7 @@ class Peer : Parcelable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(id)
+        dest.writeLong(id)
         dest.writeString(title)
         dest.writeString(avaUrl)
     }
@@ -72,7 +72,7 @@ class Peer : Parcelable {
         const val GROUP = 2
         const val CHAT = 3
         const val CONTACT = 4
-        fun getType(peerId: Int): Int {
+        fun getType(peerId: Long): Int {
             if (peerId > VKApiMessage.CHAT_PEER) {
                 return CHAT
             } else if (peerId > VKApiMessage.CONTACT_PEER) {
@@ -83,55 +83,55 @@ class Peer : Parcelable {
             } else USER
         }
 
-        fun fromChatId(chatId: Int): Int {
+        fun fromChatId(chatId: Long): Long {
             return chatId + VKApiMessage.CHAT_PEER
         }
 
-        fun fromContactId(chatId: Int): Int {
+        fun fromContactId(chatId: Long): Long {
             return chatId + VKApiMessage.CONTACT_PEER
         }
 
-        fun toChatId(peerId: Int): Int {
+        fun toChatId(peerId: Long): Long {
             return peerId - VKApiMessage.CHAT_PEER
         }
 
-        fun toContactId(peerId: Int): Int {
+        fun toContactId(peerId: Long): Long {
             return peerId - VKApiMessage.CONTACT_PEER
         }
 
-        fun fromOwnerId(ownerId: Int): Int {
+        fun fromOwnerId(ownerId: Long): Long {
             return ownerId
         }
 
-        fun toOwnerId(peerId: Int): Int {
+        fun toOwnerId(peerId: Long): Long {
             return peerId
         }
 
-        fun toUserId(peerId: Int): Int {
+        fun toUserId(peerId: Long): Long {
             return peerId
         }
 
-        fun isGroupChat(peerId: Int): Boolean {
+        fun isGroupChat(peerId: Long): Boolean {
             return peerId > VKApiMessage.CHAT_PEER
         }
 
-        fun isContactChat(peerId: Int): Boolean {
+        fun isContactChat(peerId: Long): Boolean {
             return peerId in (VKApiMessage.CONTACT_PEER + 1) until VKApiMessage.CHAT_PEER
         }
 
-        fun fromUserId(userId: Int): Int {
+        fun fromUserId(userId: Long): Long {
             return userId
         }
 
-        fun isUser(peerId: Int): Boolean {
+        fun isUser(peerId: Long): Boolean {
             return getType(peerId) == USER
         }
 
-        fun isGroup(peerId: Int): Boolean {
+        fun isGroup(peerId: Long): Boolean {
             return getType(peerId) == GROUP
         }
 
-        fun fromGroupId(groupId: Int): Int {
+        fun fromGroupId(groupId: Long): Long {
             return -abs(groupId)
         }
     }

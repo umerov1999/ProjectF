@@ -4,27 +4,27 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class VkPhotosSelectableSource : AbsSelectableSource {
-    val accountId: Int
-    val ownerId: Int
+    val accountId: Long
+    val ownerId: Long
 
     /**
      * @param accountId Кто будет загружать список фото
      * @param ownerId   Чьи фото будут загружатся
      */
-    constructor(accountId: Int, ownerId: Int) : super(Types.VK_PHOTOS) {
+    constructor(accountId: Long, ownerId: Long) : super(Types.VK_PHOTOS) {
         this.accountId = accountId
         this.ownerId = ownerId
     }
 
     internal constructor(parcel: Parcel) : super(parcel) {
-        accountId = parcel.readInt()
-        ownerId = parcel.readInt()
+        accountId = parcel.readLong()
+        ownerId = parcel.readLong()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         super.writeToParcel(dest, flags)
-        dest.writeInt(accountId)
-        dest.writeInt(ownerId)
+        dest.writeLong(accountId)
+        dest.writeLong(ownerId)
     }
 
     override fun describeContents(): Int {

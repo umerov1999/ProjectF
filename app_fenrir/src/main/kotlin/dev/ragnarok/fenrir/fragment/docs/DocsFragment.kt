@@ -196,7 +196,7 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
         mDocsAdapter?.notifyItemBindableRemoved(position)
     }
 
-    override fun openDocument(accountId: Int, document: Document) {
+    override fun openDocument(accountId: Long, document: Document) {
         getDocPreviewPlace(accountId, document).tryOpenWith(requireActivity())
     }
 
@@ -207,7 +207,7 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
         requireActivity().finish()
     }
 
-    override fun goToGifPlayer(accountId: Int, gifs: ArrayList<Document>, selected: Int) {
+    override fun goToGifPlayer(accountId: Long, gifs: ArrayList<Document>, selected: Int) {
         getGifPagerPlace(accountId, gifs, selected).tryOpenWith(requireActivity())
     }
 
@@ -215,7 +215,7 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
         requestReadPermission.launch()
     }
 
-    override fun startSelectUploadFileActivity(accountId: Int) {
+    override fun startSelectUploadFileActivity(accountId: Long) {
         val sources = Sources()
             .with(FileManagerSelectableSource())
             .with(LocalPhotosSelectableSource())
@@ -263,8 +263,8 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
         return object : IPresenterFactory<DocsListPresenter> {
             override fun create(): DocsListPresenter {
                 return DocsListPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     requireArguments().getString(Extra.ACTION),
                     saveInstanceState
                 )
@@ -313,10 +313,10 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
     }
 
     companion object {
-        fun buildArgs(accountId: Int, ownerId: Int, action: String?): Bundle {
+        fun buildArgs(accountId: Long, ownerId: Long, action: String?): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putString(Extra.ACTION, action)
             return args
         }
@@ -327,7 +327,7 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
             return fragment
         }
 
-        fun newInstance(accountId: Int, ownerId: Int, action: String?): DocsFragment {
+        fun newInstance(accountId: Long, ownerId: Long, action: String?): DocsFragment {
             return newInstance(buildArgs(accountId, ownerId, action))
         }
     }

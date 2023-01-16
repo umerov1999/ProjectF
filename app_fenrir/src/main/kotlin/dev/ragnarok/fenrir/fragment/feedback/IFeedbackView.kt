@@ -13,5 +13,5 @@ interface IFeedbackView : IMvpView, IAttachmentsPlacesView, IErrorView {
     fun notifyFirstListReceived()
     fun notifyDataSetChanged()
     fun configLoadMore(@LoadMoreState loadmoreState: Int)
-    fun showLinksDialog(accountId: Int, notification: Feedback)
+    fun showLinksDialog(accountId: Long, notification: Feedback)
 }

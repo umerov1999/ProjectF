@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 class Gift : AbsModel {
     var id: Int
         private set
-    var fromId = 0
+    var fromId = 0L
         private set
     var message: String? = null
         private set
@@ -21,7 +21,7 @@ class Gift : AbsModel {
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        fromId = parcel.readInt()
+        fromId = parcel.readLong()
         message = parcel.readString()
         date = parcel.readLong()
         giftItem = parcel.readTypedObjectCompat(GiftItem.CREATOR)
@@ -42,7 +42,7 @@ class Gift : AbsModel {
         return this
     }
 
-    fun setFromId(fromId: Int): Gift {
+    fun setFromId(fromId: Long): Gift {
         this.fromId = fromId
         return this
     }
@@ -76,7 +76,7 @@ class Gift : AbsModel {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(fromId)
+        parcel.writeLong(fromId)
         parcel.writeString(message)
         parcel.writeLong(date)
         parcel.writeTypedObjectCompat(giftItem, flags)

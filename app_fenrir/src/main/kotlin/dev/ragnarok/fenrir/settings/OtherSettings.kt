@@ -27,12 +27,12 @@ internal class OtherSettings(context: Context) : IOtherSettings {
     private val app: Context = context.applicationContext
     private val userNameChanges: MutableSet<String> = Collections.synchronizedSet(HashSet(1))
     private val types: MutableMap<String, String> = Collections.synchronizedMap(HashMap(1))
-    private val ownerChangesMonitor: MutableSet<Int> = Collections.synchronizedSet(HashSet(1))
+    private val ownerChangesMonitor: MutableSet<Long> = Collections.synchronizedSet(HashSet(1))
     override fun getUserNameChangesMap(): Map<String, String> {
         return HashMap(types)
     }
 
-    override fun isOwnerInChangesMonitor(ownerId: Int): Boolean {
+    override fun isOwnerInChangesMonitor(ownerId: Long): Boolean {
         return ownerChangesMonitor.contains(ownerId)
     }
 
@@ -40,7 +40,7 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         val preferences = getPreferences(app)
         ownerChangesMonitor.clear()
         for (i in preferences.getStringSet("owner_changes_monitor_uids", HashSet(1)) ?: return) {
-            ownerChangesMonitor.add(i.toInt())
+            ownerChangesMonitor.add(i.toLong())
         }
     }
 
@@ -63,7 +63,7 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         }
     }
 
-    override fun putOwnerInChangesMonitor(ownerId: Int) {
+    override fun putOwnerInChangesMonitor(ownerId: Long) {
         val preferences = getPreferences(app)
         ownerChangesMonitor.add(ownerId)
         val ownerChangesMonitorSet = HashSet<String>()
@@ -75,7 +75,7 @@ internal class OtherSettings(context: Context) : IOtherSettings {
             .apply()
     }
 
-    override fun removeOwnerInChangesMonitor(ownerId: Int) {
+    override fun removeOwnerInChangesMonitor(ownerId: Long) {
         val preferences = getPreferences(app)
         ownerChangesMonitor.remove(ownerId)
         val ownerChangesMonitorSet = HashSet<String>()
@@ -87,7 +87,7 @@ internal class OtherSettings(context: Context) : IOtherSettings {
             .apply()
     }
 
-    override fun setUserNameChanges(userId: Int, name: String?) {
+    override fun setUserNameChanges(userId: Long, name: String?) {
         val preferences = getPreferences(app)
         if (name.isNullOrEmpty()) {
             userNameChanges.remove(keyForUserNameChanges(userId))
@@ -106,7 +106,7 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         }
     }
 
-    override fun getUserNameChanges(userId: Int): String? {
+    override fun getUserNameChanges(userId: Long): String? {
         if (types.containsKey(keyForUserNameChanges(userId))) {
             val v = types[keyForUserNameChanges(userId)]
             if (v.nonNullNoEmpty()) {
@@ -116,19 +116,19 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         return null
     }
 
-    override fun getFeedSourceIds(accountId: Int): String? {
+    override fun getFeedSourceIds(accountId: Long): String? {
         return getPreferences(app)
             .getString("source_ids$accountId", null)
     }
 
-    override fun setFeedSourceIds(accountId: Int, sourceIds: String?) {
+    override fun setFeedSourceIds(accountId: Long, sourceIds: String?) {
         getPreferences(app)
             .edit()
             .putString("source_ids$accountId", sourceIds)
             .apply()
     }
 
-    override fun storeFeedScrollState(accountId: Int, state: String?) {
+    override fun storeFeedScrollState(accountId: Long, state: String?) {
         if (state != null) {
             getPreferences(app)
                 .edit()
@@ -142,16 +142,16 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         }
     }
 
-    override fun restoreFeedScrollState(accountId: Int): String? {
+    override fun restoreFeedScrollState(accountId: Long): String? {
         return getPreferences(app).getString(KEY_JSON_STATE + accountId, null)
     }
 
-    override fun restoreFeedNextFrom(accountId: Int): String? {
+    override fun restoreFeedNextFrom(accountId: Long): String? {
         return getPreferences(app)
             .getString("next_from$accountId", null)
     }
 
-    override fun storeFeedNextFrom(accountId: Int, nextFrom: String?) {
+    override fun storeFeedNextFrom(accountId: Long, nextFrom: String?) {
         getPreferences(app)
             .edit()
             .putString("next_from$accountId", nextFrom)
@@ -344,15 +344,15 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         getPreferences(app).edit().putLong("last_audio_sync", time).apply()
     }
 
-    override fun get_last_stickers_sync(accountId: Int): Long {
+    override fun get_last_stickers_sync(accountId: Long): Long {
         return getPreferences(app).getLong("last_stickers_sync_$accountId", -1)
     }
 
-    override fun del_last_stickers_sync(accountId: Int) {
+    override fun del_last_stickers_sync(accountId: Long) {
         getPreferences(app).edit().remove("last_stickers_sync_$accountId").apply()
     }
 
-    override fun set_last_stickers_sync(accountId: Int, time: Long) {
+    override fun set_last_stickers_sync(accountId: Long, time: Long) {
         getPreferences(app).edit().putLong("last_stickers_sync_$accountId", time).apply()
     }
 
@@ -596,10 +596,10 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         }
     override val rendering_mode: Int
         get() = try {
-            getPreferences(app).getString("rendering_mode", "0")!!
+            getPreferences(app).getString("rendering_bitmap_mode", "2")!!
                 .trim { it <= ' ' }.toInt()
         } catch (e: Exception) {
-            0
+            2
         }
     override val endListAnimation: Int
         get() = try {
@@ -664,7 +664,7 @@ internal class OtherSettings(context: Context) : IOtherSettings {
     companion object {
         private const val KEY_JSON_STATE = "json_list_state"
         private const val KEY_USERNAME_UIDS = "user_name_changes_uids"
-        internal fun keyForUserNameChanges(userId: Int): String {
+        internal fun keyForUserNameChanges(userId: Long): String {
             return "custom_user_name_$userId"
         }
     }

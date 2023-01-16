@@ -15,8 +15,8 @@ interface ILocalMediaStorage : IStorage {
     val imageAlbums: Single<List<LocalImageAlbum>>
     val audioAlbums: Single<List<LocalImageAlbum>>
     val videos: Single<List<LocalVideo>>
-    fun getAudios(accountId: Int): Single<List<Audio>>
-    fun getAudios(accountId: Int, albumId: Long): Single<List<Audio>>
+    fun getAudios(accountId: Long): Single<List<Audio>>
+    fun getAudios(accountId: Long, albumId: Long): Single<List<Audio>>
     fun getOldThumbnail(@Content_Local type: Int, content_Id: Long): Bitmap?
     fun getThumbnail(uri: Uri?, x: Int, y: Int): Bitmap?
 }

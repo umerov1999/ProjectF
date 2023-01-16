@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.core.SingleEmitter
 
 internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttachmentsStorage {
     override fun attachDbos(
-        accountId: Int,
+        accountId: Long,
         attachToType: Int,
         attachToDbid: Int,
         entities: List<DboEntity>
@@ -60,7 +60,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
     }
 
     override fun getAttachmentsDbosWithIds(
-        accountId: Int,
+        accountId: Long,
         @AttachToType attachToType: Int,
         attachToDbid: Int
     ): Single<List<Pair<Int, DboEntity>>> {
@@ -84,7 +84,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
         }
     }
 
-    private fun createCursor(accountId: Int, attachToType: Int, attachToDbid: Int): Cursor? {
+    private fun createCursor(accountId: Long, attachToType: Int, attachToDbid: Int): Cursor? {
         val uri = uriForType(attachToType, accountId)
         return contentResolver.query(
             uri, null,
@@ -93,7 +93,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
     }
 
     override fun getAttachmentsDbosSync(
-        accountId: Int,
+        accountId: Long,
         attachToType: Int,
         attachToDbid: Int,
         cancelable: Cancelable
@@ -115,7 +115,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
     }
 
     override fun remove(
-        accountId: Int,
+        accountId: Long,
         @AttachToType attachToType: Int,
         attachToDbid: Int,
         generatedAttachmentId: Int
@@ -133,7 +133,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
         }
     }
 
-    override fun getCount(accountId: Int, attachToType: Int, attachToDbid: Int): Single<Int> {
+    override fun getCount(accountId: Long, attachToType: Int, attachToDbid: Int): Single<Int> {
         return Single.fromCallable {
             val uri = uriForType(attachToType, accountId)
             val selection = attachToIdColumnFor(attachToType) + " = ?"
@@ -146,7 +146,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
     }
 
     companion object {
-        internal fun uriForType(@AttachToType type: Int, accountId: Int): Uri {
+        internal fun uriForType(@AttachToType type: Int, accountId: Long): Uri {
             return when (type) {
                 AttachToType.COMMENT -> getCommentsAttachmentsContentUriFor(
                     accountId
@@ -161,7 +161,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
 
 
         fun appendAttachOperationWithBackReference(
-            operations: MutableList<ContentProviderOperation>, accountId: Int,
+            operations: MutableList<ContentProviderOperation>, accountId: Long,
             @AttachToType attachToType: Int, attachToBackReferenceIndex: Int, dboEntity: DboEntity
         ) {
             val cv = ContentValues()
@@ -180,7 +180,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
 
         fun appendAttachOperationWithStableAttachToId(
             operations: MutableList<ContentProviderOperation>,
-            accountId: Int, @AttachToType attachToType: Int,
+            accountId: Long, @AttachToType attachToType: Int,
             attachToDbid: Int, dboEntity: DboEntity
         ): Int {
             val cv = ContentValues()

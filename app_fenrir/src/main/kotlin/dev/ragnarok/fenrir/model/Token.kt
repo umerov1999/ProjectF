@@ -4,16 +4,16 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class Token : Parcelable {
-    val ownerId: Int
+    val ownerId: Long
     val accessToken: String?
 
-    constructor(ownerId: Int, accessToken: String?) {
+    constructor(ownerId: Long, accessToken: String?) {
         this.ownerId = ownerId
         this.accessToken = accessToken
     }
 
     internal constructor(parcel: Parcel) {
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         accessToken = parcel.readString()
     }
 
@@ -22,7 +22,7 @@ class Token : Parcelable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(ownerId)
+        dest.writeLong(ownerId)
         dest.writeString(accessToken)
     }
 

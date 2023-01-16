@@ -143,7 +143,7 @@ class UserBannedFragment : BaseMvpFragment<UserBannedPresenter, IUserBannedView>
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun startUserSelection(accountId: Int) {
+    override fun startUserSelection(accountId: Long) {
         val place = getFriendsFollowersPlace(
             accountId,
             accountId,
@@ -164,7 +164,7 @@ class UserBannedFragment : BaseMvpFragment<UserBannedPresenter, IUserBannedView>
         mRecyclerView?.smoothScrollToPosition(position)
     }
 
-    override fun showOwnerProfile(accountId: Int, owner: Owner) {
+    override fun showOwnerProfile(accountId: Long, owner: Owner) {
         getOwnerWallPlace(accountId, owner).tryOpenWith(requireActivity())
     }
 
@@ -172,7 +172,7 @@ class UserBannedFragment : BaseMvpFragment<UserBannedPresenter, IUserBannedView>
         return object : IPresenterFactory<UserBannedPresenter> {
             override fun create(): UserBannedPresenter {
                 return UserBannedPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }
@@ -191,9 +191,9 @@ class UserBannedFragment : BaseMvpFragment<UserBannedPresenter, IUserBannedView>
     }
 
     companion object {
-        fun newInstance(accountId: Int): UserBannedFragment {
+        fun newInstance(accountId: Long): UserBannedFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = UserBannedFragment()
             fragment.arguments = args
             return fragment

@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.util.PersistentLogger
 
 class TmpGalleryPagerPresenter : PhotoPagerPresenter {
     constructor(
-        accountId: Int, source: TmpSource, index: Int, context: Context,
+        accountId: Long, source: TmpSource, index: Int, context: Context,
         savedInstanceState: Bundle?
     ) : super(ArrayList<Photo>(0), accountId, false, context, savedInstanceState) {
         currentIndex = index
@@ -20,7 +20,7 @@ class TmpGalleryPagerPresenter : PhotoPagerPresenter {
     }
 
     constructor(
-        accountId: Int, source: Long, index: Int, context: Context,
+        accountId: Long, source: Long, index: Int, context: Context,
         savedInstanceState: Bundle?
     ) : super(ArrayList<Photo>(0), accountId, false, context, savedInstanceState) {
         currentIndex = index

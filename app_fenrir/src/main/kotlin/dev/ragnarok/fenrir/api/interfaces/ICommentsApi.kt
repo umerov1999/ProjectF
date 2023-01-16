@@ -9,7 +9,7 @@ interface ICommentsApi {
     @CheckResult
     operator fun get(
         sourceType: String?,
-        ownerId: Int,
+        ownerId: Long,
         sourceId: Int,
         offset: Int?,
         count: Int?,

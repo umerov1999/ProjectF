@@ -1,14 +1,14 @@
 package dev.ragnarok.fenrir.model
 
 import android.os.Parcel
-import dev.ragnarok.fenrir.api.model.interfaces.Identificable
+import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class Owner : AbsModel, Identificable, ParcelNative.ParcelableNative {
+sealed class Owner : AbsModel, IdentificableOwner, ParcelNative.ParcelableNative {
     @OwnerType
     val ownerType: Int
 
@@ -32,7 +32,7 @@ sealed class Owner : AbsModel, Identificable, ParcelNative.ParcelableNative {
         dest.writeInt(ownerType)
     }
 
-    open val ownerId: Int
+    open val ownerId: Long
         get() {
             throw UnsupportedOperationException()
         }
@@ -78,7 +78,7 @@ sealed class Owner : AbsModel, Identificable, ParcelNative.ParcelableNative {
             )
         }
 
-        fun readOwnerFromParcel(id: Int, parcel: Parcel): Owner? {
+        fun readOwnerFromParcel(id: Long, parcel: Parcel): Owner? {
             return if (id <= 0) parcel.readTypedObjectCompat(Community.CREATOR) else parcel.readTypedObjectCompat(
                 User.CREATOR
             )

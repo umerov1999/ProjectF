@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.db.model.entity
 
-class SimpleDialogEntity(val peerId: Int) {
+class SimpleDialogEntity(val peerId: Long) {
     var title: String? = null
         private set
     var unreadCount = 0

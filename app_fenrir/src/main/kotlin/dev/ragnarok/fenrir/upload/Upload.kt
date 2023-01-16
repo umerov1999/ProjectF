@@ -16,7 +16,7 @@ import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 open class Upload : AbsModel, Identificable {
-    val accountId: Int
+    val accountId: Long
 
     /* Идентификатор обьекта загрузки, генерируется базой данных при вставке */
     private var id: Int
@@ -51,13 +51,13 @@ open class Upload : AbsModel, Identificable {
     var isAutoCommit = false
         private set
 
-    constructor(accountId: Int) {
+    constructor(accountId: Long) {
         this.accountId = accountId
         id = incrementedUploadId
     }
 
     internal constructor(parcel: Parcel) {
-        accountId = parcel.readInt()
+        accountId = parcel.readLong()
         id = parcel.readInt()
         fileUri = parcel.readTypedObjectCompat(Uri.CREATOR)
         destination = parcel.readTypedObjectCompat(UploadDestination.CREATOR)!!
@@ -111,7 +111,7 @@ open class Upload : AbsModel, Identificable {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(accountId)
+        parcel.writeLong(accountId)
         parcel.writeInt(id)
         parcel.writeTypedObjectCompat(fileUri, flags)
         parcel.writeTypedObjectCompat(destination, flags)

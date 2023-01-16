@@ -12,9 +12,9 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class LikesListPresenter(
-    accountId: Int,
+    accountId: Long,
     private val type: String,
-    private val ownerId: Int,
+    private val ownerId: Long,
     private val itemId: Int,
     private val filter: String,
     savedInstanceState: Bundle?

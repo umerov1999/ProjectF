@@ -48,8 +48,8 @@ class CommunityLinksFragment : BaseMvpFragment<CommunityLinksPresenter, ICommuni
         return object : IPresenterFactory<CommunityLinksPresenter> {
             override fun create(): CommunityLinksPresenter {
                 return CommunityLinksPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.GROUP_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.GROUP_ID),
                     saveInstanceState
                 )
             }
@@ -94,10 +94,10 @@ class CommunityLinksFragment : BaseMvpFragment<CommunityLinksPresenter, ICommuni
     }
 
     companion object {
-        fun newInstance(accountId: Int, groupId: Int): CommunityLinksFragment {
+        fun newInstance(accountId: Long, groupId: Long): CommunityLinksFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.GROUP_ID, groupId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.GROUP_ID, groupId)
             val fragment = CommunityLinksFragment()
             fragment.arguments = args
             return fragment

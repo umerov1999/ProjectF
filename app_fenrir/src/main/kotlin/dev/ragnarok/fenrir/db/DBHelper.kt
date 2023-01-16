@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.db.column.attachments.WallAttachmentsColumns
 import dev.ragnarok.fenrir.module.FenrirNative
 import java.util.concurrent.ConcurrentHashMap
 
-class DBHelper private constructor(context: Context, aid: Int) :
+class DBHelper private constructor(context: Context, aid: Long) :
     SQLiteOpenHelper(context, getDatabaseFileName(aid), null, Constants.DATABASE_FENRIR_VERSION) {
     override fun onOpen(db: SQLiteDatabase) {
         super.onOpen(db)
@@ -795,10 +795,10 @@ class DBHelper private constructor(context: Context, aid: Int) :
 
     companion object {
         const val TAG = "DBHelper"
-        private val dbHelperMap: MutableMap<Int, DBHelper> = ConcurrentHashMap()
+        private val dbHelperMap: MutableMap<Long, DBHelper> = ConcurrentHashMap()
 
         @Synchronized
-        fun getInstance(context: Context, aid: Int): DBHelper {
+        fun getInstance(context: Context, aid: Long): DBHelper {
             var helper = dbHelperMap[aid]
             if (helper == null) {
                 helper = DBHelper(context, aid)
@@ -807,12 +807,12 @@ class DBHelper private constructor(context: Context, aid: Int) :
             return helper
         }
 
-        fun removeDatabaseFor(context: Context, aid: Int) {
+        fun removeDatabaseFor(context: Context, aid: Long) {
             dbHelperMap.remove(aid)
             context.deleteDatabase(getDatabaseFileName(aid))
         }
 
-        internal fun getDatabaseFileName(aid: Int): String {
+        internal fun getDatabaseFileName(aid: Long): String {
             return if (!FenrirNative.isNativeLoaded) "fenrir_uncompressed_$aid.sqlite" else "fenrir_$aid.sqlite"
         }
     }

@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.putBoolean
 
 class Market : AbsModel {
     val id: Int
-    val owner_id: Int
+    val owner_id: Long
     var access_key: String? = null
         private set
     var isIs_favorite = false
@@ -33,14 +33,14 @@ class Market : AbsModel {
     var photos: List<Photo>? = null
         private set
 
-    constructor(id: Int, owner_id: Int) {
+    constructor(id: Int, owner_id: Long) {
         this.id = id
         this.owner_id = owner_id
     }
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        owner_id = parcel.readInt()
+        owner_id = parcel.readLong()
         access_key = parcel.readString()
         isIs_favorite = parcel.getBoolean()
         weight = parcel.readInt()
@@ -57,7 +57,7 @@ class Market : AbsModel {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(owner_id)
+        parcel.writeLong(owner_id)
         parcel.writeString(access_key)
         parcel.putBoolean(isIs_favorite)
         parcel.writeInt(weight)

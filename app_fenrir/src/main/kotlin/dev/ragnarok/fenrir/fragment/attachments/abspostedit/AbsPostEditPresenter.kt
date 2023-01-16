@@ -5,7 +5,7 @@ import dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit.AbsAttachment
 import dev.ragnarok.fenrir.util.BooleanValue
 
 abstract class AbsPostEditPresenter<V : IBasePostEditView> internal constructor(
-    accountId: Int,
+    accountId: Long,
     savedInstanceState: Bundle?
 ) : AbsAttachmentsEditPresenter<V>(accountId, savedInstanceState) {
     val fromGroup = BooleanValue()

@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Market
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class FaveProductsPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFaveProductsView>(accountId, savedInstanceState) {
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
     private val mMarkets: ArrayList<Market> = ArrayList()

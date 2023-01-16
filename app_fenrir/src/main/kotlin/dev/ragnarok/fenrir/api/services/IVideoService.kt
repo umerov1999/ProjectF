@@ -11,7 +11,7 @@ import io.reactivex.rxjava3.core.Single
 
 class IVideoService : IServiceRest() {
     fun getComments(
-        ownerId: Int?,
+        ownerId: Long?,
         videoId: Int,
         needLikes: Int?,
         startCommentId: Int?,
@@ -37,9 +37,9 @@ class IVideoService : IServiceRest() {
     }
 
     fun addVideo(
-        targetId: Int?,
+        targetId: Long?,
         videoId: Int?,
-        ownerId: Int?
+        ownerId: Long?
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "video.add", form(
@@ -52,8 +52,8 @@ class IVideoService : IServiceRest() {
 
     fun deleteVideo(
         videoId: Int?,
-        ownerId: Int?,
-        targetId: Int?
+        ownerId: Long?,
+        targetId: Long?
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "video.delete", form(
@@ -65,7 +65,7 @@ class IVideoService : IServiceRest() {
     }
 
     fun getAlbums(
-        ownerId: Int?,
+        ownerId: Long?,
         offset: Int?,
         count: Int?,
         extended: Int?,
@@ -83,8 +83,8 @@ class IVideoService : IServiceRest() {
     }
 
     fun getAlbumsByVideo(
-        target_id: Int?,
-        owner_id: Int?,
+        target_id: Long?,
+        owner_id: Long?,
         video_id: Int?,
         extended: Int?
     ): Single<BaseResponse<Items<VKApiVideoAlbum>>> {
@@ -129,7 +129,7 @@ class IVideoService : IServiceRest() {
     }
 
     fun restoreComment(
-        ownerId: Int?,
+        ownerId: Long?,
         commentId: Int
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -141,7 +141,7 @@ class IVideoService : IServiceRest() {
     }
 
     fun deleteComment(
-        ownerId: Int?,
+        ownerId: Long?,
         commentId: Int
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -153,7 +153,7 @@ class IVideoService : IServiceRest() {
     }
 
     operator fun get(
-        ownerId: Int?,
+        ownerId: Long?,
         videos: String?,
         albumId: Int?,
         count: Int?,
@@ -173,7 +173,7 @@ class IVideoService : IServiceRest() {
     }
 
     fun createComment(
-        ownerId: Int?,
+        ownerId: Long?,
         videoId: Int,
         message: String?,
         attachments: String?,
@@ -197,7 +197,7 @@ class IVideoService : IServiceRest() {
     }
 
     fun editComment(
-        ownerId: Int?,
+        ownerId: Long?,
         commentId: Int,
         message: String?,
         attachments: String?
@@ -213,7 +213,7 @@ class IVideoService : IServiceRest() {
     }
 
     fun edit(
-        ownerId: Int?,
+        ownerId: Long?,
         video_id: Int,
         name: String?,
         desc: String?

@@ -16,140 +16,140 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
 interface IAudioInteractor {
-    fun add(accountId: Int, orig: Audio, groupId: Int?): Completable
-    fun delete(accountId: Int, audioId: Int, ownerId: Int): Completable
+    fun add(accountId: Long, orig: Audio, groupId: Long?): Completable
+    fun delete(accountId: Long, audioId: Int, ownerId: Long): Completable
     fun edit(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         audioId: Int,
         artist: String?,
         title: String?,
         text: String?
     ): Completable
 
-    fun restore(accountId: Int, audioId: Int, ownerId: Int): Completable
+    fun restore(accountId: Long, audioId: Int, ownerId: Long): Completable
     fun sendBroadcast(
-        accountId: Int,
-        audioOwnerId: Int,
+        accountId: Long,
+        audioOwnerId: Long,
         audioId: Int,
         accessKey: String?,
-        targetIds: Collection<Int>
+        targetIds: Collection<Long>
     ): Completable
 
     operator fun get(
-        accountId: Int,
+        accountId: Long,
         playlist_id: Int?,
-        ownerId: Int,
+        ownerId: Long,
         offset: Int,
         count: Int,
         accessKey: String?
     ): Single<List<Audio>>
 
-    fun getPlaylistsCustom(accountId: Int, code: String?): Single<List<AudioPlaylist>>
+    fun getPlaylistsCustom(accountId: Long, code: String?): Single<List<AudioPlaylist>>
     fun getAudiosByArtist(
-        accountId: Int,
+        accountId: Long,
         artist_id: String?,
         offset: Int,
         count: Int
     ): Single<List<Audio>>
 
-    fun getById(accountId: Int, audios: List<Audio>): Single<List<Audio>>
-    fun getByIdOld(accountId: Int, audios: List<Audio>, old: Boolean): Single<List<Audio>>
-    fun getLyrics(accountId: Int, lyrics_id: Int): Single<String>
-    fun getPopular(accountId: Int, foreign: Int, genre: Int, count: Int): Single<List<Audio>>
-    fun getRecommendations(accountId: Int, audioOwnerId: Int, count: Int): Single<List<Audio>>
+    fun getById(accountId: Long, audios: List<Audio>): Single<List<Audio>>
+    fun getByIdOld(accountId: Long, audios: List<Audio>, old: Boolean): Single<List<Audio>>
+    fun getLyrics(accountId: Long, lyrics_id: Int): Single<String>
+    fun getPopular(accountId: Long, foreign: Int, genre: Int, count: Int): Single<List<Audio>>
+    fun getRecommendations(accountId: Long, audioOwnerId: Long, count: Int): Single<List<Audio>>
     fun getRecommendationsByAudio(
-        accountId: Int,
+        accountId: Long,
         audio: String?,
         count: Int
     ): Single<List<Audio>>
 
     fun search(
-        accountId: Int,
+        accountId: Long,
         criteria: AudioSearchCriteria,
         offset: Int,
         count: Int
     ): Single<List<Audio>>
 
     fun searchArtists(
-        accountId: Int,
+        accountId: Long,
         criteria: ArtistSearchCriteria,
         offset: Int,
         count: Int
     ): Single<List<VKApiArtist>>
 
     fun searchPlaylists(
-        accountId: Int,
+        accountId: Long,
         criteria: AudioPlaylistSearchCriteria,
         offset: Int,
         count: Int
     ): Single<List<AudioPlaylist>>
 
     fun getPlaylists(
-        accountId: Int,
-        owner_id: Int,
+        accountId: Long,
+        owner_id: Long,
         offset: Int,
         count: Int
     ): Single<List<AudioPlaylist>>
 
     fun createPlaylist(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         title: String?,
         description: String?
     ): Single<AudioPlaylist>
 
     fun editPlaylist(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         playlist_id: Int,
         title: String?,
         description: String?
     ): Single<Int>
 
     fun removeFromPlaylist(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
     ): Single<Int>
 
     fun addToPlaylist(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
     ): Single<List<AddToPlaylistResponse>>
 
     fun followPlaylist(
-        accountId: Int,
+        accountId: Long,
         playlist_id: Int,
-        ownerId: Int,
+        ownerId: Long,
         accessKey: String?
     ): Single<AudioPlaylist>
 
-    fun clonePlaylist(accountId: Int, playlist_id: Int, ownerId: Int): Single<AudioPlaylist>
+    fun clonePlaylist(accountId: Long, playlist_id: Int, ownerId: Long): Single<AudioPlaylist>
     fun getPlaylistById(
-        accountId: Int,
+        accountId: Long,
         playlist_id: Int,
-        ownerId: Int,
+        ownerId: Long,
         accessKey: String?
     ): Single<AudioPlaylist>
 
-    fun deletePlaylist(accountId: Int, playlist_id: Int, ownerId: Int): Single<Int>
+    fun deletePlaylist(accountId: Long, playlist_id: Int, ownerId: Long): Single<Int>
     fun reorder(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         audio_id: Int,
         before: Int?,
         after: Int?
     ): Single<Int>
 
-    fun trackEvents(accountId: Int, audio: Audio): Completable
+    fun trackEvents(accountId: Long, audio: Audio): Completable
 
     fun getCatalogV2Sections(
-        accountId: Int,
-        owner_id: Int,
+        accountId: Long,
+        owner_id: Long,
         artist_id: String?,
         url: String?,
         query: String?,
@@ -157,12 +157,12 @@ interface IAudioInteractor {
     ): Single<CatalogV2List>
 
     fun getCatalogV2Section(
-        accountId: Int, section_id: String, start_from: String?
+        accountId: Long, section_id: String, start_from: String?
     ): Single<CatalogV2Section>
 
     fun getCatalogV2BlockItems(
-        accountId: Int, block_id: String, start_from: String?
+        accountId: Long, block_id: String, start_from: String?
     ): Single<CatalogV2Block>
 
-    fun getArtistById(accountId: Int, artist_id: String): Single<ArtistInfo>
+    fun getArtistById(accountId: Long, artist_id: String): Single<ArtistInfo>
 }

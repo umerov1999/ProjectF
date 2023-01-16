@@ -31,7 +31,7 @@ import java.util.*
 
 class StickersInteractor(private val networker: INetworker, private val storage: IStickersStorage) :
     IStickersInteractor {
-    override fun getAndStoreStickerSets(accountId: Int): Completable {
+    override fun getAndStoreStickerSets(accountId: Long): Completable {
         val stickerSet = networker.vkDefault(accountId)
             .store()
             .stickers
@@ -88,7 +88,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
     }
 
     private fun getStickersKeywordsAndStore(
-        accountId: Int,
+        accountId: Long,
         items: VKApiStickersKeywords
     ): Completable {
         val s: List<List<VKApiSticker>?> = listEmptyIfNull(items.words_stickers)
@@ -101,7 +101,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
         return storage.storeKeyWords(accountId, temp)
     }
 
-    override fun getStickerSets(accountId: Int): Single<List<StickerSet>> {
+    override fun getStickerSets(accountId: Long): Single<List<StickerSet>> {
         return storage.getPurchasedAndActive(accountId)
             .map { entities ->
                 mapAll(entities) {
@@ -112,7 +112,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
             }
     }
 
-    override fun getKeywordsStickers(accountId: Int, s: String?): Single<List<Sticker>> {
+    override fun getKeywordsStickers(accountId: Long, s: String?): Single<List<Sticker>> {
         return storage.getKeywordsStickers(accountId, s)
             .map { entities ->
                 mapAll(entities) {

@@ -77,7 +77,7 @@ class UserDetailsEntity {
         private set
     var relation = 0
         private set
-    var relationPartnerId = 0
+    var relationPartnerId = 0L
         private set
     var languages: Array<String>? = null
         private set
@@ -245,7 +245,7 @@ class UserDetailsEntity {
         return this
     }
 
-    fun setRelationPartnerId(relationPartnerId: Int): UserDetailsEntity {
+    fun setRelationPartnerId(relationPartnerId: Long): UserDetailsEntity {
         this.relationPartnerId = relationPartnerId
         return this
     }
@@ -403,7 +403,7 @@ class UserDetailsEntity {
     @Keep
     @Serializable
     class RelativeEntity {
-        var id = 0
+        var id = 0L
             private set
         var type: String? = null
             private set
@@ -415,7 +415,7 @@ class UserDetailsEntity {
             return this
         }
 
-        fun setId(id: Int): RelativeEntity {
+        fun setId(id: Long): RelativeEntity {
             this.id = id
             return this
         }

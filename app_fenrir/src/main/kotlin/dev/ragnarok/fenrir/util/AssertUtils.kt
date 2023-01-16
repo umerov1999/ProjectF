@@ -26,6 +26,10 @@ object AssertUtils {
         check(value > 0)
     }
 
+    fun assertPositive(value: Long) {
+        check(value > 0)
+    }
+
     fun assertTrue(value: Boolean) {
         check(value)
     }

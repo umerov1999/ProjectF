@@ -21,16 +21,16 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
     private val app: Context = context.applicationContext
     private val changesPublisher = PublishProcessor.create<IAccountsSettings>()
     private val preferences: SharedPreferences = getPreferences(context)
-    private val tokens: MutableMap<Int, String> = Collections.synchronizedMap(HashMap(1))
-    private val types: MutableMap<Int, Int> = Collections.synchronizedMap(HashMap(1))
-    private val devices: MutableMap<Int, String> = Collections.synchronizedMap(HashMap(1))
+    private val tokens: MutableMap<Long, String> = Collections.synchronizedMap(HashMap(1))
+    private val types: MutableMap<Long, Int> = Collections.synchronizedMap(HashMap(1))
+    private val devices: MutableMap<Long, String> = Collections.synchronizedMap(HashMap(1))
     private val accounts: MutableSet<String> = Collections.synchronizedSet(
         preferences.getStringSet(
             KEY_ACCOUNT_UIDS,
             HashSet(1)
         )!!
     )
-    private val currentPublisher = PublishProcessor.create<Int>()
+    private val currentPublisher = PublishProcessor.create<Long>()
     private fun notifyAboutRegisteredChanges() {
         changesPublisher.onNext(this)
     }
@@ -39,15 +39,15 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         return changesPublisher.onBackpressureBuffer()
     }
 
-    override fun observeChanges(): Flowable<Int> {
+    override fun observeChanges(): Flowable<Long> {
         return currentPublisher.onBackpressureBuffer()
     }
 
-    override val registered: List<Int>
+    override val registered: List<Long>
         get() {
-            val ids: MutableList<Int> = ArrayList(accounts.size)
+            val ids: MutableList<Long> = ArrayList(accounts.size)
             for (stringuid in accounts) {
-                val uid = stringuid.toInt()
+                val uid = stringuid.toLong()
                 ids.add(uid)
             }
             return ids
@@ -62,18 +62,18 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         currentPublisher.onNext(current)
     }
 
-    override var current: Int
-        get() = preferences.getInt(KEY_CURRENT, IAccountsSettings.INVALID_ID)
+    override var current: Long
+        get() = preferences.getLong(KEY_CURRENT, IAccountsSettings.INVALID_ID)
         set(accountId) {
             if (current == accountId) return
             getPreferences(app)
                 .edit()
-                .putInt(KEY_CURRENT, accountId)
+                .putLong(KEY_CURRENT, accountId)
                 .apply()
             fireAccountChange()
         }
 
-    override fun remove(accountId: Int) {
+    override fun remove(accountId: Long) {
         val currentAccountId = current
         val preferences = getPreferences(app)
         accounts.remove(accountId.toString())
@@ -82,7 +82,7 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
             .apply()
         if (accountId == currentAccountId) {
             val accountIds = registered
-            var fisrtUserAccountId: Int? = null
+            var fisrtUserAccountId: Long? = null
 
             // делаем активным первый аккаунт ПОЛЬЗОВАТЕЛЯ
             for (existsId in accountIds) {
@@ -93,7 +93,7 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
             }
             if (fisrtUserAccountId != null) {
                 preferences.edit()
-                    .putInt(KEY_CURRENT, fisrtUserAccountId)
+                    .putLong(KEY_CURRENT, fisrtUserAccountId)
                     .apply()
             } else {
                 preferences.edit()
@@ -105,13 +105,13 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         fireAccountChange()
     }
 
-    override fun registerAccountId(accountId: Int, setCurrent: Boolean) {
+    override fun registerAccountId(accountId: Long, setCurrent: Boolean) {
         val preferences = getPreferences(app)
         accounts.add(accountId.toString())
         val editor = preferences.edit()
         editor.putStringSet(KEY_ACCOUNT_UIDS, accounts)
         if (setCurrent) {
-            editor.putInt(KEY_CURRENT, accountId)
+            editor.putLong(KEY_CURRENT, accountId)
         }
         editor.apply()
         notifyAboutRegisteredChanges()
@@ -120,7 +120,7 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         }
     }
 
-    override fun storeAccessToken(accountId: Int, accessToken: String?) {
+    override fun storeAccessToken(accountId: Long, accessToken: String?) {
         accessToken ?: return
         tokens[accountId] = accessToken
         preferences.edit()
@@ -128,13 +128,13 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
             .apply()
     }
 
-    override fun storeLogin(accountId: Int, loginCombo: String?) {
+    override fun storeLogin(accountId: Long, loginCombo: String?) {
         preferences.edit()
             .putString(loginKeyFor(accountId), loginCombo)
             .apply()
     }
 
-    override fun storeDevice(accountId: Int, deviceName: String?) {
+    override fun storeDevice(accountId: Long, deviceName: String?) {
         if (deviceName.isNullOrEmpty()) {
             removeDevice(accountId)
             return
@@ -145,18 +145,18 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
             .apply()
     }
 
-    override fun getLogin(accountId: Int): String? {
+    override fun getLogin(accountId: Long): String? {
         return preferences.getString(loginKeyFor(accountId), null)
     }
 
-    override fun storeTokenType(accountId: Int, @AccountType type: Int) {
+    override fun storeTokenType(accountId: Long, @AccountType type: Int) {
         types[accountId] = type
         preferences.edit()
             .putInt(typeAccKeyFor(accountId), type)
             .apply()
     }
 
-    override fun getAccessToken(accountId: Int): String? {
+    override fun getAccessToken(accountId: Long): String? {
         return tokens[accountId]
     }
 
@@ -164,7 +164,7 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         get() = tokens[current]
 
     @AccountType
-    override fun getType(accountId: Int): Int {
+    override fun getType(accountId: Long): Int {
         if (types.containsKey(accountId)) {
             val ret = types[accountId]
             if (ret != null) {
@@ -174,33 +174,33 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         return Constants.DEFAULT_ACCOUNT_TYPE
     }
 
-    override fun getDevice(accountId: Int): String? {
+    override fun getDevice(accountId: Long): String? {
         return if (devices.containsKey(accountId)) {
             devices[accountId]
         } else null
     }
 
-    override fun removeAccessToken(accountId: Int) {
+    override fun removeAccessToken(accountId: Long) {
         tokens.remove(accountId)
         preferences.edit()
             .remove(tokenKeyFor(accountId))
             .apply()
     }
 
-    override fun removeType(accountId: Int) {
+    override fun removeType(accountId: Long) {
         types.remove(accountId)
         preferences.edit()
             .remove(typeAccKeyFor(accountId))
             .apply()
     }
 
-    override fun removeLogin(accountId: Int) {
+    override fun removeLogin(accountId: Long) {
         preferences.edit()
             .remove(loginKeyFor(accountId))
             .apply()
     }
 
-    override fun removeDevice(accountId: Int) {
+    override fun removeDevice(accountId: Long) {
         devices.remove(accountId)
         preferences.edit()
             .remove(deviceKeyFor(accountId))
@@ -209,26 +209,26 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
 
     companion object {
         private const val KEY_ACCOUNT_UIDS = "account_uids"
-        private const val KEY_CURRENT = "current_account_id_int"
-        internal fun tokenKeyFor(uid: Int): String {
+        private const val KEY_CURRENT = "current_account_id_long"
+        internal fun tokenKeyFor(uid: Long): String {
             return "token$uid"
         }
 
-        internal fun loginKeyFor(uid: Int): String {
+        internal fun loginKeyFor(uid: Long): String {
             return "login$uid"
         }
 
-        internal fun deviceKeyFor(uid: Int): String {
+        internal fun deviceKeyFor(uid: Long): String {
             return "device$uid"
         }
 
-        internal fun typeAccKeyFor(uid: Int): String {
+        internal fun typeAccKeyFor(uid: Long): String {
             return "account_type$uid"
         }
     }
 
     init {
-        val aids: Collection<Int> = registered
+        val aids: Collection<Long> = registered
         for (aid in aids) {
             val token = preferences.getString(tokenKeyFor(aid), null)
             if (token.nonNullNoEmpty()) {

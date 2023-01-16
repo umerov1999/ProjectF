@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Keep
 @Serializable
 class DeltaOwner : Parcelable {
-    var ownerId: Int = 0
+    var ownerId: Long = 0
         private set
     val time: Long
     var content: ArrayList<DeltaOwnerList> = ArrayList()
@@ -20,7 +20,7 @@ class DeltaOwner : Parcelable {
         time = System.currentTimeMillis() / 1000L
     }
 
-    fun setOwner(ownerId: Int): DeltaOwner {
+    fun setOwner(ownerId: Long): DeltaOwner {
         this.ownerId = ownerId
         return this
     }
@@ -38,13 +38,13 @@ class DeltaOwner : Parcelable {
 
     internal constructor(parcel: Parcel) {
         time = parcel.readLong()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         content = parcel.createTypedArrayList(DeltaOwnerList.CREATOR) ?: ArrayList()
     }
 
     override fun writeToParcel(parcel: Parcel, i: Int) {
         parcel.writeLong(time)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeTypedList(content)
     }
 

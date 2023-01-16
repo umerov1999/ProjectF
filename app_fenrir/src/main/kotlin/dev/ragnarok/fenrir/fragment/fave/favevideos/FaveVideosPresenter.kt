@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Video
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class FaveVideosPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class FaveVideosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFaveVideosView>(accountId, savedInstanceState) {
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
     private val mVideos: ArrayList<Video> = ArrayList()

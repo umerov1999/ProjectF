@@ -5,6 +5,6 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
 interface IDatabaseStore {
-    fun storeCountries(accountId: Int, dbos: List<CountryDboEntity>): Completable
-    fun getCountries(accountId: Int): Single<List<CountryDboEntity>>
+    fun storeCountries(accountId: Long, dbos: List<CountryDboEntity>): Completable
+    fun getCountries(accountId: Long): Single<List<CountryDboEntity>>
 }

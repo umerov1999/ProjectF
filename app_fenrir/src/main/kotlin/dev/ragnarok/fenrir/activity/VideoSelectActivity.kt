@@ -19,13 +19,13 @@ class VideoSelectActivity : NoMainActivity(), PlaceProvider {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            val accountId = (intent.extras ?: return).getInt(Extra.ACCOUNT_ID)
-            val ownerId = (intent.extras ?: return).getInt(Extra.OWNER_ID)
+            val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
+            val ownerId = (intent.extras ?: return).getLong(Extra.OWNER_ID)
             attachInitialFragment(accountId, ownerId)
         }
     }
 
-    private fun attachInitialFragment(accountId: Int, ownerId: Int) {
+    private fun attachInitialFragment(accountId: Long, ownerId: Long) {
         val fragment =
             VideosTabsFragment.newInstance(accountId, ownerId, IVideosListView.ACTION_SELECT)
         supportFragmentManager
@@ -78,7 +78,7 @@ class VideoSelectActivity : NoMainActivity(), PlaceProvider {
          * @param ownerId   Чьи получать
          */
 
-        fun createIntent(context: Context, accountId: Int, ownerId: Int): Intent {
+        fun createIntent(context: Context, accountId: Long, ownerId: Long): Intent {
             return Intent(context, VideoSelectActivity::class.java)
                 .putExtra(Extra.ACCOUNT_ID, accountId)
                 .putExtra(Extra.OWNER_ID, ownerId)

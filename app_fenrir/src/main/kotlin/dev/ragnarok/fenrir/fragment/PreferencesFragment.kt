@@ -1651,15 +1651,15 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             }
 
             singleChoice(
-                "rendering_mode",
+                "rendering_bitmap_mode",
                 selItems(R.array.array_rendering_mode_names, R.array.array_rendering_mode_items),
                 parentFragmentManager
             ) {
-                initialSelection = "0"
+                initialSelection = "2"
                 titleRes = R.string.rendering_mode
                 visible = Utils.hasPie()
                 onSelectionChange { it ->
-                    var sz = 0
+                    var sz = 2
                     try {
                         sz = it.trim { it <= ' ' }.toInt()
                     } catch (ignored: NumberFormatException) {
@@ -2253,8 +2253,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
     }
 
-    private val accountId: Int
-        get() = requireArguments().getInt(ACCOUNT_ID)
+    private val accountId: Long
+        get() = requireArguments().getLong(ACCOUNT_ID)
 
     private fun isEnabledNavigationCategoryById(
         list: List<DrawerCategory>,
@@ -2727,9 +2727,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         private const val KEY_SIDE_DRAWER_ITEMS = "side_drawer_categories"
 
 
-        fun buildArgs(accountId: Int): Bundle {
+        fun buildArgs(accountId: Long): Bundle {
             val args = Bundle()
-            args.putInt(ACCOUNT_ID, accountId)
+            args.putLong(ACCOUNT_ID, accountId)
             return args
         }
 

@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.model.NewsfeedComment
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 
-class NewsfeedCommentsPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class NewsfeedCommentsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     PlaceSupportPresenter<INewsfeedCommentsView>(accountId, savedInstanceState) {
     private val data: MutableList<NewsfeedComment>
     private val interactor: INewsfeedInteractor

@@ -69,7 +69,7 @@ class AttachmentsViewBinder(
         containers: AttachmentsHolder,
         postsAsLinks: Boolean,
         messageId: Int?,
-        peerId: Int?
+        peerId: Long?
     ) {
         if (attachments == null) {
             safeSetVisibitity(containers.vgAudios, View.GONE)
@@ -110,7 +110,7 @@ class AttachmentsViewBinder(
         voices: ArrayList<VoiceMessage>?,
         container: ViewGroup?,
         messageId: Int?,
-        peerId: Int?
+        peerId: Long?
     ) {
         if (voices == null || voices.isEmpty() || container == null) {
             container?.visibility = View.GONE
@@ -222,7 +222,7 @@ class AttachmentsViewBinder(
         holder: VoiceHolder,
         voice: VoiceMessage,
         messageId: Int?,
-        peerId: Int?
+        peerId: Long?
     ) {
         val voiceMessageId = voice.getId()
         mVoiceSharedHolders.put(voiceMessageId, holder)
@@ -380,7 +380,7 @@ class AttachmentsViewBinder(
                         owners = true,
                         topics = false,
                         listener = object : LinkActionAdapter() {
-                            override fun onOwnerClick(ownerId: Int) {
+                            override fun onOwnerClick(ownerId: Long) {
                                 mAttachmentsActionCallback?.onOpenOwner(ownerId)
                             }
                         })
@@ -496,7 +496,7 @@ class AttachmentsViewBinder(
                     owners = true,
                     topics = false,
                     listener = object : LinkActionAdapter() {
-                        override fun onOwnerClick(ownerId: Int) {
+                        override fun onOwnerClick(ownerId: Long) {
                             mAttachmentsActionCallback?.onOpenOwner(ownerId)
                         }
                     })
@@ -592,7 +592,7 @@ class AttachmentsViewBinder(
                         owners = true,
                         topics = false,
                         listener = object : LinkActionAdapter() {
-                            override fun onOwnerClick(ownerId: Int) {
+                            override fun onOwnerClick(ownerId: Long) {
                                 mAttachmentsActionCallback?.onOpenOwner(ownerId)
                             }
                         })
@@ -605,7 +605,7 @@ class AttachmentsViewBinder(
                         owners = true,
                         topics = false,
                         listener = object : LinkActionAdapter() {
-                            override fun onOwnerClick(ownerId: Int) {
+                            override fun onOwnerClick(ownerId: Long) {
                                 mAttachmentsActionCallback?.onOpenOwner(ownerId)
                             }
                         })
@@ -618,7 +618,7 @@ class AttachmentsViewBinder(
                         owners = true,
                         topics = false,
                         listener = object : LinkActionAdapter() {
-                            override fun onOwnerClick(ownerId: Int) {
+                            override fun onOwnerClick(ownerId: Long) {
                                 mAttachmentsActionCallback?.onOpenOwner(ownerId)
                             }
                         })
@@ -989,7 +989,7 @@ class AttachmentsViewBinder(
             voiceHolderId: Int,
             voiceMessageId: Int,
             messageId: Int,
-            peerId: Int,
+            peerId: Long,
             voiceMessage: VoiceMessage
         )
 
@@ -1002,7 +1002,7 @@ class AttachmentsViewBinder(
         fun onVideoPlay(video: Video)
         fun onAudioPlay(position: Int, audios: ArrayList<Audio>)
         fun onForwardMessagesOpen(messages: ArrayList<Message>)
-        fun onOpenOwner(ownerId: Int)
+        fun onOpenOwner(ownerId: Long)
         fun onGoToMessagesLookup(message: Message)
         fun onDocPreviewOpen(document: Document)
         fun onPostOpen(post: Post)

@@ -37,8 +37,8 @@ import kotlin.math.abs
 class PhotosInteractor(private val networker: INetworker, private val cache: IStorages) :
     IPhotosInteractor {
     override fun get(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         count: Int,
         offset: Int,
@@ -61,8 +61,8 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun getUsersPhoto(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         extended: Int?,
         sort: Int?,
         offset: Int?,
@@ -86,8 +86,8 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun getAll(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         extended: Int?,
         photo_sizes: Int?,
         offset: Int?,
@@ -111,7 +111,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun search(
-        accountId: Int,
+        accountId: Long,
         criteria: PhotoSearchCriteria,
         offset: Int?,
         count: Int?
@@ -148,8 +148,8 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun getAllCachedData(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         sortInvert: Boolean
     ): Single<List<Photo>> {
@@ -176,7 +176,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
             }
     }
 
-    override fun getAlbumById(accountId: Int, ownerId: Int, albumId: Int): Single<PhotoAlbum> {
+    override fun getAlbumById(accountId: Long, ownerId: Long, albumId: Int): Single<PhotoAlbum> {
         return networker.vkDefault(accountId)
             .photos()
             .getAlbums(ownerId, listOf(albumId), null, null, needSystem = true, needCovers = true)
@@ -199,7 +199,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
             }
     }
 
-    override fun getCachedAlbums(accountId: Int, ownerId: Int): Single<List<PhotoAlbum>> {
+    override fun getCachedAlbums(accountId: Long, ownerId: Long): Single<List<PhotoAlbum>> {
         val criteria = PhotoAlbumsCriteria(accountId, ownerId)
         return cache.photoAlbums()
             .findAlbumsByCriteria(criteria)
@@ -211,8 +211,8 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun getTags(
-        accountId: Int,
-        ownerId: Int?,
+        accountId: Long,
+        ownerId: Long?,
         photo_id: Int?,
         access_key: String?
     ): Single<List<VKApiPhotoTags>> {
@@ -221,8 +221,8 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun getAllComments(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         album_id: Int?,
         offset: Int,
         count: Int
@@ -264,8 +264,8 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun getActualAlbums(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         count: Int,
         offset: Int
     ): Single<List<PhotoAlbum>> {
@@ -326,15 +326,15 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
             }
     }
 
-    override fun isLiked(accountId: Int, ownerId: Int, photoId: Int): Single<Boolean> {
+    override fun isLiked(accountId: Long, ownerId: Long, photoId: Int): Single<Boolean> {
         return networker.vkDefault(accountId)
             .likes()
             .isLiked("photo", ownerId, photoId)
     }
 
     override fun checkAndAddLike(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         photoId: Int,
         accessKey: String?
     ): Single<Int> {
@@ -343,8 +343,8 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun like(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         photoId: Int,
         add: Boolean,
         accessKey: String?
@@ -366,13 +366,18 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         }
     }
 
-    override fun copy(accountId: Int, ownerId: Int, photoId: Int, accessKey: String?): Single<Int> {
+    override fun copy(
+        accountId: Long,
+        ownerId: Long,
+        photoId: Int,
+        accessKey: String?
+    ): Single<Int> {
         return networker.vkDefault(accountId)
             .photos()
             .copy(ownerId, photoId, accessKey)
     }
 
-    override fun removedAlbum(accountId: Int, ownerId: Int, albumId: Int): Completable {
+    override fun removedAlbum(accountId: Long, ownerId: Long, albumId: Int): Completable {
         return networker.vkDefault(accountId)
             .photos()
             .deleteAlbum(albumId, if (ownerId < 0) abs(ownerId) else null)
@@ -382,7 +387,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
             }
     }
 
-    override fun deletePhoto(accountId: Int, ownerId: Int, photoId: Int): Completable {
+    override fun deletePhoto(accountId: Long, ownerId: Long, photoId: Int): Completable {
         return networker.vkDefault(accountId)
             .photos()
             .delete(ownerId, photoId)
@@ -393,7 +398,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
             }
     }
 
-    override fun restorePhoto(accountId: Int, ownerId: Int, photoId: Int): Completable {
+    override fun restorePhoto(accountId: Long, ownerId: Long, photoId: Int): Completable {
         return networker.vkDefault(accountId)
             .photos()
             .restore(ownerId, photoId)
@@ -405,7 +410,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     }
 
     override fun getPhotosByIds(
-        accountId: Int,
+        accountId: Long,
         ids: Collection<AccessIdPair>
     ): Single<List<Photo>> {
         val dtoPairs: MutableList<dev.ragnarok.fenrir.api.model.AccessIdPair> = ArrayList(ids.size)

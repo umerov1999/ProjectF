@@ -30,12 +30,12 @@ interface ISettings {
     fun accounts(): IAccountsSettings
     fun other(): IOtherSettings
     interface IOtherSettings {
-        fun getFeedSourceIds(accountId: Int): String?
-        fun setFeedSourceIds(accountId: Int, sourceIds: String?)
-        fun storeFeedScrollState(accountId: Int, state: String?)
-        fun restoreFeedScrollState(accountId: Int): String?
-        fun restoreFeedNextFrom(accountId: Int): String?
-        fun storeFeedNextFrom(accountId: Int, nextFrom: String?)
+        fun getFeedSourceIds(accountId: Long): String?
+        fun setFeedSourceIds(accountId: Long, sourceIds: String?)
+        fun storeFeedScrollState(accountId: Long, state: String?)
+        fun restoreFeedScrollState(accountId: Long): String?
+        fun restoreFeedNextFrom(accountId: Long): String?
+        fun storeFeedNextFrom(accountId: Long, nextFrom: String?)
         val isAudioBroadcastActive: Boolean
         val maxBitmapResolution: Int
         val servicePlaylist: List<Int>
@@ -130,14 +130,14 @@ interface ISettings {
         fun isEnable_dirs_files_count(): Boolean
         fun get_last_audio_sync(): Long
         fun set_last_audio_sync(time: Long)
-        fun get_last_stickers_sync(accountId: Int): Long
-        fun del_last_stickers_sync(accountId: Int)
-        fun set_last_stickers_sync(accountId: Int, time: Long)
+        fun get_last_stickers_sync(accountId: Long): Long
+        fun del_last_stickers_sync(accountId: Long)
+        fun set_last_stickers_sync(accountId: Long, time: Long)
         val isOngoing_player_notification: Boolean
         fun reloadOwnerChangesMonitor()
-        fun isOwnerInChangesMonitor(ownerId: Int): Boolean
-        fun putOwnerInChangesMonitor(ownerId: Int)
-        fun removeOwnerInChangesMonitor(ownerId: Int)
+        fun isOwnerInChangesMonitor(ownerId: Long): Boolean
+        fun putOwnerInChangesMonitor(ownerId: Long)
+        fun removeOwnerInChangesMonitor(ownerId: Long)
         val isAudio_catalog_v2: Boolean
 
         @get:Lang
@@ -148,8 +148,8 @@ interface ISettings {
         var localServer: LocalServerSettings
         var playerCoverBackgroundSettings: PlayerCoverBackgroundSettings
         var slidrSettings: SlidrSettings
-        fun getUserNameChanges(userId: Int): String?
-        fun setUserNameChanges(userId: Int, name: String?)
+        fun getUserNameChanges(userId: Long): String?
+        fun setUserNameChanges(userId: Long, name: String?)
         fun reloadUserNameChangesSettings(onlyRoot: Boolean)
         fun getUserNameChangesMap(): Map<String, String>
         val userNameChangesKeys: Set<String>
@@ -160,30 +160,30 @@ interface ISettings {
     }
 
     interface IAccountsSettings {
-        fun observeChanges(): Flowable<Int>
+        fun observeChanges(): Flowable<Long>
         fun observeRegistered(): Flowable<IAccountsSettings>
-        val registered: List<Int>
-        var current: Int
+        val registered: List<Long>
+        var current: Long
         val currentAccessToken: String?
-        fun remove(accountId: Int)
-        fun registerAccountId(accountId: Int, setCurrent: Boolean)
-        fun storeAccessToken(accountId: Int, accessToken: String?)
-        fun storeLogin(accountId: Int, loginCombo: String?)
-        fun removeDevice(accountId: Int)
-        fun storeDevice(accountId: Int, deviceName: String?)
-        fun getDevice(accountId: Int): String?
-        fun getLogin(accountId: Int): String?
-        fun storeTokenType(accountId: Int, @AccountType type: Int)
-        fun getAccessToken(accountId: Int): String?
+        fun remove(accountId: Long)
+        fun registerAccountId(accountId: Long, setCurrent: Boolean)
+        fun storeAccessToken(accountId: Long, accessToken: String?)
+        fun storeLogin(accountId: Long, loginCombo: String?)
+        fun removeDevice(accountId: Long)
+        fun storeDevice(accountId: Long, deviceName: String?)
+        fun getDevice(accountId: Long): String?
+        fun getLogin(accountId: Long): String?
+        fun storeTokenType(accountId: Long, @AccountType type: Int)
+        fun getAccessToken(accountId: Long): String?
 
         @AccountType
-        fun getType(accountId: Int): Int
-        fun removeAccessToken(accountId: Int)
-        fun removeType(accountId: Int)
-        fun removeLogin(accountId: Int)
+        fun getType(accountId: Long): Int
+        fun removeAccessToken(accountId: Long)
+        fun removeType(accountId: Long)
+        fun removeLogin(accountId: Long)
 
         companion object {
-            const val INVALID_ID = -1
+            const val INVALID_ID = -1L
         }
     }
 
@@ -230,11 +230,11 @@ interface ISettings {
     }
 
     interface INotificationSettings {
-        fun getNotifPref(aid: Int, peerid: Int): Int
-        fun setDefault(aid: Int, peerId: Int)
-        fun resetAccount(aid: Int)
-        fun forceDisable(aid: Int, peerId: Int)
-        fun setNotifPref(aid: Int, peerid: Int, flag: Int)
+        fun getNotifPref(aid: Long, peerid: Long): Int
+        fun setDefault(aid: Long, peerId: Long)
+        fun resetAccount(aid: Long)
+        fun forceDisable(aid: Long, peerId: Long)
+        fun setNotifPref(aid: Long, peerid: Long, flag: Int)
         val otherNotificationMask: Int
         val isCommentsNotificationsEnabled: Boolean
         val isFriendRequestAcceptationNotifEnabled: Boolean
@@ -254,7 +254,7 @@ interface ISettings {
         val isQuickReplyImmediately: Boolean
         val isBirthdayNotifyEnabled: Boolean
         val isMentionNotifyEnabled: Boolean
-        fun isSilentChat(aid: Int, peerId: Int): Boolean
+        fun isSilentChat(aid: Long, peerId: Long): Boolean
         val chatsNotif: Map<String, Int>
         val chatsNotifKeys: Set<String>
         fun reloadNotifSettings(onlyRoot: Boolean)
@@ -269,8 +269,8 @@ interface ISettings {
     }
 
     interface IRecentChats {
-        operator fun get(accountId: Int): MutableList<RecentChat>
-        fun store(accountId: Int, chats: List<RecentChat>)
+        operator fun get(accountId: Long): MutableList<RecentChat>
+        fun store(accountId: Long, chats: List<RecentChat>)
     }
 
     interface IDrawerSettings {
@@ -299,20 +299,20 @@ interface ISettings {
         val isEntranceByFingerprintAllowed: Boolean
 
         @KeyLocationPolicy
-        fun getEncryptionLocationPolicy(accountId: Int, peerId: Int): Int
-        fun disableMessageEncryption(accountId: Int, peerId: Int)
-        fun isMessageEncryptionEnabled(accountId: Int, peerId: Int): Boolean
-        fun enableMessageEncryption(accountId: Int, peerId: Int, @KeyLocationPolicy policy: Int)
+        fun getEncryptionLocationPolicy(accountId: Long, peerId: Long): Int
+        fun disableMessageEncryption(accountId: Long, peerId: Long)
+        fun isMessageEncryptionEnabled(accountId: Long, peerId: Long): Boolean
+        fun enableMessageEncryption(accountId: Long, peerId: Long, @KeyLocationPolicy policy: Int)
         fun firePinAttemptNow()
         fun clearPinHistory()
         val pinEnterHistory: List<Long>
         fun hasPinHash(): Boolean
         fun pinHistoryDepthValue(): Int
         fun needHideMessagesBodyForNotif(): Boolean
-        fun addHiddenDialog(peerId: Int)
-        fun removeHiddenDialog(peerId: Int)
+        fun addHiddenDialog(peerId: Long)
+        fun removeHiddenDialog(peerId: Long)
         fun hasHiddenDialogs(): Boolean
-        fun isHiddenDialog(peerId: Int): Boolean
+        fun isHiddenDialog(peerId: Long): Boolean
         var showHiddenDialogs: Boolean
         fun reloadHiddenDialogSettings()
         val isDelayedAllow: Boolean
@@ -330,7 +330,7 @@ interface ISettings {
         fun storeAvatarStyle(@AvatarStyle style: Int)
         fun isDarkModeEnabled(context: Context): Boolean
         val nightMode: Int
-        fun getDefaultPage(accountId: Int): Place
+        fun getDefaultPage(accountId: Long): Place
         fun notifyPlaceResumed(type: Int)
         val isSystemEmoji: Boolean
         val isEmojis_full_screen: Boolean

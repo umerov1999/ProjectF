@@ -13,10 +13,10 @@ import io.reactivex.rxjava3.core.Single
 
 interface IAccountApi {
     @CheckResult
-    fun ban(ownerId: Int): Single<Int>
+    fun ban(ownerId: Long): Single<Int>
 
     @CheckResult
-    fun unban(ownerId: Int): Single<Int>
+    fun unban(ownerId: Long): Single<Int>
     fun getBanned(count: Int?, offset: Int?, fields: String?): Single<AccountsBannedResponse>
 
     @CheckResult

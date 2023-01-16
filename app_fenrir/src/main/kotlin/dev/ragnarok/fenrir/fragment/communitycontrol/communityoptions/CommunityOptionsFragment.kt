@@ -142,7 +142,7 @@ class CommunityOptionsFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunityOptionsPresenter> {
         return object : IPresenterFactory<CommunityOptionsPresenter> {
             override fun create(): CommunityOptionsPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val community: Community = requireArguments().getParcelableCompat(Extra.GROUP)!!
                 val settings: GroupSettings =
                     requireArguments().getParcelableCompat(Extra.SETTINGS)!!
@@ -256,14 +256,14 @@ class CommunityOptionsFragment :
 
     companion object {
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             community: Community,
             settings: GroupSettings
         ): CommunityOptionsFragment {
             val args = Bundle()
             args.putParcelable(Extra.GROUP, community)
             args.putParcelable(Extra.SETTINGS, settings)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = CommunityOptionsFragment()
             fragment.arguments = args
             return fragment

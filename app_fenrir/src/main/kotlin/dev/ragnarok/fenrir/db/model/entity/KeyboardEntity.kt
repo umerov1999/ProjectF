@@ -11,7 +11,7 @@ class KeyboardEntity {
     var inline = false
         private set
 
-    var author_id = 0
+    var author_id = 0L
         private set
 
     var buttons: List<List<ButtonEntity>>? = null
@@ -27,7 +27,7 @@ class KeyboardEntity {
         return this
     }
 
-    fun setAuthor_id(author_id: Int): KeyboardEntity {
+    fun setAuthor_id(author_id: Long): KeyboardEntity {
         this.author_id = author_id
         return this
     }

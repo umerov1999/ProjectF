@@ -362,7 +362,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                 owners = true,
                 topics = false,
                 listener = object : LinkActionAdapter() {
-                    override fun onOwnerClick(ownerId: Int) {
+                    override fun onOwnerClick(ownerId: Long) {
                         onOpenOwner(ownerId)
                     }
 
@@ -482,7 +482,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
         }
     }
 
-    override fun goToPostEditing(accountId: Int, post: Post) {
+    override fun goToPostEditing(accountId: Long, post: Post) {
         goToPostEditor(requireActivity(), accountId, post)
     }
 
@@ -497,9 +497,9 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                 val wrapper: ParcelableOwnerWrapper? =
                     requireArguments().getParcelableCompat(Extra.OWNER)
                 return WallPostPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getInt(Extra.POST_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     requireArguments().getParcelableCompat(Extra.POST),
                     wrapper?.get(),
                     requireActivity(),
@@ -509,14 +509,14 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
         }
     }
 
-    override fun goToNewsSearch(accountId: Int, hashTag: String?) {
+    override fun goToNewsSearch(accountId: Long, hashTag: String?) {
         val criteria = NewsFeedCriteria(hashTag)
         getSingleTabSearchPlace(accountId, SearchContentType.NEWS, criteria).tryOpenWith(
             requireActivity()
         )
     }
 
-    override fun doPostExport(accountId: Int, post: Post) {
+    override fun doPostExport(accountId: Long, post: Post) {
         PostDownload(requireActivity()).doDownloadAsHTML(accountId, post)
     }
 
@@ -565,11 +565,11 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
             return fragment
         }
 
-        fun buildArgs(accountId: Int, postId: Int, ownerId: Int, post: Post?): Bundle {
+        fun buildArgs(accountId: Long, postId: Int, ownerId: Long, post: Post?): Bundle {
             val bundle = Bundle()
-            bundle.putInt(Extra.ACCOUNT_ID, accountId)
+            bundle.putLong(Extra.ACCOUNT_ID, accountId)
             bundle.putInt(Extra.POST_ID, postId)
-            bundle.putInt(Extra.OWNER_ID, ownerId)
+            bundle.putLong(Extra.OWNER_ID, ownerId)
             bundle.putParcelable(Extra.POST, post)
             return bundle
         }

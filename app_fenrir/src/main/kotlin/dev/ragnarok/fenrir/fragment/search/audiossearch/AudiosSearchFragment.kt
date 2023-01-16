@@ -124,7 +124,7 @@ class AudiosSearchFragment :
         return object : IPresenterFactory<AudiosSearchPresenter> {
             override fun create(): AudiosSearchPresenter {
                 return AudiosSearchPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.CRITERIA),
                     saveInstanceState
                 )
@@ -136,9 +136,9 @@ class AudiosSearchFragment :
         const val ACTION_SELECT = "AudiosSearchFragment.ACTION_SELECT"
 
 
-        fun newInstance(accountId: Int, criteria: AudioSearchCriteria?): AudiosSearchFragment {
+        fun newInstance(accountId: Long, criteria: AudioSearchCriteria?): AudiosSearchFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, criteria)
             val fragment = AudiosSearchFragment()
             fragment.arguments = args
@@ -147,11 +147,11 @@ class AudiosSearchFragment :
 
 
         fun newInstanceSelect(
-            accountId: Int,
+            accountId: Long,
             criteria: AudioSearchCriteria?
         ): AudiosSearchFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, criteria)
             args.putBoolean(ACTION_SELECT, true)
             val fragment = AudiosSearchFragment()

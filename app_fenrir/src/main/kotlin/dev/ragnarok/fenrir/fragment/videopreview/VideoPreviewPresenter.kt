@@ -25,9 +25,9 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 
 class VideoPreviewPresenter(
-    accountId: Int,
+    accountId: Long,
     private val videoId: Int,
-    private val ownerId: Int,
+    private val ownerId: Long,
     aKey: String?,
     video: Video?,
     savedInstanceState: Bundle?
@@ -253,7 +253,7 @@ class VideoPreviewPresenter(
         createCustomToast(context).showToast(R.string.copied_url)
     }
 
-    fun fireOwnerClick(ownerId: Int) {
+    fun fireOwnerClick(ownerId: Long) {
         view?.showOwnerWall(
             accountId,
             ownerId

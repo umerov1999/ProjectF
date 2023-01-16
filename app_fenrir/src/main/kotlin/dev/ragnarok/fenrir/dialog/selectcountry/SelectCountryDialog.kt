@@ -78,7 +78,7 @@ class SelectCountryDialog : BaseMvpDialogFragment<CountriesPresenter, ICountries
         return object : IPresenterFactory<CountriesPresenter> {
             override fun create(): CountriesPresenter {
                 return CountriesPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }

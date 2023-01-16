@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 internal class UserLongpoll(
     private val networker: INetworker,
-    override val accountId: Int,
+    override val accountId: Long,
     private val callback: Callback
 ) : ILongpoll {
     private val mDelayedObservable = Observable.interval(
@@ -140,7 +140,7 @@ internal class UserLongpoll(
         }
 
     interface Callback {
-        fun onUpdates(aid: Int, updates: VkApiLongpollUpdates)
+        fun onUpdates(aid: Long, updates: VkApiLongpollUpdates)
     }
 
     companion object {

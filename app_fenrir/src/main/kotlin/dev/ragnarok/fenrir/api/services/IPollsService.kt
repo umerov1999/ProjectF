@@ -11,7 +11,7 @@ class IPollsService : IServiceRest() {
         question: String?,
         isAnonymous: Int?,
         isMultiple: Int?,
-        ownerId: Int?,
+        ownerId: Long?,
         addAnswers: String?
     ): Single<BaseResponse<VKApiPoll>> {
         return rest.request(
@@ -27,7 +27,7 @@ class IPollsService : IServiceRest() {
 
     //https://vk.com/dev/polls.deleteVote
     fun deleteVote(
-        ownerId: Int?,
+        ownerId: Long?,
         pollId: Int,
         answerId: Long,
         isBoard: Int?
@@ -44,7 +44,7 @@ class IPollsService : IServiceRest() {
 
     //https://vk.com/dev/polls.addVote
     fun addVote(
-        ownerId: Int?,
+        ownerId: Long?,
         pollId: Int,
         answerIds: String?,
         isBoard: Int?
@@ -60,7 +60,7 @@ class IPollsService : IServiceRest() {
     }
 
     fun getById(
-        ownerId: Int?,
+        ownerId: Long?,
         isBoard: Int?,
         pollId: Int?
     ): Single<BaseResponse<VKApiPoll>> {
@@ -74,7 +74,7 @@ class IPollsService : IServiceRest() {
     }
 
     fun getVoters(
-        ownerId: Int,
+        ownerId: Long,
         pollId: Int,
         isBoard: Int?,
         answer_ids: String,

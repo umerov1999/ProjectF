@@ -9,7 +9,7 @@ import kotlinx.serialization.builtins.serializer
 
 class IMessageService : IServiceRest() {
     fun editMessage(
-        peedId: Int,
+        peedId: Long,
         messageId: Int,
         message: String?,
         attachment: String?,
@@ -29,7 +29,7 @@ class IMessageService : IServiceRest() {
     }
 
     fun pin(
-        peerId: Int,
+        peerId: Long,
         messageId: Int
     ): Single<BaseResponse<VKApiMessage>> {
         return rest.request(
@@ -40,11 +40,11 @@ class IMessageService : IServiceRest() {
         )
     }
 
-    fun pinConversation(peerId: Int): Single<BaseResponse<Int>> {
+    fun pinConversation(peerId: Long): Single<BaseResponse<Int>> {
         return rest.request("messages.pinConversation", form("peer_id" to peerId), baseInt)
     }
 
-    fun unpinConversation(peerId: Int): Single<BaseResponse<Int>> {
+    fun unpinConversation(peerId: Long): Single<BaseResponse<Int>> {
         return rest.request("messages.unpinConversation", form("peer_id" to peerId), baseInt)
     }
 
@@ -52,7 +52,7 @@ class IMessageService : IServiceRest() {
         return rest.request("messages.markAsListened", form("message_id" to message_id), baseInt)
     }
 
-    fun unpin(peerId: Int): Single<BaseResponse<Int>> {
+    fun unpin(peerId: Long): Single<BaseResponse<Int>> {
         return rest.request("messages.unpin", form("peer_id" to peerId), baseInt)
     }
 
@@ -65,8 +65,8 @@ class IMessageService : IServiceRest() {
      * @return 1
      */
     fun removeChatUser(
-        chatId: Int,
-        memberId: Int
+        chatId: Long,
+        memberId: Long
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "messages.removeChatUser", form(
@@ -76,7 +76,7 @@ class IMessageService : IServiceRest() {
         )
     }
 
-    fun deleteChatPhoto(chatId: Int): Single<BaseResponse<UploadChatPhotoResponse>> {
+    fun deleteChatPhoto(chatId: Long): Single<BaseResponse<UploadChatPhotoResponse>> {
         return rest.request(
             "messages.deleteChatPhoto",
             form("chat_id" to chatId),
@@ -92,8 +92,8 @@ class IMessageService : IServiceRest() {
      * @return 1
      */
     fun addChatUser(
-        chatId: Int,
-        userId: Int
+        chatId: Long,
+        userId: Long
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "messages.addChatUser", form(
@@ -119,7 +119,7 @@ class IMessageService : IServiceRest() {
      * @return Returns a list of chat objects.
      */
     fun getChat(
-        chatId: Int?,
+        chatId: Long?,
         chatIds: String?,
         fields: String?,
         nameCase: String?
@@ -135,7 +135,7 @@ class IMessageService : IServiceRest() {
     }
 
     fun getConversationMembers(
-        peer_id: Int?,
+        peer_id: Long?,
         fields: String?
     ): Single<BaseResponse<ConversationMembersResponse>> {
         return rest.request(
@@ -156,7 +156,7 @@ class IMessageService : IServiceRest() {
      * @return 1
      */
     fun editChat(
-        chatId: Int,
+        chatId: Long,
         title: String?
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -177,12 +177,12 @@ class IMessageService : IServiceRest() {
     fun createChat(
         userIds: String?,
         title: String?
-    ): Single<BaseResponse<Int>> {
+    ): Single<BaseResponse<Long>> {
         return rest.request(
             "messages.createChat", form(
                 "user_ids" to userIds,
                 "title" to title
-            ), baseInt
+            ), baseLong
         )
     }
 
@@ -192,7 +192,7 @@ class IMessageService : IServiceRest() {
      * @param peerId Destination ID.
      * @return 1
      */
-    fun deleteDialog(peerId: Int): Single<BaseResponse<ConversationDeleteResult>> {
+    fun deleteDialog(peerId: Long): Single<BaseResponse<ConversationDeleteResult>> {
         return rest.request(
             "messages.deleteConversation",
             form("peer_id" to peerId),
@@ -241,7 +241,7 @@ class IMessageService : IServiceRest() {
      * @return 1
      */
     fun markAsRead(
-        peerId: Int?,
+        peerId: Long?,
         startMessageId: Int?
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -272,7 +272,7 @@ class IMessageService : IServiceRest() {
      * @return 1
      */
     fun setActivity(
-        peerId: Int,
+        peerId: Long,
         type: String?
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -298,7 +298,7 @@ class IMessageService : IServiceRest() {
      */
     fun search(
         query: String?,
-        peerId: Int?,
+        peerId: Long?,
         date: Long?,
         previewLength: Int?,
         offset: Int?,
@@ -381,7 +381,7 @@ class IMessageService : IServiceRest() {
      * and additional next_from field containing new offset value.
      */
     fun getHistoryAttachments(
-        peerId: Int,
+        peerId: Long,
         mediaType: String?,
         startFrom: String?,
         count: Int?,
@@ -420,7 +420,7 @@ class IMessageService : IServiceRest() {
      */
     fun send(
         randomId: Long?,
-        peerId: Int?,
+        peerId: Long?,
         domain: String?,
         message: String?,
         latitude: Double?,
@@ -534,7 +534,7 @@ class IMessageService : IServiceRest() {
     fun getHistory(
         offset: Int?,
         count: Int?,
-        peerId: Int,
+        peerId: Long,
         startMessageId: Int?,
         rev: Int?,
         extended: Int?,
@@ -558,7 +558,7 @@ class IMessageService : IServiceRest() {
     fun getJsonHistory(
         offset: Int?,
         count: Int?,
-        peerId: Int
+        peerId: Long
     ): Single<BaseResponse<Items<VKApiJsonString>>> {
         return rest.request(
             "messages.getHistory", form(
@@ -621,8 +621,8 @@ class IMessageService : IServiceRest() {
     }
 
     fun setMemberRole(
-        peer_id: Int?,
-        member_id: Int?,
+        peer_id: Long?,
+        member_id: Long?,
         role: String?
     ): Single<BaseResponse<Int>> {
         return rest.request(

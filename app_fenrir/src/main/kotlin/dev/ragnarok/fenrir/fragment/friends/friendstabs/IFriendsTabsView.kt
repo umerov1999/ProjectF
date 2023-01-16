@@ -6,8 +6,8 @@ import dev.ragnarok.fenrir.model.FriendsCounters
 
 interface IFriendsTabsView : IMvpView, IErrorView {
     fun displayCounters(counters: FriendsCounters)
-    fun configTabs(accountId: Int, userId: Int, isNotMyPage: Boolean)
+    fun configTabs(accountId: Long, userId: Long, isNotMyPage: Boolean)
     fun displayUserNameAtToolbar(userName: String?)
     fun setDrawerFriendsSectionSelected(selected: Boolean)
-    fun onFriendsBirthday(accountId: Int, ownerId: Int)
+    fun onFriendsBirthday(accountId: Long, ownerId: Long)
 }

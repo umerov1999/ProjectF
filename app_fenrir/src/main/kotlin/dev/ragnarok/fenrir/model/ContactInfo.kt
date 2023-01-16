@@ -1,10 +1,10 @@
 package dev.ragnarok.fenrir.model
 
-class ContactInfo(private val userId: Int) {
+class ContactInfo(private val userId: Long) {
     private var description: String? = null
     private var phone: String? = null
     private var email: String? = null
-    fun getUserId(): Int {
+    fun getUserId(): Long {
         return userId
     }
 

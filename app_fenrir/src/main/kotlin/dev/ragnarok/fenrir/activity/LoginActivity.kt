@@ -144,10 +144,10 @@ class LoginActivity : AppCompatActivity() {
             context: Context?,
             clientId: String?,
             scope: String?,
-            groupIds: Collection<Int>?
+            groupIds: Collection<Long>?
         ): Intent {
-            val ids = Utils.join(groupIds, ",", object : Utils.SimpleFunction<Int, String> {
-                override fun apply(orig: Int): String {
+            val ids = Utils.join(groupIds, ",", object : Utils.SimpleFunction<Long, String> {
+                override fun apply(orig: Long): String {
                     return orig.toString()
                 }
             })
@@ -170,7 +170,7 @@ class LoginActivity : AppCompatActivity() {
                 val groupid = matcher.group(1)
                 val token = matcher.group(2)
                 if (groupid.nonNullNoEmpty() && token.nonNullNoEmpty()) {
-                    tokens.add(Token(-groupid.toInt(), token))
+                    tokens.add(Token(-groupid.toLong(), token))
                 }
             }
             if (tokens.isEmpty()) {

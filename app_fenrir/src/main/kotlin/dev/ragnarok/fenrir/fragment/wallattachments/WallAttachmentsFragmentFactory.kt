@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.fragment.wallattachments.wallvideosattachments.WallVi
 import dev.ragnarok.fenrir.util.FindAttachmentType
 
 object WallAttachmentsFragmentFactory {
-    fun newInstance(accountId: Int, ownerId: Int, type: String?): Fragment? {
+    fun newInstance(accountId: Long, ownerId: Long, type: String?): Fragment? {
         requireNotNull(type) { "Type cant bee null" }
         var fragment: Fragment? = null
         when (type) {

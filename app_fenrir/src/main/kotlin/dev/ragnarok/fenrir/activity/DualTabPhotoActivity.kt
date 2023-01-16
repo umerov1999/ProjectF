@@ -52,8 +52,8 @@ class DualTabPhotoActivity : NoMainActivity(), PlaceProvider {
         when (place.type) {
             Place.VK_PHOTO_ALBUM -> {
                 val albumId = args.getInt(Extra.ALBUM_ID)
-                val accountId = args.getInt(Extra.ACCOUNT_ID)
-                val ownerId = args.getInt(Extra.OWNER_ID)
+                val accountId = args.getLong(Extra.ACCOUNT_ID)
+                val ownerId = args.getLong(Extra.OWNER_ID)
                 val fragment = VKPhotosFragment.newInstance(
                     accountId,
                     ownerId,

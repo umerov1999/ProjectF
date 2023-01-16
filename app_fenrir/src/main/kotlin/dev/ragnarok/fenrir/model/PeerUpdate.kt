@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.model
 
-class PeerUpdate(val accountId: Int, val peerId: Int) {
+class PeerUpdate(val accountId: Long, val peerId: Long) {
     var readIn: Read? = null
     var readOut: Read? = null
     var lastMessage: LastMessage? = null

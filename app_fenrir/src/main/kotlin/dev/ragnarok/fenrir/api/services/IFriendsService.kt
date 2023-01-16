@@ -23,7 +23,7 @@ class IFriendsService : IServiceRest() {
     @POST("execute")
     Single<BaseResponse<FriendsWithCountersResponse>> getWithMyCounters(@Field("code") String code);*/
     operator fun get(
-        userId: Int?,
+        userId: Long?,
         order: String?,
         listId: Int?,
         count: Int?,
@@ -60,7 +60,7 @@ class IFriendsService : IServiceRest() {
 
     //https://vk.com/dev/friends.getLists
     fun getLists(
-        userId: Int?,
+        userId: Long?,
         returnSystem: Int?
     ): Single<BaseResponse<Items<VKApiFriendList>>> {
         return rest.request(
@@ -72,7 +72,7 @@ class IFriendsService : IServiceRest() {
     }
 
     //https://vk.com/dev/friends.delete
-    fun delete(userId: Int): Single<BaseResponse<DeleteFriendResponse>> {
+    fun delete(userId: Long): Single<BaseResponse<DeleteFriendResponse>> {
         return rest.request(
             "friends.delete",
             form("user_id" to userId),
@@ -82,7 +82,7 @@ class IFriendsService : IServiceRest() {
 
     //https://vk.com/dev/friends.add
     fun add(
-        userId: Int,
+        userId: Long,
         text: String?,
         follow: Int?
     ): Single<BaseResponse<Int>> {
@@ -96,7 +96,7 @@ class IFriendsService : IServiceRest() {
     }
 
     fun deleteSubscriber(
-        subscriber_id: Int
+        subscriber_id: Long
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "friends.deleteSubscriber", form(
@@ -107,7 +107,7 @@ class IFriendsService : IServiceRest() {
 
     //https://vk.com/dev/friends.search
     fun search(
-        userId: Int,
+        userId: Long,
         query: String?,
         fields: String?,
         nameCase: String?,

@@ -9,5 +9,5 @@ interface IVideoAlbumsByVideoView : IMvpView, IErrorView {
     fun notifyDataAdded(position: Int, count: Int)
     fun displayLoading(loading: Boolean)
     fun notifyDataSetChanged()
-    fun openAlbum(accountId: Int, ownerId: Int, albumId: Int, action: String?, title: String?)
+    fun openAlbum(accountId: Long, ownerId: Long, albumId: Int, action: String?, title: String?)
 }

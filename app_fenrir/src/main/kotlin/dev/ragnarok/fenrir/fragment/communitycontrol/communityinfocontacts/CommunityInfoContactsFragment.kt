@@ -53,7 +53,7 @@ class CommunityInfoContactsFragment :
         return object : IPresenterFactory<CommunityInfoContactsPresenter> {
             override fun create(): CommunityInfoContactsPresenter {
                 return CommunityInfoContactsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.GROUP_ID)!!,
                     saveInstanceState
                 )
@@ -73,7 +73,7 @@ class CommunityInfoContactsFragment :
         mAdapter?.setData(managers)
     }
 
-    override fun showUserProfile(accountId: Int, user: User) {
+    override fun showUserProfile(accountId: Long, user: User) {
         getOwnerWallPlace(accountId, user).tryOpenWith(requireActivity())
     }
 
@@ -90,9 +90,9 @@ class CommunityInfoContactsFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int, groupId: Community?): CommunityInfoContactsFragment {
+        fun newInstance(accountId: Long, groupId: Community?): CommunityInfoContactsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.GROUP_ID, groupId)
             val fragment = CommunityInfoContactsFragment()
             fragment.arguments = args

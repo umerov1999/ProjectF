@@ -20,7 +20,7 @@ class VKApiPoll
     /**
      * ID of the user or community that owns this poll.
      */
-    var owner_id = 0
+    var owner_id = 0L
 
     /**
      * Date (in Unix time) the poll was created.
@@ -56,7 +56,7 @@ class VKApiPoll
      */
     var is_board = false
     var closed = false
-    var author_id = 0
+    var author_id = 0L
     var can_vote = false
     var can_edit = false
     var can_report = false

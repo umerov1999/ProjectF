@@ -25,7 +25,7 @@ import dev.ragnarok.fenrir.util.Utils.safeCheck
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.*
 
-class AudiosLocalPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IAudiosLocalView>(accountId, savedInstanceState) {
     private val origin_audios: ArrayList<Audio>
     private val audios: ArrayList<Audio>

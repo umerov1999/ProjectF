@@ -25,15 +25,15 @@ class RelationshipInteractor(
     private val repositories: IStorages,
     private val networker: INetworker
 ) : IRelationshipInteractor {
-    override fun getCachedGroupMembers(accountId: Int, groupId: Int): Single<List<Owner>> {
+    override fun getCachedGroupMembers(accountId: Long, groupId: Long): Single<List<Owner>> {
         return repositories.relativeship()
             .getGroupMembers(accountId, groupId)
             .map { obj -> buildOwnerUsersFromDbo(obj) }
     }
 
     override fun getGroupMembers(
-        accountId: Int,
-        groupId: Int,
+        accountId: Long,
+        groupId: Long,
         offset: Int,
         count: Int,
         filter: String?
@@ -63,27 +63,27 @@ class RelationshipInteractor(
             }
     }
 
-    override fun getCachedFriends(accountId: Int, objectId: Int): Single<List<User>> {
+    override fun getCachedFriends(accountId: Long, objectId: Long): Single<List<User>> {
         return repositories.relativeship()
             .getFriends(accountId, objectId)
             .map { obj -> buildUsersFromDbo(obj) }
     }
 
-    override fun getCachedFollowers(accountId: Int, objectId: Int): Single<List<User>> {
+    override fun getCachedFollowers(accountId: Long, objectId: Long): Single<List<User>> {
         return repositories.relativeship()
             .getFollowers(accountId, objectId)
             .map { obj -> buildUsersFromDbo(obj) }
     }
 
-    override fun getCachedRequests(accountId: Int): Single<List<User>> {
+    override fun getCachedRequests(accountId: Long): Single<List<User>> {
         return repositories.relativeship()
             .getRequests(accountId)
             .map { obj -> buildUsersFromDbo(obj) }
     }
 
     override fun getActualFriendsList(
-        accountId: Int,
-        objectId: Int,
+        accountId: Long,
+        objectId: Long,
         count: Int?,
         offset: Int
     ): Single<List<User>> {
@@ -101,8 +101,8 @@ class RelationshipInteractor(
     }
 
     override fun getOnlineFriends(
-        accountId: Int,
-        objectId: Int,
+        accountId: Long,
+        objectId: Long,
         count: Int,
         offset: Int
     ): Single<List<User>> {
@@ -115,7 +115,7 @@ class RelationshipInteractor(
             .map { obj -> transformUsers(obj) }
     }
 
-    override fun getRecommendations(accountId: Int, count: Int?): Single<List<User>> {
+    override fun getRecommendations(accountId: Long, count: Int?): Single<List<User>> {
         return networker.vkDefault(accountId)
             .friends()
             .getRecommendations(count, Fields.FIELDS_BASE_USER, null)
@@ -123,15 +123,15 @@ class RelationshipInteractor(
             .map { obj -> transformUsers(obj) }
     }
 
-    override fun deleteSubscriber(accountId: Int, subscriber_id: Int): Single<Int> {
+    override fun deleteSubscriber(accountId: Long, subscriber_id: Long): Single<Int> {
         return networker.vkDefault(accountId)
             .friends()
             .deleteSubscriber(subscriber_id)
     }
 
     override fun getFollowers(
-        accountId: Int,
-        objectId: Int,
+        accountId: Long,
+        objectId: Long,
         count: Int,
         offset: Int
     ): Single<List<User>> {
@@ -149,7 +149,7 @@ class RelationshipInteractor(
     }
 
     override fun getRequests(
-        accountId: Int,
+        accountId: Long,
         offset: Int?,
         count: Int?,
         store: Boolean
@@ -172,8 +172,8 @@ class RelationshipInteractor(
     }
 
     override fun getMutualFriends(
-        accountId: Int,
-        objectId: Int,
+        accountId: Long,
+        objectId: Long,
         count: Int,
         offset: Int
     ): Single<List<User>> {
@@ -184,8 +184,8 @@ class RelationshipInteractor(
     }
 
     override fun searchFriends(
-        accountId: Int,
-        userId: Int,
+        accountId: Long,
+        userId: Long,
         count: Int,
         offset: Int,
         q: String?
@@ -199,7 +199,7 @@ class RelationshipInteractor(
             }
     }
 
-    override fun getFriendsCounters(accountId: Int, userId: Int): Single<FriendsCounters> {
+    override fun getFriendsCounters(accountId: Long, userId: Long): Single<FriendsCounters> {
         return networker.vkDefault(accountId)
             .users()[listOf(userId), null, "counters", null]
             .map { users ->
@@ -222,8 +222,8 @@ class RelationshipInteractor(
     }
 
     override fun addFriend(
-        accountId: Int,
-        userId: Int,
+        accountId: Long,
+        userId: Long,
         optionalText: String?,
         keepFollow: Boolean
     ): Single<Int> {
@@ -232,7 +232,7 @@ class RelationshipInteractor(
             .add(userId, optionalText, keepFollow)
     }
 
-    override fun deleteFriends(accountId: Int, userId: Int): Single<Int> {
+    override fun deleteFriends(accountId: Long, userId: Long): Single<Int> {
         return networker.vkDefault(accountId)
             .friends()
             .delete(userId)

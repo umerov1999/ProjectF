@@ -47,7 +47,7 @@ import kotlin.math.abs
 
 open class PhotoPagerPresenter internal constructor(
     protected var mPhotos: ArrayList<Photo>,
-    accountId: Int,
+    accountId: Long,
     private val read_only: Boolean,
     private val context: Context,
     savedInstanceState: Bundle?
@@ -353,7 +353,7 @@ open class PhotoPagerPresenter internal constructor(
             })
     }
 
-    private fun onDeleteOrRestoreResult(photoId: Int, ownerId: Int, deleted: Boolean) {
+    private fun onDeleteOrRestoreResult(photoId: Int, ownerId: Long, deleted: Boolean) {
         val index = Utils.findIndexById(mPhotos, photoId, ownerId)
         if (index != -1) {
             val photo = mPhotos[index]
@@ -364,7 +364,7 @@ open class PhotoPagerPresenter internal constructor(
         }
     }
 
-    private fun interceptLike(ownerId: Int, photoId: Int, count: Int, userLikes: Boolean) {
+    private fun interceptLike(ownerId: Long, photoId: Int, count: Int, userLikes: Boolean) {
         for (photo in mPhotos) {
             if (photo.getObjectId() == photoId && photo.ownerId == ownerId) {
                 photo.setLikesCount(count)
@@ -414,7 +414,7 @@ open class PhotoPagerPresenter internal constructor(
         }
     }
 
-    private fun transform_owner(owner_id: Int): String {
+    private fun transform_owner(owner_id: Long): String {
         return if (owner_id < 0) "club" + abs(owner_id) else "id$owner_id"
     }
 
@@ -574,7 +574,7 @@ open class PhotoPagerPresenter internal constructor(
                 .subscribe({
                     val buttons: MutableList<FunctionSource> = ArrayList(it.size)
                     for (i in it) {
-                        if (i.user_id != 0) {
+                        if (i.user_id != 0L) {
                             buttons.add(FunctionSource(i.tagged_name, R.drawable.person) {
                                 PlaceFactory.getOwnerWallPlace(
                                     accountId, i.user_id, null

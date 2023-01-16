@@ -20,9 +20,9 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.subscribeOnIOAndIgnore
 import io.reactivex.rxjava3.core.Single
 
 class CommentCreatePresenter(
-    accountId: Int,
+    accountId: Long,
     commentDbid: Int,
-    sourceOwnerId: Int,
+    sourceOwnerId: Long,
     body: String?,
     savedInstanceState: Bundle?
 ) : AbsAttachmentsEditPresenter<ICreateCommentView>(accountId, savedInstanceState) {

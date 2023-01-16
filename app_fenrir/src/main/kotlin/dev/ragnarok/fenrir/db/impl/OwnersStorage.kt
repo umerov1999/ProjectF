@@ -33,7 +33,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 
 internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwnersStorage {
     private val banActionsPublisher: PublishSubject<BanAction> = PublishSubject.create()
-    private val managementActionsPublisher: PublishSubject<Pair<Int, Manager>> =
+    private val managementActionsPublisher: PublishSubject<Pair<Long, Manager>> =
         PublishSubject.create()
 
     override fun fireBanAction(action: BanAction): Completable {
@@ -44,15 +44,18 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         return banActionsPublisher
     }
 
-    override fun fireManagementChangeAction(manager: Pair<Int, Manager>): Completable {
+    override fun fireManagementChangeAction(manager: Pair<Long, Manager>): Completable {
         return Completable.fromAction { managementActionsPublisher.onNext(manager) }
     }
 
-    override fun observeManagementChanges(): Observable<Pair<Int, Manager>> {
+    override fun observeManagementChanges(): Observable<Pair<Long, Manager>> {
         return managementActionsPublisher
     }
 
-    override fun getUserDetails(accountId: Int, userId: Int): Single<Optional<UserDetailsEntity>> {
+    override fun getUserDetails(
+        accountId: Long,
+        userId: Long
+    ): Single<Optional<UserDetailsEntity>> {
         return Single.fromCallable {
             val uri = getUserDetContentUriFor(accountId)
             val where = BaseColumns._ID + " = ?"
@@ -74,8 +77,8 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     override fun getGroupsDetails(
-        accountId: Int,
-        groupId: Int
+        accountId: Long,
+        groupId: Long
     ): Single<Optional<CommunityDetailsEntity>> {
         return Single.fromCallable {
             val uri = getGroupsDetContentUriFor(accountId)
@@ -98,8 +101,8 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     override fun storeGroupsDetails(
-        accountId: Int,
-        groupId: Int,
+        accountId: Long,
+        groupId: Long,
         dbo: CommunityDetailsEntity
     ): Completable {
         return Completable.fromAction {
@@ -115,8 +118,8 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     override fun storeUserDetails(
-        accountId: Int,
-        userId: Int,
+        accountId: Long,
+        userId: Long,
         dbo: UserDetailsEntity
     ): Completable {
         return Completable.fromAction {
@@ -131,7 +134,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         }
     }
 
-    override fun applyPathes(accountId: Int, patches: List<UserPatch>): Completable {
+    override fun applyPathes(accountId: Long, patches: List<UserPatch>): Completable {
         return if (patches.isEmpty()) {
             Completable.complete()
         } else Completable.create { emitter: CompletableEmitter ->
@@ -165,11 +168,11 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     override fun findFriendsListsByIds(
-        accountId: Int,
-        userId: Int,
-        ids: Collection<Int>
-    ): Single<MutableMap<Int, FriendListEntity>> {
-        return Single.create { emitter: SingleEmitter<MutableMap<Int, FriendListEntity>> ->
+        accountId: Long,
+        userId: Long,
+        ids: Collection<Long>
+    ): Single<MutableMap<Long, FriendListEntity>> {
+        return Single.create { emitter: SingleEmitter<MutableMap<Long, FriendListEntity>> ->
             val uri = getFriendListsContentUriFor(accountId)
             val where =
                 FriendListsColumns.USER_ID + " = ? " + " AND " + FriendListsColumns.LIST_ID + " IN(" + Utils.join(
@@ -178,7 +181,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 ) + ")"
             val args = arrayOf(userId.toString())
             val cursor = context.contentResolver.query(uri, null, where, args, null)
-            @SuppressLint("UseSparseArrays") val map: MutableMap<Int, FriendListEntity> =
+            @SuppressLint("UseSparseArrays") val map: MutableMap<Long, FriendListEntity> =
                 HashMap(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
@@ -194,7 +197,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         }
     }
 
-    override fun getLocalizedUserActivity(accountId: Int, userId: Int): Maybe<String> {
+    override fun getLocalizedUserActivity(accountId: Long, userId: Long): Maybe<String> {
         return Maybe.create { e: MaybeEmitter<String> ->
             val uProjection = arrayOf(UserColumns.LAST_SEEN, UserColumns.ONLINE, UserColumns.SEX)
             val uri = getUserContentUriFor(accountId)
@@ -218,7 +221,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         }
     }
 
-    override fun findUserDboById(accountId: Int, ownerId: Int): Single<Optional<UserEntity>> {
+    override fun findUserDboById(accountId: Long, ownerId: Long): Single<Optional<UserEntity>> {
         return Single.create { emitter: SingleEmitter<Optional<UserEntity>> ->
             val where = BaseColumns._ID + " = ?"
             val args = arrayOf(ownerId.toString())
@@ -236,8 +239,8 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     override fun findCommunityDboById(
-        accountId: Int,
-        ownerId: Int
+        accountId: Long,
+        ownerId: Long
     ): Single<Optional<CommunityEntity>> {
         return Single.create { emitter: SingleEmitter<Optional<CommunityEntity>> ->
             val where = BaseColumns._ID + " = ?"
@@ -255,7 +258,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         }
     }
 
-    override fun findUserByDomain(accountId: Int, domain: String?): Single<Optional<UserEntity>> {
+    override fun findUserByDomain(accountId: Long, domain: String?): Single<Optional<UserEntity>> {
         return Single.create { emitter: SingleEmitter<Optional<UserEntity>> ->
             val uri = getUserContentUriFor(accountId)
             val where = UserColumns.DOMAIN + " LIKE ?"
@@ -272,7 +275,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         }
     }
 
-    override fun findFriendBirtday(accountId: Int): Single<List<User>> {
+    override fun findFriendBirtday(accountId: Long): Single<List<User>> {
         return Single.create {
             val uri = getUserContentUriFor(accountId)
             val where = UserColumns.BDATE + " IS NOT NULL AND " + UserColumns.IS_FRIEND + " = 1"
@@ -287,7 +290,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     override fun findCommunityByDomain(
-        accountId: Int,
+        accountId: Long,
         domain: String?
     ): Single<Optional<CommunityEntity>> {
         return Single.create { emitter: SingleEmitter<Optional<CommunityEntity>> ->
@@ -306,7 +309,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         }
     }
 
-    override fun findUserDbosByIds(accountId: Int, ids: List<Int>): Single<List<UserEntity>> {
+    override fun findUserDbosByIds(accountId: Long, ids: List<Long>): Single<List<UserEntity>> {
         return if (ids.isEmpty()) {
             Single.just(emptyList())
         } else Single.create { emitter: SingleEmitter<List<UserEntity>> ->
@@ -336,8 +339,8 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     override fun findCommunityDbosByIds(
-        accountId: Int,
-        ids: List<Int>
+        accountId: Long,
+        ids: List<Long>
     ): Single<List<CommunityEntity>> {
         return if (ids.isEmpty()) {
             Single.just(emptyList())
@@ -367,7 +370,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         }
     }
 
-    override fun storeUserDbos(accountId: Int, users: List<UserEntity>): Completable {
+    override fun storeUserDbos(accountId: Long, users: List<UserEntity>): Completable {
         return Completable.create { emitter: CompletableEmitter ->
             val operations = ArrayList<ContentProviderOperation>(users.size)
             appendUsersInsertOperation(operations, accountId, users)
@@ -376,7 +379,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         }
     }
 
-    override fun storeOwnerEntities(accountId: Int, entities: OwnerEntities?): Completable {
+    override fun storeOwnerEntities(accountId: Long, entities: OwnerEntities?): Completable {
         return Completable.create { emitter: CompletableEmitter ->
             entities ?: return@create emitter.onComplete()
             val operations = ArrayList<ContentProviderOperation>(
@@ -390,7 +393,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     override fun storeCommunityDbos(
-        accountId: Int,
+        accountId: Long,
         communityEntities: List<CommunityEntity>
     ): Completable {
         return Completable.create { emitter: CompletableEmitter ->
@@ -401,13 +404,16 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         }
     }
 
-    override fun getMissingUserIds(accountId: Int, ids: Collection<Int>): Single<Collection<Int>> {
-        return Single.create { e: SingleEmitter<Collection<Int>> ->
+    override fun getMissingUserIds(
+        accountId: Long,
+        ids: Collection<Long>
+    ): Single<Collection<Long>> {
+        return Single.create { e: SingleEmitter<Collection<Long>> ->
             if (ids.isEmpty()) {
                 e.onSuccess(emptyList())
                 return@create
             }
-            val copy: MutableSet<Int> = HashSet(ids)
+            val copy: MutableSet<Long> = HashSet(ids)
             val projection = arrayOf(BaseColumns._ID)
             val cursor = contentResolver.query(
                 getUserContentUriFor(accountId),
@@ -415,7 +421,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             )
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    val id = cursor.getInt(BaseColumns._ID)
+                    val id = cursor.getLong(BaseColumns._ID)
                     copy.remove(id)
                 }
                 cursor.close()
@@ -425,15 +431,15 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     override fun getMissingCommunityIds(
-        accountId: Int,
-        ids: Collection<Int>
-    ): Single<Collection<Int>> {
-        return Single.create { e: SingleEmitter<Collection<Int>> ->
+        accountId: Long,
+        ids: Collection<Long>
+    ): Single<Collection<Long>> {
+        return Single.create { e: SingleEmitter<Collection<Long>> ->
             if (ids.isEmpty()) {
                 e.onSuccess(emptyList())
                 return@create
             }
-            val copy: MutableSet<Int> = HashSet(ids)
+            val copy: MutableSet<Long> = HashSet(ids)
             val projection = arrayOf(BaseColumns._ID)
             val cursor = contentResolver.query(
                 getGroupsContentUriFor(accountId),
@@ -441,7 +447,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             )
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    val id = cursor.getInt(BaseColumns._ID)
+                    val id = cursor.getLong(BaseColumns._ID)
                     copy.remove(id)
                 }
                 cursor.close()
@@ -451,7 +457,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     private fun mapFriendsList(cursor: Cursor): FriendListEntity {
-        val id = cursor.getInt(FriendListsColumns.LIST_ID)
+        val id = cursor.getLong(FriendListsColumns.LIST_ID)
         val name = cursor.getString(FriendListsColumns.NAME)
         return FriendListEntity(id, name)
     }
@@ -484,7 +490,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
 
         fun appendOwnersInsertOperations(
             operations: MutableList<ContentProviderOperation>,
-            accountId: Int,
+            accountId: Long,
             ownerEntities: OwnerEntities?
         ) {
             ownerEntities ?: return
@@ -495,7 +501,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
 
         fun appendUsersInsertOperation(
             operations: MutableList<ContentProviderOperation>,
-            accountId: Int,
+            accountId: Long,
             dbos: List<UserEntity>?
         ) {
             dbos ?: return
@@ -508,7 +514,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
 
         fun appendCommunitiesInsertOperation(
             operations: MutableList<ContentProviderOperation>,
-            accountId: Int,
+            accountId: Long,
             dbos: List<CommunityEntity>?
         ) {
             dbos ?: return
@@ -570,7 +576,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         }
 
         internal fun mapCommunityDbo(cursor: Cursor): CommunityEntity {
-            return CommunityEntity(cursor.getInt(BaseColumns._ID))
+            return CommunityEntity(cursor.getLong(BaseColumns._ID))
                 .setName(cursor.getString(GroupColumns.NAME))
                 .setScreenName(cursor.getString(GroupColumns.SCREEN_NAME))
                 .setClosed(cursor.getInt(GroupColumns.IS_CLOSED))
@@ -589,7 +595,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         }
 
         internal fun mapUserDbo(cursor: Cursor): UserEntity {
-            return UserEntity(cursor.getInt(BaseColumns._ID))
+            return UserEntity(cursor.getLong(BaseColumns._ID))
                 .setFirstName(cursor.getString(UserColumns.FIRST_NAME))
                 .setLastName(cursor.getString(UserColumns.LAST_NAME))
                 .setOnline(cursor.getBoolean(UserColumns.ONLINE))

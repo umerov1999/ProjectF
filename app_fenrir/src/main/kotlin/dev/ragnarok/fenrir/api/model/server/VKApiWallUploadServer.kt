@@ -21,14 +21,14 @@ class VKApiWallUploadServer : Parcelable, UploadServer {
     /**
      * идентификатор пользователя, от чьего имени будет загружено фото
      */
-    var user_id = 0
+    var user_id = 0L
 
     @Suppress("UNUSED")
     constructor()
     internal constructor(parcel: Parcel) {
         url = parcel.readString()
         album_id = parcel.readInt()
-        user_id = parcel.readInt()
+        user_id = parcel.readLong()
     }
 
     override fun describeContents(): Int {
@@ -38,7 +38,7 @@ class VKApiWallUploadServer : Parcelable, UploadServer {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeString(url)
         dest.writeInt(album_id)
-        dest.writeInt(user_id)
+        dest.writeLong(user_id)
     }
 
     companion object CREATOR : Parcelable.Creator<VKApiWallUploadServer> {

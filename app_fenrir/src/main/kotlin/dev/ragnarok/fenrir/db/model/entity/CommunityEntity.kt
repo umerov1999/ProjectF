@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.db.model.entity
 
-class CommunityEntity(val id: Int) {
+class CommunityEntity(val id: Long) {
     var name: String? = null
         private set
     var screenName: String? = null

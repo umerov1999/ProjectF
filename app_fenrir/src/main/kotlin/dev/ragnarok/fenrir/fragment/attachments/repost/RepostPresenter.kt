@@ -10,8 +10,8 @@ import dev.ragnarok.fenrir.model.AttachmentEntry
 import dev.ragnarok.fenrir.model.Post
 
 class RepostPresenter(
-    accountId: Int, private val post: Post,
-    private val targetGroupId: Int?, savedInstanceState: Bundle?
+    accountId: Long, private val post: Post,
+    private val targetGroupId: Long?, savedInstanceState: Bundle?
 ) :
     AbsAttachmentsEditPresenter<IRepostView>(accountId, savedInstanceState) {
     private val walls: IWallsRepository = Repository.walls

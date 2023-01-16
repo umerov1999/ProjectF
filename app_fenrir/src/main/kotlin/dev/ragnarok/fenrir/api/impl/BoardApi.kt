@@ -10,10 +10,10 @@ import dev.ragnarok.fenrir.api.services.IBoardService
 import dev.ragnarok.fenrir.requireNonNull
 import io.reactivex.rxjava3.core.Single
 
-internal class BoardApi(accountId: Int, provider: IServiceProvider) :
+internal class BoardApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IBoardApi {
     override fun getComments(
-        groupId: Int,
+        groupId: Long,
         topicId: Int,
         needLikes: Boolean?,
         startCommentId: Int?,
@@ -41,7 +41,7 @@ internal class BoardApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun restoreComment(groupId: Int, topicId: Int, commentId: Int): Single<Boolean> {
+    override fun restoreComment(groupId: Long, topicId: Int, commentId: Int): Single<Boolean> {
         return provideService(IBoardService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.restoreComment(groupId, topicId, commentId)
@@ -50,7 +50,7 @@ internal class BoardApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun deleteComment(groupId: Int, topicId: Int, commentId: Int): Single<Boolean> {
+    override fun deleteComment(groupId: Long, topicId: Int, commentId: Int): Single<Boolean> {
         return provideService(IBoardService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.deleteComment(groupId, topicId, commentId)
@@ -60,7 +60,7 @@ internal class BoardApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getTopics(
-        groupId: Int, topicIds: Collection<Int>?, order: Int?,
+        groupId: Long, topicIds: Collection<Int>?, order: Int?,
         offset: Int?, count: Int?, extended: Boolean?,
         preview: Int?, previewLength: Int?, fields: String?
     ): Single<TopicsResponse> {
@@ -92,7 +92,7 @@ internal class BoardApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun editComment(
-        groupId: Int, topicId: Int, commentId: Int, message: String?,
+        groupId: Long, topicId: Int, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
     ): Single<Boolean> {
         return provideService(IBoardService(), TokenType.USER)
@@ -112,7 +112,7 @@ internal class BoardApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun addComment(
-        groupId: Int?,
+        groupId: Long?,
         topicId: Int,
         message: String?,
         attachments: Collection<IAttachmentToken>?,

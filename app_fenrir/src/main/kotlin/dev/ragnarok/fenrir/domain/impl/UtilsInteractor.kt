@@ -29,13 +29,13 @@ class UtilsInteractor(
 ) : IUtilsInteractor {
     @SuppressLint("UseSparseArrays")
     override fun createFullPrivacies(
-        accountId: Int,
+        accountId: Long,
         orig: Map<Int, SimplePrivacy>
     ): Single<Map<Int, Privacy>> {
         return Single.just(orig)
             .flatMap {
-                val uids: MutableSet<Int> = HashSet()
-                val listsIds: MutableSet<Int> = HashSet()
+                val uids: MutableSet<Long> = HashSet()
+                val listsIds: MutableSet<Long> = HashSet()
                 for ((_, privacy) in orig) {
                     if (privacy.getEntries().isNullOrEmpty()) {
                         continue
@@ -68,7 +68,7 @@ class UtilsInteractor(
             }
     }
 
-    override fun resolveDomain(accountId: Int, domain: String?): Single<Optional<Owner>> {
+    override fun resolveDomain(accountId: Long, domain: String?): Single<Optional<Owner>> {
         return stores.owners()
             .findUserByDomain(accountId, domain)
             .flatMap<Optional<Owner>> { optionalUserEntity: Optional<UserEntity> ->
@@ -100,7 +100,7 @@ class UtilsInteractor(
                             when (response.type) {
                                 "user" -> {
                                     val userId =
-                                        it.toInt()
+                                        it.toLong()
                                     ownersRepository.getBaseOwnerInfo(
                                         accountId,
                                         userId,
@@ -110,7 +110,7 @@ class UtilsInteractor(
                                 }
                                 "group" -> {
                                     val ownerId = -abs(
-                                        it.toInt()
+                                        it.toLong()
                                     )
                                     ownersRepository.getBaseOwnerInfo(
                                         accountId,
@@ -128,17 +128,17 @@ class UtilsInteractor(
 
     @SuppressLint("UseSparseArrays")
     private fun findFriendListsByIds(
-        accountId: Int,
-        userId: Int,
-        ids: Collection<Int>
-    ): Single<Map<Int, FriendList>> {
+        accountId: Long,
+        userId: Long,
+        ids: Collection<Long>
+    ): Single<Map<Long, FriendList>> {
         return if (ids.isEmpty()) {
             Single.just(emptyMap())
         } else stores.owners()
             .findFriendsListsByIds(accountId, userId, ids)
             .flatMap { mp ->
                 if (mp.size == ids.size) {
-                    val data: MutableMap<Int, FriendList> = HashMap(mp.size)
+                    val data: MutableMap<Long, FriendList> = HashMap(mp.size)
                     for (id in ids) {
                         val dbo = mp[id] ?: continue
                         data[id] = FriendList(dbo.id, dbo.name)
@@ -155,7 +155,7 @@ class UtilsInteractor(
                     }
                     .flatMap { dtos ->
                         val dbos: MutableList<FriendListEntity> = ArrayList(dtos.size)
-                        val data: MutableMap<Int, FriendList> = HashMap(mp.size)
+                        val data: MutableMap<Long, FriendList> = HashMap(mp.size)
                         for (dto in dtos) {
                             dbos.add(FriendListEntity(dto.id, dto.name))
                         }
@@ -180,7 +180,7 @@ class UtilsInteractor(
     }
 
     override fun getLastShortenedLinks(
-        accountId: Int,
+        accountId: Long,
         count: Int?,
         offset: Int?
     ): Single<List<ShortLink>> {
@@ -199,34 +199,34 @@ class UtilsInteractor(
             }
     }
 
-    override fun getShortLink(accountId: Int, url: String?, t_private: Int?): Single<ShortLink> {
+    override fun getShortLink(accountId: Long, url: String?, t_private: Int?): Single<ShortLink> {
         return networker.vkDefault(accountId)
             .utils()
             .getShortLink(url, t_private)
             .map { obj -> transform(obj) }
     }
 
-    override fun deleteFromLastShortened(accountId: Int, key: String?): Single<Int> {
+    override fun deleteFromLastShortened(accountId: Long, key: String?): Single<Int> {
         return networker.vkDefault(accountId)
             .utils()
             .deleteFromLastShortened(key)
     }
 
-    override fun checkLink(accountId: Int, url: String?): Single<VKApiCheckedLink> {
+    override fun checkLink(accountId: Long, url: String?): Single<VKApiCheckedLink> {
         return networker.vkDefault(accountId)
             .utils()
             .checkLink(url)
     }
 
-    override fun joinChatByInviteLink(accountId: Int, link: String?): Single<VKApiChatResponse> {
+    override fun joinChatByInviteLink(accountId: Long, link: String?): Single<VKApiChatResponse> {
         return networker.vkDefault(accountId)
             .utils()
             .joinChatByInviteLink(link)
     }
 
     override fun getInviteLink(
-        accountId: Int,
-        peer_id: Int?,
+        accountId: Long,
+        peer_id: Long?,
         reset: Int?
     ): Single<VKApiLinkResponse> {
         return networker.vkDefault(accountId)
@@ -234,13 +234,13 @@ class UtilsInteractor(
             .getInviteLink(peer_id, reset)
     }
 
-    override fun customScript(accountId: Int, code: String?): Single<Int> {
+    override fun customScript(accountId: Long, code: String?): Single<Int> {
         return networker.vkDefault(accountId)
             .utils()
             .customScript(code)
     }
 
-    override fun getServerTime(accountId: Int): Single<Long> {
+    override fun getServerTime(accountId: Long): Single<Long> {
         return networker.vkDefault(accountId)
             .utils()
             .getServerTime()

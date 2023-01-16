@@ -75,8 +75,8 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
             }
             R.id.action_catalog_v2_find_friends -> {
                 PlaceFactory.getCatalogV2AudioCatalogPlace(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     null,
                     null,
                     "https://vk.com/audio?section=recoms_friends"
@@ -85,8 +85,8 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
             }
             R.id.action_catalog_v2_find_groups -> {
                 PlaceFactory.getCatalogV2AudioCatalogPlace(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     null,
                     null,
                     "https://vk.com/audio?section=recommended_groups"
@@ -95,8 +95,8 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
             }
             R.id.action_catalog_v2_recent -> {
                 PlaceFactory.getCatalogV2AudioCatalogPlace(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     null,
                     null,
                     "https://vk.com/audio?section=recent"
@@ -105,8 +105,8 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
             }
             R.id.action_catalog_v2_artists -> {
                 PlaceFactory.getCatalogV2AudioCatalogPlace(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     null,
                     null,
                     "https://vk.com/audio?section=artist_recoms"
@@ -121,7 +121,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
         return requireArguments().getString(Extra.ARTIST)
             .isNullOrEmpty() && requireArguments().getString(Extra.QUERY)
             .isNullOrEmpty() && requireArguments().getString(Extra.URL)
-            .isNullOrEmpty() && requireArguments().getInt(Extra.ACCOUNT_ID) == requireArguments().getInt(
+            .isNullOrEmpty() && requireArguments().getLong(Extra.ACCOUNT_ID) == requireArguments().getLong(
             Extra.OWNER_ID
         )
     }
@@ -222,7 +222,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
         mAdapter?.notifyDataSetChanged()
     }
 
-    override fun search(accountId: Int, q: String) {
+    override fun search(accountId: Long, q: String) {
         PlaceFactory.getCatalogV2AudioCatalogPlace(accountId, accountId, null, q, null)
             .tryOpenWith(requireActivity())
     }
@@ -269,8 +269,8 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
         return object : IPresenterFactory<CatalogV2ListPresenter> {
             override fun create(): CatalogV2ListPresenter {
                 return CatalogV2ListPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     requireArguments().getString(Extra.ARTIST),
                     requireArguments().getString(Extra.QUERY),
                     requireArguments().getString(Extra.URL),
@@ -313,15 +313,15 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 )
             } else when (pFragments[position].customType) {
                 TYPE_LOCAL_AUDIO -> return AudiosLocalFragment.newInstance(
-                    requireArguments().getInt(Extra.ACCOUNT_ID)
+                    requireArguments().getLong(Extra.ACCOUNT_ID)
                 )
                 TYPE_LOCAL_SERVER_AUDIO -> return AudiosLocalServerFragment.newInstance(
-                    requireArguments().getInt(Extra.ACCOUNT_ID)
+                    requireArguments().getLong(Extra.ACCOUNT_ID)
                 )
                 TYPE_AUDIO -> {
                     val args = AudiosFragment.buildArgs(
-                        requireArguments().getInt(Extra.ACCOUNT_ID),
-                        requireArguments().getInt(Extra.OWNER_ID),
+                        requireArguments().getLong(Extra.ACCOUNT_ID),
+                        requireArguments().getLong(Extra.OWNER_ID),
                         null,
                         null
                     )
@@ -330,8 +330,8 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 }
                 TYPE_PLAYLIST -> {
                     val fragment = AudioPlaylistsFragment.newInstance(
-                        requireArguments().getInt(Extra.ACCOUNT_ID),
-                        requireArguments().getInt(Extra.OWNER_ID)
+                        requireArguments().getLong(Extra.ACCOUNT_ID),
+                        requireArguments().getLong(Extra.OWNER_ID)
                     )
                     fragment.requireArguments()
                         .putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
@@ -339,8 +339,8 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 }
                 TYPE_RECOMMENDATIONS -> {
                     val fragment = AudiosRecommendationFragment.newInstance(
-                        requireArguments().getInt(Extra.ACCOUNT_ID),
-                        requireArguments().getInt(Extra.OWNER_ID), false, 0
+                        requireArguments().getLong(Extra.ACCOUNT_ID),
+                        requireArguments().getLong(Extra.OWNER_ID), false, 0
                     )
                     fragment.requireArguments()
                         .putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
@@ -357,12 +357,12 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
 
     companion object {
         fun newInstance(
-            accountId: Int,
-            ownerId: Int,
+            accountId: Long,
+            ownerId: Long,
         ): CatalogV2ListFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putString(Extra.ARTIST, null)
             val fragment = CatalogV2ListFragment()
             fragment.arguments = args
@@ -370,15 +370,15 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
         }
 
         fun buildArgs(
-            accountId: Int,
-            ownerId: Int,
+            accountId: Long,
+            ownerId: Long,
             artistId: String?,
             query: String?,
             url: String?
         ): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putString(Extra.ARTIST, artistId)
             args.putString(Extra.QUERY, query)
             args.putString(Extra.URL, url)

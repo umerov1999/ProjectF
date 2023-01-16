@@ -53,7 +53,7 @@ class AccountAdapter(
         val account = getByPosition(position)
         val owner = account.owner
         if (owner == null) {
-            holder.firstName.text = account.getObjectId().toString()
+            holder.firstName.text = account.getOwnerObjectId().toString()
             displayAvatar(holder.avatar, transformation, null, Constants.PICASSO_TAG)
         } else {
             holder.firstName.text = owner.fullName
@@ -69,7 +69,7 @@ class AccountAdapter(
             if (owner.domain.nonNullNoEmpty()) {
                 holder.domain.text = "@" + owner.domain
             } else {
-                holder.domain.text = "@id" + account.getObjectId()
+                holder.domain.text = "@id" + account.getOwnerObjectId()
             }
             holder.tvLastTime.visibility = View.VISIBLE
             holder.tvLastTime.text = UserInfoResolveUtil.getUserActivityLine(context, owner, false)
@@ -83,11 +83,11 @@ class AccountAdapter(
             holder.vOnline.setIcon(iconRes ?: 0)
             holder.vOnline.visibility = if (online) View.VISIBLE else View.GONE
         } else {
-            holder.domain.text = "club" + abs(account.getObjectId())
+            holder.domain.text = "club" + abs(account.getOwnerObjectId())
             holder.tvLastTime.visibility = View.GONE
             holder.vOnline.visibility = View.GONE
         }
-        val isCurrent = account.getObjectId() == Settings.get()
+        val isCurrent = account.getOwnerObjectId() == Settings.get()
             .accounts()
             .current
         holder.active.visibility = if (isCurrent) View.VISIBLE else View.INVISIBLE

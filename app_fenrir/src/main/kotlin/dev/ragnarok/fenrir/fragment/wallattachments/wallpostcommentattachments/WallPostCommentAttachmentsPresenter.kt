@@ -17,8 +17,8 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class WallPostCommentAttachmentsPresenter(
-    accountId: Int,
-    private val owner_id: Int,
+    accountId: Long,
+    private val owner_id: Long,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<IWallPostCommentAttachmentsView>(accountId, savedInstanceState) {
     private val mPost: ArrayList<Post> = ArrayList()

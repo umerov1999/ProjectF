@@ -19,7 +19,7 @@ class VideoDtoAdapter : AbsAdapter<VKApiVideo>("VKApiVideo") {
         val root = json.asJsonObject
         val dto = VKApiVideo()
         dto.id = optInt(root, "id")
-        dto.owner_id = optInt(root, "owner_id")
+        dto.owner_id = optLong(root, "owner_id")
         dto.title = optString(root, "title")
         dto.description = optString(root, "description")
         dto.duration = optInt(root, "duration")

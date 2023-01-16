@@ -15,7 +15,7 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import io.reactivex.rxjava3.core.Single
 
 class CommunitiesSearchPresenter(
-    accountId: Int,
+    accountId: Long,
     criteria: GroupSearchCriteria?,
     savedInstanceState: Bundle?
 ) : AbsSearchPresenter<ICommunitiesSearchView, GroupSearchCriteria, Community, IntNextFrom>(
@@ -37,7 +37,7 @@ class CommunitiesSearchPresenter(
     }
 
     override fun doSearch(
-        accountId: Int,
+        accountId: Long,
         criteria: GroupSearchCriteria,
         startFrom: IntNextFrom
     ): Single<Pair<List<Community>, IntNextFrom>> {

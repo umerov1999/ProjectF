@@ -10,7 +10,7 @@ import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import java.util.*
 
-class CountriesPresenter(private val accountId: Int, savedInstanceState: Bundle?) :
+class CountriesPresenter(private val accountId: Long, savedInstanceState: Bundle?) :
     RxSupportPresenter<ICountriesView>(savedInstanceState) {
     private val databaseInteractor: IDatabaseInteractor
     private val filtered: MutableList<Country>

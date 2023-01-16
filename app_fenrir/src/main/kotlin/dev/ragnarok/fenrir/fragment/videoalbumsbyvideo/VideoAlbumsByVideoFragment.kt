@@ -84,8 +84,8 @@ class VideoAlbumsByVideoFragment :
     }
 
     override fun openAlbum(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         action: String?,
         title: String?
@@ -124,9 +124,9 @@ class VideoAlbumsByVideoFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<VideoAlbumsByVideoPresenter> {
         return object : IPresenterFactory<VideoAlbumsByVideoPresenter> {
             override fun create(): VideoAlbumsByVideoPresenter {
-                val ownerId1 = requireArguments().getInt(Extra.OWNER_ID)
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val owner = requireArguments().getInt(Extra.OWNER)
+                val ownerId1 = requireArguments().getLong(Extra.OWNER_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val owner = requireArguments().getLong(Extra.OWNER)
                 val video = requireArguments().getInt(Extra.VIDEO)
                 return VideoAlbumsByVideoPresenter(
                     accountId,
@@ -147,19 +147,19 @@ class VideoAlbumsByVideoFragment :
         }
 
         fun newInstance(
-            accountId: Int,
-            ownerId: Int,
-            video_ownerId: Int,
+            accountId: Long,
+            ownerId: Long,
+            video_ownerId: Long,
             video_Id: Int
         ): VideoAlbumsByVideoFragment {
             return newInstance(buildArgs(accountId, ownerId, video_ownerId, video_Id))
         }
 
-        fun buildArgs(accountId: Int, ownerId: Int, video_ownerId: Int, video_Id: Int): Bundle {
+        fun buildArgs(accountId: Long, ownerId: Long, video_ownerId: Long, video_Id: Int): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
-            args.putInt(Extra.OWNER, video_ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.OWNER, video_ownerId)
             args.putInt(Extra.VIDEO, video_Id)
             return args
         }

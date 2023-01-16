@@ -94,7 +94,7 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
             Place.CHAT -> {
                 val peer: Peer = args.getParcelableCompat(Extra.PEER) ?: return
                 val chatFragment =
-                    newInstance(args.getInt(Extra.ACCOUNT_ID), args.getInt(Extra.OWNER_ID), peer)
+                    newInstance(args.getLong(Extra.ACCOUNT_ID), args.getLong(Extra.OWNER_ID), peer)
                 attachToFront(chatFragment)
             }
             Place.UNREAD_MESSAGES -> attachToFront(NotReadMessagesFragment.newInstance(args))
@@ -123,7 +123,7 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
             Place.DOC_PREVIEW -> {
                 val document: Document? = args.getParcelableCompat(Extra.DOC)
                 if (document != null && document.hasValidGifVideoLink()) {
-                    val aid = args.getInt(Extra.ACCOUNT_ID)
+                    val aid = args.getLong(Extra.ACCOUNT_ID)
                     val documents = ArrayList(listOf(document))
                     val extra = GifPagerActivity.buildArgs(aid, documents, 0)
                     place.launchActivityForResult(this, GifPagerActivity.newInstance(this, extra))

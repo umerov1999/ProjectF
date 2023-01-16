@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Document : AbsModel {
     val id: Int
-    val ownerId: Int
+    val ownerId: Long
     var title: String? = null
         private set
     var size: Long = 0
@@ -33,17 +33,17 @@ class Document : AbsModel {
         private set
     var msgId = 0
         private set
-    var msgPeerId = 0
+    var msgPeerId = 0L
         private set
 
-    constructor(id: Int, ownerId: Int) {
+    constructor(id: Int, ownerId: Long) {
         this.id = id
         this.ownerId = ownerId
     }
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         title = parcel.readString()
         size = parcel.readLong()
         ext = parcel.readString()
@@ -55,12 +55,12 @@ class Document : AbsModel {
         videoPreview = parcel.readTypedObjectCompat(VideoPreview.CREATOR)
         graffiti = parcel.readTypedObjectCompat(Graffiti.CREATOR)
         msgId = parcel.readInt()
-        msgPeerId = parcel.readInt()
+        msgPeerId = parcel.readLong()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeString(title)
         parcel.writeLong(size)
         parcel.writeString(ext)
@@ -72,7 +72,7 @@ class Document : AbsModel {
         parcel.writeTypedObjectCompat(videoPreview, flags)
         parcel.writeTypedObjectCompat(graffiti, flags)
         parcel.writeInt(msgId)
-        parcel.writeInt(msgPeerId)
+        parcel.writeLong(msgPeerId)
     }
 
     @AbsModelType
@@ -161,7 +161,7 @@ class Document : AbsModel {
         return this
     }
 
-    fun setMsgPeerId(msgPeerId: Int): Document {
+    fun setMsgPeerId(msgPeerId: Long): Document {
         this.msgPeerId = msgPeerId
         return this
     }

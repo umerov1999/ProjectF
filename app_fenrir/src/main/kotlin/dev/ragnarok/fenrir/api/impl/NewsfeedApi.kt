@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.api.services.INewsfeedService
 import io.reactivex.rxjava3.core.Single
 import kotlin.math.abs
 
-internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
+internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), INewsfeedApi {
     override fun getLists(listIds: Collection<Int>?): Single<Items<VKApiFeedList>> {
         return provideService(INewsfeedService(), TokenType.USER)
@@ -24,7 +24,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun saveList(title: String?, listIds: Collection<Int>?): Single<Int> {
+    override fun saveList(title: String?, listIds: Collection<Long>?): Single<Int> {
         return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service.saveList(title, join(listIds, ","))
@@ -32,9 +32,9 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun addBan(listIds: Collection<Int>): Single<Int> {
-        val users: ArrayList<Int> = ArrayList()
-        val groups: ArrayList<Int> = ArrayList()
+    override fun addBan(listIds: Collection<Long>): Single<Int> {
+        val users: ArrayList<Long> = ArrayList()
+        val groups: ArrayList<Long> = ArrayList()
         for (i in listIds) {
             if (i < 0) {
                 groups.add(abs(i))
@@ -57,7 +57,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun ignoreItem(type: String?, owner_id: Int?, item_id: Int?): Single<Int> {
+    override fun ignoreItem(type: String?, owner_id: Long?, item_id: Int?): Single<Int> {
         return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service.ignoreItem(type, owner_id, item_id)
@@ -116,7 +116,7 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getMentions(
-        owner_id: Int?,
+        owner_id: Long?,
         count: Int?,
         offset: Int?,
         startTime: Long?,
@@ -194,9 +194,9 @@ internal class NewsfeedApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun deleteBan(listIds: Collection<Int>): Single<Int> {
-        val users: ArrayList<Int> = ArrayList()
-        val groups: ArrayList<Int> = ArrayList()
+    override fun deleteBan(listIds: Collection<Long>): Single<Int> {
+        val users: ArrayList<Long> = ArrayList()
+        val groups: ArrayList<Long> = ArrayList()
         for (i in listIds) {
             if (i < 0) {
                 groups.add(abs(i))

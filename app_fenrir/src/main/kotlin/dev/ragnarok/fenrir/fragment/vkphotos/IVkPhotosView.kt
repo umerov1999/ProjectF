@@ -20,11 +20,18 @@ interface IVkPhotosView : IMvpView, IErrorView, IToolbarView {
     fun setButtonAddVisible(visible: Boolean, anim: Boolean)
     fun notifyUploadItemChanged(index: Int)
     fun notifyUploadProgressChanged(id: Int, progress: Int)
-    fun displayGallery(accountId: Int, albumId: Int, ownerId: Int, source: TmpSource, position: Int)
-    fun displayGalleryUnSafe(
-        accountId: Int,
+    fun displayGallery(
+        accountId: Long,
         albumId: Int,
-        ownerId: Int,
+        ownerId: Long,
+        source: TmpSource,
+        position: Int
+    )
+
+    fun displayGalleryUnSafe(
+        accountId: Long,
+        albumId: Int,
+        ownerId: Long,
         parcelNativePointer: Long,
         position: Int
     )

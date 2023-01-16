@@ -7,21 +7,21 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class MarketAlbum : AbsModel {
     private val id: Int
-    private val owner_id: Int
+    private val owner_id: Long
     private var access_key: String? = null
     private var title: String? = null
     private var photo: Photo? = null
     private var count = 0
     private var updated_time: Long = 0
 
-    constructor(id: Int, owner_id: Int) {
+    constructor(id: Int, owner_id: Long) {
         this.id = id
         this.owner_id = owner_id
     }
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        owner_id = parcel.readInt()
+        owner_id = parcel.readLong()
         access_key = parcel.readString()
         count = parcel.readInt()
         updated_time = parcel.readLong()
@@ -31,7 +31,7 @@ class MarketAlbum : AbsModel {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(owner_id)
+        parcel.writeLong(owner_id)
         parcel.writeString(access_key)
         parcel.writeInt(count)
         parcel.writeLong(updated_time)
@@ -48,7 +48,7 @@ class MarketAlbum : AbsModel {
         return id
     }
 
-    fun getOwner_id(): Int {
+    fun getOwner_id(): Long {
         return owner_id
     }
 

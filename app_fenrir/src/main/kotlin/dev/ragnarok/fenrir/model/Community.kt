@@ -17,7 +17,7 @@ import kotlin.math.abs
 @Serializable
 @SerialName("community")
 class Community : Owner {
-    val id: Int
+    val id: Long
     override var fullName: String? = null
         private set
     override val domain: String?
@@ -50,12 +50,12 @@ class Community : Owner {
     var hasUnseenStories = false
         private set
 
-    constructor(id: Int) : super(OwnerType.COMMUNITY) {
+    constructor(id: Long) : super(OwnerType.COMMUNITY) {
         this.id = id
     }
 
     internal constructor(parcel: Parcel) : super(parcel) {
-        id = parcel.readInt()
+        id = parcel.readLong()
         fullName = parcel.readString()
         screenName = parcel.readString()
         closed = parcel.readInt()
@@ -74,7 +74,7 @@ class Community : Owner {
     }
 
     internal constructor(parcel: ParcelNative) : super(parcel) {
-        id = parcel.readInt()
+        id = parcel.readLong()
         fullName = parcel.readString()
         screenName = parcel.readString()
         closed = parcel.readInt()
@@ -92,12 +92,12 @@ class Community : Owner {
         hasUnseenStories = parcel.readBoolean()
     }
 
-    override val ownerId: Int
+    override val ownerId: Long
         get() = -abs(id)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         super.writeToParcel(parcel, flags)
-        parcel.writeInt(id)
+        parcel.writeLong(id)
         parcel.writeString(fullName)
         parcel.writeString(screenName)
         parcel.writeInt(closed)
@@ -117,7 +117,7 @@ class Community : Owner {
 
     override fun writeToParcelNative(dest: ParcelNative) {
         super.writeToParcelNative(dest)
-        dest.writeInt(id)
+        dest.writeLong(id)
         dest.writeString(fullName)
         dest.writeString(screenName)
         dest.writeInt(closed)
@@ -223,7 +223,7 @@ class Community : Owner {
         return 0
     }
 
-    override fun getObjectId(): Int {
+    override fun getOwnerObjectId(): Long {
         return -abs(id)
     }
 

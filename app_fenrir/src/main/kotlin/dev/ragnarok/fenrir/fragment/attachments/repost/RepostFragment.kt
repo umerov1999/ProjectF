@@ -44,10 +44,10 @@ class RepostFragment : AbsAttachmentsEditFragment<RepostPresenter, IRepostView>(
             override fun create(): RepostPresenter {
                 val post: Post = requireArguments().getParcelableCompat(EXTRA_POST)!!
                 val groupId =
-                    if (requireArguments().containsKey(EXTRA_GROUP_ID)) requireArguments().getInt(
+                    if (requireArguments().containsKey(EXTRA_GROUP_ID)) requireArguments().getLong(
                         EXTRA_GROUP_ID
                     ) else null
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 return RepostPresenter(accountId, post, groupId, saveInstanceState)
             }
         }
@@ -62,18 +62,18 @@ class RepostFragment : AbsAttachmentsEditFragment<RepostPresenter, IRepostView>(
             return fragment
         }
 
-        fun newInstance(accountId: Int, gid: Int?, post: Post?): RepostFragment {
+        fun newInstance(accountId: Long, gid: Long?, post: Post?): RepostFragment {
             val fragment = RepostFragment()
             fragment.arguments = buildArgs(accountId, gid, post)
             return fragment
         }
 
-        fun buildArgs(accountId: Int, groupId: Int?, post: Post?): Bundle {
+        fun buildArgs(accountId: Long, groupId: Long?, post: Post?): Bundle {
             val bundle = Bundle()
             bundle.putParcelable(EXTRA_POST, post)
-            bundle.putInt(Extra.ACCOUNT_ID, accountId)
+            bundle.putLong(Extra.ACCOUNT_ID, accountId)
             if (groupId != null) {
-                bundle.putInt(EXTRA_GROUP_ID, groupId)
+                bundle.putLong(EXTRA_GROUP_ID, groupId)
             }
             return bundle
         }

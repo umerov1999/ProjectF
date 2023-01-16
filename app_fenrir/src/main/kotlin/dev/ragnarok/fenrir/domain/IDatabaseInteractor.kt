@@ -5,10 +5,10 @@ import dev.ragnarok.fenrir.model.database.*
 import io.reactivex.rxjava3.core.Single
 
 interface IDatabaseInteractor {
-    fun getChairs(accountId: Int, facultyId: Int, count: Int, offset: Int): Single<List<Chair>>
-    fun getCountries(accountId: Int, ignoreCache: Boolean): Single<List<Country>>
+    fun getChairs(accountId: Long, facultyId: Int, count: Int, offset: Int): Single<List<Chair>>
+    fun getCountries(accountId: Long, ignoreCache: Boolean): Single<List<Country>>
     fun getCities(
-        accountId: Int,
+        accountId: Long,
         countryId: Int,
         q: String?,
         needAll: Boolean,
@@ -17,15 +17,15 @@ interface IDatabaseInteractor {
     ): Single<List<City>>
 
     fun getFaculties(
-        accountId: Int,
+        accountId: Long,
         universityId: Int,
         count: Int,
         offset: Int
     ): Single<List<Faculty>>
 
-    fun getSchoolClasses(accountId: Int, countryId: Int): Single<List<SchoolClazz>>
+    fun getSchoolClasses(accountId: Long, countryId: Int): Single<List<SchoolClazz>>
     fun getSchools(
-        accountId: Int,
+        accountId: Long,
         cityId: Int,
         q: String?,
         count: Int,
@@ -33,7 +33,7 @@ interface IDatabaseInteractor {
     ): Single<List<School>>
 
     fun getUniversities(
-        accountId: Int,
+        accountId: Long,
         filter: String?,
         cityId: Int?,
         countyId: Int?,

@@ -11,5 +11,5 @@ interface ITopicsView : IMvpView, IErrorView {
     fun notifyDataAdd(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
     fun setupLoadMore(@LoadMoreState state: Int)
-    fun goToComments(accountId: Int, topic: Topic)
+    fun goToComments(accountId: Long, topic: Topic)
 }

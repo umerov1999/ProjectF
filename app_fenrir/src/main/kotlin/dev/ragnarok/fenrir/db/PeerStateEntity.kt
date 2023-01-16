@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.db
 
-class PeerStateEntity(val peerId: Int) {
+class PeerStateEntity(val peerId: Long) {
     var unreadCount = 0
         private set
     var lastMessageId = 0

@@ -14,15 +14,15 @@ import io.reactivex.rxjava3.core.Single
 interface IWallsRepository {
     @CheckResult
     fun editPost(
-        accountId: Int, ownerId: Int, postId: Int, friendsOnly: Boolean?, message: String?,
+        accountId: Long, ownerId: Long, postId: Int, friendsOnly: Boolean?, message: String?,
         attachments: List<AbsModel>?, services: String?,
         signed: Boolean?, publishDate: Long?, latitude: Double?,
         longitude: Double?, placeId: Int?, markAsAds: Boolean?
     ): Completable
 
     fun search(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         query: String?,
         ownersPostOnly: Boolean,
         count: Int,
@@ -30,17 +30,29 @@ interface IWallsRepository {
     ): Single<Pair<List<Post>, Int>>
 
     fun post(
-        accountId: Int, ownerId: Int, friendsOnly: Boolean?, fromGroup: Boolean?, message: String?,
-        attachments: List<AbsModel>?, services: String?, signed: Boolean?,
-        publishDate: Long?, latitude: Double?, longitude: Double?, placeId: Int?,
-        postId: Int?, guid: Int?, markAsAds: Boolean?, adsPromotedStealth: Boolean?
+        accountId: Long,
+        ownerId: Long,
+        friendsOnly: Boolean?,
+        fromGroup: Boolean?,
+        message: String?,
+        attachments: List<AbsModel>?,
+        services: String?,
+        signed: Boolean?,
+        publishDate: Long?,
+        latitude: Double?,
+        longitude: Double?,
+        placeId: Int?,
+        postId: Int?,
+        guid: Int?,
+        markAsAds: Boolean?,
+        adsPromotedStealth: Boolean?
     ): Single<Post>
 
-    fun like(accountId: Int, ownerId: Int, postId: Int, add: Boolean): Single<Int>
-    fun isLiked(accountId: Int, ownerId: Int, postId: Int): Single<Boolean>
+    fun like(accountId: Long, ownerId: Long, postId: Int, add: Boolean): Single<Int>
+    fun isLiked(accountId: Long, ownerId: Long, postId: Int): Single<Boolean>
     fun getWall(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         offset: Int,
         count: Int,
         wallFilter: Int,
@@ -48,22 +60,22 @@ interface IWallsRepository {
     ): Single<List<Post>>
 
     fun getWallNoCache(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         offset: Int,
         count: Int,
         wallFilter: Int
     ): Single<List<Post>>
 
-    fun checkAndAddLike(accountId: Int, ownerId: Int, postId: Int): Single<Int>
-    fun getCachedWall(accountId: Int, ownerId: Int, wallFilter: Int): Single<List<Post>>
-    fun delete(accountId: Int, ownerId: Int, postId: Int): Completable
-    fun restore(accountId: Int, ownerId: Int, postId: Int): Completable
-    fun reportPost(accountId: Int, owner_id: Int, post_id: Int, reason: Int): Single<Int>
-    fun subscribe(accountId: Int, owner_id: Int): Single<Int>
-    fun unsubscribe(accountId: Int, owner_id: Int): Single<Int>
-    fun getById(accountId: Int, ownerId: Int, postId: Int): Single<Post>
-    fun pinUnpin(accountId: Int, ownerId: Int, postId: Int, pin: Boolean): Completable
+    fun checkAndAddLike(accountId: Long, ownerId: Long, postId: Int): Single<Int>
+    fun getCachedWall(accountId: Long, ownerId: Long, wallFilter: Int): Single<List<Post>>
+    fun delete(accountId: Long, ownerId: Long, postId: Int): Completable
+    fun restore(accountId: Long, ownerId: Long, postId: Int): Completable
+    fun reportPost(accountId: Long, owner_id: Long, post_id: Int, reason: Int): Single<Int>
+    fun subscribe(accountId: Long, owner_id: Long): Single<Int>
+    fun unsubscribe(accountId: Long, owner_id: Long): Single<Int>
+    fun getById(accountId: Long, ownerId: Long, postId: Int): Single<Post>
+    fun pinUnpin(accountId: Long, ownerId: Long, postId: Int, pin: Boolean): Completable
 
     /**
      * Ability to observe minor post changes (likes, deleted, pin state, etc.)
@@ -90,18 +102,18 @@ interface IWallsRepository {
      * @return Single c обьектом поста
      */
     fun getEditingPost(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         @EditingPostType type: Int,
         withAttachments: Boolean
     ): Single<Post>
 
-    fun post(accountId: Int, post: Post, fromGroup: Boolean, showSigner: Boolean): Single<Post>
+    fun post(accountId: Long, post: Post, fromGroup: Boolean, showSigner: Boolean): Single<Post>
     fun repost(
-        accountId: Int,
+        accountId: Long,
         postId: Int,
-        ownerId: Int,
-        groupId: Int?,
+        ownerId: Long,
+        groupId: Long?,
         message: String?
     ): Single<Post>
 
@@ -112,7 +124,7 @@ interface IWallsRepository {
      * @param post      пост
      * @return Single с локальным идентификатором
      */
-    fun cachePostWithIdSaving(accountId: Int, post: Post): Single<Int>
+    fun cachePostWithIdSaving(accountId: Long, post: Post): Single<Int>
 
     /**
      * Удалить пост из кеша (используется только для "черновиков"
@@ -122,5 +134,5 @@ interface IWallsRepository {
      * @return Completable
      */
     @CheckResult
-    fun deleteFromCache(accountId: Int, postDbid: Int): Completable
+    fun deleteFromCache(accountId: Long, postDbid: Int): Completable
 }

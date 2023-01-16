@@ -5,7 +5,7 @@ import io.reactivex.rxjava3.core.Single
 
 interface IServiceProvider {
     fun <T : IServiceRest> provideService(
-        accountId: Int,
+        accountId: Long,
         serviceClass: T,
         vararg tokenTypes: Int
     ): Single<T>

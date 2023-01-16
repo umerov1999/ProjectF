@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 
 class Narratives : Parcelable {
     val id: Int
-    val owner_id: Int
+    val owner_id: Long
     var title: String? = null
         private set
     var cover: String? = null
@@ -15,21 +15,21 @@ class Narratives : Parcelable {
     var stories: IntArray? = null
         private set
 
-    constructor(id: Int, owner_id: Int) {
+    constructor(id: Int, owner_id: Long) {
         this.id = id
         this.owner_id = owner_id
     }
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        owner_id = parcel.readInt()
+        owner_id = parcel.readLong()
         title = parcel.readString()
         cover = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, i: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(owner_id)
+        parcel.writeLong(owner_id)
         parcel.writeString(title)
         parcel.writeString(cover)
     }

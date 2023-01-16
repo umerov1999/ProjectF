@@ -15,36 +15,36 @@ import io.reactivex.rxjava3.core.Single
 
 interface IOwnersStorage : IStorage {
     fun findFriendsListsByIds(
-        accountId: Int,
-        userId: Int,
-        ids: Collection<Int>
-    ): Single<MutableMap<Int, FriendListEntity>>
+        accountId: Long,
+        userId: Long,
+        ids: Collection<Long>
+    ): Single<MutableMap<Long, FriendListEntity>>
 
     @CheckResult
-    fun getLocalizedUserActivity(accountId: Int, userId: Int): Maybe<String>
-    fun findUserDboById(accountId: Int, ownerId: Int): Single<Optional<UserEntity>>
-    fun findCommunityDboById(accountId: Int, ownerId: Int): Single<Optional<CommunityEntity>>
-    fun findUserByDomain(accountId: Int, domain: String?): Single<Optional<UserEntity>>
-    fun findCommunityByDomain(accountId: Int, domain: String?): Single<Optional<CommunityEntity>>
-    fun findUserDbosByIds(accountId: Int, ids: List<Int>): Single<List<UserEntity>>
-    fun findCommunityDbosByIds(accountId: Int, ids: List<Int>): Single<List<CommunityEntity>>
-    fun storeUserDbos(accountId: Int, users: List<UserEntity>): Completable
-    fun storeCommunityDbos(accountId: Int, communityEntities: List<CommunityEntity>): Completable
-    fun storeOwnerEntities(accountId: Int, entities: OwnerEntities?): Completable
+    fun getLocalizedUserActivity(accountId: Long, userId: Long): Maybe<String>
+    fun findUserDboById(accountId: Long, ownerId: Long): Single<Optional<UserEntity>>
+    fun findCommunityDboById(accountId: Long, ownerId: Long): Single<Optional<CommunityEntity>>
+    fun findUserByDomain(accountId: Long, domain: String?): Single<Optional<UserEntity>>
+    fun findCommunityByDomain(accountId: Long, domain: String?): Single<Optional<CommunityEntity>>
+    fun findUserDbosByIds(accountId: Long, ids: List<Long>): Single<List<UserEntity>>
+    fun findCommunityDbosByIds(accountId: Long, ids: List<Long>): Single<List<CommunityEntity>>
+    fun storeUserDbos(accountId: Long, users: List<UserEntity>): Completable
+    fun storeCommunityDbos(accountId: Long, communityEntities: List<CommunityEntity>): Completable
+    fun storeOwnerEntities(accountId: Long, entities: OwnerEntities?): Completable
 
     @CheckResult
-    fun getMissingUserIds(accountId: Int, ids: Collection<Int>): Single<Collection<Int>>
+    fun getMissingUserIds(accountId: Long, ids: Collection<Long>): Single<Collection<Long>>
 
     @CheckResult
-    fun getMissingCommunityIds(accountId: Int, ids: Collection<Int>): Single<Collection<Int>>
+    fun getMissingCommunityIds(accountId: Long, ids: Collection<Long>): Single<Collection<Long>>
     fun fireBanAction(action: BanAction): Completable
     fun observeBanActions(): Observable<BanAction>
-    fun fireManagementChangeAction(manager: Pair<Int, Manager>): Completable
-    fun observeManagementChanges(): Observable<Pair<Int, Manager>>
-    fun getGroupsDetails(accountId: Int, groupId: Int): Single<Optional<CommunityDetailsEntity>>
-    fun storeGroupsDetails(accountId: Int, groupId: Int, dbo: CommunityDetailsEntity): Completable
-    fun getUserDetails(accountId: Int, userId: Int): Single<Optional<UserDetailsEntity>>
-    fun storeUserDetails(accountId: Int, userId: Int, dbo: UserDetailsEntity): Completable
-    fun applyPathes(accountId: Int, patches: List<UserPatch>): Completable
-    fun findFriendBirtday(accountId: Int): Single<List<User>>
+    fun fireManagementChangeAction(manager: Pair<Long, Manager>): Completable
+    fun observeManagementChanges(): Observable<Pair<Long, Manager>>
+    fun getGroupsDetails(accountId: Long, groupId: Long): Single<Optional<CommunityDetailsEntity>>
+    fun storeGroupsDetails(accountId: Long, groupId: Long, dbo: CommunityDetailsEntity): Completable
+    fun getUserDetails(accountId: Long, userId: Long): Single<Optional<UserDetailsEntity>>
+    fun storeUserDetails(accountId: Long, userId: Long, dbo: UserDetailsEntity): Completable
+    fun applyPathes(accountId: Long, patches: List<UserPatch>): Completable
+    fun findFriendBirtday(accountId: Long): Single<List<User>>
 }

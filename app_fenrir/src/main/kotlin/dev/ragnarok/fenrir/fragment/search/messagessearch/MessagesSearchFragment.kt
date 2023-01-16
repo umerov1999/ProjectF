@@ -39,13 +39,13 @@ class MessagesSearchFragment :
         return LinearLayoutManager(requireActivity())
     }
 
-    override fun onAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onAvatarClick(message: Message, userId: Long, position: Int) {
         presenter?.fireOwnerClick(
             userId
         )
     }
 
-    override fun onLongAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onLongAvatarClick(message: Message, userId: Long, position: Int) {
         presenter?.fireOwnerClick(
             userId
         )
@@ -76,7 +76,7 @@ class MessagesSearchFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<MessagesSearchPresenter> {
         return object : IPresenterFactory<MessagesSearchPresenter> {
             override fun create(): MessagesSearchPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val c: MessageSearchCriteria? =
                     requireArguments().getParcelableCompat(Extra.CRITERIA)
                 return MessagesSearchPresenter(accountId, c, saveInstanceState)
@@ -84,11 +84,11 @@ class MessagesSearchFragment :
         }
     }
 
-    override fun goToMessagesLookup(accountId: Int, peerId: Int, messageId: Int) {
+    override fun goToMessagesLookup(accountId: Long, peerId: Long, messageId: Int) {
         getMessagesLookupPlace(accountId, peerId, messageId, null).tryOpenWith(requireActivity())
     }
 
-    override fun goToPeerLookup(accountId: Int, peer: Peer) {
+    override fun goToPeerLookup(accountId: Long, peer: Peer) {
         getChatPlace(accountId, accountId, peer).tryOpenWith(requireActivity())
     }
 
@@ -129,7 +129,7 @@ class MessagesSearchFragment :
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Int,
+        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         presenter?.fireVoicePlayButtonClick(
@@ -154,11 +154,11 @@ class MessagesSearchFragment :
 
     companion object {
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             initialCriteria: MessageSearchCriteria?
         ): MessagesSearchFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, initialCriteria)
             val fragment = MessagesSearchFragment()
             fragment.arguments = args

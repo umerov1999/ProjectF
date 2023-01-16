@@ -13,7 +13,7 @@ object FriendListsColumns : BaseColumns {
     const val FULL_USER_ID = "$TABLENAME.$USER_ID"
     const val FULL_LIST_ID = "$TABLENAME.$LIST_ID"
     const val FULL_NAME = "$TABLENAME.$NAME"
-    fun getCv(userId: Int, list: VKApiFriendList): ContentValues {
+    fun getCv(userId: Long, list: VKApiFriendList): ContentValues {
         val cv = ContentValues()
         cv.put(USER_ID, userId)
         cv.put(LIST_ID, list.id)

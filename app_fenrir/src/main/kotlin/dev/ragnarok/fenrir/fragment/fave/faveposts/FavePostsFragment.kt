@@ -70,7 +70,7 @@ class FavePostsFragment : PlaceSupportMvpFragment<FavePostsPresenter, IFavePosts
         )
     }
 
-    override fun onAvatarClick(ownerId: Int) {
+    override fun onAvatarClick(ownerId: Long) {
         onOpenOwner(ownerId)
     }
 
@@ -156,7 +156,7 @@ class FavePostsFragment : PlaceSupportMvpFragment<FavePostsPresenter, IFavePosts
         return object : IPresenterFactory<FavePostsPresenter> {
             override fun create(): FavePostsPresenter {
                 return FavePostsPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
                     ), saveInstanceState
                 )
@@ -165,9 +165,9 @@ class FavePostsFragment : PlaceSupportMvpFragment<FavePostsPresenter, IFavePosts
     }
 
     companion object {
-        fun newInstance(accountId: Int): FavePostsFragment {
+        fun newInstance(accountId: Long): FavePostsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val favePostsFragment = FavePostsFragment()
             favePostsFragment.arguments = args
             return favePostsFragment

@@ -10,17 +10,17 @@ class Post : AbsModel, Cloneable {
         private set
     var vkid = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var author: Owner? = null
         private set
-    var authorId = 0
+    var authorId = 0L
         private set
     var date: Long = 0
         private set
     var text: String? = null
         private set
-    var replyOwnerId = 0
+    var replyOwnerId = 0L
         private set
     var replyPostId = 0
         private set
@@ -46,7 +46,7 @@ class Post : AbsModel, Cloneable {
         private set
     var attachments: Attachments? = null
         private set
-    var signerId = 0
+    var signerId = 0L
         private set
     var creator: User? = null
         private set
@@ -61,7 +61,7 @@ class Post : AbsModel, Cloneable {
         private set
     var viewCount = 0
         private set
-    var creatorId = 0
+    var creatorId = 0L
         private set
     var isCanEdit = false
         private set
@@ -75,12 +75,12 @@ class Post : AbsModel, Cloneable {
     internal constructor(parcel: Parcel) {
         dbid = parcel.readInt()
         vkid = parcel.readInt()
-        ownerId = parcel.readInt()
-        authorId = parcel.readInt()
+        ownerId = parcel.readLong()
+        authorId = parcel.readLong()
         author = Owner.readOwnerFromParcel(authorId, parcel)
         date = parcel.readLong()
         text = parcel.readString()
-        replyOwnerId = parcel.readInt()
+        replyOwnerId = parcel.readLong()
         replyPostId = parcel.readInt()
         isFriendsOnly = parcel.getBoolean()
         commentsCount = parcel.readInt()
@@ -92,8 +92,8 @@ class Post : AbsModel, Cloneable {
         isUserReposted = parcel.getBoolean()
         postType = parcel.readInt()
         attachments = parcel.readTypedObjectCompat(Attachments.CREATOR)
-        signerId = parcel.readInt()
-        creatorId = parcel.readInt()
+        signerId = parcel.readLong()
+        creatorId = parcel.readLong()
         creator = parcel.readTypedObjectCompat(User.CREATOR)
         isCanPin = parcel.getBoolean()
         isPinned = parcel.getBoolean()
@@ -144,7 +144,7 @@ class Post : AbsModel, Cloneable {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): Post {
+    fun setOwnerId(ownerId: Long): Post {
         this.ownerId = ownerId
         return this
     }
@@ -154,7 +154,7 @@ class Post : AbsModel, Cloneable {
         return this
     }
 
-    fun setAuthorId(authorId: Int): Post {
+    fun setAuthorId(authorId: Long): Post {
         this.authorId = authorId
         return this
     }
@@ -169,7 +169,7 @@ class Post : AbsModel, Cloneable {
         return this
     }
 
-    fun setReplyOwnerId(replyOwnerId: Int): Post {
+    fun setReplyOwnerId(replyOwnerId: Long): Post {
         this.replyOwnerId = replyOwnerId
         return this
     }
@@ -224,7 +224,7 @@ class Post : AbsModel, Cloneable {
         return this
     }
 
-    fun setSignerId(signerId: Int): Post {
+    fun setSignerId(signerId: Long): Post {
         this.signerId = signerId
         return this
     }
@@ -291,12 +291,12 @@ class Post : AbsModel, Cloneable {
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(dbid)
         parcel.writeInt(vkid)
-        parcel.writeInt(ownerId)
-        parcel.writeInt(authorId)
+        parcel.writeLong(ownerId)
+        parcel.writeLong(authorId)
         parcel.writeTypedObjectCompat(author, flags)
         parcel.writeLong(date)
         parcel.writeString(text)
-        parcel.writeInt(replyOwnerId)
+        parcel.writeLong(replyOwnerId)
         parcel.writeInt(replyPostId)
         parcel.putBoolean(isFriendsOnly)
         parcel.writeInt(commentsCount)
@@ -308,8 +308,8 @@ class Post : AbsModel, Cloneable {
         parcel.putBoolean(isUserReposted)
         parcel.writeInt(postType)
         parcel.writeTypedObjectCompat(attachments, flags)
-        parcel.writeInt(signerId)
-        parcel.writeInt(creatorId)
+        parcel.writeLong(signerId)
+        parcel.writeLong(creatorId)
         parcel.writeTypedObjectCompat(creator, flags)
         parcel.putBoolean(isCanPin)
         parcel.putBoolean(isPinned)
@@ -415,7 +415,7 @@ class Post : AbsModel, Cloneable {
         return attachments?.docs.nonNullNoEmpty()
     }
 
-    fun setCreatorId(creatorId: Int): Post {
+    fun setCreatorId(creatorId: Long): Post {
         this.creatorId = creatorId
         return this
     }

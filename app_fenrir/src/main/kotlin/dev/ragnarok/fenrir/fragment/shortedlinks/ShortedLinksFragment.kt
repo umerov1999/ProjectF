@@ -175,7 +175,7 @@ class ShortedLinksFragment : BaseMvpFragment<ShortedLinksPresenter, IShortedLink
         return object : IPresenterFactory<ShortedLinksPresenter> {
             override fun create(): ShortedLinksPresenter {
                 return ShortedLinksPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }
@@ -198,9 +198,9 @@ class ShortedLinksFragment : BaseMvpFragment<ShortedLinksPresenter, IShortedLink
     }
 
     companion object {
-        fun newInstance(accountId: Int): ShortedLinksFragment {
+        fun newInstance(accountId: Long): ShortedLinksFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = ShortedLinksFragment()
             fragment.arguments = args
             return fragment

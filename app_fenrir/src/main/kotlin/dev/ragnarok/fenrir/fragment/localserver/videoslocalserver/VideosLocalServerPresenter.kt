@@ -13,7 +13,7 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
-class VideosLocalServerPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class VideosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IVideosLocalServerView>(accountId, savedInstanceState) {
     private val videos: MutableList<Video>
     private val fInteractor: ILocalServerInteractor

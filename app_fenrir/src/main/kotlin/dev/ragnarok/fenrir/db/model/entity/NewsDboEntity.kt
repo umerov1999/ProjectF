@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 class NewsDboEntity : DboEntity() {
     var type: String? = null
         private set
-    var sourceId = 0
+    var sourceId = 0L
         private set
     var date: Long = 0
         private set
@@ -16,7 +16,7 @@ class NewsDboEntity : DboEntity() {
         private set
     var isFinalPost = false
         private set
-    var copyOwnerId = 0
+    var copyOwnerId = 0L
         private set
     var copyPostId = 0
         private set
@@ -44,7 +44,7 @@ class NewsDboEntity : DboEntity() {
         private set
     var isUserReposted = false
         private set
-    var friendsTags: List<Int>? = null
+    var friendsTags: List<Long>? = null
         private set
     var views = 0
         private set
@@ -65,7 +65,7 @@ class NewsDboEntity : DboEntity() {
         return this
     }
 
-    fun setSourceId(sourceId: Int): NewsDboEntity {
+    fun setSourceId(sourceId: Long): NewsDboEntity {
         this.sourceId = sourceId
         return this
     }
@@ -90,7 +90,7 @@ class NewsDboEntity : DboEntity() {
         return this
     }
 
-    fun setCopyOwnerId(copyOwnerId: Int): NewsDboEntity {
+    fun setCopyOwnerId(copyOwnerId: Long): NewsDboEntity {
         this.copyOwnerId = copyOwnerId
         return this
     }
@@ -160,7 +160,7 @@ class NewsDboEntity : DboEntity() {
         return this
     }
 
-    fun setFriendsTags(friendsTags: List<Int>?): NewsDboEntity {
+    fun setFriendsTags(friendsTags: List<Long>?): NewsDboEntity {
         this.friendsTags = friendsTags
         return this
     }

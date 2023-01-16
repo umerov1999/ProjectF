@@ -110,7 +110,7 @@ class AudioToMessageUploadable(
     companion object {
         fun attachIntoDatabaseRx(
             repository: IAttachmentsRepository, storage: IMessagesStorage,
-            accountId: Int, messageId: Int, audio: Audio
+            accountId: Long, messageId: Int, audio: Audio
         ): Completable {
             return repository
                 .attach(accountId, AttachToType.MESSAGE, messageId, listOf(audio))

@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.model.criteria
 
 import dev.ragnarok.fenrir.db.DatabaseIdRange
 
-class FaveArticlesCriteria(val accountId: Int) : Criteria() {
+class FaveArticlesCriteria(val accountId: Long) : Criteria() {
     var range: DatabaseIdRange? = null
         private set
 

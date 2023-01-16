@@ -28,8 +28,8 @@ import java.io.File
 import java.io.IOException
 
 class MessageAttachmentsPresenter(
-    private val accountId: Int,
-    private val messageOwnerId: Int,
+    private val accountId: Long,
+    private val messageOwnerId: Long,
     private val messageId: Int,
     private val context: Context,
     bundle: ModelsBundle?,

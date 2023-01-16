@@ -157,7 +157,7 @@ class SettingsBackup {
         var notification_force_link: Boolean? = null
         var recording_to_opus: Boolean? = null
         var service_playlists: String? = null
-        var rendering_mode: String? = null
+        var rendering_bitmap_mode: String? = null
         var hidden_peers: Set<String>? = null
         var notif_peer_uids: Set<String>? = null
         var user_name_changes_uids: Set<String>? = null

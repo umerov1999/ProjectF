@@ -54,8 +54,8 @@ internal class TopicsStorage(base: AppStorages) : AbsStorage(base), ITopicsStore
     }
 
     override fun store(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         topics: List<TopicDboEntity>,
         owners: OwnerEntities?,
         canAddTopic: Boolean,
@@ -98,8 +98,8 @@ internal class TopicsStorage(base: AppStorages) : AbsStorage(base), ITopicsStore
     }
 
     override fun attachPoll(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         topicId: Int,
         pollDbo: PollDboEntity?
     ): Completable {
@@ -149,13 +149,13 @@ internal class TopicsStorage(base: AppStorages) : AbsStorage(base), ITopicsStore
 
         internal fun mapDbo(cursor: Cursor): TopicDboEntity {
             val id = cursor.getInt(TopicsColumns.TOPIC_ID)
-            val ownerId = cursor.getInt(TopicsColumns.OWNER_ID)
+            val ownerId = cursor.getLong(TopicsColumns.OWNER_ID)
             val dbo = TopicDboEntity().set(id, ownerId)
                 .setTitle(cursor.getString(TopicsColumns.TITLE))
                 .setCreatedTime(cursor.getLong(TopicsColumns.CREATED))
-                .setCreatorId(cursor.getInt(TopicsColumns.CREATED_BY))
+                .setCreatorId(cursor.getLong(TopicsColumns.CREATED_BY))
                 .setLastUpdateTime(cursor.getLong(TopicsColumns.UPDATED))
-                .setUpdatedBy(cursor.getInt(TopicsColumns.UPDATED_BY))
+                .setUpdatedBy(cursor.getLong(TopicsColumns.UPDATED_BY))
                 .setClosed(cursor.getBoolean(TopicsColumns.IS_CLOSED))
                 .setFixed(cursor.getBoolean(TopicsColumns.IS_FIXED))
                 .setCommentsCount(cursor.getInt(TopicsColumns.COMMENTS))

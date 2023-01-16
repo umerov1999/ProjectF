@@ -92,8 +92,8 @@ class WallVideosAttachmentsFragment :
         return object : IPresenterFactory<WallVideosAttachmentsPresenter> {
             override fun create(): WallVideosAttachmentsPresenter {
                 return WallVideosAttachmentsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     saveInstanceState
                 )
             }
@@ -143,10 +143,10 @@ class WallVideosAttachmentsFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int, ownerId: Int): WallVideosAttachmentsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): WallVideosAttachmentsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = WallVideosAttachmentsFragment()
             fragment.arguments = args
             return fragment

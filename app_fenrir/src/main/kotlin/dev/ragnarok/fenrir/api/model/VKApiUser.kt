@@ -411,7 +411,7 @@ class VKApiUser
      */
     var role: String? = null
 
-    constructor(id: Int) : this() {
+    constructor(id: Long) : this() {
         this.id = id
     }
 
@@ -508,7 +508,7 @@ class VKApiUser
     @Serializable
     class Relative {
         var type: String? = null
-        var id = 0
+        var id = 0L
         var name: String? = null
     }
 
@@ -521,7 +521,7 @@ class VKApiUser
         const val FRIEND_STATUS_HAS_INPUT_REQUEST = 2
         const val FRIEND_STATUS_IS_FRIEDND = 3
 
-        fun create(id: Int): VKApiUser {
+        fun create(id: Long): VKApiUser {
             val user = VKApiUser()
             user.id = id
             return user

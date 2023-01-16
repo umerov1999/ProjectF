@@ -84,10 +84,10 @@ class SelectFacultyDialog : AccountDependencyDialogFragment(), FacultiesAdapter.
 
     companion object {
         private const val COUNT_PER_REQUEST = 1000
-        fun newInstance(aid: Int, facultyId: Int, additional: Bundle?): SelectFacultyDialog {
+        fun newInstance(aid: Long, facultyId: Int, additional: Bundle?): SelectFacultyDialog {
             val args = additional ?: Bundle()
             args.putInt(Extra.FACULTY_ID, facultyId)
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             val selectCityDialog = SelectFacultyDialog()
             selectCityDialog.arguments = args
             return selectCityDialog

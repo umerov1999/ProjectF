@@ -20,7 +20,7 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
-class PhotosLocalServerPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IPhotosLocalServerView>(accountId, savedInstanceState) {
     private val photos: MutableList<Photo>
     private val fInteractor: ILocalServerInteractor

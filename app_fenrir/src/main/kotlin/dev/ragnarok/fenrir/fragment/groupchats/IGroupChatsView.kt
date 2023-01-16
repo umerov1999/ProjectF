@@ -11,5 +11,5 @@ interface IGroupChatsView : IMvpView, IErrorView {
     fun notifyDataAdd(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
     fun setupLoadMore(@LoadMoreState state: Int)
-    fun goToChat(accountId: Int, chat_id: Int)
+    fun goToChat(accountId: Long, chat_id: Long)
 }

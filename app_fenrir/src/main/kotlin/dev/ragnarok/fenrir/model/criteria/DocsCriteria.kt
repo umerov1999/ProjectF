@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.model.criteria
 
-class DocsCriteria(val accountId: Int, val ownerId: Int) : Criteria() {
+class DocsCriteria(val accountId: Long, val ownerId: Long) : Criteria() {
     var filter: Int? = null
         private set
 

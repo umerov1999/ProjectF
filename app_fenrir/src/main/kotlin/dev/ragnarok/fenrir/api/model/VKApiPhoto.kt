@@ -29,7 +29,7 @@ class VKApiPhoto
     /**
      * ID of the user or community that owns the photo.
      */
-    var owner_id = 0
+    var owner_id = 0L
 
     /**
      * Width (in pixels) of the original photo.

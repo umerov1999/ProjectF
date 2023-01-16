@@ -29,7 +29,7 @@ interface IUtilsApi {
     fun joinChatByInviteLink(link: String?): Single<VKApiChatResponse>
 
     @CheckResult
-    fun getInviteLink(peer_id: Int?, reset: Int?): Single<VKApiLinkResponse>
+    fun getInviteLink(peer_id: Long?, reset: Int?): Single<VKApiLinkResponse>
 
     @CheckResult
     fun customScript(code: String?): Single<Int>

@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.db.model
 
-class MessagePatch(val messageId: Int, val peerId: Int) {
+class MessagePatch(val messageId: Int, val peerId: Long) {
     var deletion: Deletion? = null
     var important: Important? = null
 

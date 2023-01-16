@@ -21,12 +21,12 @@ class VKApiMessage
     /**
      * For an incoming message, the user ID of the author. For an outgoing message, the user ID of the receiver.
      */
-    var peer_id = 0
+    var peer_id = 0L
 
     /**
      * For an incoming message, the user ID of the author. For an outgoing message, the user ID of the receiver.
      */
-    var from_id = 0
+    var from_id = 0L
 
     /**
      * Date (in Unix time) when the message was sent.
@@ -80,7 +80,7 @@ class VKApiMessage
      * идентификатор пользователя (если > 0) или email (если < 0), которого пригласили или исключили
      * число, для служебных сообщений с action равным chat_invite_user или chat_kick_user
      */
-    var action_mid = 0
+    var action_mid = 0L
 
     /**
      * email, который пригласили или исключили

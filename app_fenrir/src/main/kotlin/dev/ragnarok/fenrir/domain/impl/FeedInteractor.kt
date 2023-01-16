@@ -66,7 +66,7 @@ class FeedInteractor(
     }
 
     override fun getActualFeed(
-        accountId: Int,
+        accountId: Long,
         count: Int,
         startFrom: String?,
         filters: String?,
@@ -109,7 +109,7 @@ class FeedInteractor(
                     val dbos: MutableList<NewsDboEntity> = ArrayList(feed.size)
                     val ownIds = VKOwnIds()
                     for (news in feed) {
-                        if (news.source_id == 0) {
+                        if (news.source_id == 0L) {
                             continue
                         }
                         dbos.add(mapNews(news))
@@ -130,7 +130,7 @@ class FeedInteractor(
                                 .map {
                                     val news: MutableList<News> = ArrayList(feed.size)
                                     for (dto in feed) {
-                                        if (dto.source_id == 0) {
+                                        if (dto.source_id == 0L) {
                                             continue
                                         }
                                         news.add(buildNews(dto, it))
@@ -159,7 +159,7 @@ class FeedInteractor(
                         val dbos: MutableList<NewsDboEntity> = ArrayList(feed.size)
                         val ownIds = VKOwnIds()
                         for (dto in feed) {
-                            if (dto.source_id == 0 || blockAds && (dto.type == "ads" || dto.mark_as_ads != 0) || needStripRepost && dto.isOnlyRepost || containInWords(
+                            if (dto.source_id == 0L || blockAds && (dto.type == "ads" || dto.mark_as_ads != 0) || needStripRepost && dto.isOnlyRepost || containInWords(
                                     rgx,
                                     dto
                                 )
@@ -184,7 +184,7 @@ class FeedInteractor(
                                     .map {
                                         val news: MutableList<News> = ArrayList(feed.size)
                                         for (dto in feed) {
-                                            if (dto.source_id == 0 || blockAds && (dto.type == "ads" || dto.mark_as_ads != 0) || needStripRepost && dto.isOnlyRepost || containInWords(
+                                            if (dto.source_id == 0L || blockAds && (dto.type == "ads" || dto.mark_as_ads != 0) || needStripRepost && dto.isOnlyRepost || containInWords(
                                                     rgx,
                                                     dto
                                                 )
@@ -204,7 +204,7 @@ class FeedInteractor(
     }
 
     override fun search(
-        accountId: Int,
+        accountId: Long,
         criteria: NewsFeedCriteria,
         count: Int,
         startFrom: String?
@@ -247,44 +247,44 @@ class FeedInteractor(
             }
     }
 
-    override fun saveList(accountId: Int, title: String?, listIds: Collection<Int>): Single<Int> {
+    override fun saveList(accountId: Long, title: String?, listIds: Collection<Long>): Single<Int> {
         return networker.vkDefault(accountId)
             .newsfeed().saveList(title, listIds)
     }
 
-    override fun addBan(accountId: Int, listIds: Collection<Int>): Single<Int> {
+    override fun addBan(accountId: Long, listIds: Collection<Long>): Single<Int> {
         return networker.vkDefault(accountId)
             .newsfeed().addBan(listIds)
     }
 
-    override fun deleteBan(accountId: Int, listIds: Collection<Int>): Single<Int> {
+    override fun deleteBan(accountId: Long, listIds: Collection<Long>): Single<Int> {
         return networker.vkDefault(accountId)
             .newsfeed().deleteBan(listIds)
     }
 
-    override fun getBanned(accountId: Int): Single<List<Owner>> {
+    override fun getBanned(accountId: Long): Single<List<Owner>> {
         return networker.vkDefault(accountId)
             .newsfeed().getBanned().map { response ->
                 transformOwners(response.profiles, response.groups)
             }
     }
 
-    override fun deleteList(accountId: Int, list_id: Int?): Single<Int> {
+    override fun deleteList(accountId: Long, list_id: Int?): Single<Int> {
         return networker.vkDefault(accountId)
             .newsfeed().deleteList(list_id)
     }
 
     override fun ignoreItem(
-        accountId: Int,
+        accountId: Long,
         type: String?,
-        owner_id: Int?,
+        owner_id: Long?,
         item_id: Int?
     ): Single<Int> {
         return networker.vkDefault(accountId)
             .newsfeed().ignoreItem(type, owner_id, item_id)
     }
 
-    override fun getCachedFeedLists(accountId: Int): Single<List<FeedList>> {
+    override fun getCachedFeedLists(accountId: Long): Single<List<FeedList>> {
         val criteria = FeedSourceCriteria(accountId)
         return stores.feed()
             .getAllLists(criteria)
@@ -297,7 +297,7 @@ class FeedInteractor(
             }
     }
 
-    override fun getActualFeedLists(accountId: Int): Single<List<FeedList>> {
+    override fun getActualFeedLists(accountId: Long): Single<List<FeedList>> {
         return networker.vkDefault(accountId)
             .newsfeed()
             .getLists(null)
@@ -323,7 +323,7 @@ class FeedInteractor(
             }
     }
 
-    override fun getCachedFeed(accountId: Int): Single<List<News>> {
+    override fun getCachedFeed(accountId: Long): Single<List<News>> {
         val criteria = FeedCriteria(accountId)
         return stores.feed()
             .findByCriteria(criteria)

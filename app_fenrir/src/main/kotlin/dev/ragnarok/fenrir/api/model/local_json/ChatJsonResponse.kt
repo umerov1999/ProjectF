@@ -10,7 +10,7 @@ class ChatJsonResponse {
     var type: String? = null
     var messages: List<VKApiMessage>? = null
     var version: Version? = null
-    var page_id = 0
+    var page_id = 0L
     var page_title: String? = null
     var page_avatar: String? = null
     var page_phone_number: String? = null

@@ -28,7 +28,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class AudioPlaylistsPresenter(accountId: Int, val owner_id: Int, savedInstanceState: Bundle?) :
+class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IAudioPlaylistsView>(accountId, savedInstanceState) {
     private val addon: MutableList<AudioPlaylist>
     private val playlists: MutableList<AudioPlaylist>

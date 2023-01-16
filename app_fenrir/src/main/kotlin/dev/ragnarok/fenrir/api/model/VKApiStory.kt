@@ -14,7 +14,7 @@ class VKApiStory : VKApiAttachment {
     /**
      * Note owner ID.
      */
-    var owner_id = 0
+    var owner_id = 0L
 
     /**
      * Date (in Unix time) when the note was created.

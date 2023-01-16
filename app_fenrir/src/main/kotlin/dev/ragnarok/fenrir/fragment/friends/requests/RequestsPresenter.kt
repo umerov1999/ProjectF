@@ -20,7 +20,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class RequestsPresenter(accountId: Int, private val userId: Int, savedInstanceState: Bundle?) :
+class RequestsPresenter(accountId: Long, private val userId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IRequestsView>(accountId, savedInstanceState) {
     private val relationshipInteractor: IRelationshipInteractor =
         InteractorFactory.createRelationshipInteractor()
@@ -95,7 +95,7 @@ class RequestsPresenter(accountId: Int, private val userId: Int, savedInstanceSt
         if (do_scan && isNotFriendShow) {
             val not_requests = ArrayList<Owner>()
             for (i in allData) {
-                if (indexOf(users, i.getObjectId()) == -1) {
+                if (indexOf(users, i.getOwnerObjectId()) == -1) {
                     not_requests.add(i)
                 }
             }

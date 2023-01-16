@@ -93,7 +93,7 @@ class ProductsFragment : BaseMvpFragment<ProductsPresenter, IProductsView>(), IP
         mSwipeRefreshLayout?.post { mSwipeRefreshLayout?.isRefreshing = refreshing }
     }
 
-    override fun onOpenMarket(accountId: Int, market: Market) {
+    override fun onOpenMarket(accountId: Long, market: Market) {
         getMarketViewPlace(accountId, market).tryOpenWith(requireActivity())
     }
 
@@ -101,9 +101,9 @@ class ProductsFragment : BaseMvpFragment<ProductsPresenter, IProductsView>(), IP
         return object : IPresenterFactory<ProductsPresenter> {
             override fun create(): ProductsPresenter {
                 return ProductsPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
-                    ), requireArguments().getInt(Extra.OWNER_ID), requireArguments().getInt(
+                    ), requireArguments().getLong(Extra.OWNER_ID), requireArguments().getInt(
                         Extra.ALBUM_ID
                     ), requireArguments().getBoolean(Extra.SERVICE, false), saveInstanceState
                 )
@@ -134,14 +134,14 @@ class ProductsFragment : BaseMvpFragment<ProductsPresenter, IProductsView>(), IP
 
     companion object {
         fun newInstance(
-            accountId: Int,
-            ownerId: Int,
+            accountId: Long,
+            ownerId: Long,
             albumId: Int,
             isService: Boolean
         ): ProductsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putInt(Extra.ALBUM_ID, albumId)
             args.putBoolean(Extra.SERVICE, isService)
             val fragment = ProductsFragment()

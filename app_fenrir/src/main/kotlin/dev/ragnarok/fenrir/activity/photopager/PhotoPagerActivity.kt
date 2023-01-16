@@ -73,11 +73,11 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             "dev.ragnarok.fenrir.activity.photopager.PhotoPagerActivity"
 
         fun buildArgsForSimpleGallery(
-            aid: Int, index: Int, photos: ArrayList<Photo>,
+            aid: Long, index: Int, photos: ArrayList<Photo>,
             needUpdate: Boolean
         ): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             args.putParcelableArrayList(EXTRA_PHOTOS, photos)
             args.putInt(Extra.INDEX, index)
             args.putBoolean(EXTRA_NEED_UPDATE, needUpdate)
@@ -85,17 +85,17 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         }
 
         fun buildArgsForAlbum(
-            aid: Int,
+            aid: Long,
             albumId: Int,
-            ownerId: Int,
+            ownerId: Long,
             source: TmpSource,
             position: Int,
             readOnly: Boolean,
             invert: Boolean
         ): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, aid)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putInt(Extra.ALBUM_ID, albumId)
             args.putInt(Extra.INDEX, position)
             args.putBoolean(Extra.READONLY, readOnly)
@@ -105,17 +105,17 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         }
 
         fun buildArgsForAlbum(
-            aid: Int,
+            aid: Long,
             albumId: Int,
-            ownerId: Int,
+            ownerId: Long,
             photos: ArrayList<Photo>,
             position: Int,
             readOnly: Boolean,
             invert: Boolean
         ): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, aid)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putInt(Extra.ALBUM_ID, albumId)
             args.putInt(Extra.INDEX, position)
             args.putBoolean(Extra.READONLY, readOnly)
@@ -132,17 +132,17 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         }
 
         fun buildArgsForAlbum(
-            aid: Int,
+            aid: Long,
             albumId: Int,
-            ownerId: Int,
+            ownerId: Long,
             parcelNativePointer: Long,
             position: Int,
             readOnly: Boolean,
             invert: Boolean
         ): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, aid)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putInt(Extra.ALBUM_ID, albumId)
             args.putInt(Extra.INDEX, position)
             args.putBoolean(Extra.READONLY, readOnly)
@@ -151,9 +151,9 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             return args
         }
 
-        fun buildArgsForFave(aid: Int, photos: ArrayList<Photo>, index: Int): Bundle {
+        fun buildArgsForFave(aid: Long, photos: ArrayList<Photo>, index: Int): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             args.putParcelableArrayList(EXTRA_PHOTOS, photos)
             args.putInt(Extra.INDEX, index)
             return args
@@ -382,7 +382,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         return false
     }
 
-    override fun goToLikesList(accountId: Int, ownerId: Int, photoId: Int) {
+    override fun goToLikesList(accountId: Long, ownerId: Long, photoId: Int) {
         PlaceFactory.getLikesCopiesPlace(
             accountId,
             "photo",
@@ -429,7 +429,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         object : IPresenterFactory<PhotoPagerPresenter> {
             override fun create(): PhotoPagerPresenter {
                 val placeType = requireArguments().getInt(Extra.PLACE_TYPE)
-                val aid = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
                 when (placeType) {
                     Place.SIMPLE_PHOTO_GALLERY -> {
                         val index = requireArguments().getInt(Extra.INDEX)
@@ -447,7 +447,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     }
                     Place.VK_PHOTO_ALBUM_GALLERY_SAVED -> {
                         val indexx = requireArguments().getInt(Extra.INDEX)
-                        val ownerId = requireArguments().getInt(Extra.OWNER_ID)
+                        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
                         val albumId = requireArguments().getInt(Extra.ALBUM_ID)
                         val readOnly = requireArguments().getBoolean(Extra.READONLY)
                         val invert = requireArguments().getBoolean(Extra.INVERT)
@@ -467,7 +467,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     }
                     Place.VK_PHOTO_ALBUM_GALLERY, Place.VK_PHOTO_ALBUM_GALLERY_NATIVE -> {
                         val indexx = requireArguments().getInt(Extra.INDEX)
-                        val ownerId = requireArguments().getInt(Extra.OWNER_ID)
+                        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
                         val albumId = requireArguments().getInt(Extra.ALBUM_ID)
                         val readOnly = requireArguments().getBoolean(Extra.READONLY)
                         val invert = requireArguments().getBoolean(Extra.INVERT)
@@ -576,7 +576,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         mViewPager?.setCurrentItem(initialIndex, false)
     }
 
-    override fun sharePhoto(accountId: Int, photo: Photo) {
+    override fun sharePhoto(accountId: Long, photo: Photo) {
         val items = arrayOf(
             getString(R.string.share_link),
             getString(R.string.repost_send_message),
@@ -599,7 +599,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             .show()
     }
 
-    override fun postToMyWall(photo: Photo, accountId: Int) {
+    override fun postToMyWall(photo: Photo, accountId: Long) {
         PlaceUtil.goToPostCreation(
             this,
             accountId,
@@ -623,7 +623,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         this.invalidateOptionsMenu()
     }
 
-    override fun goToComments(accountId: Int, commented: Commented) {
+    override fun goToComments(accountId: Long, commented: Commented) {
         PlaceFactory.getCommentsPlace(accountId, commented, null).tryOpenWith(this)
     }
 

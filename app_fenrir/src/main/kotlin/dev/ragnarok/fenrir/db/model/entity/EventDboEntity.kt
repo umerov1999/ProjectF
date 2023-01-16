@@ -8,14 +8,14 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("event")
 class EventDboEntity : DboEntity() {
-    var id = 0
+    var id = 0L
         private set
     var button_text: String? = null
         private set
     var text: String? = null
         private set
 
-    fun setId(id: Int): EventDboEntity {
+    fun setId(id: Long): EventDboEntity {
         this.id = id
         return this
     }

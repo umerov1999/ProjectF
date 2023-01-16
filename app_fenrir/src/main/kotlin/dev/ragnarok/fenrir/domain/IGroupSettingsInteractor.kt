@@ -7,10 +7,10 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
 interface IGroupSettingsInteractor {
-    fun getGroupSettings(accountId: Int, groupId: Int): Single<GroupSettings>
+    fun getGroupSettings(accountId: Long, groupId: Long): Single<GroupSettings>
     fun edit(
-        accountId: Int,
-        groupId: Int,
+        accountId: Long,
+        groupId: Long,
         title: String?,
         description: String?,
         screen_name: String?,
@@ -25,9 +25,9 @@ interface IGroupSettingsInteractor {
     ): Completable
 
     fun ban(
-        accountId: Int,
-        groupId: Int,
-        ownerId: Int,
+        accountId: Long,
+        groupId: Long,
+        ownerId: Long,
         endDateUnixtime: Long?,
         reason: Int,
         comment: String?,
@@ -35,8 +35,8 @@ interface IGroupSettingsInteractor {
     ): Completable
 
     fun editManager(
-        accountId: Int,
-        groupId: Int,
+        accountId: Long,
+        groupId: Long,
         user: User,
         role: String?,
         asContact: Boolean,
@@ -45,14 +45,14 @@ interface IGroupSettingsInteractor {
         phone: String?
     ): Completable
 
-    fun unban(accountId: Int, groupId: Int, ownerId: Int): Completable
+    fun unban(accountId: Long, groupId: Long, ownerId: Long): Completable
     fun getBanned(
-        accountId: Int,
-        groupId: Int,
+        accountId: Long,
+        groupId: Long,
         startFrom: IntNextFrom,
         count: Int
     ): Single<Pair<List<Banned>, IntNextFrom>>
 
-    fun getManagers(accountId: Int, groupId: Int): Single<List<Manager>>
-    fun getContacts(accountId: Int, groupId: Int): Single<List<ContactInfo>>
+    fun getManagers(accountId: Long, groupId: Long): Single<List<Manager>>
+    fun getContacts(accountId: Long, groupId: Long): Single<List<ContactInfo>>
 }

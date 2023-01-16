@@ -23,8 +23,8 @@ class NewsfeedInteractor(
     private val ownersRepository: IOwnersRepository
 ) : INewsfeedInteractor {
     override fun getMentions(
-        accountId: Int,
-        owner_id: Int?,
+        accountId: Long,
+        owner_id: Long?,
         count: Int?,
         offset: Int?,
         startTime: Long?,
@@ -64,7 +64,7 @@ class NewsfeedInteractor(
     }
 
     override fun getNewsfeedComments(
-        accountId: Int,
+        accountId: Long,
         count: Int,
         startFrom: String?,
         filter: String?

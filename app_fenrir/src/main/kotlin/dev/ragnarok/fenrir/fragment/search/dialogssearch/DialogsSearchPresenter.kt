@@ -15,7 +15,7 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import io.reactivex.rxjava3.core.Single
 
 class DialogsSearchPresenter(
-    accountId: Int,
+    accountId: Long,
     criteria: DialogsSearchCriteria?,
     savedInstanceState: Bundle?
 ) : AbsSearchPresenter<IDialogsSearchView, DialogsSearchCriteria, Conversation, IntNextFrom>(
@@ -36,7 +36,7 @@ class DialogsSearchPresenter(
     }
 
     override fun doSearch(
-        accountId: Int,
+        accountId: Long,
         criteria: DialogsSearchCriteria,
         startFrom: IntNextFrom
     ): Single<Pair<List<Conversation>, IntNextFrom>> {

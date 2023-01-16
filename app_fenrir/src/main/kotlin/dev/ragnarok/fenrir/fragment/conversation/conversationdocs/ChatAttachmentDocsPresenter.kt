@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.core.Single
 
-class ChatAttachmentDocsPresenter(peerId: Int, accountId: Int, savedInstanceState: Bundle?) :
+class ChatAttachmentDocsPresenter(peerId: Long, accountId: Long, savedInstanceState: Bundle?) :
     BaseChatAttachmentsPresenter<Document, IChatAttachmentDocsView>(
         peerId,
         accountId,
@@ -26,7 +26,7 @@ class ChatAttachmentDocsPresenter(peerId: Int, accountId: Int, savedInstanceStat
     }
 
     override fun requestAttachments(
-        peerId: Int,
+        peerId: Long,
         nextFrom: String?
     ): Single<Pair<String?, List<Document>>> {
         return get().vkDefault(accountId)

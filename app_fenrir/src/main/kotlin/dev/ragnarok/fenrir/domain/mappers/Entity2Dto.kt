@@ -89,7 +89,7 @@ object Entity2Dto {
                 )
             }
             is AudioPlaylistDboEntity -> {
-                return if (dboEntity.original_access_key.isNullOrEmpty() || dboEntity.original_id == 0 || dboEntity.original_owner_id == 0) {
+                return if (dboEntity.original_access_key.isNullOrEmpty() || dboEntity.original_id == 0 || dboEntity.original_owner_id == 0L) {
                     AttachmentsTokenCreator.ofAudioPlaylist(
                         dboEntity.id,
                         dboEntity.ownerId,

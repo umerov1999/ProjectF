@@ -135,7 +135,7 @@ class FeedbackFragment : PlaceSupportMvpFragment<FeedbackPresenter, IFeedbackVie
         mLoadMoreHelper?.switchToState(loadmoreState)
     }
 
-    override fun showLinksDialog(accountId: Int, notification: Feedback) {
+    override fun showLinksDialog(accountId: Long, notification: Feedback) {
         FeedbackLinkDialog.newInstance(accountId, notification)
             .show(parentFragmentManager, "feedback_links")
     }
@@ -144,7 +144,7 @@ class FeedbackFragment : PlaceSupportMvpFragment<FeedbackPresenter, IFeedbackVie
         return object : IPresenterFactory<FeedbackPresenter> {
             override fun create(): FeedbackPresenter {
                 return FeedbackPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
                     ), saveInstanceState
                 )
@@ -163,13 +163,13 @@ class FeedbackFragment : PlaceSupportMvpFragment<FeedbackPresenter, IFeedbackVie
     }
 
     companion object {
-        fun buildArgs(accountId: Int): Bundle {
+        fun buildArgs(accountId: Long): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             return args
         }
 
-        fun newInstance(accountId: Int): FeedbackFragment {
+        fun newInstance(accountId: Long): FeedbackFragment {
             return newInstance(buildArgs(accountId))
         }
 

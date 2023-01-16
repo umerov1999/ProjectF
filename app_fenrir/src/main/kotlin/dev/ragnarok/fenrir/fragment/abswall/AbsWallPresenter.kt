@@ -52,8 +52,8 @@ import java.util.*
 import kotlin.math.abs
 
 abstract class AbsWallPresenter<V : IWallView> internal constructor(
-    accountId: Int,
-    val ownerId: Int,
+    accountId: Long,
+    val ownerId: Long,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<V>(accountId, savedInstanceState) {
     protected val wall: MutableList<Post>
@@ -555,7 +555,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         }
     }
 
-    private fun findByVkid(ownerId: Int, vkid: Int): Int {
+    private fun findByVkid(ownerId: Long, vkid: Int): Int {
         return indexOf(
             wall
         ) {

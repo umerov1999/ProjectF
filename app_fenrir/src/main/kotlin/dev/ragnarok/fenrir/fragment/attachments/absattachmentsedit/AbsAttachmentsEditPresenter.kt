@@ -20,7 +20,7 @@ import java.io.File
 import java.io.IOException
 
 abstract class AbsAttachmentsEditPresenter<V : IBaseAttachmentsEditView> internal constructor(
-    accountId: Int,
+    accountId: Long,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<V>(accountId, savedInstanceState) {
     val uploadManager: IUploadManager = Includes.uploadManager

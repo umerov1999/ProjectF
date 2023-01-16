@@ -11,7 +11,7 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 abstract class AbsSearchPresenter<V : IBaseSearchView<T>, C : BaseSearchCriteria, T, N : AbsNextFrom> internal constructor(
-    accountId: Int,
+    accountId: Long,
     var criteria: C?,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<V>(accountId, savedInstanceState) {
@@ -129,7 +129,7 @@ abstract class AbsSearchPresenter<V : IBaseSearchView<T>, C : BaseSearchCriteria
         }
     }
 
-    abstract fun doSearch(accountId: Int, criteria: C, startFrom: N): Single<Pair<List<T>, N>>
+    abstract fun doSearch(accountId: Long, criteria: C, startFrom: N): Single<Pair<List<T>, N>>
     abstract fun instantiateEmptyCriteria(): C
     override fun onDestroyed() {
         actionHandler.setAction(null)

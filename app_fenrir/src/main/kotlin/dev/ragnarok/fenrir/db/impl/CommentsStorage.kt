@@ -32,9 +32,9 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
     private val minorUpdatesPublisher: PublishSubject<CommentUpdate> = PublishSubject.create()
     private val mStoreLock = Any()
     override fun insert(
-        accountId: Int,
+        accountId: Long,
         sourceId: Int,
-        sourceOwnerId: Int,
+        sourceOwnerId: Long,
         sourceType: Int,
         dbos: List<CommentEntity>,
         owners: OwnerEntities?,
@@ -157,7 +157,7 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
         }
     }
 
-    override fun findEditingComment(accountId: Int, commented: Commented): Maybe<DraftComment> {
+    override fun findEditingComment(accountId: Long, commented: Commented): Maybe<DraftComment> {
         return Maybe.create { e: MaybeEmitter<DraftComment> ->
             val cursor = contentResolver.query(
                 getCommentsContentUriFor(accountId), null,
@@ -199,10 +199,10 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
     }
 
     override fun saveDraftComment(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         text: String?,
-        replyToUser: Int,
+        replyToUser: Long,
         replyToComment: Int
     ): Single<Int> {
         return Single.create { e: SingleEmitter<Int> ->
@@ -268,7 +268,7 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
         return minorUpdatesPublisher
     }
 
-    override fun deleteByDbid(accountId: Int, dbid: Int): Completable {
+    override fun deleteByDbid(accountId: Long, dbid: Int): Completable {
         return Completable.fromAction {
             val uri = getCommentsContentUriFor(accountId)
             val where = BaseColumns._ID + " = ?"
@@ -277,7 +277,7 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
         }
     }
 
-    private fun findEditingCommentId(aid: Int, commented: Commented): Int? {
+    private fun findEditingCommentId(aid: Long, commented: Commented): Int? {
         val projection = arrayOf(BaseColumns._ID)
         val cursor = contentResolver.query(
             getCommentsContentUriFor(aid), projection,
@@ -302,7 +302,7 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
     }
 
     private fun mapDbo(
-        accountId: Int,
+        accountId: Long,
         cursor: Cursor,
         includeAttachments: Boolean,
         forceAttachments: Boolean,
@@ -313,17 +313,17 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
         val dbid = cursor.getInt(BaseColumns._ID)
         val sourceId = cursor.getInt(CommentsColumns.SOURCE_ID)
         val sourceOwnerId =
-            cursor.getInt(CommentsColumns.SOURCE_OWNER_ID)
+            cursor.getLong(CommentsColumns.SOURCE_OWNER_ID)
         val sourceType = cursor.getInt(CommentsColumns.SOURCE_TYPE)
         val sourceAccessKey =
             cursor.getString(CommentsColumns.SOURCE_ACCESS_KEY)
         val id = cursor.getInt(CommentsColumns.COMMENT_ID)
         val threadsJson = cursor.getBlob(CommentsColumns.THREADS)
         val dbo = CommentEntity().set(sourceId, sourceOwnerId, sourceType, sourceAccessKey, id)
-            .setFromId(cursor.getInt(CommentsColumns.FROM_ID))
+            .setFromId(cursor.getLong(CommentsColumns.FROM_ID))
             .setDate(cursor.getLong(CommentsColumns.DATE))
             .setText(cursor.getString(CommentsColumns.TEXT))
-            .setReplyToUserId(cursor.getInt(CommentsColumns.REPLY_TO_USER))
+            .setReplyToUserId(cursor.getLong(CommentsColumns.REPLY_TO_USER))
             .setThreadsCount(cursor.getInt(CommentsColumns.THREADS_COUNT))
             .setReplyToComment(cursor.getInt(CommentsColumns.REPLY_TO_COMMENT))
             .setLikesCount(cursor.getInt(CommentsColumns.LIKES))
@@ -352,7 +352,7 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
     companion object {
         fun getCV(
             sourceId: Int,
-            sourceOwnerId: Int,
+            sourceOwnerId: Long,
             sourceType: Int,
             dbo: CommentEntity
         ): ContentValues {

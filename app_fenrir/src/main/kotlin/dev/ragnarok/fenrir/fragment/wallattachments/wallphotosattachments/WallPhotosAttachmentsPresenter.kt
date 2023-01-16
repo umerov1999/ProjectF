@@ -22,8 +22,8 @@ import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class WallPhotosAttachmentsPresenter(
-    accountId: Int,
-    private val owner_id: Int,
+    accountId: Long,
+    private val owner_id: Long,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<IWallPhotosAttachmentsView>(accountId, savedInstanceState) {
     private val mPhotos: ArrayList<Photo> = ArrayList()

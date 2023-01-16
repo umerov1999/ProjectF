@@ -15,7 +15,7 @@ import dev.ragnarok.fenrir.util.Utils.indexOfOwner
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class FollowersPresenter(accountId: Int, private val userId: Int, savedInstanceState: Bundle?) :
+class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanceState: Bundle?) :
     SimpleOwnersPresenter<IFollowersView>(accountId, savedInstanceState) {
     private val relationshipInteractor: IRelationshipInteractor =
         InteractorFactory.createRelationshipInteractor()
@@ -101,7 +101,7 @@ class FollowersPresenter(accountId: Int, private val userId: Int, savedInstanceS
             }
             val add_followers = ArrayList<Owner>()
             for (i in users) {
-                if (indexOf(data, i.getObjectId()) == -1) {
+                if (indexOf(data, i.getOwnerObjectId()) == -1) {
                     add_followers.add(i)
                 }
             }

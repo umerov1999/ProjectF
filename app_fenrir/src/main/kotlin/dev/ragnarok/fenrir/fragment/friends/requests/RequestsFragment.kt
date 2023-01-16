@@ -95,8 +95,8 @@ class RequestsFragment : BaseMvpFragment<RequestsPresenter, IRequestsView>(),
         return object : IPresenterFactory<RequestsPresenter> {
             override fun create(): RequestsPresenter {
                 return RequestsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.USER_ID), saveInstanceState
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.USER_ID), saveInstanceState
                 )
             }
         }
@@ -119,7 +119,7 @@ class RequestsFragment : BaseMvpFragment<RequestsPresenter, IRequestsView>(),
         mAdapter?.notifyItemRangeInserted(position, count)
     }
 
-    override fun showUserWall(accountId: Int, user: User) {
+    override fun showUserWall(accountId: Long, user: User) {
         getOwnerWallPlace(accountId, user).tryOpenWith(requireActivity())
     }
 
@@ -127,7 +127,7 @@ class RequestsFragment : BaseMvpFragment<RequestsPresenter, IRequestsView>(),
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun showNotRequests(data: List<Owner>, accountId: Int, ownerId: Int) {
+    override fun showNotRequests(data: List<Owner>, accountId: Long, ownerId: Long) {
         if (data.isEmpty()) {
             return
         }
@@ -149,10 +149,10 @@ class RequestsFragment : BaseMvpFragment<RequestsPresenter, IRequestsView>(),
     }
 
     companion object {
-        fun newInstance(accountId: Int, userId: Int): RequestsFragment {
+        fun newInstance(accountId: Long, userId: Long): RequestsFragment {
             val args = Bundle()
-            args.putInt(Extra.USER_ID, userId)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.USER_ID, userId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val requestsFragment = RequestsFragment()
             requestsFragment.arguments = args
             return requestsFragment

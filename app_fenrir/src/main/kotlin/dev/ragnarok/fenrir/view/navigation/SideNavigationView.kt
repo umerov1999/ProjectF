@@ -55,7 +55,7 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
     private var mAdapter: MenuListAdapter? = null
     private var mDrawerItems: MutableList<AbsMenuItem>? = null
     private var backgroundImage: ImageView? = null
-    private var mAccountId = 0
+    private var mAccountId = 0L
     private var ownersRepository: IOwnersRepository = owners
     private var statesCallback: NavigationStatesCallbacks? = null
     private val navCallback = NavigationBottomSheetCallback()
@@ -467,7 +467,7 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
             .store(mAccountId, chats)
     }
 
-    override fun onAccountChange(newAccountId: Int) {
+    override fun onAccountChange(newAccountId: Long) {
         backupRecentChats()
         mAccountId = newAccountId
         //        SECTION_ITEM_DIALOGS.setCount(Stores.getInstance()

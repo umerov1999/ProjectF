@@ -34,7 +34,7 @@ class PostPublishPrepareActivity : AppCompatActivity(), RecyclerMenuAdapter.Acti
     private var streams: StreamData? = null
     private var links: String? = null
     private var mime: String? = null
-    private var accountId = 0
+    private var accountId = 0L
     private var loading = false
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(Utils.updateActivityContext(newBase))

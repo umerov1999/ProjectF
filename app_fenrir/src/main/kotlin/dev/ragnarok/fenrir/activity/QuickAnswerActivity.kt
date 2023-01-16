@@ -59,7 +59,7 @@ class QuickAnswerActivity : AppCompatActivity() {
     }
     private var etText: TextInputEditText? = null
     private var notifier: TextingNotifier? = null
-    private var accountId = 0
+    private var accountId = 0L
     private lateinit var msg: Message
     private var messageIsRead = false
     private var messagesRepository: IMessagesRepository = messages
@@ -81,7 +81,7 @@ class QuickAnswerActivity : AppCompatActivity() {
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
         }
         msg = (intent.extras?.getParcelableCompat(Extra.MESSAGE) ?: return)
-        accountId = (intent.extras ?: return).getInt(Extra.ACCOUNT_ID)
+        accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
         notifier = TextingNotifier(accountId)
         setContentView(R.layout.activity_quick_answer)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -154,7 +154,7 @@ class QuickAnswerActivity : AppCompatActivity() {
                     }
 
                     override fun onForwardMessagesOpen(messages: ArrayList<Message>) {}
-                    override fun onOpenOwner(ownerId: Int) {}
+                    override fun onOpenOwner(ownerId: Long) {}
                     override fun onGoToMessagesLookup(message: Message) {}
                     override fun onDocPreviewOpen(document: Document) {}
                     override fun onPostOpen(post: Post) {}
@@ -194,7 +194,7 @@ class QuickAnswerActivity : AppCompatActivity() {
                     voiceHolderId: Int,
                     voiceMessageId: Int,
                     messageId: Int,
-                    peerId: Int,
+                    peerId: Long,
                     voiceMessage: VoiceMessage
                 ) {
                     val audio =
@@ -335,7 +335,7 @@ class QuickAnswerActivity : AppCompatActivity() {
 
         fun forStart(
             context: Context?,
-            accountId: Int,
+            accountId: Long,
             msg: Message?,
             body: String?,
             imgUrl: String?,

@@ -29,9 +29,9 @@ class LikesFragment : AbsOwnersListFragment<LikesListPresenter, ISimpleOwnersVie
         return object : IPresenterFactory<LikesListPresenter> {
             override fun create(): LikesListPresenter {
                 return LikesListPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getString(Extra.TYPE)!!,
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     requireArguments().getInt(Extra.ITEM_ID),
                     requireArguments().getString(Extra.FILTER)!!,
                     saveInstanceState
@@ -50,16 +50,16 @@ class LikesFragment : AbsOwnersListFragment<LikesListPresenter, ISimpleOwnersVie
 
     companion object {
         fun buildArgs(
-            accountId: Int,
+            accountId: Long,
             type: String?,
-            ownerId: Int,
+            ownerId: Long,
             itemId: Int,
             filter: String?
         ): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putString(Extra.TYPE, type)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putInt(Extra.ITEM_ID, itemId)
             args.putString(Extra.FILTER, filter)
             return args

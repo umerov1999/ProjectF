@@ -11,9 +11,9 @@ import dev.ragnarok.fenrir.api.model.server.VKApiVideosUploadServer
 import dev.ragnarok.fenrir.api.services.IDocsService
 import io.reactivex.rxjava3.core.Single
 
-internal class DocsApi(accountId: Int, provider: IServiceProvider) : AbsApi(accountId, provider),
+internal class DocsApi(accountId: Long, provider: IServiceProvider) : AbsApi(accountId, provider),
     IDocsApi {
-    override fun delete(ownerId: Int?, docId: Int): Single<Boolean> {
+    override fun delete(ownerId: Long?, docId: Int): Single<Boolean> {
         return provideService(IDocsService(), TokenType.USER)
             .flatMap { service ->
                 service.delete(ownerId, docId)
@@ -22,7 +22,7 @@ internal class DocsApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun add(ownerId: Int, docId: Int, accessKey: String?): Single<Int> {
+    override fun add(ownerId: Long, docId: Int, accessKey: String?): Single<Int> {
         return provideService(IDocsService(), TokenType.USER)
             .flatMap { service ->
                 service.add(ownerId, docId, accessKey)
@@ -57,7 +57,7 @@ internal class DocsApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun getMessagesUploadServer(
-        peerId: Int?,
+        peerId: Long?,
         type: String?
     ): Single<VKApiDocsUploadServer> {
         return provideService(IDocsService(), TokenType.USER, TokenType.COMMUNITY)
@@ -67,7 +67,7 @@ internal class DocsApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun getUploadServer(groupId: Int?): Single<VKApiDocsUploadServer> {
+    override fun getUploadServer(groupId: Long?): Single<VKApiDocsUploadServer> {
         return provideService(IDocsService(), TokenType.USER)
             .flatMap { service ->
                 service.getUploadServer(groupId)
@@ -77,7 +77,7 @@ internal class DocsApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
 
     override fun getVideoServer(
         isPrivate: Int?,
-        group_id: Int?,
+        group_id: Long?,
         name: String?
     ): Single<VKApiVideosUploadServer> {
         return provideService(IDocsService(), TokenType.USER)
@@ -88,7 +88,7 @@ internal class DocsApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun get(
-        ownerId: Int?,
+        ownerId: Long?,
         count: Int?,
         offset: Int?,
         type: Int?

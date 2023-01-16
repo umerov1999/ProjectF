@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.push
 import java.util.regex.Pattern
 
 open class VkPlace {
-    class Photo(val ownerId: Int, val photoId: Int) : VkPlace() {
+    class Photo(val ownerId: Long, val photoId: Int) : VkPlace() {
         override fun toString(): String {
             return "Photo{" +
                     "ownerId=" + ownerId +
@@ -12,7 +12,7 @@ open class VkPlace {
         }
     }
 
-    class PhotoComment(val ownerId: Int, val photoId: Int) : VkPlace() {
+    class PhotoComment(val ownerId: Long, val photoId: Int) : VkPlace() {
         override fun toString(): String {
             return "PhotoComment{" +
                     "ownerId=" + ownerId +
@@ -21,7 +21,7 @@ open class VkPlace {
         }
     }
 
-    class WallComment(val ownerId: Int, val postId: Int) : VkPlace() {
+    class WallComment(val ownerId: Long, val postId: Int) : VkPlace() {
         override fun toString(): String {
             return "WallComment{" +
                     "ownerId=" + ownerId +
@@ -30,7 +30,7 @@ open class VkPlace {
         }
     }
 
-    class WallPost(val ownerId: Int, val postId: Int) : VkPlace() {
+    class WallPost(val ownerId: Long, val postId: Int) : VkPlace() {
         override fun toString(): String {
             return "WallPost{" +
                     "ownerId=" + ownerId +
@@ -39,7 +39,7 @@ open class VkPlace {
         }
     }
 
-    class Video(val ownerId: Int, val videoId: Int) : VkPlace() {
+    class Video(val ownerId: Long, val videoId: Int) : VkPlace() {
         override fun toString(): String {
             return "Video{" +
                     "ownerId=" + ownerId +
@@ -48,7 +48,7 @@ open class VkPlace {
         }
     }
 
-    class VideoComment(val ownerId: Int, val videoId: Int) : VkPlace() {
+    class VideoComment(val ownerId: Long, val videoId: Int) : VkPlace() {
         override fun toString(): String {
             return "VideoComment{" +
                     "ownerId=" + ownerId +
@@ -73,37 +73,37 @@ open class VkPlace {
         fun parse(obj: String?): VkPlace? {
             var matcher = obj?.let { PATTERN_PHOTO.matcher(it) }
             if (matcher?.find() == true) {
-                val ownerId = matcher.group(1)?.toInt() ?: return null
+                val ownerId = matcher.group(1)?.toLong() ?: return null
                 val photoId = matcher.group(2)?.toInt() ?: return null
                 return Photo(ownerId, photoId)
             }
             matcher = obj?.let { PATTERN_PHOTO_COMMENT.matcher(it) }
             if (matcher?.find() == true) {
-                val ownerId = matcher.group(1)?.toInt() ?: return null
+                val ownerId = matcher.group(1)?.toLong() ?: return null
                 val photoId = matcher.group(2)?.toInt() ?: return null
                 return PhotoComment(ownerId, photoId)
             }
             matcher = obj?.let { PATTERN_WALL.matcher(it) }
             if (matcher?.find() == true) {
-                val ownerId = matcher.group(1)?.toInt() ?: return null
+                val ownerId = matcher.group(1)?.toLong() ?: return null
                 val postId = matcher.group(2)?.toInt() ?: return null
                 return WallPost(ownerId, postId)
             }
             matcher = obj?.let { PATTERN_WALL_COMMENT.matcher(it) }
             if (matcher?.find() == true) {
-                val ownerId = matcher.group(1)?.toInt() ?: return null
+                val ownerId = matcher.group(1)?.toLong() ?: return null
                 val postId = matcher.group(2)?.toInt() ?: return null
                 return WallComment(ownerId, postId)
             }
             matcher = obj?.let { PATTERN_VIDEO.matcher(it) }
             if (matcher?.find() == true) {
-                val ownerId = matcher.group(1)?.toInt() ?: return null
+                val ownerId = matcher.group(1)?.toLong() ?: return null
                 val videoId = matcher.group(2)?.toInt() ?: return null
                 return Video(ownerId, videoId)
             }
             matcher = obj?.let { PATTERN_VIDEO_COMMENT.matcher(it) }
             if (matcher?.find() == true) {
-                val ownerId = matcher.group(1)?.toInt() ?: return null
+                val ownerId = matcher.group(1)?.toLong() ?: return null
                 val videoId = matcher.group(2)?.toInt() ?: return null
                 return VideoComment(ownerId, videoId)
             }

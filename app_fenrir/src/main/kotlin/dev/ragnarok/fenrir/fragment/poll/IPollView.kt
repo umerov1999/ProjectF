@@ -21,8 +21,8 @@ interface IPollView : IMvpView, IErrorView {
     fun setupButton(voted: Boolean)
 
     fun openVoters(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         pollId: Int,
         board: Boolean,
         answer: Long

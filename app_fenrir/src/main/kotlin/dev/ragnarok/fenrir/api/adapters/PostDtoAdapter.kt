@@ -25,9 +25,9 @@ class PostDtoAdapter : AbsAdapter<VKApiPost>("VKApiPost") {
                 dto.post_type = DONUT
             }
         }
-        dto.owner_id = getFirstInt(root, 0, "owner_id", "to_id", "source_id")
-        dto.from_id = optInt(root, "from_id")
-        if (dto.from_id == 0) {
+        dto.owner_id = getFirstLong(root, 0, "owner_id", "to_id", "source_id")
+        dto.from_id = optLong(root, "from_id")
+        if (dto.from_id == 0L) {
             // "copy_history": [
             // {
             //     ... this post has been removed ...
@@ -48,8 +48,8 @@ class PostDtoAdapter : AbsAdapter<VKApiPost>("VKApiPost") {
                 dto.copyright = VKApiPost.Copyright(it, link)
             }
         }
-        dto.reply_owner_id = optInt(root, "reply_owner_id", 0)
-        if (dto.reply_owner_id == 0) {
+        dto.reply_owner_id = optLong(root, "reply_owner_id", 0)
+        if (dto.reply_owner_id == 0L) {
             // for replies from newsfeed.search
             // но не помешало бы понять какого хе...а!!!
             dto.reply_owner_id = dto.owner_id
@@ -96,8 +96,8 @@ class PostDtoAdapter : AbsAdapter<VKApiPost>("VKApiPost") {
         }
         dto.can_edit = optBoolean(root, "can_edit")
         dto.is_favorite = optBoolean(root, "is_favorite")
-        dto.signer_id = optInt(root, "signer_id")
-        dto.created_by = optInt(root, "created_by")
+        dto.signer_id = optLong(root, "signer_id")
+        dto.created_by = optLong(root, "created_by")
         dto.can_pin = optInt(root, "can_pin") == 1
         dto.is_pinned = optBoolean(root, "is_pinned")
         if (hasArray(root, "copy_history")) {

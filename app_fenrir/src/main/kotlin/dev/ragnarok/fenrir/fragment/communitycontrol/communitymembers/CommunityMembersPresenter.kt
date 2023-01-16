@@ -11,8 +11,8 @@ import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class CommunityMembersPresenter(
-    accountId: Int,
-    private val group_id: Int,
+    accountId: Long,
+    private val group_id: Long,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<ICommunityMembersView>(accountId, savedInstanceState) {
     private val relationshipInteractor: IRelationshipInteractor =

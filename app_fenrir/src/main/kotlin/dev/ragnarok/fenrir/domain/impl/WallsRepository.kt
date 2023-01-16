@@ -49,7 +49,7 @@ class WallsRepository(
     private val majorUpdatesPublisher = PublishSubject.create<Post>()
     private val postInvalidatePublisher = PublishSubject.create<IdPair>()
     override fun editPost(
-        accountId: Int, ownerId: Int, postId: Int, friendsOnly: Boolean?,
+        accountId: Long, ownerId: Long, postId: Int, friendsOnly: Boolean?,
         message: String?, attachments: List<AbsModel>?, services: String?,
         signed: Boolean?, publishDate: Long?, latitude: Double?, longitude: Double?,
         placeId: Int?, markAsAds: Boolean?
@@ -78,10 +78,22 @@ class WallsRepository(
     }
 
     override fun post(
-        accountId: Int, ownerId: Int, friendsOnly: Boolean?, fromGroup: Boolean?, message: String?,
-        attachments: List<AbsModel>?, services: String?, signed: Boolean?,
-        publishDate: Long?, latitude: Double?, longitude: Double?, placeId: Int?,
-        postId: Int?, guid: Int?, markAsAds: Boolean?, adsPromotedStealth: Boolean?
+        accountId: Long,
+        ownerId: Long,
+        friendsOnly: Boolean?,
+        fromGroup: Boolean?,
+        message: String?,
+        attachments: List<AbsModel>?,
+        services: String?,
+        signed: Boolean?,
+        publishDate: Long?,
+        latitude: Double?,
+        longitude: Double?,
+        placeId: Int?,
+        postId: Int?,
+        guid: Int?,
+        markAsAds: Boolean?,
+        adsPromotedStealth: Boolean?
     ): Single<Post> {
         var tokens: List<IAttachmentToken>? = null
         try {
@@ -108,14 +120,14 @@ class WallsRepository(
             }
     }
 
-    private fun invalidatePost(accountId: Int, postId: Int, ownerId: Int): Completable {
+    private fun invalidatePost(accountId: Long, postId: Int, ownerId: Long): Completable {
         val pair = IdPair(postId, ownerId)
         return storages.wall()
             .invalidatePost(accountId, postId, ownerId)
             .doOnComplete { postInvalidatePublisher.onNext(pair) }
     }
 
-    override fun like(accountId: Int, ownerId: Int, postId: Int, add: Boolean): Single<Int> {
+    override fun like(accountId: Long, ownerId: Long, postId: Int, add: Boolean): Single<Int> {
         val single: Single<Int> = if (add) {
             networker.vkDefault(accountId)
                 .likes()
@@ -132,20 +144,20 @@ class WallsRepository(
         }
     }
 
-    override fun checkAndAddLike(accountId: Int, ownerId: Int, postId: Int): Single<Int> {
+    override fun checkAndAddLike(accountId: Long, ownerId: Long, postId: Int): Single<Int> {
         return networker.vkDefault(accountId)
             .likes().checkAndAddLike("post", ownerId, postId, null)
     }
 
-    override fun isLiked(accountId: Int, ownerId: Int, postId: Int): Single<Boolean> {
+    override fun isLiked(accountId: Long, ownerId: Long, postId: Int): Single<Boolean> {
         return networker.vkDefault(accountId)
             .likes()
             .isLiked("post", ownerId, postId)
     }
 
     override fun getWallNoCache(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         offset: Int,
         count: Int,
         wallFilter: Int
@@ -174,8 +186,8 @@ class WallsRepository(
     }
 
     override fun getWall(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         offset: Int,
         count: Int,
         wallFilter: Int,
@@ -211,7 +223,7 @@ class WallsRepository(
                                     dbos,
                                     ownerEntities,
                                     if (offset == 0) object : IClearWallTask {
-                                        override val ownerId: Int
+                                        override val ownerId: Long
                                             get() = ownerId
                                     } else null)
                                 .map { posts }
@@ -222,7 +234,7 @@ class WallsRepository(
             }
     }
 
-    private fun entities2models(accountId: Int): SingleTransformer<List<PostDboEntity>, List<Post>> {
+    private fun entities2models(accountId: Long): SingleTransformer<List<PostDboEntity>, List<Post>> {
         return SingleTransformer { single: Single<List<PostDboEntity>> ->
             single
                 .flatMap { dbos ->
@@ -241,7 +253,7 @@ class WallsRepository(
         }
     }
 
-    private fun entity2model(accountId: Int): SingleTransformer<PostDboEntity, Post> {
+    private fun entity2model(accountId: Long): SingleTransformer<PostDboEntity, Post> {
         return SingleTransformer { single: Single<PostDboEntity> ->
             single
                 .flatMap { dbo ->
@@ -258,7 +270,11 @@ class WallsRepository(
         }
     }
 
-    override fun getCachedWall(accountId: Int, ownerId: Int, wallFilter: Int): Single<List<Post>> {
+    override fun getCachedWall(
+        accountId: Long,
+        ownerId: Long,
+        wallFilter: Int
+    ): Single<List<Post>> {
         val criteria = WallCriteria(accountId, ownerId).setMode(wallFilter)
         return storages.wall()
             .findDbosByCriteria(criteria)
@@ -272,7 +288,7 @@ class WallsRepository(
             .andThen(Completable.fromAction { minorUpdatesPublisher.onNext(update) })
     }
 
-    override fun delete(accountId: Int, ownerId: Int, postId: Int): Completable {
+    override fun delete(accountId: Long, ownerId: Long, postId: Int): Completable {
         val update = PostUpdate(accountId, postId, ownerId).withDeletion(true)
         return networker.vkDefault(accountId)
             .wall()
@@ -280,7 +296,7 @@ class WallsRepository(
             .flatMapCompletable { applyPatch(update) }
     }
 
-    override fun restore(accountId: Int, ownerId: Int, postId: Int): Completable {
+    override fun restore(accountId: Long, ownerId: Long, postId: Int): Completable {
         val update = PostUpdate(accountId, postId, ownerId).withDeletion(false)
         return networker.vkDefault(accountId)
             .wall()
@@ -288,25 +304,30 @@ class WallsRepository(
             .flatMapCompletable { applyPatch(update) }
     }
 
-    override fun reportPost(accountId: Int, owner_id: Int, post_id: Int, reason: Int): Single<Int> {
+    override fun reportPost(
+        accountId: Long,
+        owner_id: Long,
+        post_id: Int,
+        reason: Int
+    ): Single<Int> {
         return networker.vkDefault(accountId)
             .wall()
             .reportPost(owner_id, post_id, reason)
     }
 
-    override fun subscribe(accountId: Int, owner_id: Int): Single<Int> {
+    override fun subscribe(accountId: Long, owner_id: Long): Single<Int> {
         return networker.vkDefault(accountId)
             .wall()
             .subscribe(owner_id)
     }
 
-    override fun unsubscribe(accountId: Int, owner_id: Int): Single<Int> {
+    override fun unsubscribe(accountId: Long, owner_id: Long): Single<Int> {
         return networker.vkDefault(accountId)
             .wall()
             .unsubscribe(owner_id)
     }
 
-    override fun getById(accountId: Int, ownerId: Int, postId: Int): Single<Post> {
+    override fun getById(accountId: Long, ownerId: Long, postId: Int): Single<Post> {
         val id = dev.ragnarok.fenrir.api.model.IdPair(postId, ownerId)
         return networker.vkDefault(accountId)
             .wall()
@@ -329,7 +350,7 @@ class WallsRepository(
             }
     }
 
-    override fun pinUnpin(accountId: Int, ownerId: Int, postId: Int, pin: Boolean): Completable {
+    override fun pinUnpin(accountId: Long, ownerId: Long, postId: Int, pin: Boolean): Completable {
         val single: Single<Boolean> = if (pin) {
             networker.vkDefault(accountId)
                 .wall()
@@ -356,8 +377,8 @@ class WallsRepository(
     }
 
     override fun getEditingPost(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         type: Int,
         withAttachments: Boolean
     ): Single<Post> {
@@ -367,7 +388,7 @@ class WallsRepository(
     }
 
     override fun post(
-        accountId: Int,
+        accountId: Long,
         post: Post,
         fromGroup: Boolean,
         showSigner: Boolean
@@ -384,10 +405,10 @@ class WallsRepository(
     }
 
     override fun repost(
-        accountId: Int,
+        accountId: Long,
         postId: Int,
-        ownerId: Int,
-        groupId: Int?,
+        ownerId: Long,
+        groupId: Long?,
         message: String?
     ): Single<Post> {
         val resultOwnerId = if (groupId != null) -abs(groupId) else accountId
@@ -405,17 +426,17 @@ class WallsRepository(
             }
     }
 
-    override fun cachePostWithIdSaving(accountId: Int, post: Post): Single<Int> {
+    override fun cachePostWithIdSaving(accountId: Long, post: Post): Single<Int> {
         val entity = buildPostDbo(post)
         return storages.wall()
             .replacePost(accountId, entity)
     }
 
-    override fun deleteFromCache(accountId: Int, postDbid: Int): Completable {
+    override fun deleteFromCache(accountId: Long, postDbid: Int): Completable {
         return storages.wall().deletePost(accountId, postDbid)
     }
 
-    private fun getAndStorePost(accountId: Int, ownerId: Int, postId: Int): Single<Post> {
+    private fun getAndStorePost(accountId: Long, ownerId: Long, postId: Int): Single<Post> {
         val cache = storages.wall()
         return networker.vkDefault(accountId)
             .wall()
@@ -442,8 +463,8 @@ class WallsRepository(
     }
 
     override fun search(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         query: String?,
         ownersPostOnly: Boolean,
         count: Int,
@@ -512,7 +533,7 @@ class WallsRepository(
 
         internal fun singlePair(
             postId: Int,
-            postOwnerId: Int
+            postOwnerId: Long
         ): Collection<dev.ragnarok.fenrir.api.model.IdPair> {
             return listOf(dev.ragnarok.fenrir.api.model.IdPair(postId, postOwnerId))
         }

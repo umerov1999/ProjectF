@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.core.Single
 
-class ChatAttachmentVideoPresenter(peerId: Int, accountId: Int, savedInstanceState: Bundle?) :
+class ChatAttachmentVideoPresenter(peerId: Long, accountId: Long, savedInstanceState: Bundle?) :
     BaseChatAttachmentsPresenter<Video, IChatAttachmentVideoView>(
         peerId,
         accountId,
@@ -25,7 +25,7 @@ class ChatAttachmentVideoPresenter(peerId: Int, accountId: Int, savedInstanceSta
     }
 
     override fun requestAttachments(
-        peerId: Int,
+        peerId: Long,
         nextFrom: String?
     ): Single<Pair<String?, List<Video>>> {
         return get().vkDefault(accountId)

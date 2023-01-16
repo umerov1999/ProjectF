@@ -23,7 +23,7 @@ import dev.ragnarok.fenrir.util.PersistentLogger
 import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.core.Single
 
-class ChatAttachmentPhotoPresenter(peerId: Int, accountId: Int, savedInstanceState: Bundle?) :
+class ChatAttachmentPhotoPresenter(peerId: Long, accountId: Long, savedInstanceState: Bundle?) :
     BaseChatAttachmentsPresenter<Photo, IChatAttachmentPhotosView>(
         peerId,
         accountId,
@@ -31,7 +31,7 @@ class ChatAttachmentPhotoPresenter(peerId: Int, accountId: Int, savedInstanceSta
     ) {
     private val openGalleryDisposableHolder = DisposableHolder<Void>()
     override fun requestAttachments(
-        peerId: Int,
+        peerId: Long,
         nextFrom: String?
     ): Single<Pair<String?, List<Photo>>> {
         return get().vkDefault(accountId)

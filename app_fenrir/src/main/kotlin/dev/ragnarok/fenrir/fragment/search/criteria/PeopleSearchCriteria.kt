@@ -4,11 +4,11 @@ import android.os.Parcel
 import android.os.Parcelable
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.search.options.*
-import dev.ragnarok.fenrir.util.ParcelUtils.readObjectInteger
-import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectInteger
+import dev.ragnarok.fenrir.util.ParcelUtils.readObjectLong
+import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectLong
 
 class PeopleSearchCriteria : BaseSearchCriteria {
-    var groupId: Int? = null
+    var groupId: Long? = null
         private set
 
     constructor(query: String?) : super(query) {
@@ -142,12 +142,12 @@ class PeopleSearchCriteria : BaseSearchCriteria {
     }
 
     internal constructor(parcel: Parcel) : super(parcel) {
-        groupId = readObjectInteger(parcel)
+        groupId = readObjectLong(parcel)
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         super.writeToParcel(dest, flags)
-        writeObjectInteger(dest, groupId)
+        writeObjectLong(dest, groupId)
     }
 
     override fun describeContents(): Int {
@@ -159,7 +159,7 @@ class PeopleSearchCriteria : BaseSearchCriteria {
         return super.clone() as PeopleSearchCriteria
     }
 
-    fun setGroupId(groupId: Int?): PeopleSearchCriteria {
+    fun setGroupId(groupId: Long?): PeopleSearchCriteria {
         this.groupId = groupId
         return this
     }

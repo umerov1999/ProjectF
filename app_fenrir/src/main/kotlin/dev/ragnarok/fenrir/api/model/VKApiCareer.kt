@@ -12,7 +12,7 @@ class VKApiCareer
  * Creates empty School instance.
  */
     : IUserActivityPoint {
-    var group_id = 0
+    var group_id = 0L
     var company: String? = null
     var country_id = 0
     var city_id = 0

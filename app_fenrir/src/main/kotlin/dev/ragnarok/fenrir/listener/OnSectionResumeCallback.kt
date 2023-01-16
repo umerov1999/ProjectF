@@ -4,7 +4,7 @@ import dev.ragnarok.fenrir.model.drawer.SectionMenuItem
 
 interface OnSectionResumeCallback {
     fun onSectionResume(sectionDrawerItem: SectionMenuItem)
-    fun onChatResume(accountId: Int, peerId: Int, title: String?, imgUrl: String?)
+    fun onChatResume(accountId: Long, peerId: Long, title: String?, imgUrl: String?)
     fun onClearSelection()
     fun readAllNotifications()
 }

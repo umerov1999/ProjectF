@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import io.reactivex.rxjava3.core.Single
 
-internal class NotificationsApi(accountId: Int, provider: IServiceProvider) :
+internal class NotificationsApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), INotificationsApi {
     override fun markAsViewed(): Single<Int> {
         return provideService(INotificationsService(), TokenType.USER)

@@ -50,7 +50,7 @@ import kotlin.math.abs
 class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
     Worker(context, workerParams) {
     private val DOWNLOAD_DATE_FORMAT: DateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", appLocale)
-    private val Avatars: MutableMap<Int, String> = HashMap()
+    private val Avatars: MutableMap<Long, String> = HashMap()
     private val avatars_styles = StringBuilder()
     private val messagesRepository: IMessagesRepository = messages
     private val mNotifyManager = createNotificationManager(applicationContext)
@@ -70,7 +70,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
         return String(Base64.decode(value, Base64.DEFAULT), Charsets.UTF_8)
     }
 
-    private fun getAvatarUrl(owner: Owner?, owner_id: Int): String {
+    private fun getAvatarUrl(owner: Owner?, owner_id: Long): String {
         if (owner_id >= VKApiMessage.CHAT_PEER) {
             return "https://vk.com/images/icons/im_multichat_200.png"
         }
@@ -84,13 +84,13 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
         } else res
     }
 
-    private fun getTitle(owner: Owner?, owner_id: Int, chat_title: String?): String? {
+    private fun getTitle(owner: Owner?, owner_id: Long, chat_title: String?): String? {
         return if (owner_id < VKApiMessage.CHAT_PEER) {
             if (owner == null || owner.fullName.isNullOrEmpty()) "dialog_$owner_id" else owner.fullName
         } else chat_title
     }
 
-    private fun getAvatarTag(peerId: Int): String {
+    private fun getAvatarTag(peerId: Long): String {
         return "avatar_id_" + if (peerId < 0) "club" else "" + abs(peerId)
     }
 
@@ -364,7 +364,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
 
     @SuppressLint("MissingPermission")
     @Suppress("DEPRECATION")
-    private fun doDownloadAsHTML(chat_title: String?, account_id: Int, owner_id: Int) {
+    private fun doDownloadAsHTML(chat_title: String?, account_id: Long, owner_id: Long) {
         try {
             var owner: Owner? = null
             if (owner_id < VKApiMessage.CHAT_PEER) {
@@ -544,7 +544,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
 
     @SuppressLint("MissingPermission")
     @Suppress("DEPRECATION")
-    private fun doJsonDownload(chat_title: String?, account_id: Int, owner_id: Int) {
+    private fun doJsonDownload(chat_title: String?, account_id: Long, owner_id: Long) {
         try {
             var owner: Owner? = null
             if (owner_id < VKApiMessage.CHAT_PEER) {
@@ -742,13 +742,13 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
     }
 
     override fun doWork(): Result {
-        val owner_id = inputData.getInt(Extra.OWNER_ID, 0)
-        val account_id = inputData.getInt(Extra.ACCOUNT_ID, 0)
+        val owner_id = inputData.getLong(Extra.OWNER_ID, 0)
+        val account_id = inputData.getLong(Extra.ACCOUNT_ID, 0)
         var chat_title = inputData.getString(Extra.TITLE)
         val action = inputData.getString(Extra.ACTION)
         if (chat_title.isNullOrEmpty()) chat_title =
             applicationContext.getString(R.string.chat) + " " + owner_id
-        if (owner_id == 0 || account_id == 0) return Result.failure()
+        if (owner_id == 0L || account_id == 0L) return Result.failure()
         createForeground()
         inMainThread(object : SafeCallInt {
             override fun call() {

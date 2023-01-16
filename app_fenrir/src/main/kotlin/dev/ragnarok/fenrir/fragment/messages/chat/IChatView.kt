@@ -34,7 +34,7 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
     fun hideInputView()
 
     fun goToMessageAttachmentsEditor(
-        accountId: Int, messageOwnerId: Int, destination: UploadDestination,
+        accountId: Long, messageOwnerId: Long, destination: UploadDestination,
         body: String?, attachments: ModelsBundle?
     )
 
@@ -54,18 +54,18 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
         InviteLink: Boolean
     )
 
-    fun goToSearchMessage(accountId: Int, peer: Peer)
+    fun goToSearchMessage(accountId: Long, peer: Peer)
     fun showImageSizeSelectDialog(streams: List<Uri>)
 
     fun resetUploadImages()
     fun resetInputAttachments()
-    fun notifyChatResume(accountId: Int, peerId: Int, title: String?, image: String?)
-    fun goToConversationAttachments(accountId: Int, peerId: Int)
-    fun goToChatMembers(accountId: Int, chatId: Int)
-    fun showChatMembers(accountId: Int, chatId: Int)
+    fun notifyChatResume(accountId: Long, peerId: Long, title: String?, image: String?)
+    fun goToConversationAttachments(accountId: Long, peerId: Long)
+    fun goToChatMembers(accountId: Long, chatId: Long)
+    fun showChatMembers(accountId: Long, chatId: Long)
     fun showChatTitleChangeDialog(initialValue: String?)
-    fun showUserWall(accountId: Int, peerId: Int)
-    fun forwardMessagesToAnotherConversation(messages: ArrayList<Message>, accountId: Int)
+    fun showUserWall(accountId: Long, peerId: Long)
+    fun forwardMessagesToAnotherConversation(messages: ArrayList<Message>, accountId: Long)
     fun diplayForwardTypeSelectDialog(messages: ArrayList<Message>)
     fun setEmptyTextVisible(visible: Boolean)
     fun setupRecordPauseButton(available: Boolean, isPlaying: Boolean)
@@ -78,12 +78,12 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
 
     fun notifyEditAttachmentChanged(index: Int)
     fun notifyEditAttachmentRemoved(index: Int)
-    fun startImagesSelection(accountId: Int, ownerId: Int)
+    fun startImagesSelection(accountId: Long, ownerId: Long)
     fun notifyEditAttachmentsAdded(position: Int, size: Int)
     fun notifyEditUploadProgressUpdate(id: Int, progress: Int)
-    fun startVideoSelection(accountId: Int, ownerId: Int)
-    fun startAudioSelection(accountId: Int)
-    fun startDocSelection(accountId: Int)
+    fun startVideoSelection(accountId: Long, ownerId: Long)
+    fun startAudioSelection(accountId: Long)
+    fun startDocSelection(accountId: Long)
     fun startCamera(fileUri: Uri)
     fun showDeleteForAllDialog(
         removeAllIds: ArrayList<Message>,
@@ -92,9 +92,9 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
 
     fun scrollTo(position: Int)
     fun showSnackbar(@StringRes res: Int, isLong: Boolean)
-    fun goToMessagesLookup(accountId: Int, peerId: Int, messageId: Int, message: Message)
+    fun goToMessagesLookup(accountId: Long, peerId: Long, messageId: Int, message: Message)
     fun goToUnreadMessages(
-        accountId: Int,
+        accountId: Long,
         messageId: Int,
         incoming: Int,
         outgoing: Int,

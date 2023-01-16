@@ -11,7 +11,7 @@ class Keyboard : Parcelable {
         private set
     var inline = false
         private set
-    var author_id = 0
+    var author_id = 0L
         private set
     var buttons: ArrayList<List<Button>>? = null
         private set
@@ -20,7 +20,7 @@ class Keyboard : Parcelable {
     internal constructor(parcel: Parcel) {
         one_time = parcel.getBoolean()
         inline = parcel.getBoolean()
-        author_id = parcel.readInt()
+        author_id = parcel.readLong()
         val size = parcel.readInt()
         buttons = ArrayList(size)
         for (i in 0 until size) {
@@ -38,7 +38,7 @@ class Keyboard : Parcelable {
         return this
     }
 
-    fun setAuthor_id(author_id: Int): Keyboard {
+    fun setAuthor_id(author_id: Long): Keyboard {
         this.author_id = author_id
         return this
     }
@@ -55,7 +55,7 @@ class Keyboard : Parcelable {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.putBoolean(one_time)
         dest.putBoolean(inline)
-        dest.writeInt(author_id)
+        dest.writeLong(author_id)
         if (buttons == null) {
             dest.writeInt(0)
         } else {

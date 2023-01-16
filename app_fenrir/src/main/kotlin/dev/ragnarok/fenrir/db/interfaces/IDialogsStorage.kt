@@ -15,22 +15,22 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 
 interface IDialogsStorage : IStorage {
-    fun getUnreadDialogsCount(accountId: Int): Int
-    fun observeUnreadDialogsCount(): Observable<Pair<Int, Int>>
-    fun findPeerStates(accountId: Int, ids: Collection<Int>): Single<List<PeerStateEntity>>
-    fun setUnreadDialogsCount(accountId: Int, unreadCount: Int)
-    fun findSimple(accountId: Int, peerId: Int): Single<Optional<SimpleDialogEntity>>
-    fun saveSimple(accountId: Int, entity: SimpleDialogEntity): Completable
+    fun getUnreadDialogsCount(accountId: Long): Int
+    fun observeUnreadDialogsCount(): Observable<Pair<Long, Int>>
+    fun findPeerStates(accountId: Long, ids: Collection<Long>): Single<List<PeerStateEntity>>
+    fun setUnreadDialogsCount(accountId: Long, unreadCount: Int)
+    fun findSimple(accountId: Long, peerId: Long): Single<Optional<SimpleDialogEntity>>
+    fun saveSimple(accountId: Long, entity: SimpleDialogEntity): Completable
     fun updateDialogKeyboard(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         keyboardEntity: KeyboardEntity?
     ): Completable
 
     fun getDialogs(criteria: DialogsCriteria): Single<List<DialogDboEntity>>
-    fun removePeerWithId(accountId: Int, peerId: Int): Completable
+    fun removePeerWithId(accountId: Long, peerId: Long): Completable
     fun insertDialogs(
-        accountId: Int,
+        accountId: Long,
         dbos: List<DialogDboEntity>,
         clearBefore: Boolean
     ): Completable
@@ -41,8 +41,8 @@ interface IDialogsStorage : IStorage {
      * @param ids список входящих идентификаторов
      * @return отсутствующие
      */
-    fun getMissingGroupChats(accountId: Int, ids: Collection<Int>): Single<Collection<Int>>
-    fun insertChats(accountId: Int, chats: List<VKApiChat>): Completable
-    fun applyPatches(accountId: Int, patches: List<PeerPatch>): Completable
-    fun findChatById(accountId: Int, peerId: Int): Single<Optional<Chat>>
+    fun getMissingGroupChats(accountId: Long, ids: Collection<Long>): Single<Collection<Long>>
+    fun insertChats(accountId: Long, chats: List<VKApiChat>): Completable
+    fun applyPatches(accountId: Long, patches: List<PeerPatch>): Completable
+    fun findChatById(accountId: Long, peerId: Long): Single<Optional<Chat>>
 }

@@ -62,7 +62,7 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
         return view
     }
 
-    override fun openChatWith(accountId: Int, messagesOwnerId: Int, peer: Peer) {
+    override fun openChatWith(accountId: Long, messagesOwnerId: Long, peer: Peer) {
         PlaceFactory.getChatPlace(accountId, messagesOwnerId, peer).tryOpenWith(requireActivity())
     }
 
@@ -84,7 +84,7 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
         ivMail?.visibility = if (user.canWritePrivateMessage) View.VISIBLE else View.GONE
     }
 
-    override fun openOwnerProfile(accountId: Int, ownerId: Int, owner: Owner?) {
+    override fun openOwnerProfile(accountId: Long, ownerId: Long, owner: Owner?) {
         PlaceFactory.getOwnerWallPlace(accountId, ownerId, owner).tryOpenWith(requireActivity())
     }
 
@@ -105,7 +105,7 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
         object : IPresenterFactory<UserDetailsPresenter> {
             override fun create(): UserDetailsPresenter {
                 return UserDetailsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.USER)!!,
                     requireArguments().getParcelableCompat("details")!!,
                     saveInstanceState
@@ -157,8 +157,8 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
     }
 
     override fun openPhotoAlbum(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         photos: ArrayList<Photo>,
         position: Int
@@ -179,7 +179,7 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
         PlaceFactory.getSingleURLPhotoPlace(
             user.originalAvatar,
             user.fullName,
-            "id" + user.getObjectId()
+            "id" + user.getOwnerObjectId()
         ).tryOpenWith(requireActivity())
     }
 
@@ -198,9 +198,9 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
         const val PARALLAX_COEFF = 0.5f
 
 
-        fun newInstance(accountId: Int, user: User, details: UserDetails): UserDetailsFragment {
+        fun newInstance(accountId: Long, user: User, details: UserDetails): UserDetailsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.USER, user)
             args.putParcelable("details", details)
             val fragment = UserDetailsFragment()

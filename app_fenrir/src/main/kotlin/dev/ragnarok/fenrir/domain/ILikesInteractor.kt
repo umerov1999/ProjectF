@@ -5,9 +5,9 @@ import io.reactivex.rxjava3.core.Single
 
 interface ILikesInteractor {
     fun getLikes(
-        accountId: Int,
+        accountId: Long,
         type: String?,
-        ownerId: Int,
+        ownerId: Long,
         itemId: Int,
         filter: String?,
         count: Int,

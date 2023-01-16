@@ -97,7 +97,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
             intent.extras?.getParcelableCompat(Extra.LIST) ?: DeltaOwner()
         }
 
-        val accountId = intent.extras?.getInt(Extra.ACCOUNT_ID, Settings.get().accounts().current)
+        val accountId = intent.extras?.getLong(Extra.ACCOUNT_ID, Settings.get().accounts().current)
             ?: Settings.get().accounts().current
 
         val Title: TextView = findViewById(R.id.delta_title)
@@ -213,7 +213,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
         val ivRecycler: RecyclerView = view.findViewById(R.id.alert_recycle)
     }
 
-    private inner class Adapter(val DeltaOwner: DeltaOwner, private val accountId: Int) :
+    private inner class Adapter(val DeltaOwner: DeltaOwner, private val accountId: Long) :
         RecyclerView.Adapter<RecyclerViewHolder>() {
         @SuppressLint("ClickableViewAccessibility")
         override fun onCreateViewHolder(container: ViewGroup, viewType: Int): RecyclerViewHolder {
@@ -303,7 +303,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
     }
 
     companion object {
-        fun showDeltaActivity(context: Context, accountId: Int, delta: DeltaOwner) {
+        fun showDeltaActivity(context: Context, accountId: Long, delta: DeltaOwner) {
             if (delta.content.isEmpty()) {
                 return
             }

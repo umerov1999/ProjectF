@@ -34,7 +34,7 @@ class ArtistSearchFragment :
         return object : IPresenterFactory<ArtistSearchPresenter> {
             override fun create(): ArtistSearchPresenter {
                 return ArtistSearchPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.CRITERIA),
                     saveInstanceState
                 )
@@ -51,24 +51,24 @@ class ArtistSearchFragment :
     companion object {
 
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             initialCriteria: ArtistSearchCriteria?
         ): ArtistSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = ArtistSearchFragment()
             fragment.arguments = args
             return fragment
         }
 
         fun newInstanceSelect(
-            accountId: Int,
+            accountId: Long,
             initialCriteria: ArtistSearchCriteria?
         ): ArtistSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = ArtistSearchFragment()
             fragment.arguments = args
             return fragment

@@ -11,11 +11,11 @@ import kotlinx.serialization.Serializable
 class WallReplyDboEntity : DboEntity() {
     var id = 0
         private set
-    var fromId = 0
+    var fromId = 0L
         private set
     var postId = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var text: String? = null
         private set
@@ -32,12 +32,12 @@ class WallReplyDboEntity : DboEntity() {
         return this
     }
 
-    fun setOwnerId(owner_id: Int): WallReplyDboEntity {
+    fun setOwnerId(owner_id: Long): WallReplyDboEntity {
         ownerId = owner_id
         return this
     }
 
-    fun setFromId(from_id: Int): WallReplyDboEntity {
+    fun setFromId(from_id: Long): WallReplyDboEntity {
         fromId = from_id
         return this
     }

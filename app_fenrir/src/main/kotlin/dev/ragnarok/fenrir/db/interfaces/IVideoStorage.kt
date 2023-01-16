@@ -12,8 +12,8 @@ interface IVideoStorage : IStorage {
 
     @CheckResult
     fun insertData(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         videos: List<VideoDboEntity>,
         invalidateBefore: Boolean

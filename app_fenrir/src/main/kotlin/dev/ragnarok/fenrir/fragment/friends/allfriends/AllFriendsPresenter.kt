@@ -21,7 +21,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class AllFriendsPresenter(accountId: Int, private val userId: Int, savedInstanceState: Bundle?) :
+class AllFriendsPresenter(accountId: Long, private val userId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IAllFriendsView>(accountId, savedInstanceState) {
     private val relationshipInteractor: IRelationshipInteractor =
         InteractorFactory.createRelationshipInteractor()
@@ -91,13 +91,13 @@ class AllFriendsPresenter(accountId: Int, private val userId: Int, savedInstance
             val not_friends = ArrayList<Owner>()
             val add_friends = ArrayList<Owner>()
             for (i in allData) {
-                if (indexOf(users, i.getObjectId()) == -1) {
+                if (indexOf(users, i.getOwnerObjectId()) == -1) {
                     not_friends.add(i)
                 }
             }
             if (userId != accountId) {
                 for (i in users) {
-                    if (indexOf(allData, i.getObjectId()) == -1) {
+                    if (indexOf(allData, i.getOwnerObjectId()) == -1) {
                         add_friends.add(i)
                     }
                 }

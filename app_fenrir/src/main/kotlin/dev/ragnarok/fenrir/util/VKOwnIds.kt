@@ -12,8 +12,8 @@ import dev.ragnarok.fenrir.requireNonNull
 import kotlin.math.abs
 
 class VKOwnIds {
-    private val uids: MutableSet<Int>
-    private val gids: MutableSet<Int>
+    private val uids: MutableSet<Long>
+    private val gids: MutableSet<Long>
     fun append(userArray: UserArray): VKOwnIds {
         userArray.ids?.let {
             for (id in it) {
@@ -58,7 +58,7 @@ class VKOwnIds {
     }
 
     fun append(comment: VKApiComment): VKOwnIds {
-        if (comment.from_id != 0) {
+        if (comment.from_id != 0L) {
             append(comment.from_id)
         }
         comment.attachments.requireNonNull {
@@ -89,9 +89,9 @@ class VKOwnIds {
         return this
     }
 
-    val all: Collection<Int>
+    val all: Collection<Long>
         get() {
-            val result: MutableCollection<Int> = HashSet(uids.size + gids.size)
+            val result: MutableCollection<Long> = HashSet(uids.size + gids.size)
             result.addAll(uids)
             for (gid in gids) {
                 result.add(-abs(gid))
@@ -99,15 +99,15 @@ class VKOwnIds {
             return result
         }
 
-    fun getUids(): Set<Int> {
+    fun getUids(): Set<Long> {
         return uids
     }
 
-    fun getGids(): Set<Int> {
+    fun getGids(): Set<Long> {
         return gids
     }
 
-    fun appendAll(ids: Collection<Int>): VKOwnIds {
+    fun appendAll(ids: Collection<Long>): VKOwnIds {
         for (id in ids) {
             append(id)
         }
@@ -215,9 +215,9 @@ class VKOwnIds {
         return this
     }
 
-    fun append(ownerId: Int?) {
+    fun append(ownerId: Long?) {
         ownerId ?: return
-        if (ownerId == 0) return
+        if (ownerId == 0L) return
         if (ownerId > 0) {
             appendUid(ownerId)
         } else {
@@ -225,7 +225,7 @@ class VKOwnIds {
         }
     }
 
-    fun appendAll(ownerIds: IntArray?) {
+    fun appendAll(ownerIds: LongArray?) {
         if (ownerIds != null) {
             for (id in ownerIds) {
                 append(id)
@@ -233,11 +233,11 @@ class VKOwnIds {
         }
     }
 
-    private fun appendUid(uid: Int) {
+    private fun appendUid(uid: Long) {
         uids.add(uid)
     }
 
-    private fun appendGid(gid: Int) {
+    private fun appendGid(gid: Long) {
         gids.add(abs(gid))
     }
 

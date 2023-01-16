@@ -133,7 +133,7 @@ class ChatMembersFragment : BaseMvpFragment<ChatMembersPresenter, IChatMembersVi
         mAdapter?.notifyItemRangeInserted(position, count)
     }
 
-    override fun openUserWall(accountId: Int, user: Owner) {
+    override fun openUserWall(accountId: Long, user: Owner) {
         getOwnerWallPlace(accountId, user).tryOpenWith(requireActivity())
     }
 
@@ -141,7 +141,7 @@ class ChatMembersFragment : BaseMvpFragment<ChatMembersPresenter, IChatMembersVi
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun startSelectUsersActivity(accountId: Int) {
+    override fun startSelectUsersActivity(accountId: Long) {
         val place = getFriendsFollowersPlace(
             accountId,
             accountId,
@@ -162,8 +162,8 @@ class ChatMembersFragment : BaseMvpFragment<ChatMembersPresenter, IChatMembersVi
         return object : IPresenterFactory<ChatMembersPresenter> {
             override fun create(): ChatMembersPresenter {
                 return ChatMembersPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.CHAT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.CHAT_ID),
                     saveInstanceState
                 )
             }
@@ -176,7 +176,7 @@ class ChatMembersFragment : BaseMvpFragment<ChatMembersPresenter, IChatMembersVi
         )
     }
 
-    override fun onAdminToggleClick(isAdmin: Boolean, ownerId: Int) {
+    override fun onAdminToggleClick(isAdmin: Boolean, ownerId: Long) {
         presenter?.fireAdminToggleClick(
             isAdmin,
             ownerId
@@ -184,10 +184,10 @@ class ChatMembersFragment : BaseMvpFragment<ChatMembersPresenter, IChatMembersVi
     }
 
     companion object {
-        fun buildArgs(accountId: Int, chatId: Int): Bundle {
+        fun buildArgs(accountId: Long, chatId: Long): Bundle {
             val args = Bundle()
-            args.putInt(Extra.CHAT_ID, chatId)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.CHAT_ID, chatId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             return args
         }
 

@@ -47,13 +47,13 @@ import java.util.*
 class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
     View.OnCreateContextMenuListener {
     private var mWebView: WebView? = null
-    private var mAccountId = 0
+    private var mAccountId = 0L
     private var title: String? = null
     private var webState: Bundle? = null
     private var mUtilsInteractor: IUtilsInteractor = InteractorFactory.createUtilsInteractor()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mAccountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+        mAccountId = requireArguments().getLong(Extra.ACCOUNT_ID)
         savedInstanceState?.let { restoreFromInstanceState(it) }
     }
 
@@ -348,10 +348,10 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
     companion object {
         val TAG: String = BrowserFragment::class.java.simpleName
         private const val SAVE_TITLE = "save_title"
-        fun buildArgs(accountId: Int, url: String, owner: String?, type: String?): Bundle {
+        fun buildArgs(accountId: Long, url: String, owner: String?, type: String?): Bundle {
             val args = Bundle()
             args.putString(Extra.URL, url)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putString(Extra.OWNER, owner)
             args.putString(Extra.TYPE, type)
             return args

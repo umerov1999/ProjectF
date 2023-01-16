@@ -11,7 +11,7 @@ class ILikesService : IServiceRest() {
     //https://vk.com/dev/likes.getList
     fun getList(
         type: String?,
-        ownerId: Int?,
+        ownerId: Long?,
         itemId: Int?,
         pageUrl: String?,
         filter: String?,
@@ -42,7 +42,7 @@ class ILikesService : IServiceRest() {
     //https://vk.com/dev/likes.delete
     fun delete(
         type: String?,
-        ownerId: Int?,
+        ownerId: Long?,
         itemId: Int,
         accessKey: String?
     ): Single<BaseResponse<LikeResponse>> {
@@ -59,7 +59,7 @@ class ILikesService : IServiceRest() {
     //https://vk.com/dev/likes.add
     fun add(
         type: String?,
-        ownerId: Int?,
+        ownerId: Long?,
         itemId: Int,
         accessKey: String?
     ): Single<BaseResponse<LikeResponse>> {
@@ -76,7 +76,7 @@ class ILikesService : IServiceRest() {
     //https://vk.com/dev/likes.isLiked
     fun isLiked(
         type: String?,
-        ownerId: Int?,
+        ownerId: Long?,
         itemId: Int
     ): Single<BaseResponse<isLikeResponse>> {
         return rest.request(
@@ -91,7 +91,7 @@ class ILikesService : IServiceRest() {
     fun checkAndAddLike(
         code: String?,
         type: String?,
-        ownerId: Int?,
+        ownerId: Long?,
         itemId: Int,
         accessKey: String?
     ): Single<BaseResponse<Int>> {

@@ -46,7 +46,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
         val favePage = data[position]
         if (Settings.get().other().isMention_fave) {
             holder.itemView.setOnLongClickListener {
-                if (favePage.getObjectId() >= 0) {
+                if (favePage.getOwnerObjectId() >= 0) {
                     favePage.owner?.let { it1 -> clickListener?.onMention(it1) }
                 }
                 true
@@ -64,7 +64,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
             if (favePage.owner?.isVerified == true) View.VISIBLE else View.GONE
 
         if (Settings.get().other()
-                .isOwnerInChangesMonitor(favePage.owner?.ownerId ?: favePage.getObjectId())
+                .isOwnerInChangesMonitor(favePage.owner?.ownerId ?: favePage.getOwnerObjectId())
         ) {
             holder.ivMonitor.visibility = View.VISIBLE
             holder.ivMonitor.fromRes(

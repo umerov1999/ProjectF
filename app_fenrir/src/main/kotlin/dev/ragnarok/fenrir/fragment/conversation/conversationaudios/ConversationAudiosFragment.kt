@@ -61,8 +61,8 @@ class ConversationAudiosFragment :
         return object : IPresenterFactory<ChatAttachmentAudioPresenter> {
             override fun create(): ChatAttachmentAudioPresenter {
                 return ChatAttachmentAudioPresenter(
-                    requireArguments().getInt(Extra.PEER_ID),
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.PEER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }

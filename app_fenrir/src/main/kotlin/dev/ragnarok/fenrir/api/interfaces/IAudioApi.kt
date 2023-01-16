@@ -13,7 +13,7 @@ import io.reactivex.rxjava3.core.Single
 
 interface IAudioApi {
     @CheckResult
-    fun setBroadcast(audio: AccessIdPair, targetIds: Collection<Int>): Single<List<Int>>
+    fun setBroadcast(audio: AccessIdPair, targetIds: Collection<Long>): Single<List<Int>>
 
     @CheckResult
     fun search(
@@ -33,14 +33,14 @@ interface IAudioApi {
     ): Single<Items<VKApiAudioPlaylist>>
 
     @CheckResult
-    fun restore(audioId: Int, ownerId: Int?): Single<VKApiAudio>
+    fun restore(audioId: Int, ownerId: Long?): Single<VKApiAudio>
 
     @CheckResult
-    fun delete(audioId: Int, ownerId: Int): Single<Boolean>
+    fun delete(audioId: Int, ownerId: Long): Single<Boolean>
 
     @CheckResult
     fun edit(
-        ownerId: Int,
+        ownerId: Long,
         audioId: Int,
         artist: String?,
         title: String?,
@@ -48,18 +48,18 @@ interface IAudioApi {
     ): Single<Int>
 
     @CheckResult
-    fun add(audioId: Int, ownerId: Int, groupId: Int?, accessKey: String?): Single<Int>
+    fun add(audioId: Int, ownerId: Long, groupId: Long?, accessKey: String?): Single<Int>
 
     @CheckResult
     fun createPlaylist(
-        ownerId: Int,
+        ownerId: Long,
         title: String?,
         description: String?
     ): Single<VKApiAudioPlaylist>
 
     @CheckResult
     fun editPlaylist(
-        ownerId: Int,
+        ownerId: Long,
         playlist_id: Int,
         title: String?,
         description: String?
@@ -67,27 +67,27 @@ interface IAudioApi {
 
     @CheckResult
     fun removeFromPlaylist(
-        ownerId: Int,
+        ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
     ): Single<Int>
 
     @CheckResult
     fun addToPlaylist(
-        ownerId: Int,
+        ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
     ): Single<List<AddToPlaylistResponse>>
 
     @CheckResult
-    fun reorder(ownerId: Int, audio_id: Int, before: Int?, after: Int?): Single<Int>
+    fun reorder(ownerId: Long, audio_id: Int, before: Int?, after: Int?): Single<Int>
 
     @CheckResult
     fun trackEvents(events: String?): Single<Int>
 
     @CheckResult
     operator fun get(
-        playlist_id: Int?, ownerId: Int?,
+        playlist_id: Int?, ownerId: Long?,
         offset: Int?, count: Int?, accessKey: String?
     ): Single<Items<VKApiAudio>>
 
@@ -105,27 +105,27 @@ interface IAudioApi {
     ): Single<List<VKApiAudio>>
 
     @CheckResult
-    fun deletePlaylist(playlist_id: Int, ownerId: Int): Single<Int>
+    fun deletePlaylist(playlist_id: Int, ownerId: Long): Single<Int>
 
     @CheckResult
     fun followPlaylist(
         playlist_id: Int,
-        ownerId: Int,
+        ownerId: Long,
         accessKey: String?
     ): Single<VKApiAudioPlaylist>
 
     @CheckResult
-    fun clonePlaylist(playlist_id: Int, ownerId: Int): Single<VKApiAudioPlaylist>
+    fun clonePlaylist(playlist_id: Int, ownerId: Long): Single<VKApiAudioPlaylist>
 
     @CheckResult
     fun getPlaylistById(
         playlist_id: Int,
-        ownerId: Int,
+        ownerId: Long,
         accessKey: String?
     ): Single<VKApiAudioPlaylist>
 
     @CheckResult
-    fun getRecommendations(audioOwnerId: Int?, count: Int?): Single<Items<VKApiAudio>>
+    fun getRecommendations(audioOwnerId: Long?, count: Int?): Single<Items<VKApiAudio>>
 
     @CheckResult
     fun getRecommendationsByAudio(audio: String?, count: Int?): Single<Items<VKApiAudio>>
@@ -140,7 +140,7 @@ interface IAudioApi {
     fun getLyrics(lyrics_id: Int): Single<VKApiLyrics>
 
     @CheckResult
-    fun getPlaylists(owner_id: Int, offset: Int, count: Int): Single<Items<VKApiAudioPlaylist>>
+    fun getPlaylists(owner_id: Long, offset: Int, count: Int): Single<Items<VKApiAudioPlaylist>>
 
     @CheckResult
     fun getPlaylistsCustom(code: String?): Single<ServicePlaylistResponse>
@@ -159,7 +159,7 @@ interface IAudioApi {
 
     @CheckResult
     fun getCatalogV2Sections(
-        owner_id: Int, artist_id: String?, url: String?, query: String?, context: String?
+        owner_id: Long, artist_id: String?, url: String?, query: String?, context: String?
     ): Single<VKApiCatalogV2ListResponse>
 
     @CheckResult

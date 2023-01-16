@@ -3,9 +3,9 @@ package dev.ragnarok.fenrir.crypt
 class AesKeyPair {
     var version = 0
         private set
-    var accountId = 0
+    var accountId = 0L
         private set
-    var peerId = 0
+    var peerId = 0L
         private set
     var sessionId: Long = 0
         private set
@@ -20,12 +20,12 @@ class AesKeyPair {
     lateinit var hisAesKey: String
         private set
 
-    fun setAccountId(accountId: Int): AesKeyPair {
+    fun setAccountId(accountId: Long): AesKeyPair {
         this.accountId = accountId
         return this
     }
 
-    fun setPeerId(peerId: Int): AesKeyPair {
+    fun setPeerId(peerId: Long): AesKeyPair {
         this.peerId = peerId
         return this
     }

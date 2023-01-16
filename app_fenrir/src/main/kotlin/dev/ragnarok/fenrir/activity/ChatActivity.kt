@@ -80,7 +80,7 @@ class ChatActivity : NoMainActivity(), PlaceProvider, AppStyleable {
             Place.CHAT -> {
                 val peer: Peer = args.getParcelableCompat(Extra.PEER) ?: return
                 val chatFragment =
-                    newInstance(args.getInt(Extra.ACCOUNT_ID), args.getInt(Extra.OWNER_ID), peer)
+                    newInstance(args.getLong(Extra.ACCOUNT_ID), args.getLong(Extra.OWNER_ID), peer)
                 attachToFront(chatFragment)
             }
             Place.VK_PHOTO_ALBUM_GALLERY, Place.FAVE_PHOTOS_GALLERY, Place.SIMPLE_PHOTO_GALLERY, Place.VK_PHOTO_TMP_SOURCE, Place.VK_PHOTO_ALBUM_GALLERY_SAVED, Place.VK_PHOTO_ALBUM_GALLERY_NATIVE -> newInstance(
@@ -108,7 +108,7 @@ class ChatActivity : NoMainActivity(), PlaceProvider, AppStyleable {
             Place.DOC_PREVIEW -> {
                 val document: Document? = args.getParcelableCompat(Extra.DOC)
                 if (document != null && document.hasValidGifVideoLink()) {
-                    val aid = args.getInt(Extra.ACCOUNT_ID)
+                    val aid = args.getLong(Extra.ACCOUNT_ID)
                     val documents = ArrayList(listOf(document))
                     val extra = GifPagerActivity.buildArgs(aid, documents, 0)
                     place.launchActivityForResult(this, GifPagerActivity.newInstance(this, extra))

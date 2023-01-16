@@ -82,7 +82,7 @@ object NotificationHelper {
         synchronized(bubbleLock) { return bubbleOpened }
     }
 
-    fun setBubbleOpened(accountId: Int, peerId: Int) {
+    fun setBubbleOpened(accountId: Long, peerId: Long) {
         synchronized(bubbleLock) { bubbleOpened = createPeerTagFor(accountId, peerId) }
     }
 
@@ -104,7 +104,7 @@ object NotificationHelper {
      * @param context контекст
      */
     @SuppressLint("CheckResult")
-    fun notifyNewMessage(context: Context, accountId: Int, message: Message) {
+    fun notifyNewMessage(context: Context, accountId: Long, message: Message) {
         if (Settings.get().other().isDisable_notifications) return
         ChatEntryFetcher.getRx(context, accountId, accountId)
             .subscribeOn(NotificationScheduler.INSTANCE)
@@ -175,7 +175,7 @@ object NotificationHelper {
     }
 
     private fun doShowNotification(
-        accountId: Int, context: Context, account: DialogInfo,
+        accountId: Long, context: Context, account: DialogInfo,
         info: DialogInfo, message: Message, history: List<Message>?
     ) {
         val account_peer = Peer(accountId).setTitle(account.title).setAvaUrl(account.img)
@@ -255,7 +255,7 @@ object NotificationHelper {
         msgs: NotificationCompat.MessagingStyle,
         message: Message,
         hideBody: Boolean,
-        accountId: Int,
+        accountId: Long,
         acc_avatar: Bitmap,
         avatar: Bitmap
     ) {
@@ -309,7 +309,7 @@ object NotificationHelper {
     @SuppressLint("CheckResult")
     private fun showNotification(
         context: Context,
-        accountId: Int,
+        accountId: Long,
         peer: Peer,
         message: Message,
         avatar: Bitmap,
@@ -557,7 +557,7 @@ object NotificationHelper {
         }
     }
 
-    private fun createPeerTagFor(aid: Int, peerId: Int): String {
+    private fun createPeerTagFor(aid: Long, peerId: Long): String {
         return aid.toString() + "_" + peerId
     }
 
@@ -582,7 +582,7 @@ object NotificationHelper {
     }
 
 
-    fun tryCancelNotificationForPeer(context: Context, accountId: Int, peerId: Int) {
+    fun tryCancelNotificationForPeer(context: Context, accountId: Long, peerId: Long) {
         //int mask = Settings.get()
         //        .notifications()
         //        .getNotifPref(accountId, peerId);
@@ -655,7 +655,7 @@ object NotificationHelper {
         builder: NotificationCompat.Builder,
         person: Person,
         peer: Peer,
-        accountId: Int
+        accountId: Long
     ) {
         try {
             val person_name =

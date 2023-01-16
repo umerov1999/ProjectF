@@ -13,9 +13,9 @@ import dev.ragnarok.fenrir.api.services.IPhotosService
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import io.reactivex.rxjava3.core.Single
 
-internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
+internal class PhotosApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IPhotosApi {
-    override fun deleteAlbum(albumId: Int, groupId: Int?): Single<Boolean> {
+    override fun deleteAlbum(albumId: Int, groupId: Long?): Single<Boolean> {
         return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteAlbum(albumId, groupId)
@@ -24,7 +24,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun restore(ownerId: Int?, photoId: Int): Single<Boolean> {
+    override fun restore(ownerId: Long?, photoId: Int): Single<Boolean> {
         return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.restore(ownerId, photoId)
@@ -33,7 +33,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun delete(ownerId: Int?, photoId: Int): Single<Boolean> {
+    override fun delete(ownerId: Long?, photoId: Int): Single<Boolean> {
         return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.delete(ownerId, photoId)
@@ -42,7 +42,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun deleteComment(ownerId: Int?, commentId: Int): Single<Boolean> {
+    override fun deleteComment(ownerId: Long?, commentId: Int): Single<Boolean> {
         return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteComment(ownerId, commentId)
@@ -51,7 +51,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun restoreComment(ownerId: Int?, commentId: Int): Single<Boolean> {
+    override fun restoreComment(ownerId: Long?, commentId: Int): Single<Boolean> {
         return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.restoreComment(ownerId, commentId)
@@ -61,7 +61,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun editComment(
-        ownerId: Int?, commentId: Int, message: String?,
+        ownerId: Long?, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
     ): Single<Boolean> {
         return provideService(IPhotosService(), TokenType.USER)
@@ -81,7 +81,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
 
     override fun createAlbum(
         title: String?,
-        groupId: Int?,
+        groupId: Long?,
         description: String?,
         privacyView: VKApiPrivacy?,
         privacyComment: VKApiPrivacy?,
@@ -105,7 +105,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
         albumId: Int,
         title: String?,
         description: String?,
-        ownerId: Int?,
+        ownerId: Long?,
         privacyView: VKApiPrivacy?,
         privacyComment: VKApiPrivacy?,
         uploadByAdminsOnly: Boolean?,
@@ -125,7 +125,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun copy(ownerId: Int, photoId: Int, accessKey: String?): Single<Int> {
+    override fun copy(ownerId: Long, photoId: Int, accessKey: String?): Single<Int> {
         return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service.copy(ownerId, photoId, accessKey)
@@ -134,7 +134,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun createComment(
-        ownerId: Int?, photoId: Int, fromGroup: Boolean?, message: String?,
+        ownerId: Long?, photoId: Int, fromGroup: Boolean?, message: String?,
         replyToComment: Int?, attachments: Collection<IAttachmentToken>?,
         stickerId: Int?, accessKey: String?, generatedUniqueId: Int?
     ): Single<Int> {
@@ -160,7 +160,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getComments(
-        ownerId: Int?,
+        ownerId: Long?,
         photoId: Int,
         needLikes: Boolean?,
         startCommentId: Int?,
@@ -204,7 +204,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun getUploadServer(albumId: Int, groupId: Int?): Single<VKApiUploadServer> {
+    override fun getUploadServer(albumId: Int, groupId: Long?): Single<VKApiUploadServer> {
         return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
@@ -226,7 +226,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun getOwnerPhotoUploadServer(ownerId: Int?): Single<VKApiOwnerPhotoUploadServer> {
+    override fun getOwnerPhotoUploadServer(ownerId: Long?): Single<VKApiOwnerPhotoUploadServer> {
         return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
@@ -235,7 +235,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun getChatUploadServer(chat_id: Int?): Single<VKApiChatPhotoUploadServer> {
+    override fun getChatUploadServer(chat_id: Long?): Single<VKApiChatPhotoUploadServer> {
         return provideService(IPhotosService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -254,7 +254,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun saveWallPhoto(
-        userId: Int?, groupId: Int?, photo: String?,
+        userId: Long?, groupId: Long?, photo: String?,
         server: Int, hash: String?, latitude: Double?,
         longitude: Double?, caption: String?
     ): Single<List<VKApiPhoto>> {
@@ -275,7 +275,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun getWallUploadServer(groupId: Int?): Single<VKApiWallUploadServer> {
+    override fun getWallUploadServer(groupId: Long?): Single<VKApiWallUploadServer> {
         return provideService(IPhotosService(), TokenType.USER)
             .flatMap { service ->
                 service
@@ -285,7 +285,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun save(
-        albumId: Int, groupId: Int?, server: Int, photosList: String?,
+        albumId: Int, groupId: Long?, server: Int, photosList: String?,
         hash: String?, latitude: Double?, longitude: Double?, caption: String?
     ): Single<List<VKApiPhoto>> {
         return provideService(IPhotosService(), TokenType.USER)
@@ -297,7 +297,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun get(
-        ownerId: Int?, albumId: String?, photoIds: Collection<Int>?,
+        ownerId: Long?, albumId: String?, photoIds: Collection<Int>?,
         rev: Boolean?, offset: Int?, count: Int?
     ): Single<Items<VKApiPhoto>> {
         val photos = join(photoIds, ",")
@@ -309,7 +309,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getUsersPhoto(
-        ownerId: Int?,
+        ownerId: Long?,
         extended: Int?,
         sort: Int?,
         offset: Int?,
@@ -323,7 +323,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getAll(
-        ownerId: Int?,
+        ownerId: Long?,
         extended: Int?,
         photo_sizes: Int?,
         offset: Int?,
@@ -356,7 +356,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getAlbums(
-        ownerId: Int?, albumIds: Collection<Int>?,
+        ownerId: Long?, albumIds: Collection<Int>?,
         offset: Int?, count: Int?, needSystem: Boolean?,
         needCovers: Boolean?
     ): Single<Items<VKApiPhotoAlbum>> {
@@ -377,7 +377,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getTags(
-        ownerId: Int?,
+        ownerId: Long?,
         photo_id: Int?,
         access_key: String?
     ): Single<List<VKApiPhotoTags>> {
@@ -390,7 +390,7 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getAllComments(
-        ownerId: Int?,
+        ownerId: Long?,
         album_id: Int?,
         need_likes: Int?,
         offset: Int?,
@@ -434,7 +434,11 @@ internal class PhotosApi(accountId: Int, provider: IServiceProvider) :
     }
 
     companion object {
-        internal fun findAccessKey(data: Collection<AccessIdPair>, id: Int, ownerId: Int): String? {
+        internal fun findAccessKey(
+            data: Collection<AccessIdPair>,
+            id: Int,
+            ownerId: Long
+        ): String? {
             for (pair in data) {
                 if (pair.id == id && pair.ownerId == ownerId) {
                     return pair.accessKey

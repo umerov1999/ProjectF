@@ -11,15 +11,15 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
 interface IAccountsInteractor {
-    fun getBanned(accountId: Int, count: Int, offset: Int): Single<BannedPart>
-    fun banOwners(accountId: Int, owners: Collection<Owner>): Completable
-    fun unbanOwner(accountId: Int, ownerId: Int): Completable
-    fun changeStatus(accountId: Int, status: String?): Completable
-    fun setOffline(accountId: Int): Single<Boolean>
-    fun getProfileInfo(accountId: Int): Single<VKApiProfileInfo>
-    fun getPushSettings(accountId: Int): Single<List<ConversationPushItem>>
+    fun getBanned(accountId: Long, count: Int, offset: Int): Single<BannedPart>
+    fun banOwners(accountId: Long, owners: Collection<Owner>): Completable
+    fun unbanOwner(accountId: Long, ownerId: Long): Completable
+    fun changeStatus(accountId: Long, status: String?): Completable
+    fun setOffline(accountId: Long): Single<Boolean>
+    fun getProfileInfo(accountId: Long): Single<VKApiProfileInfo>
+    fun getPushSettings(accountId: Long): Single<List<ConversationPushItem>>
     fun saveProfileInfo(
-        accountId: Int,
+        accountId: Long,
         first_name: String?,
         last_name: String?,
         maiden_name: String?,
@@ -32,16 +32,20 @@ interface IAccountsInteractor {
     fun getAll(refresh: Boolean): Single<List<Account>>
 
     fun importMessagesContacts(
-        accountId: Int,
+        accountId: Long,
         context: Context,
         offset: Int?,
         count: Int?
     ): Single<List<ContactConversation>>
 
-    fun getContactList(accountId: Int, offset: Int?, count: Int?): Single<List<ContactConversation>>
+    fun getContactList(
+        accountId: Long,
+        offset: Int?,
+        count: Int?
+    ): Single<List<ContactConversation>>
 
     fun resetMessagesContacts(
-        accountId: Int,
+        accountId: Long,
         offset: Int?,
         count: Int?
     ): Single<List<ContactConversation>>

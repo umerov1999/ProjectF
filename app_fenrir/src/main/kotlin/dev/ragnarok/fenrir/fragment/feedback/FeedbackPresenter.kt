@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class FeedbackPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class FeedbackPresenter(accountId: Long, savedInstanceState: Bundle?) :
     PlaceSupportPresenter<IFeedbackView>(accountId, savedInstanceState) {
     private val mData: MutableList<Feedback>
     private val feedbackInteractor: IFeedbackInteractor =

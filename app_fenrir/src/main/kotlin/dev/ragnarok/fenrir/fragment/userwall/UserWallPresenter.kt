@@ -41,8 +41,8 @@ import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 class UserWallPresenter(
-    accountId: Int,
-    ownerId: Int,
+    accountId: Long,
+    ownerId: Long,
     owner: User?,
     private val context: Context,
     savedInstanceState: Bundle?
@@ -708,7 +708,7 @@ class UserWallPresenter(
         } else null
     }
 
-    private fun getRegistrationDate(owner_id: Int): Single<String> {
+    private fun getRegistrationDate(owner_id: Long): Single<String> {
         return Single.create { emitter ->
             val builder: OkHttpClient.Builder = OkHttpClient.Builder()
                 .readTimeout(15, TimeUnit.SECONDS)
@@ -839,7 +839,7 @@ class UserWallPresenter(
     }
 
     fun fireChatClick() {
-        val peer = Peer(Peer.fromUserId(user.getObjectId()))
+        val peer = Peer(Peer.fromUserId(user.getOwnerObjectId()))
             .setAvaUrl(user.maxSquareAvatar)
             .setTitle(user.fullName)
         view?.openChatWith(

@@ -110,7 +110,7 @@ class CommunitiesFragment : BaseMvpFragment<CommunitiesPresenter, ICommunitiesVi
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun showCommunityWall(accountId: Int, community: Community) {
+    override fun showCommunityWall(accountId: Long, community: Community) {
         getOwnerWallPlace(accountId, community).tryOpenWith(requireActivity())
     }
 
@@ -121,8 +121,8 @@ class CommunitiesFragment : BaseMvpFragment<CommunitiesPresenter, ICommunitiesVi
     override fun showModCommunities(
         add: List<Owner>,
         remove: List<Owner>,
-        accountId: Int,
-        ownerId: Int
+        accountId: Long,
+        ownerId: Long
     ) {
         if (add.isEmpty() && remove.isEmpty()) {
             return
@@ -164,8 +164,8 @@ class CommunitiesFragment : BaseMvpFragment<CommunitiesPresenter, ICommunitiesVi
         return object : IPresenterFactory<CommunitiesPresenter> {
             override fun create(): CommunitiesPresenter {
                 return CommunitiesPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.USER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.USER_ID),
                     saveInstanceState
                 )
             }
@@ -214,10 +214,10 @@ class CommunitiesFragment : BaseMvpFragment<CommunitiesPresenter, ICommunitiesVi
     }
 
     companion object {
-        fun newInstance(accountId: Int, userId: Int): CommunitiesFragment {
+        fun newInstance(accountId: Long, userId: Long): CommunitiesFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.USER_ID, userId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.USER_ID, userId)
             val fragment = CommunitiesFragment()
             fragment.arguments = args
             return fragment

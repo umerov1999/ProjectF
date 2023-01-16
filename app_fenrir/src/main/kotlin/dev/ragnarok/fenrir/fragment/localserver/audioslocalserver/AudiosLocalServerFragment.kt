@@ -114,7 +114,7 @@ class AudiosLocalServerFragment :
         return object : IPresenterFactory<AudiosLocalServerPresenter> {
             override fun create(): AudiosLocalServerPresenter {
                 return AudiosLocalServerPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }
@@ -201,9 +201,9 @@ class AudiosLocalServerFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int): AudiosLocalServerFragment {
+        fun newInstance(accountId: Long): AudiosLocalServerFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = AudiosLocalServerFragment()
             fragment.arguments = args
             return fragment

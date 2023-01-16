@@ -8,11 +8,11 @@ import dev.ragnarok.fenrir.api.model.response.CustomCommentsResponse
 import dev.ragnarok.fenrir.api.services.ICommentsService
 import io.reactivex.rxjava3.core.Single
 
-internal class CommentsApi(accountId: Int, provider: IServiceProvider) :
+internal class CommentsApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), ICommentsApi {
     override fun get(
         sourceType: String?,
-        ownerId: Int,
+        ownerId: Long,
         sourceId: Int,
         offset: Int?,
         count: Int?,

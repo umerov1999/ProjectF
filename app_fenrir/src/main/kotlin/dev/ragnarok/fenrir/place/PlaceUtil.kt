@@ -21,12 +21,12 @@ import java.lang.ref.WeakReference
 
 object PlaceUtil {
 
-    fun goToPostEditor(activity: Activity, accountId: Int, post: Post) {
+    fun goToPostEditor(activity: Activity, accountId: Long, post: Post) {
         val dialog = createProgressDialog(activity)
         val dialogWeakReference = WeakReference<Dialog>(dialog)
         val reference = WeakReference(activity)
         val ownerId = post.ownerId
-        val ids: MutableSet<Int> = HashSet()
+        val ids: MutableSet<Long> = HashSet()
         ids.add(accountId)
         ids.add(ownerId)
         val disposable = owners
@@ -59,8 +59,8 @@ object PlaceUtil {
     @JvmOverloads
     fun goToPostCreation(
         activity: Activity,
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         @EditingPostType editingType: Int,
         input: List<AbsModel>?,
         streams: ArrayList<Uri>? = null,
@@ -70,7 +70,7 @@ object PlaceUtil {
         val dialog = createProgressDialog(activity)
         val dialogWeakReference = WeakReference<Dialog>(dialog)
         val reference = WeakReference(activity)
-        val ids: MutableSet<Int> = HashSet()
+        val ids: MutableSet<Long> = HashSet()
         ids.add(accountId)
         ids.add(ownerId)
         val disposable = owners

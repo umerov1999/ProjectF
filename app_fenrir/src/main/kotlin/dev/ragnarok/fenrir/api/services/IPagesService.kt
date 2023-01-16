@@ -8,7 +8,7 @@ import io.reactivex.rxjava3.core.Single
 class IPagesService : IServiceRest() {
     //https://vk.com/dev/pages.get
     operator fun get(
-        ownerId: Int,
+        ownerId: Long,
         pageId: Int,
         global: Int?,
         sitePreview: Int?,

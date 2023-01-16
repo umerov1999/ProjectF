@@ -16,15 +16,15 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class PhotoAlbumsPresenter(
-    accountId: Int,
-    ownerId: Int,
+    accountId: Long,
+    ownerId: Long,
     params: AdditionalParams?,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IPhotoAlbumsView>(accountId, savedInstanceState) {
     private val photosInteractor: IPhotosInteractor = InteractorFactory.createPhotosInteractor()
     private val ownersRepository: IOwnersRepository = owners
     private val utilsInteractor: IUtilsInteractor = InteractorFactory.createUtilsInteractor()
-    private val mOwnerId: Int = ownerId
+    private val mOwnerId: Long = ownerId
     private val netDisposable = CompositeDisposable()
     private val cacheDisposable = CompositeDisposable()
     private var mOwner: Owner? = null
@@ -179,7 +179,7 @@ class PhotoAlbumsPresenter(
             })
     }
 
-    private fun onAlbumRemoved(albumId: Int, ownerId: Int) {
+    private fun onAlbumRemoved(albumId: Int, ownerId: Long) {
         val index = findIndexById(mData, albumId, ownerId)
         if (index != -1) {
             view?.notifyItemRemoved(

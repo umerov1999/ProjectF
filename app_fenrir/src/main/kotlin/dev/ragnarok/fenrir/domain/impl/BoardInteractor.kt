@@ -22,7 +22,7 @@ class BoardInteractor(
     private val stores: IStorages,
     private val ownersRepository: IOwnersRepository
 ) : IBoardInteractor {
-    override fun getCachedTopics(accountId: Int, ownerId: Int): Single<List<Topic>> {
+    override fun getCachedTopics(accountId: Long, ownerId: Long): Single<List<Topic>> {
         val criteria = TopicsCriteria(accountId, ownerId)
         return stores.topics()
             .getByCriteria(criteria)
@@ -52,8 +52,8 @@ class BoardInteractor(
     //public static final int ORDER_ASCENDING_UPDATE_TIME = -1;
     //public static final int ORDER_ASCENDING_CREATE_TIME = -2;
     override fun getActualTopics(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         count: Int,
         offset: Int
     ): Single<List<Topic>> {

@@ -46,7 +46,7 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
     private var mRecentChats: MutableList<RecentChat>? = null
     private var mAdapter: MenuListAdapter? = null
     private var mDrawerItems: ArrayList<AbsMenuItem>? = null
-    private var mAccountId = 0
+    private var mAccountId = 0L
     private var ownersRepository: IOwnersRepository = owners
     private var statesCallback: NavigationStatesCallbacks? = null
     private val navCallback = NavigationBottomSheetCallback()
@@ -371,7 +371,7 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
             .store(mAccountId, chats)
     }
 
-    override fun onAccountChange(newAccountId: Int) {
+    override fun onAccountChange(newAccountId: Long) {
         backupRecentChats()
         mAccountId = newAccountId
         //        SECTION_ITEM_DIALOGS.setCount(Stores.getInstance()

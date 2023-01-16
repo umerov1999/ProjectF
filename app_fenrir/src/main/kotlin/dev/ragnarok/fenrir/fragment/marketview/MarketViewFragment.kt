@@ -68,7 +68,7 @@ class MarketViewFragment : BaseMvpFragment<MarketViewPresenter, IMarketViewView>
         return root
     }
 
-    override fun displayMarket(market: Market, accountId: Int) {
+    override fun displayMarket(market: Market, accountId: Long) {
         if (market.thumb_photo != null) {
             photo?.visibility = View.VISIBLE
             displayAvatar(photo, null, market.thumb_photo, Constants.PICASSO_TAG)
@@ -132,7 +132,7 @@ class MarketViewFragment : BaseMvpFragment<MarketViewPresenter, IMarketViewView>
                     R.string.markets_description,
                     market.description
                 ), owners = true, topics = false, listener = object : LinkActionAdapter() {
-                    override fun onOwnerClick(ownerId: Int) {
+                    override fun onOwnerClick(ownerId: Long) {
                         getOwnerWallPlace(accountId, ownerId, null).tryOpenWith(requireActivity())
                     }
                 })
@@ -156,11 +156,11 @@ class MarketViewFragment : BaseMvpFragment<MarketViewPresenter, IMarketViewView>
         }
     }
 
-    override fun sendMarket(accountId: Int, market: Market) {
+    override fun sendMarket(accountId: Long, market: Market) {
         startForSendAttachments(requireActivity(), accountId, market)
     }
 
-    override fun onWriteToMarketer(accountId: Int, market: Market, peer: Peer) {
+    override fun onWriteToMarketer(accountId: Long, market: Market, peer: Peer) {
         startForSendAttachmentsFor(requireActivity(), accountId, peer, market)
     }
 
@@ -183,7 +183,7 @@ class MarketViewFragment : BaseMvpFragment<MarketViewPresenter, IMarketViewView>
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<MarketViewPresenter> {
         return object : IPresenterFactory<MarketViewPresenter> {
             override fun create(): MarketViewPresenter {
-                val aid = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val market: Market = requireArguments().getParcelableCompat(Extra.MARKET)!!
                 return MarketViewPresenter(aid, market, saveInstanceState)
             }
@@ -191,10 +191,10 @@ class MarketViewFragment : BaseMvpFragment<MarketViewPresenter, IMarketViewView>
     }
 
     companion object {
-        fun buildArgs(aid: Int, market: Market?): Bundle {
+        fun buildArgs(aid: Long, market: Market?): Bundle {
             val bundle = Bundle()
             bundle.putParcelable(Extra.MARKET, market)
-            bundle.putInt(Extra.ACCOUNT_ID, aid)
+            bundle.putLong(Extra.ACCOUNT_ID, aid)
             return bundle
         }
 

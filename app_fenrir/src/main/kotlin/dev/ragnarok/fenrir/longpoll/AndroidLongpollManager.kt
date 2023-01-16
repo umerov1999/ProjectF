@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.longpoll
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.util.SparseArray
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.longpoll.VkApiGroupLongpollUpdates
@@ -23,8 +22,8 @@ class AndroidLongpollManager internal constructor(
     private val networker: INetworker,
     private val messagesProcessor: IRealtimeMessagesProcessor
 ) : ILongpollManager, UserLongpoll.Callback, GroupLongpoll.Callback {
-    private val map: SparseArray<LongpollEntry> = SparseArray(1)
-    private val keepAlivePublisher: PublishProcessor<Int> = PublishProcessor.create()
+    private val map: HashMap<Long, LongpollEntry> = HashMap(1)
+    private val keepAlivePublisher: PublishProcessor<Long> = PublishProcessor.create()
     private val actionsPublisher: PublishProcessor<VkApiLongpollUpdates> = PublishProcessor.create()
     private val lock = Any()
     private val compositeDisposable = CompositeDisposable()
@@ -32,16 +31,16 @@ class AndroidLongpollManager internal constructor(
         return actionsPublisher.onBackpressureBuffer()
     }
 
-    override fun observeKeepAlive(): Flowable<Int> {
+    override fun observeKeepAlive(): Flowable<Long> {
         return keepAlivePublisher.onBackpressureBuffer()
     }
 
-    private fun createLongpoll(accountId: Int): ILongpoll {
+    private fun createLongpoll(accountId: Long): ILongpoll {
         //return accountId > 0 ? new UserLongpoll(networker, accountId, this) : new GroupLongpoll(networker, Math.abs(accountId), this);
         return UserLongpoll(networker, accountId, this)
     }
 
-    override fun forceDestroy(accountId: Int) {
+    override fun forceDestroy(accountId: Long) {
         d(TAG, "forceDestroy, accountId: $accountId")
         synchronized(lock) {
             val entry = map[accountId]
@@ -49,7 +48,7 @@ class AndroidLongpollManager internal constructor(
         }
     }
 
-    override fun keepAlive(accountId: Int) {
+    override fun keepAlive(accountId: Long) {
         d(TAG, "keepAlive, accountId: $accountId")
         synchronized(lock) {
             var entry = map[accountId]
@@ -57,7 +56,7 @@ class AndroidLongpollManager internal constructor(
                 entry.deferDestroy()
             } else {
                 entry = LongpollEntry(createLongpoll(accountId), this)
-                map.put(accountId, entry)
+                map[accountId] = entry
                 entry.connect()
             }
         }
@@ -73,7 +72,7 @@ class AndroidLongpollManager internal constructor(
         keepAlivePublisher.onNext(entry.accountId)
     }
 
-    override fun onUpdates(aid: Int, updates: VkApiLongpollUpdates) {
+    override fun onUpdates(aid: Long, updates: VkApiLongpollUpdates) {
         d(TAG, "updates, accountId: $aid")
         updates.add_message_updates.nonNullNoEmpty {
             messagesProcessor.process(aid, it)
@@ -91,14 +90,14 @@ class AndroidLongpollManager internal constructor(
         actionsPublisher.onNext(updates)
     }
 
-    override fun onUpdates(groupId: Int, updates: VkApiGroupLongpollUpdates) {}
+    override fun onUpdates(groupId: Long, updates: VkApiGroupLongpollUpdates) {}
     class LongpollEntry(
         val longpoll: ILongpoll,
         manager: AndroidLongpollManager
     ) {
         val handler: SocketHandler = SocketHandler(this)
         val managerReference: WeakReference<AndroidLongpollManager> = WeakReference(manager)
-        val accountId: Int = longpoll.accountId
+        val accountId: Long = longpoll.accountId
         var released = false
         fun connect() {
             longpoll.connect()

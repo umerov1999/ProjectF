@@ -13,13 +13,13 @@ import io.reactivex.rxjava3.core.Single
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 
-internal class PollsApi(accountId: Int, provider: IServiceProvider) :
+internal class PollsApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IPollsApi {
     override fun create(
         question: String?,
         isAnonymous: Boolean?,
         isMultiple: Boolean?,
-        ownerId: Int,
+        ownerId: Long,
         addAnswers: List<String>
     ): Single<VKApiPoll> {
         return provideService(IPollsService(), TokenType.USER)
@@ -37,7 +37,7 @@ internal class PollsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun deleteVote(
-        ownerId: Int?,
+        ownerId: Long?,
         pollId: Int,
         answerId: Long,
         isBoard: Boolean?
@@ -51,7 +51,7 @@ internal class PollsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun addVote(
-        ownerId: Int,
+        ownerId: Long,
         pollId: Int,
         answerIds: Set<Long>,
         isBoard: Boolean?
@@ -64,7 +64,7 @@ internal class PollsApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun getById(ownerId: Int, isBoard: Boolean?, pollId: Int): Single<VKApiPoll> {
+    override fun getById(ownerId: Long, isBoard: Boolean?, pollId: Int): Single<VKApiPoll> {
         return provideService(IPollsService(), TokenType.USER)
             .flatMap { service ->
                 service.getById(ownerId, integerFromBoolean(isBoard), pollId)
@@ -73,7 +73,7 @@ internal class PollsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getVoters(
-        ownerId: Int,
+        ownerId: Long,
         pollId: Int,
         isBoard: Int?,
         answer_ids: List<Long>, offset: Int?, count: Int?

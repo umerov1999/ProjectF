@@ -8,7 +8,7 @@ interface ICatalogV2ListView : IMvpView, IErrorView {
     fun displayData(sections: List<CatalogV2List.CatalogV2ListItem>)
     fun setSection(position: Int)
     fun notifyDataSetChanged()
-    fun search(accountId: Int, q: String)
+    fun search(accountId: Long, q: String)
     fun resolveLoading(visible: Boolean)
     fun onFail()
 }

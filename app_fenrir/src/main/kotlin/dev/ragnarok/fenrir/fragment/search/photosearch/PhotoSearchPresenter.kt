@@ -15,7 +15,7 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import io.reactivex.rxjava3.core.Single
 
 class PhotoSearchPresenter(
-    accountId: Int,
+    accountId: Long,
     criteria: PhotoSearchCriteria?,
     savedInstanceState: Bundle?
 ) : AbsSearchPresenter<IPhotoSearchView, PhotoSearchCriteria, Photo, IntNextFrom>(
@@ -36,7 +36,7 @@ class PhotoSearchPresenter(
     }
 
     override fun doSearch(
-        accountId: Int,
+        accountId: Long,
         criteria: PhotoSearchCriteria,
         startFrom: IntNextFrom
     ): Single<Pair<List<Photo>, IntNextFrom>> {

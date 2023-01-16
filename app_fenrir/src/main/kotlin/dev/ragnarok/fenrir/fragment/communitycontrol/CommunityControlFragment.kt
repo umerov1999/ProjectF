@@ -30,11 +30,11 @@ class CommunityControlFragment : Fragment() {
     private lateinit var mCommunity: Community
 
     private var mSettings: GroupSettings? = null
-    private var mAccountId = 0
+    private var mAccountId = 0L
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mSettings = requireArguments().getParcelableCompat(Extra.SETTINGS)
-        mAccountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+        mAccountId = requireArguments().getLong(Extra.ACCOUNT_ID)
         mCommunity = (requireArguments().getParcelableCompat(Extra.OWNER) ?: return)
     }
 
@@ -152,12 +152,12 @@ class CommunityControlFragment : Fragment() {
 
     companion object {
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             community: Community?,
             settings: GroupSettings?
         ): CommunityControlFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.SETTINGS, settings)
             args.putParcelable(Extra.OWNER, community)
             val fragment = CommunityControlFragment()

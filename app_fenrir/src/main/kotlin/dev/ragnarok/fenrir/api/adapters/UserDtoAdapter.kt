@@ -17,8 +17,8 @@ class UserDtoAdapter : AbsAdapter<VKApiUser>("VKApiUser") {
         }
         val dto = VKApiUser()
         val root = json.asJsonObject
-        dto.id = optInt(root, "id")
-        if (dto.id == 0) dto.id = optInt(root, "user_id")
+        dto.id = optLong(root, "id")
+        if (dto.id == 0L) dto.id = optLong(root, "user_id")
         dto.first_name = optString(root, Fields.USER_FIELDS.FIRST_NAME)
         dto.last_name = optString(root, Fields.USER_FIELDS.LAST_NAME)
         dto.online = optBoolean(root, Fields.USER_FIELDS.ONLINE)

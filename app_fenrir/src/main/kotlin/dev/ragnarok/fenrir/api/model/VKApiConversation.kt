@@ -85,14 +85,14 @@ class VKApiConversation {
          * идентификатор назначения.
          */
         @SerialName("id")
-        var id = 0
+        var id = 0L
 
         /**
          * local_id (integer) — локальный идентификатор назначения. Для чатов — id - 2000000000, для сообществ — -id, для e-mail — -(id+2000000000).
          * для контактов - (id-1900000000)
          */
         @SerialName("local_id")
-        var local_id = 0
+        var local_id = 0L
 
         @SerialName("type")
         var type: String? = null
@@ -113,7 +113,7 @@ class VKApiConversation {
         var photo: Photo? = null
 
         @SerialName("active_ids")
-        var activeIds: IntArray? = null
+        var activeIds: LongArray? = null
 
         @SerialName("state")
         var state: String? = null
@@ -194,7 +194,7 @@ class VKApiConversation {
     @Serializable
     class ContactElement {
         @SerialName("id")
-        var id = 0
+        var id = 0L
 
         @SerialName("name")
         var name: String? = null
@@ -227,7 +227,7 @@ class VKApiConversation {
         var inline = false
 
         @SerialName("author_id")
-        var author_id = 0
+        var author_id = 0L
 
         @SerialName("buttons")
         var buttons: List<List<ButtonElement>>? = null

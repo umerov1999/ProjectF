@@ -118,7 +118,7 @@ abstract class AbsOwnersListFragment<P : SimpleOwnersPresenter<V>, V : ISimpleOw
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun showOwnerWall(accountId: Int, owner: Owner) {
+    override fun showOwnerWall(accountId: Long, owner: Owner) {
         getOwnerWallPlace(accountId, owner).tryOpenWith(requireActivity())
     }
 }

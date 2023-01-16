@@ -97,8 +97,8 @@ class WallPostCommentAttachmentsFragment :
         return object : IPresenterFactory<WallPostCommentAttachmentsPresenter> {
             override fun create(): WallPostCommentAttachmentsPresenter {
                 return WallPostCommentAttachmentsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     saveInstanceState
                 )
             }
@@ -137,7 +137,7 @@ class WallPostCommentAttachmentsFragment :
         }
     }
 
-    override fun onAvatarClick(ownerId: Int) {
+    override fun onAvatarClick(ownerId: Long) {
         onOwnerClick(ownerId)
     }
 
@@ -183,11 +183,11 @@ class WallPostCommentAttachmentsFragment :
         )
     }
 
-    override fun openPostEditor(accountId: Int, post: Post) {
+    override fun openPostEditor(accountId: Long, post: Post) {
         goToPostEditor(requireActivity(), accountId, post)
     }
 
-    override fun openAllComments(accountId: Int, ownerId: Int, posts: ArrayList<Int>) {
+    override fun openAllComments(accountId: Long, ownerId: Long, posts: ArrayList<Int>) {
         getWallSearchCommentsAttachmentsPlace(
             accountId,
             ownerId,
@@ -196,10 +196,10 @@ class WallPostCommentAttachmentsFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int, ownerId: Int): WallPostCommentAttachmentsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): WallPostCommentAttachmentsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = WallPostCommentAttachmentsFragment()
             fragment.arguments = args
             return fragment

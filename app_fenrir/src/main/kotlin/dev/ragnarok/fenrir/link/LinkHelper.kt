@@ -56,7 +56,7 @@ import kotlin.math.abs
 
 object LinkHelper {
     @SuppressLint("CheckResult")
-    fun openUrl(context: Activity, accountId: Int, link: String?, isMain: Boolean) {
+    fun openUrl(context: Activity, accountId: Long, link: String?, isMain: Boolean) {
         if (link == null || link.isEmpty()) {
             createCustomToast(context).showToastError(R.string.empty_clipboard_url)
             return
@@ -102,7 +102,7 @@ object LinkHelper {
 
 
     @SuppressLint("CheckResult")
-    fun openVKLink(context: Context, accountId: Int, link: AbsLink, isMain: Boolean): Boolean {
+    fun openVKLink(context: Context, accountId: Long, link: AbsLink, isMain: Boolean): Boolean {
         when (link.type) {
             AbsLink.PLAYLIST -> {
                 val plLink = link as AudioPlaylistLink
@@ -189,7 +189,7 @@ object LinkHelper {
             AbsLink.PROFILE, AbsLink.GROUP -> {
                 val ownerLink = link as OwnerLink
                 var ownId = ownerLink.ownerId
-                if (ownId == 0) {
+                if (ownId == 0L) {
                     ownId = Settings.get().accounts().current
                 }
                 getOwnerWallPlace(accountId, ownId, null).tryOpenWith(context)
@@ -332,7 +332,7 @@ object LinkHelper {
 
     private fun openVKlink(
         activity: Activity,
-        accountId: Int,
+        accountId: Long,
         url: String,
         isMain: Boolean
     ): Boolean {
@@ -385,7 +385,7 @@ object LinkHelper {
         }
     }
 
-    private fun openLinkInBrowserInternal(context: Context, accountId: Int, url: String?) {
+    private fun openLinkInBrowserInternal(context: Context, accountId: Long, url: String?) {
         if (url.isNullOrEmpty()) return
         getExternalLinkPlace(accountId, url).tryOpenWith(context)
     }

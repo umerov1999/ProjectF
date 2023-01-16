@@ -10,7 +10,7 @@ abstract class AbsRecyclerViewAdapter<H : RecyclerView.ViewHolder> : RecyclerVie
         this.ownerClickListener = ownerClickListener
     }
 
-    protected fun addOwnerAvatarClickHandling(view: View, ownerId: Int) {
+    protected fun addOwnerAvatarClickHandling(view: View, ownerId: Long) {
         view.setOnClickListener {
             ownerClickListener?.onOwnerClick(ownerId)
         }

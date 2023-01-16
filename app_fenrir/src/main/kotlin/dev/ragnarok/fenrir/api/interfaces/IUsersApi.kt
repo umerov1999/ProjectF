@@ -9,11 +9,11 @@ import io.reactivex.rxjava3.core.Single
 
 interface IUsersApi {
     @CheckResult
-    fun getUserWallInfo(userId: Int, fields: String?, nameCase: String?): Single<VKApiUser>
+    fun getUserWallInfo(userId: Long, fields: String?, nameCase: String?): Single<VKApiUser>
 
     @CheckResult
     fun getFollowers(
-        userId: Int?, offset: Int?, count: Int?,
+        userId: Long?, offset: Int?, count: Int?,
         fields: String?, nameCase: String?
     ): Single<Items<VKApiUser>>
 
@@ -37,12 +37,12 @@ interface IUsersApi {
         hasPhoto: Boolean?, schoolCountry: Int?, schoolCity: Int?,
         schoolClass: Int?, school: Int?, schoolYear: Int?,
         religion: String?, interests: String?, company: String?,
-        position: String?, groupId: Int?, fromList: String?
+        position: String?, groupId: Long?, fromList: String?
     ): Single<Items<VKApiUser>>
 
     @CheckResult
     operator fun get(
-        userIds: Collection<Int>?, domains: Collection<String>?,
+        userIds: Collection<Long>?, domains: Collection<String>?,
         fields: String?, nameCase: String?
     ): Single<List<VKApiUser>>
 
@@ -56,10 +56,10 @@ interface IUsersApi {
     fun stories_save(upload_results: String?): Single<Items<VKApiStory>>
 
     @CheckResult
-    fun getStory(owner_id: Int?, extended: Int?, fields: String?): Single<StoryResponse>
+    fun getStory(owner_id: Long?, extended: Int?, fields: String?): Single<StoryResponse>
 
     @CheckResult
-    fun getNarratives(owner_id: Int, offset: Int?, count: Int?): Single<Items<VKApiNarratives>>
+    fun getNarratives(owner_id: Long, offset: Int?, count: Int?): Single<Items<VKApiNarratives>>
 
     @CheckResult
     fun getStoryById(
@@ -69,20 +69,20 @@ interface IUsersApi {
     ): Single<StoryGetResponse>
 
     @CheckResult
-    fun checkAndAddFriend(userId: Int?): Single<Int>
+    fun checkAndAddFriend(userId: Long?): Single<Int>
 
     @CheckResult
-    fun getGifts(user_id: Int?, count: Int?, offset: Int?): Single<Items<VKApiGift>>
+    fun getGifts(user_id: Long?, count: Int?, offset: Int?): Single<Items<VKApiGift>>
 
     @CheckResult
     fun searchStory(
         q: String?,
-        mentioned_id: Int?,
+        mentioned_id: Long?,
         count: Int?,
         extended: Int?,
         fields: String?
     ): Single<StoryResponse>
 
     @CheckResult
-    fun report(userId: Int?, type: String?, comment: String?): Single<Int>
+    fun report(userId: Long?, type: String?, comment: String?): Single<Int>
 }

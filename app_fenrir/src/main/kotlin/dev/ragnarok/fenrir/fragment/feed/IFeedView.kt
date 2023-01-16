@@ -18,9 +18,9 @@ interface IFeedView : IAttachmentsPlacesView, IMvpView, IErrorView {
     fun showRefreshing(refreshing: Boolean)
     fun scrollFeedSourcesToPosition(position: Int)
     fun scrollTo(pos: Int)
-    override fun goToLikes(accountId: Int, type: String?, ownerId: Int, id: Int)
-    override fun goToReposts(accountId: Int, type: String?, ownerId: Int, id: Int)
-    fun goToPostComments(accountId: Int, postId: Int, ownerId: Int)
+    override fun goToLikes(accountId: Long, type: String?, ownerId: Long, id: Int)
+    override fun goToReposts(accountId: Long, type: String?, ownerId: Long, id: Int)
+    fun goToPostComments(accountId: Long, postId: Int, ownerId: Long)
     fun showSuccessToast()
     fun askToReload()
 }

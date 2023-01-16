@@ -9,7 +9,11 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.User
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class OnlineFriendsPresenter(accountId: Int, private val userId: Int, savedInstanceState: Bundle?) :
+class OnlineFriendsPresenter(
+    accountId: Long,
+    private val userId: Long,
+    savedInstanceState: Bundle?
+) :
     SimpleOwnersPresenter<ISimpleOwnersView>(accountId, savedInstanceState) {
     private val relationshipInteractor: IRelationshipInteractor =
         InteractorFactory.createRelationshipInteractor()

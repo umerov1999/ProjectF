@@ -11,7 +11,7 @@ class VKApiDoc : VKApiAttachment {
     var id = 0
 
     @SerialName("owner_id")
-    var ownerId = 0
+    var ownerId = 0L
 
     @SerialName("title")
     var title: String? = null

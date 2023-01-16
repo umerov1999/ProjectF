@@ -73,7 +73,7 @@ class FeedAdapter(
                 owners = true,
                 topics = false,
                 listener = object : LinkActionAdapter() {
-                    override fun onOwnerClick(ownerId: Int) {
+                    override fun onOwnerClick(ownerId: Long) {
                         clickListener?.onAvatarClick(ownerId)
                     }
                 })
@@ -213,7 +213,7 @@ class FeedAdapter(
     }
 
     interface ClickListener {
-        fun onAvatarClick(ownerId: Int)
+        fun onAvatarClick(ownerId: Long)
         fun onRepostClick(news: News)
         fun onPostClick(news: News)
         fun onBanClick(news: News)

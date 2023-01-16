@@ -49,10 +49,10 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
 
     class Entry : Parcelable, ParcelNative.ParcelableNative {
         private val type: Int
-        private val id: Int
+        private val id: Long
         private val allowed: Boolean
 
-        constructor(type: Int, id: Int, allowed: Boolean) {
+        constructor(type: Int, id: Long, allowed: Boolean) {
             this.type = type
             this.id = id
             this.allowed = allowed
@@ -60,13 +60,13 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
 
         internal constructor(parcel: Parcel) {
             type = parcel.readInt()
-            id = parcel.readInt()
+            id = parcel.readLong()
             allowed = parcel.getBoolean()
         }
 
         internal constructor(parcel: ParcelNative) {
             type = parcel.readInt()
-            id = parcel.readInt()
+            id = parcel.readLong()
             allowed = parcel.readBoolean()
         }
 
@@ -74,7 +74,7 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
             return type
         }
 
-        fun getId(): Int {
+        fun getId(): Long {
             return id
         }
 
@@ -88,13 +88,13 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
 
         override fun writeToParcel(dest: Parcel, flags: Int) {
             dest.writeInt(type)
-            dest.writeInt(id)
+            dest.writeLong(id)
             dest.putBoolean(allowed)
         }
 
         override fun writeToParcelNative(dest: ParcelNative) {
             dest.writeInt(type)
-            dest.writeInt(id)
+            dest.writeLong(id)
             dest.writeBoolean(allowed)
         }
 
@@ -107,7 +107,7 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
 
         override fun hashCode(): Int {
             var result = type
-            result = 31 * result + id
+            result = 31 * result + id.hashCode()
             result = 31 * result + if (allowed) 1 else 0
             return result
         }

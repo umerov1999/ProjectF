@@ -25,10 +25,10 @@ import kotlinx.serialization.Serializable
 
 class MentionMessage {
     private var message_id = 0
-    private var peerId = 0
+    private var peerId = 0L
     private var body: String? = null
     private var title: String? = null
-    fun notify(context: Context, account_id: Int) {
+    fun notify(context: Context, account_id: Long) {
         if (!get()
                 .notifications()
                 .isMentionNotifyEnabled
@@ -76,10 +76,10 @@ class MentionMessage {
         var msg_id = 0
 
         @SerialName("sender_id")
-        var sender_id = 0
+        var sender_id = 0L
 
         @SerialName("chat_id")
-        var chat_id = 0
+        var chat_id = 0L
     }
 
     companion object {
@@ -92,7 +92,7 @@ class MentionMessage {
             message.message_id = context.msg_id
             message.body = data["body"]
             message.title = data["title"]
-            message.peerId = if (context.chat_id == 0) context.sender_id else context.chat_id
+            message.peerId = if (context.chat_id == 0L) context.sender_id else context.chat_id
             return message
         }
     }

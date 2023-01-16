@@ -22,7 +22,7 @@ class PhotoDtoAdapter : AbsAdapter<VKApiPhoto>("VKApiPhoto") {
         photo.date = optLong(root, "date")
         photo.height = optInt(root, "height")
         photo.width = optInt(root, "width")
-        photo.owner_id = optInt(root, "owner_id")
+        photo.owner_id = optLong(root, "owner_id")
         photo.text = optString(root, "text")
         photo.access_key = optString(root, "access_key")
         if (hasObject(root, "likes")) {

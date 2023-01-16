@@ -39,7 +39,7 @@ class INewsfeedService : IServiceRest() {
 
     //https://vk.com/dev/newsfeed.getMentions
     fun getMentions(
-        owner_id: Int?,
+        owner_id: Long?,
         count: Int?,
         offset: Int?,
         startTime: Long?,
@@ -124,7 +124,7 @@ class INewsfeedService : IServiceRest() {
     //https://vk.com/dev/newsfeed.ignoreItem
     fun ignoreItem(
         type: String?,
-        owner_id: Int?,
+        owner_id: Long?,
         item_id: Int?
     ): Single<BaseResponse<Int>> {
         return rest.request(

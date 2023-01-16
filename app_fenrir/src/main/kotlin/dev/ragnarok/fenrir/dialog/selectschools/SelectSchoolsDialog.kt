@@ -108,10 +108,10 @@ class SelectSchoolsDialog : AccountDependencyDialogFragment(), SchoolsAdapter.Li
     companion object {
         private const val COUNT_PER_REQUEST = 1000
         private const val RUN_SEARCH_DELAY = 1000
-        fun newInstance(aid: Int, schoolId: Int, additional: Bundle?): SelectSchoolsDialog {
+        fun newInstance(aid: Long, schoolId: Int, additional: Bundle?): SelectSchoolsDialog {
             val args = additional ?: Bundle()
             args.putInt(Extra.SCHOOL_ID, schoolId)
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             val selectCityDialog = SelectSchoolsDialog()
             selectCityDialog.arguments = args
             return selectCityDialog

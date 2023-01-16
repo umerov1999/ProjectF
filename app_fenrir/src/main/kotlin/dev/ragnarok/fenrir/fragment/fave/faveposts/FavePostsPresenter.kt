@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.util.Utils.findInfoByPredicate
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class FavePostsPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class FavePostsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     PlaceSupportPresenter<IFavePostsView>(accountId, savedInstanceState) {
     private val posts: MutableList<Post>
     private val faveInteractor: IFaveInteractor

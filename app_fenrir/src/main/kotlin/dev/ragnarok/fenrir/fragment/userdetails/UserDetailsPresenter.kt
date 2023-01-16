@@ -20,7 +20,7 @@ import dev.ragnarok.fenrir.util.Utils.joinNonEmptyStrings
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 
 class UserDetailsPresenter(
-    accountId: Int,
+    accountId: Long,
     private val user: User,
     details: UserDetails,
     savedInstanceState: Bundle?
@@ -31,7 +31,7 @@ class UserDetailsPresenter(
     fun fireChatClick() {
         val peer = Peer(
             Peer.fromUserId(
-                user.getObjectId()
+                user.getOwnerObjectId()
             )
         )
             .setAvaUrl(user.maxSquareAvatar)
@@ -86,7 +86,7 @@ class UserDetailsPresenter(
         val items: MutableList<AdvancedItem> = ArrayList()
         val mainSection = Section(Text(R.string.mail_information))
         val domain =
-            if (user.domain.nonNullNoEmpty()) "@" + user.domain else "@" + user.getObjectId()
+            if (user.domain.nonNullNoEmpty()) "@" + user.domain else "@" + user.getOwnerObjectId()
         items.add(
             AdvancedItem(1, AdvancedItem.TYPE_COPY_DETAILS_ONLY, Text(R.string.id))
                 .setSubtitle(Text(domain))
@@ -584,7 +584,7 @@ class UserDetailsPresenter(
         internal fun addPersonalInfo(
             items: MutableList<AdvancedItem>,
             @DrawableRes icon: Int,
-            key: Int,
+            key: Long,
             section: Section,
             @StringRes title: Int,
             v: String?

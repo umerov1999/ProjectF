@@ -17,7 +17,7 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 
 class DatabaseStorage internal constructor(base: AppStorages) : AbsStorage(base), IDatabaseStore {
-    override fun storeCountries(accountId: Int, dbos: List<CountryDboEntity>): Completable {
+    override fun storeCountries(accountId: Long, dbos: List<CountryDboEntity>): Completable {
         return Completable.create { emitter: CompletableEmitter ->
             val uri = getCountriesContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(dbos.size + 1)
@@ -37,7 +37,7 @@ class DatabaseStorage internal constructor(base: AppStorages) : AbsStorage(base)
         }
     }
 
-    override fun getCountries(accountId: Int): Single<List<CountryDboEntity>> {
+    override fun getCountries(accountId: Long): Single<List<CountryDboEntity>> {
         return Single.create { emitter: SingleEmitter<List<CountryDboEntity>> ->
             val uri = getCountriesContentUriFor(accountId)
             val cursor = contentResolver.query(uri, null, null, null, null)

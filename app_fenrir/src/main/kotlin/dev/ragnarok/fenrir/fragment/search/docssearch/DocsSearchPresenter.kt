@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import io.reactivex.rxjava3.core.Single
 
 class DocsSearchPresenter(
-    accountId: Int,
+    accountId: Long,
     criteria: DocumentSearchCriteria?,
     savedInstanceState: Bundle?
 ) : AbsSearchPresenter<IDocSearchView, DocumentSearchCriteria, Document, IntNextFrom>(
@@ -35,7 +35,7 @@ class DocsSearchPresenter(
     }
 
     override fun doSearch(
-        accountId: Int,
+        accountId: Long,
         criteria: DocumentSearchCriteria,
         startFrom: IntNextFrom
     ): Single<Pair<List<Document>, IntNextFrom>> {

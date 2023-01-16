@@ -35,8 +35,8 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class PostCreatePresenter(
-    accountId: Int,
-    ownerId: Int,
+    accountId: Long,
+    ownerId: Long,
     @EditingPostType editingType: Int,
     bundle: ModelsBundle?,
     private val attrs: WallEditorAttrs,
@@ -45,7 +45,7 @@ class PostCreatePresenter(
     mime: String?,
     savedInstanceState: Bundle?
 ) : AbsPostEditPresenter<IPostCreateView>(accountId, savedInstanceState) {
-    private val ownerId: Int
+    private val ownerId: Long
 
     @EditingPostType
     private val editingType: Int

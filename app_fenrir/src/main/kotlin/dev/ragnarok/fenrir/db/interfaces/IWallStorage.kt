@@ -13,32 +13,32 @@ import io.reactivex.rxjava3.core.Single
 interface IWallStorage : IStorage {
     @CheckResult
     fun storeWallEntities(
-        accountId: Int, posts: List<PostDboEntity>,
+        accountId: Long, posts: List<PostDboEntity>,
         owners: OwnerEntities?,
         clearWall: IClearWallTask?
     ): Single<IntArray>
 
     @CheckResult
-    fun replacePost(accountId: Int, post: PostDboEntity): Single<Int>
+    fun replacePost(accountId: Long, post: PostDboEntity): Single<Int>
 
     @CheckResult
     fun getEditingPost(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         @EditingPostType type: Int,
         includeAttachment: Boolean
     ): Single<PostDboEntity>
 
     @CheckResult
-    fun deletePost(accountId: Int, dbid: Int): Completable
+    fun deletePost(accountId: Long, dbid: Int): Completable
 
     @CheckResult
-    fun findPostById(accountId: Int, dbid: Int): Single<Optional<PostDboEntity>>
+    fun findPostById(accountId: Long, dbid: Int): Single<Optional<PostDboEntity>>
 
     @CheckResult
     fun findPostById(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         vkpostId: Int,
         includeAttachment: Boolean
     ): Single<Optional<PostDboEntity>>
@@ -46,13 +46,13 @@ interface IWallStorage : IStorage {
     fun findDbosByCriteria(criteria: WallCriteria): Single<List<PostDboEntity>>
 
     @CheckResult
-    fun update(accountId: Int, ownerId: Int, postId: Int, update: PostPatch): Completable
+    fun update(accountId: Long, ownerId: Long, postId: Int, update: PostPatch): Completable
 
     /**
      * Уведомить хранилище, что пост более не существует
      */
-    fun invalidatePost(accountId: Int, postVkid: Int, postOwnerId: Int): Completable
+    fun invalidatePost(accountId: Long, postVkid: Int, postOwnerId: Long): Completable
     interface IClearWallTask {
-        val ownerId: Int
+        val ownerId: Long
     }
 }

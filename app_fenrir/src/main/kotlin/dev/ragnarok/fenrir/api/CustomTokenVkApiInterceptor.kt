@@ -8,7 +8,7 @@ internal class CustomTokenVkApiInterceptor(
     override val token: String?,
     v: String,
     @AccountType private val accountType: Int,
-    private val account_id: Int?
+    private val account_id: Long?
 ) : AbsVkApiInterceptor(
     v
 ) {
@@ -23,6 +23,6 @@ internal class CustomTokenVkApiInterceptor(
             }
             return accountType
         }
-    override val accountId: Int
+    override val accountId: Long
         get() = account_id ?: -1
 }

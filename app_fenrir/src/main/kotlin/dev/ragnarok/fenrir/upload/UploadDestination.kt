@@ -5,7 +5,7 @@ import android.os.Parcelable
 
 open class UploadDestination : Parcelable {
     val id: Int
-    val ownerId: Int
+    val ownerId: Long
 
     @Method
     val method: Int
@@ -13,7 +13,7 @@ open class UploadDestination : Parcelable {
     @MessageMethod
     var messageMethod: Int
 
-    constructor(id: Int, ownerId: Int, method: Int, message_method: Int) {
+    constructor(id: Int, ownerId: Long, method: Int, message_method: Int) {
         this.id = id
         this.ownerId = ownerId
         this.method = method
@@ -22,7 +22,7 @@ open class UploadDestination : Parcelable {
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         method = parcel.readInt()
         messageMethod = parcel.readInt()
     }
@@ -33,7 +33,7 @@ open class UploadDestination : Parcelable {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(id)
-        dest.writeInt(ownerId)
+        dest.writeLong(ownerId)
         dest.writeInt(method)
         dest.writeInt(messageMethod)
     }
@@ -47,7 +47,7 @@ open class UploadDestination : Parcelable {
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + ownerId
+        result = 31 * result + ownerId.hashCode()
         result = 31 * result + method
         return result
     }
@@ -57,7 +57,7 @@ open class UploadDestination : Parcelable {
         return compareTo(destination.id, destination.ownerId, destination.method)
     }
 
-    fun compareTo(id: Int, ownerId: Int, type: Int): Boolean {
+    fun compareTo(id: Int, ownerId: Long, type: Int): Boolean {
         return this.id == id && this.ownerId == ownerId && method == type
     }
 
@@ -71,8 +71,9 @@ open class UploadDestination : Parcelable {
     }
 
     companion object {
-        const val WITHOUT_OWNER = 0
+        const val WITHOUT_OWNER = 0L
         private const val NO_ID = 0
+        private const val NO_ID_L = 0L
 
         @JvmField
         val CREATOR: Parcelable.Creator<UploadDestination> =
@@ -87,7 +88,7 @@ open class UploadDestination : Parcelable {
             }
 
 
-        fun forProfilePhoto(ownerId: Int): UploadDestination {
+        fun forProfilePhoto(ownerId: Long): UploadDestination {
             return UploadDestination(
                 NO_ID,
                 ownerId,
@@ -97,7 +98,7 @@ open class UploadDestination : Parcelable {
         }
 
 
-        fun forChatPhoto(chat_id: Int): UploadDestination {
+        fun forChatPhoto(chat_id: Long): UploadDestination {
             return UploadDestination(
                 NO_ID,
                 chat_id,
@@ -107,7 +108,7 @@ open class UploadDestination : Parcelable {
         }
 
 
-        fun forDocuments(ownerId: Int): UploadDestination {
+        fun forDocuments(ownerId: Long): UploadDestination {
             return UploadDestination(
                 NO_ID,
                 ownerId,
@@ -117,7 +118,7 @@ open class UploadDestination : Parcelable {
         }
 
 
-        fun forAudio(ownerId: Int): UploadDestination {
+        fun forAudio(ownerId: Long): UploadDestination {
             return UploadDestination(
                 NO_ID,
                 ownerId,
@@ -130,7 +131,7 @@ open class UploadDestination : Parcelable {
         fun forRemotePlay(): UploadDestination {
             return UploadDestination(
                 NO_ID,
-                NO_ID,
+                NO_ID_L,
                 Method.REMOTE_PLAY_AUDIO,
                 MessageMethod.NULL
             )
@@ -138,11 +139,11 @@ open class UploadDestination : Parcelable {
 
 
         fun forStory(@MessageMethod msg_method: Int): UploadDestination {
-            return UploadDestination(NO_ID, NO_ID, Method.STORY, msg_method)
+            return UploadDestination(NO_ID, NO_ID_L, Method.STORY, msg_method)
         }
 
 
-        fun forVideo(is_public: Int, ownerId: Int): UploadDestination {
+        fun forVideo(is_public: Int, ownerId: Long): UploadDestination {
             return UploadDestination(
                 is_public,
                 ownerId,
@@ -168,7 +169,7 @@ open class UploadDestination : Parcelable {
         }
 
 
-        fun forPhotoAlbum(albumId: Int, ownerId: Int): UploadDestination {
+        fun forPhotoAlbum(albumId: Int, ownerId: Long): UploadDestination {
             return UploadDestination(
                 albumId,
                 ownerId,
@@ -178,12 +179,12 @@ open class UploadDestination : Parcelable {
         }
 
 
-        fun forPost(dbid: Int, ownerId: Int, @MessageMethod msg_method: Int): UploadDestination {
+        fun forPost(dbid: Int, ownerId: Long, @MessageMethod msg_method: Int): UploadDestination {
             return UploadDestination(dbid, ownerId, Method.TO_WALL, msg_method)
         }
 
 
-        fun forPost(dbid: Int, ownerId: Int): UploadDestination {
+        fun forPost(dbid: Int, ownerId: Long): UploadDestination {
             return UploadDestination(
                 dbid,
                 ownerId,
@@ -193,7 +194,7 @@ open class UploadDestination : Parcelable {
         }
 
 
-        fun forComment(dbid: Int, sourceOwnerId: Int): UploadDestination {
+        fun forComment(dbid: Int, sourceOwnerId: Long): UploadDestination {
             return UploadDestination(
                 dbid,
                 sourceOwnerId,
@@ -205,7 +206,7 @@ open class UploadDestination : Parcelable {
 
         fun forComment(
             dbid: Int,
-            sourceOwnerId: Int,
+            sourceOwnerId: Long,
             @MessageMethod msg_method: Int
         ): UploadDestination {
             return UploadDestination(dbid, sourceOwnerId, Method.TO_COMMENT, msg_method)

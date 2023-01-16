@@ -10,7 +10,7 @@ import io.reactivex.rxjava3.core.Single
 interface IMessagesApi {
     @CheckResult
     fun edit(
-        peerId: Int,
+        peerId: Long,
         messageId: Int,
         message: String?,
         attachments: List<IAttachmentToken>?,
@@ -19,36 +19,36 @@ interface IMessagesApi {
     ): Completable
 
     @CheckResult
-    fun removeChatMember(chatId: Int, memberId: Int): Single<Boolean>
+    fun removeChatMember(chatId: Long, memberId: Long): Single<Boolean>
 
     @CheckResult
-    fun deleteChatPhoto(chatId: Int): Single<Boolean>
+    fun deleteChatPhoto(chatId: Long): Single<Boolean>
 
     @CheckResult
-    fun addChatUser(chatId: Int, userId: Int): Single<Boolean>
+    fun addChatUser(chatId: Long, userId: Long): Single<Boolean>
 
     @CheckResult
     fun getChat(
-        chatId: Int?,
-        chatIds: Collection<Int>?,
+        chatId: Long?,
+        chatIds: Collection<Long>?,
         fields: String?,
         name_case: String?
     ): Single<List<VKApiChat>>
 
     @CheckResult
     fun getConversationMembers(
-        peer_id: Int?,
+        peer_id: Long?,
         fields: String?
     ): Single<ConversationMembersResponse>
 
     @CheckResult
-    fun editChat(chatId: Int, title: String?): Single<Boolean>
+    fun editChat(chatId: Long, title: String?): Single<Boolean>
 
     @CheckResult
-    fun createChat(userIds: Collection<Int>, title: String?): Single<Int>
+    fun createChat(userIds: Collection<Long>, title: String?): Single<Long>
 
     @CheckResult
-    fun deleteDialog(peerId: Int): Single<ConversationDeleteResult>
+    fun deleteDialog(peerId: Long): Single<ConversationDeleteResult>
 
     @CheckResult
     fun restore(messageId: Int): Single<Boolean>
@@ -61,14 +61,14 @@ interface IMessagesApi {
     ): Single<Map<String, Int>>
 
     @CheckResult
-    fun markAsRead(peerId: Int?, startMessageId: Int?): Single<Boolean>
+    fun markAsRead(peerId: Long?, startMessageId: Int?): Single<Boolean>
 
     @CheckResult
-    fun setActivity(peerId: Int, typing: Boolean): Single<Boolean>
+    fun setActivity(peerId: Long, typing: Boolean): Single<Boolean>
 
     @CheckResult
     fun search(
-        query: String?, peerId: Int?, date: Long?, previewLength: Int?,
+        query: String?, peerId: Long?, date: Long?, previewLength: Int?,
         offset: Int?, count: Int?
     ): Single<Items<VKApiMessage>>
 
@@ -85,13 +85,13 @@ interface IMessagesApi {
 
     @CheckResult
     fun getHistoryAttachments(
-        peerId: Int, mediaType: String?, startFrom: String?, photoSizes: Int?,
+        peerId: Long, mediaType: String?, startFrom: String?, photoSizes: Int?,
         count: Int?, fields: String?
     ): Single<AttachmentsHistoryResponse>
 
     @CheckResult
     fun send(
-        randomId: Long?, peerId: Int?, domain: String?, message: String?,
+        randomId: Long?, peerId: Long?, domain: String?, message: String?,
         latitude: Double?, longitude: Double?, attachments: Collection<IAttachmentToken>?,
         forwardMessages: Collection<Int>?, stickerId: Int?, payload: String?, reply_to: Int?
     ): Single<Int>
@@ -107,7 +107,7 @@ interface IMessagesApi {
 
     @CheckResult
     fun getConversations(
-        peers: List<Int>,
+        peers: List<Long>,
         extended: Boolean?,
         fields: String?
     ): Single<ItemsProfilesGroupsResponse<VKApiConversation>>
@@ -119,7 +119,7 @@ interface IMessagesApi {
     fun getHistory(
         offset: Int?,
         count: Int?,
-        peerId: Int,
+        peerId: Long,
         startMessageId: Int?,
         rev: Boolean?,
         extended: Boolean?,
@@ -127,7 +127,7 @@ interface IMessagesApi {
     ): Single<MessageHistoryResponse>
 
     @CheckResult
-    fun getJsonHistory(offset: Int?, count: Int?, peerId: Int): Single<Items<VKApiJsonString>>
+    fun getJsonHistory(offset: Int?, count: Int?, peerId: Long): Single<Items<VKApiJsonString>>
 
     @CheckResult
     fun getImportantMessages(
@@ -150,13 +150,13 @@ interface IMessagesApi {
     ): Single<ConversationsResponse>
 
     @CheckResult
-    fun pin(peerId: Int, messageId: Int): Completable
+    fun pin(peerId: Long, messageId: Int): Completable
 
     @CheckResult
-    fun unpin(peerId: Int): Completable
+    fun unpin(peerId: Long): Completable
 
     @CheckResult
-    fun pinUnPinConversation(peerId: Int, peen: Boolean): Completable
+    fun pinUnPinConversation(peerId: Long, peen: Boolean): Completable
 
     @CheckResult
     fun markAsListened(message_id: Int): Completable
@@ -165,5 +165,5 @@ interface IMessagesApi {
     fun recogniseAudioMessage(message_id: Int?, audio_message_id: String?): Single<Int>
 
     @CheckResult
-    fun setMemberRole(peer_id: Int?, member_id: Int?, role: String?): Single<Int>
+    fun setMemberRole(peer_id: Long?, member_id: Long?, role: String?): Single<Int>
 }

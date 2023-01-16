@@ -22,7 +22,7 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
 
 abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal constructor(
-    accountId: Int,
+    accountId: Long,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<V>(accountId, savedInstanceState), IPlayerStatusListener {
     protected val lastReadId = LastReadId(0, 0)
@@ -180,7 +180,7 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Int,
+        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         val player = mVoicePlayer ?: return

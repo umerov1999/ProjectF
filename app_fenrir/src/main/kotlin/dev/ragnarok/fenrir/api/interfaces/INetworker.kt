@@ -4,8 +4,8 @@ import dev.ragnarok.fenrir.api.IVkRestProvider
 
 interface INetworker {
     fun getVkRestProvider(): IVkRestProvider
-    fun vkDefault(accountId: Int): IAccountApis
-    fun vkManual(accountId: Int, accessToken: String): IAccountApis
+    fun vkDefault(accountId: Long): IAccountApis
+    fun vkManual(accountId: Long, accessToken: String): IAccountApis
     fun vkDirectAuth(): IAuthApi
     fun vkAuth(): IAuthApi
     fun localServerApi(): ILocalServerApi

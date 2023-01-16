@@ -17,6 +17,6 @@ class Copies {
         var id = 0
 
         @SerialName("from_id")
-        var owner_id = 0
+        var owner_id = 0L
     }
 }

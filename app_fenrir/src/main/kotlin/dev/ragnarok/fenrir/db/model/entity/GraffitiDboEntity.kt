@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 class GraffitiDboEntity : DboEntity() {
     var id = 0
         private set
-    var owner_id = 0
+    var owner_id = 0L
         private set
     var url: String? = null
         private set
@@ -26,7 +26,7 @@ class GraffitiDboEntity : DboEntity() {
         return this
     }
 
-    fun setOwner_id(owner_id: Int): GraffitiDboEntity {
+    fun setOwner_id(owner_id: Long): GraffitiDboEntity {
         this.owner_id = owner_id
         return this
     }

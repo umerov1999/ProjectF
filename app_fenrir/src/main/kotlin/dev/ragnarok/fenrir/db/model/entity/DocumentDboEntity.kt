@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 class DocumentDboEntity : DboEntity() {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var title: String? = null
         private set
@@ -33,7 +33,7 @@ class DocumentDboEntity : DboEntity() {
     var video: VideoPreviewDbo? = null
         private set
 
-    operator fun set(id: Int, ownerId: Int): DocumentDboEntity {
+    operator fun set(id: Int, ownerId: Long): DocumentDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this

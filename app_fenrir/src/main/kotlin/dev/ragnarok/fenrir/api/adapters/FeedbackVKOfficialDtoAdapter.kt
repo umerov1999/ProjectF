@@ -68,7 +68,7 @@ class FeedbackVKOfficialDtoAdapter : AbsAdapter<FeedbackVKOfficialList>("Feedbac
                 ) {
                     val context_item = action_item["context"]?.jsonObject
                     dto.action = ActionMessage(
-                        optInt(context_item, "peer_id", 0),
+                        optLong(context_item, "peer_id", 0),
                         optInt(context_item, "id", 0)
                     )
                 }
@@ -112,7 +112,7 @@ class FeedbackVKOfficialDtoAdapter : AbsAdapter<FeedbackVKOfficialList>("Feedbac
                 val matcher = LinkParser.MENTIONS_AVATAR_PATTERN.matcher(it)
                 if (matcher.find()) {
                     val Type = matcher.group(1)
-                    matcher.group(2)?.toInt()?.let { lit ->
+                    matcher.group(2)?.toLong()?.let { lit ->
                         dto.header_owner_id =
                             if (Type == "event" || Type == "club" || Type == "public") -lit else lit
                         if (dto.header_owner_id.orZero() >= 0) {

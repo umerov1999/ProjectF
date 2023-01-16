@@ -145,11 +145,11 @@ class CommentContainer : LinearLayout {
                             listener?.onReplyToOwnerClick(link.replyToOwner, link.replyToCommentId)
                         }
 
-                        override fun onOwnerClick(ownerId: Int) {
+                        override fun onOwnerClick(ownerId: Long) {
                             listener?.onAvatarClick(ownerId)
                         }
                     })
-                if (text.isNullOrEmpty() && comment.fromId == 0) {
+                if (text.isNullOrEmpty() && comment.fromId == 0L) {
                     check.tvText.visibility = VISIBLE
                     check.tvText.setText(R.string.deleted)
                 } else {
@@ -184,7 +184,7 @@ class CommentContainer : LinearLayout {
                     )
                 }
                 check.ivOwnerAvatar.setOnClickListener {
-                    if (comment.fromId == 0) {
+                    if (comment.fromId == 0L) {
                         return@setOnClickListener
                     }
                     listener?.onAvatarClick(comment.fromId)
@@ -201,7 +201,7 @@ class CommentContainer : LinearLayout {
         listener: OnCommentActionListener?
     ): Spannable {
         val time = AppTextUtils.getDateFromUnixTime(comment.date)
-        if (comment.replyToUser == 0) {
+        if (comment.replyToUser == 0L) {
             return Spannable.Factory.getInstance().newSpannable(time)
         }
         val commentText = context.getString(R.string.comment).lowercase(Locale.getDefault())

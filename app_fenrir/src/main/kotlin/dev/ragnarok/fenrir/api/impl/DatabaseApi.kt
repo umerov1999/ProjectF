@@ -10,7 +10,7 @@ import dev.ragnarok.fenrir.api.model.database.*
 import dev.ragnarok.fenrir.api.services.IDatabaseService
 import io.reactivex.rxjava3.core.Single
 
-internal class DatabaseApi(accountId: Int, provider: IServiceProvider) :
+internal class DatabaseApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IDatabaseApi {
     override fun getCitiesById(cityIds: Collection<Int>): Single<List<VKApiCity>> {
         return provideService(IDatabaseService(), TokenType.USER, TokenType.SERVICE)

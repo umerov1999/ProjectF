@@ -29,8 +29,8 @@ import kotlin.math.abs
 
 internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelativeshipStorage {
     override fun storeFriendsList(
-        accountId: Int,
-        userId: Int,
+        accountId: Long,
+        userId: Long,
         data: Collection<FriendListEntity>
     ): Completable {
         return Completable.create { e: CompletableEmitter ->
@@ -60,9 +60,9 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
     }
 
     override fun storeFriends(
-        accountId: Int,
+        accountId: Long,
         users: List<UserEntity>,
-        objectId: Int,
+        objectId: Long,
         clearBeforeStore: Boolean
     ): Completable {
         return completableStoreForType(
@@ -75,9 +75,9 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
     }
 
     private fun completableStoreForType(
-        accountId: Int,
+        accountId: Long,
         userEntities: List<UserEntity>,
-        objectId: Int,
+        objectId: Long,
         relationType: Int,
         clear: Boolean
     ): Completable {
@@ -95,9 +95,9 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
     }
 
     override fun storeFollowers(
-        accountId: Int,
+        accountId: Long,
         users: List<UserEntity>,
-        objectId: Int,
+        objectId: Long,
         clearBeforeStore: Boolean
     ): Completable {
         return completableStoreForType(
@@ -110,9 +110,9 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
     }
 
     override fun storeRequests(
-        accountId: Int,
+        accountId: Long,
         users: List<UserEntity>,
-        objectId: Int,
+        objectId: Long,
         clearBeforeStore: Boolean
     ): Completable {
         return completableStoreForType(
@@ -125,9 +125,9 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
     }
 
     override fun storeGroupMembers(
-        accountId: Int,
+        accountId: Long,
         users: List<UserEntity>,
-        objectId: Int,
+        objectId: Long,
         clearBeforeStore: Boolean
     ): Completable {
         return completableStoreForType(
@@ -139,23 +139,23 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         )
     }
 
-    override fun getGroupMembers(accountId: Int, groupId: Int): Single<List<UserEntity>> {
+    override fun getGroupMembers(accountId: Long, groupId: Long): Single<List<UserEntity>> {
         return getUsersForType(accountId, groupId, RelationshipColumns.TYPE_GROUP_MEMBER)
     }
 
-    override fun getFriends(accountId: Int, objectId: Int): Single<List<UserEntity>> {
+    override fun getFriends(accountId: Long, objectId: Long): Single<List<UserEntity>> {
         return getUsersForType(accountId, objectId, RelationshipColumns.TYPE_FRIEND)
     }
 
-    override fun getFollowers(accountId: Int, objectId: Int): Single<List<UserEntity>> {
+    override fun getFollowers(accountId: Long, objectId: Long): Single<List<UserEntity>> {
         return getUsersForType(accountId, objectId, RelationshipColumns.TYPE_FOLLOWER)
     }
 
-    override fun getRequests(accountId: Int): Single<List<UserEntity>> {
+    override fun getRequests(accountId: Long): Single<List<UserEntity>> {
         return getUsersForType(accountId, accountId, RelationshipColumns.TYPE_REQUESTS)
     }
 
-    override fun getCommunities(accountId: Int, ownerId: Int): Single<List<CommunityEntity>> {
+    override fun getCommunities(accountId: Long, ownerId: Long): Single<List<CommunityEntity>> {
         return Single.create { emitter: SingleEmitter<List<CommunityEntity>> ->
             val cursor = getCursorForType(accountId, ownerId, RelationshipColumns.TYPE_MEMBER)
             val dbos: MutableList<CommunityEntity> = ArrayList(safeCountOf(cursor))
@@ -173,9 +173,9 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
     }
 
     override fun storeComminities(
-        accountId: Int,
+        accountId: Long,
         communities: List<CommunityEntity>,
-        userId: Int,
+        userId: Long,
         invalidateBefore: Boolean
     ): Completable {
         return Completable.create { emitter: CompletableEmitter ->
@@ -203,7 +203,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         }
     }
 
-    private fun getCursorForType(accountId: Int, objectId: Int, relationType: Int): Cursor? {
+    private fun getCursorForType(accountId: Long, objectId: Long, relationType: Int): Cursor? {
         val uri = getRelativeshipContentUriFor(accountId)
         val where =
             RelationshipColumns.FULL_TYPE + " = ? AND " + RelationshipColumns.OBJECT_ID + " = ?"
@@ -212,8 +212,8 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
     }
 
     private fun getUsersForType(
-        accountId: Int,
-        objectId: Int,
+        accountId: Long,
+        objectId: Long,
         relationType: Int
     ): Single<List<UserEntity>> {
         return Single.create { emitter: SingleEmitter<List<UserEntity>> ->
@@ -235,7 +235,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
     private fun appendInsertHeaders(
         uri: Uri,
         operations: MutableList<ContentProviderOperation>,
-        objectId: Int,
+        objectId: Long,
         dbos: List<UserEntity>,
         type: Int
     ) {
@@ -250,8 +250,8 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
     }
 
     private fun clearOperationFor(
-        accountId: Int,
-        objectId: Int,
+        accountId: Long,
+        objectId: Long,
         type: Int
     ): ContentProviderOperation {
         val uri = getRelativeshipContentUriFor(accountId)
@@ -266,7 +266,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
 
     companion object {
         internal fun mapCommunity(cursor: Cursor): CommunityEntity {
-            return CommunityEntity(cursor.getInt(RelationshipColumns.SUBJECT_ID))
+            return CommunityEntity(cursor.getLong(RelationshipColumns.SUBJECT_ID))
                 .setName(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_GROUP_NAME))
                 .setScreenName(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_GROUP_SCREEN_NAME))
                 .setClosed(cursor.getInt(RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_CLOSED))
@@ -286,7 +286,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
 
         internal fun mapDbo(cursor: Cursor): UserEntity {
             val gid =
-                abs(cursor.getInt(RelationshipColumns.SUBJECT_ID))
+                abs(cursor.getLong(RelationshipColumns.SUBJECT_ID))
             return UserEntity(gid)
                 .setFirstName(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_USER_FIRST_NAME))
                 .setLastName(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_USER_LAST_NAME))

@@ -33,7 +33,7 @@ class SendAttachmentsActivity : MainActivity() {
     }
 
     companion object {
-        fun startForSendAttachments(context: Context, accountId: Int, bundle: ModelsBundle?) {
+        fun startForSendAttachments(context: Context, accountId: Long, bundle: ModelsBundle?) {
             val intent = Intent(context, SendAttachmentsActivity::class.java)
             intent.action = ACTION_SEND_ATTACHMENTS
             intent.putExtra(EXTRA_INPUT_ATTACHMENTS, bundle)
@@ -44,7 +44,7 @@ class SendAttachmentsActivity : MainActivity() {
 
         fun startForSendAttachmentsFor(
             context: Context,
-            accountId: Int,
+            accountId: Long,
             peer: Peer,
             bundle: ModelsBundle?
         ) {
@@ -63,14 +63,14 @@ class SendAttachmentsActivity : MainActivity() {
         }
 
 
-        fun startForSendAttachments(context: Context, accountId: Int, model: AbsModel) {
+        fun startForSendAttachments(context: Context, accountId: Long, model: AbsModel) {
             startForSendAttachments(context, accountId, ModelsBundle(1).append(model))
         }
 
 
         fun startForSendAttachmentsFor(
             context: Context,
-            accountId: Int,
+            accountId: Long,
             peer: Peer,
             model: AbsModel
         ) {

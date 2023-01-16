@@ -34,7 +34,7 @@ import java.lang.ref.WeakReference
 class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     private var mPlayerDisposable = Disposable.disposed()
     private var mAccountDisposable = Disposable.disposed()
-    private var mAccountId = 0
+    private var mAccountId = 0L
     private lateinit var visual: RLottieImageView
     private lateinit var playCover: ImageView
     private lateinit var title: TextView

@@ -16,32 +16,32 @@ interface IWallView : IAttachmentsPlacesView, IMvpView, ISnackbarView,
     fun notifyWallDataAdded(position: Int, count: Int)
     fun setupLoadMoreFooter(@LoadMoreState state: Int)
     fun showRefreshing(refreshing: Boolean)
-    fun openPhotoAlbums(accountId: Int, ownerId: Int, owner: Owner?)
-    fun openAudios(accountId: Int, ownerId: Int, owner: Owner?)
-    fun openArticles(accountId: Int, ownerId: Int, owner: Owner?)
-    fun openVideosLibrary(accountId: Int, ownerId: Int, owner: Owner?)
-    fun goToPostCreation(accountId: Int, ownerId: Int, @EditingPostType postType: Int)
+    fun openPhotoAlbums(accountId: Long, ownerId: Long, owner: Owner?)
+    fun openAudios(accountId: Long, ownerId: Long, owner: Owner?)
+    fun openArticles(accountId: Long, ownerId: Long, owner: Owner?)
+    fun openVideosLibrary(accountId: Long, ownerId: Long, owner: Owner?)
+    fun goToPostCreation(accountId: Long, ownerId: Long, @EditingPostType postType: Int)
     fun copyToClipboard(label: String?, body: String?)
     fun openPhotoAlbum(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         photos: ArrayList<Photo>,
         position: Int
     )
 
-    fun goToWallSearch(accountId: Int, ownerId: Int)
-    fun openPostEditor(accountId: Int, post: Post)
+    fun goToWallSearch(accountId: Long, ownerId: Long)
+    fun openPostEditor(accountId: Long, post: Post)
     fun notifyWallItemRemoved(index: Int)
-    fun goToConversationAttachments(accountId: Int, ownerId: Int)
-    fun goNarratives(accountId: Int, ownerId: Int)
+    fun goToConversationAttachments(accountId: Long, ownerId: Long)
+    fun goNarratives(accountId: Long, ownerId: Long)
     interface IOptionView {
-        fun typeOwnerId(id: Int)
+        fun typeOwnerId(id: Long)
         fun setIsMy(my: Boolean)
         fun setIsBlacklistedByMe(blocked: Boolean)
         fun setIsFavorite(favorite: Boolean)
         fun setIsSubscribed(subscribed: Boolean)
     }
 
-    fun onRequestSkipOffset(accountId: Int, ownerId: Int, wallFilter: Int, currentPos: Int)
+    fun onRequestSkipOffset(accountId: Long, ownerId: Long, wallFilter: Int, currentPos: Int)
 }

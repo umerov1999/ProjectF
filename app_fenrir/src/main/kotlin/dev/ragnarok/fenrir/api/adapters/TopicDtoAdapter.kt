@@ -19,12 +19,12 @@ class TopicDtoAdapter : AbsAdapter<VKApiTopic>("VKApiTopic") {
         val dto = VKApiTopic()
         val root = json.asJsonObject
         dto.id = optInt(root, "id")
-        dto.owner_id = optInt(root, "owner_id")
+        dto.owner_id = optLong(root, "owner_id")
         dto.title = optString(root, "title")
         dto.created = optLong(root, "created")
-        dto.created_by = optInt(root, "created_by")
+        dto.created_by = optLong(root, "created_by")
         dto.updated = optLong(root, "updated")
-        dto.updated_by = optInt(root, "updated_by")
+        dto.updated_by = optLong(root, "updated_by")
         dto.is_closed = optBoolean(root, "is_closed")
         dto.is_fixed = optBoolean(root, "is_fixed")
         if (root.has("comments")) {

@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.api.services.IFaveService
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import io.reactivex.rxjava3.core.Single
 
-internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(accountId, provider),
+internal class FaveApi(accountId: Long, provider: IServiceProvider) : AbsApi(accountId, provider),
     IFaveApi {
     override fun getPages(
         offset: Int?,
@@ -68,7 +68,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun getOwnerPublishedArticles(
-        owner_id: Int?,
+        owner_id: Long?,
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiArticle>> {
@@ -118,7 +118,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun addPage(userId: Int?, groupId: Int?): Single<Boolean> {
+    override fun addPage(userId: Long?, groupId: Long?): Single<Boolean> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
                 service.addPage(userId, groupId)
@@ -136,7 +136,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun addVideo(owner_id: Int?, id: Int?, access_key: String?): Single<Boolean> {
+    override fun addVideo(owner_id: Long?, id: Int?, access_key: String?): Single<Boolean> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
                 service.addVideo(owner_id, id, access_key)
@@ -154,7 +154,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun addProduct(id: Int, owner_id: Int, access_key: String?): Single<Boolean> {
+    override fun addProduct(id: Int, owner_id: Long, access_key: String?): Single<Boolean> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
                 service.addProduct(id, owner_id, access_key)
@@ -163,7 +163,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun addPost(owner_id: Int?, id: Int?, access_key: String?): Single<Boolean> {
+    override fun addPost(owner_id: Long?, id: Int?, access_key: String?): Single<Boolean> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
                 service.addPost(owner_id, id, access_key)
@@ -172,7 +172,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun removePage(userId: Int?, groupId: Int?): Single<Boolean> {
+    override fun removePage(userId: Long?, groupId: Long?): Single<Boolean> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
                 service.removePage(userId, groupId)
@@ -190,7 +190,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun removeArticle(owner_id: Int?, article_id: Int?): Single<Boolean> {
+    override fun removeArticle(owner_id: Long?, article_id: Int?): Single<Boolean> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
                 service.removeArticle(owner_id, article_id)
@@ -199,7 +199,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun removeProduct(id: Int?, owner_id: Int?): Single<Boolean> {
+    override fun removeProduct(id: Int?, owner_id: Long?): Single<Boolean> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
                 service.removeProduct(id, owner_id)
@@ -208,7 +208,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun removePost(owner_id: Int?, id: Int?): Single<Boolean> {
+    override fun removePost(owner_id: Long?, id: Int?): Single<Boolean> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
                 service.removePost(owner_id, id)
@@ -217,7 +217,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun removeVideo(owner_id: Int?, id: Int?): Single<Boolean> {
+    override fun removeVideo(owner_id: Long?, id: Int?): Single<Boolean> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
                 service.removeVideo(owner_id, id)
@@ -226,7 +226,7 @@ internal class FaveApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun pushFirst(owner_id: Int): Single<Boolean> {
+    override fun pushFirst(owner_id: Long): Single<Boolean> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->
                 service.pushFirst(

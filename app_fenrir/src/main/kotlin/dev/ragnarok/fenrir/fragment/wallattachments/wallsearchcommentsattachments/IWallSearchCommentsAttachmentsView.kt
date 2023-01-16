@@ -16,5 +16,5 @@ interface IWallSearchCommentsAttachmentsView : IMvpView, IErrorView,
     fun onSetLoadingStatus(isLoad: Int)
     fun moveFocusTo(index: Int)
     fun notifyItemChanged(index: Int)
-    fun goToPost(accountId: Int, ownerId: Int, postId: Int)
+    fun goToPost(accountId: Long, ownerId: Long, postId: Int)
 }

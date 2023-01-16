@@ -12,7 +12,7 @@ class RecommendationsFriendsFragment :
         return object : IPresenterFactory<RecommendationsFriendsPresenter> {
             override fun create(): RecommendationsFriendsPresenter {
                 return RecommendationsFriendsPresenter(
-                    requireArguments().getInt(Extra.USER_ID),
+                    requireArguments().getLong(Extra.USER_ID),
                     saveInstanceState
                 )
             }
@@ -28,10 +28,10 @@ class RecommendationsFriendsFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int, userId: Int): RecommendationsFriendsFragment {
+        fun newInstance(accountId: Long, userId: Long): RecommendationsFriendsFragment {
             val bundle = Bundle()
-            bundle.putInt(Extra.USER_ID, userId)
-            bundle.putInt(Extra.ACCOUNT_ID, accountId)
+            bundle.putLong(Extra.USER_ID, userId)
+            bundle.putLong(Extra.ACCOUNT_ID, accountId)
             val friendsFragment = RecommendationsFriendsFragment()
             friendsFragment.arguments = bundle
             return friendsFragment

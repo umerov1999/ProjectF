@@ -9,6 +9,6 @@ interface IBirthDayView : IMvpView, IErrorView {
     fun displayData(users: List<BirthDay>)
     fun notifyDataSetChanged()
     fun showRefreshing(refreshing: Boolean)
-    fun goToWall(accountId: Int, user: User)
+    fun goToWall(accountId: Long, user: User)
     fun moveTo(pos: Int)
 }

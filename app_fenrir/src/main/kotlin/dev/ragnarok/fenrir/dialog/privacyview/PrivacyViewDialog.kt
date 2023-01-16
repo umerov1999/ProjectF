@@ -157,10 +157,10 @@ class PrivacyViewDialog : AccountDependencyDialogFragment(), PrivacyAdapter.Acti
     companion object {
         const val REQUEST_PRIVACY_VIEW = "request_privacy_view"
         private const val SAVE_PRIVACY = "save_privacy"
-        fun buildArgs(aid: Int, privacy: Privacy?): Bundle {
+        fun buildArgs(aid: Long, privacy: Privacy?): Bundle {
             val bundle = Bundle()
             bundle.putParcelable(Extra.PRIVACY, privacy)
-            bundle.putInt(Extra.ACCOUNT_ID, aid)
+            bundle.putLong(Extra.ACCOUNT_ID, aid)
             return bundle
         }
 

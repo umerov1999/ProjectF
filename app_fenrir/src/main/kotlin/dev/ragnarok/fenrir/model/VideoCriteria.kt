@@ -4,12 +4,12 @@ import dev.ragnarok.fenrir.db.DatabaseIdRange
 import dev.ragnarok.fenrir.model.criteria.Criteria
 
 class VideoCriteria(
-    private val accountId: Int,
-    private val ownerId: Int,
+    private val accountId: Long,
+    private val ownerId: Long,
     private val albumId: Int
 ) : Criteria() {
     private var range: DatabaseIdRange? = null
-    fun getAccountId(): Int {
+    fun getAccountId(): Long {
         return accountId
     }
 
@@ -17,7 +17,7 @@ class VideoCriteria(
         return albumId
     }
 
-    fun getOwnerId(): Int {
+    fun getOwnerId(): Long {
         return ownerId
     }
 

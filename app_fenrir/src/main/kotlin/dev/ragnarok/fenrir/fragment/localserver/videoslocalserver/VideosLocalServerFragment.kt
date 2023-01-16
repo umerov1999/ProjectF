@@ -82,7 +82,7 @@ class VideosLocalServerFragment :
         return object : IPresenterFactory<VideosLocalServerPresenter> {
             override fun create(): VideosLocalServerPresenter {
                 return VideosLocalServerPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }
@@ -134,9 +134,9 @@ class VideosLocalServerFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int): VideosLocalServerFragment {
+        fun newInstance(accountId: Long): VideosLocalServerFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = VideosLocalServerFragment()
             fragment.arguments = args
             return fragment

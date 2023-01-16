@@ -8,56 +8,56 @@ import io.reactivex.rxjava3.core.Single
 
 interface IWallApi {
     fun search(
-        ownerId: Int, query: String?, ownersOnly: Boolean?,
+        ownerId: Long, query: String?, ownersOnly: Boolean?,
         count: Int, offset: Int, extended: Boolean?, fields: String?
     ): Single<WallSearchResponse>
 
     @CheckResult
     fun edit(
-        ownerId: Int?, postId: Int?, friendsOnly: Boolean?, message: String?,
+        ownerId: Long?, postId: Int?, friendsOnly: Boolean?, message: String?,
         attachments: Collection<IAttachmentToken>?, services: String?,
         signed: Boolean?, publishDate: Long?, latitude: Double?,
         longitude: Double?, placeId: Int?, markAsAds: Boolean?
     ): Single<Boolean>
 
     @CheckResult
-    fun pin(ownerId: Int?, postId: Int): Single<Boolean>
+    fun pin(ownerId: Long?, postId: Int): Single<Boolean>
 
     @CheckResult
-    fun unpin(ownerId: Int?, postId: Int): Single<Boolean>
+    fun unpin(ownerId: Long?, postId: Int): Single<Boolean>
 
     @CheckResult
     fun repost(
-        postOwnerId: Int,
+        postOwnerId: Long,
         postId: Int,
         message: String?,
-        groupId: Int?,
+        groupId: Long?,
         markAsAds: Boolean?
     ): Single<RepostReponse>
 
     @CheckResult
     fun post(
-        ownerId: Int?, friendsOnly: Boolean?, fromGroup: Boolean?, message: String?,
+        ownerId: Long?, friendsOnly: Boolean?, fromGroup: Boolean?, message: String?,
         attachments: Collection<IAttachmentToken>?, services: String?, signed: Boolean?,
         publishDate: Long?, latitude: Double?, longitude: Double?, placeId: Int?,
         postId: Int?, guid: Int?, markAsAds: Boolean?, adsPromotedStealth: Boolean?
     ): Single<Int>
 
     @CheckResult
-    fun delete(ownerId: Int?, postId: Int): Single<Boolean>
+    fun delete(ownerId: Long?, postId: Int): Single<Boolean>
 
     @CheckResult
-    fun restoreComment(ownerId: Int?, commentId: Int): Single<Boolean>
+    fun restoreComment(ownerId: Long?, commentId: Int): Single<Boolean>
 
     @CheckResult
-    fun deleteComment(ownerId: Int?, commentId: Int): Single<Boolean>
+    fun deleteComment(ownerId: Long?, commentId: Int): Single<Boolean>
 
     @CheckResult
-    fun restore(ownerId: Int?, postId: Int): Single<Boolean>
+    fun restore(ownerId: Long?, postId: Int): Single<Boolean>
 
     @CheckResult
     fun editComment(
-        ownerId: Int?,
+        ownerId: Long?,
         commentId: Int,
         message: String?,
         attachments: Collection<IAttachmentToken>?
@@ -65,7 +65,7 @@ interface IWallApi {
 
     @CheckResult
     fun createComment(
-        ownerId: Int?, postId: Int, fromGroup: Int?,
+        ownerId: Long?, postId: Int, fromGroup: Long?,
         message: String?, replyToComment: Int?,
         attachments: Collection<IAttachmentToken>?, stickerId: Int?,
         generatedUniqueId: Int?
@@ -73,7 +73,7 @@ interface IWallApi {
 
     @CheckResult
     operator fun get(
-        ownerId: Int?, domain: String?, offset: Int?, count: Int?,
+        ownerId: Long?, domain: String?, offset: Int?, count: Int?,
         filter: String?, extended: Boolean?, fields: String?
     ): Single<WallResponse>
 
@@ -85,20 +85,20 @@ interface IWallApi {
 
     @CheckResult
     fun getComments(
-        ownerId: Int, postId: Int, needLikes: Boolean?,
+        ownerId: Long, postId: Int, needLikes: Boolean?,
         startCommentId: Int?, offset: Int?, count: Int?,
         sort: String?, extended: Boolean?, fields: String?
     ): Single<DefaultCommentsResponse>
 
     @CheckResult
-    fun reportPost(owner_id: Int?, post_id: Int?, reason: Int?): Single<Int>
+    fun reportPost(owner_id: Long?, post_id: Int?, reason: Int?): Single<Int>
 
     @CheckResult
-    fun reportComment(owner_id: Int?, post_id: Int?, reason: Int?): Single<Int>
+    fun reportComment(owner_id: Long?, post_id: Int?, reason: Int?): Single<Int>
 
     @CheckResult
-    fun subscribe(owner_id: Int?): Single<Int>
+    fun subscribe(owner_id: Long?): Single<Int>
 
     @CheckResult
-    fun unsubscribe(owner_id: Int?): Single<Int>
+    fun unsubscribe(owner_id: Long?): Single<Int>
 }

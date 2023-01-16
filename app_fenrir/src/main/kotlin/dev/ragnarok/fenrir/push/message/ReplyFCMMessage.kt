@@ -38,7 +38,7 @@ class ReplyFCMMessage {
     // {"width":50,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cd\/BB6tk_bcJ3U.jpg","height":50}],
     // sound=1, title=Reply to your comment, to_id=216143660, group_id=reply,
     // context={"feedback":true,"reply_id":60,"user_id":280186075,"item_id":56,"owner_id":"280186075","type":"comment"}}
-    private var from_id = 0
+    private var from_id = 0L
     private var reply_id = 0
 
     //public String firstName;
@@ -48,7 +48,7 @@ class ReplyFCMMessage {
     private var place: String? = null
 
     @SuppressLint("CheckResult")
-    fun notify(context: Context, accountId: Int) {
+    fun notify(context: Context, accountId: Long) {
         if (!get()
                 .notifications()
                 .isReplyNotifEnabled
@@ -118,7 +118,7 @@ class ReplyFCMMessage {
         //private String type;
         fun fromRemoteMessage(remote: RemoteMessage): ReplyFCMMessage? {
             val message = ReplyFCMMessage()
-            message.from_id = remote.data["from_id"]?.toInt() ?: return null
+            message.from_id = remote.data["from_id"]?.toLong() ?: return null
             message.reply_id = remote.data["reply_id"]?.toInt() ?: return null
             //message.sex = optInt(bundle, "sex");
             //message.firstName = bundle.getString("first_name");

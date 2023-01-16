@@ -22,7 +22,7 @@ class VKApiComment
     /**
      * Comment author ID.
      */
-    var from_id = 0
+    var from_id = 0L
 
     /**
      * Date when the comment was added as unixtime.
@@ -37,7 +37,7 @@ class VKApiComment
     /**
      * ID of the user or community to whom the reply is addressed (if the comment is a reply to another comment).
      */
-    var reply_to_user = 0
+    var reply_to_user = 0L
 
     /**
      * ID of the comment the reply to which is represented by the current comment (if the comment is a reply to another comment).

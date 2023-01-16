@@ -92,7 +92,7 @@ class LocalJsonToChatFragment :
         return res
     }
 
-    override fun attachments_mode(accountId: Int, last_selected: Int) {
+    override fun attachments_mode(accountId: Long, last_selected: Int) {
         val menus = ModalBottomSheetDialogFragment.Builder()
         menus.add(
             OptionRequest(
@@ -257,7 +257,7 @@ class LocalJsonToChatFragment :
         object : IPresenterFactory<LocalJsonToChatPresenter> {
             override fun create(): LocalJsonToChatPresenter {
                 return LocalJsonToChatPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireActivity(),
                     saveInstanceState
                 )
@@ -324,11 +324,11 @@ class LocalJsonToChatFragment :
             .apply(requireActivity())
     }
 
-    override fun onAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onAvatarClick(message: Message, userId: Long, position: Int) {
         presenter?.fireOwnerClick(userId)
     }
 
-    override fun onLongAvatarClick(message: Message, userId: Int, position: Int) {}
+    override fun onLongAvatarClick(message: Message, userId: Long, position: Int) {}
     override fun onRestoreClick(message: Message, position: Int) {}
     override fun onBotKeyboardClick(button: Keyboard.Button) {}
 
@@ -341,9 +341,9 @@ class LocalJsonToChatFragment :
 
     companion object {
 
-        fun newInstance(accountId: Int): LocalJsonToChatFragment {
+        fun newInstance(accountId: Long): LocalJsonToChatFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = LocalJsonToChatFragment()
             fragment.arguments = args
             return fragment

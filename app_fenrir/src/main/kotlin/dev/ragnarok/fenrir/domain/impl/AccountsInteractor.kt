@@ -28,7 +28,7 @@ class AccountsInteractor(
     private val blacklistRepository: IBlacklistRepository,
     private val ownersRepository: IOwnersRepository
 ) : IAccountsInteractor {
-    override fun getBanned(accountId: Int, count: Int, offset: Int): Single<BannedPart> {
+    override fun getBanned(accountId: Long, count: Int, offset: Int): Single<BannedPart> {
         return networker.vkDefault(accountId)
             .account()
             .getBanned(count, offset, Fields.FIELDS_BASE_OWNER)
@@ -46,7 +46,7 @@ class AccountsInteractor(
             }
     }
 
-    override fun banOwners(accountId: Int, owners: Collection<Owner>): Completable {
+    override fun banOwners(accountId: Long, owners: Collection<Owner>): Completable {
         var completable = Completable.complete()
         for (owner in owners) {
             completable = completable.andThen(
@@ -61,7 +61,7 @@ class AccountsInteractor(
         return completable
     }
 
-    override fun unbanOwner(accountId: Int, ownerId: Int): Completable {
+    override fun unbanOwner(accountId: Long, ownerId: Long): Completable {
         return networker.vkDefault(accountId)
             .account()
             .unban(ownerId)
@@ -70,7 +70,7 @@ class AccountsInteractor(
             .andThen(blacklistRepository.fireRemove(accountId, ownerId))
     }
 
-    override fun changeStatus(accountId: Int, status: String?): Completable {
+    override fun changeStatus(accountId: Long, status: String?): Completable {
         return networker.vkDefault(accountId)
             .status()
             .set(status, null)
@@ -83,26 +83,26 @@ class AccountsInteractor(
             }
     }
 
-    override fun setOffline(accountId: Int): Single<Boolean> {
+    override fun setOffline(accountId: Long): Single<Boolean> {
         return networker.vkDefault(accountId)
             .account()
             .setOffline()
     }
 
-    override fun getProfileInfo(accountId: Int): Single<VKApiProfileInfo> {
+    override fun getProfileInfo(accountId: Long): Single<VKApiProfileInfo> {
         return networker.vkDefault(accountId)
             .account()
             .profileInfo
     }
 
-    override fun getPushSettings(accountId: Int): Single<List<ConversationPushItem>> {
+    override fun getPushSettings(accountId: Long): Single<List<ConversationPushItem>> {
         return networker.vkDefault(accountId)
             .account()
             .pushSettings.map { obj -> obj.pushSettings }
     }
 
     override fun saveProfileInfo(
-        accountId: Int,
+        accountId: Long,
         first_name: String?,
         last_name: String?,
         maiden_name: String?,
@@ -119,9 +119,9 @@ class AccountsInteractor(
 
     override fun getAll(refresh: Boolean): Single<List<Account>> {
         return Single.create { emitter: SingleEmitter<List<Account>> ->
-            val tmpIds: Collection<Int> = settings.registered
-            val ids: Collection<Int> = if (!Settings.get().security().IsShow_hidden_accounts()) {
-                val lst = ArrayList<Int>()
+            val tmpIds: Collection<Long> = settings.registered
+            val ids: Collection<Long> = if (!Settings.get().security().IsShow_hidden_accounts()) {
+                val lst = ArrayList<Long>()
                 for (i in tmpIds) {
                     if (!Utils.isHiddenAccount(i)) {
                         lst.add(i)
@@ -151,7 +151,7 @@ class AccountsInteractor(
     }
 
     override fun importMessagesContacts(
-        accountId: Int,
+        accountId: Long,
         context: Context,
         offset: Int?,
         count: Int?
@@ -164,7 +164,7 @@ class AccountsInteractor(
     }
 
     override fun resetMessagesContacts(
-        accountId: Int,
+        accountId: Long,
         offset: Int?,
         count: Int?
     ): Single<List<ContactConversation>> {
@@ -172,7 +172,7 @@ class AccountsInteractor(
             .account().resetMessagesContacts().andThen(getContactList(accountId, offset, count))
     }
 
-    private fun findProfiles(id: Int, list: List<VKApiUser>?): VKApiUser? {
+    private fun findProfiles(id: Long, list: List<VKApiUser>?): VKApiUser? {
         for (i in list.orEmpty()) {
             if (i.id == id) {
                 return i
@@ -182,7 +182,7 @@ class AccountsInteractor(
     }
 
     private fun findContacts(
-        id: Int,
+        id: Long,
         list: List<VKApiConversation.ContactElement>?
     ): VKApiConversation.ContactElement? {
         for (i in list.orEmpty()) {
@@ -194,7 +194,7 @@ class AccountsInteractor(
     }
 
     override fun getContactList(
-        accountId: Int,
+        accountId: Long,
         offset: Int?,
         count: Int?
     ): Single<List<ContactConversation>> {

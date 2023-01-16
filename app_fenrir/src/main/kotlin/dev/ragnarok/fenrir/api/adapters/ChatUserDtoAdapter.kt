@@ -15,7 +15,7 @@ class ChatUserDtoAdapter : AbsAdapter<ChatUserDto>("ChatUserDto") {
         val dto = ChatUserDto()
         if (checkObject(json)) {
             val root = json.asJsonObject
-            dto.invited_by = optInt(root, "invited_by")
+            dto.invited_by = optLong(root, "invited_by")
             dto.type = optString(root, "type")
         }
         dto.user = user

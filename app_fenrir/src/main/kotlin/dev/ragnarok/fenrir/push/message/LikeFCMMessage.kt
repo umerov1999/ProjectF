@@ -44,13 +44,13 @@ class LikeFCMMessage {
     // key: to_id, value: 280186075, class: class java.lang.String
     // key: group_id, value: likes, class: class java.lang.String
     // key: context, value: {"feedback":true,"item_id":"456239045","owner_id":"280186075","type":"photo"}, class: class java.lang.String
-    private var accountId = 0
+    private var accountId = 0L
     private var id: String? = null
     private var title: String? = null
     private var from_id = 0
     private var badge = 0
     private var item_id = 0
-    private var owner_id = 0
+    private var owner_id = 0L
     private var like_type: String? = null
     private var reply_id = 0
 
@@ -185,7 +185,7 @@ class LikeFCMMessage {
         var item_id = 0
 
         @SerialName("owner_id")
-        var owner_id = 0
+        var owner_id = 0L
 
         @SerialName("type")
         var type: String? = null
@@ -195,7 +195,7 @@ class LikeFCMMessage {
     }
 
     companion object {
-        fun fromRemoteMessage(accountId: Int, remote: RemoteMessage): LikeFCMMessage? {
+        fun fromRemoteMessage(accountId: Long, remote: RemoteMessage): LikeFCMMessage? {
             val message = LikeFCMMessage()
             message.accountId = accountId
             val data = remote.data

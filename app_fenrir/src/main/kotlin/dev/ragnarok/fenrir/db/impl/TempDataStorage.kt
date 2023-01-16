@@ -28,7 +28,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
     }
 
     override fun <T> getTemporaryData(
-        ownerId: Int,
+        ownerId: Long,
         sourceId: Int,
         serializer: ISerializeAdapter<T>
     ): Single<List<T>> {
@@ -53,7 +53,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
     }
 
     override fun <T> putTemporaryData(
-        ownerId: Int,
+        ownerId: Long,
         sourceId: Int,
         data: List<T>,
         serializer: ISerializeAdapter<T>
@@ -90,7 +90,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         }
     }
 
-    override fun deleteTemporaryData(ownerId: Int): Completable {
+    override fun deleteTemporaryData(ownerId: Long): Completable {
         return Completable.fromAction {
             val start = System.currentTimeMillis()
             val count = helper.writableDatabase.delete(
@@ -274,7 +274,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         }
     }
 
-    override fun deleteAudio(sourceOwner: Int, id: Int, ownerId: Int): Completable {
+    override fun deleteAudio(sourceOwner: Long, id: Int, ownerId: Long): Completable {
         return Completable.fromAction {
             helper.writableDatabase.delete(
                 AudioColumns.TABLENAME,
@@ -293,7 +293,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         }
     }
 
-    override fun getAudiosAll(sourceOwner: Int): Single<List<Audio>> {
+    override fun getAudiosAll(sourceOwner: Long): Single<List<Audio>> {
         return Single.fromCallable {
             val cursor = helper.readableDatabase.query(
                 AudioColumns.TABLENAME,
@@ -313,7 +313,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         }
     }
 
-    override fun addAudios(sourceOwner: Int, list: List<Audio>, clear: Boolean): Completable {
+    override fun addAudios(sourceOwner: Long, list: List<Audio>, clear: Boolean): Completable {
         return Completable.create { it1 ->
             val db = helper.writableDatabase
             db.beginTransaction()
@@ -446,7 +446,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         internal fun mapAudio(cursor: Cursor): Audio {
             val v = Audio()
                 .setId(cursor.getInt(AudioColumns.AUDIO_ID))
-                .setOwnerId(cursor.getInt(AudioColumns.AUDIO_OWNER_ID))
+                .setOwnerId(cursor.getLong(AudioColumns.AUDIO_OWNER_ID))
                 .setArtist(cursor.getString(AudioColumns.ARTIST))
                 .setTitle(cursor.getString(AudioColumns.TITLE))
                 .setDuration(cursor.getInt(AudioColumns.DURATION))
@@ -454,7 +454,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 .setLyricsId(cursor.getInt(AudioColumns.LYRICS_ID))
                 .setDate(cursor.getLong(AudioColumns.DATE))
                 .setAlbumId(cursor.getInt(AudioColumns.ALBUM_ID))
-                .setAlbum_owner_id(cursor.getInt(AudioColumns.ALBUM_OWNER_ID))
+                .setAlbum_owner_id(cursor.getLong(AudioColumns.ALBUM_OWNER_ID))
                 .setAlbum_access_key(cursor.getString(AudioColumns.ALBUM_ACCESS_KEY))
                 .setGenre(cursor.getInt(AudioColumns.GENRE))
                 .setAccessKey(cursor.getString(AudioColumns.ACCESS_KEY))

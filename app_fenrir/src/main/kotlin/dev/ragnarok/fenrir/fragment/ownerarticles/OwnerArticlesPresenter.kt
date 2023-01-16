@@ -10,8 +10,8 @@ import dev.ragnarok.fenrir.model.Photo
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class OwnerArticlesPresenter(
-    accountId: Int,
-    private val ownerId: Int,
+    accountId: Long,
+    private val ownerId: Long,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IOwnerArticlesView>(accountId, savedInstanceState) {
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()

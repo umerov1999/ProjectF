@@ -36,7 +36,7 @@ class CommunitiesSearchFragment :
         return object : IPresenterFactory<CommunitiesSearchPresenter> {
             override fun create(): CommunitiesSearchPresenter {
                 return CommunitiesSearchPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.CRITERIA),
                     saveInstanceState
                 )
@@ -50,18 +50,18 @@ class CommunitiesSearchFragment :
         )
     }
 
-    override fun openCommunityWall(accountId: Int, community: Community) {
+    override fun openCommunityWall(accountId: Long, community: Community) {
         getOwnerWallPlace(accountId, community).tryOpenWith(requireActivity())
     }
 
     companion object {
 
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             initialCriteria: GroupSearchCriteria?
         ): CommunitiesSearchFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, initialCriteria)
             val fragment = CommunitiesSearchFragment()
             fragment.arguments = args

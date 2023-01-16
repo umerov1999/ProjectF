@@ -17,7 +17,7 @@ import java.text.DateFormat
 import java.util.*
 
 class CommunityBanEditPresenter : AccountDependencyPresenter<ICommunityBanEditView> {
-    private val groupId: Int
+    private val groupId: Long
     private val banned: Banned?
     private val users: ArrayList<Owner>
     private val interactor: IGroupSettingsInteractor
@@ -28,7 +28,12 @@ class CommunityBanEditPresenter : AccountDependencyPresenter<ICommunityBanEditVi
     private var showCommentToUser = false
     private var requestNow = false
 
-    constructor(accountId: Int, groupId: Int, banned: Banned, savedInstanceState: Bundle?) : super(
+    constructor(
+        accountId: Long,
+        groupId: Long,
+        banned: Banned,
+        savedInstanceState: Bundle?
+    ) : super(
         accountId,
         savedInstanceState
     ) {
@@ -45,8 +50,8 @@ class CommunityBanEditPresenter : AccountDependencyPresenter<ICommunityBanEditVi
     }
 
     constructor(
-        accountId: Int,
-        groupId: Int,
+        accountId: Long,
+        groupId: Long,
         users: ArrayList<Owner>,
         savedInstanceState: Bundle?
     ) : super(accountId, savedInstanceState) {
@@ -75,7 +80,7 @@ class CommunityBanEditPresenter : AccountDependencyPresenter<ICommunityBanEditVi
     private fun resolveBanStatusView() {
         if (banned != null) {
             view?.displayBanStatus(
-                banned.admin.getObjectId(),
+                banned.admin.getOwnerObjectId(),
                 banned.admin.fullName,
                 banned.info.endDate
             )

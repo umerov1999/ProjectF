@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.db.model
 
-class PostUpdate(val accountId: Int, val postId: Int, val ownerId: Int) {
+class PostUpdate(val accountId: Long, val postId: Int, val ownerId: Long) {
     var pinUpdate: PinUpdate? = null
         private set
     var deleteUpdate: DeleteUpdate? = null

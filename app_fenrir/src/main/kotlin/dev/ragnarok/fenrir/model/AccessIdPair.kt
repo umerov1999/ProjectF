@@ -5,10 +5,10 @@ import android.os.Parcelable
 
 class AccessIdPair : Parcelable {
     private val id: Int
-    private val ownerId: Int
+    private val ownerId: Long
     private val accessKey: String?
 
-    constructor(id: Int, ownerId: Int, accessKey: String?) {
+    constructor(id: Int, ownerId: Long, accessKey: String?) {
         this.id = id
         this.ownerId = ownerId
         this.accessKey = accessKey
@@ -16,7 +16,7 @@ class AccessIdPair : Parcelable {
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         accessKey = parcel.readString()
     }
 
@@ -24,7 +24,7 @@ class AccessIdPair : Parcelable {
         return id
     }
 
-    fun getOwnerId(): Int {
+    fun getOwnerId(): Long {
         return ownerId
     }
 
@@ -38,7 +38,7 @@ class AccessIdPair : Parcelable {
 
     override fun writeToParcel(parcel: Parcel, i: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeString(accessKey)
     }
 

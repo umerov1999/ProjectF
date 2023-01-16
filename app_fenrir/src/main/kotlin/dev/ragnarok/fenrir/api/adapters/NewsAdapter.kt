@@ -5,8 +5,8 @@ import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.int
 import dev.ragnarok.fenrir.util.serializeble.json.jsonPrimitive
+import dev.ragnarok.fenrir.util.serializeble.json.long
 
 class NewsAdapter : AbsAdapter<VKApiNews>("VKApiNews") {
     @Throws(Exception::class)
@@ -19,12 +19,12 @@ class NewsAdapter : AbsAdapter<VKApiNews>("VKApiNews") {
         val dto = VKApiNews()
         val root = json.asJsonObject
         dto.type = optString(root, "type")
-        dto.source_id = optInt(root, "source_id")
+        dto.source_id = optLong(root, "source_id")
         dto.date = optLong(root, "date")
         dto.post_id = optInt(root, "post_id")
         dto.post_type = optString(root, "post_type")
         dto.final_post = optBoolean(root, "final_post")
-        dto.copy_owner_id = optInt(root, "copy_owner_id")
+        dto.copy_owner_id = optLong(root, "copy_owner_id")
         dto.copy_post_id = optInt(root, "copy_post_id")
         dto.mark_as_ads = optInt(root, "mark_as_ads")
         if (hasArray(root, "copy_history")) {
@@ -126,7 +126,7 @@ class NewsAdapter : AbsAdapter<VKApiNews>("VKApiNews") {
             dto.friends = ArrayList(friendsArray?.size.orZero())
             for (i in 0 until friendsArray?.size.orZero()) {
                 val friendObj = friendsArray?.get(i)?.asJsonObject
-                friendObj?.get("user_id")?.jsonPrimitive?.let { dto.friends?.add(it.int) }
+                friendObj?.get("user_id")?.jsonPrimitive?.let { dto.friends?.add(it.long) }
             }
         }
         return dto

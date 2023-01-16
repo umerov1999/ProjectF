@@ -16,7 +16,7 @@ import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.core.SingleTransformer
 
 class MessagesDecryptor(private val store: IStorages) : IMessagesDecryptor {
-    override fun withMessagesDecryption(accountId: Int): SingleTransformer<List<Message>, List<Message>> {
+    override fun withMessagesDecryption(accountId: Long): SingleTransformer<List<Message>, List<Message>> {
         return SingleTransformer { single: Single<List<Message>> ->
             single
                 .flatMap { messages ->
@@ -68,7 +68,7 @@ class MessagesDecryptor(private val store: IStorages) : IMessagesDecryptor {
     }
 
     private fun getKeyPairs(
-        accountId: Int,
+        accountId: Long,
         tokens: List<Pair<Int, Long>>
     ): Single<LongSparseArray<AesKeyPair?>> {
         return Single.create { emitter: SingleEmitter<LongSparseArray<AesKeyPair?>> ->

@@ -15,9 +15,9 @@ import dev.ragnarok.fenrir.api.services.IAccountService
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
-internal class AccountApi(accountId: Int, provider: IServiceProvider) :
+internal class AccountApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IAccountApi {
-    override fun ban(ownerId: Int): Single<Int> {
+    override fun ban(ownerId: Long): Single<Int> {
         return provideService(IAccountService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -26,7 +26,7 @@ internal class AccountApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun unban(ownerId: Int): Single<Int> {
+    override fun unban(ownerId: Long): Single<Int> {
         return provideService(IAccountService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service

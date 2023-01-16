@@ -15,10 +15,10 @@ import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import io.reactivex.rxjava3.core.Single
 
-internal class UsersApi(accountId: Int, provider: IServiceProvider) :
+internal class UsersApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IUsersApi {
     override fun getUserWallInfo(
-        userId: Int,
+        userId: Long,
         fields: String?,
         nameCase: String?
     ): Single<VKApiUser> {
@@ -59,7 +59,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getFollowers(
-        userId: Int?,
+        userId: Long?,
         offset: Int?,
         count: Int?,
         fields: String?,
@@ -118,7 +118,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
         interests: String?,
         company: String?,
         position: String?,
-        groupId: Int?,
+        groupId: Long?,
         fromList: String?
     ): Single<Items<VKApiUser>> {
         return provideService(IUsersService(), TokenType.USER)
@@ -163,7 +163,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun report(userId: Int?, type: String?, comment: String?): Single<Int> {
+    override fun report(userId: Long?, type: String?, comment: String?): Single<Int> {
         return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -172,7 +172,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun checkAndAddFriend(userId: Int?): Single<Int> {
+    override fun checkAndAddFriend(userId: Long?): Single<Int> {
         return provideService(IUsersService(), TokenType.USER)
             .flatMap { service ->
                 service
@@ -184,7 +184,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun getStory(owner_id: Int?, extended: Int?, fields: String?): Single<StoryResponse> {
+    override fun getStory(owner_id: Long?, extended: Int?, fields: String?): Single<StoryResponse> {
         return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service.getStory(owner_id, extended, fields)
@@ -193,7 +193,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getNarratives(
-        owner_id: Int,
+        owner_id: Long,
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiNarratives>> {
@@ -217,7 +217,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun getGifts(user_id: Int?, count: Int?, offset: Int?): Single<Items<VKApiGift>> {
+    override fun getGifts(user_id: Long?, count: Int?, offset: Int?): Single<Items<VKApiGift>> {
         return provideService(IUsersService(), TokenType.USER)
             .flatMap { service ->
                 service.getGifts(user_id, count, offset)
@@ -227,7 +227,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
 
     override fun searchStory(
         q: String?,
-        mentioned_id: Int?,
+        mentioned_id: Long?,
         count: Int?,
         extended: Int?,
         fields: String?
@@ -240,7 +240,7 @@ internal class UsersApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun get(
-        userIds: Collection<Int>?,
+        userIds: Collection<Long>?,
         domains: Collection<String>?,
         fields: String?,
         nameCase: String?

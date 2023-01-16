@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.disposables.Disposable
 
 class CatalogV2SectionPresenter(
-    accountId: Int,
+    accountId: Long,
     private val section_id: String,
     savedInstanceState: Bundle?
 ) :

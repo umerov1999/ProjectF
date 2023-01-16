@@ -10,11 +10,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 class RecentChat : AbsMenuItem {
     @SerialName("aid")
-    var aid = 0
+    var aid = 0L
         private set
 
     @SerialName("peerId")
-    var peerId = 0
+    var peerId = 0L
 
     @SerialName("title")
     var title: String? = null
@@ -24,8 +24,8 @@ class RecentChat : AbsMenuItem {
 
     constructor() : super(TYPE_RECENT_CHAT)
     constructor(
-        aid: Int,
-        peerId: Int,
+        aid: Long,
+        peerId: Long,
         title: String?,
         iconUrl: String?
     ) : super(TYPE_RECENT_CHAT) {
@@ -36,8 +36,8 @@ class RecentChat : AbsMenuItem {
     }
 
     internal constructor(parcel: Parcel) : super(parcel) {
-        aid = parcel.readInt()
-        peerId = parcel.readInt()
+        aid = parcel.readLong()
+        peerId = parcel.readLong()
         title = parcel.readString()
         iconUrl = parcel.readString()
     }
@@ -52,15 +52,15 @@ class RecentChat : AbsMenuItem {
 
     override fun hashCode(): Int {
         var result = super.hashCode()
-        result = 31 * result + aid
-        result = 31 * result + peerId
+        result = 31 * result + aid.hashCode()
+        result = 31 * result + peerId.hashCode()
         return result
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         super.writeToParcel(dest, flags)
-        dest.writeInt(aid)
-        dest.writeInt(peerId)
+        dest.writeLong(aid)
+        dest.writeLong(peerId)
         dest.writeString(title)
         dest.writeString(iconUrl)
     }

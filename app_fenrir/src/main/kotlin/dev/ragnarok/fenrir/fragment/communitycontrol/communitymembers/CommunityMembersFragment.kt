@@ -86,8 +86,8 @@ class CommunityMembersFragment :
     override fun showModMembers(
         add: List<Owner>,
         remove: List<Owner>,
-        accountId: Int,
-        ownerId: Int
+        accountId: Long,
+        ownerId: Long
     ) {
         if (add.isEmpty() && remove.isEmpty()) {
             return
@@ -136,7 +136,7 @@ class CommunityMembersFragment :
         resolveEmptyTextVisibility()
     }
 
-    override fun openUserWall(accountId: Int, user: Owner) {
+    override fun openUserWall(accountId: Long, user: Owner) {
         getOwnerWallPlace(accountId, user).tryOpenWith(requireActivity())
     }
 
@@ -151,7 +151,7 @@ class CommunityMembersFragment :
         mSwipeRefreshLayout?.post { mSwipeRefreshLayout?.isRefreshing = refreshing }
     }
 
-    override fun onSearch(accountId: Int, groupId: Int) {
+    override fun onSearch(accountId: Long, groupId: Long) {
         val criteria = PeopleSearchCriteria("")
             .setGroupId(groupId)
         PlaceFactory.getSingleTabSearchPlace(accountId, SearchContentType.PEOPLE, criteria)
@@ -233,8 +233,8 @@ class CommunityMembersFragment :
         return object : IPresenterFactory<CommunityMembersPresenter> {
             override fun create(): CommunityMembersPresenter {
                 return CommunityMembersPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.GROUP_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.GROUP_ID),
                     saveInstanceState
                 )
             }
@@ -263,10 +263,10 @@ class CommunityMembersFragment :
     }
 
     companion object {
-        fun buildArgs(accountId: Int, groupId: Int): Bundle {
+        fun buildArgs(accountId: Long, groupId: Long): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.GROUP_ID, groupId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.GROUP_ID, groupId)
             return args
         }
 

@@ -43,13 +43,13 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
     ) {
         createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text)
     }
-    protected var accountId = 0
+    protected var accountId = 0L
         private set
     open var isSupportAccountHotSwap = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         require(requireArguments().containsKey(Extra.ACCOUNT_ID)) { "Fragments args does not contains Extra.ACCOUNT_ID" }
-        accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+        accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
         mCompositeDisposable.add(
             Settings.get()
                 .accounts()
@@ -58,7 +58,7 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
                 .subscribe { fireAccountChange(it) })
     }
 
-    private fun fireAccountChange(newAid: Int) {
+    private fun fireAccountChange(newAid: Long) {
         val oldAid = accountId
         if (!isSupportAccountHotSwap) {
             if (newAid != oldAid) {
@@ -72,7 +72,7 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
         if (newAid == oldAid) return
         beforeAccountChange(oldAid, newAid)
         accountId = newAid
-        requireArguments().putInt(Extra.ACCOUNT_ID, newAid)
+        requireArguments().putLong(Extra.ACCOUNT_ID, newAid)
         afterAccountChange(oldAid, newAid)
     }
 
@@ -85,8 +85,8 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
         mCompositeDisposable.add(disposable)
     }
 
-    protected open fun afterAccountChange(oldAid: Int, newAid: Int) {}
-    protected open fun beforeAccountChange(oldAid: Int, newAid: Int) {}
+    protected open fun afterAccountChange(oldAid: Long, newAid: Long) {}
+    protected open fun beforeAccountChange(oldAid: Long, newAid: Long) {}
     override fun onPollOpen(poll: Poll) {
         ///PlaceManager.withContext(getContext())
         //        .toPoll()
@@ -109,7 +109,7 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
         getForwardMessagesPlace(accountId, messages).tryOpenWith(requireActivity())
     }
 
-    override fun onOpenOwner(ownerId: Int) {
+    override fun onOpenOwner(ownerId: Long) {
         getOwnerWallPlace(accountId, ownerId, null).tryOpenWith(requireActivity())
     }
 

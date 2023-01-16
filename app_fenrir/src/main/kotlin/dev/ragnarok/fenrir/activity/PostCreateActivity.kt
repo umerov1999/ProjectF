@@ -16,7 +16,7 @@ class PostCreateActivity : NoMainActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            val accountId = (intent.extras ?: return).getInt(Extra.ACCOUNT_ID)
+            val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
             val streams = intent.getParcelableArrayListExtraCompat<Uri>("streams")
             val attrs: WallEditorAttrs = intent.getParcelableExtraCompat("attrs") ?: return
             val links = intent.getStringExtra("links")
@@ -45,7 +45,7 @@ class PostCreateActivity : NoMainActivity() {
 
         fun newIntent(
             context: Context,
-            accountId: Int,
+            accountId: Long,
             attrs: WallEditorAttrs,
             streams: ArrayList<Uri>?,
             links: String?,

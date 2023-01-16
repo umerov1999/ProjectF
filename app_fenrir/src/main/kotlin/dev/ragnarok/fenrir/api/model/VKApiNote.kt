@@ -20,7 +20,7 @@ class VKApiNote
     /**
      * Note owner ID.
      */
-    var user_id = 0
+    var user_id = 0L
 
     /**
      * Note title.

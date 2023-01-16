@@ -106,8 +106,8 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
     }
 
     override fun onRequestSkipOffset(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         wallFilter: Int,
         currentPos: Int
     ) {
@@ -137,7 +137,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
     }
 
-    override fun goNarratives(accountId: Int, ownerId: Int) {
+    override fun goNarratives(accountId: Long, ownerId: Long) {
         getNarrativesPlace(accountId, ownerId).tryOpenWith(requireActivity())
     }
 
@@ -209,7 +209,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
     }
 
 
-    override fun onAvatarClick(ownerId: Int) {
+    override fun onAvatarClick(ownerId: Long) {
         super.onOwnerClick(ownerId)
     }
 
@@ -220,8 +220,8 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
     }
 
     override fun openPhotoAlbum(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         photos: ArrayList<Photo>,
         position: Int
@@ -238,14 +238,14 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
             .tryOpenWith(requireActivity())
     }
 
-    override fun goToWallSearch(accountId: Int, ownerId: Int) {
+    override fun goToWallSearch(accountId: Long, ownerId: Long) {
         val criteria = WallSearchCriteria("", ownerId)
         getSingleTabSearchPlace(accountId, SearchContentType.WALL, criteria).tryOpenWith(
             requireActivity()
         )
     }
 
-    override fun goToConversationAttachments(accountId: Int, ownerId: Int) {
+    override fun goToConversationAttachments(accountId: Long, ownerId: Long) {
         val types = arrayOf(
             FindAttachmentType.TYPE_PHOTO,
             FindAttachmentType.TYPE_VIDEO,
@@ -424,7 +424,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         customToast.showToast(R.string.copied)
     }
 
-    override fun goToPostCreation(accountId: Int, ownerId: Int, @EditingPostType postType: Int) {
+    override fun goToPostCreation(accountId: Long, ownerId: Long, @EditingPostType postType: Int) {
         goToPostCreation(requireActivity(), accountId, ownerId, postType, null)
     }
 
@@ -460,7 +460,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         mWallAdapter?.notifyItemRemoved(index + (mWallAdapter?.headersCount ?: 0))
     }
 
-    override fun onOwnerClick(ownerId: Int) {
+    override fun onOwnerClick(ownerId: Long) {
         onOpenOwner(ownerId)
     }
 
@@ -496,7 +496,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         presenter?.fireLikeClick(post)
     }
 
-    override fun openPostEditor(accountId: Int, post: Post) {
+    override fun openPostEditor(accountId: Long, post: Post) {
         goToPostEditor(requireActivity(), accountId, post)
     }
 
@@ -504,7 +504,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         mLoadMoreFooterHelper?.switchToState(state)
     }
 
-    override fun openPhotoAlbums(accountId: Int, ownerId: Int, owner: Owner?) {
+    override fun openPhotoAlbums(accountId: Long, ownerId: Long, owner: Owner?) {
         getVKPhotoAlbumsPlace(
             accountId,
             ownerId,
@@ -514,19 +514,19 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
             .tryOpenWith(requireActivity())
     }
 
-    override fun openVideosLibrary(accountId: Int, ownerId: Int, owner: Owner?) {
+    override fun openVideosLibrary(accountId: Long, ownerId: Long, owner: Owner?) {
         getVideosPlace(accountId, ownerId, IVideosListView.ACTION_SHOW)
             .withParcelableExtra(Extra.OWNER, owner)
             .tryOpenWith(requireActivity())
     }
 
-    override fun openAudios(accountId: Int, ownerId: Int, owner: Owner?) {
+    override fun openAudios(accountId: Long, ownerId: Long, owner: Owner?) {
         getAudiosPlace(accountId, ownerId)
             .withParcelableExtra(Extra.OWNER, owner)
             .tryOpenWith(requireActivity())
     }
 
-    override fun openArticles(accountId: Int, ownerId: Int, owner: Owner?) {
+    override fun openArticles(accountId: Long, ownerId: Long, owner: Owner?) {
         getOwnerArticles(accountId, ownerId)
             .withParcelableExtra(Extra.OWNER, owner)
             .tryOpenWith(requireActivity())
@@ -554,12 +554,12 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         var isBlacklistedByMe = false
         var isFavorite = false
         var isSubscribed = false
-        var ownerId = 0
+        var ownerId = 0L
         override fun setIsBlacklistedByMe(blocked: Boolean) {
             isBlacklistedByMe = blocked
         }
 
-        override fun typeOwnerId(id: Int) {
+        override fun typeOwnerId(id: Long) {
             ownerId = id
         }
 
@@ -577,16 +577,16 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
     }
 
     companion object {
-        fun buildArgs(accountId: Int, ownerId: Int, owner: Owner?): Bundle {
+        fun buildArgs(accountId: Long, ownerId: Long, owner: Owner?): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putParcelable(Extra.OWNER, ParcelableOwnerWrapper(owner))
             return args
         }
 
         fun newInstance(args: Bundle): Fragment {
-            val fragment: Fragment = if (args.getInt(Extra.OWNER_ID) > 0) {
+            val fragment: Fragment = if (args.getLong(Extra.OWNER_ID) > 0) {
                 UserWallFragment()
             } else {
                 GroupWallFragment()

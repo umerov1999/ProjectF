@@ -10,7 +10,7 @@ class VKApiGraffiti : VKApiAttachment {
     var id = 0
 
     @SerialName("owner_id")
-    var owner_id = 0
+    var owner_id = 0L
 
     @SerialName("url")
     var url: String? = null

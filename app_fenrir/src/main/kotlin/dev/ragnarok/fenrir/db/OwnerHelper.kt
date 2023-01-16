@@ -9,8 +9,8 @@ import dev.ragnarok.fenrir.db.column.UserColumns
 import dev.ragnarok.fenrir.getString
 
 object OwnerHelper {
-    fun loadOwnerFullName(context: Context, aid: Int, ownerId: Int): String? {
-        if (ownerId == 0) return null
+    fun loadOwnerFullName(context: Context, aid: Long, ownerId: Long): String? {
+        if (ownerId == 0L) return null
         var result: String? = null
         if (ownerId > 0) {
             val uCursor = context.contentResolver.query(

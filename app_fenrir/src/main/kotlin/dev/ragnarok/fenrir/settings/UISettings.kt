@@ -73,7 +73,7 @@ internal class UISettings(context: Context) : IUISettings {
             AppCompatDelegate.MODE_NIGHT_YES
         }
 
-    override fun getDefaultPage(accountId: Int): Place {
+    override fun getDefaultPage(accountId: Long): Place {
         val preferences = getPreferences(app)
         val page = preferences.getString(PreferencesFragment.KEY_DEFAULT_CATEGORY, "last_closed")
         if ("last_closed" == page) {

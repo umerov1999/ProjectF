@@ -10,7 +10,7 @@ interface ICommunityInfoContactsView : IErrorView, IMvpView, IToastView {
     fun notifyDataSetChanged()
     fun displayRefreshing(loadingNow: Boolean)
     fun displayData(managers: List<Manager>)
-    fun showUserProfile(accountId: Int, user: User)
+    fun showUserProfile(accountId: Long, user: User)
     fun notifyItemRemoved(index: Int)
     fun notifyItemChanged(index: Int)
     fun notifyItemAdded(index: Int)

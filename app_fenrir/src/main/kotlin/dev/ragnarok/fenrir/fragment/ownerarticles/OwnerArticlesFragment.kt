@@ -97,7 +97,7 @@ class OwnerArticlesFragment : BaseMvpFragment<OwnerArticlesPresenter, IOwnerArti
         mSwipeRefreshLayout?.post { mSwipeRefreshLayout?.isRefreshing = refreshing }
     }
 
-    override fun goToArticle(accountId: Int, article: Article) {
+    override fun goToArticle(accountId: Long, article: Article) {
         article.uRL?.let {
             getExternalLinkPlace(
                 accountId,
@@ -108,7 +108,7 @@ class OwnerArticlesFragment : BaseMvpFragment<OwnerArticlesPresenter, IOwnerArti
         }
     }
 
-    override fun goToPhoto(accountId: Int, photo: Photo) {
+    override fun goToPhoto(accountId: Long, photo: Photo) {
         val temp = ArrayList(listOf(photo))
         getSimpleGalleryPlace(accountId, temp, 0, false).tryOpenWith(requireActivity())
     }
@@ -117,9 +117,9 @@ class OwnerArticlesFragment : BaseMvpFragment<OwnerArticlesPresenter, IOwnerArti
         return object : IPresenterFactory<OwnerArticlesPresenter> {
             override fun create(): OwnerArticlesPresenter {
                 return OwnerArticlesPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
-                    ), requireArguments().getInt(Extra.OWNER_ID), saveInstanceState
+                    ), requireArguments().getLong(Extra.OWNER_ID), saveInstanceState
                 )
             }
         }
@@ -174,10 +174,10 @@ class OwnerArticlesFragment : BaseMvpFragment<OwnerArticlesPresenter, IOwnerArti
     }
 
     companion object {
-        fun newInstance(accountId: Int, ownerId: Int): OwnerArticlesFragment {
+        fun newInstance(accountId: Long, ownerId: Long): OwnerArticlesFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = OwnerArticlesFragment()
             fragment.arguments = args
             return fragment

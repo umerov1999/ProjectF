@@ -154,7 +154,7 @@ object UploadUtils {
 
 
     fun createIntents(
-        accountId: Int, destination: UploadDestination, photos: List<LocalPhoto>, size: Int,
+        accountId: Long, destination: UploadDestination, photos: List<LocalPhoto>, size: Int,
         autoCommit: Boolean
     ): List<UploadIntent> {
         val intents: MutableList<UploadIntent> = ArrayList(photos.size)
@@ -171,7 +171,7 @@ object UploadUtils {
     }
 
     fun createVideoIntents(
-        accountId: Int, destination: UploadDestination, path: String?,
+        accountId: Long, destination: UploadDestination, path: String?,
         autoCommit: Boolean
     ): List<UploadIntent> {
         val intent = UploadIntent(accountId, destination).setAutoCommit(autoCommit).setFileUri(
@@ -181,7 +181,7 @@ object UploadUtils {
     }
 
     fun createIntents(
-        accountId: Int, destination: UploadDestination, file: String?, size: Int,
+        accountId: Long, destination: UploadDestination, file: String?, size: Int,
         autoCommit: Boolean
     ): List<UploadIntent> {
         val intents: MutableList<UploadIntent> = ArrayList()

@@ -601,8 +601,8 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ChatPresenter> =
         object : IPresenterFactory<ChatPresenter> {
             override fun create(): ChatPresenter {
-                val aid = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val messagesOwnerId = requireArguments().getInt(Extra.OWNER_ID)
+                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val messagesOwnerId = requireArguments().getLong(Extra.OWNER_ID)
                 val peer = requireArguments().getParcelableCompat<Peer>(Extra.PEER)!!
                 return ChatPresenter(
                     aid,
@@ -731,7 +731,12 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         if (!loading || position > 2) recyclerView?.smoothScrollToPosition(position)
     }
 
-    override fun goToMessagesLookup(accountId: Int, peerId: Int, messageId: Int, message: Message) {
+    override fun goToMessagesLookup(
+        accountId: Long,
+        peerId: Long,
+        messageId: Int,
+        message: Message
+    ) {
         PlaceFactory.getMessagesLookupPlace(accountId, peerId, messageId, message)
             .tryOpenWith(requireActivity())
     }
@@ -747,7 +752,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     }
 
     override fun goToUnreadMessages(
-        accountId: Int,
+        accountId: Long,
         messageId: Int,
         incoming: Int,
         outgoing: Int,
@@ -799,7 +804,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
                         }
 
-                        override fun onOwnerClick(ownerId: Int) {
+                        override fun onOwnerClick(ownerId: Long) {
                             presenter?.fireOwnerClick(ownerId)
                         }
 
@@ -827,7 +832,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Int,
+        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         presenter?.fireVoicePlayButtonClick(
@@ -1057,7 +1062,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     }
 
     override fun goToMessageAttachmentsEditor(
-        accountId: Int, messageOwnerId: Int, destination: UploadDestination,
+        accountId: Long, messageOwnerId: Long, destination: UploadDestination,
         body: String?, attachments: ModelsBundle?
     ) {
         val fragment = MessageAttachmentsFragment.newInstance(
@@ -1095,7 +1100,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             }
         }
 
-    override fun startImagesSelection(accountId: Int, ownerId: Int) {
+    override fun startImagesSelection(accountId: Long, ownerId: Long) {
         val sources = Sources()
             .with(LocalPhotosSelectableSource())
             .with(LocalGallerySelectableSource())
@@ -1117,17 +1122,17 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             }
         }
 
-    override fun startVideoSelection(accountId: Int, ownerId: Int) {
+    override fun startVideoSelection(accountId: Long, ownerId: Long) {
         val intent = VideoSelectActivity.createIntent(requireActivity(), accountId, ownerId)
         openRequestAudioVideoDoc.launch(intent)
     }
 
-    override fun startAudioSelection(accountId: Int) {
+    override fun startAudioSelection(accountId: Long) {
         val intent = AudioSelectActivity.createIntent(requireActivity(), accountId)
         openRequestAudioVideoDoc.launch(intent)
     }
 
-    override fun startDocSelection(accountId: Int) {
+    override fun startDocSelection(accountId: Long) {
         val intent =
             AttachmentsActivity.createIntent(requireActivity(), accountId, AttachmentsTypes.DOC)
         openRequestAudioVideoDoc.launch(intent)
@@ -1354,7 +1359,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
     }
 
-    override fun goToSearchMessage(accountId: Int, peer: Peer) {
+    override fun goToSearchMessage(accountId: Long, peer: Peer) {
         val criteria = MessageSearchCriteria("").setPeerId(peer.id)
         PlaceFactory.getSingleTabSearchPlace(accountId, SearchContentType.MESSAGES, criteria)
             .tryOpenWith(requireActivity())
@@ -1414,7 +1419,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         toolbar?.setNavigationOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
     }
 
-    private fun resolveLeftButton(peerId: Int) {
+    private fun resolveLeftButton(peerId: Long) {
         try {
             if (toolbar != null) {
                 resolveToolbarNavigationIcon()
@@ -1448,7 +1453,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         }
     }
 
-    override fun notifyChatResume(accountId: Int, peerId: Int, title: String?, image: String?) {
+    override fun notifyChatResume(accountId: Long, peerId: Long, title: String?, image: String?) {
         if (activity is OnSectionResumeCallback) {
             (activity as OnSectionResumeCallback).onChatResume(accountId, peerId, title, image)
         }
@@ -1456,7 +1461,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         resolveLeftButton(peerId)
     }
 
-    override fun goToConversationAttachments(accountId: Int, peerId: Int) {
+    override fun goToConversationAttachments(accountId: Long, peerId: Long) {
         val types = arrayOf(
             FindAttachmentType.TYPE_PHOTO,
             FindAttachmentType.TYPE_VIDEO,
@@ -1483,16 +1488,16 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             })
     }
 
-    internal fun showConversationAttachments(accountId: Int, peerId: Int, type: String) {
+    internal fun showConversationAttachments(accountId: Long, peerId: Long, type: String) {
         PlaceFactory.getConversationAttachmentsPlace(accountId, peerId, type)
             .tryOpenWith(requireActivity())
     }
 
-    override fun goToChatMembers(accountId: Int, chatId: Int) {
+    override fun goToChatMembers(accountId: Long, chatId: Long) {
         PlaceFactory.getChatMembersPlace(accountId, chatId).tryOpenWith(requireActivity())
     }
 
-    override fun showChatMembers(accountId: Int, chatId: Int) {
+    override fun showChatMembers(accountId: Long, chatId: Long) {
         ChatUsersDomainFragment.newInstance(
             Settings.get().accounts().current,
             chatId, object : ChatUsersDomainFragment.Listener {
@@ -1560,13 +1565,13 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             .show()
     }
 
-    override fun showUserWall(accountId: Int, peerId: Int) {
+    override fun showUserWall(accountId: Long, peerId: Long) {
         PlaceFactory.getOwnerWallPlace(accountId, peerId, null).tryOpenWith(requireActivity())
     }
 
     override fun forwardMessagesToAnotherConversation(
         messages: ArrayList<Message>,
-        accountId: Int
+        accountId: Long
     ) {
         SendAttachmentsActivity.startForSendAttachments(
             requireActivity(),
@@ -1894,7 +1899,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         presenter?.fireDeleteForMeClick(ids)
     }
 
-    override fun onAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onAvatarClick(message: Message, userId: Long, position: Int) {
         if (isActionModeVisible()) {
             presenter?.fireMessageClick(message, position)
         } else {
@@ -1919,7 +1924,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         presenter?.fireMessageClick(message, position)
     }
 
-    override fun onLongAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onLongAvatarClick(message: Message, userId: Long, position: Int) {
         presenter?.fireLongAvatarClick(userId)
     }
 
@@ -2070,10 +2075,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     }
 
     companion object {
-        fun newInstance(accountId: Int, messagesOwnerId: Int, peer: Peer): ChatFragment {
+        fun newInstance(accountId: Long, messagesOwnerId: Long, peer: Peer): ChatFragment {
             val args = Bundle().apply {
-                putInt(Extra.ACCOUNT_ID, accountId)
-                putInt(Extra.OWNER_ID, messagesOwnerId)
+                putLong(Extra.ACCOUNT_ID, accountId)
+                putLong(Extra.OWNER_ID, messagesOwnerId)
                 putParcelable(Extra.PEER, peer)
             }
 

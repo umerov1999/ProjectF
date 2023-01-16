@@ -37,7 +37,7 @@ class NewsFeedSearchFragment :
         }
     }
 
-    override fun onAvatarClick(ownerId: Int) {
+    override fun onAvatarClick(ownerId: Long) {
         presenter?.fireOwnerClick(
             ownerId
         )
@@ -93,7 +93,7 @@ class NewsFeedSearchFragment :
         return object : IPresenterFactory<NewsFeedSearchPresenter> {
             override fun create(): NewsFeedSearchPresenter {
                 return NewsFeedSearchPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.CRITERIA),
                     saveInstanceState
                 )
@@ -104,12 +104,12 @@ class NewsFeedSearchFragment :
     companion object {
 
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             initialCriteria: NewsFeedCriteria?
         ): NewsFeedSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = NewsFeedSearchFragment()
             fragment.arguments = args
             return fragment

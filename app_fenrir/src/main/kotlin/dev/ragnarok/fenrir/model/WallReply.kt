@@ -12,13 +12,13 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class WallReply : AbsModel, Identificable {
     private var id = 0
-    var fromId = 0
+    var fromId = 0L
         private set
     var postId = 0
         private set
     var author: Owner? = null
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var text: String? = null
         private set
@@ -27,9 +27,9 @@ class WallReply : AbsModel, Identificable {
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        fromId = parcel.readInt()
+        fromId = parcel.readLong()
         postId = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         text = parcel.readString()
         attachments = parcel.readTypedObjectCompat(Attachments.CREATOR)
         author = readOwner(parcel)
@@ -39,9 +39,9 @@ class WallReply : AbsModel, Identificable {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(fromId)
+        parcel.writeLong(fromId)
         parcel.writeInt(postId)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeString(text)
         parcel.writeTypedObjectCompat(attachments, flags)
         writeOwner(parcel, flags, author)
@@ -85,7 +85,7 @@ class WallReply : AbsModel, Identificable {
         return this
     }
 
-    fun setOwnerId(owner_id: Int): WallReply {
+    fun setOwnerId(owner_id: Long): WallReply {
         ownerId = owner_id
         return this
     }
@@ -105,7 +105,7 @@ class WallReply : AbsModel, Identificable {
         return this
     }
 
-    fun setFromId(from_id: Int): WallReply {
+    fun setFromId(from_id: Long): WallReply {
         fromId = from_id
         return this
     }

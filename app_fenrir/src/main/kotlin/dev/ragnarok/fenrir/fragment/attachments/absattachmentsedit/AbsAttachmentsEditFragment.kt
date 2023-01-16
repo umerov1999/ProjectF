@@ -247,7 +247,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
         mTextBody?.setText(text)
     }
 
-    override fun openAddVkPhotosWindow(maxSelectionCount: Int, accountId: Int, ownerId: Int) {
+    override fun openAddVkPhotosWindow(maxSelectionCount: Int, accountId: Long, ownerId: Long) {
         val intent = Intent(requireActivity(), PhotoAlbumsActivity::class.java)
         intent.putExtra(Extra.OWNER_ID, accountId)
         intent.putExtra(Extra.ACCOUNT_ID, ownerId)
@@ -255,23 +255,23 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
         openRequestPhotoFromVK.launch(intent)
     }
 
-    private fun startAttachmentsActivity(accountId: Int, type: Int) {
+    private fun startAttachmentsActivity(accountId: Long, type: Int) {
         val intent = Intent(requireActivity(), AttachmentsActivity::class.java)
         intent.putExtra(Extra.TYPE, type)
         intent.putExtra(Extra.ACCOUNT_ID, accountId)
         openRequestAudioVideoDoc.launch(intent)
     }
 
-    override fun openAddAudiosWindow(maxSelectionCount: Int, accountId: Int) {
+    override fun openAddAudiosWindow(maxSelectionCount: Int, accountId: Long) {
         val intent = createIntent(requireActivity(), accountId)
         openRequestAudioVideoDoc.launch(intent)
     }
 
-    override fun openAddVideosWindow(maxSelectionCount: Int, accountId: Int) {
+    override fun openAddVideosWindow(maxSelectionCount: Int, accountId: Long) {
         startAttachmentsActivity(accountId, AttachmentsTypes.VIDEO)
     }
 
-    override fun openAddDocumentsWindow(maxSelectionCount: Int, accountId: Int) {
+    override fun openAddDocumentsWindow(maxSelectionCount: Int, accountId: Long) {
         startAttachmentsActivity(accountId, AttachmentsTypes.DOC)
     }
 
@@ -342,7 +342,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
         }
     }
 
-    override fun openPollCreationWindow(accountId: Int, ownerId: Int) {
+    override fun openPollCreationWindow(accountId: Long, ownerId: Long) {
         getCreatePollPlace(accountId, ownerId)
             .setFragmentListener(CreatePollFragment.REQUEST_CREATE_POLL) { _: String?, result: Bundle ->
                 val poll: Poll = result.getParcelableCompat("poll") ?: return@setFragmentListener

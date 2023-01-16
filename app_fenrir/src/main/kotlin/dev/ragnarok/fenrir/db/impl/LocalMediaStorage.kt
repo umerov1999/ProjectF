@@ -48,7 +48,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
             it.onSuccess(data)
         }
 
-    override fun getAudios(accountId: Int): Single<List<Audio>> {
+    override fun getAudios(accountId: Long): Single<List<Audio>> {
         return Single.create { e: SingleEmitter<List<Audio>> ->
             val cursor = contentResolver.query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -66,7 +66,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
         }
     }
 
-    override fun getAudios(accountId: Int, albumId: Long): Single<List<Audio>> {
+    override fun getAudios(accountId: Long, albumId: Long): Single<List<Audio>> {
         return Single.create { e: SingleEmitter<List<Audio>> ->
             val cursor = contentResolver.query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -277,7 +277,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                 .setTitle(cursor.getString(MediaStore.MediaColumns.DISPLAY_NAME))
         }
 
-        internal fun mapAudio(accountId: Int, cursor: Cursor): Audio? {
+        internal fun mapAudio(accountId: Long, cursor: Cursor): Audio? {
             val id = cursor.getLong(BaseColumns._ID)
             val data = buildUriForPicassoNew(Content_Local.AUDIO, id).toString()
             if (cursor.getString(MediaStore.MediaColumns.DISPLAY_NAME)

@@ -93,7 +93,7 @@ class FaveArticlesFragment : BaseMvpFragment<FaveArticlesPresenter, IFaveArticle
         mSwipeRefreshLayout?.post { mSwipeRefreshLayout?.isRefreshing = refreshing }
     }
 
-    override fun goToArticle(accountId: Int, article: Article) {
+    override fun goToArticle(accountId: Long, article: Article) {
         article.uRL?.let {
             getExternalLinkPlace(
                 accountId,
@@ -104,7 +104,7 @@ class FaveArticlesFragment : BaseMvpFragment<FaveArticlesPresenter, IFaveArticle
         }
     }
 
-    override fun goToPhoto(accountId: Int, photo: Photo) {
+    override fun goToPhoto(accountId: Long, photo: Photo) {
         val temp = ArrayList(listOf(photo))
         getSimpleGalleryPlace(accountId, temp, 0, false).tryOpenWith(requireActivity())
     }
@@ -113,7 +113,7 @@ class FaveArticlesFragment : BaseMvpFragment<FaveArticlesPresenter, IFaveArticle
         return object : IPresenterFactory<FaveArticlesPresenter> {
             override fun create(): FaveArticlesPresenter {
                 return FaveArticlesPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
                     ), saveInstanceState
                 )
@@ -146,9 +146,9 @@ class FaveArticlesFragment : BaseMvpFragment<FaveArticlesPresenter, IFaveArticle
 
     companion object {
 
-        fun newInstance(accountId: Int): FaveArticlesFragment {
+        fun newInstance(accountId: Long): FaveArticlesFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = FaveArticlesFragment()
             fragment.arguments = args
             return fragment

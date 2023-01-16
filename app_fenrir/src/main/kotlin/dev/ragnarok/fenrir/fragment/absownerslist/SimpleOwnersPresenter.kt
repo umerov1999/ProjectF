@@ -5,7 +5,7 @@ import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.model.Owner
 
 abstract class SimpleOwnersPresenter<V : ISimpleOwnersView>(
-    accountId: Int,
+    accountId: Long,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<V>(accountId, savedInstanceState) {
     val data: MutableList<Owner>

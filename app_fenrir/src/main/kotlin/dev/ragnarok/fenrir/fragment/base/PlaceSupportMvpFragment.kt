@@ -72,11 +72,11 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
         }
     }
 
-    override fun onOwnerClick(ownerId: Int) {
+    override fun onOwnerClick(ownerId: Long) {
         presenter?.fireOwnerClick(ownerId)
     }
 
-    override fun openChatWith(accountId: Int, messagesOwnerId: Int, peer: Peer) {
+    override fun openChatWith(accountId: Long, messagesOwnerId: Long, peer: Peer) {
         PlaceFactory.getChatPlace(accountId, messagesOwnerId, peer).tryOpenWith(requireActivity())
     }
 
@@ -96,7 +96,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
         presenter?.fireForwardMessagesClick(messages)
     }
 
-    override fun onOpenOwner(ownerId: Int) {
+    override fun onOpenOwner(ownerId: Long) {
         presenter?.fireOwnerClick(ownerId)
     }
 
@@ -104,12 +104,12 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
         presenter?.fireGoToMessagesLookup(message)
     }
 
-    override fun goToMessagesLookupFWD(accountId: Int, peerId: Int, messageId: Int) {
+    override fun goToMessagesLookupFWD(accountId: Long, peerId: Long, messageId: Int) {
         PlaceFactory.getMessagesLookupPlace(accountId, peerId, messageId, null)
             .tryOpenWith(requireActivity())
     }
 
-    override fun goWallReplyOpen(accountId: Int, reply: WallReply) {
+    override fun goWallReplyOpen(accountId: Long, reply: WallReply) {
         PlaceFactory.getCommentsPlace(
             accountId,
             Commented(reply.postId, reply.ownerId, CommentedType.POST, null),
@@ -159,7 +159,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
             .tryOpenWith(requireActivity())
     }
 
-    override fun openStory(accountId: Int, story: Story) {
+    override fun openStory(accountId: Long, story: Story) {
         PlaceFactory.getHistoryVideoPreviewPlace(accountId, ArrayList(setOf(story)), 0)
             .tryOpenWith(requireActivity())
     }
@@ -172,7 +172,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
         presenter?.fireWallReplyOpen(reply)
     }
 
-    override fun openAudioPlaylist(accountId: Int, playlist: AudioPlaylist) {
+    override fun openAudioPlaylist(accountId: Long, playlist: AudioPlaylist) {
         PlaceFactory.getAudiosInAlbumPlace(
             accountId,
             playlist.getOwnerId(),
@@ -185,7 +185,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
         presenter?.firePhotoClick(photos, index, refresh)
     }
 
-    override fun openPhotoAlbum(accountId: Int, album: PhotoAlbum) {
+    override fun openPhotoAlbum(accountId: Long, album: PhotoAlbum) {
         PlaceFactory.getVKPhotosAlbumPlace(accountId, album.ownerId, album.getObjectId(), null)
             .tryOpenWith(requireActivity())
     }
@@ -206,23 +206,23 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
         presenter?.fireArtistClick(artist)
     }
 
-    override fun openLink(accountId: Int, link: Link) {
+    override fun openLink(accountId: Long, link: Link) {
         LinkHelper.openLinkInBrowser(requireActivity(), link.url)
     }
 
-    override fun openUrl(accountId: Int, url: String) {
+    override fun openUrl(accountId: Long, url: String) {
         PlaceFactory.getExternalLinkPlace(accountId, url)
             .tryOpenWith(requireActivity())
     }
 
-    override fun openWikiPage(accountId: Int, page: WikiPage) {
+    override fun openWikiPage(accountId: Long, page: WikiPage) {
         page.viewUrl?.let {
             PlaceFactory.getExternalLinkPlace(accountId, it)
                 .tryOpenWith(requireActivity())
         }
     }
 
-    override fun toMarketAlbumOpen(accountId: Int, market_album: MarketAlbum) {
+    override fun toMarketAlbumOpen(accountId: Long, market_album: MarketAlbum) {
         PlaceFactory.getMarketPlace(
             accountId,
             market_album.getOwner_id(),
@@ -232,16 +232,16 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
             .tryOpenWith(requireActivity())
     }
 
-    override fun toArtistOpen(accountId: Int, artist: AudioArtist) {
+    override fun toArtistOpen(accountId: Long, artist: AudioArtist) {
         PlaceFactory.getArtistPlace(accountId, artist.getId()).tryOpenWith(requireActivity())
     }
 
-    override fun toMarketOpen(accountId: Int, market: Market) {
+    override fun toMarketOpen(accountId: Long, market: Market) {
         PlaceFactory.getMarketViewPlace(accountId, market).tryOpenWith(requireActivity())
     }
 
     override fun openSimplePhotoGallery(
-        accountId: Int,
+        accountId: Long,
         photos: ArrayList<Photo>,
         index: Int,
         needUpdate: Boolean
@@ -250,51 +250,51 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
             .tryOpenWith(requireActivity())
     }
 
-    override fun openPost(accountId: Int, post: Post) {
+    override fun openPost(accountId: Long, post: Post) {
         PlaceFactory.getPostPreviewPlace(accountId, post.vkid, post.ownerId, post)
             .tryOpenWith(requireActivity())
     }
 
-    override fun openDocPreview(accountId: Int, document: Document) {
+    override fun openDocPreview(accountId: Long, document: Document) {
         PlaceFactory.getDocPreviewPlace(accountId, document).tryOpenWith(requireActivity())
     }
 
-    override fun openOwnerWall(accountId: Int, ownerId: Int) {
+    override fun openOwnerWall(accountId: Long, ownerId: Long) {
         PlaceFactory.getOwnerWallPlace(accountId, ownerId, null).tryOpenWith(requireActivity())
     }
 
-    override fun openForwardMessages(accountId: Int, messages: ArrayList<Message>) {
+    override fun openForwardMessages(accountId: Long, messages: ArrayList<Message>) {
         PlaceFactory.getForwardMessagesPlace(accountId, messages).tryOpenWith(requireActivity())
     }
 
-    override fun playAudioList(accountId: Int, position: Int, apiAudio: ArrayList<Audio>) {
+    override fun playAudioList(accountId: Long, position: Int, apiAudio: ArrayList<Audio>) {
         startForPlayList(requireActivity(), apiAudio, position, false)
         if (!Settings.get().other().isShow_mini_player) PlaceFactory.getPlayerPlace(
             Settings.get().accounts().current
         ).tryOpenWith(requireActivity())
     }
 
-    override fun openVideo(accountId: Int, apiVideo: Video) {
+    override fun openVideo(accountId: Long, apiVideo: Video) {
         PlaceFactory.getVideoPreviewPlace(accountId, apiVideo).tryOpenWith(requireActivity())
     }
 
-    override fun openHistoryVideo(accountId: Int, stories: ArrayList<Story>, index: Int) {
+    override fun openHistoryVideo(accountId: Long, stories: ArrayList<Story>, index: Int) {
         PlaceFactory.getHistoryVideoPreviewPlace(accountId, stories, index)
             .tryOpenWith(requireActivity())
     }
 
-    override fun openPoll(accountId: Int, apiPoll: Poll) {
+    override fun openPoll(accountId: Long, apiPoll: Poll) {
         PlaceFactory.getPollPlace(accountId, apiPoll)
             .tryOpenWith(requireActivity())
     }
 
-    override fun openComments(accountId: Int, commented: Commented, focusToCommentId: Int?) {
+    override fun openComments(accountId: Long, commented: Commented, focusToCommentId: Int?) {
         PlaceFactory.getCommentsPlace(accountId, commented, focusToCommentId)
             .tryOpenWith(requireActivity())
     }
 
     override fun openSearch(
-        accountId: Int,
+        accountId: Long,
         @SearchContentType type: Int,
         criteria: BaseSearchCriteria?
     ) {
@@ -302,7 +302,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
             .tryOpenWith(requireActivity())
     }
 
-    override fun goToLikes(accountId: Int, type: String?, ownerId: Int, id: Int) {
+    override fun goToLikes(accountId: Long, type: String?, ownerId: Long, id: Int) {
         PlaceFactory.getLikesCopiesPlace(
             accountId,
             type,
@@ -313,7 +313,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
             .tryOpenWith(requireActivity())
     }
 
-    override fun goToReposts(accountId: Int, type: String?, ownerId: Int, id: Int) {
+    override fun goToReposts(accountId: Long, type: String?, ownerId: Long, id: Int) {
         PlaceFactory.getLikesCopiesPlace(
             accountId,
             type,
@@ -324,7 +324,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
             .tryOpenWith(requireActivity())
     }
 
-    override fun repostPost(accountId: Int, post: Post) {
+    override fun repostPost(accountId: Long, post: Post) {
         val dialog = PostShareDialog.newInstance(accountId, post)
         dialog.show(parentFragmentManager, "post-sharing")
     }

@@ -10,8 +10,8 @@ import io.reactivex.rxjava3.core.Single
 interface IPhotoAlbumsStorage : IStorage {
     @CheckResult
     fun findAlbumById(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int
     ): Single<Optional<PhotoAlbumDboEntity>>
 
@@ -20,12 +20,12 @@ interface IPhotoAlbumsStorage : IStorage {
 
     @CheckResult
     fun store(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albums: List<PhotoAlbumDboEntity>,
         clearBefore: Boolean
     ): Completable
 
     @CheckResult
-    fun removeAlbumById(accountId: Int, ownerId: Int, albumId: Int): Completable
+    fun removeAlbumById(accountId: Long, ownerId: Long, albumId: Int): Completable
 }

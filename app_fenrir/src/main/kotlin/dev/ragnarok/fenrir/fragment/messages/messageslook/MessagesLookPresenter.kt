@@ -19,8 +19,8 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
 import io.reactivex.rxjava3.core.Observable
 
 class MessagesLookPresenter(
-    accountId: Int,
-    peerId: Int,
+    accountId: Long,
+    peerId: Long,
     focusTo: Int,
     message: Message?,
     savedInstanceState: Bundle?

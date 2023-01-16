@@ -9,5 +9,5 @@ interface IGiftsView : IMvpView, IErrorView {
     fun notifyDataSetChanged()
     fun notifyDataAdded(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
-    fun onOpenWall(accountId: Int, ownerId: Int)
+    fun onOpenWall(accountId: Long, ownerId: Long)
 }

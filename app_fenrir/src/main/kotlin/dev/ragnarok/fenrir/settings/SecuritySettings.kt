@@ -71,8 +71,8 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
     }
 
     override fun enableMessageEncryption(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         @KeyLocationPolicy policy: Int
     ) {
         mPrefs.edit()
@@ -80,18 +80,18 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
             .apply()
     }
 
-    override fun isMessageEncryptionEnabled(accountId: Int, peerId: Int): Boolean {
+    override fun isMessageEncryptionEnabled(accountId: Long, peerId: Long): Boolean {
         return mPrefs.contains(encryptionKeyFor(accountId, peerId))
     }
 
-    override fun disableMessageEncryption(accountId: Int, peerId: Int) {
+    override fun disableMessageEncryption(accountId: Long, peerId: Long) {
         mPrefs.edit()
             .remove(encryptionKeyFor(accountId, peerId))
             .apply()
     }
 
     @KeyLocationPolicy
-    override fun getEncryptionLocationPolicy(accountId: Int, peerId: Int): Int {
+    override fun getEncryptionLocationPolicy(accountId: Long, peerId: Long): Int {
         return mPrefs.getInt(encryptionKeyFor(accountId, peerId), KeyLocationPolicy.PERSIST)
     }
 
@@ -160,14 +160,14 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
                 .apply()
         }
 
-    override fun addHiddenDialog(peerId: Int) {
+    override fun addHiddenDialog(peerId: Long) {
         hiddenPeers.add(peerId.toString())
         getPreferences(mApplication).edit()
             .putStringSet(KEY_HIDDEN_PEERS, hiddenPeers)
             .apply()
     }
 
-    override fun removeHiddenDialog(peerId: Int) {
+    override fun removeHiddenDialog(peerId: Long) {
         hiddenPeers.remove(peerId.toString())
         getPreferences(mApplication).edit()
             .putStringSet(KEY_HIDDEN_PEERS, hiddenPeers)
@@ -178,7 +178,7 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         return hiddenPeers.isNotEmpty()
     }
 
-    override fun isHiddenDialog(peerId: Int): Boolean {
+    override fun isHiddenDialog(peerId: Long): Boolean {
         return hiddenPeers.contains(peerId.toString())
     }
 
@@ -208,7 +208,7 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
             return result
         }
 
-        internal fun encryptionKeyFor(accountId: Int, peerId: Int): String {
+        internal fun encryptionKeyFor(accountId: Long, peerId: Long): String {
             return "encryptionkeypolicy" + accountId + "_" + peerId
         }
 

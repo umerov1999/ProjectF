@@ -9,8 +9,8 @@ import dev.ragnarok.fenrir.model.AppChatUser
 import java.util.*
 
 class ChatUsersDomainPresenter(
-    accountId: Int,
-    private val chatId: Int,
+    accountId: Long,
+    private val chatId: Long,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IChatUsersDomainView>(accountId, savedInstanceState) {
     private val messagesInteractor: IMessagesRepository

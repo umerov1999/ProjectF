@@ -1,11 +1,11 @@
 package dev.ragnarok.fenrir.model
 
-class PeerDeleting(private val accountId: Int, private val peerId: Int) {
-    fun getAccountId(): Int {
+class PeerDeleting(private val accountId: Long, private val peerId: Long) {
+    fun getAccountId(): Long {
         return accountId
     }
 
-    fun getPeerId(): Int {
+    fun getPeerId(): Long {
         return peerId
     }
 }

@@ -7,23 +7,23 @@ import io.reactivex.rxjava3.core.Single
 interface ILikesApi {
     @CheckResult
     fun getList(
-        type: String?, ownerId: Int?, itemId: Int?, pageUrl: String?, filter: String?,
+        type: String?, ownerId: Long?, itemId: Int?, pageUrl: String?, filter: String?,
         friendsOnly: Boolean?, offset: Int?, count: Int?, skipOwn: Boolean?, fields: String?
     ): Single<LikesListResponse>
 
     @CheckResult
-    fun delete(type: String?, ownerId: Int?, itemId: Int, accessKey: String?): Single<Int>
+    fun delete(type: String?, ownerId: Long?, itemId: Int, accessKey: String?): Single<Int>
 
     @CheckResult
-    fun add(type: String?, ownerId: Int?, itemId: Int, accessKey: String?): Single<Int>
+    fun add(type: String?, ownerId: Long?, itemId: Int, accessKey: String?): Single<Int>
 
     @CheckResult
-    fun isLiked(type: String?, ownerId: Int?, itemId: Int): Single<Boolean>
+    fun isLiked(type: String?, ownerId: Long?, itemId: Int): Single<Boolean>
 
     @CheckResult
     fun checkAndAddLike(
         type: String?,
-        ownerId: Int?,
+        ownerId: Long?,
         itemId: Int,
         accessKey: String?
     ): Single<Int>

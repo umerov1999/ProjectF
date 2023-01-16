@@ -11,14 +11,14 @@ import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
-internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
+internal class MessagesApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IMessagesApi {
     private fun serviceRx(vararg tokenTypes: Int): Single<IMessageService> {
         return provideService(IMessageService(), *tokenTypes)
     }
 
     override fun edit(
-        peerId: Int,
+        peerId: Long,
         messageId: Int,
         message: String?,
         attachments: List<IAttachmentToken>?,
@@ -44,7 +44,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun removeChatMember(chatId: Int, memberId: Int): Single<Boolean> {
+    override fun removeChatMember(chatId: Long, memberId: Long): Single<Boolean> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -54,7 +54,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun deleteChatPhoto(chatId: Int): Single<Boolean> {
+    override fun deleteChatPhoto(chatId: Long): Single<Boolean> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -64,7 +64,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun addChatUser(chatId: Int, userId: Int): Single<Boolean> {
+    override fun addChatUser(chatId: Long, userId: Long): Single<Boolean> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -75,8 +75,8 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getChat(
-        chatId: Int?,
-        chatIds: Collection<Int>?,
+        chatId: Long?,
+        chatIds: Collection<Long>?,
         fields: String?,
         name_case: String?
     ): Single<List<VKApiChat>> {
@@ -90,7 +90,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getConversationMembers(
-        peer_id: Int?,
+        peer_id: Long?,
         fields: String?
     ): Single<ConversationMembersResponse> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
@@ -101,7 +101,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun editChat(chatId: Int, title: String?): Single<Boolean> {
+    override fun editChat(chatId: Long, title: String?): Single<Boolean> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -111,7 +111,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun createChat(userIds: Collection<Int>, title: String?): Single<Int> {
+    override fun createChat(userIds: Collection<Long>, title: String?): Single<Long> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -129,7 +129,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun setMemberRole(peer_id: Int?, member_id: Int?, role: String?): Single<Int> {
+    override fun setMemberRole(peer_id: Long?, member_id: Long?, role: String?): Single<Int> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -138,7 +138,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun deleteDialog(peerId: Int): Single<ConversationDeleteResult> {
+    override fun deleteDialog(peerId: Long): Single<ConversationDeleteResult> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -174,7 +174,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun markAsRead(peerId: Int?, startMessageId: Int?): Single<Boolean> {
+    override fun markAsRead(peerId: Long?, startMessageId: Int?): Single<Boolean> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -193,7 +193,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun setActivity(peerId: Int, typing: Boolean): Single<Boolean> {
+    override fun setActivity(peerId: Long, typing: Boolean): Single<Boolean> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
@@ -205,7 +205,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
 
     override fun search(
         query: String?,
-        peerId: Int?,
+        peerId: Long?,
         date: Long?,
         previewLength: Int?,
         offset: Int?,
@@ -245,7 +245,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getHistoryAttachments(
-        peerId: Int,
+        peerId: Long,
         mediaType: String?,
         startFrom: String?,
         photoSizes: Int?,
@@ -261,7 +261,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun send(
-        randomId: Long?, peerId: Int?, domain: String?, message: String?,
+        randomId: Long?, peerId: Long?, domain: String?, message: String?,
         latitude: Double?, longitude: Double?, attachments: Collection<IAttachmentToken>?,
         forwardMessages: Collection<Int>?, stickerId: Int?, payload: String?, reply_to: Int?
     ): Single<Int> {
@@ -280,7 +280,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getConversations(
-        peers: List<Int>,
+        peers: List<Long>,
         extended: Boolean?,
         fields: String?
     ): Single<ItemsProfilesGroupsResponse<VKApiConversation>> {
@@ -316,7 +316,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
 
     }
 
-    override fun unpin(peerId: Int): Completable {
+    override fun unpin(peerId: Long): Completable {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMapCompletable { service ->
                 service.unpin(peerId)
@@ -325,7 +325,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun pin(peerId: Int, messageId: Int): Completable {
+    override fun pin(peerId: Long, messageId: Int): Completable {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMapCompletable { service ->
                 service.pin(peerId, messageId)
@@ -334,7 +334,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun pinUnPinConversation(peerId: Int, peen: Boolean): Completable {
+    override fun pinUnPinConversation(peerId: Long, peen: Boolean): Completable {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMapCompletable { service ->
                 (if (peen) service.pinConversation(peerId) else service.unpinConversation(peerId))
@@ -366,7 +366,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
     override fun getHistory(
         offset: Int?,
         count: Int?,
-        peerId: Int,
+        peerId: Long,
         startMessageId: Int?,
         rev: Boolean?,
         extended: Boolean?,
@@ -391,7 +391,7 @@ internal class MessagesApi(accountId: Int, provider: IServiceProvider) :
     override fun getJsonHistory(
         offset: Int?,
         count: Int?,
-        peerId: Int
+        peerId: Long
     ): Single<Items<VKApiJsonString>> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->

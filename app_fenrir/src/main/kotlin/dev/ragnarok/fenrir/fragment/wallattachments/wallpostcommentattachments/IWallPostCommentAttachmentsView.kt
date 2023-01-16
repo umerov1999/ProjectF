@@ -14,6 +14,6 @@ interface IWallPostCommentAttachmentsView : IMvpView, IErrorView,
     fun toolbarTitle(title: String)
     fun toolbarSubtitle(subtitle: String)
     fun onSetLoadingStatus(isLoad: Int)
-    fun openPostEditor(accountId: Int, post: Post)
-    fun openAllComments(accountId: Int, ownerId: Int, posts: ArrayList<Int>)
+    fun openPostEditor(accountId: Long, post: Post)
+    fun openAllComments(accountId: Long, ownerId: Long, posts: ArrayList<Int>)
 }

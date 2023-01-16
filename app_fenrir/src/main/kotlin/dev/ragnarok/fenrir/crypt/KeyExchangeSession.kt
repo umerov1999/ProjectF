@@ -5,8 +5,8 @@ import java.util.*
 
 class KeyExchangeSession private constructor(
     val id: Long,
-    val accountId: Int,
-    val peerId: Int,
+    val accountId: Long,
+    val peerId: Long,
     @KeyLocationPolicy val keyLocationPolicy: Int
 ) {
 
@@ -37,8 +37,8 @@ class KeyExchangeSession private constructor(
     companion object {
         fun createOutSession(
             id: Long,
-            accountId: Int,
-            peerId: Int,
+            accountId: Long,
+            peerId: Long,
             @KeyLocationPolicy keyLocationPolicy: Int
         ): KeyExchangeSession {
             val session = KeyExchangeSession(id, accountId, peerId, keyLocationPolicy)
@@ -48,8 +48,8 @@ class KeyExchangeSession private constructor(
 
         fun createInputSession(
             id: Long,
-            accountId: Int,
-            peerId: Int,
+            accountId: Long,
+            peerId: Long,
             @KeyLocationPolicy keyLocationPolicy: Int
         ): KeyExchangeSession {
             val session = KeyExchangeSession(id, accountId, peerId, keyLocationPolicy)

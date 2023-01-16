@@ -22,7 +22,7 @@ class PushSettingsResponse {
             var disabled_until = 0L
 
             @SerialName("peer_id")
-            var peer_id = 0
+            var peer_id = 0L
         }
     }
 }

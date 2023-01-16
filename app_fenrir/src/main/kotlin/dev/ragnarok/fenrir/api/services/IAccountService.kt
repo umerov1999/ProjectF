@@ -9,11 +9,11 @@ import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
 
 class IAccountService : IServiceRest() {
-    fun ban(owner_id: Int): Single<BaseResponse<Int>> {
+    fun ban(owner_id: Long): Single<BaseResponse<Int>> {
         return rest.request("account.ban", form("owner_id" to owner_id), baseInt)
     }
 
-    fun unban(owner_id: Int): Single<BaseResponse<Int>> {
+    fun unban(owner_id: Long): Single<BaseResponse<Int>> {
         return rest.request("account.unban", form("owner_id" to owner_id), baseInt)
     }
 

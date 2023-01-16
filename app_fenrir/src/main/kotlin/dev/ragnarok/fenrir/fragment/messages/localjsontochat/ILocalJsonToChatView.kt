@@ -16,6 +16,6 @@ interface ILocalJsonToChatView : IMvpView, IErrorView,
     fun setToolbarSubtitle(subtitle: String?)
     fun scroll_pos(pos: Int)
     fun displayToolbarAvatar(peer: Peer)
-    fun attachments_mode(accountId: Int, last_selected: Int)
+    fun attachments_mode(accountId: Long, last_selected: Int)
     fun resolveEmptyText(visible: Boolean)
 }

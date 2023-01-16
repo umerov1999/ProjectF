@@ -54,8 +54,8 @@ class ConversationPhotosFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ChatAttachmentPhotoPresenter> {
         return object : IPresenterFactory<ChatAttachmentPhotoPresenter> {
             override fun create(): ChatAttachmentPhotoPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val peerId = requireArguments().getInt(Extra.PEER_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val peerId = requireArguments().getLong(Extra.PEER_ID)
                 return ChatAttachmentPhotoPresenter(peerId, accountId, saveInstanceState)
             }
         }
@@ -66,13 +66,13 @@ class ConversationPhotosFragment :
         adapter?.setData(data)
     }
 
-    override fun goToTempPhotosGallery(accountId: Int, source: TmpSource, index: Int) {
+    override fun goToTempPhotosGallery(accountId: Long, source: TmpSource, index: Int) {
         getTmpSourceGalleryPlace(accountId, source, index).setActivityResultLauncher(
             requestPhotoUpdate
         ).tryOpenWith(requireActivity())
     }
 
-    override fun goToTempPhotosGallery(accountId: Int, ptr: Long, index: Int) {
+    override fun goToTempPhotosGallery(accountId: Long, ptr: Long, index: Int) {
         getTmpSourceGalleryPlace(
             accountId,
             ptr,

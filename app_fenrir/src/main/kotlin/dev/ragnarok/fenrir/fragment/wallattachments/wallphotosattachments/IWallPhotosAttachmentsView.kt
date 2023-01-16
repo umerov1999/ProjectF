@@ -14,7 +14,7 @@ interface IWallPhotosAttachmentsView : IMvpView, IErrorView,
     fun showRefreshing(refreshing: Boolean)
     fun toolbarTitle(title: String)
     fun toolbarSubtitle(subtitle: String)
-    fun goToTempPhotosGallery(accountId: Int, source: TmpSource, index: Int)
-    fun goToTempPhotosGallery(accountId: Int, ptr: Long, index: Int)
+    fun goToTempPhotosGallery(accountId: Long, source: TmpSource, index: Int)
+    fun goToTempPhotosGallery(accountId: Long, ptr: Long, index: Int)
     fun onSetLoadingStatus(isLoad: Int)
 }

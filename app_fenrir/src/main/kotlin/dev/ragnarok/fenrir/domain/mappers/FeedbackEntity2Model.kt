@@ -64,7 +64,7 @@ object FeedbackEntity2Model {
             .setOwners(buildUserArray(entity.owners, owners))
     }
 
-    private fun buildUserArray(usersIds: IntArray?, owners: IOwnersBundle): List<Owner> {
+    private fun buildUserArray(usersIds: LongArray?, owners: IOwnersBundle): List<Owner> {
         usersIds ?: return emptyList()
         val data: MutableList<Owner> = ArrayList(usersIds.size)
         for (id in usersIds) {

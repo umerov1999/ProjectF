@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.db.model
 
 import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
 
-class PeerPatch(val id: Int) {
+class PeerPatch(val id: Long) {
     var inRead: ReadTo? = null
         private set
     var outRead: ReadTo? = null

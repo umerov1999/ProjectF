@@ -148,7 +148,7 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
         actionBar?.setTitle(R.string.photos)
     }
 
-    override fun openAlbum(accountId: Int, album: PhotoAlbum, owner: Owner?, action: String?) {
+    override fun openAlbum(accountId: Long, album: PhotoAlbum, owner: Owner?, action: String?) {
         if (album.getObjectId() == -311) {
             getLocalServerPhotosPlace(accountId).tryOpenWith(requireActivity())
         } else {
@@ -194,12 +194,12 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
         }
     }
 
-    override fun goToAlbumCreation(accountId: Int, ownerId: Int) {
+    override fun goToAlbumCreation(accountId: Long, ownerId: Long) {
         getCreatePhotoAlbumPlace(accountId, ownerId)
             .tryOpenWith(requireActivity())
     }
 
-    override fun goToAlbumEditing(accountId: Int, album: PhotoAlbum, editor: PhotoAlbumEditor) {
+    override fun goToAlbumEditing(accountId: Long, album: PhotoAlbum, editor: PhotoAlbumEditor) {
         getEditPhotoAlbumPlace(accountId, album, editor) //.withParcelableExtra(Extra.OWNER, owner)
             .tryOpenWith(requireActivity())
     }
@@ -234,7 +234,7 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
         }
     }
 
-    override fun goToPhotoComments(accountId: Int, ownerId: Int) {
+    override fun goToPhotoComments(accountId: Long, ownerId: Long) {
         getPhotoAllCommentsPlace(accountId, ownerId).tryOpenWith(requireActivity())
     }
 
@@ -267,8 +267,8 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PhotoAlbumsPresenter> {
         return object : IPresenterFactory<PhotoAlbumsPresenter> {
             override fun create(): PhotoAlbumsPresenter {
-                val ownerId = requireArguments().getInt(Extra.OWNER_ID)
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val wrapper: ParcelableOwnerWrapper? =
                     requireArguments().getParcelableCompat(Extra.OWNER)
                 val owner = wrapper?.get()
@@ -295,15 +295,15 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
     companion object {
         const val ACTION_SELECT_ALBUM = "dev.ragnarok.fenrir.ACTION_SELECT_ALBUM"
         fun newInstance(
-            accountId: Int,
-            ownerId: Int,
+            accountId: Long,
+            ownerId: Long,
             action: String?,
             ownerWrapper: ParcelableOwnerWrapper?,
             hide_toolbar: Boolean
         ): VKPhotoAlbumsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putParcelable(Extra.OWNER, ownerWrapper)
             args.putString(Extra.ACTION, action)
             if (hide_toolbar) args.putBoolean(EXTRA_HIDE_TOOLBAR, true)

@@ -24,13 +24,13 @@ class PrivacyEntity {
         var type = 0
             private set
 
-        var id = 0
+        var id = 0L
             private set
 
         var isAllowed = false
             private set
 
-        operator fun set(type: Int, id: Int, allowed: Boolean): Entry {
+        operator fun set(type: Int, id: Long, allowed: Boolean): Entry {
             this.type = type
             this.id = id
             isAllowed = allowed

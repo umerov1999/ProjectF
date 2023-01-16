@@ -101,9 +101,9 @@ class AudioSearchTabsFragment : Fragment() {
         const val TAB_MUSIC = 0
         const val TAB_AUDIO_PLAYLISTS = 1
         const val TAB_ARTISTS = 2
-        fun buildArgs(accountId: Int): Bundle {
+        fun buildArgs(accountId: Long): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             return args
         }
 

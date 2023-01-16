@@ -9,12 +9,12 @@ import kotlinx.serialization.Serializable
 class VKApiNews {
     var type //friends_recomm //post
             : String? = null
-    var source_id = 0
+    var source_id = 0L
     var date: Long = 0
     var post_id = 0
     var post_type: String? = null
     var final_post = false
-    var copy_owner_id = 0
+    var copy_owner_id = 0L
     var copy_post_id = 0
     var copy_history: List<VKApiPost>? = null
     var copy_post_date: Long = 0
@@ -36,7 +36,7 @@ class VKApiNews {
      * Information about attachments to the post (photos, links, etc.), if any;
      */
     var attachments: VKApiAttachments? = null
-    var friends: ArrayList<Int>? = null
+    var friends: ArrayList<Long>? = null
     var views = 0
     val attachmentsCount: Int
         get() = attachments?.size().orZero()

@@ -77,13 +77,13 @@ class SelectSchoolClassesDialog : AccountDependencyDialogFragment(), SchoolClass
 
     companion object {
         fun newInstance(
-            aid: Int,
+            aid: Long,
             schoolClassesId: Int,
             additional: Bundle?
         ): SelectSchoolClassesDialog {
             val args = additional ?: Bundle()
             args.putInt(Extra.SCHOOL_CLASS_ID, schoolClassesId)
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             val selectCityDialog = SelectSchoolClassesDialog()
             selectCityDialog.arguments = args
             return selectCityDialog

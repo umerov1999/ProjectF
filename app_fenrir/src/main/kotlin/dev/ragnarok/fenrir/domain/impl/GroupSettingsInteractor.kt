@@ -31,7 +31,7 @@ class GroupSettingsInteractor(
     private val repository: IOwnersStorage,
     private val ownersRepository: IOwnersRepository
 ) : IGroupSettingsInteractor {
-    override fun getGroupSettings(accountId: Int, groupId: Int): Single<GroupSettings> {
+    override fun getGroupSettings(accountId: Long, groupId: Long): Single<GroupSettings> {
         return networker.vkDefault(accountId)
             .groups()
             .getSettings(groupId)
@@ -39,9 +39,9 @@ class GroupSettingsInteractor(
     }
 
     override fun ban(
-        accountId: Int,
-        groupId: Int,
-        ownerId: Int,
+        accountId: Long,
+        groupId: Long,
+        ownerId: Long,
         endDateUnixtime: Long?,
         reason: Int,
         comment: String?,
@@ -54,8 +54,8 @@ class GroupSettingsInteractor(
     }
 
     override fun edit(
-        accountId: Int,
-        groupId: Int,
+        accountId: Long,
+        groupId: Long,
         title: String?,
         description: String?,
         screen_name: String?,
@@ -87,8 +87,8 @@ class GroupSettingsInteractor(
     }
 
     override fun editManager(
-        accountId: Int,
-        groupId: Int,
+        accountId: Long,
+        groupId: Long,
         user: User,
         role: String?,
         asContact: Boolean,
@@ -99,11 +99,19 @@ class GroupSettingsInteractor(
         val targetRole = if ("creator".equals(role, ignoreCase = true)) "administrator" else role
         return networker.vkDefault(accountId)
             .groups()
-            .editManager(groupId, user.getObjectId(), targetRole, asContact, position, email, phone)
+            .editManager(
+                groupId,
+                user.getOwnerObjectId(),
+                targetRole,
+                asContact,
+                position,
+                email,
+                phone
+            )
             .andThen(
                 Single
                     .fromCallable {
-                        val info = ContactInfo(user.getObjectId())
+                        val info = ContactInfo(user.getOwnerObjectId())
                             .setDescription(position)
                             .setPhone(phone)
                             .setEmail(email)
@@ -118,7 +126,7 @@ class GroupSettingsInteractor(
                     })
     }
 
-    override fun unban(accountId: Int, groupId: Int, ownerId: Int): Completable {
+    override fun unban(accountId: Long, groupId: Long, ownerId: Long): Completable {
         return networker.vkDefault(accountId)
             .groups()
             .unban(groupId, ownerId)
@@ -126,8 +134,8 @@ class GroupSettingsInteractor(
     }
 
     override fun getBanned(
-        accountId: Int,
-        groupId: Int,
+        accountId: Long,
+        groupId: Long,
         startFrom: IntNextFrom,
         count: Int
     ): Single<Pair<List<Banned>, IntNextFrom>> {
@@ -151,7 +159,7 @@ class GroupSettingsInteractor(
                         for (u in items) {
                             var admin: User
                             val banInfo = u.banInfo ?: continue
-                            admin = if (banInfo.adminId != 0) {
+                            admin = if (banInfo.adminId != 0L) {
                                 bundle.getById(banInfo.adminId) as User
                             } else {
                                 // ignore this
@@ -178,7 +186,7 @@ class GroupSettingsInteractor(
             }
     }
 
-    override fun getContacts(accountId: Int, groupId: Int): Single<List<ContactInfo>> {
+    override fun getContacts(accountId: Long, groupId: Long): Single<List<ContactInfo>> {
         return networker.vkDefault(accountId).groups()
             .getById(setOf(groupId), null, null, "contacts")
             .map { communities ->
@@ -193,7 +201,7 @@ class GroupSettingsInteractor(
             }
     }
 
-    override fun getManagers(accountId: Int, groupId: Int): Single<List<Manager>> {
+    override fun getManagers(accountId: Long, groupId: Long): Single<List<Manager>> {
         return networker.vkDefault(accountId)
             .groups()
             .getMembers(

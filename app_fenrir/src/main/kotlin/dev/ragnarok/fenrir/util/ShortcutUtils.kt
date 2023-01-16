@@ -33,7 +33,7 @@ object ShortcutUtils {
     @Throws(IOException::class)
     private fun createAccountShortcut(
         context: Context,
-        accountId: Int,
+        accountId: Long,
         title: String,
         url: String
     ) {
@@ -55,7 +55,7 @@ object ShortcutUtils {
 
     fun createAccountShortcutRx(
         context: Context,
-        accountId: Int,
+        accountId: Long,
         title: String,
         url: String
     ): Completable {
@@ -71,8 +71,8 @@ object ShortcutUtils {
     @Throws(IOException::class)
     private fun createWallShortcut(
         context: Context,
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         title: String,
         url: String?
     ) {
@@ -96,8 +96,8 @@ object ShortcutUtils {
 
     fun createWallShortcutRx(
         context: Context,
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         title: String?,
         url: String?
     ): Completable {
@@ -157,8 +157,8 @@ object ShortcutUtils {
     fun chatOpenIntent(
         context: Context,
         url: String?,
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         title: String?
     ): Intent {
         val intent = Intent(context.applicationContext, MainActivity::class.java)
@@ -174,8 +174,8 @@ object ShortcutUtils {
     private fun createChatShortcut(
         context: Context,
         url: String,
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         title: String
     ) {
         val id = "fenrir_peer_" + peerId + "_aid_" + accountId
@@ -188,8 +188,8 @@ object ShortcutUtils {
     fun createChatShortcutRx(
         context: Context,
         url: String,
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         title: String
     ): Completable {
         return Includes.stores.tempStore()
@@ -217,7 +217,7 @@ object ShortcutUtils {
 
 
     @TargetApi(Build.VERSION_CODES.N_MR1)
-    fun addDynamicShortcut(context: Context, accountId: Int, peer: Peer): Completable {
+    fun addDynamicShortcut(context: Context, accountId: Long, peer: Peer): Completable {
         val app = context.applicationContext
         return loadRoundAvatar(peer.avaUrl ?: VKApiUser.CAMERA_50)
             .flatMapCompletable { bitmap: Bitmap? ->

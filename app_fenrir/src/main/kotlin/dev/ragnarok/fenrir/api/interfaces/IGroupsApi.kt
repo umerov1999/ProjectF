@@ -9,8 +9,8 @@ import io.reactivex.rxjava3.core.Single
 interface IGroupsApi {
     @CheckResult
     fun editManager(
-        groupId: Int,
-        userId: Int,
+        groupId: Long,
+        userId: Long,
         role: String?,
         isContact: Boolean?,
         contactPosition: String?,
@@ -20,7 +20,7 @@ interface IGroupsApi {
 
     @CheckResult
     fun edit(
-        groupId: Int,
+        groupId: Long,
         title: String?,
         description: String?,
         screen_name: String?,
@@ -35,12 +35,12 @@ interface IGroupsApi {
     ): Completable
 
     @CheckResult
-    fun unban(groupId: Int, ownerId: Int): Completable
+    fun unban(groupId: Long, ownerId: Long): Completable
 
     @CheckResult
     fun ban(
-        groupId: Int,
-        ownerId: Int,
+        groupId: Long,
+        ownerId: Long,
         endDate: Long?,
         reason: Int?,
         comment: String?,
@@ -48,14 +48,14 @@ interface IGroupsApi {
     ): Completable
 
     @CheckResult
-    fun getSettings(groupId: Int): Single<GroupSettingsDto>
+    fun getSettings(groupId: Long): Single<GroupSettingsDto>
 
     @CheckResult
-    fun getMarketAlbums(owner_id: Int, offset: Int, count: Int): Single<Items<VKApiMarketAlbum>>
+    fun getMarketAlbums(owner_id: Long, offset: Int, count: Int): Single<Items<VKApiMarketAlbum>>
 
     @CheckResult
     fun getMarket(
-        owner_id: Int,
+        owner_id: Long,
         album_id: Int?,
         offset: Int,
         count: Int,
@@ -64,7 +64,7 @@ interface IGroupsApi {
 
     @CheckResult
     fun getMarketServices(
-        owner_id: Int,
+        owner_id: Long,
         offset: Int,
         count: Int,
         extended: Int?
@@ -75,11 +75,11 @@ interface IGroupsApi {
 
     @CheckResult
     fun getBanned(
-        groupId: Int,
+        groupId: Long,
         offset: Int?,
         count: Int?,
         fields: String?,
-        userId: Int?
+        userId: Long?
     ): Single<Items<VKApiBanned>>
 
     @CheckResult
@@ -98,26 +98,26 @@ interface IGroupsApi {
     ): Single<Items<VKApiCommunity>>
 
     @CheckResult
-    fun leave(groupId: Int): Single<Boolean>
+    fun leave(groupId: Long): Single<Boolean>
 
     @CheckResult
-    fun join(groupId: Int, notSure: Int?): Single<Boolean>
+    fun join(groupId: Long, notSure: Int?): Single<Boolean>
 
     @CheckResult
     operator fun get(
-        userId: Int?, extended: Boolean?, filter: String?,
+        userId: Long?, extended: Boolean?, filter: String?,
         fields: String?, offset: Int?, count: Int?
     ): Single<Items<VKApiCommunity>>
 
     @CheckResult
     fun getById(
-        ids: Collection<Int>, domains: Collection<String>?,
+        ids: Collection<Long>, domains: Collection<String>?,
         groupId: String?, fields: String?
     ): Single<List<VKApiCommunity>>
 
     @CheckResult
-    fun getLongPollServer(groupId: Int): Single<GroupLongpollServer>
+    fun getLongPollServer(groupId: Long): Single<GroupLongpollServer>
 
     @CheckResult
-    fun getChats(groupId: Int, offset: Int?, count: Int?): Single<Items<VKApiGroupChats>>
+    fun getChats(groupId: Long, offset: Int?, count: Int?): Single<Items<VKApiGroupChats>>
 }

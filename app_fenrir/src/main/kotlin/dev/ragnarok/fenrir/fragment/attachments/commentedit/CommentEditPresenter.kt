@@ -21,7 +21,7 @@ import dev.ragnarok.fenrir.util.Utils.copyToArrayListWithPredicate
 
 class CommentEditPresenter(
     comment: Comment,
-    accountId: Int,
+    accountId: Long,
     CommentThread: Int?,
     savedInstanceState: Bundle?
 ) : AbsAttachmentsEditPresenter<ICommentEditView>(accountId, savedInstanceState) {

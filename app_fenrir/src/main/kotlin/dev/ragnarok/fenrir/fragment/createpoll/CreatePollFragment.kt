@@ -98,8 +98,8 @@ class CreatePollFragment : BaseMvpFragment<CreatePollPresenter, ICreatePollView>
         return object : IPresenterFactory<CreatePollPresenter> {
             override fun create(): CreatePollPresenter {
                 return CreatePollPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     saveInstanceState
                 )
             }
@@ -193,10 +193,10 @@ class CreatePollFragment : BaseMvpFragment<CreatePollPresenter, ICreatePollView>
             return fragment
         }
 
-        fun buildArgs(accountId: Int, ownerId: Int): Bundle {
+        fun buildArgs(accountId: Long, ownerId: Long): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             return args
         }
     }

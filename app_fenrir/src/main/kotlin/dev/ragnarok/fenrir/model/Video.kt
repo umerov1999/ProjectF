@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 class Video : AbsModel, ParcelNative.ParcelableNative {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var albumId = 0
         private set
@@ -83,13 +83,13 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         private set
     var msgId = 0
         private set
-    var msgPeerId = 0
+    var msgPeerId = 0L
         private set
 
     constructor()
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         albumId = parcel.readInt()
         title = parcel.readString()
         description = parcel.readString()
@@ -125,12 +125,12 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         private = parcel.getBoolean()
         isFavorite = parcel.getBoolean()
         msgId = parcel.readInt()
-        msgPeerId = parcel.readInt()
+        msgPeerId = parcel.readLong()
     }
 
     internal constructor(parcel: ParcelNative) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         albumId = parcel.readInt()
         title = parcel.readString()
         description = parcel.readString()
@@ -166,7 +166,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         private = parcel.readBoolean()
         isFavorite = parcel.readBoolean()
         msgId = parcel.readInt()
-        msgPeerId = parcel.readInt()
+        msgPeerId = parcel.readLong()
     }
 
     @AbsModelType
@@ -186,7 +186,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeInt(albumId)
         parcel.writeString(title)
         parcel.writeString(description)
@@ -222,12 +222,12 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         parcel.putBoolean(private)
         parcel.putBoolean(isFavorite)
         parcel.writeInt(msgId)
-        parcel.writeInt(msgPeerId)
+        parcel.writeLong(msgPeerId)
     }
 
     override fun writeToParcelNative(dest: ParcelNative) {
         dest.writeInt(id)
-        dest.writeInt(ownerId)
+        dest.writeLong(ownerId)
         dest.writeInt(albumId)
         dest.writeString(title)
         dest.writeString(description)
@@ -263,7 +263,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         dest.writeBoolean(private)
         dest.writeBoolean(isFavorite)
         dest.writeInt(msgId)
-        dest.writeInt(msgPeerId)
+        dest.writeLong(msgPeerId)
     }
 
     fun setCanAdd(canAdd: Boolean): Video {
@@ -295,7 +295,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): Video {
+    fun setOwnerId(ownerId: Long): Video {
         this.ownerId = ownerId
         return this
     }
@@ -445,7 +445,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun setMsgPeerId(msgPeerId: Int): Video {
+    fun setMsgPeerId(msgPeerId: Long): Video {
         this.msgPeerId = msgPeerId
         return this
     }

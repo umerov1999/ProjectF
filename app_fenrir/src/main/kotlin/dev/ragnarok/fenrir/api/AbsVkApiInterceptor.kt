@@ -18,7 +18,7 @@ abstract class AbsVkApiInterceptor(private val version: String) :
 
     @AccountType
     abstract val type: Int
-    protected abstract val accountId: Int
+    protected abstract val accountId: Long
 
     /*
    private String RECEIPT_GMS_TOKEN() {

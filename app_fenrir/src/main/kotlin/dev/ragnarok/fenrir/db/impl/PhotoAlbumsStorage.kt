@@ -23,8 +23,8 @@ import io.reactivex.rxjava3.core.SingleEmitter
 
 internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoAlbumsStorage {
     override fun findAlbumById(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int
     ): Single<Optional<PhotoAlbumDboEntity>> {
         return Single.create { e: SingleEmitter<Optional<PhotoAlbumDboEntity>> ->
@@ -69,8 +69,8 @@ internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoA
     }
 
     override fun store(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albums: List<PhotoAlbumDboEntity>,
         clearBefore: Boolean
     ): Completable {
@@ -102,7 +102,7 @@ internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoA
         }
     }
 
-    override fun removeAlbumById(accountId: Int, ownerId: Int, albumId: Int): Completable {
+    override fun removeAlbumById(accountId: Long, ownerId: Long, albumId: Int): Completable {
         return Completable.create { e: CompletableEmitter ->
             val where =
                 PhotoAlbumsColumns.OWNER_ID + " = ? AND " + PhotoAlbumsColumns.ALBUM_ID + " = ?"
@@ -115,7 +115,7 @@ internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoA
 
     private fun mapAlbum(cursor: Cursor): PhotoAlbumDboEntity {
         val id = cursor.getInt(PhotoAlbumsColumns.ALBUM_ID)
-        val ownerId = cursor.getInt(PhotoAlbumsColumns.OWNER_ID)
+        val ownerId = cursor.getLong(PhotoAlbumsColumns.OWNER_ID)
         val album = PhotoAlbumDboEntity().set(id, ownerId)
             .setTitle(cursor.getString(PhotoAlbumsColumns.TITLE))
             .setSize(cursor.getInt(PhotoAlbumsColumns.SIZE))

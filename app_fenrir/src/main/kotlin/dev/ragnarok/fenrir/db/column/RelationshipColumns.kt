@@ -56,7 +56,7 @@ object RelationshipColumns : BaseColumns {
     const val FOREIGN_SUBJECT_GROUP_TYPE = "subject_group_type"
     const val FOREIGN_SUBJECT_GROUP_HAS_UNSEEN_STORIES = "subject_group_has_unseen_stories"
 
-    fun getCV(objectId: Int, subjectId: Int, type: Int): ContentValues {
+    fun getCV(objectId: Long, subjectId: Long, type: Int): ContentValues {
         val cv = ContentValues()
         cv.put(OBJECT_ID, objectId)
         cv.put(SUBJECT_ID, subjectId)

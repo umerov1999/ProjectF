@@ -42,14 +42,14 @@ class CommentsInteractor(
     private val cache: IStorages,
     private val ownersRepository: IOwnersRepository
 ) : ICommentsInteractor {
-    override fun getAllCachedData(accountId: Int, commented: Commented): Single<List<Comment>> {
+    override fun getAllCachedData(accountId: Long, commented: Commented): Single<List<Comment>> {
         val criteria = CommentsCriteria(accountId, commented)
         return cache.comments()
             .getDbosByCriteria(criteria)
             .compose(dbos2models(accountId))
     }
 
-    private fun dbos2models(accountId: Int): SingleTransformer<List<CommentEntity>, List<Comment>> {
+    private fun dbos2models(accountId: Long): SingleTransformer<List<CommentEntity>, List<Comment>> {
         return SingleTransformer { single: Single<List<CommentEntity>> ->
             single.flatMap { dbos ->
                 val ownids = VKOwnIds()
@@ -70,7 +70,7 @@ class CommentsInteractor(
     }
 
     private fun cacheData(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         data: List<CommentEntity>,
         owners: OwnerEntities,
@@ -88,7 +88,7 @@ class CommentsInteractor(
     }
 
     private fun transform(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         comments: List<VKApiComment>,
         users: Collection<VKApiUser>?,
@@ -119,8 +119,8 @@ class CommentsInteractor(
     }
 
     override fun getCommentsNoCache(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         postId: Int,
         offset: Int
     ): Single<List<Comment>> {
@@ -144,7 +144,7 @@ class CommentsInteractor(
     }
 
     override fun getCommentsPortion(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         offset: Int,
         count: Int,
@@ -204,23 +204,23 @@ class CommentsInteractor(
             }
     }
 
-    override fun restoreDraftComment(accountId: Int, commented: Commented): Maybe<DraftComment>? {
+    override fun restoreDraftComment(accountId: Long, commented: Commented): Maybe<DraftComment>? {
         return cache.comments()
             .findEditingComment(accountId, commented)
     }
 
     override fun safeDraftComment(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         body: String?,
         replyToCommentId: Int,
-        replyToUserId: Int
+        replyToUserId: Long
     ): Single<Int> {
         return cache.comments()
             .saveDraftComment(accountId, commented, body, replyToUserId, replyToCommentId)
     }
 
-    override fun isLiked(accountId: Int, commented: Commented, commentId: Int): Single<Boolean> {
+    override fun isLiked(accountId: Long, commented: Commented, commentId: Int): Single<Boolean> {
         val type: String = when (commented.sourceType) {
             CommentedType.PHOTO -> "photo_comment"
             CommentedType.POST -> "comment"
@@ -234,7 +234,7 @@ class CommentsInteractor(
     }
 
     override fun checkAndAddLike(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         commentId: Int
     ): Single<Int> {
@@ -250,7 +250,7 @@ class CommentsInteractor(
     }
 
     override fun like(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         commentId: Int,
         add: Boolean
@@ -280,7 +280,7 @@ class CommentsInteractor(
     }
 
     override fun deleteRestore(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         commentId: Int,
         delete: Boolean
@@ -334,7 +334,7 @@ class CommentsInteractor(
     }
 
     override fun send(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         commentThread: Int?,
         intent: CommentIntent
@@ -375,7 +375,7 @@ class CommentsInteractor(
     }
 
     private fun getCachedAttachmentsToken(
-        accountId: Int,
+        accountId: Long,
         commentDbid: Int
     ): Single<List<IAttachmentToken>> {
         return cache.attachments()
@@ -390,7 +390,7 @@ class CommentsInteractor(
     }
 
     override fun getAllCommentsRange(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         startFromCommentId: Int,
         continueToCommentId: Int
@@ -419,7 +419,7 @@ class CommentsInteractor(
             }
     }
 
-    override fun getAvailableAuthors(accountId: Int): Single<List<Owner>> {
+    override fun getAvailableAuthors(accountId: Long): Single<List<Owner>> {
         return ownersRepository.getBaseOwnerInfo(accountId, accountId, IOwnersRepository.MODE_ANY)
             .flatMap { owner ->
                 networker.vkDefault(accountId)
@@ -435,7 +435,7 @@ class CommentsInteractor(
     }
 
     override fun edit(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         commentId: Int,
         body: String?,
@@ -485,7 +485,7 @@ class CommentsInteractor(
     }
 
     private fun startLooking(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         tempData: TempData,
         startFromCommentId: Int,
@@ -525,7 +525,7 @@ class CommentsInteractor(
     }
 
     private fun getDefaultCommentsService(
-        accountId: Int, commented: Commented, startCommentId: Int,
+        accountId: Long, commented: Commented, startCommentId: Int,
         offset: Int, count: Int, sort: String, extended: Boolean, fields: String
     ): Single<DefaultCommentsResponse> {
         val ownerId = commented.sourceOwnerId
@@ -589,7 +589,7 @@ class CommentsInteractor(
     }
 
     private fun sendComment(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         intent: CommentIntent,
         attachments: List<IAttachmentToken>?
@@ -641,7 +641,7 @@ class CommentsInteractor(
     }
 
     private fun getCommentByIdAndStore(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         commentId: Int,
         commentThread: Int?,
@@ -699,8 +699,8 @@ class CommentsInteractor(
     }
 
     override fun reportComment(
-        accountId: Int,
-        owner_id: Int,
+        accountId: Long,
+        owner_id: Long,
         post_id: Int,
         reason: Int
     ): Single<Int> {

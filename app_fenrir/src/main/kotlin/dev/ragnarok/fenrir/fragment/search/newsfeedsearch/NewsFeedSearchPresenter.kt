@@ -21,7 +21,7 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.core.Single
 
 class NewsFeedSearchPresenter(
-    accountId: Int,
+    accountId: Long,
     criteria: NewsFeedCriteria?,
     savedInstanceState: Bundle?
 ) : AbsSearchPresenter<INewsFeedSearchView, NewsFeedCriteria, Post, StringNextFrom>(
@@ -44,7 +44,7 @@ class NewsFeedSearchPresenter(
     }
 
     override fun doSearch(
-        accountId: Int,
+        accountId: Long,
         criteria: NewsFeedCriteria,
         startFrom: StringNextFrom
     ): Single<Pair<List<Post>, StringNextFrom>> {

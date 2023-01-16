@@ -114,7 +114,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
     private var mRecyclerView: RecyclerView? = null
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mAdapter: AccountAdapter? = null
-    private var temp_to_show = 0
+    private var temp_to_show = 0L
     private val requestEnterPin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -163,7 +163,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
-            val uid = result.data?.extras?.getInt(Extra.USER_ID)
+            val uid = result.data?.extras?.getLong(Extra.USER_ID)
             val token = result.data?.getStringExtra(Extra.TOKEN)
             val Login = result.data?.getStringExtra(Extra.LOGIN)
             val Password = result.data?.getStringExtra(Extra.PASSWORD)
@@ -207,7 +207,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
                     val reader = obj["fenrir_accounts"]
                     for (i in reader?.asJsonArray.orEmpty()) {
                         val elem = i.asJsonObject
-                        val id = elem["user_id"]?.jsonPrimitive?.intOrNull ?: continue
+                        val id = elem["user_id"]?.jsonPrimitive?.longOrNull ?: continue
                         if (Settings.get().accounts().registered.contains(id)) continue
                         val token = elem["access_token"]?.jsonPrimitive?.contentOrNull ?: continue
                         val Type = elem["type"]?.jsonPrimitive?.intOrNull ?: continue
@@ -361,7 +361,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
         ItemTouchHelper(MessagesReplyItemCallback { o: Int ->
             if (mAdapter?.checkPosition(o) == true) {
                 val account = mAdapter?.getByPosition(o) ?: return@MessagesReplyItemCallback
-                val idCurrent = account.getObjectId() == Settings.get()
+                val idCurrent = account.getOwnerObjectId() == Settings.get()
                     .accounts()
                     .current
                 if (!idCurrent) {
@@ -407,7 +407,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
             DirectAuthDialog.ACTION_LOGIN_COMPLETE,
             this
         ) { _: String?, result: Bundle ->
-            val uid = result.getInt(Extra.USER_ID)
+            val uid = result.getLong(Extra.USER_ID)
             val token = result.getString(Extra.TOKEN)
             val Login = result.getString(Extra.LOGIN)
             val Password = result.getString(Extra.PASSWORD)
@@ -484,10 +484,10 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
         )
     }
 
-    private fun indexOf(uid: Int): Int {
+    private fun indexOf(uid: Long): Int {
         mData.nonNullNoEmpty {
             for (i in it.indices) {
-                if (it[i].getObjectId() == uid) {
+                if (it[i].getOwnerObjectId() == uid) {
                     return i
                 }
             }
@@ -496,7 +496,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
     }
 
     private fun merge(account: Account) {
-        val index = indexOf(account.getObjectId())
+        val index = indexOf(account.getOwnerObjectId())
         mData?.let {
             if (index != -1) {
                 it[index] = account
@@ -509,7 +509,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
     }
 
     private fun processNewAccount(
-        uid: Int,
+        uid: Long,
         token: String?,
         @AccountType type: Int,
         Login: String?,
@@ -578,40 +578,40 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
     internal fun delete(account: Account) {
         Settings.get()
             .accounts()
-            .removeAccessToken(account.getObjectId())
+            .removeAccessToken(account.getOwnerObjectId())
         Settings.get()
             .accounts()
-            .removeType(account.getObjectId())
+            .removeType(account.getOwnerObjectId())
         Settings.get()
             .accounts()
-            .removeLogin(account.getObjectId())
+            .removeLogin(account.getOwnerObjectId())
         Settings.get()
             .accounts()
-            .removeDevice(account.getObjectId())
+            .removeDevice(account.getOwnerObjectId())
         Settings.get()
             .accounts()
-            .remove(account.getObjectId())
-        DBHelper.removeDatabaseFor(requireActivity(), account.getObjectId())
-        longpollManager.forceDestroy(account.getObjectId())
+            .remove(account.getOwnerObjectId())
+        DBHelper.removeDatabaseFor(requireActivity(), account.getOwnerObjectId())
+        longpollManager.forceDestroy(account.getOwnerObjectId())
         mData?.remove(account)
         mAdapter?.notifyDataSetChanged()
         resolveEmptyText()
-        Includes.stores.stickers().clearAccount(account.getObjectId()).fromIOToMain()
+        Includes.stores.stickers().clearAccount(account.getOwnerObjectId()).fromIOToMain()
             .subscribe(RxUtils.dummy(), RxUtils.ignore())
     }
 
     internal fun setAsActive(account: Account) {
         Settings.get()
-            .accounts().current = account.getObjectId()
+            .accounts().current = account.getOwnerObjectId()
         mAdapter?.notifyDataSetChanged()
     }
 
     override fun onClick(account: Account) {
-        val idCurrent = account.getObjectId() == Settings.get()
+        val idCurrent = account.getOwnerObjectId() == Settings.get()
             .accounts()
             .current
         val menus = ModalBottomSheetDialogFragment.Builder()
-        if (account.getObjectId() > 0) {
+        if (account.getOwnerObjectId() > 0) {
             menus.add(
                 OptionRequest(
                     0,
@@ -628,7 +628,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
                     false
                 )
             )
-            if (!Settings.get().accounts().getLogin(account.getObjectId()).isNullOrEmpty()) {
+            if (!Settings.get().accounts().getLogin(account.getOwnerObjectId()).isNullOrEmpty()) {
                 menus.add(
                     OptionRequest(
                         3,
@@ -658,7 +658,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
                 )
             )
         }
-        if (isHiddenAccount(account.getObjectId())) {
+        if (isHiddenAccount(account.getOwnerObjectId())) {
             menus.add(
                 OptionRequest(
                     4,
@@ -685,7 +685,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
                         3 -> if (!Settings.get().security().isUsePinForSecurity) {
                             createCustomToast(requireActivity()).showToastError(R.string.not_supported_hide)
                         } else {
-                            temp_to_show = account.getObjectId()
+                            temp_to_show = account.getOwnerObjectId()
                             requestEnterPin.launch(
                                 Intent(
                                     requireActivity(),
@@ -697,7 +697,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
                             val root =
                                 View.inflate(requireActivity(), R.layout.dialog_enter_text, null)
                             (root.findViewById<View>(R.id.editText) as TextInputEditText).setText(
-                                Settings.get().accounts().getDevice(account.getObjectId())
+                                Settings.get().accounts().getDevice(account.getOwnerObjectId())
                             )
                             MaterialAlertDialogBuilder(requireActivity())
                                 .setTitle(R.string.set_device)
@@ -705,7 +705,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
                                 .setView(root)
                                 .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                                     Settings.get().accounts().storeDevice(
-                                        account.getObjectId(),
+                                        account.getOwnerObjectId(),
                                         (root.findViewById<View>(R.id.editText) as TextInputEditText).editableText.toString()
                                     )
                                 }
@@ -728,7 +728,7 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
         )
     }
 
-    private fun getUserIdByAccessToken(@AccountType type: Int, accessToken: String): Single<Int> {
+    private fun getUserIdByAccessToken(@AccountType type: Int, accessToken: String): Single<Long> {
         val bodyBuilder = FormBody.Builder()
         bodyBuilder.add("access_token", accessToken)
             .add("v", Constants.API_VERSION)
@@ -888,14 +888,14 @@ class AccountsFragment : BaseFragment(), View.OnClickListener, AccountAdapter.Ca
     }
 
     internal fun createShortcut(account: Account) {
-        if (account.getObjectId() < 0) {
+        if (account.getOwnerObjectId() < 0) {
             return  // this is community
         }
         val user = account.owner as User
         appendDisposable(
             createAccountShortcutRx(
                 requireActivity(),
-                account.getObjectId(),
+                account.getOwnerObjectId(),
                 account.displayName,
                 user.maxSquareAvatar ?: VKApiUser.CAMERA_50
             ).fromIOToMain().subscribe(

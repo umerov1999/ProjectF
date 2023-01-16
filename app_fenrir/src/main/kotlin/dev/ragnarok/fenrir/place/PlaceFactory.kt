@@ -62,9 +62,9 @@ import dev.ragnarok.fenrir.util.Utils
 
 object PlaceFactory {
 
-    fun getUserDetailsPlace(accountId: Int, user: User, details: UserDetails): Place {
+    fun getUserDetailsPlace(accountId: Long, user: User, details: UserDetails): Place {
         return Place(Place.USER_DETAILS)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withParcelableExtra(Extra.USER, user)
             .withParcelableExtra("details", details)
     }
@@ -81,101 +81,105 @@ object PlaceFactory {
         get() = Place(Place.PROXY_ADD)
 
 
-    fun getUserBlackListPlace(accountId: Int): Place {
+    fun getUserBlackListPlace(accountId: Long): Place {
         return Place(Place.USER_BLACKLIST)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
 
 
-    fun getRequestExecutorPlace(accountId: Int): Place {
+    fun getRequestExecutorPlace(accountId: Long): Place {
         return Place(Place.REQUEST_EXECUTOR)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
 
 
-    fun getCommunityManagerEditPlace(accountId: Int, groupId: Int, manager: Manager?): Place {
+    fun getCommunityManagerEditPlace(accountId: Long, groupId: Long, manager: Manager?): Place {
         return Place(Place.COMMUNITY_MANAGER_EDIT)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.GROUP_ID, groupId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.GROUP_ID, groupId)
             .withParcelableExtra(Extra.MANAGER, manager)
     }
 
 
-    fun getCommunityManagerAddPlace(accountId: Int, groupId: Int, users: ArrayList<User>?): Place {
+    fun getCommunityManagerAddPlace(
+        accountId: Long,
+        groupId: Long,
+        users: ArrayList<User>?
+    ): Place {
         val place = Place(Place.COMMUNITY_MANAGER_ADD)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.GROUP_ID, groupId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.GROUP_ID, groupId)
         place.prepareArguments().putParcelableArrayList(Extra.USERS, users)
         return place
     }
 
 
-    fun getTmpSourceGalleryPlace(accountId: Int, source: TmpSource, index: Int): Place {
+    fun getTmpSourceGalleryPlace(accountId: Long, source: TmpSource, index: Int): Place {
         return Place(Place.VK_PHOTO_TMP_SOURCE)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withIntExtra(Extra.INDEX, index)
             .withParcelableExtra(Extra.SOURCE, source)
     }
 
 
-    fun getTmpSourceGalleryPlace(accountId: Int, ptr: Long, index: Int): Place {
+    fun getTmpSourceGalleryPlace(accountId: Long, ptr: Long, index: Int): Place {
         return Place(Place.VK_PHOTO_TMP_SOURCE)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withIntExtra(Extra.INDEX, index)
             .withLongExtra(Extra.SOURCE, ptr)
     }
 
 
-    fun getCommunityAddBanPlace(accountId: Int, groupId: Int, users: ArrayList<User>?): Place {
+    fun getCommunityAddBanPlace(accountId: Long, groupId: Long, users: ArrayList<User>?): Place {
         val place = Place(Place.COMMUNITY_ADD_BAN)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.GROUP_ID, groupId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.GROUP_ID, groupId)
         place.prepareArguments().putParcelableArrayList(Extra.USERS, users)
         return place
     }
 
 
-    fun getCommunityBanEditPlace(accountId: Int, groupId: Int, banned: Banned?): Place {
+    fun getCommunityBanEditPlace(accountId: Long, groupId: Long, banned: Banned?): Place {
         return Place(Place.COMMUNITY_BAN_EDIT)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.GROUP_ID, groupId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.GROUP_ID, groupId)
             .withParcelableExtra(Extra.BANNED, banned)
     }
 
 
     fun getCommunityControlPlace(
-        accountId: Int,
+        accountId: Long,
         community: Community?,
         settings: GroupSettings?
     ): Place {
         return Place(Place.COMMUNITY_CONTROL)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withParcelableExtra(Extra.SETTINGS, settings)
             .withParcelableExtra(Extra.OWNER, community)
     }
 
 
-    fun getShowCommunityInfoPlace(accountId: Int, community: Community?): Place {
+    fun getShowCommunityInfoPlace(accountId: Long, community: Community?): Place {
         return Place(Place.COMMUNITY_INFO)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withParcelableExtra(Extra.OWNER, community)
     }
 
 
-    fun getShowCommunityLinksInfoPlace(accountId: Int, community: Community?): Place {
+    fun getShowCommunityLinksInfoPlace(accountId: Long, community: Community?): Place {
         return Place(Place.COMMUNITY_INFO_LINKS)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withParcelableExtra(Extra.OWNER, community)
     }
 
-    fun getNewsfeedCommentsPlace(accountId: Int): Place {
+    fun getNewsfeedCommentsPlace(accountId: Long): Place {
         return Place(Place.NEWSFEED_COMMENTS)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
 
 
     fun getSingleTabSearchPlace(
-        accountId: Int,
+        accountId: Long,
         @SearchContentType type: Int,
         criteria: BaseSearchCriteria?
     ): Place {
@@ -194,23 +198,23 @@ object PlaceFactory {
 
 
     fun getCommentCreatePlace(
-        accountId: Int,
+        accountId: Long,
         commentId: Int,
-        sourceOwnerId: Int,
+        sourceOwnerId: Long,
         body: String?
     ): Place {
         return Place(Place.COMMENT_CREATE)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withIntExtra(Extra.COMMENT_ID, commentId)
-            .withIntExtra(Extra.OWNER_ID, sourceOwnerId)
+            .withLongExtra(Extra.OWNER_ID, sourceOwnerId)
             .withStringExtra(Extra.BODY, body)
     }
 
 
     fun getPhotoAlbumGalleryPlace(
-        accountId: Int,
+        accountId: Long,
         albumId: Int,
-        ownerId: Int,
+        ownerId: Long,
         parcelNativePointer: Long,
         position: Int,
         readOnly: Boolean,
@@ -232,9 +236,9 @@ object PlaceFactory {
 
 
     fun getPhotoAlbumGalleryPlace(
-        accountId: Int,
+        accountId: Long,
         albumId: Int,
-        ownerId: Int,
+        ownerId: Long,
         photos: ArrayList<Photo>,
         position: Int,
         readOnly: Boolean,
@@ -256,9 +260,9 @@ object PlaceFactory {
 
 
     fun getPhotoAlbumGalleryPlace(
-        accountId: Int,
+        accountId: Long,
         albumId: Int,
-        ownerId: Int,
+        ownerId: Long,
         source: TmpSource,
         position: Int,
         readOnly: Boolean,
@@ -279,7 +283,7 @@ object PlaceFactory {
     }
 
     fun getSimpleGalleryPlace(
-        accountId: Int,
+        accountId: Long,
         photos: ArrayList<Photo>,
         position: Int,
         needRefresh: Boolean
@@ -289,13 +293,13 @@ object PlaceFactory {
     }
 
 
-    fun getFavePhotosGallery(accountId: Int, photos: ArrayList<Photo>, position: Int): Place {
+    fun getFavePhotosGallery(accountId: Long, photos: ArrayList<Photo>, position: Int): Place {
         return Place(Place.FAVE_PHOTOS_GALLERY)
             .setArguments(buildArgsForFave(accountId, photos, position))
     }
 
 
-    fun getCreatePollPlace(accountId: Int, ownerId: Int): Place {
+    fun getCreatePollPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.CREATE_POLL).setArguments(
             CreatePollFragment.buildArgs(
                 accountId,
@@ -309,28 +313,28 @@ object PlaceFactory {
         get() = Place(Place.SETTINGS_THEME)
 
 
-    fun getPollPlace(accountId: Int, poll: Poll): Place {
+    fun getPollPlace(accountId: Long, poll: Poll): Place {
         return Place(Place.POLL).setArguments(PollFragment.buildArgs(accountId, poll))
     }
 
 
-    fun getGifPagerPlace(accountId: Int, documents: ArrayList<Document>, index: Int): Place {
+    fun getGifPagerPlace(accountId: Long, documents: ArrayList<Document>, index: Int): Place {
         val place = Place(Place.GIF_PAGER)
         place.setArguments(GifPagerActivity.buildArgs(accountId, documents, index))
         return place
     }
 
 
-    fun getWallAttachmentsPlace(accountId: Int, ownerId: Int, type: String?): Place {
+    fun getWallAttachmentsPlace(accountId: Long, ownerId: Long, type: String?): Place {
         return Place(Place.WALL_ATTACHMENTS)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.OWNER_ID, ownerId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.OWNER_ID, ownerId)
             .withStringExtra(Extra.TYPE, type)
     }
 
     fun getMessagesLookupPlace(
-        aid: Int,
-        peerId: Int,
+        aid: Long,
+        peerId: Long,
         focusMessageId: Int,
         message: Message?
     ): Place {
@@ -340,8 +344,8 @@ object PlaceFactory {
 
 
     fun getWallSearchCommentsAttachmentsPlace(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         posts: ArrayList<Int>
     ): Place {
         return Place(Place.SEARCH_COMMENTS)
@@ -356,7 +360,7 @@ object PlaceFactory {
 
 
     fun getUnreadMessagesPlace(
-        aid: Int,
+        aid: Long,
         focusMessageId: Int,
         incoming: Int,
         outgoing: Int,
@@ -377,46 +381,46 @@ object PlaceFactory {
     }
 
 
-    fun getEditPhotoAlbumPlace(aid: Int, album: PhotoAlbum, editor: PhotoAlbumEditor): Place {
+    fun getEditPhotoAlbumPlace(aid: Long, album: PhotoAlbum, editor: PhotoAlbumEditor): Place {
         return Place(Place.EDIT_PHOTO_ALBUM)
             .setArguments(CreatePhotoAlbumFragment.buildArgsForEdit(aid, album, editor))
     }
 
 
-    fun getCreatePhotoAlbumPlace(aid: Int, ownerId: Int): Place {
+    fun getCreatePhotoAlbumPlace(aid: Long, ownerId: Long): Place {
         return Place(Place.CREATE_PHOTO_ALBUM)
             .setArguments(CreatePhotoAlbumFragment.buildArgsForCreate(aid, ownerId))
     }
 
-    fun getMarketAlbumPlace(accountId: Int, ownerId: Int): Place {
+    fun getMarketAlbumPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.MARKET_ALBUMS)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.OWNER_ID, ownerId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.OWNER_ID, ownerId)
     }
 
-    fun getNarrativesPlace(accountId: Int, ownerId: Int): Place {
+    fun getNarrativesPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.NARRATIVES)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.OWNER_ID, ownerId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.OWNER_ID, ownerId)
     }
 
-    fun getMarketPlace(accountId: Int, ownerId: Int, albumId: Int, isService: Boolean): Place {
+    fun getMarketPlace(accountId: Long, ownerId: Long, albumId: Int, isService: Boolean): Place {
         return Place(Place.MARKETS)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.OWNER_ID, ownerId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.OWNER_ID, ownerId)
             .withIntExtra(Extra.ALBUM_ID, albumId)
             .withBoolExtra(Extra.SERVICE, isService)
     }
 
 
-    fun getPhotoAllCommentsPlace(accountId: Int, ownerId: Int): Place {
+    fun getPhotoAllCommentsPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.PHOTO_ALL_COMMENT)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.OWNER_ID, ownerId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.OWNER_ID, ownerId)
     }
 
 
-    fun getMarketViewPlace(accountId: Int, market: Market): Place {
+    fun getMarketViewPlace(accountId: Long, market: Market): Place {
         return Place(Place.MARKET_VIEW).setArguments(
             MarketViewFragment.buildArgs(
                 accountId,
@@ -446,7 +450,7 @@ object PlaceFactory {
     }
 
 
-    fun getResolveDomainPlace(aid: Int, url: String?, domain: String?): Place {
+    fun getResolveDomainPlace(aid: Long, url: String?, domain: String?): Place {
         return Place(Place.RESOLVE_DOMAIN).setArguments(
             ResolveDomainDialog.buildArgs(
                 aid,
@@ -456,51 +460,51 @@ object PlaceFactory {
         )
     }
 
-    fun getBookmarksPlace(aid: Int, tab: Int): Place {
+    fun getBookmarksPlace(aid: Long, tab: Int): Place {
         return Place(Place.BOOKMARKS).setArguments(FaveTabsFragment.buildArgs(aid, tab))
     }
 
-    fun getNotificationsPlace(aid: Int): Place {
+    fun getNotificationsPlace(aid: Long): Place {
         return Place(Place.NOTIFICATIONS).setArguments(FeedbackFragment.buildArgs(aid))
     }
 
-    fun getFeedPlace(aid: Int): Place {
+    fun getFeedPlace(aid: Long): Place {
         return Place(Place.FEED).setArguments(FeedFragment.buildArgs(aid))
     }
 
-    fun getDocumentsPlace(aid: Int, ownerId: Int, action: String?): Place {
+    fun getDocumentsPlace(aid: Long, ownerId: Long, action: String?): Place {
         return Place(Place.DOCS).setArguments(DocsFragment.buildArgs(aid, ownerId, action))
     }
 
-    fun getPreferencesPlace(aid: Int): Place {
+    fun getPreferencesPlace(aid: Long): Place {
         return Place(Place.PREFERENCES).setArguments(PreferencesFragment.buildArgs(aid))
     }
 
-    fun getDialogsPlace(accountId: Int, dialogsOwnerId: Int, subtitle: String?): Place {
+    fun getDialogsPlace(accountId: Long, dialogsOwnerId: Long, subtitle: String?): Place {
         return Place(Place.DIALOGS)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.OWNER_ID, dialogsOwnerId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.OWNER_ID, dialogsOwnerId)
             .withStringExtra(Extra.SUBTITLE, subtitle)
     }
 
 
-    fun getChatPlace(accountId: Int, messagesOwnerId: Int, peer: Peer): Place {
+    fun getChatPlace(accountId: Long, messagesOwnerId: Long, peer: Peer): Place {
         return Place(Place.CHAT)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.OWNER_ID, messagesOwnerId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.OWNER_ID, messagesOwnerId)
             .withParcelableExtra(Extra.PEER, peer)
     }
 
 
-    fun getLocalServerPhotosPlace(accountId: Int): Place {
+    fun getLocalServerPhotosPlace(accountId: Long): Place {
         return Place(Place.LOCAL_SERVER_PHOTO)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
 
 
     fun getVKPhotosAlbumPlace(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         action: String?,
         selected: Int = -1
@@ -517,20 +521,20 @@ object PlaceFactory {
     }
 
     fun getVKPhotoAlbumsPlace(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         action: String?,
         ownerWrapper: ParcelableOwnerWrapper?
     ): Place {
         return Place(Place.VK_PHOTO_ALBUMS)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.OWNER_ID, ownerId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.OWNER_ID, ownerId)
             .withStringExtra(Extra.ACTION, action)
             .withParcelableExtra(Extra.OWNER, ownerWrapper)
     }
 
     fun getExternalLinkPlace(
-        accountId: Int,
+        accountId: Long,
         url: String,
         owner: String? = null,
         type: String? = null
@@ -545,52 +549,52 @@ object PlaceFactory {
         )
     }
 
-    fun getRepostPlace(accountId: Int, gid: Int?, post: Post?): Place {
+    fun getRepostPlace(accountId: Long, gid: Long?, post: Post?): Place {
         return Place(Place.REPOST).setArguments(RepostFragment.buildArgs(accountId, gid, post))
     }
 
-    fun getEditCommentPlace(accountId: Int, comment: Comment?, commemtId: Int?): Place {
+    fun getEditCommentPlace(accountId: Long, comment: Comment?, commemtId: Int?): Place {
         val ret = Place(Place.EDIT_COMMENT)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withParcelableExtra(Extra.COMMENT, comment)
         if (commemtId != null) ret.withIntExtra(Extra.COMMENT_ID, commemtId)
         return ret
     }
 
-    fun getAudiosPlace(accountId: Int, ownerId: Int): Place {
-        return Place(Place.AUDIOS).withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.OWNER_ID, ownerId)
+    fun getAudiosPlace(accountId: Long, ownerId: Long): Place {
+        return Place(Place.AUDIOS).withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.OWNER_ID, ownerId)
     }
 
-    fun getShortLinks(accountId: Int): Place {
-        return Place(Place.SHORT_LINKS).withIntExtra(Extra.ACCOUNT_ID, accountId)
+    fun getShortLinks(accountId: Long): Place {
+        return Place(Place.SHORT_LINKS).withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
 
 
-    fun getImportantMessages(accountId: Int): Place {
-        return Place(Place.IMPORTANT_MESSAGES).withIntExtra(Extra.ACCOUNT_ID, accountId)
+    fun getImportantMessages(accountId: Long): Place {
+        return Place(Place.IMPORTANT_MESSAGES).withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
 
     fun getRemoteFileManager(): Place {
         return Place(Place.REMOTE_FILE_MANAGER)
     }
 
-    fun getOwnerArticles(accountId: Int, ownerId: Int): Place {
-        return Place(Place.OWNER_ARTICLES).withIntExtra(Extra.ACCOUNT_ID, accountId).withIntExtra(
+    fun getOwnerArticles(accountId: Long, ownerId: Long): Place {
+        return Place(Place.OWNER_ARTICLES).withLongExtra(Extra.ACCOUNT_ID, accountId).withLongExtra(
             Extra.OWNER_ID, ownerId
         )
     }
 
 
-    fun getMentionsPlace(accountId: Int, ownerId: Int): Place {
-        return Place(Place.MENTIONS).withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.OWNER_ID, ownerId)
+    fun getMentionsPlace(accountId: Long, ownerId: Long): Place {
+        return Place(Place.MENTIONS).withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.OWNER_ID, ownerId)
     }
 
 
     fun getAudiosInAlbumPlace(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int?,
         access_key: String?
     ): Place {
@@ -605,18 +609,19 @@ object PlaceFactory {
     }
 
 
-    fun SearchByAudioPlace(accountId: Int, audio_ownerId: Int, audio_id: Int): Place {
-        return Place(Place.SEARCH_BY_AUDIO).withIntExtra(Extra.ACCOUNT_ID, accountId).withIntExtra(
-            Extra.OWNER_ID, audio_ownerId
-        ).withIntExtra(Extra.ID, audio_id)
+    fun SearchByAudioPlace(accountId: Long, audio_ownerId: Long, audio_id: Int): Place {
+        return Place(Place.SEARCH_BY_AUDIO).withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(
+                Extra.OWNER_ID, audio_ownerId
+            ).withIntExtra(Extra.ID, audio_id)
     }
 
 
-    fun getPlayerPlace(accountId: Int): Place {
+    fun getPlayerPlace(accountId: Long): Place {
         return Place(Place.PLAYER).setArguments(AudioPlayerFragment.buildArgs(accountId))
     }
 
-    fun getVideosPlace(accountId: Int, ownerId: Int, action: String?): Place {
+    fun getVideosPlace(accountId: Long, ownerId: Long, action: String?): Place {
         return Place(Place.VIDEOS).setArguments(
             VideosTabsFragment.buildArgs(
                 accountId,
@@ -628,8 +633,8 @@ object PlaceFactory {
 
 
     fun getVideoAlbumPlace(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         action: String?,
         albumTitle: String?
@@ -639,7 +644,7 @@ object PlaceFactory {
     }
 
 
-    fun getVideoPreviewPlace(accountId: Int, video: Video): Place {
+    fun getVideoPreviewPlace(accountId: Long, video: Video): Place {
         return Place(Place.VIDEO_PREVIEW)
             .setArguments(
                 VideoPreviewFragment.buildArgs(
@@ -653,14 +658,14 @@ object PlaceFactory {
     }
 
 
-    fun getHistoryVideoPreviewPlace(accountId: Int, stories: ArrayList<Story>, index: Int): Place {
+    fun getHistoryVideoPreviewPlace(accountId: Long, stories: ArrayList<Story>, index: Int): Place {
         return Place(Place.STORY_PLAYER)
             .setArguments(StoryPagerActivity.buildArgs(accountId, stories, index))
     }
 
     fun getVideoPreviewPlace(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         videoId: Int,
         accessKey: String?,
         video: Video?
@@ -683,9 +688,9 @@ object PlaceFactory {
     }
 
     fun getLikesCopiesPlace(
-        accountId: Int,
+        accountId: Long,
         type: String?,
-        ownerId: Int,
+        ownerId: Long,
         itemId: Int,
         filter: String?
     ): Place {
@@ -693,15 +698,15 @@ object PlaceFactory {
             .setArguments(LikesFragment.buildArgs(accountId, type, ownerId, itemId, filter))
     }
 
-    fun getCommunitiesPlace(accountId: Int, userId: Int): Place {
+    fun getCommunitiesPlace(accountId: Long, userId: Long): Place {
         return Place(Place.COMMUNITIES)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.USER_ID, userId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.USER_ID, userId)
     }
 
     fun getFriendsFollowersPlace(
-        accountId: Int,
-        userId: Int,
+        accountId: Long,
+        userId: Long,
         tab: Int,
         counters: FriendsCounters?
     ): Place {
@@ -710,7 +715,7 @@ object PlaceFactory {
     }
 
 
-    fun getChatMembersPlace(accountId: Int, chatId: Int): Place {
+    fun getChatMembersPlace(accountId: Long, chatId: Long): Place {
         return Place(Place.CHAT_MEMBERS).setArguments(
             ChatMembersFragment.buildArgs(
                 accountId,
@@ -719,25 +724,25 @@ object PlaceFactory {
         )
     }
 
-    fun getOwnerWallPlace(accountId: Int, owner: Owner): Place {
+    fun getOwnerWallPlace(accountId: Long, owner: Owner): Place {
         val ownerId = owner.ownerId
         return getOwnerWallPlace(accountId, ownerId, owner)
     }
 
-    fun getOwnerWallPlace(accountId: Int, ownerId: Int, owner: Owner?): Place {
+    fun getOwnerWallPlace(accountId: Long, ownerId: Long, owner: Owner?): Place {
         return Place(Place.WALL).setArguments(AbsWallFragment.buildArgs(accountId, ownerId, owner))
     }
 
 
-    fun getTopicsPlace(accountId: Int, ownerId: Int): Place {
+    fun getTopicsPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.TOPICS).setArguments(TopicsFragment.buildArgs(accountId, ownerId))
     }
 
-    fun getSearchPlace(accountId: Int, tab: Int): Place {
+    fun getSearchPlace(accountId: Long, tab: Int): Place {
         return Place(Place.SEARCH).setArguments(SearchTabsFragment.buildArgs(accountId, tab))
     }
 
-    fun getAudiosTabsSearchPlace(accountId: Int): Place {
+    fun getAudiosTabsSearchPlace(accountId: Long): Place {
         return Place(Place.AUDIOS_SEARCH_TABS).setArguments(
             AudioSearchTabsFragment.buildArgs(
                 accountId
@@ -746,7 +751,7 @@ object PlaceFactory {
     }
 
 
-    fun getGroupChatsPlace(accountId: Int, groupId: Int): Place {
+    fun getGroupChatsPlace(accountId: Long, groupId: Long): Place {
         return Place(Place.GROUP_CHATS).setArguments(
             GroupChatsFragment.buildArgs(
                 accountId,
@@ -757,7 +762,7 @@ object PlaceFactory {
 
 
     fun getCreatePostPlace(
-        accountId: Int, ownerId: Int, @EditingPostType editingType: Int,
+        accountId: Long, ownerId: Long, @EditingPostType editingType: Int,
         input: List<AbsModel>?, attrs: WallEditorAttrs,
         streams: ArrayList<Uri>?, body: String?, mime: String?
     ): Place {
@@ -781,7 +786,7 @@ object PlaceFactory {
     }
 
 
-    fun getForwardMessagesPlace(accountId: Int, messages: ArrayList<Message>): Place {
+    fun getForwardMessagesPlace(accountId: Long, messages: ArrayList<Message>): Place {
         return Place(Place.FORWARD_MESSAGES).setArguments(
             FwdsFragment.buildArgs(
                 accountId,
@@ -791,35 +796,35 @@ object PlaceFactory {
     }
 
 
-    fun getEditPostPlace(accountId: Int, post: Post, attrs: WallEditorAttrs): Place {
+    fun getEditPostPlace(accountId: Long, post: Post, attrs: WallEditorAttrs): Place {
         return Place(Place.EDIT_POST)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withParcelableExtra(Extra.POST, post)
             .withParcelableExtra(Extra.ATTRS, attrs)
     }
 
-    fun getPostPreviewPlace(accountId: Int, postId: Int, ownerId: Int): Place {
+    fun getPostPreviewPlace(accountId: Long, postId: Int, ownerId: Long): Place {
         return getPostPreviewPlace(accountId, postId, ownerId, null)
     }
 
-    fun getPostPreviewPlace(accountId: Int, postId: Int, ownerId: Int, post: Post?): Place {
+    fun getPostPreviewPlace(accountId: Long, postId: Int, ownerId: Long, post: Post?): Place {
         return Place(Place.WALL_POST)
             .setArguments(WallPostFragment.buildArgs(accountId, postId, ownerId, post))
     }
 
-    fun getCommunityMembersPlace(accountId: Int, groupId: Int): Place {
+    fun getCommunityMembersPlace(accountId: Long, groupId: Long): Place {
         return Place(Place.COMMUNITY_MEMBERS)
             .setArguments(CommunityMembersFragment.buildArgs(accountId, groupId))
     }
 
-    fun getFriendsBirthdaysPlace(accountId: Int, ownerId: Int): Place {
+    fun getFriendsBirthdaysPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.FRIENDS_BIRTHDAYS)
             .setArguments(BirthDayFragment.buildArgs(accountId, ownerId))
     }
 
     fun getCatalogV2AudioCatalogPlace(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         artistId: String?,
         query: String?,
         url: String?
@@ -828,15 +833,15 @@ object PlaceFactory {
             .setArguments(CatalogV2ListFragment.buildArgs(accountId, ownerId, artistId, query, url))
     }
 
-    fun getCatalogV2AudioSectionPlace(accountId: Int, sectionId: String): Place {
+    fun getCatalogV2AudioSectionPlace(accountId: Long, sectionId: String): Place {
         return Place(Place.CATALOG_V2_AUDIO_SECTION)
             .setArguments(CatalogV2SectionFragment.buildArgs(accountId, sectionId))
     }
 
     fun getAlbumsByVideoPlace(
-        accountId: Int,
-        ownerId: Int,
-        video_ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
+        video_ownerId: Long,
         video_Id: Int
     ): Place {
         return Place(Place.ALBUMS_BY_VIDEO)
@@ -852,9 +857,9 @@ object PlaceFactory {
 
 
     fun getDocPreviewPlace(
-        accountId: Int,
+        accountId: Long,
         docId: Int,
-        ownerId: Int,
+        ownerId: Long,
         accessKey: String?,
         document: Document?
     ): Place {
@@ -872,7 +877,7 @@ object PlaceFactory {
     }
 
 
-    fun getDocPreviewPlace(accountId: Int, document: Document): Place {
+    fun getDocPreviewPlace(accountId: Long, document: Document): Place {
         return getDocPreviewPlace(
             accountId,
             document.id,
@@ -883,23 +888,23 @@ object PlaceFactory {
     }
 
 
-    fun getConversationAttachmentsPlace(accountId: Int, peerId: Int, type: String?): Place {
+    fun getConversationAttachmentsPlace(accountId: Long, peerId: Long, type: String?): Place {
         return Place(Place.CONVERSATION_ATTACHMENTS)
             .setArguments(ConversationFragmentFactory.buildArgs(accountId, peerId, type))
     }
 
-    fun getCommentsPlace(accountId: Int, commented: Commented?, focusToCommentId: Int?): Place {
+    fun getCommentsPlace(accountId: Long, commented: Commented?, focusToCommentId: Int?): Place {
         return Place(Place.COMMENTS)
             .setArguments(CommentsFragment.buildArgs(accountId, commented, focusToCommentId, null))
     }
 
-    fun getFeedBanPlace(accountId: Int): Place {
+    fun getFeedBanPlace(accountId: Long): Place {
         return Place(Place.FEED_BAN)
             .setArguments(FeedBannedFragment.buildArgs(accountId))
     }
 
     fun getCommentsThreadPlace(
-        accountId: Int,
+        accountId: Long,
         commented: Commented?,
         focusToCommentId: Int?,
         commemtId: Int?
@@ -916,7 +921,7 @@ object PlaceFactory {
     }
 
 
-    fun getArtistPlace(accountId: Int, id: String?): Place {
+    fun getArtistPlace(accountId: Long, id: String?): Place {
         return if (Settings.get().other().isAudio_catalog_v2) getCatalogV2AudioCatalogPlace(
             accountId,
             accountId,
@@ -930,16 +935,16 @@ object PlaceFactory {
     }
 
 
-    fun getFriendsByPhonesPlace(accountId: Int): Place {
+    fun getFriendsByPhonesPlace(accountId: Long): Place {
         return Place(Place.FRIENDS_BY_PHONES)
             .setArguments(FriendsByPhonesFragment.buildArgs(accountId))
     }
 
 
-    fun getGiftsPlace(accountId: Int, ownerId: Int): Place {
+    fun getGiftsPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.GIFTS)
-            .withIntExtra(Extra.ACCOUNT_ID, accountId)
-            .withIntExtra(Extra.OWNER_ID, ownerId)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.OWNER_ID, ownerId)
     }
 
     fun getShortcutsPlace(): Place {
@@ -947,8 +952,8 @@ object PlaceFactory {
     }
 
     fun getVotersPlace(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         pollId: Int,
         board: Boolean,
         answer: Long

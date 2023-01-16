@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.model.GroupChats
 import dev.ragnarok.fenrir.model.LoadMoreState
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class GroupChatsPresenter(accountId: Int, private val groupId: Int, savedInstanceState: Bundle?) :
+class GroupChatsPresenter(accountId: Long, private val groupId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IGroupChatsView>(accountId, savedInstanceState) {
     private val chats: MutableList<GroupChats>
     private val utilsInteractor: IUtilsInteractor

@@ -11,7 +11,7 @@ import io.reactivex.rxjava3.core.Single
 
 class DialogsInteractor(private val networker: INetworker, private val repositories: IStorages) :
     IDialogsInteractor {
-    override fun getChatById(accountId: Int, peerId: Int): Single<Chat> {
+    override fun getChatById(accountId: Long, peerId: Long): Single<Chat> {
         return repositories.dialogs()
             .findChatById(accountId, peerId)
             .flatMap { optional ->

@@ -9,5 +9,5 @@ interface IFavePhotosView : IMvpView, IErrorView {
     fun notifyDataSetChanged()
     fun notifyDataAdded(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
-    fun goToGallery(accountId: Int, photos: ArrayList<Photo>, position: Int)
+    fun goToGallery(accountId: Long, photos: ArrayList<Photo>, position: Int)
 }

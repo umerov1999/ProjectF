@@ -18,15 +18,15 @@ import dev.ragnarok.fenrir.util.Utils
 
 class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
     private val localServerInteractor: ILocalServerInteractor
-    private val mOwnerId: Int
+    private val mOwnerId: Long
     private val mAlbumId: Int
     private val invertPhotoRev: Boolean
     private var canLoad: Boolean
 
     constructor(
         index: Int,
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         photos: ArrayList<Photo>,
         readOnly: Boolean,
@@ -49,8 +49,8 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
 
     constructor(
         index: Int,
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         source: TmpSource,
         readOnly: Boolean,

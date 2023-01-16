@@ -13,7 +13,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 
-class OtherApi(private val accountId: Int, private val provider: IVkRestProvider) : IOtherApi {
+class OtherApi(private val accountId: Long, private val provider: IVkRestProvider) : IOtherApi {
     override fun rawRequest(
         method: String,
         postParams: Map<String, String>

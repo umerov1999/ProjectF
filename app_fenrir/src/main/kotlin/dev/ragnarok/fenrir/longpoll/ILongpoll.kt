@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.longpoll
 
 interface ILongpoll {
-    val accountId: Int
+    val accountId: Long
     fun connect()
     fun shutdown()
 }

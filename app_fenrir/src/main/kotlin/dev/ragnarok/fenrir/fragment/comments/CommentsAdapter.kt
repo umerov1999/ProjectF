@@ -106,7 +106,7 @@ class CommentsAdapter(
                         listener?.onReplyToOwnerClick(link.replyToOwner, link.replyToCommentId)
                     }
 
-                    override fun onOwnerClick(ownerId: Int) {
+                    override fun onOwnerClick(ownerId: Long) {
                         listener?.onAvatarClick(ownerId)
                     }
                 })
@@ -152,7 +152,7 @@ class CommentsAdapter(
             listener,
             onHashTagClickListener
         )
-        if (text.isNullOrEmpty() && comment.fromId == 0) {
+        if (text.isNullOrEmpty() && comment.fromId == 0L) {
             holder.tvText.visibility = View.VISIBLE
             holder.tvText.setText(R.string.deleted)
         } else {
@@ -182,7 +182,7 @@ class CommentsAdapter(
             listener?.onCommentLikeClick(comment, !comment.isUserLikes)
         }
         holder.ivOwnerAvatar.setOnClickListener {
-            if (comment.fromId == 0) {
+            if (comment.fromId == 0L) {
                 return@setOnClickListener
             }
             listener?.onAvatarClick(comment.fromId)
@@ -191,7 +191,7 @@ class CommentsAdapter(
 
     private fun genTimeAndReplyText(comment: Comment): Spannable {
         val time = AppTextUtils.getDateFromUnixTime(comment.date)
-        if (comment.replyToUser == 0) {
+        if (comment.replyToUser == 0L) {
             return Spannable.Factory.getInstance().newSpannable(time)
         }
         val commentText = context.getString(R.string.comment).lowercase(Locale.getDefault())
@@ -234,9 +234,9 @@ class CommentsAdapter(
     }
 
     interface OnCommentActionListener {
-        fun onReplyToOwnerClick(ownerId: Int, commentId: Int)
+        fun onReplyToOwnerClick(ownerId: Long, commentId: Int)
         fun onRestoreComment(commentId: Int)
-        fun onAvatarClick(ownerId: Int)
+        fun onAvatarClick(ownerId: Long)
         fun onCommentLikeClick(comment: Comment, add: Boolean)
         fun populateCommentContextMenu(comment: Comment)
     }

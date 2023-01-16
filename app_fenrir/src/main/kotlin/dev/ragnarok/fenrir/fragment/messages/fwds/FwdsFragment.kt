@@ -60,11 +60,11 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
             .apply(requireActivity())
     }
 
-    override fun onAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onAvatarClick(message: Message, userId: Long, position: Int) {
         onOpenOwner(userId)
     }
 
-    override fun onLongAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onLongAvatarClick(message: Message, userId: Long, position: Int) {
         onOpenOwner(userId)
     }
 
@@ -151,7 +151,7 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
             override fun create(): FwdsPresenter {
                 val messages: ArrayList<Message> =
                     requireArguments().getParcelableArrayListCompat(Extra.MESSAGES)!!
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 return FwdsPresenter(accountId, messages, saveInstanceState)
             }
         }
@@ -168,7 +168,7 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Int,
+        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         presenter?.fireVoicePlayButtonClick(
@@ -192,9 +192,9 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
     }
 
     companion object {
-        fun buildArgs(accountId: Int, messages: ArrayList<Message>): Bundle {
+        fun buildArgs(accountId: Long, messages: ArrayList<Message>): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelableArrayList(Extra.MESSAGES, messages)
             return args
         }

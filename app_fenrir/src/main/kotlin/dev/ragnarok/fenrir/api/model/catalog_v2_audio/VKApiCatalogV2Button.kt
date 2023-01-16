@@ -18,7 +18,7 @@ class VKApiCatalogV2Button {
     var title: String? = null
 
     @SerialName("owner_id")
-    var owner_id: Int = 0
+    var owner_id: Long = 0
 
     @SerialName("target_block_ids")
     var target_block_ids: List<String>? = null

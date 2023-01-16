@@ -11,8 +11,8 @@ class OnlineFriendsFragment : AbsOwnersListFragment<OnlineFriendsPresenter, ISim
         return object : IPresenterFactory<OnlineFriendsPresenter> {
             override fun create(): OnlineFriendsPresenter {
                 return OnlineFriendsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.USER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.USER_ID),
                     saveInstanceState
                 )
             }
@@ -28,10 +28,10 @@ class OnlineFriendsFragment : AbsOwnersListFragment<OnlineFriendsPresenter, ISim
     }
 
     companion object {
-        fun newInstance(accountId: Int, userId: Int): OnlineFriendsFragment {
+        fun newInstance(accountId: Long, userId: Long): OnlineFriendsFragment {
             val bundle = Bundle()
-            bundle.putInt(Extra.USER_ID, userId)
-            bundle.putInt(Extra.ACCOUNT_ID, accountId)
+            bundle.putLong(Extra.USER_ID, userId)
+            bundle.putLong(Extra.ACCOUNT_ID, accountId)
             val friendsFragment = OnlineFriendsFragment()
             friendsFragment.arguments = bundle
             return friendsFragment

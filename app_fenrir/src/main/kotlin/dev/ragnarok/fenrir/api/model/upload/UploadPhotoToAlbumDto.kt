@@ -12,7 +12,7 @@ class UploadPhotoToAlbumDto {
     var photos_list: String? = null
 
     @SerialName("aid")
-    var aid = 0
+    var aid = 0L
 
     @SerialName("hash")
     var hash: String? = null

@@ -10,9 +10,9 @@ import io.reactivex.rxjava3.core.Single
 
 class LikesInteractor(private val networker: INetworker) : ILikesInteractor {
     override fun getLikes(
-        accountId: Int,
+        accountId: Long,
         type: String?,
-        ownerId: Int,
+        ownerId: Long,
         itemId: Int,
         filter: String?,
         count: Int,

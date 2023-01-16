@@ -30,7 +30,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
-class RequestExecutePresenter(accountId: Int, savedInstanceState: Bundle?) :
+class RequestExecutePresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IRequestExecuteView>(accountId, savedInstanceState) {
     private val networker: INetworker = get()
     private var body: String? = null
@@ -153,7 +153,7 @@ class RequestExecutePresenter(accountId: Int, savedInstanceState: Bundle?) :
     }
 
     private fun executeSingle(
-        accountId: Int,
+        accountId: Long,
         method: String,
         params: Map<String, String>
     ): Single<Pair<String?, String?>> {

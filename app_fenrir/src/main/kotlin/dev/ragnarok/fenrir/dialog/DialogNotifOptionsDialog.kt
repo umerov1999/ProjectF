@@ -16,8 +16,8 @@ import dev.ragnarok.fenrir.util.Utils.hasFlag
 
 class DialogNotifOptionsDialog : BottomSheetDialogFragment() {
     private var mask = 0
-    private var peerId = 0
-    private var accountId = 0
+    private var peerId = 0L
+    private var accountId = 0L
     private var scEnable: MaterialSwitch? = null
     private var scHighPriority: MaterialSwitch? = null
     private var scSound: MaterialSwitch? = null
@@ -26,8 +26,8 @@ class DialogNotifOptionsDialog : BottomSheetDialogFragment() {
     private var listener: Listener? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-        peerId = requireArguments().getInt(Extra.PEER_ID)
+        accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        peerId = requireArguments().getLong(Extra.PEER_ID)
         mask = Settings.get()
             .notifications()
             .getNotifPref(accountId, peerId)
@@ -108,10 +108,10 @@ class DialogNotifOptionsDialog : BottomSheetDialogFragment() {
     }
 
     companion object {
-        fun newInstance(aid: Int, peerId: Int, listener: Listener?): DialogNotifOptionsDialog {
+        fun newInstance(aid: Long, peerId: Long, listener: Listener?): DialogNotifOptionsDialog {
             val args = Bundle()
-            args.putInt(Extra.PEER_ID, peerId)
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.PEER_ID, peerId)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             val dialog = DialogNotifOptionsDialog()
             dialog.listener = listener
             dialog.arguments = args

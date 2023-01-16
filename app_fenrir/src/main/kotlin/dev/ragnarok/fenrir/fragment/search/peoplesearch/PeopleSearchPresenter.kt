@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import io.reactivex.rxjava3.core.Single
 
 class PeopleSearchPresenter(
-    accountId: Int,
+    accountId: Long,
     criteria: PeopleSearchCriteria?,
     savedInstanceState: Bundle?
 ) : AbsSearchPresenter<IPeopleSearchView, PeopleSearchCriteria, User, IntNextFrom>(
@@ -34,7 +34,7 @@ class PeopleSearchPresenter(
     }
 
     override fun doSearch(
-        accountId: Int,
+        accountId: Long,
         criteria: PeopleSearchCriteria,
         startFrom: IntNextFrom
     ): Single<Pair<List<User>, IntNextFrom>> {

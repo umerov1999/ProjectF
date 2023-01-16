@@ -54,7 +54,7 @@ class PushRegistrationResolver(
                         .getType(settings.accounts().current) != Constants.DEFAULT_ACCOUNT_TYPE
                 ) return@flatMapCompletable Completable.never()
                 val needUnregister: MutableSet<VkPushRegistration> = HashSet(0)
-                val optionalAccountId: Optional<Int> = if (hasAuth) wrap(accountId) else empty()
+                val optionalAccountId: Optional<Long> = if (hasAuth) wrap(accountId) else empty()
                 var hasOk = false
                 var hasRemove = false
                 for (registered in available) {
@@ -185,7 +185,7 @@ class PushRegistrationResolver(
     private fun analizeRegistration(
         available: VkPushRegistration,
         data: Data,
-        optionAccountId: Optional<Int>
+        optionAccountId: Optional<Long>
     ): Reason {
         if (data.deviceId != available.deviceId) {
             return Reason.REMOVE

@@ -34,8 +34,8 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class AudiosPresenter(
-    accountId: Int,
-    private val ownerId: Int,
+    accountId: Long,
+    private val ownerId: Long,
     albumId: Int?,
     private val accessKey: String?,
     private val iSSelectMode: Boolean,

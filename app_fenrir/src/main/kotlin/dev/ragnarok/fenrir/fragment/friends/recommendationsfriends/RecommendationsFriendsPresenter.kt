@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.User
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class RecommendationsFriendsPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class RecommendationsFriendsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     SimpleOwnersPresenter<ISimpleOwnersView>(accountId, savedInstanceState) {
     private val relationshipInteractor: IRelationshipInteractor =
         InteractorFactory.createRelationshipInteractor()

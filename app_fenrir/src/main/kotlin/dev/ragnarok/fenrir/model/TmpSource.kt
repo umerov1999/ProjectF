@@ -4,16 +4,16 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class TmpSource : Parcelable {
-    val ownerId: Int
+    val ownerId: Long
     val sourceId: Int
 
-    constructor(ownerId: Int, sourceId: Int) {
+    constructor(ownerId: Long, sourceId: Int) {
         this.ownerId = ownerId
         this.sourceId = sourceId
     }
 
     internal constructor(parcel: Parcel) {
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         sourceId = parcel.readInt()
     }
 
@@ -22,7 +22,7 @@ class TmpSource : Parcelable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(ownerId)
+        dest.writeLong(ownerId)
         dest.writeInt(sourceId)
     }
 

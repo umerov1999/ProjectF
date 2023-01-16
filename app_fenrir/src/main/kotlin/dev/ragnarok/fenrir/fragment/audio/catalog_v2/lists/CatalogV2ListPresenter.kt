@@ -21,8 +21,8 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 
 class CatalogV2ListPresenter(
-    accountId: Int,
-    private val owner_id: Int,
+    accountId: Long,
+    private val owner_id: Long,
     private val artist_id: String?,
     private val query: String?,
     private val url: String?,

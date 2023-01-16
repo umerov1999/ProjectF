@@ -17,7 +17,7 @@ class StoryDtoAdapter : AbsAdapter<VKApiStory>("VKApiStory") {
         val story = VKApiStory()
         val root = json.asJsonObject
         story.id = optInt(root, "id")
-        story.owner_id = optInt(root, "owner_id")
+        story.owner_id = optLong(root, "owner_id")
         story.date = optLong(root, "owner_id")
         story.expires_at = optLong(root, "expires_at")
         story.is_expired = optBoolean(root, "is_expired")

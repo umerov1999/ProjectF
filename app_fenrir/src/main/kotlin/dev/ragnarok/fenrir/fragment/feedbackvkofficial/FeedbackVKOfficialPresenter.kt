@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class FeedbackVKOfficialPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFeedbackVKOfficialView>(accountId, savedInstanceState) {
     private val pages: FeedbackVKOfficialList = FeedbackVKOfficialList()
     private val fInteractor: IFeedbackInteractor

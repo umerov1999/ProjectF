@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 
 open class BaseDocumentPresenter<V : IBasicDocumentView>(
-    accountId: Int,
+    accountId: Long,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<V>(accountId, savedInstanceState) {
     private val docsInteractor: IDocsInteractor = InteractorFactory.createDocsInteractor()
@@ -36,7 +36,7 @@ open class BaseDocumentPresenter<V : IBasicDocumentView>(
             })
     }
 
-    protected fun delete(id: Int, ownerId: Int) {
+    protected fun delete(id: Int, ownerId: Long) {
         appendDisposable(docsInteractor.delete(accountId, id, ownerId)
             .fromIOToMain()
             .subscribe({

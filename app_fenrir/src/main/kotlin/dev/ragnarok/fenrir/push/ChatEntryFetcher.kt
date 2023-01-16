@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.util.Optional.Companion.empty
 import io.reactivex.rxjava3.core.Single
 
 object ChatEntryFetcher {
-    fun getRx(context: Context, accountId: Int, peerId: Int): Single<DialogInfo> {
+    fun getRx(context: Context, accountId: Long, peerId: Long): Single<DialogInfo> {
         val app = context.applicationContext
         when (Peer.getType(peerId)) {
             Peer.USER, Peer.GROUP -> {

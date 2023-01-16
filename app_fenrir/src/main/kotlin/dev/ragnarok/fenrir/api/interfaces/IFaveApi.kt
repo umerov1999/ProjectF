@@ -29,7 +29,7 @@ interface IFaveApi {
 
     @CheckResult
     fun getOwnerPublishedArticles(
-        owner_id: Int?,
+        owner_id: Long?,
         offset: Int?,
         count: Int?
     ): Single<Items<VKApiArticle>>
@@ -41,41 +41,41 @@ interface IFaveApi {
     fun getLinks(offset: Int?, count: Int?): Single<Items<FaveLinkDto>>
 
     @CheckResult
-    fun addPage(userId: Int?, groupId: Int?): Single<Boolean>
+    fun addPage(userId: Long?, groupId: Long?): Single<Boolean>
 
     @CheckResult
     fun addLink(link: String?): Single<Boolean>
 
     @CheckResult
-    fun removePage(userId: Int?, groupId: Int?): Single<Boolean>
+    fun removePage(userId: Long?, groupId: Long?): Single<Boolean>
 
     @CheckResult
     fun removeLink(linkId: String?): Single<Boolean>
 
     @CheckResult
-    fun removeArticle(owner_id: Int?, article_id: Int?): Single<Boolean>
+    fun removeArticle(owner_id: Long?, article_id: Int?): Single<Boolean>
 
     @CheckResult
-    fun removePost(owner_id: Int?, id: Int?): Single<Boolean>
+    fun removePost(owner_id: Long?, id: Int?): Single<Boolean>
 
     @CheckResult
-    fun removeVideo(owner_id: Int?, id: Int?): Single<Boolean>
+    fun removeVideo(owner_id: Long?, id: Int?): Single<Boolean>
 
     @CheckResult
-    fun pushFirst(owner_id: Int): Single<Boolean>
+    fun pushFirst(owner_id: Long): Single<Boolean>
 
     @CheckResult
-    fun addVideo(owner_id: Int?, id: Int?, access_key: String?): Single<Boolean>
+    fun addVideo(owner_id: Long?, id: Int?, access_key: String?): Single<Boolean>
 
     @CheckResult
     fun addArticle(url: String?): Single<Boolean>
 
     @CheckResult
-    fun addProduct(id: Int, owner_id: Int, access_key: String?): Single<Boolean>
+    fun addProduct(id: Int, owner_id: Long, access_key: String?): Single<Boolean>
 
     @CheckResult
-    fun removeProduct(id: Int?, owner_id: Int?): Single<Boolean>
+    fun removeProduct(id: Int?, owner_id: Long?): Single<Boolean>
 
     @CheckResult
-    fun addPost(owner_id: Int?, id: Int?, access_key: String?): Single<Boolean>
+    fun addPost(owner_id: Long?, id: Int?, access_key: String?): Single<Boolean>
 }

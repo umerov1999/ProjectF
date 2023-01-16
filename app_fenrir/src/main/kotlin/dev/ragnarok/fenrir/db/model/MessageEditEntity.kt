@@ -4,7 +4,7 @@ import dev.ragnarok.fenrir.db.model.entity.DboEntity
 import dev.ragnarok.fenrir.db.model.entity.KeyboardEntity
 import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
 
-class MessageEditEntity(val status: Int, val senderId: Int) {
+class MessageEditEntity(val status: Int, val senderId: Long) {
     var isEncrypted = false
         private set
     var date: Long = 0

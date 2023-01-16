@@ -23,7 +23,7 @@ class CommentEditFragment : AbsAttachmentsEditFragment<CommentEditPresenter, ICo
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommentEditPresenter> {
         return object : IPresenterFactory<CommentEditPresenter> {
             override fun create(): CommentEditPresenter {
-                val aid = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val CommentThread: Int? =
                     if (requireArguments().containsKey(Extra.COMMENT_ID)) requireArguments().getInt(
                         Extra.COMMENT_ID
@@ -99,13 +99,13 @@ class CommentEditFragment : AbsAttachmentsEditFragment<CommentEditPresenter, ICo
     companion object {
         const val REQUEST_COMMENT_EDIT = "request_comment_edit"
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             comment: Comment?,
             CommentThread: Int?
         ): CommentEditFragment {
             val args = Bundle()
             args.putParcelable(Extra.COMMENT, comment)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             if (CommentThread != null) {
                 args.putInt(Extra.COMMENT_ID, CommentThread)
             }

@@ -239,7 +239,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         }
     }
 
-    override fun updateAccountIdNoRefresh(accountId: Int) {
+    override fun updateAccountIdNoRefresh(accountId: Long) {
         mAdapter?.updateAccount(accountId)
     }
 
@@ -377,7 +377,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                             createCustomToast(requireActivity()).showToastError(R.string.not_supported_hide)
                             securitySettingsPlace.tryOpenWith(requireActivity())
                         } else {
-                            Settings.get().security().addHiddenDialog(dialog.getObjectId())
+                            Settings.get().security().addHiddenDialog(dialog.getOwnerObjectId())
                             ReconfigureOptionsHide(Settings.get().security().showHiddenDialogs)
                             notifyDataSetChanged()
                             if (needHelp(HelperSimple.HIDDEN_DIALOGS, 3)) {
@@ -385,7 +385,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                             }
                         }
                         7 -> {
-                            Settings.get().security().removeHiddenDialog(dialog.getObjectId())
+                            Settings.get().security().removeHiddenDialog(dialog.getOwnerObjectId())
                             ReconfigureOptionsHide(Settings.get().security().showHiddenDialogs)
                             notifyDataSetChanged()
                         }
@@ -451,7 +451,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
     }
 
      */
-    override fun displayData(data: List<Dialog>, accountId: Int) {
+    override fun displayData(data: List<Dialog>, accountId: Long) {
         mAdapter?.setData(data, accountId)
     }
 
@@ -468,9 +468,9 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
     }
 
     override fun goToChat(
-        accountId: Int,
-        messagesOwnerId: Int,
-        peerId: Int,
+        accountId: Long,
+        messagesOwnerId: Long,
+        peerId: Long,
         title: String?,
         ava_url: String?
     ) {
@@ -481,7 +481,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         ).tryOpenWith(requireActivity())
     }
 
-    override fun goToSearch(accountId: Int) {
+    override fun goToSearch(accountId: Long) {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.info)
             .setCancelable(true)
@@ -499,7 +499,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
             .show()
     }
 
-    override fun goToImportant(accountId: Int) {
+    override fun goToImportant(accountId: Long) {
         getImportantMessages(accountId).tryOpenWith(requireActivity())
     }
 
@@ -529,7 +529,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
             .show()
     }
 
-    override fun showNotificationSettings(accountId: Int, peerId: Int) {
+    override fun showNotificationSettings(accountId: Long, peerId: Long) {
         if (hasOreo()) {
             return
         }
@@ -543,7 +543,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
             }).show(parentFragmentManager, "dialog-notif-options")
     }
 
-    override fun goToOwnerWall(accountId: Int, ownerId: Int, owner: Owner?) {
+    override fun goToOwnerWall(accountId: Long, ownerId: Long, owner: Owner?) {
         getOwnerWallPlace(accountId, ownerId, owner).tryOpenWith(requireActivity())
     }
 
@@ -551,8 +551,8 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         return object : IPresenterFactory<DialogsPresenter> {
             override fun create(): DialogsPresenter {
                 return DialogsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     requireActivity().intent.getParcelableExtraCompat(MainActivity.EXTRA_INPUT_ATTACHMENTS),
                     saveInstanceState
                 )
@@ -605,12 +605,12 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
     }
 
     companion object {
-        fun newInstance(accountId: Int, dialogsOwnerId: Int, subtitle: String?): DialogsFragment {
+        fun newInstance(accountId: Long, dialogsOwnerId: Long, subtitle: String?): DialogsFragment {
             val fragment = DialogsFragment()
             val args = Bundle()
             args.putString(Extra.SUBTITLE, subtitle)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, dialogsOwnerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, dialogsOwnerId)
             fragment.arguments = args
             return fragment
         }

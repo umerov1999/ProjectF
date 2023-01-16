@@ -12,7 +12,7 @@ import io.reactivex.rxjava3.core.Single
 class IUsersService : IServiceRest() {
     fun getUserWallInfo(
         code: String?,
-        userId: Int,
+        userId: Long,
         fields: String?,
         nameCase: String?
     ): Single<BaseResponse<UserWallInfoResponse>> {
@@ -28,7 +28,7 @@ class IUsersService : IServiceRest() {
 
     //https://vk.com/dev/users.getFollowers
     fun getFollowers(
-        userId: Int?,
+        userId: Long?,
         offset: Int?,
         count: Int?,
         fields: String?,
@@ -96,7 +96,7 @@ class IUsersService : IServiceRest() {
         interests: String?,
         company: String?,
         position: String?,
-        groupId: Int?,
+        groupId: Long?,
         fromList: String?
     ): Single<BaseResponse<Items<VKApiUser>>> {
         return rest.request(
@@ -193,7 +193,7 @@ class IUsersService : IServiceRest() {
     }
 
     fun report(
-        userId: Int?,
+        userId: Long?,
         type: String?,
         comment: String?
     ): Single<BaseResponse<Int>> {
@@ -207,7 +207,7 @@ class IUsersService : IServiceRest() {
     }
 
     fun getStory(
-        owner_id: Int?,
+        owner_id: Long?,
         extended: Int?,
         fields: String?
     ): Single<BaseResponse<StoryResponse>> {
@@ -221,7 +221,7 @@ class IUsersService : IServiceRest() {
     }
 
     fun getNarratives(
-        owner_id: Int,
+        owner_id: Long,
         offset: Int?,
         count: Int?
     ): Single<BaseResponse<Items<VKApiNarratives>>> {
@@ -249,7 +249,7 @@ class IUsersService : IServiceRest() {
     }
 
     fun getGifts(
-        user_id: Int?,
+        user_id: Long?,
         count: Int?,
         offset: Int?
     ): Single<BaseResponse<Items<VKApiGift>>> {
@@ -264,7 +264,7 @@ class IUsersService : IServiceRest() {
 
     fun searchStory(
         q: String?,
-        mentioned_id: Int?,
+        mentioned_id: Long?,
         count: Int?,
         extended: Int?,
         fields: String?
@@ -282,7 +282,7 @@ class IUsersService : IServiceRest() {
 
     fun checkAndAddFriend(
         code: String?,
-        user_id: Int?
+        user_id: Long?
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "execute", form(

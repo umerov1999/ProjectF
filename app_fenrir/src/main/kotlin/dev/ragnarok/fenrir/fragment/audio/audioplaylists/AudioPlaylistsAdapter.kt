@@ -124,7 +124,7 @@ class AudioPlaylistsAdapter(
                             true
                         }
                     if (playlist.getOriginal_access_key()
-                            .isNullOrEmpty() || playlist.getOriginal_id() == 0 || playlist.getOriginal_owner_id() == 0
+                            .isNullOrEmpty() || playlist.getOriginal_id() == 0 || playlist.getOriginal_owner_id() == 0L
                     ) {
                         menu.add(0, v.id, 0, R.string.edit)
                             .setOnMenuItemClickListener {

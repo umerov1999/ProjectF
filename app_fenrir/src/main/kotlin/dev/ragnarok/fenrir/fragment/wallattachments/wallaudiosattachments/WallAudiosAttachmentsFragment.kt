@@ -90,8 +90,8 @@ class WallAudiosAttachmentsFragment :
         return object : IPresenterFactory<WallAudiosAttachmentsPresenter> {
             override fun create(): WallAudiosAttachmentsPresenter {
                 return WallAudiosAttachmentsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     saveInstanceState
                 )
             }
@@ -124,7 +124,7 @@ class WallAudiosAttachmentsFragment :
         }
     }
 
-    override fun onAvatarClick(ownerId: Int) {
+    override fun onAvatarClick(ownerId: Long) {
         onOwnerClick(ownerId)
     }
 
@@ -170,15 +170,15 @@ class WallAudiosAttachmentsFragment :
         )
     }
 
-    override fun openPostEditor(accountId: Int, post: Post) {
+    override fun openPostEditor(accountId: Long, post: Post) {
         goToPostEditor(requireActivity(), accountId, post)
     }
 
     companion object {
-        fun newInstance(accountId: Int, ownerId: Int): WallAudiosAttachmentsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): WallAudiosAttachmentsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = WallAudiosAttachmentsFragment()
             fragment.arguments = args
             return fragment

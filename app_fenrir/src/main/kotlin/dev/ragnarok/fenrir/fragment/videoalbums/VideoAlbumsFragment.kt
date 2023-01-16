@@ -88,8 +88,8 @@ class VideoAlbumsFragment : BaseMvpFragment<VideoAlbumsPresenter, IVideoAlbumsVi
     }
 
     override fun openAlbum(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         action: String?,
         title: String?
@@ -113,8 +113,8 @@ class VideoAlbumsFragment : BaseMvpFragment<VideoAlbumsPresenter, IVideoAlbumsVi
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<VideoAlbumsPresenter> {
         return object : IPresenterFactory<VideoAlbumsPresenter> {
             override fun create(): VideoAlbumsPresenter {
-                val ownerId1 = requireArguments().getInt(Extra.OWNER_ID)
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val ownerId1 = requireArguments().getLong(Extra.OWNER_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val action = requireArguments().getString(Extra.ACTION)
                 return VideoAlbumsPresenter(accountId, ownerId1, action, saveInstanceState)
             }
@@ -128,14 +128,14 @@ class VideoAlbumsFragment : BaseMvpFragment<VideoAlbumsPresenter, IVideoAlbumsVi
             return fragment
         }
 
-        fun newInstance(accountId: Int, ownerId: Int, action: String?): VideoAlbumsFragment {
+        fun newInstance(accountId: Long, ownerId: Long, action: String?): VideoAlbumsFragment {
             return newInstance(buildArgs(accountId, ownerId, action))
         }
 
-        fun buildArgs(aid: Int, ownerId: Int, action: String?): Bundle {
+        fun buildArgs(aid: Long, ownerId: Long, action: String?): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, aid)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putString(Extra.ACTION, action)
             return args
         }

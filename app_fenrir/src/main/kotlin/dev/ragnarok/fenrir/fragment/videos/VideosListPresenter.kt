@@ -34,10 +34,10 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class VideosListPresenter(
-    accountId: Int, ownerId: Int, albumId: Int, private val action: String?,
+    accountId: Long, ownerId: Long, albumId: Int, private val action: String?,
     albumTitle: String?, context: Context, savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IVideosListView>(accountId, savedInstanceState) {
-    val ownerId: Int
+    val ownerId: Long
     val albumId: Int
     private val data: MutableList<Video>
     private val interactor: IVideosInteractor = InteractorFactory.createVideosInteractor()

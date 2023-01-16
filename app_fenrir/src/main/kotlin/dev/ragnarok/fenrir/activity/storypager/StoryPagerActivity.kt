@@ -269,7 +269,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<StoryPagerPresenter> =
         object : IPresenterFactory<StoryPagerPresenter> {
             override fun create(): StoryPagerPresenter {
-                val aid = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val index = requireArguments().getInt(Extra.INDEX)
                 val stories: ArrayList<Story> = if (FenrirNative.isNativeLoaded && Settings.get()
                         .other().isNative_parcel_story
@@ -326,7 +326,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         supportActionBar?.title = getString(titleRes, *params)
     }
 
-    override fun setToolbarSubtitle(story: Story, account_id: Int) {
+    override fun setToolbarSubtitle(story: Story, account_id: Long) {
         supportActionBar?.subtitle = story.owner?.fullName
         mAvatar?.setOnClickListener {
             story.owner?.let { it1 ->
@@ -372,7 +372,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         }
     }
 
-    override fun onShare(story: Story, account_id: Int) {
+    override fun onShare(story: Story, account_id: Long) {
         SendAttachmentsActivity.startForSendAttachments(this, account_id, story)
     }
 
@@ -668,9 +668,9 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
             return ph
         }
 
-        fun buildArgs(aid: Int, stories: ArrayList<Story>, index: Int): Bundle {
+        fun buildArgs(aid: Long, stories: ArrayList<Story>, index: Int): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             args.putInt(Extra.INDEX, index)
             if (FenrirNative.isNativeLoaded && Settings.get().other().isNative_parcel_story) {
                 args.putLong(

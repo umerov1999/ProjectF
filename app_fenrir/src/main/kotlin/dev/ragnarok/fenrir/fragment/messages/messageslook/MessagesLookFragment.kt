@@ -215,15 +215,15 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         mHeaderHelper?.switchToState(downHeaderState)
     }
 
-    override fun forwardMessages(accountId: Int, messages: ArrayList<Message>) {
+    override fun forwardMessages(accountId: Long, messages: ArrayList<Message>) {
         startForSendAttachments(requireActivity(), accountId, FwdMessages(messages))
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<MessagesLookPresenter> {
         return object : IPresenterFactory<MessagesLookPresenter> {
             override fun create(): MessagesLookPresenter {
-                val aid = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val peerId = requireArguments().getInt(Extra.PEER_ID)
+                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val peerId = requireArguments().getLong(Extra.PEER_ID)
                 val focusTo = requireArguments().getInt(Extra.FOCUS_TO)
                 val message: Message? =
                     if (requireArguments().containsKey(Extra.MESSAGE)) requireArguments().getParcelableCompat(
@@ -234,7 +234,7 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         }
     }
 
-    override fun onAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onAvatarClick(message: Message, userId: Long, position: Int) {
         if (mActionView?.isVisible == true) {
             presenter?.fireMessageClick(
                 message,
@@ -247,7 +247,7 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         }
     }
 
-    override fun onLongAvatarClick(message: Message, userId: Int, position: Int) {
+    override fun onLongAvatarClick(message: Message, userId: Long, position: Int) {
         if (mActionView?.isVisible == true) {
             presenter?.fireMessageClick(
                 message,
@@ -290,7 +290,7 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         )
     }
 
-    override fun displayToolbarAvatar(accountId: Int, peer: Peer) {
+    override fun displayToolbarAvatar(accountId: Long, peer: Peer) {
         if (EmptyAvatar == null || Avatar == null || Title == null) {
             return
         }
@@ -463,7 +463,7 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Int,
+        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         presenter?.fireVoicePlayButtonClick(
@@ -487,10 +487,15 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
     }
 
     companion object {
-        fun buildArgs(accountId: Int, peerId: Int, focusMessageId: Int, message: Message?): Bundle {
+        fun buildArgs(
+            accountId: Long,
+            peerId: Long,
+            focusMessageId: Int,
+            message: Message?
+        ): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.PEER_ID, peerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.PEER_ID, peerId)
             args.putInt(Extra.FOCUS_TO, focusMessageId)
             if (message != null) {
                 args.putParcelable(Extra.MESSAGE, message)

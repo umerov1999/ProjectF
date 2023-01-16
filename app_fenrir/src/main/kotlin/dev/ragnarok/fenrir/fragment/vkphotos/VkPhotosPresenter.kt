@@ -30,8 +30,14 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class VkPhotosPresenter(
-    accountId: Int, private val ownerId: Int, private val albumId: Int, private val action: String,
-    owner: Owner?, album: PhotoAlbum?, private val loadedIdPhoto: Int, savedInstanceState: Bundle?
+    accountId: Long,
+    private val ownerId: Long,
+    private val albumId: Int,
+    private val action: String,
+    owner: Owner?,
+    album: PhotoAlbum?,
+    private val loadedIdPhoto: Int,
+    savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IVkPhotosView>(accountId, savedInstanceState) {
     private val interactor: IPhotosInteractor
     private val ownersRepository: IOwnersRepository

@@ -147,7 +147,7 @@ class FeedbackVKOfficialFragment :
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun openOwnerWall(owner_id: Int) {
+    override fun openOwnerWall(owner_id: Long) {
         getOwnerWallPlace(Settings.get().accounts().current, owner_id, null).tryOpenWith(
             requireActivity()
         )
@@ -175,7 +175,7 @@ class FeedbackVKOfficialFragment :
         return object : IPresenterFactory<FeedbackVKOfficialPresenter> {
             override fun create(): FeedbackVKOfficialPresenter {
                 return FeedbackVKOfficialPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }
@@ -183,9 +183,9 @@ class FeedbackVKOfficialFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int): FeedbackVKOfficialFragment {
+        fun newInstance(accountId: Long): FeedbackVKOfficialFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = FeedbackVKOfficialFragment()
             fragment.arguments = args
             return fragment

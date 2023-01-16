@@ -89,7 +89,7 @@ class Photo2MessageUploadable(
     companion object {
         fun attachIntoDatabaseRx(
             repository: IAttachmentsRepository, storage: IMessagesStorage,
-            accountId: Int, messageId: Int, photo: Photo
+            accountId: Long, messageId: Int, photo: Photo
         ): Completable {
             return repository
                 .attach(accountId, AttachToType.MESSAGE, messageId, listOf(photo))

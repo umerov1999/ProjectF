@@ -23,8 +23,8 @@ import io.reactivex.rxjava3.core.SingleEmitter
 
 internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStorage {
     override fun insertPhotosRx(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         photos: List<PhotoDboEntity>,
         clearBefore: Boolean
@@ -57,8 +57,8 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
     }
 
     override fun insertPhotosExtendedRx(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         photos: List<PhotoDboEntity>,
         clearBefore: Boolean
@@ -133,8 +133,8 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
     }
 
     override fun applyPatch(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         photoId: Int,
         patch: PhotoPatch
     ): Completable {
@@ -163,7 +163,7 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
             sizes = MsgPack.decodeFromByteArrayEx(PhotoSizeEntity.serializer(), sizesJson)
         }
         val id = cursor.getInt(PhotosColumns.PHOTO_ID)
-        val ownerId = cursor.getInt(PhotosColumns.OWNER_ID)
+        val ownerId = cursor.getLong(PhotosColumns.OWNER_ID)
         return PhotoDboEntity().set(id, ownerId)
             .setSizes(sizes)
             .setAlbumId(cursor.getInt(PhotosColumns.ALBUM_ID))
@@ -211,7 +211,7 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
 
         internal fun getExtendedCV(
             dbo: PhotoDboEntity,
-            ownerId: Int,
+            ownerId: Long,
             albumInt: Int
         ): ContentValues {
             val cv = ContentValues()

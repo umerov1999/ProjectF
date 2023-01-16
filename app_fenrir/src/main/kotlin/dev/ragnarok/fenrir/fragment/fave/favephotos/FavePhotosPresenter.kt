@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class FavePhotosPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class FavePhotosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFavePhotosView>(accountId, savedInstanceState) {
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
     private val mPhotos: ArrayList<Photo> = ArrayList()

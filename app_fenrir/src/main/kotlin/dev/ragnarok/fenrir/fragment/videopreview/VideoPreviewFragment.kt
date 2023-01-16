@@ -52,7 +52,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
     View.OnClickListener, View.OnLongClickListener, IVideoPreviewView, MenuProvider {
     private val ownerLinkAdapter: OwnerLinkSpanFactory.ActionListener =
         object : LinkActionAdapter() {
-            override fun onOwnerClick(ownerId: Int) {
+            override fun onOwnerClick(ownerId: Long) {
                 presenter?.fireOwnerClick(
                     ownerId
                 )
@@ -193,9 +193,9 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         return object : IPresenterFactory<VideoPreviewPresenter> {
             override fun create(): VideoPreviewPresenter {
                 return VideoPreviewPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getInt(EXTRA_VIDEO_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     finalDocumentAccessKey,
                     requireArguments().getParcelableCompat(Extra.VIDEO),
                     saveInstanceState
@@ -286,7 +286,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         )
     }
 
-    override fun showOwnerWall(accountId: Int, ownerId: Int) {
+    override fun showOwnerWall(accountId: Long, ownerId: Long) {
         getOwnerWallPlace(accountId, ownerId, null).tryOpenWith(requireActivity())
     }
 
@@ -297,11 +297,11 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         }
     }
 
-    override fun showComments(accountId: Int, commented: Commented) {
+    override fun showComments(accountId: Long, commented: Commented) {
         getCommentsPlace(accountId, commented, null).tryOpenWith(requireActivity())
     }
 
-    override fun displayShareDialog(accountId: Int, video: Video, canPostToMyWall: Boolean) {
+    override fun displayShareDialog(accountId: Long, video: Video, canPostToMyWall: Boolean) {
         val items: Array<String> = if (canPostToMyWall) {
             if (!video.private) {
                 arrayOf(
@@ -429,7 +429,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         return items
     }
 
-    override fun showVideoPlayMenu(accountId: Int, video: Video) {
+    override fun showVideoPlayMenu(accountId: Long, video: Video) {
         val items: MutableList<Item> =
             ArrayList(createDirectVkPlayItems(video, SECTION_PLAY, false))
         val external = video.externalLink
@@ -540,7 +540,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             .show()
     }
 
-    override fun doAutoPlayVideo(accountId: Int, video: Video) {
+    override fun doAutoPlayVideo(accountId: Long, video: Video) {
         if (!video.live.isNullOrEmpty()) {
             openInternal(video, InternalVideoSize.SIZE_LIVE)
         } else if (!video.hls.isNullOrEmpty()) {
@@ -590,7 +590,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         }
     }
 
-    override fun goToLikes(accountId: Int, type: String, ownerId: Int, id: Int) {
+    override fun goToLikes(accountId: Long, type: String, ownerId: Long, id: Int) {
         getLikesCopiesPlace(accountId, type, ownerId, id, ILikesInteractor.FILTER_LIKES)
             .tryOpenWith(requireActivity())
     }
@@ -866,15 +866,15 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         private val SECTION_PLAY = Section(Text(R.string.section_play_title))
         private val SECTION_OTHER = Section(Text(R.string.other))
         fun buildArgs(
-            accountId: Int,
-            ownerId: Int,
+            accountId: Long,
+            ownerId: Long,
             videoId: Int,
             accessKey: String?,
             video: Video?
         ): Bundle {
             val bundle = Bundle()
-            bundle.putInt(Extra.ACCOUNT_ID, accountId)
-            bundle.putInt(Extra.OWNER_ID, ownerId)
+            bundle.putLong(Extra.ACCOUNT_ID, accountId)
+            bundle.putLong(Extra.OWNER_ID, ownerId)
             bundle.putInt(EXTRA_VIDEO_ID, videoId)
             if (!accessKey.isNullOrEmpty()) {
                 bundle.putString(Extra.ACCESS_KEY, accessKey)

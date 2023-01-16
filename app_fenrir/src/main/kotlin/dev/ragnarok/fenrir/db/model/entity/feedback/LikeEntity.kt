@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("like")
 class LikeEntity : FeedbackEntity {
-    var likesOwnerIds: IntArray? = null
+    var likesOwnerIds: LongArray? = null
         private set
 
     private var liked: DboEntity? = null
@@ -21,7 +21,7 @@ class LikeEntity : FeedbackEntity {
         this.type = type
     }
 
-    fun setLikesOwnerIds(likesOwnerIds: IntArray?): LikeEntity {
+    fun setLikesOwnerIds(likesOwnerIds: LongArray?): LikeEntity {
         this.likesOwnerIds = likesOwnerIds
         return this
     }

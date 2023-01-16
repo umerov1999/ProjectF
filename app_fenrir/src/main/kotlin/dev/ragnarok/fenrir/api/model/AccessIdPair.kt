@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.api.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-class AccessIdPair(val id: Int, val ownerId: Int, val accessKey: String?) {
+class AccessIdPair(val id: Int, val ownerId: Long, val accessKey: String?) {
     companion object {
 
         fun format(pair: AccessIdPair): String {

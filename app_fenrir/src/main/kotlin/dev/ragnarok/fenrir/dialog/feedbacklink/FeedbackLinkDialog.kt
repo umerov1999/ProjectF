@@ -71,8 +71,8 @@ class FeedbackLinkDialog : DialogFragment(), FeedbackLinkAdapter.ActionListener 
         return builder.create()
     }
 
-    private val accountId: Int
-        get() = requireArguments().getInt(Extra.ACCOUNT_ID)
+    private val accountId: Long
+        get() = requireArguments().getLong(Extra.ACCOUNT_ID)
 
     private fun close() {
         dismiss()
@@ -113,9 +113,9 @@ class FeedbackLinkDialog : DialogFragment(), FeedbackLinkAdapter.ActionListener 
     }
 
     companion object {
-        fun newInstance(accountId: Int, feedback: Feedback?): FeedbackLinkDialog {
+        fun newInstance(accountId: Long, feedback: Feedback?): FeedbackLinkDialog {
             val bundle = Bundle()
-            bundle.putInt(Extra.ACCOUNT_ID, accountId)
+            bundle.putLong(Extra.ACCOUNT_ID, accountId)
             bundle.putParcelable("feedback", ParcelableFeedbackWrapper(feedback))
             val feedbackLinkDialog = FeedbackLinkDialog()
             feedbackLinkDialog.arguments = bundle

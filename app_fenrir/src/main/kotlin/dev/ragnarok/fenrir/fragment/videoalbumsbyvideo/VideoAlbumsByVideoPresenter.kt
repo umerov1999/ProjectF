@@ -8,13 +8,13 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.VideoAlbum
 
 class VideoAlbumsByVideoPresenter(
-    accountId: Int,
-    private val ownerId: Int,
-    owner: Int,
+    accountId: Long,
+    private val ownerId: Long,
+    owner: Long,
     video: Int,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IVideoAlbumsByVideoView>(accountId, savedInstanceState) {
-    private val videoOwnerId: Int = owner
+    private val videoOwnerId: Long = owner
     private val videoId: Int = video
     private val data: MutableList<VideoAlbum>
     private val videosInteractor: IVideosInteractor = InteractorFactory.createVideosInteractor()

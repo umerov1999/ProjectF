@@ -106,11 +106,11 @@ class FavePagesFragment : BaseMvpFragment<FavePagesPresenter, IFavePagesView>(),
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun openOwnerWall(accountId: Int, owner: Owner) {
+    override fun openOwnerWall(accountId: Long, owner: Owner) {
         getOwnerWallPlace(accountId, owner).tryOpenWith(requireActivity())
     }
 
-    override fun openMention(accountId: Int, owner: Owner) {
+    override fun openMention(accountId: Long, owner: Owner) {
         getMentionsPlace(accountId, owner.ownerId).tryOpenWith(requireActivity())
     }
 
@@ -125,7 +125,7 @@ class FavePagesFragment : BaseMvpFragment<FavePagesPresenter, IFavePagesView>(),
         return object : IPresenterFactory<FavePagesPresenter> {
             override fun create(): FavePagesPresenter {
                 return FavePagesPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getBoolean(Extra.USER),
                     saveInstanceState
                 )
@@ -159,9 +159,9 @@ class FavePagesFragment : BaseMvpFragment<FavePagesPresenter, IFavePagesView>(),
 
     companion object {
 
-        fun newInstance(accountId: Int, isUser: Boolean): FavePagesFragment {
+        fun newInstance(accountId: Long, isUser: Boolean): FavePagesFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putBoolean(Extra.USER, isUser)
             val fragment = FavePagesFragment()
             fragment.arguments = args

@@ -11,8 +11,8 @@ interface IRequestsView : IMvpView, IErrorView {
     fun setSwipeRefreshEnabled(enabled: Boolean)
     fun displayData(data: List<UsersPart>, grouping: Boolean)
     fun notifyItemRangeInserted(position: Int, count: Int)
-    fun showUserWall(accountId: Int, user: User)
+    fun showUserWall(accountId: Long, user: User)
     fun showRefreshing(refreshing: Boolean)
-    fun showNotRequests(data: List<Owner>, accountId: Int, ownerId: Int)
+    fun showNotRequests(data: List<Owner>, accountId: Long, ownerId: Long)
     fun updateCount(count: Int)
 }

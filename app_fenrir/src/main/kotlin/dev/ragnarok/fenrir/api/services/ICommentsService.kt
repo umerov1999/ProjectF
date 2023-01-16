@@ -9,7 +9,7 @@ class ICommentsService : IServiceRest() {
     operator fun get(
         code: String?,
         sourceType: String?,
-        ownerId: Int,
+        ownerId: Long,
         sourceId: Int,
         offset: Int?,
         count: Int?,

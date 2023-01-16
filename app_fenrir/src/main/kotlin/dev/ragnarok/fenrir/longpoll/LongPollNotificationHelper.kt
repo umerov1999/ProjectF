@@ -31,7 +31,7 @@ object LongPollNotificationHelper {
         notifyAbountNewMessage(context, message.accountId, message)
     }
 
-    private fun notifyAbountNewMessage(context: Context, accountId: Int, message: Message) {
+    private fun notifyAbountNewMessage(context: Context, accountId: Long, message: Message) {
         val mask = Settings.get().notifications().getNotifPref(accountId, message.peerId)
         if (!hasFlag(mask, ISettings.INotificationSettings.FLAG_SHOW_NOTIF)) {
             return

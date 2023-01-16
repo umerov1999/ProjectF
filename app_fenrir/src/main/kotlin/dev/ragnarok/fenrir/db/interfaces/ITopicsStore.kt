@@ -14,8 +14,8 @@ interface ITopicsStore {
 
     @CheckResult
     fun store(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         topics: List<TopicDboEntity>,
         owners: OwnerEntities?,
         canAddTopic: Boolean,
@@ -24,5 +24,10 @@ interface ITopicsStore {
     ): Completable
 
     @CheckResult
-    fun attachPoll(accountId: Int, ownerId: Int, topicId: Int, pollDbo: PollDboEntity?): Completable
+    fun attachPoll(
+        accountId: Long,
+        ownerId: Long,
+        topicId: Int,
+        pollDbo: PollDboEntity?
+    ): Completable
 }

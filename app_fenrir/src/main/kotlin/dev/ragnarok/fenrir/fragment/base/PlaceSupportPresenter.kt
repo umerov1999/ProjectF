@@ -10,7 +10,7 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.*
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
 
-abstract class PlaceSupportPresenter<V>(accountId: Int, savedInstanceState: Bundle?) :
+abstract class PlaceSupportPresenter<V>(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<V>(
         accountId,
         savedInstanceState
@@ -48,7 +48,7 @@ abstract class PlaceSupportPresenter<V>(accountId: Int, savedInstanceState: Bund
         view?.openDocPreview(accountId, document)
     }
 
-    fun fireOwnerClick(ownerId: Int) {
+    fun fireOwnerClick(ownerId: Long) {
         view?.openOwnerWall(accountId, ownerId)
     }
 
@@ -60,7 +60,7 @@ abstract class PlaceSupportPresenter<V>(accountId: Int, savedInstanceState: Bund
         )
     }
 
-    fun fireGoToMessagesLookup(peerId: Int, msgId: Int) {
+    fun fireGoToMessagesLookup(peerId: Long, msgId: Int) {
         view?.goToMessagesLookupFWD(accountId, peerId, msgId)
     }
 
@@ -138,7 +138,7 @@ abstract class PlaceSupportPresenter<V>(accountId: Int, savedInstanceState: Bund
         }
     }
 
-    fun fireCopiesLikesClick(type: String?, ownerId: Int, itemId: Int, filter: String?) {
+    fun fireCopiesLikesClick(type: String?, ownerId: Long, itemId: Int, filter: String?) {
         if (ILikesInteractor.FILTER_LIKES == filter) {
             view?.goToLikes(accountId, type, ownerId, itemId)
         } else if (ILikesInteractor.FILTER_COPIES == filter) {

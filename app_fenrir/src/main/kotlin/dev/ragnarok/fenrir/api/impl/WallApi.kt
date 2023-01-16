@@ -9,10 +9,10 @@ import dev.ragnarok.fenrir.api.model.response.*
 import dev.ragnarok.fenrir.api.services.IWallService
 import io.reactivex.rxjava3.core.Single
 
-internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(accountId, provider),
+internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(accountId, provider),
     IWallApi {
     override fun search(
-        ownerId: Int,
+        ownerId: Long,
         query: String?,
         ownersOnly: Boolean?,
         count: Int,
@@ -32,7 +32,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun edit(
-        ownerId: Int?,
+        ownerId: Long?,
         postId: Int?,
         friendsOnly: Boolean?,
         message: String?,
@@ -70,7 +70,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun pin(ownerId: Int?, postId: Int): Single<Boolean> {
+    override fun pin(ownerId: Long?, postId: Int): Single<Boolean> {
         return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.pin(ownerId, postId)
@@ -79,7 +79,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun unpin(ownerId: Int?, postId: Int): Single<Boolean> {
+    override fun unpin(ownerId: Long?, postId: Int): Single<Boolean> {
         return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.unpin(ownerId, postId)
@@ -89,10 +89,10 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun repost(
-        postOwnerId: Int,
+        postOwnerId: Long,
         postId: Int,
         message: String?,
-        groupId: Int?,
+        groupId: Long?,
         markAsAds: Boolean?
     ): Single<RepostReponse> {
         val obj = "wall" + postOwnerId + "_" + postId
@@ -104,7 +104,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun post(
-        ownerId: Int?,
+        ownerId: Long?,
         friendsOnly: Boolean?,
         fromGroup: Boolean?,
         message: String?,
@@ -148,7 +148,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun delete(ownerId: Int?, postId: Int): Single<Boolean> {
+    override fun delete(ownerId: Long?, postId: Int): Single<Boolean> {
         return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.delete(ownerId, postId)
@@ -157,7 +157,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun restoreComment(ownerId: Int?, commentId: Int): Single<Boolean> {
+    override fun restoreComment(ownerId: Long?, commentId: Int): Single<Boolean> {
         return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.restoreComment(ownerId, commentId)
@@ -166,7 +166,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun deleteComment(ownerId: Int?, commentId: Int): Single<Boolean> {
+    override fun deleteComment(ownerId: Long?, commentId: Int): Single<Boolean> {
         return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.deleteComment(ownerId, commentId)
@@ -175,7 +175,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun restore(ownerId: Int?, postId: Int): Single<Boolean> {
+    override fun restore(ownerId: Long?, postId: Int): Single<Boolean> {
         return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service.restore(ownerId, postId)
@@ -185,7 +185,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun editComment(
-        ownerId: Int?, commentId: Int, message: String?,
+        ownerId: Long?, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
     ): Single<Boolean> {
         return provideService(IWallService(), TokenType.USER)
@@ -204,7 +204,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun createComment(
-        ownerId: Int?, postId: Int, fromGroup: Int?, message: String?,
+        ownerId: Long?, postId: Int, fromGroup: Long?, message: String?,
         replyToComment: Int?, attachments: Collection<IAttachmentToken>?,
         stickerId: Int?, generatedUniqueId: Int?
     ): Single<Int> {
@@ -230,7 +230,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun get(
-        ownerId: Int?,
+        ownerId: Long?,
         domain: String?,
         offset: Int?,
         count: Int?,
@@ -265,7 +265,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun reportPost(owner_id: Int?, post_id: Int?, reason: Int?): Single<Int> {
+    override fun reportPost(owner_id: Long?, post_id: Int?, reason: Int?): Single<Int> {
         return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service
@@ -274,7 +274,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun subscribe(owner_id: Int?): Single<Int> {
+    override fun subscribe(owner_id: Long?): Single<Int> {
         return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service
@@ -283,7 +283,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun unsubscribe(owner_id: Int?): Single<Int> {
+    override fun unsubscribe(owner_id: Long?): Single<Int> {
         return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service
@@ -292,7 +292,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
             }
     }
 
-    override fun reportComment(owner_id: Int?, post_id: Int?, reason: Int?): Single<Int> {
+    override fun reportComment(owner_id: Long?, post_id: Int?, reason: Int?): Single<Int> {
         return provideService(IWallService(), TokenType.USER)
             .flatMap { service ->
                 service
@@ -302,7 +302,7 @@ internal class WallApi(accountId: Int, provider: IServiceProvider) : AbsApi(acco
     }
 
     override fun getComments(
-        ownerId: Int, postId: Int, needLikes: Boolean?,
+        ownerId: Long, postId: Int, needLikes: Boolean?,
         startCommentId: Int?, offset: Int?, count: Int?,
         sort: String?, extended: Boolean?, fields: String?
     ): Single<DefaultCommentsResponse> {

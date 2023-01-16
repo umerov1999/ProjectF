@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Article : AbsModel {
     val id: Int
-    val ownerId: Int
+    val ownerId: Long
     var ownerName: String? = null
         private set
     var uRL: String? = null
@@ -25,14 +25,14 @@ class Article : AbsModel {
     var isFavorite = false
         private set
 
-    constructor(id: Int, owner_id: Int) {
+    constructor(id: Int, owner_id: Long) {
         this.id = id
         ownerId = owner_id
     }
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         ownerName = parcel.readString()
         uRL = parcel.readString()
         title = parcel.readString()
@@ -44,7 +44,7 @@ class Article : AbsModel {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeString(ownerName)
         parcel.writeString(uRL)
         parcel.writeString(title)
@@ -105,7 +105,7 @@ class Article : AbsModel {
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + ownerId
+        result = 31 * result + ownerId.hashCode()
         return result
     }
 

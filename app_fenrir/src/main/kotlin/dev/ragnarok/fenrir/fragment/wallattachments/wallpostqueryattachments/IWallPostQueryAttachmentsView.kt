@@ -14,5 +14,5 @@ interface IWallPostQueryAttachmentsView : IMvpView, IErrorView,
     fun toolbarTitle(title: String)
     fun toolbarSubtitle(subtitle: String)
     fun onSetLoadingStatus(isLoad: Int)
-    fun openPostEditor(accountId: Int, post: Post)
+    fun openPostEditor(accountId: Long, post: Post)
 }

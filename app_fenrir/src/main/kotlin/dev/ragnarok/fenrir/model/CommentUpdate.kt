@@ -1,13 +1,13 @@
 package dev.ragnarok.fenrir.model
 
 class CommentUpdate private constructor(
-    private val accountId: Int,
+    private val accountId: Long,
     private val commented: Commented,
     private val commentId: Int
 ) {
     private var likeUpdate: LikeUpdate? = null
     private var deleteUpdate: DeleteUpdate? = null
-    fun getAccountId(): Int {
+    fun getAccountId(): Long {
         return accountId
     }
 
@@ -54,7 +54,7 @@ class CommentUpdate private constructor(
     }
 
     companion object {
-        fun create(accountId: Int, commented: Commented, commentId: Int): CommentUpdate {
+        fun create(accountId: Long, commented: Commented, commentId: Int): CommentUpdate {
             return CommentUpdate(accountId, commented, commentId)
         }
     }

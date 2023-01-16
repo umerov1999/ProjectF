@@ -11,8 +11,8 @@ interface ICommunityBlacklistView : IErrorView, IMvpView, IToastView {
     fun notifyDataSetChanged()
     fun diplayData(data: List<Banned>)
     fun notifyItemRemoved(index: Int)
-    fun openBanEditor(accountId: Int, groupId: Int, banned: Banned)
-    fun startSelectProfilesActivity(accountId: Int, groupId: Int)
-    fun addUsersToBan(accountId: Int, groupId: Int, users: ArrayList<User>)
+    fun openBanEditor(accountId: Long, groupId: Long, banned: Banned)
+    fun startSelectProfilesActivity(accountId: Long, groupId: Long)
+    fun addUsersToBan(accountId: Long, groupId: Long, users: ArrayList<User>)
     fun notifyItemsAdded(position: Int, size: Int)
 }

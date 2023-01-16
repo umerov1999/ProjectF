@@ -7,7 +7,7 @@ class AddMessageUpdate : AbsLongpollEvent(ACTION_MESSAGE_ADDED) {
     var messageId = 0
     var timestamp: Long = 0
     var text: String? = null
-    var from = 0
+    var from = 0L
     var isOut = false
     var unread = false
     var important = false
@@ -15,12 +15,12 @@ class AddMessageUpdate : AbsLongpollEvent(ACTION_MESSAGE_ADDED) {
     var hasMedia = false
     var sourceText: String? = null
     var sourceAct: String? = null
-    var sourceMid = 0
+    var sourceMid = 0L
     var fwds: ArrayList<String>? = null
     var keyboard: CurrentKeyboard? = null
     var payload: String? = null
     var reply: String? = null
-    var peerId = 0
+    var peerId = 0L
     var random_id: String? = null
     var edit_time: Long = 0
 

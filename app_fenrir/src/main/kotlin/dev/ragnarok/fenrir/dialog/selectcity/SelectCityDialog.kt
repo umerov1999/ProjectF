@@ -114,10 +114,10 @@ class SelectCityDialog : AccountDependencyDialogFragment(), CitiesAdapter.Listen
     companion object {
         private const val COUNT_PER_REQUEST = 1000
         private const val RUN_SEARCH_DELAY = 1000
-        fun newInstance(aid: Int, cityId: Int, additional: Bundle?): SelectCityDialog {
+        fun newInstance(aid: Long, cityId: Int, additional: Bundle?): SelectCityDialog {
             val args = additional ?: Bundle()
             args.putInt(Extra.CITY_ID, cityId)
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             val selectCityDialog = SelectCityDialog()
             selectCityDialog.arguments = args
             return selectCityDialog

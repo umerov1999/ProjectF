@@ -8,21 +8,21 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("call")
 class CallDboEntity : DboEntity() {
-    var initiator_id = 0
+    var initiator_id = 0L
         private set
-    var receiver_id = 0
+    var receiver_id = 0L
         private set
     var state: String? = null
         private set
     var time: Long = 0
         private set
 
-    fun setInitiator_id(initiator_id: Int): CallDboEntity {
+    fun setInitiator_id(initiator_id: Long): CallDboEntity {
         this.initiator_id = initiator_id
         return this
     }
 
-    fun setReceiver_id(receiver_id: Int): CallDboEntity {
+    fun setReceiver_id(receiver_id: Long): CallDboEntity {
         this.receiver_id = receiver_id
         return this
     }

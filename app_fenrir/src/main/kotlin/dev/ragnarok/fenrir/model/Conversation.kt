@@ -6,7 +6,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 
-class Conversation(private val id: Int) {
+class Conversation(private val id: Long) {
     private var title: String? = null
     private var unreadCount = 0
     private var photo50: String? = null
@@ -56,7 +56,7 @@ class Conversation(private val id: Int) {
         return this
     }
 
-    fun getId(): Int {
+    fun getId(): Long {
         return id
     }
 

@@ -9,6 +9,6 @@ interface IFaveLinksView : IMvpView, IErrorView {
     fun notifyDataSetChanged()
     fun notifyDataAdded(position: Int, count: Int)
     fun displayRefreshing(refreshing: Boolean)
-    fun openLink(accountId: Int, link: FaveLink)
+    fun openLink(accountId: Long, link: FaveLink)
     fun notifyItemRemoved(index: Int)
 }

@@ -12,12 +12,12 @@ interface IDocsStorage : IStorage {
 
     @CheckResult
     fun store(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         entities: List<DocumentDboEntity>,
         clearBeforeInsert: Boolean
     ): Completable
 
     @CheckResult
-    fun delete(accountId: Int, docId: Int, ownerId: Int): Completable
+    fun delete(accountId: Long, docId: Int, ownerId: Long): Completable
 }

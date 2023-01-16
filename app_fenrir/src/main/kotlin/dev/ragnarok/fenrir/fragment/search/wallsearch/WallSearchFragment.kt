@@ -21,7 +21,7 @@ class WallSearchFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<WallSearchPresenter> {
         return object : IPresenterFactory<WallSearchPresenter> {
             override fun create(): WallSearchPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val c: WallSearchCriteria? = requireArguments().getParcelableCompat(Extra.CRITERIA)
                 return WallSearchPresenter(accountId, c, saveInstanceState)
             }
@@ -33,7 +33,7 @@ class WallSearchFragment :
     }
 
     override fun postCreate(root: View) {}
-    override fun onAvatarClick(ownerId: Int) {
+    override fun onAvatarClick(ownerId: Long) {
         super.onOwnerClick(ownerId)
     }
 
@@ -51,7 +51,7 @@ class WallSearchFragment :
         return manager
     }
 
-    override fun onOwnerClick(ownerId: Int) {
+    override fun onOwnerClick(ownerId: Long) {
         presenter?.fireOwnerClick(
             ownerId
         )
@@ -95,9 +95,9 @@ class WallSearchFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int, criteria: WallSearchCriteria?): WallSearchFragment {
+        fun newInstance(accountId: Long, criteria: WallSearchCriteria?): WallSearchFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, criteria)
             val fragment = WallSearchFragment()
             fragment.arguments = args

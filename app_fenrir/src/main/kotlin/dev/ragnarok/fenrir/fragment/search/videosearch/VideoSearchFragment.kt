@@ -56,7 +56,7 @@ class VideoSearchFragment :
         return object : IPresenterFactory<VideosSearchPresenter> {
             override fun create(): VideosSearchPresenter {
                 return VideosSearchPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.CRITERIA),
                     requireArguments().getString(Extra.ACTION),
                     saveInstanceState
@@ -67,11 +67,11 @@ class VideoSearchFragment :
 
     companion object {
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             initialCriteria: VideoSearchCriteria?
         ): VideoSearchFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, initialCriteria)
             val fragment = VideoSearchFragment()
             fragment.arguments = args

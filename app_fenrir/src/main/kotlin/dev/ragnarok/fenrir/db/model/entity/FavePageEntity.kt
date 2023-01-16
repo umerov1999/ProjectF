@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.db.model.entity
 
 import dev.ragnarok.fenrir.model.FavePageType
 
-class FavePageEntity(val id: Int) {
+class FavePageEntity(val id: Long) {
     var description: String? = null
         private set
 

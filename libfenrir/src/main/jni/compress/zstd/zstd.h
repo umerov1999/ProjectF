@@ -1427,6 +1427,51 @@ ZSTDLIB_STATIC_API unsigned long long ZSTD_decompressBound(const void* src, size
  *           or an error code (if srcSize is too small) */
 ZSTDLIB_STATIC_API size_t ZSTD_frameHeaderSize(const void* src, size_t srcSize);
 
+/*! ZSTD_decompressionMargin() :
+ * Zstd supports in-place decompression, where the input and output buffers overlap.
+ * In this case, the output buffer must be at least (Margin + Output_Size) bytes large,
+ * and the input buffer must be at the end of the output buffer.
+ *
+ *  _______________________ Output Buffer ________________________
+ * |                                                              |
+ * |                                        ____ Input Buffer ____|
+ * |                                       |                      |
+ * v                                       v                      v
+ * |---------------------------------------|-----------|----------|
+ * ^                                                   ^          ^
+ * |___________________ Output_Size ___________________|_ Margin _|
+ *
+ * NOTE: See also ZSTD_DECOMPRESSION_MARGIN().
+ * NOTE: This applies only to single-pass decompression through ZSTD_decompress() or
+ * ZSTD_decompressDCtx().
+ * NOTE: This function supports multi-frame input.
+ *
+ * @param src The compressed frame(s)
+ * @param srcSize The size of the compressed frame(s)
+ * @returns The decompression margin or an error that can be checked with ZSTD_isError().
+ */
+ZSTDLIB_STATIC_API size_t ZSTD_decompressionMargin(const void* src, size_t srcSize);
+
+/*! ZSTD_DECOMPRESS_MARGIN() :
+ * Similar to ZSTD_decompressionMargin(), but instead of computing the margin from
+ * the compressed frame, compute it from the original size and the blockSizeLog.
+ * See ZSTD_decompressionMargin() for details.
+ *
+ * WARNING: This macro does not support multi-frame input, the input must be a single
+ * zstd frame. If you need that support use the function, or implement it yourself.
+ *
+ * @param originalSize The original uncompressed size of the data.
+ * @param blockSize    The block size == MIN(windowSize, ZSTD_BLOCKSIZE_MAX).
+ *                     Unless you explicitly set the windowLog smaller than
+ *                     ZSTD_BLOCKSIZELOG_MAX you can just use ZSTD_BLOCKSIZE_MAX.
+ */
+#define ZSTD_DECOMPRESSION_MARGIN(originalSize, blockSize) ((size_t)(                                              \
+        ZSTD_FRAMEHEADERSIZE_MAX                                                              /* Frame header */ + \
+        4                                                                                         /* checksum */ + \
+        ((originalSize) == 0 ? 0 : 3 * (((originalSize) + (blockSize) - 1) / blockSize)) /* 3 bytes per block */ + \
+        (blockSize)                                                                    /* One block of margin */   \
+    ))
+
 typedef enum {
   ZSTD_sf_noBlockDelimiters = 0,         /* Representation of ZSTD_Sequence has no block delimiters, sequences only */
   ZSTD_sf_explicitBlockDelimiters = 1    /* Representation of ZSTD_Sequence contains explicit block delimiters */
@@ -2465,8 +2510,8 @@ ZSTDLIB_STATIC_API size_t ZSTD_toFlushNow(ZSTD_CCtx* cctx);
  *     ZSTD_DCtx_loadDictionary(zds, dict, dictSize);
  *
  * note: no dictionary will be used if dict == NULL or dictSize < 8
- * Note : this prototype will be marked as deprecated and generate compilation warnings on reaching v1.5.x
  */
+ZSTD_DEPRECATED("use ZSTD_DCtx_reset + ZSTD_DCtx_loadDictionary, see zstd.h for detailed instructions")
 ZSTDLIB_STATIC_API size_t ZSTD_initDStream_usingDict(ZSTD_DStream* zds, const void* dict, size_t dictSize);
 
 /*!
@@ -2476,8 +2521,8 @@ ZSTDLIB_STATIC_API size_t ZSTD_initDStream_usingDict(ZSTD_DStream* zds, const vo
  *     ZSTD_DCtx_refDDict(zds, ddict);
  *
  * note : ddict is referenced, it must outlive decompression session
- * Note : this prototype will be marked as deprecated and generate compilation warnings on reaching v1.5.x
  */
+ZSTD_DEPRECATED("use ZSTD_DCtx_reset + ZSTD_DCtx_refDDict, see zstd.h for detailed instructions")
 ZSTDLIB_STATIC_API size_t ZSTD_initDStream_usingDDict(ZSTD_DStream* zds, const ZSTD_DDict* ddict);
 
 /*!
@@ -2486,8 +2531,8 @@ ZSTDLIB_STATIC_API size_t ZSTD_initDStream_usingDDict(ZSTD_DStream* zds, const Z
  *     ZSTD_DCtx_reset(zds, ZSTD_reset_session_only);
  *
  * re-use decompression parameters from previous init; saves dictionary loading
- * Note : this prototype will be marked as deprecated and generate compilation warnings on reaching v1.5.x
  */
+ZSTD_DEPRECATED("use ZSTD_DCtx_reset, see zstd.h for detailed instructions")
 ZSTDLIB_STATIC_API size_t ZSTD_resetDStream(ZSTD_DStream* zds);
 
 

@@ -19,7 +19,7 @@ class OwnerInfo private constructor(val owner: Owner, val avatar: Bitmap?) {
         get() = owner as Community
 
     companion object {
-        fun getRx(context: Context, accountId: Int, ownerId: Int): Single<OwnerInfo> {
+        fun getRx(context: Context, accountId: Long, ownerId: Long): Single<OwnerInfo> {
             val app = context.applicationContext
             val interactor = owners
             return interactor.getBaseOwnerInfo(accountId, ownerId, IOwnersRepository.MODE_ANY)

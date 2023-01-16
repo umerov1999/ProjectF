@@ -69,8 +69,8 @@ class NewsfeedMentionsFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<NewsfeedMentionsPresenter> {
         return object : IPresenterFactory<NewsfeedMentionsPresenter> {
             override fun create(): NewsfeedMentionsPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val ownerId = requireArguments().getInt(Extra.OWNER_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
                 return NewsfeedMentionsPresenter(accountId, ownerId, saveInstanceState)
             }
         }
@@ -118,10 +118,10 @@ class NewsfeedMentionsFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int, ownerId: Int): NewsfeedMentionsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): NewsfeedMentionsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = NewsfeedMentionsFragment()
             fragment.arguments = args
             return fragment

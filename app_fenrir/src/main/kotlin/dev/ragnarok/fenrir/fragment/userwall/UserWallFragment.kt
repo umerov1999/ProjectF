@@ -288,7 +288,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                 getSingleURLPhotoPlace(
                     resource,
                     usr.fullName,
-                    "id" + usr.getObjectId()
+                    "id" + usr.getOwnerObjectId()
                 ).tryOpenWith(requireActivity())
                 true
             }
@@ -309,7 +309,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         }
     }
 
-    override fun openUserDetails(accountId: Int, user: User, details: UserDetails) {
+    override fun openUserDetails(accountId: Long, user: User, details: UserDetails) {
         getUserDetailsPlace(accountId, user, details).tryOpenWith(requireActivity())
     }
 
@@ -365,7 +365,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
 
         SelectionUtils.addSelectionProfileSupport(getContext(), mHeaderHolder.avatarRoot, user);
     }*/
-    override fun showAvatarUploadedMessage(accountId: Int, post: Post) {
+    override fun showAvatarUploadedMessage(accountId: Long, post: Post) {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.success)
             .setMessage(R.string.avatar_was_changed_successfully)
@@ -461,8 +461,8 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         return object : IPresenterFactory<UserWallPresenter> {
             override fun create(): UserWallPresenter {
                 requireArguments()
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val ownerId = requireArguments().getInt(Extra.OWNER_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
                 val wrapper: ParcelableOwnerWrapper? =
                     requireArguments().getParcelableCompat(Extra.OWNER)
                 return UserWallPresenter(
@@ -490,25 +490,25 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         }
     }
 
-    override fun openFriends(accountId: Int, userId: Int, tab: Int, counters: FriendsCounters?) {
+    override fun openFriends(accountId: Long, userId: Long, tab: Int, counters: FriendsCounters?) {
         getFriendsFollowersPlace(accountId, userId, tab, counters).tryOpenWith(requireActivity())
     }
 
-    override fun openGroups(accountId: Int, userId: Int, user: User?) {
+    override fun openGroups(accountId: Long, userId: Long, user: User?) {
         getCommunitiesPlace(accountId, userId)
             .withParcelableExtra(Extra.USER, user)
             .tryOpenWith(requireActivity())
     }
 
-    override fun openProducts(accountId: Int, ownerId: Int, owner: Owner?) {
+    override fun openProducts(accountId: Long, ownerId: Long, owner: Owner?) {
         getMarketPlace(accountId, ownerId, 0, false).tryOpenWith(requireActivity())
     }
 
-    override fun openProductServices(accountId: Int, ownerId: Int) {
+    override fun openProductServices(accountId: Long, ownerId: Long) {
         getMarketPlace(accountId, ownerId, 0, true).tryOpenWith(requireActivity())
     }
 
-    override fun openGifts(accountId: Int, ownerId: Int, owner: Owner?) {
+    override fun openGifts(accountId: Long, ownerId: Long, owner: Owner?) {
         getGiftsPlace(accountId, ownerId).tryOpenWith(requireActivity())
     }
 
@@ -591,7 +591,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                     getSingleURLPhotoPlace(
                         usr.originalAvatar,
                         usr.fullName,
-                        "id" + usr.getObjectId()
+                        "id" + usr.getOwnerObjectId()
                     ).tryOpenWith(requireActivity())
                 }
                 2 -> {
@@ -612,7 +612,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         }.setCancelable(true).show()
     }
 
-    override fun showMention(accountId: Int, ownerId: Int) {
+    override fun showMention(accountId: Long, ownerId: Long) {
         getMentionsPlace(accountId, ownerId).tryOpenWith(requireActivity())
     }
 

@@ -14,9 +14,9 @@ import io.reactivex.rxjava3.core.Single
 
 interface ICommentsStorage : IStorage {
     fun insert(
-        accountId: Int,
+        accountId: Long,
         sourceId: Int,
-        sourceOwnerId: Int,
+        sourceOwnerId: Long,
         sourceType: Int,
         dbos: List<CommentEntity>,
         owners: OwnerEntities?,
@@ -26,18 +26,18 @@ interface ICommentsStorage : IStorage {
     fun getDbosByCriteria(criteria: CommentsCriteria): Single<List<CommentEntity>>
 
     @CheckResult
-    fun findEditingComment(accountId: Int, commented: Commented): Maybe<DraftComment>?
+    fun findEditingComment(accountId: Long, commented: Commented): Maybe<DraftComment>?
 
     @CheckResult
     fun saveDraftComment(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         text: String?,
-        replyToUser: Int,
+        replyToUser: Long,
         replyToComment: Int
     ): Single<Int>
 
     fun commitMinorUpdate(update: CommentUpdate): Completable
     fun observeMinorUpdates(): Observable<CommentUpdate>
-    fun deleteByDbid(accountId: Int, dbid: Int): Completable
+    fun deleteByDbid(accountId: Long, dbid: Int): Completable
 }

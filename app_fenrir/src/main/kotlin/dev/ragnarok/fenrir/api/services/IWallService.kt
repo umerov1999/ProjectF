@@ -7,7 +7,7 @@ import io.reactivex.rxjava3.core.Single
 class IWallService : IServiceRest() {
     //https://vk.com/dev/wall.search
     fun search(
-        ownerId: Int?,
+        ownerId: Long?,
         domain: String?,
         query: String?,
         ownersOnly: Int?,
@@ -32,7 +32,7 @@ class IWallService : IServiceRest() {
 
     //https://vk.com/dev/wall.edit
     fun edit(
-        ownerId: Int?,
+        ownerId: Long?,
         postId: Int?,
         friendsOnly: Int?,
         message: String?,
@@ -65,7 +65,7 @@ class IWallService : IServiceRest() {
 
     //https://vk.com/dev/wall.pin
     fun pin(
-        ownerId: Int?,
+        ownerId: Long?,
         postId: Int
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -78,7 +78,7 @@ class IWallService : IServiceRest() {
 
     //https://vk.com/dev/wall.unpin
     fun unpin(
-        ownerId: Int?,
+        ownerId: Long?,
         postId: Int
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -93,7 +93,7 @@ class IWallService : IServiceRest() {
     fun repost(
         pobject: String?,
         message: String?,
-        groupId: Int?,
+        groupId: Long?,
         markAsAds: Int?
     ): Single<BaseResponse<RepostReponse>> {
         return rest.request(
@@ -108,7 +108,7 @@ class IWallService : IServiceRest() {
 
     //https://vk.com/dev/wall.post
     fun post(
-        ownerId: Int?,
+        ownerId: Long?,
         friendsOnly: Int?,
         fromGroup: Int?,
         message: String?,
@@ -154,7 +154,7 @@ class IWallService : IServiceRest() {
      * @return 1
      */
     fun delete(
-        ownerId: Int?,
+        ownerId: Long?,
         postId: Int
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -174,7 +174,7 @@ class IWallService : IServiceRest() {
      * @return 1
      */
     fun restoreComment(
-        ownerId: Int?,
+        ownerId: Long?,
         commentId: Int
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -194,7 +194,7 @@ class IWallService : IServiceRest() {
      * @return 1
      */
     fun deleteComment(
-        ownerId: Int?,
+        ownerId: Long?,
         commentId: Int
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -215,7 +215,7 @@ class IWallService : IServiceRest() {
      * @return 1
      */
     fun restore(
-        ownerId: Int?,
+        ownerId: Long?,
         postId: Int
     ): Single<BaseResponse<Int>> {
         return rest.request(
@@ -248,7 +248,7 @@ class IWallService : IServiceRest() {
      * @return 1
      */
     fun editComment(
-        ownerId: Int?,
+        ownerId: Long?,
         commentId: Int,
         message: String?,
         attachments: String?
@@ -264,9 +264,9 @@ class IWallService : IServiceRest() {
     }
 
     fun createComment(
-        ownerId: Int?,
+        ownerId: Long?,
         postId: Int,
-        fromGroup: Int?,
+        fromGroup: Long?,
         message: String?,
         replyToComment: Int?,
         attachments: String?,
@@ -289,7 +289,7 @@ class IWallService : IServiceRest() {
 
     //https://vk.com/dev/wall.getComments
     fun getComments(
-        ownerId: Int?,
+        ownerId: Long?,
         postId: Int,
         needLikes: Int?,
         startCommentId: Int?,
@@ -317,7 +317,7 @@ class IWallService : IServiceRest() {
     }
 
     operator fun get(
-        ownerId: Int?,
+        ownerId: Long?,
         domain: String?,
         offset: Int?,
         count: Int?,
@@ -355,7 +355,7 @@ class IWallService : IServiceRest() {
     }
 
     fun reportComment(
-        owner_id: Int?,
+        owner_id: Long?,
         comment_id: Int?,
         reason: Int?
     ): Single<BaseResponse<Int>> {
@@ -369,7 +369,7 @@ class IWallService : IServiceRest() {
     }
 
     fun reportPost(
-        owner_id: Int?,
+        owner_id: Long?,
         post_id: Int?,
         reason: Int?
     ): Single<BaseResponse<Int>> {
@@ -382,11 +382,11 @@ class IWallService : IServiceRest() {
         )
     }
 
-    fun subscribe(owner_id: Int?): Single<BaseResponse<Int>> {
+    fun subscribe(owner_id: Long?): Single<BaseResponse<Int>> {
         return rest.request("wall.subscribe", form("owner_id" to owner_id), baseInt)
     }
 
-    fun unsubscribe(owner_id: Int?): Single<BaseResponse<Int>> {
+    fun unsubscribe(owner_id: Long?): Single<BaseResponse<Int>> {
         return rest.request("wall.unsubscribe", form("owner_id" to owner_id), baseInt)
     }
 }

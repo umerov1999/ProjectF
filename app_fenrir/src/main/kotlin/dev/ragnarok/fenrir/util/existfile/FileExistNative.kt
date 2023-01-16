@@ -49,7 +49,7 @@ class FileExistNative : AbsFileExist {
         findRemoteAudios(context, true)
     }
 
-    private fun transform_owner(owner_id: Int): String {
+    private fun transform_owner(owner_id: Long): String {
         return if (owner_id < 0) "club" + abs(owner_id) else "id$owner_id"
     }
 

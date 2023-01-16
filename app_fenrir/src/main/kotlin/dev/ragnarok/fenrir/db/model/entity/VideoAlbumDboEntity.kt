@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.db.model.entity
 
-class VideoAlbumDboEntity(val id: Int, val ownerId: Int) : DboEntity() {
+class VideoAlbumDboEntity(val id: Int, val ownerId: Long) : DboEntity() {
     var title: String? = null
         private set
     var image: String? = null

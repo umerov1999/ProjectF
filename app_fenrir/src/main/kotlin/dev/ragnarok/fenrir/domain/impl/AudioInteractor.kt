@@ -22,14 +22,14 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
 class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
-    override fun add(accountId: Int, orig: Audio, groupId: Int?): Completable {
+    override fun add(accountId: Long, orig: Audio, groupId: Long?): Completable {
         return networker.vkDefault(accountId)
             .audio()
             .add(orig.id, orig.ownerId, groupId, orig.accessKey)
             .ignoreElement()
     }
 
-    override fun delete(accountId: Int, audioId: Int, ownerId: Int): Completable {
+    override fun delete(accountId: Long, audioId: Int, ownerId: Long): Completable {
         return networker.vkDefault(accountId)
             .audio()
             .delete(audioId, ownerId)
@@ -37,8 +37,8 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun edit(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         audioId: Int,
         artist: String?,
         title: String?,
@@ -50,7 +50,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
             .ignoreElement()
     }
 
-    override fun restore(accountId: Int, audioId: Int, ownerId: Int): Completable {
+    override fun restore(accountId: Long, audioId: Int, ownerId: Long): Completable {
         return networker.vkDefault(accountId)
             .audio()
             .restore(audioId, ownerId)
@@ -58,11 +58,11 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun sendBroadcast(
-        accountId: Int,
-        audioOwnerId: Int,
+        accountId: Long,
+        audioOwnerId: Long,
         audioId: Int,
         accessKey: String?,
-        targetIds: Collection<Int>
+        targetIds: Collection<Long>
     ): Completable {
         return networker.vkDefault(accountId)
             .audio()
@@ -71,9 +71,9 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun get(
-        accountId: Int,
+        accountId: Long,
         playlist_id: Int?,
-        ownerId: Int,
+        ownerId: Long,
         offset: Int,
         count: Int,
         accessKey: String?
@@ -92,7 +92,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
             }
     }
 
-    override fun getPlaylistsCustom(accountId: Int, code: String?): Single<List<AudioPlaylist>> {
+    override fun getPlaylistsCustom(accountId: Long, code: String?): Single<List<AudioPlaylist>> {
         return networker.vkDefault(accountId)
             .audio()
             .getPlaylistsCustom(code)
@@ -105,7 +105,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun getAudiosByArtist(
-        accountId: Int,
+        accountId: Long,
         artist_id: String?,
         offset: Int,
         count: Int
@@ -125,7 +125,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
             }
     }
 
-    override fun getById(accountId: Int, audios: List<Audio>): Single<List<Audio>> {
+    override fun getById(accountId: Long, audios: List<Audio>): Single<List<Audio>> {
         return networker.vkDefault(accountId)
             .audio()
             .getById(audios)
@@ -137,7 +137,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun getByIdOld(
-        accountId: Int,
+        accountId: Long,
         audios: List<Audio>,
         old: Boolean
     ): Single<List<Audio>> {
@@ -153,18 +153,18 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
             }
     }
 
-    override fun getLyrics(accountId: Int, lyrics_id: Int): Single<String> {
+    override fun getLyrics(accountId: Long, lyrics_id: Int): Single<String> {
         return networker.vkDefault(accountId)
             .audio().getLyrics(lyrics_id).map { checkNotNull(it.text) }
     }
 
-    override fun getArtistById(accountId: Int, artist_id: String): Single<ArtistInfo> {
+    override fun getArtistById(accountId: Long, artist_id: String): Single<ArtistInfo> {
         return networker.vkDefault(accountId)
             .audio().getArtistById(artist_id).map { it }
     }
 
     override fun getPopular(
-        accountId: Int,
+        accountId: Long,
         foreign: Int,
         genre: Int,
         count: Int
@@ -180,8 +180,8 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun getRecommendations(
-        accountId: Int,
-        audioOwnerId: Int,
+        accountId: Long,
+        audioOwnerId: Long,
         count: Int
     ): Single<List<Audio>> {
         return networker.vkDefault(accountId)
@@ -200,7 +200,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun getRecommendationsByAudio(
-        accountId: Int,
+        accountId: Long,
         audio: String?,
         count: Int
     ): Single<List<Audio>> {
@@ -220,8 +220,8 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun getPlaylists(
-        accountId: Int,
-        owner_id: Int,
+        accountId: Long,
+        owner_id: Long,
         offset: Int,
         count: Int
     ): Single<List<AudioPlaylist>> {
@@ -241,8 +241,8 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun createPlaylist(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         title: String?,
         description: String?
     ): Single<AudioPlaylist> {
@@ -253,8 +253,8 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun editPlaylist(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         playlist_id: Int,
         title: String?,
         description: String?
@@ -266,8 +266,8 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun removeFromPlaylist(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
     ): Single<Int> {
@@ -277,8 +277,8 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun addToPlaylist(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
     ): Single<List<AddToPlaylistResponse>> {
@@ -289,9 +289,9 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun followPlaylist(
-        accountId: Int,
+        accountId: Long,
         playlist_id: Int,
-        ownerId: Int,
+        ownerId: Long,
         accessKey: String?
     ): Single<AudioPlaylist> {
         return networker.vkDefault(accountId)
@@ -301,9 +301,9 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun clonePlaylist(
-        accountId: Int,
+        accountId: Long,
         playlist_id: Int,
-        ownerId: Int
+        ownerId: Long
     ): Single<AudioPlaylist> {
         return networker.vkDefault(accountId)
             .audio()
@@ -312,9 +312,9 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun getPlaylistById(
-        accountId: Int,
+        accountId: Long,
         playlist_id: Int,
-        ownerId: Int,
+        ownerId: Long,
         accessKey: String?
     ): Single<AudioPlaylist> {
         return networker.vkDefault(accountId)
@@ -324,8 +324,8 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun reorder(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         audio_id: Int,
         before: Int?,
         after: Int?
@@ -337,7 +337,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     @SuppressLint("DefaultLocale")
-    override fun trackEvents(accountId: Int, audio: Audio): Completable {
+    override fun trackEvents(accountId: Long, audio: Audio): Completable {
         val events = String.format(
             "[{\"e\":\"audio_play\",\"audio_id\":\"%s\",\"source\":\"%s\",\"uuid\":%s,\"duration\":%d,\"start_time\":%d}]",
             audio.ownerId.toString() + "_" + audio.id,
@@ -352,14 +352,14 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
             .ignoreElement()
     }
 
-    override fun deletePlaylist(accountId: Int, playlist_id: Int, ownerId: Int): Single<Int> {
+    override fun deletePlaylist(accountId: Long, playlist_id: Int, ownerId: Long): Single<Int> {
         return networker.vkDefault(accountId)
             .audio()
             .deletePlaylist(playlist_id, ownerId)
     }
 
     override fun search(
-        accountId: Int,
+        accountId: Long,
         criteria: AudioSearchCriteria,
         offset: Int,
         count: Int
@@ -390,7 +390,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun searchArtists(
-        accountId: Int,
+        accountId: Long,
         criteria: ArtistSearchCriteria,
         offset: Int,
         count: Int
@@ -406,7 +406,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun searchPlaylists(
-        accountId: Int,
+        accountId: Long,
         criteria: AudioPlaylistSearchCriteria,
         offset: Int,
         count: Int
@@ -427,8 +427,8 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun getCatalogV2Sections(
-        accountId: Int,
-        owner_id: Int,
+        accountId: Long,
+        owner_id: Long,
         artist_id: String?,
         url: String?,
         query: String?,
@@ -441,7 +441,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun getCatalogV2Section(
-        accountId: Int, section_id: String, start_from: String?
+        accountId: Long, section_id: String, start_from: String?
     ): Single<CatalogV2Section> {
         return networker.vkDefault(accountId)
             .audio()
@@ -450,7 +450,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     override fun getCatalogV2BlockItems(
-        accountId: Int, block_id: String, start_from: String?
+        accountId: Long, block_id: String, start_from: String?
     ): Single<CatalogV2Block> {
         return networker.vkDefault(accountId)
             .audio()

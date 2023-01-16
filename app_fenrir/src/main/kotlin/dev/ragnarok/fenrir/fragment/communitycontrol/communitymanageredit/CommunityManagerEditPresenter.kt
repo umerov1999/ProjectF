@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 
 class CommunityManagerEditPresenter : AccountDependencyPresenter<ICommunityManagerEditView> {
     private val users: List<User>
-    private val groupId: Int
+    private val groupId: Long
     private val interactor: IGroupSettingsInteractor
     private val isCreator: Boolean
     private val adding: Boolean
@@ -26,8 +26,8 @@ class CommunityManagerEditPresenter : AccountDependencyPresenter<ICommunityManag
     private var savingNow = false
 
     constructor(
-        accountId: Int,
-        groupId: Int,
+        accountId: Long,
+        groupId: Long,
         manager: Manager,
         savedInstanceState: Bundle?
     ) : super(accountId, savedInstanceState) {
@@ -54,8 +54,8 @@ class CommunityManagerEditPresenter : AccountDependencyPresenter<ICommunityManag
     }
 
     constructor(
-        accountId: Int,
-        groupId: Int,
+        accountId: Long,
+        groupId: Long,
         users: List<User>,
         savedInstanceState: Bundle?
     ) : super(accountId, savedInstanceState) {

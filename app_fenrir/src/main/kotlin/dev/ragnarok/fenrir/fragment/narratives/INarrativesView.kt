@@ -10,5 +10,5 @@ interface INarrativesView : IMvpView, IErrorView {
     fun notifyDataSetChanged()
     fun notifyDataAdded(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
-    fun onNarrativesOpen(accountId: Int, stories: ArrayList<Story>)
+    fun onNarrativesOpen(accountId: Long, stories: ArrayList<Story>)
 }

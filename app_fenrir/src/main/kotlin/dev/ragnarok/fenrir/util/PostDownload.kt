@@ -28,7 +28,7 @@ import java.io.OutputStream
 import kotlin.math.abs
 
 class PostDownload(private val context: Context) {
-    private val Avatars: MutableMap<Int, String> = HashMap()
+    private val Avatars: MutableMap<Long, String> = HashMap()
     private val avatars_styles = StringBuilder()
     private val mNotifyManager = createNotificationManager(context)
     private fun createNotificationManager(context: Context): NotificationManagerCompat {
@@ -62,11 +62,11 @@ class PostDownload(private val context: Context) {
         return if (owner.fullName.isNullOrEmpty()) "wall_${post.ownerId}_${post.vkid}" else owner.fullName + "_${post.ownerId}_${post.vkid}"
     }
 
-    private fun getAvatarTag(peerId: Int): String {
+    private fun getAvatarTag(peerId: Long): String {
         return "avatar_id_" + if (peerId < 0) "club" else "" + abs(peerId)
     }
 
-    private fun Build_Post(accountId: Int, owner: Owner, i: Post, isSub: Boolean): String {
+    private fun Build_Post(accountId: Long, owner: Owner, i: Post, isSub: Boolean): String {
         owner.let {
             it.maxSquareAvatar.nonNullNoEmpty { kk ->
                 if (!Avatars.containsKey(it.ownerId)) {
@@ -152,7 +152,7 @@ class PostDownload(private val context: Context) {
         if (!isSub && i.hasCopyHierarchy()) {
             for (s in i.getCopyHierarchy().orEmpty()) {
                 val ownerT: Owner =
-                    if (s.authorId.orZero() == 0) OwnerInfo.getRx(context, accountId, s.ownerId)
+                    if (s.authorId.orZero() == 0L) OwnerInfo.getRx(context, accountId, s.ownerId)
                         .blockingGet().owner else OwnerInfo.getRx(context, accountId, s.authorId)
                         .blockingGet().owner
                 val fwd = Build_Post(accountId, ownerT, s, true)
@@ -338,7 +338,7 @@ class PostDownload(private val context: Context) {
         if (isSub && i.hasCopyHierarchy()) {
             for (s in i.getCopyHierarchy().orEmpty()) {
                 val ownerT: Owner =
-                    if (s.authorId.orZero() == 0) OwnerInfo.getRx(context, accountId, s.ownerId)
+                    if (s.authorId.orZero() == 0L) OwnerInfo.getRx(context, accountId, s.ownerId)
                         .blockingGet().owner else OwnerInfo.getRx(context, accountId, s.authorId)
                         .blockingGet().owner
                 val fwd = Build_Post(accountId, ownerT, s, true)
@@ -350,12 +350,12 @@ class PostDownload(private val context: Context) {
 
     @SuppressLint("MissingPermission", "CheckResult")
     @Suppress("DEPRECATION")
-    fun doDownloadAsHTML(account_id: Int, post: Post) {
+    fun doDownloadAsHTML(account_id: Long, post: Post) {
         Completable.create {
             try {
                 val id = post.ownerId.toString() + "_" + post.vkid
                 val owner: Owner =
-                    if (post.authorId.orZero() == 0) OwnerInfo.getRx(
+                    if (post.authorId.orZero() == 0L) OwnerInfo.getRx(
                         context,
                         account_id,
                         post.ownerId

@@ -15,7 +15,7 @@ class VKApiChat
     /**
      * Chat ID, positive number.
      */
-    var id = 0
+    var id = 0L
 
     /**
      * Type of chat.
@@ -30,7 +30,7 @@ class VKApiChat
     /**
      * ID of the chat starter, positive number
      */
-    var admin_id = 0
+    var admin_id = 0L
 
     /**
      * List of chat participants' IDs.

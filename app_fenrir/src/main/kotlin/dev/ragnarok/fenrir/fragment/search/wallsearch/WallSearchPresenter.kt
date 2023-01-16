@@ -20,7 +20,7 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.core.Single
 
 class WallSearchPresenter(
-    accountId: Int,
+    accountId: Long,
     criteria: WallSearchCriteria?,
     savedInstanceState: Bundle?
 ) : AbsSearchPresenter<IWallSearchView, WallSearchCriteria, Post, IntNextFrom>(
@@ -72,7 +72,7 @@ class WallSearchPresenter(
     }
 
     override fun doSearch(
-        accountId: Int,
+        accountId: Long,
         criteria: WallSearchCriteria,
         startFrom: IntNextFrom
     ): Single<Pair<List<Post>, IntNextFrom>> {

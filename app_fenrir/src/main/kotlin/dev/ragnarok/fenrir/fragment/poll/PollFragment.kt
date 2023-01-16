@@ -118,8 +118,8 @@ class PollFragment : BaseMvpFragment<PollPresenter, IPollView>(), IPollView,
     }
 
     override fun openVoters(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         pollId: Int,
         board: Boolean,
         answer: Long
@@ -141,7 +141,7 @@ class PollFragment : BaseMvpFragment<PollPresenter, IPollView>(), IPollView,
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PollPresenter> {
         return object : IPresenterFactory<PollPresenter> {
             override fun create(): PollPresenter {
-                val aid = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val poll: Poll = requireArguments().getParcelableCompat(Extra.POLL)!!
                 return PollPresenter(aid, poll, saveInstanceState)
             }
@@ -161,10 +161,10 @@ class PollFragment : BaseMvpFragment<PollPresenter, IPollView>(), IPollView,
     }
 
     companion object {
-        fun buildArgs(aid: Int, poll: Poll?): Bundle {
+        fun buildArgs(aid: Long, poll: Poll?): Bundle {
             val bundle = Bundle()
             bundle.putParcelable(Extra.POLL, poll)
-            bundle.putInt(Extra.ACCOUNT_ID, aid)
+            bundle.putLong(Extra.ACCOUNT_ID, aid)
             return bundle
         }
 

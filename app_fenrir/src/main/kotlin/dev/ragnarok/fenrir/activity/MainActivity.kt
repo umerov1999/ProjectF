@@ -182,7 +182,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             finish()
         }
     }
-    protected var mAccountId = 0
+    protected var mAccountId = 0L
     private val requestEnterPinZero = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -510,7 +510,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         //CurrentTheme.dumpDynamicColors(this)
     }
 
-    private fun updateNotificationCount(account: Int) {
+    private fun updateNotificationCount(account: Long) {
         mCompositeDisposable.add(CountersInteractor(networkInterfaces).getApiCounters(account)
             .fromIOToMain()
             .subscribe({ counters -> updateNotificationsBadge(counters) }) { removeNotificationsBadge() })
@@ -689,7 +689,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         ).showToastError(R.string.err_offline)
     }
 
-    private fun onCurrentAccountChange(newAccountId: Int) {
+    private fun onCurrentAccountChange(newAccountId: Long) {
         mAccountId = newAccountId
         navigationView?.onAccountChange(newAccountId)
         Accounts.showAccountSwitchedToast(this)
@@ -710,12 +710,12 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             return false
         }
         if (ACTION_OPEN_WALL == intent.action) {
-            val owner_id = intent.extras!!.getInt(Extra.OWNER_ID)
+            val owner_id = intent.extras!!.getLong(Extra.OWNER_ID)
             PlaceFactory.getOwnerWallPlace(mAccountId, owner_id, null).tryOpenWith(this)
             return true
         }
         if (ACTION_SWITH_ACCOUNT == intent.action) {
-            val newAccountId = intent.extras!!.getInt(Extra.ACCOUNT_ID)
+            val newAccountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
             if (Settings.get().accounts().current != newAccountId) {
                 Settings.get()
                     .accounts().current = newAccountId
@@ -724,8 +724,8 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             intent.action = ACTION_MAIN
         }
         if (ACTION_SHORTCUT_WALL == intent.action) {
-            val newAccountId = intent.extras!!.getInt(Extra.ACCOUNT_ID)
-            val ownerId = intent.extras!!.getInt(Extra.OWNER_ID)
+            val newAccountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
+            val ownerId = intent.extras!!.getLong(Extra.OWNER_ID)
             if (Settings.get().accounts().current != newAccountId) {
                 Settings.get()
                     .accounts().current = newAccountId
@@ -794,7 +794,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             return false
         }
         if (ACTION_CHAT_FROM_SHORTCUT == action) {
-            val aid = intent.extras!!.getInt(Extra.ACCOUNT_ID)
+            val aid = intent.extras!!.getLong(Extra.ACCOUNT_ID)
             val prefsAid = Settings.get()
                 .accounts()
                 .current
@@ -802,7 +802,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 Settings.get()
                     .accounts().current = aid
             }
-            val peerId = intent.extras!!.getInt(Extra.PEER_ID)
+            val peerId = intent.extras!!.getLong(Extra.PEER_ID)
             val title = intent.getStringExtra(Extra.TITLE)
             val imgUrl = intent.getStringExtra(Extra.IMAGE)
             val peer = Peer(peerId).setTitle(title).setAvaUrl(imgUrl)
@@ -848,7 +848,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         resolveToolbarNavigationIcon()
     }
 
-    private fun openChat(accountId: Int, messagesOwnerId: Int, peer: Peer, closeMain: Boolean) {
+    private fun openChat(accountId: Long, messagesOwnerId: Long, peer: Peer, closeMain: Boolean) {
         if (Settings.get().other().isEnable_show_recent_dialogs) {
             val recentChat = RecentChat(accountId, peer.id, peer.getTitle(), peer.avaUrl)
             navigationView?.appendRecentChat(recentChat)
@@ -1128,7 +1128,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         mCurrentFrontSection = sectionDrawerItem
     }
 
-    override fun onChatResume(accountId: Int, peerId: Int, title: String?, imgUrl: String?) {
+    override fun onChatResume(accountId: Long, peerId: Long, title: String?, imgUrl: String?) {
         if (Settings.get().other().isEnable_show_recent_dialogs) {
             val recentChat = RecentChat(accountId, peerId, title, imgUrl)
             navigationView?.appendRecentChat(recentChat)
@@ -1242,7 +1242,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.DOC_PREVIEW -> {
                 val document: Document? = args.getParcelableCompat(Extra.DOC)
                 if (document != null && document.hasValidGifVideoLink()) {
-                    val aid = args.getInt(Extra.ACCOUNT_ID)
+                    val aid = args.getLong(Extra.ACCOUNT_ID)
                     val documents = ArrayList(listOf(document))
                     val extra = GifPagerActivity.buildArgs(aid, documents, 0)
                     place.launchActivityForResult(this, GifPagerActivity.newInstance(this, extra))
@@ -1266,8 +1266,8 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.CHAT -> {
                 val peer: Peer = args.getParcelableCompat(Extra.PEER) ?: return
                 openChat(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.OWNER_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.OWNER_ID),
                     peer,
                     place.isNeedFinishMain
                 )
@@ -1281,7 +1281,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             }
             Place.EDIT_COMMENT -> {
                 val comment: Comment? = args.getParcelableCompat(Extra.COMMENT)
-                val accountId = args.getInt(Extra.ACCOUNT_ID)
+                val accountId = args.getLong(Extra.ACCOUNT_ID)
                 val commemtId = args.getInt(Extra.COMMENT_ID)
                 val commentEditFragment =
                     CommentEditFragment.newInstance(accountId, comment, commemtId)
@@ -1298,8 +1298,8 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             }
             Place.DIALOGS -> attachToFront(
                 DialogsFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.OWNER_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.OWNER_ID),
                     args.getString(Extra.SUBTITLE)
                 )
             )
@@ -1310,23 +1310,23 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.REMOTE_FILE_MANAGER -> attachToFront(FileManagerRemoteFragment())
             Place.COMMUNITIES -> {
                 val communitiesFragment = CommunitiesFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.USER_ID)
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.USER_ID)
                 )
                 attachToFront(communitiesFragment)
             }
             Place.AUDIOS -> attachToFront(
                 if (Settings.get().other().isAudio_catalog_v2) CatalogV2ListFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.OWNER_ID)
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.OWNER_ID)
                 ) else AudiosTabsFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.OWNER_ID)
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.OWNER_ID)
                 )
             )
             Place.MENTIONS -> attachToFront(
                 NewsfeedMentionsFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID), args.getInt(
+                    args.getLong(Extra.ACCOUNT_ID), args.getLong(
                         Extra.OWNER_ID
                     )
                 )
@@ -1340,14 +1340,14 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.AUDIOS_IN_ALBUM -> attachToFront(AudiosFragment.newInstance(args))
             Place.SEARCH_BY_AUDIO -> attachToFront(
                 AudiosRecommendationFragment.newInstance(
-                    args.getInt(
+                    args.getLong(
                         Extra.ACCOUNT_ID
-                    ), args.getInt(Extra.OWNER_ID), false, args.getInt(Extra.ID)
+                    ), args.getLong(Extra.OWNER_ID), false, args.getInt(Extra.ID)
                 )
             )
             Place.LOCAL_SERVER_PHOTO -> attachToFront(
                 PhotosLocalServerFragment.newInstance(
-                    args.getInt(
+                    args.getLong(
                         Extra.ACCOUNT_ID
                     )
                 )
@@ -1356,8 +1356,8 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.VIDEOS -> attachToFront(VideosTabsFragment.newInstance(args))
             Place.VK_PHOTO_ALBUMS -> attachToFront(
                 VKPhotoAlbumsFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.OWNER_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.OWNER_ID),
                     args.getString(Extra.ACTION),
                     args.getParcelableCompat(Extra.OWNER), false
                 )
@@ -1439,7 +1439,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             }
             Place.NEWSFEED_COMMENTS -> {
                 val newsfeedCommentsFragment = NewsfeedCommentsFragment.newInstance(
-                    args.getInt(
+                    args.getLong(
                         Extra.ACCOUNT_ID
                     )
                 )
@@ -1447,7 +1447,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             }
             Place.COMMUNITY_CONTROL -> {
                 val communityControlFragment = CommunityControlFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
                     args.getParcelableCompat(Extra.OWNER),
                     args.getParcelableCompat(Extra.SETTINGS)
                 )
@@ -1455,14 +1455,14 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             }
             Place.COMMUNITY_INFO -> {
                 val communityInfoFragment = CommunityInfoContactsFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
                     args.getParcelableCompat(Extra.OWNER)
                 )
                 attachToFront(communityInfoFragment)
             }
             Place.COMMUNITY_INFO_LINKS -> {
                 val communityLinksFragment = CommunityInfoLinksFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
                     args.getParcelableCompat(Extra.OWNER)
                 )
                 attachToFront(communityLinksFragment)
@@ -1477,41 +1477,41 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             }
             Place.COMMUNITY_BAN_EDIT -> {
                 val communityBanEditFragment = CommunityBanEditFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.GROUP_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.GROUP_ID),
                     args.getParcelableCompat<Banned>(Extra.BANNED)
                 )
                 attachToFront(communityBanEditFragment)
             }
             Place.COMMUNITY_ADD_BAN -> attachToFront(
                 CommunityBanEditFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.GROUP_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.GROUP_ID),
                     args.getParcelableArrayListCompat(Extra.USERS)
                 )
             )
             Place.COMMUNITY_MANAGER_ADD -> attachToFront(
                 CommunityManagerEditFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.GROUP_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.GROUP_ID),
                     args.getParcelableArrayListCompat(Extra.USERS)
                 )
             )
             Place.COMMUNITY_MANAGER_EDIT -> attachToFront(
                 CommunityManagerEditFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.GROUP_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.GROUP_ID),
                     args.getParcelableCompat<Manager>(Extra.MANAGER)
                 )
             )
             Place.REQUEST_EXECUTOR -> attachToFront(
                 RequestExecuteFragment.newInstance(
-                    args.getInt(
+                    args.getLong(
                         Extra.ACCOUNT_ID
                     )
                 )
             )
-            Place.USER_BLACKLIST -> attachToFront(UserBannedFragment.newInstance(args.getInt(Extra.ACCOUNT_ID)))
+            Place.USER_BLACKLIST -> attachToFront(UserBannedFragment.newInstance(args.getLong(Extra.ACCOUNT_ID)))
             Place.FRIENDS_BIRTHDAYS -> attachToFront(BirthDayFragment.newInstance(args))
             Place.DRAWER_EDIT -> attachToFront(DrawerEditFragment.newInstance())
             Place.SIDE_DRAWER_EDIT -> attachToFront(SideDrawerEditFragment.newInstance())
@@ -1519,33 +1519,33 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.ARTIST -> {
                 attachToFront(AudiosByArtistFragment.newInstance(args))
             }
-            Place.SHORT_LINKS -> attachToFront(ShortedLinksFragment.newInstance(args.getInt(Extra.ACCOUNT_ID)))
+            Place.SHORT_LINKS -> attachToFront(ShortedLinksFragment.newInstance(args.getLong(Extra.ACCOUNT_ID)))
 
             Place.SHORTCUTS -> attachToFront(ShortcutsViewFragment())
             Place.IMPORTANT_MESSAGES -> attachToFront(
                 ImportantMessagesFragment.newInstance(
-                    args.getInt(
+                    args.getLong(
                         Extra.ACCOUNT_ID
                     )
                 )
             )
             Place.OWNER_ARTICLES -> attachToFront(
                 OwnerArticlesFragment.newInstance(
-                    args.getInt(
+                    args.getLong(
                         Extra.ACCOUNT_ID
-                    ), args.getInt(Extra.OWNER_ID)
+                    ), args.getLong(Extra.OWNER_ID)
                 )
             )
             Place.USER_DETAILS -> {
-                val accountId = args.getInt(Extra.ACCOUNT_ID)
+                val accountId = args.getLong(Extra.ACCOUNT_ID)
                 val user: User = args.getParcelableCompat(Extra.USER) ?: return
                 val details: UserDetails = args.getParcelableCompat("details") ?: return
                 attachToFront(newInstance(accountId, user, details))
             }
             Place.WALL_ATTACHMENTS -> {
                 val wall_attachments = WallAttachmentsFragmentFactory.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.OWNER_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.OWNER_ID),
                     args.getString(Extra.TYPE)
                 )
                     ?: throw IllegalArgumentException("wall_attachments cant bee null")
@@ -1553,34 +1553,34 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             }
             Place.MARKET_ALBUMS -> attachToFront(
                 ProductAlbumsFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.OWNER_ID)
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.OWNER_ID)
                 )
             )
             Place.NARRATIVES -> attachToFront(
                 NarrativesFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.OWNER_ID)
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.OWNER_ID)
                 )
             )
             Place.MARKETS -> attachToFront(
                 ProductsFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.OWNER_ID),
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.OWNER_ID),
                     args.getInt(Extra.ALBUM_ID),
                     args.getBoolean(Extra.SERVICE)
                 )
             )
             Place.PHOTO_ALL_COMMENT -> attachToFront(
                 PhotoAllCommentFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.OWNER_ID)
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.OWNER_ID)
                 )
             )
             Place.GIFTS -> attachToFront(
                 GiftsFragment.newInstance(
-                    args.getInt(Extra.ACCOUNT_ID),
-                    args.getInt(Extra.OWNER_ID)
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.OWNER_ID)
                 )
             )
             Place.MARKET_VIEW -> attachToFront(MarketViewFragment.newInstance(args))
@@ -1594,9 +1594,9 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     private fun openCommentCreatePlace(place: Place) {
         val args = place.safeArguments()
         val fragment = CommentCreateFragment.newInstance(
-            args.getInt(Extra.ACCOUNT_ID),
+            args.getLong(Extra.ACCOUNT_ID),
             args.getInt(Extra.COMMENT_ID),
-            args.getInt(Extra.OWNER_ID),
+            args.getLong(Extra.OWNER_ID),
             args.getString(Extra.BODY)
         )
         place.applyFragmentListener(fragment, supportFragmentManager)

@@ -15,7 +15,7 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import io.reactivex.rxjava3.core.Single
 
 class VideosSearchPresenter(
-    accountId: Int,
+    accountId: Long,
     criteria: VideoSearchCriteria?,
     private val action: String?,
     savedInstanceState: Bundle?
@@ -37,7 +37,7 @@ class VideosSearchPresenter(
     }
 
     override fun doSearch(
-        accountId: Int,
+        accountId: Long,
         criteria: VideoSearchCriteria,
         startFrom: IntNextFrom
     ): Single<Pair<List<Video>, IntNextFrom>> {

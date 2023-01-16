@@ -2,22 +2,22 @@ package dev.ragnarok.fenrir.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import dev.ragnarok.fenrir.api.model.interfaces.Identificable
+import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
-class AppChatUser : Parcelable, Identificable {
+class AppChatUser : Parcelable, IdentificableOwner {
     private val member: Owner?
-    private val invitedBy: Int
+    private val invitedBy: Long
     private var join_date: Long = 0
     private var inviter: Owner? = null
     private var canRemove = false
     private var isAdmin = false
     private var isOwner = false
 
-    constructor(member: Owner?, invitedBy: Int) {
+    constructor(member: Owner?, invitedBy: Long) {
         this.member = member
         this.invitedBy = invitedBy
     }
@@ -29,7 +29,7 @@ class AppChatUser : Parcelable, Identificable {
         member =
             parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
                 .get()
-        invitedBy = parcel.readInt()
+        invitedBy = parcel.readLong()
         canRemove = parcel.getBoolean()
         join_date = parcel.readLong()
         isAdmin = parcel.getBoolean()
@@ -39,7 +39,7 @@ class AppChatUser : Parcelable, Identificable {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeTypedObjectCompat(ParcelableOwnerWrapper(inviter), flags)
         dest.writeTypedObjectCompat(ParcelableOwnerWrapper(member), flags)
-        dest.writeInt(invitedBy)
+        dest.writeLong(invitedBy)
         dest.putBoolean(canRemove)
         dest.writeLong(join_date)
         dest.putBoolean(isAdmin)
@@ -68,7 +68,7 @@ class AppChatUser : Parcelable, Identificable {
         return this
     }
 
-    fun getInvitedBy(): Int {
+    fun getInvitedBy(): Long {
         return invitedBy
     }
 
@@ -76,7 +76,7 @@ class AppChatUser : Parcelable, Identificable {
         return member
     }
 
-    override fun getObjectId(): Int {
+    override fun getOwnerObjectId(): Long {
         return member?.ownerId ?: 0
     }
 

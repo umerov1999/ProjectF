@@ -16,7 +16,7 @@ class FeedBannedFragment : AbsOwnersListFragment<FeedBannedPresenter, ISimpleOwn
         return object : IPresenterFactory<FeedBannedPresenter> {
             override fun create(): FeedBannedPresenter {
                 return FeedBannedPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }
@@ -68,10 +68,10 @@ class FeedBannedFragment : AbsOwnersListFragment<FeedBannedPresenter, ISimpleOwn
         }
 
         fun buildArgs(
-            accountId: Int
+            accountId: Long
         ): Bundle {
             val bundle = Bundle()
-            bundle.putInt(Extra.ACCOUNT_ID, accountId)
+            bundle.putLong(Extra.ACCOUNT_ID, accountId)
             return bundle
         }
     }

@@ -25,7 +25,7 @@ import kotlinx.serialization.KSerializer
 import okhttp3.*
 import java.util.*
 
-internal open class AbsApi(val accountId: Int, private val restProvider: IServiceProvider) {
+internal open class AbsApi(val accountId: Long, private val restProvider: IServiceProvider) {
     fun <T : IServiceRest> provideService(serviceClass: T, vararg tokenTypes: Int): Single<T> {
         var pTokenTypes: IntArray = tokenTypes
         if (pTokenTypes.nullOrEmpty()) {

@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.core.Single
 
-class ChatAttachmentAudioPresenter(peerId: Int, accountId: Int, savedInstanceState: Bundle?) :
+class ChatAttachmentAudioPresenter(peerId: Long, accountId: Long, savedInstanceState: Bundle?) :
     BaseChatAttachmentsPresenter<Audio, IChatAttachmentAudiosView>(
         peerId,
         accountId,
@@ -25,7 +25,7 @@ class ChatAttachmentAudioPresenter(peerId: Int, accountId: Int, savedInstanceSta
     }
 
     override fun requestAttachments(
-        peerId: Int,
+        peerId: Long,
         nextFrom: String?
     ): Single<Pair<String?, List<Audio>>> {
         return get().vkDefault(accountId)

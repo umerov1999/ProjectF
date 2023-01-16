@@ -10,7 +10,7 @@ import dev.ragnarok.fenrir.model.Topic
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class TopicsPresenter(accountId: Int, private val ownerId: Int, savedInstanceState: Bundle?) :
+class TopicsPresenter(accountId: Long, private val ownerId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<ITopicsView>(accountId, savedInstanceState) {
     private val topics: MutableList<Topic>
     private val boardInteractor: IBoardInteractor

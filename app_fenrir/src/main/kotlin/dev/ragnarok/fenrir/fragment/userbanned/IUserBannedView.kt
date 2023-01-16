@@ -10,8 +10,8 @@ interface IUserBannedView : IMvpView, IErrorView {
     fun notifyDataSetChanged()
     fun notifyItemRemoved(position: Int)
     fun displayRefreshing(refreshing: Boolean)
-    fun startUserSelection(accountId: Int)
+    fun startUserSelection(accountId: Long)
     fun showSuccessToast()
     fun scrollToPosition(position: Int)
-    fun showOwnerProfile(accountId: Int, owner: Owner)
+    fun showOwnerProfile(accountId: Long, owner: Owner)
 }

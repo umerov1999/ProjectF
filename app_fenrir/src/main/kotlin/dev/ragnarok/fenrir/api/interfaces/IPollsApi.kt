@@ -11,27 +11,27 @@ interface IPollsApi {
         question: String?,
         isAnonymous: Boolean?,
         isMultiple: Boolean?,
-        ownerId: Int,
+        ownerId: Long,
         addAnswers: List<String>
     ): Single<VKApiPoll>
 
     @CheckResult
-    fun deleteVote(ownerId: Int?, pollId: Int, answerId: Long, isBoard: Boolean?): Single<Boolean>
+    fun deleteVote(ownerId: Long?, pollId: Int, answerId: Long, isBoard: Boolean?): Single<Boolean>
 
     @CheckResult
     fun addVote(
-        ownerId: Int,
+        ownerId: Long,
         pollId: Int,
         answerIds: Set<Long>,
         isBoard: Boolean?
     ): Single<Boolean>
 
     @CheckResult
-    fun getById(ownerId: Int, isBoard: Boolean?, pollId: Int): Single<VKApiPoll>
+    fun getById(ownerId: Long, isBoard: Boolean?, pollId: Int): Single<VKApiPoll>
 
     @CheckResult
     fun getVoters(
-        ownerId: Int,
+        ownerId: Long,
         pollId: Int,
         isBoard: Int?,
         answer_ids: List<Long>,

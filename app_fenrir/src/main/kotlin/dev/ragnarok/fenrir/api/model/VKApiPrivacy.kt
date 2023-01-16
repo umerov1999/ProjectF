@@ -30,24 +30,24 @@ class VKApiPrivacy(var category: String?) {
         return buildJsonArray()
     }
 
-    fun includeOwner(id: Int) {
+    fun includeOwner(id: Long) {
         putIfNotExist(Entry.includedOwner(id))
     }
 
-    fun excludeOwner(id: Int) {
+    fun excludeOwner(id: Long) {
         putIfNotExist(Entry.excludedOwner(id))
     }
 
-    fun includeFriendsList(id: Int) {
+    fun includeFriendsList(id: Long) {
         putIfNotExist(Entry.includedFriendsList(id))
     }
 
-    fun excludeFriendsList(id: Int) {
+    fun excludeFriendsList(id: Long) {
         putIfNotExist(Entry.excludedFriendsList(id))
     }
 
     @Serializable
-    class Entry(var type: Int, var id: Int, var allowed: Boolean) {
+    class Entry(var type: Int, var id: Long, var allowed: Boolean) {
         override fun toString(): String {
             return when (type) {
                 TYPE_FRIENDS_LIST -> if (allowed) "list$id" else "-list$id"
@@ -59,19 +59,19 @@ class VKApiPrivacy(var category: String?) {
         companion object {
             const val TYPE_OWNER = 1
             const val TYPE_FRIENDS_LIST = 2
-            fun excludedOwner(id: Int): Entry {
+            fun excludedOwner(id: Long): Entry {
                 return Entry(TYPE_OWNER, id, false)
             }
 
-            fun includedOwner(id: Int): Entry {
+            fun includedOwner(id: Long): Entry {
                 return Entry(TYPE_OWNER, id, true)
             }
 
-            fun includedFriendsList(id: Int): Entry {
+            fun includedFriendsList(id: Long): Entry {
                 return Entry(TYPE_FRIENDS_LIST, id, true)
             }
 
-            fun excludedFriendsList(id: Int): Entry {
+            fun excludedFriendsList(id: Long): Entry {
                 return Entry(TYPE_FRIENDS_LIST, id, false)
             }
         }

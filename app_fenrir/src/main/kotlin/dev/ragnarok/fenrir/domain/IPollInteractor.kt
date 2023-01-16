@@ -6,20 +6,20 @@ import io.reactivex.rxjava3.core.Single
 
 interface IPollInteractor {
     fun createPoll(
-        accountId: Int,
+        accountId: Long,
         question: String?,
         anon: Boolean,
         multiple: Boolean,
-        ownerId: Int,
+        ownerId: Long,
         options: List<String>
     ): Single<Poll>
 
-    fun addVote(accountId: Int, poll: Poll, answerIds: Set<Long>): Single<Poll>
-    fun removeVote(accountId: Int, poll: Poll, answerId: Long): Single<Poll>
-    fun getPollById(accountId: Int, ownerId: Int, pollId: Int, isBoard: Boolean): Single<Poll>
+    fun addVote(accountId: Long, poll: Poll, answerIds: Set<Long>): Single<Poll>
+    fun removeVote(accountId: Long, poll: Poll, answerId: Long): Single<Poll>
+    fun getPollById(accountId: Long, ownerId: Long, pollId: Int, isBoard: Boolean): Single<Poll>
     fun getVoters(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         pollId: Int,
         isBoard: Int?,
         answer_ids: List<Long>,

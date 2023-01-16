@@ -18,7 +18,7 @@ class Comment : AbsModel, Identificable {
     /**
      * идентификатор автора комментария.
      */
-    var fromId = 0
+    var fromId = 0L
         private set
 
     /**
@@ -36,7 +36,7 @@ class Comment : AbsModel, Identificable {
     /**
      * идентификатор пользователя или сообщества, в ответ которому оставлен текущий комментарий (если применимо).
      */
-    var replyToUser = 0
+    var replyToUser = 0L
         private set
 
     /**
@@ -92,10 +92,10 @@ class Comment : AbsModel, Identificable {
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        fromId = parcel.readInt()
+        fromId = parcel.readLong()
         date = parcel.readLong()
         text = parcel.readString()
-        replyToUser = parcel.readInt()
+        replyToUser = parcel.readLong()
         replyToComment = parcel.readInt()
         likesCount = parcel.readInt()
         isUserLikes = parcel.getBoolean()
@@ -135,7 +135,7 @@ class Comment : AbsModel, Identificable {
         return this
     }
 
-    fun setFromId(fromId: Int): Comment {
+    fun setFromId(fromId: Long): Comment {
         this.fromId = fromId
         return this
     }
@@ -150,7 +150,7 @@ class Comment : AbsModel, Identificable {
         return this
     }
 
-    fun setReplyToUser(replyToUser: Int): Comment {
+    fun setReplyToUser(replyToUser: Long): Comment {
         this.replyToUser = replyToUser
         return this
     }
@@ -224,10 +224,10 @@ class Comment : AbsModel, Identificable {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(fromId)
+        parcel.writeLong(fromId)
         parcel.writeLong(date)
         parcel.writeString(text)
-        parcel.writeInt(replyToUser)
+        parcel.writeLong(replyToUser)
         parcel.writeInt(replyToComment)
         parcel.writeInt(likesCount)
         parcel.putBoolean(isUserLikes)

@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @SerialName("poll")
 class PollDboEntity : DboEntity() {
     var isClosed = false
-    var authorId = 0
+    var authorId = 0L
     var isCanVote = false
     var isCanEdit = false
     var isCanReport = false
@@ -18,7 +18,7 @@ class PollDboEntity : DboEntity() {
     var isMultiple = false
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var creationTime: Long = 0
         private set
@@ -37,7 +37,7 @@ class PollDboEntity : DboEntity() {
     var photo: String? = null
         private set
 
-    operator fun set(id: Int, ownerId: Int): PollDboEntity {
+    operator fun set(id: Int, ownerId: Long): PollDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this
@@ -53,7 +53,7 @@ class PollDboEntity : DboEntity() {
         return this
     }
 
-    fun setAuthorId(authorId: Int): PollDboEntity {
+    fun setAuthorId(authorId: Long): PollDboEntity {
         this.authorId = authorId
         return this
     }

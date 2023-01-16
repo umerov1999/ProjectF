@@ -18,16 +18,16 @@ class QuickReplyService : android.app.IntentService(QuickReplyService::class.jav
     @Deprecated("Deprecated in Java")
     override fun onHandleIntent(intent: Intent?) {
         if (intent != null && ACTION_ADD_MESSAGE == intent.action && intent.extras != null) {
-            val accountId = (intent.extras ?: return).getInt(Extra.ACCOUNT_ID)
-            val peerId = (intent.extras ?: return).getInt(Extra.PEER_ID)
+            val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
+            val peerId = (intent.extras ?: return).getLong(Extra.PEER_ID)
             val msg = RemoteInput.getResultsFromIntent(intent)
             if (msg != null) {
                 val body = msg.getCharSequence(Extra.BODY)
                 addMessage(accountId, peerId, body?.toString())
             }
         } else if (intent != null && ACTION_MARK_AS_READ == intent.action && intent.extras != null) {
-            val accountId = (intent.extras ?: return).getInt(Extra.ACCOUNT_ID)
-            val peerId = (intent.extras ?: return).getInt(Extra.PEER_ID)
+            val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
+            val peerId = (intent.extras ?: return).getLong(Extra.PEER_ID)
             val msgId = (intent.extras ?: return).getInt(Extra.MESSAGE_ID)
             messages.markAsRead(accountId, peerId, msgId).blockingSubscribe(dummy(), ignore())
         } else if (intent != null && ACTION_DELETE_FILE == intent.action && intent.extras != null) {
@@ -41,7 +41,7 @@ class QuickReplyService : android.app.IntentService(QuickReplyService::class.jav
         }
     }
 
-    private fun addMessage(accountId: Int, peerId: Int, body: String?) {
+    private fun addMessage(accountId: Long, peerId: Long, body: String?) {
         val messagesInteractor = messages
         val builder = SaveMessageBuilder(accountId, peerId).setBody(body)
         messagesInteractor.put(builder).blockingSubscribe()
@@ -56,8 +56,8 @@ class QuickReplyService : android.app.IntentService(QuickReplyService::class.jav
 
         fun intentForAddMessage(
             context: Context,
-            accountId: Int,
-            peerId: Int,
+            accountId: Long,
+            peerId: Long,
             msg: Message
         ): Intent {
             val intent = Intent(context, QuickReplyService::class.java)
@@ -85,8 +85,8 @@ class QuickReplyService : android.app.IntentService(QuickReplyService::class.jav
 
         fun intentForReadMessage(
             context: Context,
-            accountId: Int,
-            peerId: Int,
+            accountId: Long,
+            peerId: Long,
             msgId: Int
         ): Intent {
             val intent = Intent(context, QuickReplyService::class.java)

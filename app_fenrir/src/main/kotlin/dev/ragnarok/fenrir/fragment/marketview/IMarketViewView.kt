@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.model.Peer
 
 interface IMarketViewView : IMvpView, IErrorView {
     fun displayLoading(loading: Boolean)
-    fun displayMarket(market: Market, accountId: Int)
-    fun sendMarket(accountId: Int, market: Market)
-    fun onWriteToMarketer(accountId: Int, market: Market, peer: Peer)
+    fun displayMarket(market: Market, accountId: Long)
+    fun sendMarket(accountId: Long, market: Market)
+    fun onWriteToMarketer(accountId: Long, market: Market, peer: Peer)
 }

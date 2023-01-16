@@ -9,19 +9,19 @@ import io.reactivex.rxjava3.core.Single
 
 interface ITempDataStorage {
     fun <T> getTemporaryData(
-        ownerId: Int,
+        ownerId: Long,
         sourceId: Int,
         serializer: ISerializeAdapter<T>
     ): Single<List<T>>
 
     fun <T> putTemporaryData(
-        ownerId: Int,
+        ownerId: Long,
         sourceId: Int,
         data: List<T>,
         serializer: ISerializeAdapter<T>
     ): Completable
 
-    fun deleteTemporaryData(ownerId: Int): Completable
+    fun deleteTemporaryData(ownerId: Long): Completable
 
     fun getSearchQueries(sourceId: Int): Single<List<String>>
 
@@ -41,11 +41,11 @@ interface ITempDataStorage {
 
     fun getShortcutAll(): Single<List<ShortcutStored>>
 
-    fun getAudiosAll(sourceOwner: Int): Single<List<Audio>>
+    fun getAudiosAll(sourceOwner: Long): Single<List<Audio>>
 
-    fun addAudios(sourceOwner: Int, list: List<Audio>, clear: Boolean): Completable
+    fun addAudios(sourceOwner: Long, list: List<Audio>, clear: Boolean): Completable
 
     fun deleteAudios(): Completable
 
-    fun deleteAudio(sourceOwner: Int, id: Int, ownerId: Int): Completable
+    fun deleteAudio(sourceOwner: Long, id: Int, ownerId: Long): Completable
 }

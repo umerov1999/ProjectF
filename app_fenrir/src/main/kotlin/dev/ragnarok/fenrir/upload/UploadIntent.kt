@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.upload
 import android.net.Uri
 
 class UploadIntent(
-    val accountId: Int, /* Идентификатор обьекта, к которому прикрепляется файл
+    val accountId: Long, /* Идентификатор обьекта, к которому прикрепляется файл
          (локальный код сообщения, поста, комментария) */
     val destination: UploadDestination
 ) {

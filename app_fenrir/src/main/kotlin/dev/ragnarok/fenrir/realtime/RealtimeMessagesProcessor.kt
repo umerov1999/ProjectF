@@ -40,7 +40,7 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
     private val stateLock = Any()
     private val queue: MutableList<Entry>
     private val app: Context = provideApplicationContext()
-    private val notificationsInterceptors: SparseArray<Pair<Int, Int>>
+    private val notificationsInterceptors: SparseArray<Pair<Long, Long>>
     private val ownersRepository: IOwnersRepository
     private val messagesInteractor: IMessagesRepository
 
@@ -50,7 +50,7 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
         return publishSubject
     }
 
-    override fun process(accountId: Int, updates: List<AddMessageUpdate>): Int {
+    override fun process(accountId: Long, updates: List<AddMessageUpdate>): Int {
         val id = ID_GENERATOR.incrementAndGet()
         val entry = Entry(accountId, id, false)
         for (update in updates) {
@@ -77,7 +77,7 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
     }
 
     @Throws(QueueContainsException::class)
-    override fun process(accountId: Int, messageId: Int, ignoreIfExists: Boolean): Int {
+    override fun process(accountId: Long, messageId: Int, ignoreIfExists: Boolean): Int {
         if (hasInQueueOrCurrent(messageId)) {
             throw QueueContainsException()
         }
@@ -90,7 +90,10 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
         return id
     }
 
-    override fun registerNotificationsInterceptor(interceptorId: Int, aidPeerPair: Pair<Int, Int>) {
+    override fun registerNotificationsInterceptor(
+        interceptorId: Int,
+        aidPeerPair: Pair<Long, Long>
+    ) {
         notificationsInterceptors.put(interceptorId, aidPeerPair)
     }
 
@@ -98,7 +101,7 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
         notificationsInterceptors.remove(interceptorId)
     }
 
-    override fun isNotificationIntercepted(accountId: Int, peerId: Int): Boolean {
+    override fun isNotificationIntercepted(accountId: Long, peerId: Long): Boolean {
         for (i in 0 until notificationsInterceptors.size()) {
             val key = notificationsInterceptors.keyAt(i)
             val pair = notificationsInterceptors[key]
@@ -280,7 +283,7 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
 
     private fun identifyMissingObjectsGetAndStore(result: TmpResult): Completable {
         val ownIds = getOwnIds(result)
-        val chatIds: Collection<Int>? = getChatIds(result)
+        val chatIds: Collection<Long>? = getChatIds(result)
         val accountId = result.accountId
         var completable = Completable.complete()
         if (ownIds.nonEmpty()) {
@@ -294,10 +297,10 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
         return completable
     }
 
-    private fun findMissingChatsGetAndStore(accountId: Int, ids: Collection<Int>): Completable {
+    private fun findMissingChatsGetAndStore(accountId: Long, ids: Collection<Long>): Completable {
         return repositories.dialogs()
             .getMissingGroupChats(accountId, ids)
-            .flatMapCompletable { integers: Collection<Int> ->
+            .flatMapCompletable { integers: Collection<Long> ->
                 if (integers.isEmpty()) {
                     return@flatMapCompletable Completable.complete()
                 }
@@ -311,9 +314,9 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
             }
     }
 
-    private fun findMissingOwnersGetAndStore(accountId: Int, ids: VKOwnIds): Completable {
+    private fun findMissingOwnersGetAndStore(accountId: Long, ids: VKOwnIds): Completable {
         return findMissingOwnerIds(accountId, ids)
-            .flatMapCompletable { integers: List<Int> ->
+            .flatMapCompletable { integers: List<Long> ->
                 if (integers.isEmpty()) {
                     return@flatMapCompletable Completable.complete()
                 }
@@ -321,16 +324,16 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
             }
     }
 
-    private fun findMissingOwnerIds(accountId: Int, ids: VKOwnIds): Single<List<Int>> {
+    private fun findMissingOwnerIds(accountId: Long, ids: VKOwnIds): Single<List<Long>> {
         return repositories.owners()
             .getMissingUserIds(accountId, ids.getUids())
             .zipWith(
                 repositories.owners().getMissingCommunityIds(accountId, ids.getGids())
-            ) { integers: Collection<Int>, integers2: Collection<Int> ->
+            ) { integers: Collection<Long>, integers2: Collection<Long> ->
                 if (integers.isEmpty() && integers2.isEmpty()) {
-                    return@zipWith emptyList<Int>()
+                    return@zipWith emptyList<Long>()
                 }
-                val result: MutableList<Int> = ArrayList(integers.size + integers2.size)
+                val result: MutableList<Long> = ArrayList(integers.size + integers2.size)
                 result.addAll(integers)
                 result.addAll(integers2)
                 result
@@ -340,8 +343,8 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
     companion object {
         private const val TAG = "RealtimeMessagesProcessor"
         private val ID_GENERATOR = AtomicInteger()
-        internal fun getChatIds(result: TmpResult): Set<Int>? {
-            var peersIds: MutableSet<Int>? = null
+        internal fun getChatIds(result: TmpResult): Set<Long>? {
+            var peersIds: MutableSet<Long>? = null
             for (msg in result.data) {
                 val dto = msg.dto ?: continue
                 if (Peer.isGroupChat(dto.peer_id)) {

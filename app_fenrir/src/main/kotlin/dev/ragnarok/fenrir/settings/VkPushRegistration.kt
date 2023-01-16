@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class VkPushRegistration {
     @SerialName("userId")
-    var userId = 0
+    var userId = 0L
         private set
 
     @SerialName("deviceId")
@@ -22,7 +22,7 @@ class VkPushRegistration {
         private set
 
     operator fun set(
-        userId: Int,
+        userId: Long,
         deviceId: String,
         vkToken: String,
         gmcToken: String

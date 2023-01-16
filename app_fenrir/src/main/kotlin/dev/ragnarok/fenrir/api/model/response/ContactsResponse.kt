@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class ContactsResponse {
     @SerialName("items")
-    var items: List<Int>? = null
+    var items: List<Long>? = null
 
     @SerialName("profiles")
     var profiles: List<VKApiUser>? = null

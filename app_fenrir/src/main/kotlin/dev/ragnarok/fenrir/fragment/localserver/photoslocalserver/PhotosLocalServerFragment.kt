@@ -106,7 +106,7 @@ class PhotosLocalServerFragment :
         return object : IPresenterFactory<PhotosLocalServerPresenter> {
             override fun create(): PhotosLocalServerPresenter {
                 return PhotosLocalServerPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }
@@ -145,9 +145,9 @@ class PhotosLocalServerFragment :
     }
 
     override fun displayGallery(
-        accountId: Int,
+        accountId: Long,
         albumId: Int,
-        ownerId: Int,
+        ownerId: Long,
         source: TmpSource,
         position: Int,
         reversed: Boolean
@@ -164,9 +164,9 @@ class PhotosLocalServerFragment :
     }
 
     override fun displayGalleryUnSafe(
-        accountId: Int,
+        accountId: Long,
         albumId: Int,
-        ownerId: Int,
+        ownerId: Long,
         parcelNativePointer: Long,
         position: Int,
         reversed: Boolean
@@ -211,9 +211,9 @@ class PhotosLocalServerFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int): PhotosLocalServerFragment {
+        fun newInstance(accountId: Long): PhotosLocalServerFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = PhotosLocalServerFragment()
             fragment.arguments = args
             return fragment

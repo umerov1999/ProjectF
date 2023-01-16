@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 class CommentsPresenter(
-    private var authorId: Int,
+    private var authorId: Long,
     commented: Commented,
     focusToComment: Int?,
     context: Context,
@@ -968,7 +968,7 @@ class CommentsPresenter(
         val single: Single<List<Owner>> = if (canSendFromAnyGroup) {
             interactor.getAvailableAuthors(accountId)
         } else {
-            val ids: MutableSet<Int> = HashSet()
+            val ids: MutableSet<Long> = HashSet()
             ids.add(accountId)
             ids.add(commented.sourceOwnerId)
             ownersRepository.findBaseOwnersDataAsList(accountId, ids, IOwnersRepository.MODE_ANY)

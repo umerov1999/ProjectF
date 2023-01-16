@@ -337,8 +337,8 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
         return object : IPresenterFactory<AudiosPresenter> {
             override fun create(): AudiosPresenter {
                 return AudiosPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     albumId,
                     accessKey,
                     requireArguments().getBoolean(ACTION_SELECT),
@@ -389,10 +389,10 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
     companion object {
         const val EXTRA_IN_TABS_CONTAINER = "in_tabs_container"
         const val ACTION_SELECT = "AudiosFragment.ACTION_SELECT"
-        fun buildArgs(accountId: Int, ownerId: Int, albumId: Int?, access_key: String?): Bundle {
+        fun buildArgs(accountId: Long, ownerId: Long, albumId: Int?, access_key: String?): Bundle {
             val args = Bundle()
-            args.putInt(Extra.OWNER_ID, ownerId)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             if (albumId != null) {
                 args.putInt(Extra.ALBUM_ID, albumId)
             }

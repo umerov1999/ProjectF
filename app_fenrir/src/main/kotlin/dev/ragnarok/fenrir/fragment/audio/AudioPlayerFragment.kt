@@ -147,7 +147,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
 
     }
     private var mAudioInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
-    private var mAccountId = 0
+    private var mAccountId = 0L
     private val mBroadcastDisposable = CompositeDisposable()
     private val mCompositeDisposable = CompositeDisposable()
     private fun appendDisposable(disposable: Disposable) {
@@ -272,7 +272,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_audio_player, container, false)
-        mAccountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+        mAccountId = requireArguments().getLong(Extra.ACCOUNT_ID)
         mPlayerProgressStrings = resources.getStringArray(R.array.player_progress_state)
         mProgress = root.findViewById(R.id.seek_player_pos)
         mPlayPauseButton = root.findViewById(R.id.action_button_play)
@@ -553,7 +553,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         get_lyrics(audio)
     }
 
-    private fun add(accountId: Int, audio: Audio) {
+    private fun add(accountId: Long, audio: Audio) {
         appendDisposable(
             mAudioInteractor.add(accountId, audio, null)
                 .fromIOToMain()
@@ -565,7 +565,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         resolveAddButton()
     }
 
-    private fun delete(accountId: Int, audio: Audio) {
+    private fun delete(accountId: Long, audio: Audio) {
         val id = audio.id
         val ownerId = audio.ownerId
         appendDisposable(
@@ -580,7 +580,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 }) { showErrorInAdapter(it) })
     }
 
-    private fun restore(accountId: Int, audio: Audio) {
+    private fun restore(accountId: Long, audio: Audio) {
         val id = audio.id
         val ownerId = audio.ownerId
         appendDisposable(
@@ -622,7 +622,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         dlgAlert.create().show()
     }
 
-    private fun onAudioDeletedOrRestored(id: Int, ownerId: Int, deleted: Boolean) {
+    private fun onAudioDeletedOrRestored(id: Int, ownerId: Long, deleted: Boolean) {
         if (deleted) {
             createCustomToast(requireActivity()).showToast(R.string.deleted)
         } else {
@@ -1163,13 +1163,13 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         private const val REFRESH_TIME = 1
 
 
-        fun buildArgs(accountId: Int): Bundle {
+        fun buildArgs(accountId: Long): Bundle {
             val bundle = Bundle()
-            bundle.putInt(Extra.ACCOUNT_ID, accountId)
+            bundle.putLong(Extra.ACCOUNT_ID, accountId)
             return bundle
         }
 
-        fun newInstance(accountId: Int): AudioPlayerFragment {
+        fun newInstance(accountId: Long): AudioPlayerFragment {
             return newInstance(buildArgs(accountId))
         }
 

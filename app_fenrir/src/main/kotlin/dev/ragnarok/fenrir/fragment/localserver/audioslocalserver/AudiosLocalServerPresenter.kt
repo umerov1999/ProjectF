@@ -17,7 +17,7 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
-class AudiosLocalServerPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class AudiosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IAudiosLocalServerView>(accountId, savedInstanceState) {
     private val audios: MutableList<Audio>
     private val fInteractor: ILocalServerInteractor

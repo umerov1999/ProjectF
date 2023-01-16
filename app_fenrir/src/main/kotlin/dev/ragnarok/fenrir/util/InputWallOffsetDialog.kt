@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit
 
 class InputWallOffsetDialog internal constructor(
     private val context: Context,
-    private val accountId: Int,
-    private val ownerId: Int,
+    private val accountId: Long,
+    private val ownerId: Long,
     private val wallFilter: Int
 ) {
     private var titleRes = 0
@@ -115,8 +115,8 @@ class InputWallOffsetDialog internal constructor(
 
     class Builder(
         private val context: Context,
-        private val accountId: Int,
-        private val ownerId: Int,
+        private val accountId: Long,
+        private val ownerId: Long,
         private val wallFilter: Int
     ) {
         private var titleRes = 0

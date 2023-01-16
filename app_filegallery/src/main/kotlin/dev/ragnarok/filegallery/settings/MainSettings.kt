@@ -213,9 +213,9 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override fun getRendering_mode(): Int {
         return try {
-            getPreferences(app).getString("rendering_mode", "0")!!.trim().toInt()
+            getPreferences(app).getString("rendering_bitmap_mode", "2")!!.trim().toInt()
         } catch (e: Exception) {
-            0
+            2
         }
     }
 

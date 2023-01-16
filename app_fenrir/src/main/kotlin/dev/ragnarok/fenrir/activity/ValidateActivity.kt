@@ -131,7 +131,7 @@ class ValidateActivity : AppCompatActivity() {
                         val accessToken = tryExtractAccessToken(url)
                         val userId = tryExtractUserId(url)
                         if (accessToken.nonNullNoEmpty() || userId.nonNullNoEmpty()) {
-                            userId?.toInt()
+                            userId?.toLong()
                                 ?.let {
                                     Settings.get().accounts().storeAccessToken(it, accessToken)
                                 }

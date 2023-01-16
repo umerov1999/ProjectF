@@ -14,9 +14,9 @@ open class VKApiOwner
     /**
      * User or group ID.
      */
-    var id = 0
+    var id = 0L
     override fun hashCode(): Int {
-        return id
+        return id.hashCode()
     }
 
     override fun equals(other: Any?): Boolean {

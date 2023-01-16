@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.*
 
 class PhotoAlbum : AbsModel, ISomeones {
     private val id: Int
-    override var ownerId = 0
+    override var ownerId = 0L
         private set
     private var size = 0
     private var title: String? = null
@@ -21,14 +21,14 @@ class PhotoAlbum : AbsModel, ISomeones {
     private var privacyView: SimplePrivacy? = null
     private var privacyComment: SimplePrivacy? = null
 
-    constructor(id: Int, ownerId: Int) {
+    constructor(id: Int, ownerId: Long) {
         this.id = id
         this.ownerId = ownerId
     }
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         size = parcel.readInt()
         title = parcel.readString()
         description = parcel.readString()
@@ -44,7 +44,7 @@ class PhotoAlbum : AbsModel, ISomeones {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeInt(size)
         parcel.writeString(title)
         parcel.writeString(description)
@@ -195,7 +195,7 @@ class PhotoAlbum : AbsModel, ISomeones {
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + ownerId
+        result = 31 * result + ownerId.hashCode()
         return result
     }
 

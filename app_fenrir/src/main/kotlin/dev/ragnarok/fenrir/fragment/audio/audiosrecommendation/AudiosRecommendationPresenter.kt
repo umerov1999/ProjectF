@@ -16,8 +16,8 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class AudiosRecommendationPresenter(
-    accountId: Int,
-    private val ownerId: Int,
+    accountId: Long,
+    private val ownerId: Long,
     private val top: Boolean,
     private val option_menu_id: Int,
     savedInstanceState: Bundle?

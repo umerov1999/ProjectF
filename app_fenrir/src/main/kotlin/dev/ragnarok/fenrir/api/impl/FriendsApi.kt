@@ -12,10 +12,10 @@ import dev.ragnarok.fenrir.api.model.response.OnlineFriendsResponse
 import dev.ragnarok.fenrir.api.services.IFriendsService
 import io.reactivex.rxjava3.core.Single
 
-internal class FriendsApi(accountId: Int, provider: IServiceProvider) :
+internal class FriendsApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IFriendsApi {
     override fun getOnline(
-        userId: Int,
+        userId: Long,
         order: String?,
         count: Int,
         offset: Int,
@@ -70,7 +70,7 @@ internal class FriendsApi(accountId: Int, provider: IServiceProvider) :
                         .map(extractResponseWithErrorHandling()));
     }*/
     override fun get(
-        userId: Int?, order: String?, listId: Int?, count: Int?,
+        userId: Long?, order: String?, listId: Int?, count: Int?,
         offset: Int?, fields: String?, nameCase: String?
     ): Single<Items<VKApiUser>> {
         return provideService(IFriendsService(), TokenType.USER, TokenType.SERVICE)
@@ -101,7 +101,7 @@ internal class FriendsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun deleteSubscriber(
-        subscriber_id: Int
+        subscriber_id: Long
     ): Single<Int> {
         return provideService(IFriendsService(), TokenType.USER)
             .flatMap { service ->
@@ -110,7 +110,7 @@ internal class FriendsApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun getLists(userId: Int?, returnSystem: Boolean?): Single<Items<VKApiFriendList>> {
+    override fun getLists(userId: Long?, returnSystem: Boolean?): Single<Items<VKApiFriendList>> {
         return provideService(IFriendsService(), TokenType.USER)
             .flatMap { service ->
                 service.getLists(userId, integerFromBoolean(returnSystem))
@@ -118,7 +118,7 @@ internal class FriendsApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun delete(userId: Int): Single<DeleteFriendResponse> {
+    override fun delete(userId: Long): Single<DeleteFriendResponse> {
         return provideService(IFriendsService(), TokenType.USER)
             .flatMap { service ->
                 service.delete(userId)
@@ -126,7 +126,7 @@ internal class FriendsApi(accountId: Int, provider: IServiceProvider) :
             }
     }
 
-    override fun add(userId: Int, text: String?, follow: Boolean?): Single<Int> {
+    override fun add(userId: Long, text: String?, follow: Boolean?): Single<Int> {
         return provideService(IFriendsService(), TokenType.USER)
             .flatMap { service ->
                 service.add(userId, text, integerFromBoolean(follow))
@@ -135,7 +135,7 @@ internal class FriendsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun search(
-        userId: Int,
+        userId: Long,
         query: String?,
         fields: String?,
         nameCase: String?,
@@ -150,8 +150,8 @@ internal class FriendsApi(accountId: Int, provider: IServiceProvider) :
     }
 
     override fun getMutual(
-        sourceUid: Int?,
-        targetUid: Int,
+        sourceUid: Long?,
+        targetUid: Long,
         count: Int,
         offset: Int,
         fields: String?

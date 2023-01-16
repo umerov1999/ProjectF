@@ -226,7 +226,7 @@ class WallAdapter(
     }
 
     interface ClickListener {
-        fun onAvatarClick(ownerId: Int)
+        fun onAvatarClick(ownerId: Long)
         fun onShareClick(post: Post)
         fun onPostClick(post: Post)
         fun onRestoreClick(post: Post)
@@ -293,7 +293,7 @@ class WallAdapter(
 
     init {
         mLinkActionAdapter = object : LinkActionAdapter() {
-            override fun onOwnerClick(ownerId: Int) {
+            override fun onOwnerClick(ownerId: Long) {
                 clickListener.onAvatarClick(ownerId)
             }
         }

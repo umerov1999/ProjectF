@@ -11,8 +11,8 @@ class MutualFriendsFragment : AbsOwnersListFragment<MutualFriendsPresenter, ISim
         return object : IPresenterFactory<MutualFriendsPresenter> {
             override fun create(): MutualFriendsPresenter {
                 return MutualFriendsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(EXTRA_TARGET_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(EXTRA_TARGET_ID),
                     saveInstanceState
                 )
             }
@@ -29,10 +29,10 @@ class MutualFriendsFragment : AbsOwnersListFragment<MutualFriendsPresenter, ISim
 
     companion object {
         private const val EXTRA_TARGET_ID = "targetId"
-        fun newInstance(accountId: Int, targetId: Int): MutualFriendsFragment {
+        fun newInstance(accountId: Long, targetId: Long): MutualFriendsFragment {
             val bundle = Bundle()
-            bundle.putInt(EXTRA_TARGET_ID, targetId)
-            bundle.putInt(Extra.ACCOUNT_ID, accountId)
+            bundle.putLong(EXTRA_TARGET_ID, targetId)
+            bundle.putLong(Extra.ACCOUNT_ID, accountId)
             val friendsFragment = MutualFriendsFragment()
             friendsFragment.arguments = bundle
             return friendsFragment

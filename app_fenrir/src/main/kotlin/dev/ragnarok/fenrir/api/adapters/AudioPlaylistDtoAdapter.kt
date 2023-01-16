@@ -16,7 +16,7 @@ class AudioPlaylistDtoAdapter : AbsAdapter<VKApiAudioPlaylist>("VKApiAudioPlayli
         val root = json.jsonObject
         album.id = optInt(root, "id")
         album.count = optInt(root, "count")
-        album.owner_id = optInt(root, "owner_id")
+        album.owner_id = optLong(root, "owner_id")
         album.title = optString(root, "title")
         album.access_key = optString(root, "access_key")
         album.description = optString(root, "description")
@@ -39,7 +39,7 @@ class AudioPlaylistDtoAdapter : AbsAdapter<VKApiAudioPlaylist>("VKApiAudioPlayli
         if (hasObject(root, "original")) {
             val orig = root.getAsJsonObject("original")
             album.original_id = optInt(orig, "playlist_id")
-            album.original_owner_id = optInt(orig, "owner_id")
+            album.original_owner_id = optLong(orig, "owner_id")
             album.original_access_key = optString(orig, "access_key")
         }
         if (hasArray(root, "main_artists")) {

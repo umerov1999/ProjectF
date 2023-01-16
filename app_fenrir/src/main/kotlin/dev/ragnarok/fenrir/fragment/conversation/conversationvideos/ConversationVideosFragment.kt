@@ -46,8 +46,8 @@ class ConversationVideosFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ChatAttachmentVideoPresenter> {
         return object : IPresenterFactory<ChatAttachmentVideoPresenter> {
             override fun create(): ChatAttachmentVideoPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val peerId = requireArguments().getInt(Extra.PEER_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val peerId = requireArguments().getLong(Extra.PEER_ID)
                 return ChatAttachmentVideoPresenter(peerId, accountId, saveInstanceState)
             }
         }

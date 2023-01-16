@@ -96,7 +96,7 @@ class GroupChatsFragment : BaseMvpFragment<GroupChatsPresenter, IGroupChatsView>
         helper?.switchToState(state)
     }
 
-    override fun goToChat(accountId: Int, chat_id: Int) {
+    override fun goToChat(accountId: Long, chat_id: Long) {
         getChatPlace(accountId, accountId, Peer(Peer.fromChatId(chat_id))).tryOpenWith(
             requireActivity()
         )
@@ -105,8 +105,8 @@ class GroupChatsFragment : BaseMvpFragment<GroupChatsPresenter, IGroupChatsView>
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<GroupChatsPresenter> {
         return object : IPresenterFactory<GroupChatsPresenter> {
             override fun create(): GroupChatsPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val groupId = requireArguments().getInt(Extra.GROUP_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val groupId = requireArguments().getLong(Extra.GROUP_ID)
                 return GroupChatsPresenter(accountId, groupId, saveInstanceState)
             }
         }
@@ -125,10 +125,10 @@ class GroupChatsFragment : BaseMvpFragment<GroupChatsPresenter, IGroupChatsView>
     }
 
     companion object {
-        fun buildArgs(accountId: Int, groupId: Int): Bundle {
+        fun buildArgs(accountId: Long, groupId: Long): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.GROUP_ID, groupId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.GROUP_ID, groupId)
             return args
         }
 
@@ -138,7 +138,7 @@ class GroupChatsFragment : BaseMvpFragment<GroupChatsPresenter, IGroupChatsView>
             return fragment
         }
 
-        fun newInstance(accountId: Int, ownerId: Int): GroupChatsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): GroupChatsFragment {
             return newInstance(buildArgs(accountId, ownerId))
         }
     }

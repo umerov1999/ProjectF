@@ -22,7 +22,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class CommunitiesPresenter(accountId: Int, private val userId: Int, savedInstanceState: Bundle?) :
+class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<ICommunitiesView>(accountId, savedInstanceState) {
     private val own: DataWrapper<Community> = DataWrapper(ArrayList(), true)
     private val filtered: DataWrapper<Community> = DataWrapper(ArrayList(0), false)

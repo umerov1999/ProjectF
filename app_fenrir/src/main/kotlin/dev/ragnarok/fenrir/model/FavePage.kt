@@ -1,8 +1,8 @@
 package dev.ragnarok.fenrir.model
 
-import dev.ragnarok.fenrir.api.model.interfaces.Identificable
+import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
 
-class FavePage(private val id: Int) : Identificable {
+class FavePage(private val id: Long) : IdentificableOwner {
     var description: String? = null
         private set
 
@@ -16,7 +16,7 @@ class FavePage(private val id: Int) : Identificable {
     var group: Community? = null
         private set
 
-    override fun getObjectId(): Int {
+    override fun getOwnerObjectId(): Long {
         return id
     }
 

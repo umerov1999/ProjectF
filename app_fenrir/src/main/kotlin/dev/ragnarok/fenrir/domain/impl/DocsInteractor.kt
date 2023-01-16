@@ -18,7 +18,7 @@ import io.reactivex.rxjava3.core.Single
 
 class DocsInteractor(private val networker: INetworker, private val cache: IDocsStorage) :
     IDocsInteractor {
-    override fun request(accountId: Int, ownerId: Int, filter: Int): Single<List<Document>> {
+    override fun request(accountId: Long, ownerId: Long, filter: Int): Single<List<Document>> {
         return networker.vkDefault(accountId)
             .docs()[ownerId, null, null, filter]
             .map { items ->
@@ -38,7 +38,7 @@ class DocsInteractor(private val networker: INetworker, private val cache: IDocs
             }
     }
 
-    override fun getCacheData(accountId: Int, ownerId: Int, filter: Int): Single<List<Document>> {
+    override fun getCacheData(accountId: Long, ownerId: Long, filter: Int): Single<List<Document>> {
         return cache[DocsCriteria(accountId, ownerId).setFilter(filter)]
             .map { entities ->
                 val documents: MutableList<Document> = ArrayList(entities.size)
@@ -49,15 +49,15 @@ class DocsInteractor(private val networker: INetworker, private val cache: IDocs
             }
     }
 
-    override fun add(accountId: Int, docId: Int, ownerId: Int, accessKey: String?): Single<Int> {
+    override fun add(accountId: Long, docId: Int, ownerId: Long, accessKey: String?): Single<Int> {
         return networker.vkDefault(accountId)
             .docs()
             .add(ownerId, docId, accessKey)
     }
 
     override fun findById(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         docId: Int,
         accessKey: String?
     ): Single<Document> {
@@ -73,7 +73,7 @@ class DocsInteractor(private val networker: INetworker, private val cache: IDocs
     }
 
     override fun search(
-        accountId: Int,
+        accountId: Long,
         criteria: DocumentSearchCriteria,
         count: Int,
         offset: Int
@@ -93,7 +93,7 @@ class DocsInteractor(private val networker: INetworker, private val cache: IDocs
             }
     }
 
-    override fun delete(accountId: Int, docId: Int, ownerId: Int): Completable {
+    override fun delete(accountId: Long, docId: Int, ownerId: Long): Completable {
         return networker.vkDefault(accountId)
             .docs()
             .delete(ownerId, docId)

@@ -18,7 +18,7 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
         }
         val root = json.asJsonObject
         val dto = VKApiCommunity()
-        dto.id = optInt(root, "id")
+        dto.id = optLong(root, "id")
         dto.name = optString(root, Fields.GROUP_FIELDS.NAME)
         dto.screen_name = optString(
             root,

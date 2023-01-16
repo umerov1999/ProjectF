@@ -171,7 +171,7 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
     }
 
     override fun returnSuccessToParent(
-        userId: Int,
+        userId: Long,
         accessToken: String?,
         Login: String?,
         Password: String?,
@@ -180,7 +180,7 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
     ) {
         val data = Bundle()
         data.putString(Extra.TOKEN, accessToken)
-        data.putInt(Extra.USER_ID, userId)
+        data.putLong(Extra.USER_ID, userId)
         data.putString(Extra.LOGIN, Login)
         data.putString(Extra.PASSWORD, Password)
         data.putString(Extra.TWO_FA, twoFA)

@@ -11,7 +11,7 @@ import io.reactivex.rxjava3.core.Single
 interface IAttachmentsRepository {
     @CheckResult
     fun remove(
-        accountId: Int,
+        accountId: Long,
         @AttachToType type: Int,
         attachToId: Int,
         generatedAttachmentId: Int
@@ -19,14 +19,14 @@ interface IAttachmentsRepository {
 
     @CheckResult
     fun attach(
-        accountId: Int,
+        accountId: Long,
         @AttachToType attachToType: Int,
         attachToDbid: Int,
         models: List<AbsModel>
     ): Completable
 
     fun getAttachmentsWithIds(
-        accountId: Int,
+        accountId: Long,
         @AttachToType attachToType: Int,
         attachToDbid: Int
     ): Single<List<Pair<Int, AbsModel>>>
@@ -34,7 +34,7 @@ interface IAttachmentsRepository {
     fun observeAdding(): Observable<IAddEvent>
     fun observeRemoving(): Observable<IRemoveEvent>
     interface IBaseEvent {
-        val accountId: Int
+        val accountId: Long
 
         @get:AttachToType
         val attachToType: Int

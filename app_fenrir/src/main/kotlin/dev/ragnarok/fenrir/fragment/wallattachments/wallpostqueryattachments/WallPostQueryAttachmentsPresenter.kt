@@ -18,8 +18,8 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.*
 
 class WallPostQueryAttachmentsPresenter(
-    accountId: Int,
-    private val owner_id: Int,
+    accountId: Long,
+    private val owner_id: Long,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<IWallPostQueryAttachmentsView>(accountId, savedInstanceState) {
     private val mPost: ArrayList<Post> = ArrayList()
@@ -85,7 +85,7 @@ class WallPostQueryAttachmentsPresenter(
         return false
     }
 
-    private fun checkDocs(docs: ArrayList<Document>?, str: List<String>, ids: List<Int>): Boolean {
+    private fun checkDocs(docs: ArrayList<Document>?, str: List<String>, ids: List<Long>): Boolean {
         if (docs.isNullOrEmpty()) {
             return false
         }
@@ -97,7 +97,7 @@ class WallPostQueryAttachmentsPresenter(
         return false
     }
 
-    private fun checkPhotos(docs: ArrayList<Photo>?, str: List<String>, ids: List<Int>): Boolean {
+    private fun checkPhotos(docs: ArrayList<Photo>?, str: List<String>, ids: List<Long>): Boolean {
         if (docs.isNullOrEmpty()) {
             return false
         }
@@ -109,7 +109,7 @@ class WallPostQueryAttachmentsPresenter(
         return false
     }
 
-    private fun checkVideos(docs: ArrayList<Video>?, str: List<String>, ids: List<Int>): Boolean {
+    private fun checkVideos(docs: ArrayList<Video>?, str: List<String>, ids: List<Long>): Boolean {
         if (docs.isNullOrEmpty()) {
             return false
         }
@@ -127,7 +127,7 @@ class WallPostQueryAttachmentsPresenter(
     private fun checkAlbums(
         docs: ArrayList<PhotoAlbum>?,
         str: List<String>,
-        ids: List<Int>
+        ids: List<Long>
     ): Boolean {
         if (docs.isNullOrEmpty()) {
             return false
@@ -161,7 +161,7 @@ class WallPostQueryAttachmentsPresenter(
     private fun checkArticles(
         docs: ArrayList<Article>?,
         str: List<String>,
-        ids: List<Int>
+        ids: List<Long>
     ): Boolean {
         if (docs.isNullOrEmpty()) {
             return false
@@ -177,7 +177,7 @@ class WallPostQueryAttachmentsPresenter(
         return false
     }
 
-    private fun checkPoll(docs: ArrayList<Poll>?, str: List<String>, ids: List<Int>): Boolean {
+    private fun checkPoll(docs: ArrayList<Poll>?, str: List<String>, ids: List<Long>): Boolean {
         if (docs.isNullOrEmpty()) {
             return false
         }
@@ -189,7 +189,7 @@ class WallPostQueryAttachmentsPresenter(
         return false
     }
 
-    private fun update(data: List<Post>, str: List<String>, ids: List<Int>) {
+    private fun update(data: List<Post>, str: List<String>, ids: List<Long>) {
         for (i in data) {
             if (i.hasText() && doCompare(
                     i.text,
@@ -233,11 +233,11 @@ class WallPostQueryAttachmentsPresenter(
         for (i in str.indices) {
             str[i] = str[i].trim { it <= ' ' }.lowercase(Locale.getDefault())
         }
-        val ids: MutableList<Int> = ArrayList()
+        val ids: MutableList<Long> = ArrayList()
         for (cc in str) {
             if (cc.contains("*id")) {
                 try {
-                    ids.add(cc.replace("*id", "").toInt())
+                    ids.add(cc.replace("*id", "").toLong())
                 } catch (ignored: NumberFormatException) {
                 }
             }

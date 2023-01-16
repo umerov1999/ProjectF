@@ -23,13 +23,13 @@ class SingleTabSearchFragment : Fragment(), MySearchView.OnQueryTextListener,
     OnAdditionalButtonClickListener {
     @SearchContentType
     private var mContentType = 0
-    private var mAccountId = 0
+    private var mAccountId = 0L
     private var mInitialCriteria: BaseSearchCriteria? = null
     private var attachedChild = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mContentType = requireArguments().getInt(Extra.TYPE)
-        mAccountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+        mAccountId = requireArguments().getLong(Extra.ACCOUNT_ID)
         mInitialCriteria = requireArguments().getParcelableCompat(Extra.CRITERIA)
         if (savedInstanceState != null) {
             attachedChild = savedInstanceState.getBoolean("attachedChild")
@@ -130,13 +130,13 @@ class SingleTabSearchFragment : Fragment(), MySearchView.OnQueryTextListener,
 
     companion object {
         fun buildArgs(
-            accountId: Int,
+            accountId: Long,
             @SearchContentType contentType: Int,
             criteria: BaseSearchCriteria?
         ): Bundle {
             val args = Bundle()
             args.putInt(Extra.TYPE, contentType)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, criteria)
             return args
         }
@@ -148,25 +148,25 @@ class SingleTabSearchFragment : Fragment(), MySearchView.OnQueryTextListener,
         }
 
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             @SearchContentType contentType: Int
         ): SingleTabSearchFragment {
             val args = Bundle()
             args.putInt(Extra.TYPE, contentType)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = SingleTabSearchFragment()
             fragment.arguments = args
             return fragment
         }
 
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             @SearchContentType contentType: Int,
             criteria: BaseSearchCriteria?
         ): SingleTabSearchFragment {
             val args = Bundle()
             args.putInt(Extra.TYPE, contentType)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, criteria)
             val fragment = SingleTabSearchFragment()
             fragment.arguments = args

@@ -170,9 +170,9 @@ class MessageAttachmentsFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<MessageAttachmentsPresenter> {
         return object : IPresenterFactory<MessageAttachmentsPresenter> {
             override fun create(): MessageAttachmentsPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val messageId = requireArguments().getInt(Extra.MESSAGE_ID)
-                val messageOwnerId = requireArguments().getInt(Extra.OWNER_ID)
+                val messageOwnerId = requireArguments().getLong(Extra.OWNER_ID)
                 val bundle: ModelsBundle = requireArguments().getParcelableCompat(Extra.BUNDLE)!!
                 return MessageAttachmentsPresenter(
                     accountId,
@@ -199,7 +199,7 @@ class MessageAttachmentsFragment :
         }
     }
 
-    override fun addPhoto(accountId: Int, ownerId: Int) {
+    override fun addPhoto(accountId: Long, ownerId: Long) {
         val sources = Sources()
             .with(LocalPhotosSelectableSource())
             .with(LocalGallerySelectableSource())
@@ -301,18 +301,18 @@ class MessageAttachmentsFragment :
         parentFragmentManager.setFragmentResult(MESSAGE_SYNC_ATTACHMENTS, data)
     }
 
-    override fun startAddDocumentActivity(accountId: Int) {
+    override fun startAddDocumentActivity(accountId: Long) {
         val intent =
             AttachmentsActivity.createIntent(requireActivity(), accountId, AttachmentsTypes.DOC)
         openRequestAudioVideoDoc.launch(intent)
     }
 
-    override fun startAddVideoActivity(accountId: Int, ownerId: Int) {
+    override fun startAddVideoActivity(accountId: Long, ownerId: Long) {
         val intent = VideoSelectActivity.createIntent(requireActivity(), accountId, ownerId)
         openRequestAudioVideoDoc.launch(intent)
     }
 
-    override fun startAddAudioActivity(accountId: Int) {
+    override fun startAddAudioActivity(accountId: Long) {
         val intent = createIntent(requireActivity(), accountId)
         openRequestAudioVideoDoc.launch(intent)
     }
@@ -390,15 +390,15 @@ class MessageAttachmentsFragment :
         const val MESSAGE_CLOSE_ONLY = "message_attachments_close_only"
         const val MESSAGE_SYNC_ATTACHMENTS = "message_attachments_sync"
         fun newInstance(
-            accountId: Int,
-            messageOwnerId: Int,
+            accountId: Long,
+            messageOwnerId: Long,
             messageId: Int,
             bundle: ModelsBundle?
         ): MessageAttachmentsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putInt(Extra.MESSAGE_ID, messageId)
-            args.putInt(Extra.OWNER_ID, messageOwnerId)
+            args.putLong(Extra.OWNER_ID, messageOwnerId)
             args.putParcelable(Extra.BUNDLE, bundle)
             val fragment = MessageAttachmentsFragment()
             fragment.arguments = args

@@ -294,7 +294,7 @@ class FeedbackViewBinder(
         configReply(notification.reply, holder)
     }
 
-    private fun solveOwnerOpenByAvatar(ivSource: ImageView, ownerId: Int) {
+    private fun solveOwnerOpenByAvatar(ivSource: ImageView, ownerId: Long) {
         ivSource.setOnClickListener { openOwner(ownerId) }
     }
 
@@ -1241,7 +1241,7 @@ class FeedbackViewBinder(
         }
     }
 
-    internal fun openOwner(userId: Int) {
+    internal fun openOwner(userId: Long) {
         attachmentsActionCallback.onOpenOwner(userId)
     }
 
@@ -1264,7 +1264,7 @@ class FeedbackViewBinder(
 
     init {
         mLinkActionAdapter = object : LinkActionAdapter() {
-            override fun onOwnerClick(ownerId: Int) {
+            override fun onOwnerClick(ownerId: Long) {
                 openOwner(ownerId)
             }
         }

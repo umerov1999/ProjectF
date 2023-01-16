@@ -20,7 +20,7 @@ abstract class AbsDocumentPreviewActivity<P : BaseDocumentPresenter<V>, V : IBas
         requestWritePermission.launch()
     }
 
-    override fun shareDocument(accountId: Int, document: Document) {
+    override fun shareDocument(accountId: Long, document: Document) {
         val items = arrayOf(
             getString(R.string.share_link),
             getString(R.string.repost_send_message),

@@ -15,13 +15,13 @@ import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.spots.SpotsDialog
 
 class ResolveDomainDialog : AccountDependencyDialogFragment() {
-    private var mAccountId = 0
+    private var mAccountId = 0L
     private var url: String? = null
     private var domain: String? = null
     private var mUtilsInteractor: IUtilsInteractor? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mAccountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+        mAccountId = requireArguments().getLong(Extra.ACCOUNT_ID)
         mUtilsInteractor = InteractorFactory.createUtilsInteractor()
         url = requireArguments().getString(Extra.URL)
         domain = requireArguments().getString(Extra.DOMAIN)
@@ -64,15 +64,15 @@ class ResolveDomainDialog : AccountDependencyDialogFragment() {
     }
 
     companion object {
-        fun buildArgs(aid: Int, url: String?, domain: String?): Bundle {
+        fun buildArgs(aid: Long, url: String?, domain: String?): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             args.putString(Extra.URL, url)
             args.putString(Extra.DOMAIN, domain)
             return args
         }
 
-        fun newInstance(aid: Int, url: String?, domain: String?): ResolveDomainDialog {
+        fun newInstance(aid: Long, url: String?, domain: String?): ResolveDomainDialog {
             return newInstance(buildArgs(aid, url, domain))
         }
 

@@ -85,9 +85,9 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<VideosListPresenter> {
         return object : IPresenterFactory<VideosListPresenter> {
             override fun create(): VideosListPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val albumId = requireArguments().getInt(Extra.ALBUM_ID)
-                val ownerId = requireArguments().getInt(Extra.OWNER_ID)
+                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
                 val optAlbumTitle = requireArguments().getString(EXTRA_ALBUM_TITLE)
                 val action = requireArguments().getString(Extra.ACTION)
                 return VideosListPresenter(
@@ -140,7 +140,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         requestReadPermission.launch()
     }
 
-    override fun startSelectUploadFileActivity(accountId: Int) {
+    override fun startSelectUploadFileActivity(accountId: Long) {
         val sources = Sources()
             .with(LocalVideosSelectableSource())
             .with(FileManagerSelectableSource())
@@ -310,7 +310,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         requireActivity().finish()
     }
 
-    override fun showVideoPreview(accountId: Int, video: Video) {
+    override fun showVideoPreview(accountId: Long, video: Video) {
         getVideoPreviewPlace(accountId, video).tryOpenWith(requireActivity())
     }
 
@@ -328,8 +328,8 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
     }
 
     override fun doVideoLongClick(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         isMy: Boolean,
         position: Int,
         video: Video
@@ -435,7 +435,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         }
     }
 
-    override fun displayShareDialog(accountId: Int, video: Video, canPostToMyWall: Boolean) {
+    override fun displayShareDialog(accountId: Long, video: Video, canPostToMyWall: Boolean) {
         val items: Array<String> = if (canPostToMyWall) {
             if (!video.private) {
                 arrayOf(
@@ -498,16 +498,16 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         const val EXTRA_IN_TABS_CONTAINER = "in_tabs_container"
         const val EXTRA_ALBUM_TITLE = "album_title"
         fun buildArgs(
-            accountId: Int,
-            ownerId: Int,
+            accountId: Long,
+            ownerId: Long,
             albumId: Int,
             action: String?,
             albumTitle: String?
         ): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putInt(Extra.ALBUM_ID, albumId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             if (albumTitle != null) {
                 args.putString(EXTRA_ALBUM_TITLE, albumTitle)
             }
@@ -516,8 +516,8 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         }
 
         fun newInstance(
-            accountId: Int,
-            ownerId: Int,
+            accountId: Long,
+            ownerId: Long,
             albumId: Int,
             action: String?,
             albumTitle: String?

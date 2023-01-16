@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.core.Single
 
 internal class VkApies private constructor(
-    accountId: Int,
+    accountId: Long,
     useCustomToken: Boolean,
     customAccessToken: String?,
     provider: IVkRestProvider
@@ -133,13 +133,13 @@ internal class VkApies private constructor(
 
     companion object {
         @SuppressLint("UseSparseArrays")
-        private val APIS: MutableMap<Int, VkApies> = HashMap(1)
-        fun create(accountId: Int, accessToken: String?, provider: IVkRestProvider): VkApies {
+        private val APIS: MutableMap<Long, VkApies> = HashMap(1)
+        fun create(accountId: Long, accessToken: String?, provider: IVkRestProvider): VkApies {
             return VkApies(accountId, true, accessToken, provider)
         }
 
         @Synchronized
-        operator fun get(accountId: Int, provider: IVkRestProvider): VkApies {
+        operator fun get(accountId: Long, provider: IVkRestProvider): VkApies {
             var apies = APIS[accountId]
             if (apies == null) {
                 apies = VkApies(accountId, false, null, provider)
@@ -152,7 +152,7 @@ internal class VkApies private constructor(
     init {
         val restProvider: IServiceProvider = object : IServiceProvider {
             override fun <T : IServiceRest> provideService(
-                accountId: Int,
+                accountId: Long,
                 serviceClass: T,
                 vararg tokenTypes: Int
             ): Single<T> {
@@ -165,7 +165,7 @@ internal class VkApies private constructor(
                 }
             }
 
-            fun provideRest(aid: Int, vararg tokenPolicy: Int): Single<SimplePostHttp> {
+            fun provideRest(aid: Long, vararg tokenPolicy: Int): Single<SimplePostHttp> {
                 if (useCustomToken) {
                     return provider.provideCustomRest(aid, customAccessToken!!)
                 }

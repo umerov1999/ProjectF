@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.api.model
 
 import dev.ragnarok.fenrir.api.adapters.CommunityDtoAdapter
-import dev.ragnarok.fenrir.api.model.interfaces.Identificable
+import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import kotlinx.serialization.Serializable
 
@@ -293,12 +293,12 @@ class VKApiCommunity
     }
 
     @Serializable
-    class Contact : Identificable {
-        var user_id = 0
+    class Contact : IdentificableOwner {
+        var user_id = 0L
         var email: String? = null
         var phone: String? = null
         var desc: String? = null
-        override fun getObjectId(): Int {
+        override fun getOwnerObjectId(): Long {
             return user_id
         }
     }
@@ -328,7 +328,7 @@ class VKApiCommunity
         const val PHOTO_50 = "http://vk.com/images/community_50.gif"
         const val PHOTO_100 = "http://vk.com/images/community_100.gif"
 
-        fun create(id: Int): VKApiCommunity {
+        fun create(id: Long): VKApiCommunity {
             val community = VKApiCommunity()
             community.id = id
             return community

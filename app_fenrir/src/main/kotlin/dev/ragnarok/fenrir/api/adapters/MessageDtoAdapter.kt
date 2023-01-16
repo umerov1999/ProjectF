@@ -19,8 +19,9 @@ class MessageDtoAdapter : AbsAdapter<VKApiMessage>("VKApiMessage") {
         val root = json.asJsonObject
         dto.id = optInt(root, "id")
         dto.out = optBoolean(root, "out")
-        dto.peer_id = optInt(root, "peer_id")
-        dto.from_id = if (root.has("from_id")) optInt(root, "from_id") else optInt(root, "user_id")
+        dto.peer_id = optLong(root, "peer_id")
+        dto.from_id =
+            if (root.has("from_id")) optLong(root, "from_id") else optLong(root, "user_id")
         dto.date = optLong(root, "date")
         //dto.read_state = optBoolean(root, "read_state");
         //dto.title = VKStringUtils.unescape(optString(root, "title"));
@@ -80,7 +81,7 @@ class MessageDtoAdapter : AbsAdapter<VKApiMessage>("VKApiMessage") {
         val actionJson = root["action"]
         if (checkObject(actionJson)) {
             dto.action = optString(actionJson.asJsonObject, "type")
-            dto.action_mid = optInt(actionJson.asJsonObject, "member_id")
+            dto.action_mid = optLong(actionJson.asJsonObject, "member_id")
             dto.action_text = optString(actionJson.asJsonObject, "text")
             dto.action_email = optString(actionJson.asJsonObject, "email")
             if (hasObject(actionJson.asJsonObject, "photo")) {

@@ -10,8 +10,8 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class VideoAlbumsPresenter(
-    accountId: Int,
-    private val ownerId: Int,
+    accountId: Long,
+    private val ownerId: Long,
     private val action: String?,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IVideoAlbumsView>(accountId, savedInstanceState) {

@@ -32,8 +32,8 @@ class ConversationDocsFragment :
         return object : IPresenterFactory<ChatAttachmentDocsPresenter> {
             override fun create(): ChatAttachmentDocsPresenter {
                 return ChatAttachmentDocsPresenter(
-                    requireArguments().getInt(Extra.PEER_ID),
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.PEER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }

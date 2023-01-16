@@ -16,8 +16,8 @@ interface ICommunitiesView : IMvpView, IErrorView {
     fun notifyDataSetChanged()
     fun notifyOwnDataAdded(position: Int, count: Int)
     fun displayRefreshing(refreshing: Boolean)
-    fun showCommunityWall(accountId: Int, community: Community)
+    fun showCommunityWall(accountId: Long, community: Community)
     fun notifySearchDataAdded(position: Int, count: Int)
     fun showCommunityMenu(community: Community)
-    fun showModCommunities(add: List<Owner>, remove: List<Owner>, accountId: Int, ownerId: Int)
+    fun showModCommunities(add: List<Owner>, remove: List<Owner>, accountId: Long, ownerId: Long)
 }

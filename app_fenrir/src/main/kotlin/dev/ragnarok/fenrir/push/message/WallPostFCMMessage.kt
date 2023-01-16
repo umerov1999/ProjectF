@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 
 class WallPostFCMMessage {
     //from_id=175895893, first_name=Руслан, from=376771982493, text=Тест push-уведомлений, type=wall_post, place=wall25651989_2509, collapse_key=wall_post, last_name=Колбаса
-    private var from_id = 0
+    private var from_id = 0L
     private var post_id = 0
 
     //public String first_name;
@@ -41,9 +41,9 @@ class WallPostFCMMessage {
 
     //public String type;
     private var place: String? = null
-    private var owner_id = 0
+    private var owner_id = 0L
     private var title: String? = null
-    fun nofify(context: Context, accountId: Int) {
+    fun nofify(context: Context, accountId: Long) {
         if (accountId == owner_id) {
             notifyWallPost(context, accountId)
         } else {
@@ -52,7 +52,7 @@ class WallPostFCMMessage {
     }
 
     @SuppressLint("CheckResult")
-    private fun notifyWallPost(context: Context, accountId: Int) {
+    private fun notifyWallPost(context: Context, accountId: Long) {
         if (!get()
                 .notifications()
                 .isNewPostOnOwnWallNotifEnabled
@@ -72,7 +72,7 @@ class WallPostFCMMessage {
     }
 
     @SuppressLint("CheckResult")
-    private fun notifyNewPost(context: Context, accountId: Int) {
+    private fun notifyNewPost(context: Context, accountId: Long) {
         if (!get()
                 .notifications()
                 .isNewPostsNotificationEnabled
@@ -102,7 +102,7 @@ class WallPostFCMMessage {
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 val contentIntent = PendingIntent.getActivity(
                     app,
-                    owner_id,
+                    owner_id.hashCode(),
                     intent,
                     makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
                 )
@@ -160,7 +160,7 @@ class WallPostFCMMessage {
         var itemId = 0
 
         @SerialName("owner_id")
-        var ownerId = 0
+        var ownerId = 0L
     }
 
     companion object {
@@ -185,7 +185,7 @@ class WallPostFCMMessage {
         fun fromRemoteMessage(remote: RemoteMessage): WallPostFCMMessage? {
             val message = WallPostFCMMessage()
             val data = remote.data
-            message.from_id = remote.data["from_id"]?.toInt() ?: return null
+            message.from_id = remote.data["from_id"]?.toLong() ?: return null
             message.body = data["body"]
             message.place = data["url"]
             message.title = data["title"]

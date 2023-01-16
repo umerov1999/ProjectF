@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 class AudioPlaylistDboEntity : DboEntity() {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var count = 0
         private set
@@ -34,7 +34,7 @@ class AudioPlaylistDboEntity : DboEntity() {
         private set
     var original_id = 0
         private set
-    var original_owner_id = 0
+    var original_owner_id = 0L
         private set
 
     fun setId(id: Int): AudioPlaylistDboEntity {
@@ -42,7 +42,7 @@ class AudioPlaylistDboEntity : DboEntity() {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): AudioPlaylistDboEntity {
+    fun setOwnerId(ownerId: Long): AudioPlaylistDboEntity {
         this.ownerId = ownerId
         return this
     }
@@ -102,7 +102,7 @@ class AudioPlaylistDboEntity : DboEntity() {
         return this
     }
 
-    fun setOriginal_owner_id(original_owner_id: Int): AudioPlaylistDboEntity {
+    fun setOriginal_owner_id(original_owner_id: Long): AudioPlaylistDboEntity {
         this.original_owner_id = original_owner_id
         return this
     }

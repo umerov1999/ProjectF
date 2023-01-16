@@ -32,7 +32,7 @@ class NotificationsPrefs internal constructor(context: Context) : INotificationS
         }
     }
 
-    override fun setNotifPref(aid: Int, peerid: Int, flag: Int) {
+    override fun setNotifPref(aid: Long, peerid: Long, flag: Int) {
         val preferences = getPreferences(app)
         notification_peers.add(keyFor(aid, peerid))
         types[keyFor(aid, peerid)] = flag
@@ -93,7 +93,7 @@ class NotificationsPrefs internal constructor(context: Context) : INotificationS
         get() = isOtherNotificationsEnable && getPreferences(app)
             .getBoolean("mention_notification", true)
 
-    override fun isSilentChat(aid: Int, peerId: Int): Boolean {
+    override fun isSilentChat(aid: Long, peerId: Long): Boolean {
         if (types.containsKey(keyFor(aid, peerId))) {
             val v = types[keyFor(aid, peerId)]
             if (v != null) {
@@ -142,7 +142,7 @@ class NotificationsPrefs internal constructor(context: Context) : INotificationS
     override val isQuickReplyImmediately: Boolean
         get() = getPreferences(app).getBoolean("quick_reply_immediately", false)
 
-    override fun forceDisable(aid: Int, peerId: Int) {
+    override fun forceDisable(aid: Long, peerId: Long) {
         var mask = getGlobalNotifPref(Peer.isGroupChat(peerId))
         if (hasFlag(mask, INotificationSettings.FLAG_SHOW_NOTIF)) {
             mask = removeFlag(mask, INotificationSettings.FLAG_SHOW_NOTIF)
@@ -150,7 +150,7 @@ class NotificationsPrefs internal constructor(context: Context) : INotificationS
         setNotifPref(aid, peerId, mask)
     }
 
-    override fun setDefault(aid: Int, peerId: Int) {
+    override fun setDefault(aid: Long, peerId: Long) {
         val preferences = getPreferences(app)
         notification_peers.remove(keyFor(aid, peerId))
         types.remove(keyFor(aid, peerId))
@@ -160,7 +160,7 @@ class NotificationsPrefs internal constructor(context: Context) : INotificationS
             .apply()
     }
 
-    override fun resetAccount(aid: Int) {
+    override fun resetAccount(aid: Long) {
         val preferences = getPreferences(app)
         for (i in HashSet(notification_peers)) {
             if (i.contains(keyForAccount(aid))) {
@@ -174,7 +174,7 @@ class NotificationsPrefs internal constructor(context: Context) : INotificationS
             .apply()
     }
 
-    override fun getNotifPref(aid: Int, peerid: Int): Int {
+    override fun getNotifPref(aid: Long, peerid: Long): Int {
         if (types.containsKey(keyFor(aid, peerid))) {
             val v = types[keyFor(aid, peerid)]
             if (v != null) {
@@ -225,11 +225,11 @@ class NotificationsPrefs internal constructor(context: Context) : INotificationS
         private const val KEY_NOTIFICATION_RINGTONE = "notification_ringtone"
         private const val KEY_VIBRO_LENGTH = "vibration_length"
         private const val KEY_PEERS_UIDS = "notif_peer_uids"
-        internal fun keyFor(aid: Int, peerId: Int): String {
+        internal fun keyFor(aid: Long, peerId: Long): String {
             return "notif_peer_" + aid + "_" + peerId
         }
 
-        internal fun keyForAccount(aid: Int): String {
+        internal fun keyForAccount(aid: Long): String {
             return "notif_peer_$aid"
         }
     }

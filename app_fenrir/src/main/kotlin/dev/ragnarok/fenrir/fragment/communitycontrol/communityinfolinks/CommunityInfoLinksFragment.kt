@@ -47,7 +47,7 @@ class CommunityInfoLinksFragment :
         return object : IPresenterFactory<CommunityInfoLinksPresenter> {
             override fun create(): CommunityInfoLinksPresenter {
                 return CommunityInfoLinksPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.GROUP_ID)!!,
                     saveInstanceState
                 )
@@ -79,9 +79,9 @@ class CommunityInfoLinksFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int, groupId: Community?): CommunityInfoLinksFragment {
+        fun newInstance(accountId: Long, groupId: Community?): CommunityInfoLinksFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.GROUP_ID, groupId)
             val fragment = CommunityInfoLinksFragment()
             fragment.arguments = args

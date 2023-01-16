@@ -93,7 +93,7 @@ class VideoToMessageUploadable(
     companion object {
         fun attachIntoDatabaseRx(
             repository: IAttachmentsRepository, storage: IMessagesStorage,
-            accountId: Int, messageId: Int, video: Video
+            accountId: Long, messageId: Int, video: Video
         ): Completable {
             return repository
                 .attach(accountId, AttachToType.MESSAGE, messageId, listOf(video))

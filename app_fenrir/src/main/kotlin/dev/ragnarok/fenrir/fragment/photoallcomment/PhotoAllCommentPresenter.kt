@@ -28,8 +28,8 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class PhotoAllCommentPresenter(
-    accountId: Int,
-    private val owner_id: Int,
+    accountId: Long,
+    private val owner_id: Long,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<IPhotoAllCommentView>(accountId, savedInstanceState) {
     private val photosInteractor: IPhotosInteractor = InteractorFactory.createPhotosInteractor()

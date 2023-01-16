@@ -94,7 +94,7 @@ object Model2Dto {
             }
             is AudioPlaylist -> {
                 return if (model.getOriginal_access_key()
-                        .isNullOrEmpty() || model.getOriginal_id() == 0 || model.getOriginal_owner_id() == 0
+                        .isNullOrEmpty() || model.getOriginal_id() == 0 || model.getOriginal_owner_id() == 0L
                 ) {
                     AttachmentsTokenCreator.ofAudioPlaylist(
                         model.getId(),

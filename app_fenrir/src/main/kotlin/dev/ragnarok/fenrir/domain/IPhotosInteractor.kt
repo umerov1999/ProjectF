@@ -11,8 +11,8 @@ import io.reactivex.rxjava3.core.Single
 
 interface IPhotosInteractor {
     operator fun get(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         count: Int,
         offset: Int,
@@ -20,8 +20,8 @@ interface IPhotosInteractor {
     ): Single<List<Photo>>
 
     fun getUsersPhoto(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         extended: Int?,
         sort: Int?,
         offset: Int?,
@@ -29,8 +29,8 @@ interface IPhotosInteractor {
     ): Single<List<Photo>>
 
     fun getAll(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         extended: Int?,
         photo_sizes: Int?,
         offset: Int?,
@@ -38,59 +38,59 @@ interface IPhotosInteractor {
     ): Single<List<Photo>>
 
     fun search(
-        accountId: Int,
+        accountId: Long,
         criteria: PhotoSearchCriteria,
         offset: Int?,
         count: Int?
     ): Single<List<Photo>>
 
     fun getAllCachedData(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         sortInvert: Boolean
     ): Single<List<Photo>>
 
-    fun getAlbumById(accountId: Int, ownerId: Int, albumId: Int): Single<PhotoAlbum>
-    fun getCachedAlbums(accountId: Int, ownerId: Int): Single<List<PhotoAlbum>>
+    fun getAlbumById(accountId: Long, ownerId: Long, albumId: Int): Single<PhotoAlbum>
+    fun getCachedAlbums(accountId: Long, ownerId: Long): Single<List<PhotoAlbum>>
     fun getActualAlbums(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         count: Int,
         offset: Int
     ): Single<List<PhotoAlbum>>
 
     fun like(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         photoId: Int,
         add: Boolean,
         accessKey: String?
     ): Single<Int>
 
     fun checkAndAddLike(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         photoId: Int,
         accessKey: String?
     ): Single<Int>
 
-    fun isLiked(accountId: Int, ownerId: Int, photoId: Int): Single<Boolean>
-    fun copy(accountId: Int, ownerId: Int, photoId: Int, accessKey: String?): Single<Int>
-    fun removedAlbum(accountId: Int, ownerId: Int, albumId: Int): Completable
-    fun deletePhoto(accountId: Int, ownerId: Int, photoId: Int): Completable
-    fun restorePhoto(accountId: Int, ownerId: Int, photoId: Int): Completable
-    fun getPhotosByIds(accountId: Int, ids: Collection<AccessIdPair>): Single<List<Photo>>
+    fun isLiked(accountId: Long, ownerId: Long, photoId: Int): Single<Boolean>
+    fun copy(accountId: Long, ownerId: Long, photoId: Int, accessKey: String?): Single<Int>
+    fun removedAlbum(accountId: Long, ownerId: Long, albumId: Int): Completable
+    fun deletePhoto(accountId: Long, ownerId: Long, photoId: Int): Completable
+    fun restorePhoto(accountId: Long, ownerId: Long, photoId: Int): Completable
+    fun getPhotosByIds(accountId: Long, ids: Collection<AccessIdPair>): Single<List<Photo>>
     fun getTags(
-        accountId: Int,
-        ownerId: Int?,
+        accountId: Long,
+        ownerId: Long?,
         photo_id: Int?,
         access_key: String?
     ): Single<List<VKApiPhotoTags>>
 
     fun getAllComments(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         album_id: Int?,
         offset: Int,
         count: Int

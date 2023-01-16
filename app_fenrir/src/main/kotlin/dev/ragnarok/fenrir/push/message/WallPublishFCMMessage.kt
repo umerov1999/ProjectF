@@ -39,10 +39,10 @@ class WallPublishFCMMessage {
 
     //public String type;
     private var place: String? = null
-    private var group_id = 0
+    private var group_id = 0L
 
     @SuppressLint("CheckResult")
-    fun notify(context: Context, accountId: Int) {
+    fun notify(context: Context, accountId: Long) {
         if (!get()
                 .notifications()
                 .isWallPublishNotifEnabled
@@ -110,7 +110,7 @@ class WallPublishFCMMessage {
             val message = WallPublishFCMMessage()
             //message.name = bundle.getString("name");
             //message.from = optLong(bundle, "from");
-            message.group_id = remote.data["group_id"]?.toInt() ?: return null
+            message.group_id = remote.data["group_id"]?.toLong() ?: return null
             message.text = remote.data["text"]
             //message.type = bundle.getString("type");
             message.place = remote.data["place"]

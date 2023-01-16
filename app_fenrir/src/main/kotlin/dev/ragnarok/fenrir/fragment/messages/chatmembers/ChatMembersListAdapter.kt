@@ -151,7 +151,7 @@ class ChatMembersListAdapter(context: Context, private var data: List<AppChatUse
     interface ActionListener {
         fun onRemoveClick(user: AppChatUser)
         fun onUserClick(user: AppChatUser)
-        fun onAdminToggleClick(isAdmin: Boolean, ownerId: Int)
+        fun onAdminToggleClick(isAdmin: Boolean, ownerId: Long)
     }
 
     inner class ViewHolder internal constructor(root: View) : RecyclerView.ViewHolder(root),
@@ -174,7 +174,7 @@ class ChatMembersListAdapter(context: Context, private var data: List<AppChatUse
                     0,
                     if (item.isAdmin()) R.string.disrate else R.string.assign_administrator
                 ).setOnMenuItemClickListener {
-                    actionListener?.onAdminToggleClick(!item.isAdmin(), item.getObjectId())
+                    actionListener?.onAdminToggleClick(!item.isAdmin(), item.getOwnerObjectId())
                     true
                 }
             }

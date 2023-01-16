@@ -14,10 +14,10 @@ class Item(val key: Int, val title: Text?) {
     @ColorInt
     var color: Int? = null
         private set
-    var extra = 0
+    var extra = 0L
         private set
 
-    fun setExtra(extra: Int): Item {
+    fun setExtra(extra: Long): Item {
         this.extra = extra
         return this
     }

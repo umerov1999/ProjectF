@@ -15,7 +15,7 @@ interface IDirectAuthView : IMvpView, IErrorView {
     fun moveFocusToCaptcha()
     fun hideKeyboard()
     fun returnSuccessToParent(
-        userId: Int,
+        userId: Long,
         accessToken: String?,
         Login: String?,
         Password: String?,

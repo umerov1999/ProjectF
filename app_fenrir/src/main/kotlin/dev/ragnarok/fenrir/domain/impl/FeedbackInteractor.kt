@@ -27,7 +27,7 @@ class FeedbackInteractor(
     private val networker: INetworker,
     private val ownersRepository: IOwnersRepository
 ) : IFeedbackInteractor {
-    override fun getCachedFeedbacks(accountId: Int): Single<List<Feedback>> {
+    override fun getCachedFeedbacks(accountId: Long): Single<List<Feedback>> {
         val criteria = NotificationsCriteria(accountId)
         return cache.notifications()
             .findByCriteria(criteria)
@@ -51,7 +51,7 @@ class FeedbackInteractor(
             }
     }
 
-    override fun getCachedFeedbacksOfficial(accountId: Int): Single<FeedbackVKOfficialList> {
+    override fun getCachedFeedbacksOfficial(accountId: Long): Single<FeedbackVKOfficialList> {
         val criteria = NotificationsCriteria(accountId)
         return cache.notifications()
             .findByCriteriaOfficial(criteria)
@@ -63,7 +63,7 @@ class FeedbackInteractor(
     }
 
     override fun getActualFeedbacksOfficial(
-        accountId: Int,
+        accountId: Long,
         count: Int?,
         startFrom: Int?
     ): Single<FeedbackVKOfficialList> {
@@ -79,7 +79,7 @@ class FeedbackInteractor(
             }
     }
 
-    override fun hide(accountId: Int, query: String?): Completable {
+    override fun hide(accountId: Long, query: String?): Completable {
         return networker.vkDefault(accountId)
             .notifications()
             .hide(query)
@@ -87,7 +87,7 @@ class FeedbackInteractor(
     }
 
     override fun getActualFeedbacks(
-        accountId: Int,
+        accountId: Long,
         count: Int,
         startFrom: String?
     ): Single<Pair<List<Feedback>, String?>> {
@@ -125,7 +125,7 @@ class FeedbackInteractor(
             }
     }
 
-    override fun markAsViewed(accountId: Int): Single<Boolean> {
+    override fun markAsViewed(accountId: Long): Single<Boolean> {
         return networker.vkDefault(accountId)
             .notifications()
             .markAsViewed()

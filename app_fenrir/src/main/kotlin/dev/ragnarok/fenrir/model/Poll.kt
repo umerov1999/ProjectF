@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.putBoolean
 
 class Poll : AbsModel {
     val id: Int
-    val ownerId: Int
+    val ownerId: Long
     var creationTime: Long = 0
         private set
     var question: String? = null
@@ -24,7 +24,7 @@ class Poll : AbsModel {
         private set
     var isClosed = false
         private set
-    var authorId = 0
+    var authorId = 0L
         private set
     var isCanVote = false
         private set
@@ -43,7 +43,7 @@ class Poll : AbsModel {
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         creationTime = parcel.readLong()
         question = parcel.readString()
         voteCount = parcel.readInt()
@@ -52,7 +52,7 @@ class Poll : AbsModel {
         answers = parcel.createTypedArrayList(Answer.CREATOR)
         isBoard = parcel.getBoolean()
         isClosed = parcel.getBoolean()
-        authorId = parcel.readInt()
+        authorId = parcel.readLong()
         isCanVote = parcel.getBoolean()
         isCanEdit = parcel.getBoolean()
         isCanReport = parcel.getBoolean()
@@ -62,14 +62,14 @@ class Poll : AbsModel {
         photo = parcel.readString()
     }
 
-    constructor(id: Int, ownerId: Int) {
+    constructor(id: Int, ownerId: Long) {
         this.id = id
         this.ownerId = ownerId
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeLong(creationTime)
         parcel.writeString(question)
         parcel.writeInt(voteCount)
@@ -78,7 +78,7 @@ class Poll : AbsModel {
         parcel.writeTypedList(answers)
         parcel.putBoolean(isBoard)
         parcel.putBoolean(isClosed)
-        parcel.writeInt(authorId)
+        parcel.writeLong(authorId)
         parcel.putBoolean(isCanVote)
         parcel.putBoolean(isCanEdit)
         parcel.putBoolean(isCanReport)
@@ -98,7 +98,7 @@ class Poll : AbsModel {
         return this
     }
 
-    fun setAuthorId(authorId: Int): Poll {
+    fun setAuthorId(authorId: Long): Poll {
         this.authorId = authorId
         return this
     }

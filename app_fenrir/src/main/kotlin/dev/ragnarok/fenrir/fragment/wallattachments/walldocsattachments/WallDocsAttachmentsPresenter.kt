@@ -15,8 +15,8 @@ import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class WallDocsAttachmentsPresenter(
-    accountId: Int,
-    private val owner_id: Int,
+    accountId: Long,
+    private val owner_id: Long,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<IWallDocsAttachmentsView>(accountId, savedInstanceState) {
     private val mDocs: ArrayList<Document> = ArrayList()

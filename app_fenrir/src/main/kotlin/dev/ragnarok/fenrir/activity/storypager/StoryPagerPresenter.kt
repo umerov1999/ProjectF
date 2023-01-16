@@ -25,7 +25,7 @@ import java.util.*
 import kotlin.math.abs
 
 class StoryPagerPresenter(
-    accountId: Int,
+    accountId: Long,
     private val mStories: ArrayList<Story>,
     private var mCurrentIndex: Int,
     private val context: Context,
@@ -267,7 +267,7 @@ class StoryPagerPresenter(
         }
     }
 
-    private fun transform_owner(owner_id: Int): String {
+    private fun transform_owner(owner_id: Long): String {
         return if (owner_id < 0) "club" + abs(owner_id) else "id$owner_id"
     }
 

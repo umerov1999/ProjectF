@@ -79,11 +79,11 @@ class ChatUsersDomainFragment :
         mAdapter?.notifyItemRangeInserted(position, count)
     }
 
-    override fun openUserWall(accountId: Int, user: Owner) {
+    override fun openUserWall(accountId: Long, user: Owner) {
         getOwnerWallPlace(accountId, user).tryOpenWith(requireActivity())
     }
 
-    override fun addDomain(accountId: Int, user: Owner) {
+    override fun addDomain(accountId: Long, user: Owner) {
         listener?.onSelected(user)
     }
 
@@ -92,8 +92,8 @@ class ChatUsersDomainFragment :
         return object : IPresenterFactory<ChatUsersDomainPresenter> {
             override fun create(): ChatUsersDomainPresenter {
                 return ChatUsersDomainPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.CHAT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.CHAT_ID),
                     saveInstanceState
                 )
             }
@@ -118,14 +118,18 @@ class ChatUsersDomainFragment :
     }
 
     companion object {
-        private fun buildArgs(accountId: Int, chatId: Int): Bundle {
+        private fun buildArgs(accountId: Long, chatId: Long): Bundle {
             val args = Bundle()
-            args.putInt(Extra.CHAT_ID, chatId)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.CHAT_ID, chatId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             return args
         }
 
-        fun newInstance(accountId: Int, chatId: Int, listener: Listener?): ChatUsersDomainFragment {
+        fun newInstance(
+            accountId: Long,
+            chatId: Long,
+            listener: Listener?
+        ): ChatUsersDomainFragment {
             val fragment = ChatUsersDomainFragment()
             fragment.listener = listener
             fragment.arguments = buildArgs(accountId, chatId)

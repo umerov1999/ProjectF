@@ -2,21 +2,21 @@ package dev.ragnarok.fenrir.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import dev.ragnarok.fenrir.api.model.interfaces.Identificable
+import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
-class Account : Parcelable, Identificable {
-    private val id: Int
+class Account : Parcelable, IdentificableOwner {
+    private val id: Long
     val owner: Owner?
 
-    constructor(id: Int, owner: Owner?) {
+    constructor(id: Long, owner: Owner?) {
         this.id = id
         this.owner = owner
     }
 
     internal constructor(parcel: Parcel) {
-        id = parcel.readInt()
+        id = parcel.readLong()
         val wrapper = parcel.readTypedObjectCompat(
             ParcelableOwnerWrapper.CREATOR
         )
@@ -28,7 +28,7 @@ class Account : Parcelable, Identificable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(id)
+        dest.writeLong(id)
         dest.writeTypedObjectCompat(ParcelableOwnerWrapper(owner), flags)
     }
 
@@ -40,13 +40,13 @@ class Account : Parcelable, Identificable {
     }
 
     override fun hashCode(): Int {
-        return id
+        return id.hashCode()
     }
 
     val displayName: String
         get() = owner?.fullName ?: id.toString()
 
-    override fun getObjectId(): Int {
+    override fun getOwnerObjectId(): Long {
         return id
     }
 

@@ -10,7 +10,7 @@ import java.util.*
 object FormatUtil {
 
     fun formatCommunityBanInfo(
-        context: Context, adminId: Int, adminName: String?,
+        context: Context, adminId: Long, adminName: String?,
         endDate: Long, adminClickListener: OwnerLinkSpanFactory.ActionListener?
     ): Spannable? {
         val endDateString: String = if (endDate == 0L) {

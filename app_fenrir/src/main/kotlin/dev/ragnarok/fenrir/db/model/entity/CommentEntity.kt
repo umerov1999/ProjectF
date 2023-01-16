@@ -10,7 +10,7 @@ class CommentEntity {
     var sourceId = 0
         private set
 
-    var sourceOwnerId = 0
+    var sourceOwnerId = 0L
         private set
 
     @CommentedType
@@ -23,7 +23,7 @@ class CommentEntity {
     var id = 0
         private set
 
-    var fromId = 0
+    var fromId = 0L
         private set
 
     var date: Long = 0
@@ -32,7 +32,7 @@ class CommentEntity {
     var text: String? = null
         private set
 
-    var replyToUserId = 0
+    var replyToUserId = 0L
         private set
 
     var replyToComment = 0
@@ -69,7 +69,7 @@ class CommentEntity {
 
     operator fun set(
         sourceId: Int,
-        sourceOwnerId: Int,
+        sourceOwnerId: Long,
         @CommentedType sourceType: Int,
         sourceAccessKey: String?,
         id: Int
@@ -82,7 +82,7 @@ class CommentEntity {
         return this
     }
 
-    fun setFromId(fromId: Int): CommentEntity {
+    fun setFromId(fromId: Long): CommentEntity {
         this.fromId = fromId
         return this
     }
@@ -107,7 +107,7 @@ class CommentEntity {
         return this
     }
 
-    fun setReplyToUserId(replyToUserId: Int): CommentEntity {
+    fun setReplyToUserId(replyToUserId: Long): CommentEntity {
         this.replyToUserId = replyToUserId
         return this
     }

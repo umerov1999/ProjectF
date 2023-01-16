@@ -16,7 +16,7 @@ import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class LocalJsonToChatPresenter(
-    accountId: Int,
+    accountId: Long,
     private val context: Context,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<ILocalJsonToChatView>(accountId, savedInstanceState) {

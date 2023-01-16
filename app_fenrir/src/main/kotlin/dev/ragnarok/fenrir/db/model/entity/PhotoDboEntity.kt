@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 class PhotoDboEntity : DboEntity() {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var albumId = 0
         private set
@@ -43,7 +43,7 @@ class PhotoDboEntity : DboEntity() {
     var sizes: PhotoSizeEntity? = null
         private set
 
-    operator fun set(id: Int, ownerId: Int): PhotoDboEntity {
+    operator fun set(id: Int, ownerId: Long): PhotoDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this

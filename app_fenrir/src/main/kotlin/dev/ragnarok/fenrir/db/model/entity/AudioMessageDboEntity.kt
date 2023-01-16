@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 class AudioMessageDboEntity : DboEntity() {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var duration = 0
         private set
@@ -27,7 +27,7 @@ class AudioMessageDboEntity : DboEntity() {
     var was_listened = false
         private set
 
-    operator fun set(id: Int, ownerId: Int): AudioMessageDboEntity {
+    operator fun set(id: Int, ownerId: Long): AudioMessageDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this

@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.model.criteria
 
-class MessagesCriteria(val accountId: Int, val peerId: Int) : Criteria() {
+class MessagesCriteria(val accountId: Long, val peerId: Long) : Criteria() {
     var startMessageId: Int? = null
         private set
     var isDecryptEncryptedMessages = false
@@ -26,8 +26,8 @@ class MessagesCriteria(val accountId: Int, val peerId: Int) : Criteria() {
     }
 
     override fun hashCode(): Int {
-        var result = accountId
-        result = 31 * result + peerId
+        var result = accountId.hashCode()
+        result = 31 * result + peerId.hashCode()
         result = 31 * result + if (startMessageId != null) startMessageId.hashCode() else 0
         return result
     }

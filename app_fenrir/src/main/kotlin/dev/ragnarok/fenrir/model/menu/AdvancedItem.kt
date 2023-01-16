@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import dev.ragnarok.fenrir.model.Icon
 import dev.ragnarok.fenrir.model.Text
 
-class AdvancedItem(val key: Int, val type: Int, val title: Text?) {
+class AdvancedItem(val key: Long, val type: Int, val title: Text?) {
     var urlPrefix: String? = null
         private set
     var icon: Icon? = null
@@ -16,7 +16,7 @@ class AdvancedItem(val key: Int, val type: Int, val title: Text?) {
     var tag: Any? = null
         private set
 
-    constructor(key: Int, title: Text?) : this(key, TYPE_DEFAULT, title)
+    constructor(key: Long, title: Text?) : this(key, TYPE_DEFAULT, title)
 
     fun setUrlPrefix(urlPrefix: String?): AdvancedItem {
         this.urlPrefix = urlPrefix

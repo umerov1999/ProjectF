@@ -10,7 +10,7 @@ class LoginResponse {
     var access_token: String? = null
 
     @SerialName("user_id")
-    var user_id = 0
+    var user_id = 0L
 
     @SerialName("error")
     var error: String? = null

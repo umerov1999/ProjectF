@@ -93,8 +93,8 @@ class GiftsFragment : BaseMvpFragment<GiftsPresenter, IGiftsView>(), IGiftsView,
         mSwipeRefreshLayout?.post { mSwipeRefreshLayout?.isRefreshing = refreshing }
     }
 
-    override fun onOpenWall(accountId: Int, ownerId: Int) {
-        if (ownerId == 0) {
+    override fun onOpenWall(accountId: Long, ownerId: Long) {
+        if (ownerId == 0L) {
             return
         }
         getOwnerWallPlace(accountId, ownerId, null).tryOpenWith(requireActivity())
@@ -104,7 +104,7 @@ class GiftsFragment : BaseMvpFragment<GiftsPresenter, IGiftsView>(), IGiftsView,
         return object : IPresenterFactory<GiftsPresenter> {
             override fun create(): GiftsPresenter {
                 return GiftsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID), requireArguments().getInt(
+                    requireArguments().getLong(Extra.ACCOUNT_ID), requireArguments().getLong(
                         Extra.OWNER_ID
                     ), saveInstanceState
                 )
@@ -134,10 +134,10 @@ class GiftsFragment : BaseMvpFragment<GiftsPresenter, IGiftsView>(), IGiftsView,
     }
 
     companion object {
-        fun newInstance(accountId: Int, ownerId: Int): GiftsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): GiftsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = GiftsFragment()
             fragment.arguments = args
             return fragment

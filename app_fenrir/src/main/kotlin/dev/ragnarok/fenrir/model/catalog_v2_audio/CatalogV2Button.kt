@@ -15,7 +15,7 @@ class CatalogV2Button : Parcelable {
         private set
     var title: String? = null
         private set
-    var owner_id: Int = 0
+    var owner_id: Long = 0
         private set
     var target_block_ids: List<String>? = null
         private set
@@ -43,7 +43,7 @@ class CatalogV2Button : Parcelable {
         name = parcel.readString()
         section_id = parcel.readString()
         title = parcel.readString()
-        owner_id = parcel.readInt()
+        owner_id = parcel.readLong()
         target_block_ids = parcel.createStringArrayList()
         ref_items_count = parcel.readInt()
         ref_layout_name = parcel.readString()
@@ -55,7 +55,7 @@ class CatalogV2Button : Parcelable {
         parcel.writeString(name)
         parcel.writeString(section_id)
         parcel.writeString(title)
-        parcel.writeInt(owner_id)
+        parcel.writeLong(owner_id)
         parcel.writeStringList(target_block_ids)
         parcel.writeInt(ref_items_count)
         parcel.writeString(ref_layout_name)

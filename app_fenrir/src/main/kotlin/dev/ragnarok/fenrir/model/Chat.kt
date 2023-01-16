@@ -5,7 +5,7 @@ import android.os.Parcelable
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 
 class Chat : AbsModel {
-    val id: Int
+    val id: Long
     var title: String? = null
         private set
     var photo50: String? = null
@@ -15,12 +15,12 @@ class Chat : AbsModel {
     var photo200: String? = null
         private set
 
-    constructor(id: Int) {
+    constructor(id: Long) {
         this.id = id
     }
 
     internal constructor(parcel: Parcel) {
-        id = parcel.readInt()
+        id = parcel.readLong()
         title = parcel.readString()
         photo50 = parcel.readString()
         photo100 = parcel.readString()
@@ -57,7 +57,7 @@ class Chat : AbsModel {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(id)
+        parcel.writeLong(id)
         parcel.writeString(title)
         parcel.writeString(photo50)
         parcel.writeString(photo100)

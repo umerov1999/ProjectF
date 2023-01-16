@@ -12,32 +12,32 @@ import io.reactivex.rxjava3.core.Single
 interface IMessagesRepository {
     fun observeMessagesSendErrors(): Flowable<Throwable>
     fun handleFlagsUpdates(
-        accountId: Int,
+        accountId: Long,
         setUpdates: List<MessageFlagsSetUpdate>?,
         resetUpdates: List<MessageFlagsResetUpdate>?
     ): Completable
 
     fun handleReadUpdates(
-        accountId: Int,
+        accountId: Long,
         setUpdates: List<OutputMessagesSetReadUpdate>?,
         resetUpdates: List<InputMessagesSetReadUpdate>?
     ): Completable
 
     fun handleUnreadBadgeUpdates(
-        accountId: Int,
+        accountId: Long,
         updates: List<BadgeCountChangeUpdate>?
     ): Completable
 
-    fun handleWriteUpdates(accountId: Int, updates: List<WriteTextInDialogUpdate>?): Completable
+    fun handleWriteUpdates(accountId: Long, updates: List<WriteTextInDialogUpdate>?): Completable
     fun observeSentMessages(): Flowable<SentMsg>
     fun observePeerUpdates(): Flowable<List<PeerUpdate>>
     fun observeMessageUpdates(): Flowable<List<MessageUpdate>>
     fun observeTextWrite(): Flowable<List<WriteText>>
     fun observePeerDeleting(): Flowable<PeerDeleting>
-    fun getConversationSingle(accountId: Int, peerId: Int, mode: Mode): Single<Conversation>
-    fun getConversation(accountId: Int, peerId: Int, mode: Mode): Flowable<Conversation>
+    fun getConversationSingle(accountId: Long, peerId: Long, mode: Mode): Single<Conversation>
+    fun getConversation(accountId: Long, peerId: Long, mode: Mode): Flowable<Conversation>
     fun edit(
-        accountId: Int,
+        accountId: Long,
         message: Message,
         body: String?,
         attachments: List<AbsModel>,
@@ -53,7 +53,7 @@ interface IMessagesRepository {
      * @param peerId    идентификатор диалога
      * @return полученные сообщения
      */
-    fun getCachedPeerMessages(accountId: Int, peerId: Int): Single<List<Message>>
+    fun getCachedPeerMessages(accountId: Long, peerId: Long): Single<List<Message>>
 
     /**
      * Получить все закэшированные диалоги в локальной БД
@@ -61,9 +61,9 @@ interface IMessagesRepository {
      * @param accountId идентификатор аккаунта
      * @return диалоги
      */
-    fun getCachedDialogs(accountId: Int): Single<List<Dialog>>
+    fun getCachedDialogs(accountId: Long): Single<List<Dialog>>
     fun getMessagesFromLocalJSon(
-        accountId: Int,
+        accountId: Long,
         context: Context
     ): Single<Pair<Peer, List<Message>>>
 
@@ -74,7 +74,7 @@ interface IMessagesRepository {
      * @param messages  сообщения
      * @return Completable
      */
-    fun insertMessages(accountId: Int, messages: List<VKApiMessage>): Completable
+    fun insertMessages(accountId: Long, messages: List<VKApiMessage>): Completable
 
     /**
      * Получить актуальный список сообщений для конкретного диалога
@@ -88,8 +88,8 @@ interface IMessagesRepository {
      * @return полученные сообщения
      */
     fun getPeerMessages(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         count: Int,
         offset: Int?,
         startMessageId: Int?,
@@ -98,26 +98,26 @@ interface IMessagesRepository {
     ): Single<List<Message>>
 
     fun getJsonHistory(
-        accountId: Int,
+        accountId: Long,
         offset: Int?,
         count: Int?,
-        peerId: Int
+        peerId: Long
     ): Single<List<String>>
 
     fun getImportantMessages(
-        accountId: Int,
+        accountId: Long,
         count: Int,
         offset: Int?,
         startMessageId: Int?
     ): Single<List<Message>>
 
-    fun getDialogs(accountId: Int, count: Int, startMessageId: Int?): Single<List<Dialog>>
-    fun insertDialog(accountId: Int, dialog: Dialog): Completable
-    fun findCachedMessages(accountId: Int, ids: List<Int>): Single<List<Message>>
+    fun getDialogs(accountId: Long, count: Int, startMessageId: Int?): Single<List<Dialog>>
+    fun insertDialog(accountId: Long, dialog: Dialog): Completable
+    fun findCachedMessages(accountId: Long, ids: List<Int>): Single<List<Message>>
     fun put(builder: SaveMessageBuilder): Single<Message>
-    fun sendUnsentMessage(accountIds: Collection<Int>): Single<SentMsg>
-    fun enqueueAgain(accountId: Int, messageId: Int): Completable
-    fun enqueueAgainList(accountId: Int, ids: Collection<Int>): Completable
+    fun sendUnsentMessage(accountIds: Collection<Long>): Single<SentMsg>
+    fun enqueueAgain(accountId: Long, messageId: Int): Completable
+    fun enqueueAgainList(accountId: Long, ids: Collection<Int>): Completable
 
     /**
      * Поиск диалогов
@@ -127,48 +127,54 @@ interface IMessagesRepository {
      * @param q         строка поиска
      * @return список найденных диалогов
      */
-    fun searchConversations(accountId: Int, count: Int, q: String?): Single<List<Conversation>>
-    fun updateDialogKeyboard(accountId: Int, peerId: Int, keyboard: Keyboard?): Completable
+    fun searchConversations(accountId: Long, count: Int, q: String?): Single<List<Conversation>>
+    fun updateDialogKeyboard(accountId: Long, peerId: Long, keyboard: Keyboard?): Completable
     fun searchMessages(
-        accountId: Int,
-        peerId: Int?,
+        accountId: Long,
+        peerId: Long?,
         count: Int,
         offset: Int,
         q: String?
     ): Single<List<Message>>
 
-    fun getChatUsers(accountId: Int, chatId: Int): Single<List<AppChatUser>>
-    fun removeChatMember(accountId: Int, chatId: Int, userId: Int): Completable
-    fun addChatUsers(accountId: Int, chatId: Int, users: List<User>): Single<List<AppChatUser>>
-    fun deleteChatPhoto(accountId: Int, chatId: Int): Completable
-    fun deleteDialog(accountId: Int, peedId: Int): Completable
+    fun getChatUsers(accountId: Long, chatId: Long): Single<List<AppChatUser>>
+    fun removeChatMember(accountId: Long, chatId: Long, userId: Long): Completable
+    fun addChatUsers(accountId: Long, chatId: Long, users: List<User>): Single<List<AppChatUser>>
+    fun deleteChatPhoto(accountId: Long, chatId: Long): Completable
+    fun deleteDialog(accountId: Long, peedId: Long): Completable
     fun deleteMessages(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         ids: Collection<Int>,
         forAll: Boolean,
         spam: Boolean
     ): Completable
 
-    fun restoreMessage(accountId: Int, peerId: Int, messageId: Int): Completable
-    fun editChat(accountId: Int, chatId: Int, title: String?): Completable
-    fun createGroupChat(accountId: Int, users: Collection<Int>, title: String?): Single<Int>
+    fun restoreMessage(accountId: Long, peerId: Long, messageId: Int): Completable
+    fun editChat(accountId: Long, chatId: Long, title: String?): Completable
+    fun createGroupChat(accountId: Long, users: Collection<Long>, title: String?): Single<Long>
     fun recogniseAudioMessage(
-        accountId: Int,
+        accountId: Long,
         message_id: Int?,
         audio_message_id: String?
     ): Single<Int>
 
-    fun setMemberRole(accountId: Int, chat_id: Int, member_id: Int, isAdmin: Boolean): Completable
-    fun markAsRead(accountId: Int, peerId: Int, toId: Int): Completable
+    fun setMemberRole(
+        accountId: Long,
+        chat_id: Long,
+        member_id: Long,
+        isAdmin: Boolean
+    ): Completable
+
+    fun markAsRead(accountId: Long, peerId: Long, toId: Int): Completable
     fun markAsImportant(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         ids: Collection<Int>,
         important: Int?
     ): Completable
 
-    fun pin(accountId: Int, peerId: Int, message: Message?): Completable
-    fun pinUnPinConversation(accountId: Int, peerId: Int, peen: Boolean): Completable
-    fun markAsListened(accountId: Int, message_id: Int): Completable
+    fun pin(accountId: Long, peerId: Long, message: Message?): Completable
+    fun pinUnPinConversation(accountId: Long, peerId: Long, peen: Boolean): Completable
+    fun markAsListened(accountId: Long, message_id: Int): Completable
 }

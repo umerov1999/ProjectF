@@ -6,7 +6,7 @@ import android.os.Parcelable
 class Graffiti : AbsModel {
     var id = 0
         private set
-    var owner_id = 0
+    var owner_id = 0L
         private set
     var url: String? = null
         private set
@@ -20,7 +20,7 @@ class Graffiti : AbsModel {
     constructor()
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        owner_id = parcel.readInt()
+        owner_id = parcel.readLong()
         url = parcel.readString()
         width = parcel.readInt()
         height = parcel.readInt()
@@ -29,7 +29,7 @@ class Graffiti : AbsModel {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(owner_id)
+        parcel.writeLong(owner_id)
         parcel.writeString(url)
         parcel.writeInt(width)
         parcel.writeInt(height)
@@ -46,7 +46,7 @@ class Graffiti : AbsModel {
         return this
     }
 
-    fun setOwner_id(owner_id: Int): Graffiti {
+    fun setOwner_id(owner_id: Long): Graffiti {
         this.owner_id = owner_id
         return this
     }
@@ -82,7 +82,7 @@ class Graffiti : AbsModel {
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + owner_id
+        result = 31 * result + owner_id.hashCode()
         return result
     }
 

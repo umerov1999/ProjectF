@@ -70,11 +70,11 @@ class UploadManagerImpl(
     @Volatile
     private var current: Upload? = null
     private var needCreateChannel = true
-    override fun get(accountId: Int, destination: UploadDestination): Single<List<Upload>> {
+    override fun get(accountId: Long, destination: UploadDestination): Single<List<Upload>> {
         return Single.fromCallable { getByDestination(accountId, destination) }
     }
 
-    private fun getByDestination(accountId: Int, destination: UploadDestination): List<Upload> {
+    private fun getByDestination(accountId: Long, destination: UploadDestination): List<Upload> {
         synchronized(this) {
             val data: MutableList<Upload> = ArrayList()
             for (upload in queue) {
@@ -266,7 +266,7 @@ class UploadManagerImpl(
         }
     }
 
-    override fun cancelAll(accountId: Int, destination: UploadDestination) {
+    override fun cancelAll(accountId: Long, destination: UploadDestination) {
         synchronized(this) {
             if (current != null && accountId == current?.accountId && destination.compareTo(
                     current?.destination

@@ -10,12 +10,12 @@ import kotlinx.serialization.Serializable
 @Serializable(with = TopicDtoAdapter::class)
 class VKApiTopic : Commentable {
     var id = 0
-    var owner_id = 0
+    var owner_id = 0L
     var title: String? = null
     var created: Long = 0
-    var created_by = 0
+    var created_by = 0L
     var updated: Long = 0
-    var updated_by = 0
+    var updated_by = 0L
     var is_closed = false
     var is_fixed = false
     var comments: CommentsDto? = null

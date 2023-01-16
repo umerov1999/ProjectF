@@ -44,7 +44,7 @@ class FaveInteractor(
     private val cache: IStorages,
     private val ownersRepository: IOwnersRepository
 ) : IFaveInteractor {
-    override fun getPosts(accountId: Int, count: Int, offset: Int): Single<List<Post>> {
+    override fun getPosts(accountId: Long, count: Int, offset: Int): Single<List<Post>> {
         return networker.vkDefault(accountId)
             .fave()
             .getPosts(offset, count)
@@ -77,7 +77,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getCachedPosts(accountId: Int): Single<List<Post>> {
+    override fun getCachedPosts(accountId: Long): Single<List<Post>> {
         return cache.fave().getFavePosts(FavePostsCriteria(accountId))
             .flatMap { postDbos ->
                 val ids = VKOwnIds()
@@ -99,7 +99,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getCachedPhotos(accountId: Int): Single<List<Photo>> {
+    override fun getCachedPhotos(accountId: Long): Single<List<Photo>> {
         val criteria = FavePhotosCriteria(accountId)
         return cache.fave()
             .getPhotos(criteria)
@@ -112,7 +112,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getPhotos(accountId: Int, count: Int, offset: Int): Single<List<Photo>> {
+    override fun getPhotos(accountId: Long, count: Int, offset: Int): Single<List<Photo>> {
         return networker.vkDefault(accountId)
             .fave()
             .getPhotos(offset, count)
@@ -131,7 +131,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getCachedVideos(accountId: Int): Single<List<Video>> {
+    override fun getCachedVideos(accountId: Long): Single<List<Video>> {
         val criteria = FaveVideosCriteria(accountId)
         return cache.fave()
             .getVideos(criteria)
@@ -144,7 +144,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getCachedArticles(accountId: Int): Single<List<Article>> {
+    override fun getCachedArticles(accountId: Long): Single<List<Article>> {
         val criteria = FaveArticlesCriteria(accountId)
         return cache.fave()
             .getArticles(criteria)
@@ -157,7 +157,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getCachedProducts(accountId: Int): Single<List<Market>> {
+    override fun getCachedProducts(accountId: Long): Single<List<Market>> {
         val criteria = FaveProductsCriteria(accountId)
         return cache.fave()
             .getProducts(criteria)
@@ -170,7 +170,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getVideos(accountId: Int, count: Int, offset: Int): Single<List<Video>> {
+    override fun getVideos(accountId: Long, count: Int, offset: Int): Single<List<Video>> {
         return networker.vkDefault(accountId)
             .fave()
             .getVideos(offset, count)
@@ -189,7 +189,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getArticles(accountId: Int, count: Int, offset: Int): Single<List<Article>> {
+    override fun getArticles(accountId: Long, count: Int, offset: Int): Single<List<Article>> {
         return networker.vkDefault(accountId)
             .fave()
             .getArticles(offset, count)
@@ -205,7 +205,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getProducts(accountId: Int, count: Int, offset: Int): Single<List<Market>> {
+    override fun getProducts(accountId: Long, count: Int, offset: Int): Single<List<Market>> {
         return networker.vkDefault(accountId)
             .fave()
             .getProducts(offset, count)
@@ -222,8 +222,8 @@ class FaveInteractor(
     }
 
     override fun getOwnerPublishedArticles(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         count: Int,
         offset: Int
     ): Single<List<Article>> {
@@ -242,7 +242,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getCachedPages(accountId: Int, isUser: Boolean): Single<List<FavePage>> {
+    override fun getCachedPages(accountId: Long, isUser: Boolean): Single<List<FavePage>> {
         return if (isUser) {
             cache.fave()
                 .getFaveUsers(accountId)
@@ -255,7 +255,7 @@ class FaveInteractor(
     }
 
     override fun getPages(
-        accountId: Int,
+        accountId: Long,
         count: Int,
         offset: Int,
         isUser: Boolean
@@ -309,7 +309,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getCachedLinks(accountId: Int): Single<List<FaveLink>> {
+    override fun getCachedLinks(accountId: Long): Single<List<FaveLink>> {
         return cache.fave()
             .getFaveLinks(accountId)
             .map { entities ->
@@ -321,7 +321,7 @@ class FaveInteractor(
             }
     }
 
-    override fun getLinks(accountId: Int, count: Int, offset: Int): Single<List<FaveLink>> {
+    override fun getLinks(accountId: Long, count: Int, offset: Int): Single<List<FaveLink>> {
         return networker.vkDefault(accountId)
             .fave()
             .getLinks(offset, count)
@@ -342,7 +342,7 @@ class FaveInteractor(
             }
     }
 
-    override fun removeLink(accountId: Int, id: String?): Completable {
+    override fun removeLink(accountId: Long, id: String?): Completable {
         return networker.vkDefault(accountId)
             .fave()
             .removeLink(id)
@@ -352,37 +352,41 @@ class FaveInteractor(
             }
     }
 
-    override fun removeArticle(accountId: Int, owner_id: Int?, article_id: Int?): Single<Boolean> {
+    override fun removeArticle(
+        accountId: Long,
+        owner_id: Long?,
+        article_id: Int?
+    ): Single<Boolean> {
         return networker.vkDefault(accountId)
             .fave()
             .removeArticle(owner_id, article_id)
     }
 
-    override fun removeProduct(accountId: Int, id: Int?, owner_id: Int?): Single<Boolean> {
+    override fun removeProduct(accountId: Long, id: Int?, owner_id: Long?): Single<Boolean> {
         return networker.vkDefault(accountId)
             .fave()
             .removeProduct(id, owner_id)
     }
 
-    override fun removePost(accountId: Int, owner_id: Int?, id: Int?): Single<Boolean> {
+    override fun removePost(accountId: Long, owner_id: Long?, id: Int?): Single<Boolean> {
         return networker.vkDefault(accountId)
             .fave()
             .removePost(owner_id, id)
     }
 
-    override fun removeVideo(accountId: Int, owner_id: Int?, id: Int?): Single<Boolean> {
+    override fun removeVideo(accountId: Long, owner_id: Long?, id: Int?): Single<Boolean> {
         return networker.vkDefault(accountId)
             .fave()
             .removeVideo(owner_id, id)
     }
 
-    override fun pushFirst(accountId: Int, owner_id: Int): Single<Boolean> {
+    override fun pushFirst(accountId: Long, owner_id: Long): Single<Boolean> {
         return networker.vkDefault(accountId)
             .fave()
             .pushFirst(owner_id)
     }
 
-    override fun addPage(accountId: Int, ownerId: Int): Completable {
+    override fun addPage(accountId: Long, ownerId: Long): Completable {
         return networker.vkDefault(accountId)
             .fave()
             .addPage(
@@ -392,7 +396,7 @@ class FaveInteractor(
             .ignoreElement()
     }
 
-    override fun addLink(accountId: Int, link: String?): Completable {
+    override fun addLink(accountId: Long, link: String?): Completable {
         return networker.vkDefault(accountId)
             .fave()
             .addLink(link)
@@ -400,8 +404,8 @@ class FaveInteractor(
     }
 
     override fun addVideo(
-        accountId: Int,
-        owner_id: Int?,
+        accountId: Long,
+        owner_id: Long?,
         id: Int?,
         access_key: String?
     ): Completable {
@@ -411,7 +415,7 @@ class FaveInteractor(
             .ignoreElement()
     }
 
-    override fun addArticle(accountId: Int, url: String?): Completable {
+    override fun addArticle(accountId: Long, url: String?): Completable {
         return networker.vkDefault(accountId)
             .fave()
             .addArticle(url)
@@ -419,9 +423,9 @@ class FaveInteractor(
     }
 
     override fun addProduct(
-        accountId: Int,
+        accountId: Long,
         id: Int,
-        owner_id: Int,
+        owner_id: Long,
         access_key: String?
     ): Completable {
         return networker.vkDefault(accountId)
@@ -431,8 +435,8 @@ class FaveInteractor(
     }
 
     override fun addPost(
-        accountId: Int,
-        owner_id: Int?,
+        accountId: Long,
+        owner_id: Long?,
         id: Int?,
         access_key: String?
     ): Completable {
@@ -442,7 +446,7 @@ class FaveInteractor(
             .ignoreElement()
     }
 
-    override fun removePage(accountId: Int, ownerId: Int, isUser: Boolean): Completable {
+    override fun removePage(accountId: Long, ownerId: Long, isUser: Boolean): Completable {
         return networker.vkDefault(accountId)
             .fave()
             .removePage(

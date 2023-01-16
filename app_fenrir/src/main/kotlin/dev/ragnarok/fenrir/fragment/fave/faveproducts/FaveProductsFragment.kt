@@ -92,7 +92,7 @@ class FaveProductsFragment : BaseMvpFragment<FaveProductsPresenter, IFaveProduct
         }
     }
 
-    override fun onMarketOpen(accountId: Int, market: Market) {
+    override fun onMarketOpen(accountId: Long, market: Market) {
         getMarketViewPlace(accountId, market).tryOpenWith(requireActivity())
     }
 
@@ -100,7 +100,7 @@ class FaveProductsFragment : BaseMvpFragment<FaveProductsPresenter, IFaveProduct
         return object : IPresenterFactory<FaveProductsPresenter> {
             override fun create(): FaveProductsPresenter {
                 return FaveProductsPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
                     ), saveInstanceState
                 )
@@ -115,9 +115,9 @@ class FaveProductsFragment : BaseMvpFragment<FaveProductsPresenter, IFaveProduct
     }
 
     companion object {
-        fun newInstance(accountId: Int): FaveProductsFragment {
+        fun newInstance(accountId: Long): FaveProductsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = FaveProductsFragment()
             fragment.arguments = args
             return fragment

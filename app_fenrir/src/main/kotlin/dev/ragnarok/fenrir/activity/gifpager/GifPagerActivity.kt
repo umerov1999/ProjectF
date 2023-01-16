@@ -222,7 +222,7 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<GifPagerPresenter> {
         return object : IPresenterFactory<GifPagerPresenter> {
             override fun create(): GifPagerPresenter {
-                val aid = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val index = requireArguments().getInt(Extra.INDEX)
                 val documents: ArrayList<Document> =
                     requireArguments().getParcelableArrayListCompat(Extra.DOCS)!!
@@ -314,9 +314,9 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
             return ph
         }
 
-        fun buildArgs(aid: Int, documents: ArrayList<Document>, index: Int): Bundle {
+        fun buildArgs(aid: Long, documents: ArrayList<Document>, index: Int): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.getLong(Extra.ACCOUNT_ID, aid)
             args.putInt(Extra.INDEX, index)
             args.putParcelableArrayList(Extra.DOCS, documents)
             return args

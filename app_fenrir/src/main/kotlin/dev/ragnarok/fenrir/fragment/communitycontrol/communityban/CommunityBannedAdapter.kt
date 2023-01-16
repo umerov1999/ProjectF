@@ -71,7 +71,7 @@ class CommunityBannedAdapter(private var data: List<Banned>) :
             holder.comment.visibility = View.GONE
         }
         val spannable = FormatUtil.formatCommunityBanInfo(
-            context, admin.getObjectId(),
+            context, admin.getOwnerObjectId(),
             admin.fullName, info.endDate, ownerLinkActionListener
         )
         holder.dateAndAdminInfo.movementMethod = LinkMovementMethod.getInstance()

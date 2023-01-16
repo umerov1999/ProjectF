@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 class ConversationDeleteResult {
     @SerialName("last_deleted_id")
-    var lastDeletedId = 0
+    var lastDeletedId = 0L
 }

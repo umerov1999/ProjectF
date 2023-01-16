@@ -4,19 +4,19 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class WallSearchCriteria : BaseSearchCriteria {
-    val ownerId: Int
+    val ownerId: Long
 
-    constructor(query: String?, ownerId: Int) : super(query) {
+    constructor(query: String?, ownerId: Long) : super(query) {
         this.ownerId = ownerId
     }
 
     internal constructor(parcel: Parcel) : super(parcel) {
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         super.writeToParcel(dest, flags)
-        dest.writeInt(ownerId)
+        dest.writeLong(ownerId)
     }
 
     companion object CREATOR : Parcelable.Creator<WallSearchCriteria> {

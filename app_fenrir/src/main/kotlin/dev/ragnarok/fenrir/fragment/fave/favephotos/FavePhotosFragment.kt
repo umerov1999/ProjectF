@@ -112,7 +112,7 @@ class FavePhotosFragment : BaseMvpFragment<FavePhotosPresenter, IFavePhotosView>
         mSwipeRefreshLayout?.post { mSwipeRefreshLayout?.isRefreshing = refreshing }
     }
 
-    override fun goToGallery(accountId: Int, photos: ArrayList<Photo>, position: Int) {
+    override fun goToGallery(accountId: Long, photos: ArrayList<Photo>, position: Int) {
         getFavePhotosGallery(accountId, photos, position).setActivityResultLauncher(
             requestPhotoUpdate
         )
@@ -123,7 +123,7 @@ class FavePhotosFragment : BaseMvpFragment<FavePhotosPresenter, IFavePhotosView>
         return object : IPresenterFactory<FavePhotosPresenter> {
             override fun create(): FavePhotosPresenter {
                 return FavePhotosPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
                     ), saveInstanceState
                 )
@@ -132,9 +132,9 @@ class FavePhotosFragment : BaseMvpFragment<FavePhotosPresenter, IFavePhotosView>
     }
 
     companion object {
-        fun newInstance(accountId: Int): FavePhotosFragment {
+        fun newInstance(accountId: Long): FavePhotosFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val favePhotosFragment = FavePhotosFragment()
             favePhotosFragment.arguments = args
             return favePhotosFragment

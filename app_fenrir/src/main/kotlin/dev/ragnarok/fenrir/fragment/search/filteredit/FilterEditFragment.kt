@@ -54,11 +54,11 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
     }
     private var mData: ArrayList<BaseOption>? = null
     private var mAdapter: SearchOptionsAdapter? = null
-    private var mAccountId = 0
+    private var mAccountId = 0L
     private var mEmptyText: TextView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mAccountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+        mAccountId = requireArguments().getLong(Extra.ACCOUNT_ID)
         mData = requireArguments().getParcelableArrayListCompat(Extra.LIST)
     }
 
@@ -180,7 +180,7 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
                 val selectCountryDialog = SelectCountryDialog()
                 val args = Bundle()
                 args.putInt(Extra.KEY, databaseOption.key)
-                args.putInt(Extra.ACCOUNT_ID, mAccountId)
+                args.putLong(Extra.ACCOUNT_ID, mAccountId)
                 selectCountryDialog.arguments = args
                 selectCountryDialog.show(parentFragmentManager, "countries")
             }
@@ -534,9 +534,9 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
     companion object {
         const val REQUEST_FILTER_EDIT = "request_filter_edit"
         const val REQUEST_FILTER_OPTION = "request_filter_option"
-        fun newInstance(accountId: Int, options: ArrayList<BaseOption>): FilterEditFragment {
+        fun newInstance(accountId: Long, options: ArrayList<BaseOption>): FilterEditFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelableArrayList(Extra.LIST, options)
             val fragment = FilterEditFragment()
             fragment.arguments = args

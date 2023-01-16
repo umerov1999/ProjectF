@@ -9,8 +9,8 @@ import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 
 class CommunityLinksPresenter(
-    accountId: Int,
-    private val groupId: Int,
+    accountId: Long,
+    private val groupId: Long,
     savedInstanceState: Bundle?
 ) :
     AccountDependencyPresenter<ICommunityLinksView>(accountId, savedInstanceState) {

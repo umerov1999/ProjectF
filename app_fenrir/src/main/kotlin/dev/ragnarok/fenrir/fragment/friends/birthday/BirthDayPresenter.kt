@@ -10,7 +10,7 @@ import dev.ragnarok.fenrir.model.User
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.*
 
-class BirthDayPresenter(accountId: Int, private val ownerId: Int, savedInstanceState: Bundle?) :
+class BirthDayPresenter(accountId: Long, private val ownerId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IBirthDayView>(accountId, savedInstanceState) {
     private val users: MutableList<BirthDay>
     private val cacheInteractor: IOwnersRepository

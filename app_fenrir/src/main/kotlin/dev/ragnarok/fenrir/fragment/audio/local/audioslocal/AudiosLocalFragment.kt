@@ -128,7 +128,7 @@ class AudiosLocalFragment : BaseMvpFragment<AudiosLocalPresenter, IAudiosLocalVi
         return object : IPresenterFactory<AudiosLocalPresenter> {
             override fun create(): AudiosLocalPresenter {
                 return AudiosLocalPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     saveInstanceState
                 )
             }
@@ -233,9 +233,9 @@ class AudiosLocalFragment : BaseMvpFragment<AudiosLocalPresenter, IAudiosLocalVi
     }
 
     companion object {
-        fun newInstance(accountId: Int): AudiosLocalFragment {
+        fun newInstance(accountId: Long): AudiosLocalFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = AudiosLocalFragment()
             fragment.arguments = args
             return fragment

@@ -22,7 +22,7 @@ abstract class AbsNavigationView : FrameLayout {
     abstract fun blockSheet()
     abstract fun selectPage(item: AbsMenuItem?)
     abstract fun setUp(drawerLayout: DrawerLayout)
-    abstract fun onAccountChange(newAccountId: Int)
+    abstract fun onAccountChange(newAccountId: Long)
     abstract fun onUnreadDialogsCountChange(count: Int)
     abstract fun onUnreadNotificationsCountChange(count: Int)
     abstract fun checkCloseByClick(ev: MotionEvent): Boolean

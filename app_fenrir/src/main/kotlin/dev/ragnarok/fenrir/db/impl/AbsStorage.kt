@@ -15,7 +15,7 @@ open class AbsStorage(private val mRepositoryContext: AppStorages) : IStorage {
     val context: Context
         get() = mRepositoryContext.applicationContext
 
-    fun helper(accountId: Int): DBHelper {
+    fun helper(accountId: Long): DBHelper {
         return DBHelper.getInstance(context, accountId)
     }
 

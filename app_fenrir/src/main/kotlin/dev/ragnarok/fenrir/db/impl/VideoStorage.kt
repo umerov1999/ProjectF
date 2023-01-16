@@ -59,7 +59,7 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
 
     private fun mapVideo(cursor: Cursor): VideoDboEntity {
         val id = cursor.getInt(VideoColumns.VIDEO_ID)
-        val ownerId = cursor.getInt(VideoColumns.ORIGINAL_OWNER_ID)
+        val ownerId = cursor.getLong(VideoColumns.ORIGINAL_OWNER_ID)
         val video = VideoDboEntity().set(id, ownerId)
             .setAlbumId(cursor.getInt(VideoColumns.ALBUM_ID))
             .setTitle(cursor.getString(VideoColumns.TITLE))
@@ -117,8 +117,8 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
     }
 
     override fun insertData(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         videos: List<VideoDboEntity>,
         invalidateBefore: Boolean
@@ -167,7 +167,7 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
     companion object {
         /* Дело в том, что вк передает в p.owner_id идентификатор оригинального владельца.
      * Поэтому необходимо отдельно сохранять идентикатор owner-а, у кого в видеозаписях мы нашли видео */
-        fun getCV(dbo: VideoDboEntity, ownerId: Int): ContentValues {
+        fun getCV(dbo: VideoDboEntity, ownerId: Long): ContentValues {
             val cv = ContentValues()
             cv.put(VideoColumns.VIDEO_ID, dbo.id)
             cv.put(VideoColumns.OWNER_ID, ownerId)

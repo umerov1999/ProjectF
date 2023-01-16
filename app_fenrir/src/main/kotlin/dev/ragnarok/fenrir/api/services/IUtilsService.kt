@@ -60,7 +60,7 @@ class IUtilsService : IServiceRest() {
     }
 
     fun getInviteLink(
-        peer_id: Int?,
+        peer_id: Long?,
         reset: Int?
     ): Single<BaseResponse<VKApiLinkResponse>> {
         return rest.request(

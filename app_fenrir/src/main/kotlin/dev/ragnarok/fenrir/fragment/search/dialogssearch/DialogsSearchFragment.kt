@@ -17,7 +17,7 @@ class DialogsSearchFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<DialogsSearchPresenter> {
         return object : IPresenterFactory<DialogsSearchPresenter> {
             override fun create(): DialogsSearchPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val criteria: DialogsSearchCriteria? =
                     requireArguments().getParcelableCompat(Extra.CRITERIA)
                 return DialogsSearchPresenter(accountId, criteria, saveInstanceState)
@@ -45,9 +45,9 @@ class DialogsSearchFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int, criteria: DialogsSearchCriteria?): DialogsSearchFragment {
+        fun newInstance(accountId: Long, criteria: DialogsSearchCriteria?): DialogsSearchFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.CRITERIA, criteria)
             val fragment = DialogsSearchFragment()
             fragment.arguments = args

@@ -5,8 +5,8 @@ import android.os.Parcelable
 
 class WikiPage : AbsModel {
     val id: Int
-    val ownerId: Int
-    var creatorId = 0
+    val ownerId: Long
+    var creatorId = 0L
         private set
     var title: String? = null
         private set
@@ -25,15 +25,15 @@ class WikiPage : AbsModel {
     var viewUrl: String? = null
         private set
 
-    constructor(id: Int, ownerId: Int) {
+    constructor(id: Int, ownerId: Long) {
         this.id = id
         this.ownerId = ownerId
     }
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
-        creatorId = parcel.readInt()
+        ownerId = parcel.readLong()
+        creatorId = parcel.readLong()
         title = parcel.readString()
         source = parcel.readString()
         editionTime = parcel.readLong()
@@ -46,8 +46,8 @@ class WikiPage : AbsModel {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
-        parcel.writeInt(creatorId)
+        parcel.writeLong(ownerId)
+        parcel.writeLong(creatorId)
         parcel.writeString(title)
         parcel.writeString(source)
         parcel.writeLong(editionTime)
@@ -63,7 +63,7 @@ class WikiPage : AbsModel {
         return AbsModelType.MODEL_WIKI_PAGE
     }
 
-    fun setCreatorId(creatorId: Int): WikiPage {
+    fun setCreatorId(creatorId: Long): WikiPage {
         this.creatorId = creatorId
         return this
     }

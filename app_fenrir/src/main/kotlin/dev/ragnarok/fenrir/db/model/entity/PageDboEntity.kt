@@ -10,9 +10,9 @@ import kotlinx.serialization.Serializable
 class PageDboEntity : DboEntity() {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
-    var creatorId = 0
+    var creatorId = 0L
         private set
     var title: String? = null
         private set
@@ -31,13 +31,13 @@ class PageDboEntity : DboEntity() {
     var viewUrl: String? = null
         private set
 
-    operator fun set(id: Int, ownerId: Int): PageDboEntity {
+    operator fun set(id: Int, ownerId: Long): PageDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this
     }
 
-    fun setCreatorId(creatorId: Int): PageDboEntity {
+    fun setCreatorId(creatorId: Long): PageDboEntity {
         this.creatorId = creatorId
         return this
     }

@@ -71,7 +71,7 @@ import java.lang.ref.WeakReference
 
 class CatalogV2SectionAdapter(
     data: MutableList<AbsModel>,
-    private val account_id: Int,
+    private val account_id: Long,
     private val mContext: Context
 ) : RecyclerBindableAdapter<AbsModel, IViewHolder>(data) {
     private var clickListener: ClickListener? = null
@@ -352,7 +352,7 @@ class CatalogV2SectionAdapter(
             }
             playlist_container.setOnClickListener {
                 if (playlist.getOriginal_access_key()
-                        .isNullOrEmpty() || playlist.getOriginal_id() == 0 || playlist.getOriginal_owner_id() == 0
+                        .isNullOrEmpty() || playlist.getOriginal_id() == 0 || playlist.getOriginal_owner_id() == 0L
                 ) PlaceFactory.getAudiosInAlbumPlace(
                     account_id, playlist.getOwnerId(), playlist.getId(), playlist.getAccess_key()
                 ).tryOpenWith(mContext) else PlaceFactory.getAudiosInAlbumPlace(
@@ -384,7 +384,7 @@ class CatalogV2SectionAdapter(
     }
 
 
-    internal fun deleteTrack(accountId: Int, audio: Audio, position: Int) {
+    internal fun deleteTrack(accountId: Long, audio: Audio, position: Int) {
         audioListDisposable =
             mAudioInteractor.delete(accountId, audio.id, audio.ownerId).fromIOToMain().subscribe(
                 {
@@ -394,14 +394,14 @@ class CatalogV2SectionAdapter(
                 }) { t -> CustomToast.createCustomToast(mContext).showToastThrowable(t) }
     }
 
-    internal fun addTrack(accountId: Int, audio: Audio) {
+    internal fun addTrack(accountId: Long, audio: Audio) {
         audioListDisposable = mAudioInteractor.add(accountId, audio, null).fromIOToMain().subscribe(
             { CustomToast.createCustomToast(mContext).showToast(R.string.added) }) { t ->
             CustomToast.createCustomToast(mContext).showToastThrowable(t)
         }
     }
 
-    internal fun getMp3AndBitrate(accountId: Int, audio: Audio) {
+    internal fun getMp3AndBitrate(accountId: Long, audio: Audio) {
         val mode = audio.needRefresh()
         if (mode.first) {
             audioListDisposable =

@@ -94,7 +94,7 @@ class TopicsFragment : BaseMvpFragment<TopicsPresenter, ITopicsView>(),
         helper?.switchToState(state)
     }
 
-    override fun goToComments(accountId: Int, topic: Topic) {
+    override fun goToComments(accountId: Long, topic: Topic) {
         getCommentsPlace(accountId, Commented.from(topic), null)
             .tryOpenWith(requireActivity())
     }
@@ -102,8 +102,8 @@ class TopicsFragment : BaseMvpFragment<TopicsPresenter, ITopicsView>(),
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<TopicsPresenter> {
         return object : IPresenterFactory<TopicsPresenter> {
             override fun create(): TopicsPresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
-                val ownerId = requireArguments().getInt(Extra.OWNER_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
                 return TopicsPresenter(accountId, ownerId, saveInstanceState)
             }
         }
@@ -116,10 +116,10 @@ class TopicsFragment : BaseMvpFragment<TopicsPresenter, ITopicsView>(),
     }
 
     companion object {
-        fun buildArgs(accountId: Int, ownerId: Int): Bundle {
+        fun buildArgs(accountId: Long, ownerId: Long): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             return args
         }
 
@@ -129,7 +129,7 @@ class TopicsFragment : BaseMvpFragment<TopicsPresenter, ITopicsView>(),
             return fragment
         }
 
-        fun newInstance(accountId: Int, ownerId: Int): TopicsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): TopicsFragment {
             return newInstance(buildArgs(accountId, ownerId))
         }
     }

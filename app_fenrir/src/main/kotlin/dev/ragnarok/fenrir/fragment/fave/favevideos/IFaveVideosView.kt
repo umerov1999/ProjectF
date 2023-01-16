@@ -9,5 +9,5 @@ interface IFaveVideosView : IMvpView, IErrorView {
     fun notifyDataSetChanged()
     fun notifyDataAdded(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
-    fun goToPreview(accountId: Int, video: Video)
+    fun goToPreview(accountId: Long, video: Video)
 }

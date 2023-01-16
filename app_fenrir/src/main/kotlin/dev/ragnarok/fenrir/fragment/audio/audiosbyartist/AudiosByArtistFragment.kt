@@ -231,7 +231,7 @@ class AudiosByArtistFragment : BaseMvpFragment<AudiosByArtistPresenter, IAudiosB
         return object : IPresenterFactory<AudiosByArtistPresenter> {
             override fun create(): AudiosByArtistPresenter {
                 return AudiosByArtistPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getString(Extra.ARTIST)!!,
                     saveInstanceState
                 )
@@ -266,9 +266,9 @@ class AudiosByArtistFragment : BaseMvpFragment<AudiosByArtistPresenter, IAudiosB
             return fragment
         }
 
-        fun buildArgs(accountId: Int, artistId: String?): Bundle {
+        fun buildArgs(accountId: Long, artistId: String?): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putString(Extra.ARTIST, artistId)
             return args
         }

@@ -9,7 +9,7 @@ import io.reactivex.rxjava3.core.Single
 class IBoardService : IServiceRest() {
     //https://vk.com/dev/board.getComments
     fun getComments(
-        groupId: Int,
+        groupId: Long,
         topicId: Int,
         needLikes: Int?,
         startCommentId: Int?,
@@ -37,7 +37,7 @@ class IBoardService : IServiceRest() {
 
     //https://vk.com/dev/board.restoreComment
     fun restoreComment(
-        groupId: Int,
+        groupId: Long,
         topicId: Int,
         commentId: Int
     ): Single<BaseResponse<Int>> {
@@ -50,7 +50,7 @@ class IBoardService : IServiceRest() {
 
     //https://vk.com/dev/board.deleteComment
     fun deleteComment(
-        groupId: Int,
+        groupId: Long,
         topicId: Int,
         commentId: Int
     ): Single<BaseResponse<Int>> {
@@ -88,7 +88,7 @@ class IBoardService : IServiceRest() {
      * @return array of objects describing topics.
      */
     fun getTopics(
-        groupId: Int,
+        groupId: Long,
         topicIds: String?,
         order: Int?,
         offset: Int?,
@@ -136,7 +136,7 @@ class IBoardService : IServiceRest() {
      * @return 1
      */
     fun editComment(
-        groupId: Int,
+        groupId: Long,
         topicId: Int,
         commentId: Int,
         message: String?,
@@ -155,7 +155,7 @@ class IBoardService : IServiceRest() {
     }
 
     fun addComment(
-        groupId: Int?,
+        groupId: Long?,
         topicId: Int,
         message: String?,
         attachments: String?,

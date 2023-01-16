@@ -36,9 +36,9 @@ import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.TouchImageView
 
 class DocPreviewFragment : BaseFragment(), View.OnClickListener, MenuProvider {
-    private var accountId = 0
+    private var accountId = 0L
     private var rootView: View? = null
-    private var ownerId = 0
+    private var ownerId = 0L
     private var documentId = 0
     private var documentAccessKey: String? = null
     private var document: Document? = null
@@ -73,9 +73,9 @@ class DocPreviewFragment : BaseFragment(), View.OnClickListener, MenuProvider {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+        accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
         savedInstanceState?.let { restoreFromInstanceState(it) }
-        ownerId = requireArguments().getInt(Extra.OWNER_ID)
+        ownerId = requireArguments().getLong(Extra.OWNER_ID)
         documentId = requireArguments().getInt(Extra.DOC_ID)
         if (requireArguments().containsKey(Extra.DOC)) {
             document = requireArguments().getParcelableCompat(Extra.DOC)
@@ -362,16 +362,16 @@ class DocPreviewFragment : BaseFragment(), View.OnClickListener, MenuProvider {
     companion object {
         private const val SAVE_DELETED = "deleted"
         fun buildArgs(
-            accountId: Int,
+            accountId: Long,
             docId: Int,
-            docOwnerId: Int,
+            docOwnerId: Long,
             accessKey: String?,
             document: Document?
         ): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putInt(Extra.DOC_ID, docId)
-            args.putInt(Extra.OWNER_ID, docOwnerId)
+            args.putLong(Extra.OWNER_ID, docOwnerId)
             if (!accessKey.isNullOrEmpty()) {
                 args.putString(Extra.ACCESS_KEY, accessKey)
             }

@@ -53,7 +53,7 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
         val matcher = PATTERN_ACCOUNT.matcher(shortcut.action)
         try {
             if (matcher.find()) {
-                val id = matcher.group(1)?.toInt() ?: return false
+                val id = matcher.group(1)?.toLong() ?: return false
                 appendDisposable(
                     Repository.owners.getBaseOwnerInfo(
                         Settings.get().accounts().current,
@@ -92,8 +92,8 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
         val matcher = PATTERN_WALL.matcher(shortcut.action)
         try {
             if (matcher.find()) {
-                val id = matcher.group(1)?.toInt() ?: return false
-                val account_id = matcher.group(2)?.toInt() ?: return false
+                val id = matcher.group(1)?.toLong() ?: return false
+                val account_id = matcher.group(2)?.toLong() ?: return false
                 appendDisposable(
                     Repository.owners.getBaseOwnerInfo(
                         Settings.get().accounts().current,
@@ -134,8 +134,8 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
         val matcher = PATTERN_PEER.matcher(shortcut.action)
         try {
             if (matcher.find()) {
-                val id = matcher.group(1)?.toInt() ?: return false
-                val account_id = matcher.group(2)?.toInt() ?: return false
+                val id = matcher.group(1)?.toLong() ?: return false
+                val account_id = matcher.group(2)?.toLong() ?: return false
                 appendDisposable(
                     ShortcutUtils.createChatShortcutRx(
                         context,

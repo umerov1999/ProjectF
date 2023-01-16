@@ -2,8 +2,8 @@ package dev.ragnarok.fenrir.model.criteria
 
 import dev.ragnarok.fenrir.db.DatabaseIdRange
 
-class PhotoCriteria(val accountId: Int) {
-    var ownerId = 0
+class PhotoCriteria(val accountId: Long) {
+    var ownerId = 0L
         private set
     var albumId = 0
         private set
@@ -24,7 +24,7 @@ class PhotoCriteria(val accountId: Int) {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): PhotoCriteria {
+    fun setOwnerId(ownerId: Long): PhotoCriteria {
         this.ownerId = ownerId
         return this
     }

@@ -31,15 +31,15 @@ import kotlin.math.abs
 class GroupInviteFCMMessage {
     //collapseKey: group_invite, extras: Bundle[{from_id=175895893, from=376771982493, name=Pianoбой,
     // type=group_invite, group_id=1583008, sandbox=0, collapse_key=group_invite}]
-    private var from_id = 0
+    private var from_id = 0L
 
     //public long from;
     //public String name;
     //public String type;
-    private var group_id = 0
+    private var group_id = 0L
 
     @SuppressLint("CheckResult")
-    fun notify(context: Context, accountId: Int) {
+    fun notify(context: Context, accountId: Long) {
         if (!get()
                 .notifications()
                 .isGroupInvitedNotifEnabled
@@ -95,7 +95,7 @@ class GroupInviteFCMMessage {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         val contentIntent = PendingIntent.getActivity(
             context,
-            group_id,
+            group_id.hashCode(),
             intent,
             makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
@@ -114,9 +114,9 @@ class GroupInviteFCMMessage {
     companion object {
         fun fromRemoteMessage(remote: RemoteMessage): GroupInviteFCMMessage? {
             val message = GroupInviteFCMMessage()
-            message.from_id = remote.data["from_id"]?.toInt() ?: return null
+            message.from_id = remote.data["from_id"]?.toLong() ?: return null
             //message.name = bundle.getString("name");
-            message.group_id = remote.data["group_id"]?.toInt() ?: return null
+            message.group_id = remote.data["group_id"]?.toLong() ?: return null
             //message.from = FriendFCMMessage.optLong(bundle, "from");
             //message.type = bundle.getString("type");
             return message

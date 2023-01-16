@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 
 class MarketViewPresenter(
-    accountId: Int,
+    accountId: Long,
     private var mMarket: Market,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IMarketViewView>(accountId, savedInstanceState) {

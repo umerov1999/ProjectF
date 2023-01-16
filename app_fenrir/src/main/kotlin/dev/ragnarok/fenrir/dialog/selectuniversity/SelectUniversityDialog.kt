@@ -114,10 +114,10 @@ class SelectUniversityDialog : AccountDependencyDialogFragment(), UniversitiesAd
     companion object {
         private const val COUNT_PER_REQUEST = 1000
         private const val RUN_SEARCH_DELAY = 1000
-        fun newInstance(aid: Int, universityId: Int, additional: Bundle?): SelectUniversityDialog {
+        fun newInstance(aid: Long, universityId: Int, additional: Bundle?): SelectUniversityDialog {
             val args = additional ?: Bundle()
             args.putInt(Extra.UNIVERSITY_ID, universityId)
-            args.putInt(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             val selectCityDialog = SelectUniversityDialog()
             selectCityDialog.arguments = args
             return selectCityDialog

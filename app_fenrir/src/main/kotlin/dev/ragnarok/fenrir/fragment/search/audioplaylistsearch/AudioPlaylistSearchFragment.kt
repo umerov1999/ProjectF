@@ -47,7 +47,7 @@ class AudioPlaylistSearchFragment :
         return object : IPresenterFactory<AudioPlaylistSearchPresenter> {
             override fun create(): AudioPlaylistSearchPresenter {
                 return AudioPlaylistSearchPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.CRITERIA),
                     saveInstanceState
                 )
@@ -63,7 +63,7 @@ class AudioPlaylistSearchFragment :
             requireActivity().finish()
         } else {
             if (album.getOriginal_access_key()
-                    .isNullOrEmpty() || album.getOriginal_id() == 0 || album.getOriginal_owner_id() == 0
+                    .isNullOrEmpty() || album.getOriginal_id() == 0 || album.getOriginal_owner_id() == 0L
             ) getAudiosInAlbumPlace(
                 presenter?.accountId ?: Settings.get().accounts().current,
                 album.getOwnerId(),
@@ -80,7 +80,7 @@ class AudioPlaylistSearchFragment :
 
     override fun onOpenClick(index: Int, album: AudioPlaylist) {
         if (album.getOriginal_access_key()
-                .isNullOrEmpty() || album.getOriginal_id() == 0 || album.getOriginal_owner_id() == 0
+                .isNullOrEmpty() || album.getOriginal_id() == 0 || album.getOriginal_owner_id() == 0L
         ) getAudiosInAlbumPlace(
             presenter?.accountId ?: Settings.get().accounts().current,
             album.getOwnerId(),
@@ -117,24 +117,24 @@ class AudioPlaylistSearchFragment :
 
 
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             initialCriteria: AudioPlaylistSearchCriteria?
         ): AudioPlaylistSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             val fragment = AudioPlaylistSearchFragment()
             fragment.arguments = args
             return fragment
         }
 
         fun newInstanceSelect(
-            accountId: Int,
+            accountId: Long,
             initialCriteria: AudioPlaylistSearchCriteria?
         ): AudioPlaylistSearchFragment {
             val args = Bundle()
             args.putParcelable(Extra.CRITERIA, initialCriteria)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putBoolean(ACTION_SELECT, true)
             val fragment = AudioPlaylistSearchFragment()
             fragment.arguments = args

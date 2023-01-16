@@ -33,7 +33,7 @@ class CommentFCMMessage {
     /**
      * Идентификатор пользователя
      */
-    private var from_id = 0
+    private var from_id = 0L
 
     /**
      * Идентификатор комментария
@@ -45,10 +45,10 @@ class CommentFCMMessage {
     private var text: String? = null
     private var type: String? = null
     private var item_id = 0
-    private var owner_id = 0
+    private var owner_id = 0L
 
     @SuppressLint("CheckResult")
-    fun notify(context: Context, accountId: Int) {
+    fun notify(context: Context, accountId: Long) {
         if (!get()
                 .notifications()
                 .isCommentsNotificationsEnabled
@@ -125,7 +125,7 @@ class CommentFCMMessage {
         var item_id = 0
 
         @SerialName("owner_id")
-        var owner_id = 0
+        var owner_id = 0L
 
         @SerialName("type")
         var type: String? = null
@@ -136,7 +136,7 @@ class CommentFCMMessage {
         // text=да, type=comment, place=wall25651989_3499, google.message_id=0:1477925617795994%8c76e97a38a5ee5f, _genSrv=833239, sandbox=0, collapse_key=comment}]
         fun fromRemoteMessage(remote: RemoteMessage): CommentFCMMessage? {
             val message = CommentFCMMessage()
-            message.from_id = remote.data["from_id"]?.toInt() ?: return null
+            message.from_id = remote.data["from_id"]?.toLong() ?: return null
             message.text = remote.data["body"]
             val context: PushContext = kJson.decodeFromString(
                 PushContext.serializer(),

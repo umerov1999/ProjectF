@@ -692,19 +692,19 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             }
 
             singleChoice(
-                "rendering_mode",
+                "rendering_bitmap_mode",
                 selItems(
                     R.array.array_rendering_mode_names,
                     R.array.array_rendering_mode_items
                 ),
                 parentFragmentManager
             ) {
-                initialSelection = "0"
+                initialSelection = "2"
                 titleRes = R.string.rendering_mode
                 dependency = "developer_mode"
                 visible = Utils.hasPie()
                 onSelectionChange { it ->
-                    var sz = 0
+                    var sz = 2
                     try {
                         sz = it.trim { it <= ' ' }.toInt()
                     } catch (ignored: NumberFormatException) {

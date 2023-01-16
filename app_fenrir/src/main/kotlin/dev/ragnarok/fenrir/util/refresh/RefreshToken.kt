@@ -33,7 +33,7 @@ object RefreshToken {
     }
      */
 
-    private fun upgradeTokenKate(account: Int, oldToken: String, force: Boolean): Boolean {
+    private fun upgradeTokenKate(account: Long, oldToken: String, force: Boolean): Boolean {
         if (Utils.isHiddenAccount(account) && !force) {
             return false
         }
@@ -49,7 +49,7 @@ object RefreshToken {
         return true
     }
 
-    private fun upgradeTokenOfficial(account: Int, oldToken: String, force: Boolean): Boolean {
+    private fun upgradeTokenOfficial(account: Long, oldToken: String, force: Boolean): Boolean {
         if (Utils.isHiddenAccount(account) && !force) {
             return false
         }
@@ -66,7 +66,7 @@ object RefreshToken {
         return true
     }
 
-    fun upgradeToken(account: Int, oldToken: String, force: Boolean = false): Boolean {
+    fun upgradeToken(account: Long, oldToken: String, force: Boolean = false): Boolean {
         if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.KATE) {
             return upgradeTokenKate(account, oldToken, force)
         } else if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID) {
@@ -75,7 +75,7 @@ object RefreshToken {
         return false
     }
 
-    fun upgradeTokenRxPref(account: Int, oldToken: String): Single<Boolean> {
+    fun upgradeTokenRxPref(account: Long, oldToken: String): Single<Boolean> {
         return Single.create {
             try {
                 it.onSuccess(upgradeToken(account, oldToken, true))

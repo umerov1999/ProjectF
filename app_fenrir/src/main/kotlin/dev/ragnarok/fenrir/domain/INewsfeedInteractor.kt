@@ -6,15 +6,15 @@ import io.reactivex.rxjava3.core.Single
 
 interface INewsfeedInteractor {
     fun getNewsfeedComments(
-        accountId: Int,
+        accountId: Long,
         count: Int,
         startFrom: String?,
         filter: String?
     ): Single<Pair<List<NewsfeedComment>, String?>>
 
     fun getMentions(
-        accountId: Int,
-        owner_id: Int?,
+        accountId: Long,
+        owner_id: Long?,
         count: Int?,
         offset: Int?,
         startTime: Long?,

@@ -23,9 +23,9 @@ class CommentCreateFragment :
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommentCreatePresenter> {
         return object : IPresenterFactory<CommentCreatePresenter> {
             override fun create(): CommentCreatePresenter {
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val commentDbid = requireArguments().getInt(Extra.COMMENT_ID)
-                val sourceOwnerId = requireArguments().getInt(Extra.COMMENT_ID)
+                val sourceOwnerId = requireArguments().getLong(Extra.COMMENT_ID)
                 val body = requireArguments().getString(Extra.BODY)
                 return CommentCreatePresenter(
                     accountId,
@@ -87,15 +87,15 @@ class CommentCreateFragment :
     companion object {
         const val REQUEST_CREATE_COMMENT = "request_create_comment"
         fun newInstance(
-            accountId: Int,
+            accountId: Long,
             commentDbid: Int,
-            sourceOwnerId: Int,
+            sourceOwnerId: Long,
             body: String?
         ): CommentCreateFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putInt(Extra.COMMENT_ID, commentDbid)
-            args.putInt(Extra.OWNER_ID, sourceOwnerId)
+            args.putLong(Extra.OWNER_ID, sourceOwnerId)
             args.putString(Extra.BODY, body)
             val fragment = CommentCreateFragment()
             fragment.arguments = args

@@ -9,8 +9,8 @@ import dev.ragnarok.fenrir.model.Market
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class ProductsPresenter(
-    accountId: Int,
-    private val owner_id: Int,
+    accountId: Long,
+    private val owner_id: Long,
     private val album_id: Int,
     private val isService: Boolean,
     savedInstanceState: Bundle?

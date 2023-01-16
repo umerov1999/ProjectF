@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.link.types
 
-class AudioPlaylistLink(val ownerId: Int, val playlistId: Int, val access_key: String?) : AbsLink(
+class AudioPlaylistLink(val ownerId: Long, val playlistId: Int, val access_key: String?) : AbsLink(
     PLAYLIST
 ) {
     override fun toString(): String {

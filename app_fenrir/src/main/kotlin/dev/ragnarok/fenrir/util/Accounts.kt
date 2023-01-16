@@ -61,7 +61,7 @@ object Accounts {
     }
 
 
-    fun fromArgs(bundle: Bundle?): Int {
-        return bundle?.getInt(Extra.ACCOUNT_ID) ?: ISettings.IAccountsSettings.INVALID_ID
+    fun fromArgs(bundle: Bundle?): Long {
+        return bundle?.getLong(Extra.ACCOUNT_ID) ?: ISettings.IAccountsSettings.INVALID_ID
     }
 }

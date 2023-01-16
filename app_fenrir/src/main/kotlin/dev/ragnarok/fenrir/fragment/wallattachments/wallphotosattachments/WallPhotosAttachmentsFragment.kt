@@ -112,8 +112,8 @@ class WallPhotosAttachmentsFragment :
         return object : IPresenterFactory<WallPhotosAttachmentsPresenter> {
             override fun create(): WallPhotosAttachmentsPresenter {
                 return WallPhotosAttachmentsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     saveInstanceState
                 )
             }
@@ -150,13 +150,13 @@ class WallPhotosAttachmentsFragment :
         )
     }
 
-    override fun goToTempPhotosGallery(accountId: Int, source: TmpSource, index: Int) {
+    override fun goToTempPhotosGallery(accountId: Long, source: TmpSource, index: Int) {
         getTmpSourceGalleryPlace(accountId, source, index).setActivityResultLauncher(
             requestPhotoUpdate
         ).tryOpenWith(requireActivity())
     }
 
-    override fun goToTempPhotosGallery(accountId: Int, ptr: Long, index: Int) {
+    override fun goToTempPhotosGallery(accountId: Long, ptr: Long, index: Int) {
         getTmpSourceGalleryPlace(
             accountId,
             ptr,
@@ -173,10 +173,10 @@ class WallPhotosAttachmentsFragment :
     }
 
     companion object {
-        fun newInstance(accountId: Int, ownerId: Int): WallPhotosAttachmentsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): WallPhotosAttachmentsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = WallPhotosAttachmentsFragment()
             fragment.arguments = args
             return fragment

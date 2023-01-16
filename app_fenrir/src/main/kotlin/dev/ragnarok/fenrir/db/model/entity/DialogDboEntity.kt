@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.db.model.entity
 
-class DialogDboEntity(val peerId: Int) : DboEntity() {
+class DialogDboEntity(val peerId: Long) : DboEntity() {
     var title: String? = null
         private set
     var unreadCount = 0

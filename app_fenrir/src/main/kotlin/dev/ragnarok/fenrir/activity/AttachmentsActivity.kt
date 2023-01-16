@@ -21,7 +21,7 @@ class AttachmentsActivity : NoMainActivity(), PlaceProvider {
         if (savedInstanceState == null) {
             var fragment: Fragment? = null
             val type = (intent.extras ?: return).getInt(Extra.TYPE)
-            val accountId = (intent.extras ?: return).getInt(Extra.ACCOUNT_ID)
+            val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
             when (type) {
                 AttachmentsTypes.DOC -> fragment =
                     DocsFragment.newInstance(accountId, accountId, DocsListPresenter.ACTION_SELECT)
@@ -54,7 +54,7 @@ class AttachmentsActivity : NoMainActivity(), PlaceProvider {
 
     companion object {
 
-        fun createIntent(context: Context, accountId: Int, type: Int): Intent {
+        fun createIntent(context: Context, accountId: Long, type: Int): Intent {
             return Intent(context, AttachmentsActivity::class.java)
                 .putExtra(Extra.TYPE, type)
                 .putExtra(Extra.ACCOUNT_ID, accountId)

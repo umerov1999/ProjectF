@@ -11,8 +11,8 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class NarrativesPresenter(
-    accountId: Int,
-    private val owner_id: Int,
+    accountId: Long,
+    private val owner_id: Long,
     private val context: Context,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<INarrativesView>(accountId, savedInstanceState) {

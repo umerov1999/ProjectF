@@ -24,7 +24,7 @@ class PostEditFragment : AbsPostEditFragment<PostEditPresenter, IPostEditView>()
         return object : IPresenterFactory<PostEditPresenter> {
             override fun create(): PostEditPresenter {
                 val post: Post = requireArguments().getParcelableCompat(Extra.POST)!!
-                val accountId = requireArguments().getInt(Extra.ACCOUNT_ID)
+                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val attrs: WallEditorAttrs = requireArguments().getParcelableCompat(Extra.ATTRS)!!
                 return PostEditPresenter(accountId, post, attrs, saveInstanceState)
             }
@@ -91,11 +91,11 @@ class PostEditFragment : AbsPostEditFragment<PostEditPresenter, IPostEditView>()
             return fragment
         }
 
-        fun buildArgs(accountId: Int, post: Post, attrs: WallEditorAttrs): Bundle {
+        fun buildArgs(accountId: Long, post: Post, attrs: WallEditorAttrs): Bundle {
             val args = Bundle()
             args.putParcelable(Extra.POST, post)
             args.putParcelable(Extra.ATTRS, attrs)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             return args
         }
     }

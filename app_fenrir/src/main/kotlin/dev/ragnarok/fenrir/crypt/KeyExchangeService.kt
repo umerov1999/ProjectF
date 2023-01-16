@@ -78,23 +78,23 @@ class KeyExchangeService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_PROCESS_MESSAGE -> {
-                val accountId = intent.extras!!.getInt(Extra.ACCOUNT_ID)
-                val peerId = intent.extras!!.getInt(Extra.PEER_ID)
+                val accountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
+                val peerId = intent.extras!!.getLong(Extra.PEER_ID)
                 val messageId = intent.extras!!.getInt(Extra.MESSAGE_ID)
                 val message: ExchangeMessage = intent.getParcelableExtraCompat(Extra.MESSAGE)!!
                 processNewKeyExchangeMessage(accountId, peerId, messageId, message)
             }
             ACTION_INICIATE_KEY_EXCHANGE -> {
-                val accountId = intent.extras!!.getInt(Extra.ACCOUNT_ID)
-                val peerId = intent.extras!!.getInt(Extra.PEER_ID)
+                val accountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
+                val peerId = intent.extras!!.getLong(Extra.PEER_ID)
                 @KeyLocationPolicy val keyLocationPolicy = intent.extras!!.getInt(
                     EXTRA_KEY_LOCATION_POLICY
                 )
                 initiateKeyExchange(accountId, peerId, keyLocationPolicy)
             }
             ACTION_APPLY_EXHANGE -> {
-                val accountId = intent.extras!!.getInt(Extra.ACCOUNT_ID)
-                val peerId = intent.extras!!.getInt(Extra.PEER_ID)
+                val accountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
+                val peerId = intent.extras!!.getLong(Extra.PEER_ID)
                 val messageId = intent.extras!!.getInt(Extra.MESSAGE_ID)
                 val message: ExchangeMessage = intent.getParcelableExtraCompat(Extra.MESSAGE)!!
                 if (AppPerms.hasNotificationPermissionSimple(this)) {
@@ -106,8 +106,8 @@ class KeyExchangeService : Service() {
                 processKeyExchangeMessage(accountId, peerId, messageId, message, false)
             }
             ACTION_DECLINE -> {
-                val accountId = intent.extras!!.getInt(Extra.ACCOUNT_ID)
-                val peerId = intent.extras!!.getInt(Extra.PEER_ID)
+                val accountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
+                val peerId = intent.extras!!.getLong(Extra.PEER_ID)
                 val message: ExchangeMessage = intent.getParcelableExtraCompat(Extra.MESSAGE)!!
                 declineInputSession(accountId, peerId, message)
             }
@@ -116,7 +116,7 @@ class KeyExchangeService : Service() {
         return START_NOT_STICKY
     }
 
-    private fun declineInputSession(accountId: Int, peerId: Int, message: ExchangeMessage) {
+    private fun declineInputSession(accountId: Long, peerId: Long, message: ExchangeMessage) {
         notifyOpponentAboutSessionFail(
             accountId,
             peerId,
@@ -126,8 +126,8 @@ class KeyExchangeService : Service() {
     }
 
     private fun processNewKeyExchangeMessage(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         messageId: Int,
         message: ExchangeMessage
     ) {
@@ -151,7 +151,7 @@ class KeyExchangeService : Service() {
         return null
     }
 
-    private fun findSessionFor(accountId: Int, peerId: Int): KeyExchangeSession? {
+    private fun findSessionFor(accountId: Long, peerId: Long): KeyExchangeSession? {
         for (i in 0 until mCurrentActiveSessions.size()) {
             val key = mCurrentActiveSessions.keyAt(i)
             val session = mCurrentActiveSessions[key]
@@ -168,8 +168,8 @@ class KeyExchangeService : Service() {
 
     @SuppressLint("CheckResult")
     private fun initiateKeyExchange(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         @KeyLocationPolicy keyLocationPolicy: Int
     ) {
         val existsSession = findSessionFor(accountId, peerId)
@@ -229,8 +229,8 @@ class KeyExchangeService : Service() {
     }
 
     private fun notifyOpponentAboutSessionFail(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         sessionId: Long,
         errorCode: Int
     ) {
@@ -242,8 +242,8 @@ class KeyExchangeService : Service() {
     }
 
     private fun displayUserConfirmNotification(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         messageId: Int,
         message: ExchangeMessage
     ) {
@@ -270,7 +270,7 @@ class KeyExchangeService : Service() {
         return mCurrentActiveNotifications.get(sessionId, null)
     }
 
-    private fun notifyAboutKeyExchangeAsync(accountId: Int, peerId: Int, sessionId: Long) {
+    private fun notifyAboutKeyExchangeAsync(accountId: Long, peerId: Long, sessionId: Long) {
         mCompositeSubscription.add(OwnerInfo.getRx(this, accountId, Peer.toUserId(peerId))
             .fromIOToMain()
             .subscribe({ userInfo ->
@@ -301,8 +301,8 @@ class KeyExchangeService : Service() {
 
     @SuppressLint("MissingPermission")
     private fun displayUserConfirmNotificationImpl(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         messageId: Int,
         message: ExchangeMessage,
         ownerInfo: OwnerInfo
@@ -358,7 +358,7 @@ class KeyExchangeService : Service() {
     }
 
     private fun processKeyExchangeMessage(
-        accountId: Int, peerId: Int, messageId: Int,
+        accountId: Long, peerId: Long, messageId: Int,
         message: ExchangeMessage, needConfirmIfSessionNotStarted: Boolean
     ) {
         var session = mCurrentActiveSessions[message.sessionId]
@@ -437,8 +437,8 @@ class KeyExchangeService : Service() {
     }
 
     private fun processNoIniciatorFinished(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         session: KeyExchangeSession
     ) {
         storeKeyToDatabase(accountId, peerId, session)
@@ -508,7 +508,7 @@ class KeyExchangeService : Service() {
     }
 
     @SuppressLint("CheckResult")
-    private fun storeKeyToDatabase(accountId: Int, peerId: Int, session: KeyExchangeSession) {
+    private fun storeKeyToDatabase(accountId: Long, peerId: Long, session: KeyExchangeSession) {
         val pair = AesKeyPair()
             .setVersion(currentVersion)
             .setAccountId(accountId)
@@ -527,8 +527,8 @@ class KeyExchangeService : Service() {
     }
 
     private fun processIniciatorState2(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         session: KeyExchangeSession,
         message: ExchangeMessage
     ) {
@@ -544,8 +544,8 @@ class KeyExchangeService : Service() {
     }
 
     private fun processIniciatorState1(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         session: KeyExchangeSession,
         message: ExchangeMessage
     ) {
@@ -586,8 +586,8 @@ class KeyExchangeService : Service() {
 
     //NO_INITIATOR_STATE_1
     private fun processNoIniciatorState1(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         session: KeyExchangeSession,
         message: ExchangeMessage
     ) {
@@ -620,8 +620,8 @@ class KeyExchangeService : Service() {
 
     //NO_INITIATOR_EMPTY
     private fun processNoIniciatorEmptyState(
-        accountId: Int,
-        peerId: Int,
+        accountId: Long,
+        peerId: Long,
         session: KeyExchangeSession,
         message: ExchangeMessage
     ) {
@@ -661,7 +661,7 @@ class KeyExchangeService : Service() {
     }
 
     @SuppressLint("CheckResult")
-    private fun sendMessage(accountId: Int, peerId: Int, message: ExchangeMessage) {
+    private fun sendMessage(accountId: Long, peerId: Long, message: ExchangeMessage) {
         d(TAG, "sendMessage, message: $message")
         sendMessageImpl(accountId, peerId, message)
             .fromIOToMain()
@@ -735,7 +735,7 @@ class KeyExchangeService : Service() {
         private const val NOTIFICATION_KEY_EXCHANGE = 20
         private const val NOTIFICATION_KEY_EXCHANGE_REQUEST = 10
         private const val WHAT_STOP_SERVICE = 12
-        fun intercept(context: Context, accountId: Int, dto: VKApiMessage?): Boolean {
+        fun intercept(context: Context, accountId: Long, dto: VKApiMessage?): Boolean {
             return if (dto == null) {
                 false
             } else intercept(
@@ -750,8 +750,8 @@ class KeyExchangeService : Service() {
 
         fun intercept(
             context: Context,
-            accountId: Int,
-            peerId: Int,
+            accountId: Long,
+            peerId: Long,
             messageId: Int,
             messageBody: String?,
             out: Boolean
@@ -788,8 +788,8 @@ class KeyExchangeService : Service() {
         }
 
         internal fun sendMessageImpl(
-            accountId: Int,
-            peerId: Int,
+            accountId: Long,
+            peerId: Long,
             message: ExchangeMessage
         ): Single<Int> {
             return Single.just(Any())
@@ -815,8 +815,8 @@ class KeyExchangeService : Service() {
         }
 
         fun iniciateKeyExchangeSession(
-            context: Context, accountId: Int,
-            peerId: Int, @KeyLocationPolicy policy: Int
+            context: Context, accountId: Long,
+            peerId: Long, @KeyLocationPolicy policy: Int
         ) {
             val intent = Intent(context, KeyExchangeService::class.java)
             intent.action = ACTION_INICIATE_KEY_EXCHANGE
@@ -828,8 +828,8 @@ class KeyExchangeService : Service() {
 
         private fun processMessage(
             context: Context,
-            accountId: Int,
-            peerId: Int,
+            accountId: Long,
+            peerId: Long,
             messageId: Int,
             message: ExchangeMessage
         ) {
@@ -845,8 +845,8 @@ class KeyExchangeService : Service() {
         fun createIntentForApply(
             context: Context,
             message: ExchangeMessage,
-            accountId: Int,
-            peerId: Int,
+            accountId: Long,
+            peerId: Long,
             messageId: Int
         ): Intent {
             val apply = Intent(context, KeyExchangeService::class.java)
@@ -861,8 +861,8 @@ class KeyExchangeService : Service() {
         fun createIntentForDecline(
             context: Context,
             message: ExchangeMessage,
-            accountId: Int,
-            peerId: Int,
+            accountId: Long,
+            peerId: Long,
             messageId: Int
         ): Intent {
             val intent = Intent(context, KeyExchangeService::class.java)

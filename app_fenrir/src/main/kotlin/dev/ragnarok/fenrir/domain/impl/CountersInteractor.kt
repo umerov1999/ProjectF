@@ -6,7 +6,7 @@ import dev.ragnarok.fenrir.model.SectionCounters
 import io.reactivex.rxjava3.core.Single
 
 class CountersInteractor(private val networker: INetworker) : ICountersInteractor {
-    override fun getApiCounters(accountId: Int): Single<SectionCounters> {
+    override fun getApiCounters(accountId: Long): Single<SectionCounters> {
         return networker.vkDefault(accountId)
             .account()
             .getCounters("friends,messages,photos,videos,gifts,events,groups,notifications")

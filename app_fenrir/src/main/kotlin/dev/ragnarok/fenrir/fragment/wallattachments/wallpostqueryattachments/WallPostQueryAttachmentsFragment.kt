@@ -112,8 +112,8 @@ class WallPostQueryAttachmentsFragment :
         return object : IPresenterFactory<WallPostQueryAttachmentsPresenter> {
             override fun create(): WallPostQueryAttachmentsPresenter {
                 return WallPostQueryAttachmentsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     saveInstanceState
                 )
             }
@@ -152,7 +152,7 @@ class WallPostQueryAttachmentsFragment :
         }
     }
 
-    override fun onAvatarClick(ownerId: Int) {
+    override fun onAvatarClick(ownerId: Long) {
         onOwnerClick(ownerId)
     }
 
@@ -198,15 +198,15 @@ class WallPostQueryAttachmentsFragment :
         )
     }
 
-    override fun openPostEditor(accountId: Int, post: Post) {
+    override fun openPostEditor(accountId: Long, post: Post) {
         goToPostEditor(requireActivity(), accountId, post)
     }
 
     companion object {
-        fun newInstance(accountId: Int, ownerId: Int): WallPostQueryAttachmentsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): WallPostQueryAttachmentsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = WallPostQueryAttachmentsFragment()
             fragment.arguments = args
             return fragment

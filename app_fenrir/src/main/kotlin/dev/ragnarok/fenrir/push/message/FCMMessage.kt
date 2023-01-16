@@ -25,7 +25,7 @@ class FCMMessage {
     //public String group_id;
     var message_id = 0
     var peerId = 0
-    fun notify(accountId: Int) {
+    fun notify(accountId: Long) {
         try {
             realtimeMessages.process(accountId, message_id, true)
         } catch (e: QueueContainsException) {

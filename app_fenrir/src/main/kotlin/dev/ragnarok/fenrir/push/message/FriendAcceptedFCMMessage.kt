@@ -30,10 +30,10 @@ class FriendAcceptedFCMMessage {
     // type=friend_accepted, sandbox=0, collapse_key=friend_accepted, last_name=Боталов}]
     //private String first_name;
     //private String last_name;
-    private var uid = 0
+    private var uid = 0L
 
     @SuppressLint("CheckResult")
-    fun notify(context: Context, accountId: Int) {
+    fun notify(context: Context, accountId: Long) {
         if (!get()
                 .notifications()
                 .isFriendRequestAcceptationNotifEnabled
@@ -74,7 +74,7 @@ class FriendAcceptedFCMMessage {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         val contentIntent = PendingIntent.getActivity(
             context,
-            uid,
+            uid.hashCode(),
             intent,
             makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
@@ -111,7 +111,7 @@ class FriendAcceptedFCMMessage {
             val message = FriendAcceptedFCMMessage()
             //message.first_name = bundle.getString("first_name");
             //message.last_name = bundle.getString("last_name");
-            message.uid = remote.data["from_id"]?.toInt() ?: return null
+            message.uid = remote.data["from_id"]?.toLong() ?: return null
             //message.from = FriendFCMMessage.optLong(bundle, "from");
             //message.type = bundle.getString("type");
             return message

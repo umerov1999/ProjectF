@@ -24,7 +24,7 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils
 import io.reactivex.rxjava3.core.Single
 
 class MessagesSearchPresenter(
-    accountId: Int,
+    accountId: Long,
     criteria: MessageSearchCriteria?,
     savedInstanceState: Bundle?
 ) : AbsSearchPresenter<IMessagesSearchView, MessageSearchCriteria, Message, IntNextFrom>(
@@ -75,7 +75,7 @@ class MessagesSearchPresenter(
     }
 
     override fun doSearch(
-        accountId: Int,
+        accountId: Long,
         criteria: MessageSearchCriteria,
         startFrom: IntNextFrom
     ): Single<Pair<List<Message>, IntNextFrom>> {
@@ -120,7 +120,7 @@ class MessagesSearchPresenter(
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Int,
+        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         val player = mVoicePlayer ?: return

@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import java.util.*
 
-class ChatMembersPresenter(accountId: Int, private val chatId: Int, savedInstanceState: Bundle?) :
+class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IChatMembersView>(accountId, savedInstanceState) {
     private val messagesInteractor: IMessagesRepository
     private val users: MutableList<AppChatUser>
@@ -104,7 +104,7 @@ class ChatMembersPresenter(accountId: Int, private val chatId: Int, savedInstanc
         original.addAll(data)
         isOwner = false
         for (i in original) {
-            if (i.getObjectId() == accountId) {
+            if (i.getOwnerObjectId() == accountId) {
                 isOwner = i.isOwner()
                 break
             }
@@ -134,7 +134,7 @@ class ChatMembersPresenter(accountId: Int, private val chatId: Int, savedInstanc
             })
     }
 
-    private fun onUserRemoved(id: Int) {
+    private fun onUserRemoved(id: Long) {
         var index = findIndexById(original, id)
         if (index != -1) {
             original.removeAt(index)
@@ -191,7 +191,7 @@ class ChatMembersPresenter(accountId: Int, private val chatId: Int, savedInstanc
         )
     }
 
-    fun fireAdminToggleClick(isAdmin: Boolean, ownerId: Int) {
+    fun fireAdminToggleClick(isAdmin: Boolean, ownerId: Long) {
         appendDisposable(messagesInteractor.setMemberRole(accountId, chatId, ownerId, isAdmin)
             .fromIOToMain()
             .subscribe({ fireRefresh() }) { t -> onChatUsersAddError(t) })

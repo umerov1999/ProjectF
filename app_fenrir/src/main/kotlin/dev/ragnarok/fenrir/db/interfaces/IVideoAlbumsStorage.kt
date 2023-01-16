@@ -8,8 +8,8 @@ import io.reactivex.rxjava3.core.Single
 interface IVideoAlbumsStorage : IStorage {
     fun findByCriteria(criteria: VideoAlbumCriteria): Single<List<VideoAlbumDboEntity>>
     fun insertData(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         data: List<VideoAlbumDboEntity>,
         invalidateBefore: Boolean
     ): Completable

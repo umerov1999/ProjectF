@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.model.User
 interface ICommunityManagerEditView : IMvpView, IErrorView, IProgressView,
     IToastView {
     fun displayUserInfo(user: User)
-    fun showUserProfile(accountId: Int, user: User)
+    fun showUserProfile(accountId: Long, user: User)
     fun checkModerator()
     fun checkEditor()
     fun checkAdmin()

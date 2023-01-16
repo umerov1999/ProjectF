@@ -10,6 +10,6 @@ interface IOwnerArticlesView : IMvpView, IErrorView {
     fun notifyDataSetChanged()
     fun notifyDataAdded(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
-    fun goToArticle(accountId: Int, article: Article)
-    fun goToPhoto(accountId: Int, photo: Photo)
+    fun goToArticle(accountId: Long, article: Article)
+    fun goToPhoto(accountId: Long, photo: Photo)
 }

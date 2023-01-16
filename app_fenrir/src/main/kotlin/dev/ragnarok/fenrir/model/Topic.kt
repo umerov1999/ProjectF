@@ -9,16 +9,16 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Topic : AbsModel {
     val id: Int
-    val ownerId: Int
+    val ownerId: Long
     var title: String? = null
         private set
     var creationTime: Long = 0
         private set
-    var createdByOwnerId = 0
+    var createdByOwnerId = 0L
         private set
     var lastUpdateTime: Long = 0
         private set
-    var updatedByOwnerId = 0
+    var updatedByOwnerId = 0L
         private set
     var isClosed = false
         private set
@@ -35,19 +35,19 @@ class Topic : AbsModel {
     var updater: Owner? = null
         private set
 
-    constructor(id: Int, ownerId: Int) {
+    constructor(id: Int, ownerId: Long) {
         this.id = id
         this.ownerId = ownerId
     }
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         title = parcel.readString()
         creationTime = parcel.readLong()
-        createdByOwnerId = parcel.readInt()
+        createdByOwnerId = parcel.readLong()
         lastUpdateTime = parcel.readLong()
-        updatedByOwnerId = parcel.readInt()
+        updatedByOwnerId = parcel.readLong()
         isClosed = parcel.getBoolean()
         isFixed = parcel.getBoolean()
         commentsCount = parcel.readInt()
@@ -72,7 +72,7 @@ class Topic : AbsModel {
         return this
     }
 
-    fun setCreatedByOwnerId(createdByOwnerId: Int): Topic {
+    fun setCreatedByOwnerId(createdByOwnerId: Long): Topic {
         this.createdByOwnerId = createdByOwnerId
         return this
     }
@@ -82,7 +82,7 @@ class Topic : AbsModel {
         return this
     }
 
-    fun setUpdatedByOwnerId(updatedByOwnerId: Int): Topic {
+    fun setUpdatedByOwnerId(updatedByOwnerId: Long): Topic {
         this.updatedByOwnerId = updatedByOwnerId
         return this
     }
@@ -124,12 +124,12 @@ class Topic : AbsModel {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeString(title)
         parcel.writeLong(creationTime)
-        parcel.writeInt(createdByOwnerId)
+        parcel.writeLong(createdByOwnerId)
         parcel.writeLong(lastUpdateTime)
-        parcel.writeInt(updatedByOwnerId)
+        parcel.writeLong(updatedByOwnerId)
         parcel.putBoolean(isClosed)
         parcel.putBoolean(isFixed)
         parcel.writeInt(commentsCount)

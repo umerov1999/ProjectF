@@ -19,7 +19,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
-class FriendsByPhonesPresenter(accountId: Int, context: Context, savedInstanceState: Bundle?) :
+class FriendsByPhonesPresenter(accountId: Long, context: Context, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFriendsByPhonesView>(accountId, savedInstanceState) {
     private val data: MutableList<ContactConversation>
     private val dataSearch: MutableList<ContactConversation>

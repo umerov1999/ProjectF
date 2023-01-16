@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 class Story : AbsModel, ParcelNative.ParcelableNative {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var date: Long = 0
         private set
@@ -35,7 +35,7 @@ class Story : AbsModel, ParcelNative.ParcelableNative {
     constructor()
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         date = parcel.readLong()
         expires = parcel.readLong()
         isIs_expired = parcel.getBoolean()
@@ -48,7 +48,7 @@ class Story : AbsModel, ParcelNative.ParcelableNative {
 
     internal constructor(parcel: ParcelNative) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         date = parcel.readLong()
         expires = parcel.readLong()
         isIs_expired = parcel.readBoolean()
@@ -61,7 +61,7 @@ class Story : AbsModel, ParcelNative.ParcelableNative {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeLong(date)
         parcel.writeLong(expires)
         parcel.putBoolean(isIs_expired)
@@ -74,7 +74,7 @@ class Story : AbsModel, ParcelNative.ParcelableNative {
 
     override fun writeToParcelNative(dest: ParcelNative) {
         dest.writeInt(id)
-        dest.writeInt(ownerId)
+        dest.writeLong(ownerId)
         dest.writeLong(date)
         dest.writeLong(expires)
         dest.writeBoolean(isIs_expired)
@@ -109,7 +109,7 @@ class Story : AbsModel, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): Story {
+    fun setOwnerId(ownerId: Long): Story {
         this.ownerId = ownerId
         return this
     }
@@ -155,7 +155,7 @@ class Story : AbsModel, ParcelNative.ParcelableNative {
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + ownerId
+        result = 31 * result + ownerId.hashCode()
         return result
     }
 

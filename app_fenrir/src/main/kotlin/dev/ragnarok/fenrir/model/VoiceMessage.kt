@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.putBoolean
 
 class VoiceMessage : AbsModel {
     private val id: Int
-    private val ownerId: Int
+    private val ownerId: Long
     private var duration = 0
     private var waveform: ByteArray? = null
     private var linkOgg: String? = null
@@ -17,14 +17,14 @@ class VoiceMessage : AbsModel {
     private var transcript: String? = null
     private var was_listened = false
 
-    constructor(id: Int, ownerId: Int) {
+    constructor(id: Int, ownerId: Long) {
         this.id = id
         this.ownerId = ownerId
     }
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         duration = parcel.readInt()
         waveform = parcel.createByteArray()
         linkOgg = parcel.readString()
@@ -61,7 +61,7 @@ class VoiceMessage : AbsModel {
         return id
     }
 
-    fun getOwnerId(): Int {
+    fun getOwnerId(): Long {
         return ownerId
     }
 
@@ -125,7 +125,7 @@ class VoiceMessage : AbsModel {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeInt(duration)
         parcel.writeByteArray(waveform)
         parcel.writeString(linkOgg)

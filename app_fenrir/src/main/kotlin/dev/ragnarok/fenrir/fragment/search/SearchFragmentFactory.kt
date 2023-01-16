@@ -20,7 +20,7 @@ object SearchFragmentFactory {
 
     fun create(
         @SearchContentType type: Int,
-        accountId: Int,
+        accountId: Long,
         criteria: BaseSearchCriteria?
     ): Fragment {
         return when (type) {

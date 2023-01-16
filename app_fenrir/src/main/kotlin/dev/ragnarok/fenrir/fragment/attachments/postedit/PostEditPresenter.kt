@@ -25,7 +25,7 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.intValueIn
 
 class PostEditPresenter(
-    accountId: Int,
+    accountId: Long,
     post: Post,
     private val attrs: WallEditorAttrs,
     savedInstanceState: Bundle?

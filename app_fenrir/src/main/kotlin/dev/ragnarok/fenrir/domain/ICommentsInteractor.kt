@@ -6,9 +6,9 @@ import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 
 interface ICommentsInteractor {
-    fun getAllCachedData(accountId: Int, commented: Commented): Single<List<Comment>>
+    fun getAllCachedData(accountId: Long, commented: Commented): Single<List<Comment>>
     fun getCommentsPortion(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         offset: Int,
         count: Int,
@@ -19,48 +19,48 @@ interface ICommentsInteractor {
     ): Single<CommentsBundle>
 
     fun getCommentsNoCache(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         postId: Int,
         offset: Int
     ): Single<List<Comment>>
 
-    fun restoreDraftComment(accountId: Int, commented: Commented): Maybe<DraftComment>?
+    fun restoreDraftComment(accountId: Long, commented: Commented): Maybe<DraftComment>?
     fun safeDraftComment(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         body: String?,
         replyToCommentId: Int,
-        replyToUserId: Int
+        replyToUserId: Long
     ): Single<Int>
 
-    fun like(accountId: Int, commented: Commented, commentId: Int, add: Boolean): Completable
-    fun checkAndAddLike(accountId: Int, commented: Commented, commentId: Int): Single<Int>
-    fun isLiked(accountId: Int, commented: Commented, commentId: Int): Single<Boolean>
+    fun like(accountId: Long, commented: Commented, commentId: Int, add: Boolean): Completable
+    fun checkAndAddLike(accountId: Long, commented: Commented, commentId: Int): Single<Int>
+    fun isLiked(accountId: Long, commented: Commented, commentId: Int): Single<Boolean>
     fun deleteRestore(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         commentId: Int,
         delete: Boolean
     ): Completable
 
     fun send(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         commentThread: Int?,
         intent: CommentIntent
     ): Single<Comment>
 
     fun getAllCommentsRange(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         startFromCommentId: Int,
         continueToCommentId: Int
     ): Single<List<Comment>>
 
-    fun getAvailableAuthors(accountId: Int): Single<List<Owner>>
+    fun getAvailableAuthors(accountId: Long): Single<List<Owner>>
     fun edit(
-        accountId: Int,
+        accountId: Long,
         commented: Commented,
         commentId: Int,
         body: String?,
@@ -68,5 +68,5 @@ interface ICommentsInteractor {
         attachments: List<AbsModel>?
     ): Single<Comment>
 
-    fun reportComment(accountId: Int, owner_id: Int, post_id: Int, reason: Int): Single<Int>
+    fun reportComment(accountId: Long, owner_id: Long, post_id: Int, reason: Int): Single<Int>
 }

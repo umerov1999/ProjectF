@@ -8,17 +8,17 @@ object AttachmentTokens {
     class AttachmentToken : IAttachmentToken {
         val type: String
         val id: Int
-        val ownerId: Int
+        val ownerId: Long
         val accessKey: String?
 
-        constructor(type: String, id: Int, ownerId: Int) {
+        constructor(type: String, id: Int, ownerId: Long) {
             this.type = type
             this.id = id
             this.ownerId = ownerId
             accessKey = null
         }
 
-        constructor(type: String, id: Int, ownerId: Int, accessKey: String?) {
+        constructor(type: String, id: Int, ownerId: Long, accessKey: String?) {
             this.type = type
             this.id = id
             this.ownerId = ownerId

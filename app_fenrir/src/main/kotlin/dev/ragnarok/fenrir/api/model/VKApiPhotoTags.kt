@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class VKApiPhotoTags {
     var id = 0
-    var user_id = 0
+    var user_id = 0L
     var placer_id = 0
     var tagged_name: String? = null
     var date: Long = 0

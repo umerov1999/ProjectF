@@ -93,7 +93,7 @@ class ProductAlbumsFragment : BaseMvpFragment<ProductAlbumsPresenter, IProductAl
         mSwipeRefreshLayout?.post { mSwipeRefreshLayout?.isRefreshing = refreshing }
     }
 
-    override fun onMarketAlbumOpen(accountId: Int, market_album: MarketAlbum) {
+    override fun onMarketAlbumOpen(accountId: Long, market_album: MarketAlbum) {
         getMarketPlace(
             accountId,
             market_album.getOwner_id(),
@@ -108,10 +108,10 @@ class ProductAlbumsFragment : BaseMvpFragment<ProductAlbumsPresenter, IProductAl
         return object : IPresenterFactory<ProductAlbumsPresenter> {
             override fun create(): ProductAlbumsPresenter {
                 return ProductAlbumsPresenter(
-                    requireArguments().getInt(
+                    requireArguments().getLong(
                         Extra.ACCOUNT_ID
                     ),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     requireActivity(),
                     saveInstanceState
                 )
@@ -141,10 +141,10 @@ class ProductAlbumsFragment : BaseMvpFragment<ProductAlbumsPresenter, IProductAl
     }
 
     companion object {
-        fun newInstance(accountId: Int, ownerId: Int): ProductAlbumsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): ProductAlbumsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = ProductAlbumsFragment()
             fragment.arguments = args
             return fragment

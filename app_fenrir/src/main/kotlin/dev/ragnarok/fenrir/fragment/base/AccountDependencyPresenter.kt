@@ -7,15 +7,15 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toMainThread
 
 abstract class AccountDependencyPresenter<V>(
-    accountId: Int,
+    accountId: Long,
     savedInstanceState: Bundle?,
     private var mSupportAccountHotSwap: Boolean = false
 ) :
     RxSupportPresenter<V>(savedInstanceState) where V : IMvpView {
-    var accountId = 0
+    var accountId = 0L
         private set
 
-    private fun onAccountChange(newAccountId: Int) {
+    private fun onAccountChange(newAccountId: Long) {
         val oldAccountId = accountId
         if (oldAccountId == newAccountId) {
             return
@@ -28,16 +28,16 @@ abstract class AccountDependencyPresenter<V>(
     }
 
     @CallSuper
-    protected open fun afterAccountChange(oldAccountId: Int, newAccountId: Int) {
+    protected open fun afterAccountChange(oldAccountId: Long, newAccountId: Long) {
     }
 
     @CallSuper
-    protected open fun beforeAccountChange(oldAccountId: Int, newAccountId: Int) {
+    protected open fun beforeAccountChange(oldAccountId: Long, newAccountId: Long) {
     }
 
     override fun saveState(outState: Bundle) {
         super.saveState(outState)
-        outState.putInt(SAVE_ACCOUNT_ID, accountId)
+        outState.putLong(SAVE_ACCOUNT_ID, accountId)
     }
 
     fun toggleSupportAccountHotSwap() {
@@ -58,7 +58,7 @@ abstract class AccountDependencyPresenter<V>(
     }
 
     init {
-        this.accountId = savedInstanceState?.getInt(SAVE_ACCOUNT_ID) ?: accountId
+        this.accountId = savedInstanceState?.getLong(SAVE_ACCOUNT_ID) ?: accountId
         if (mSupportAccountHotSwap) {
             observeChangesAccount()
         }

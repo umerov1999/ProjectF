@@ -25,10 +25,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 class BirthdayFCMMessage {
-    private var user_id = 0
+    private var user_id = 0L
     private var body: String? = null
     private var title: String? = null
-    fun notify(context: Context, account_id: Int) {
+    fun notify(context: Context, account_id: Long) {
         if (!get()
                 .notifications()
                 .isBirthdayNotifyEnabled
@@ -54,7 +54,7 @@ class BirthdayFCMMessage {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         val contentIntent = PendingIntent.getActivity(
             context,
-            user_id,
+            user_id.hashCode(),
             intent,
             makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
@@ -73,7 +73,7 @@ class BirthdayFCMMessage {
     @Serializable
     private class BirthdayContext {
         @SerialName("user_id")
-        var user_id = 0
+        var user_id = 0L
     }
 
     companion object {
@@ -83,9 +83,9 @@ class BirthdayFCMMessage {
             val context: BirthdayContext =
                 kJson.decodeFromString(BirthdayContext.serializer(), data["context"] ?: return null)
             message.user_id = context.user_id
-            if (message.user_id == 0) {
-                message.user_id = data["from_id"]?.toInt().orZero()
-                if (message.user_id == 0) {
+            if (message.user_id == 0L) {
+                message.user_id = data["from_id"]?.toLong().orZero()
+                if (message.user_id == 0L) {
                     return null
                 }
             }

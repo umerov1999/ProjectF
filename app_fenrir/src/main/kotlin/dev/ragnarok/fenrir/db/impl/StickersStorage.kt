@@ -24,7 +24,7 @@ import kotlinx.serialization.builtins.serializer
 import java.util.*
 
 internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersStorage {
-    override fun storeStickerSets(accountId: Int, sets: List<StickerSetEntity>): Completable {
+    override fun storeStickerSets(accountId: Long, sets: List<StickerSetEntity>): Completable {
         return Completable.create { e: CompletableEmitter ->
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
@@ -46,7 +46,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         }
     }
 
-    override fun clearAccount(accountId: Int): Completable {
+    override fun clearAccount(accountId: Long): Completable {
         Settings.get().other().del_last_stickers_sync(accountId)
         return Completable.create { e: CompletableEmitter ->
             val db = TempDataHelper.helper.writableDatabase
@@ -70,7 +70,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         }
     }
 
-    override fun storeKeyWords(accountId: Int, sets: List<StickersKeywordsEntity>): Completable {
+    override fun storeKeyWords(accountId: Long, sets: List<StickersKeywordsEntity>): Completable {
         return Completable.create { e: CompletableEmitter ->
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
@@ -100,7 +100,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         }
     }
 
-    override fun getPurchasedAndActive(accountId: Int): Single<List<StickerSetEntity>> {
+    override fun getPurchasedAndActive(accountId: Long): Single<List<StickerSetEntity>> {
         return Single.create { e: SingleEmitter<List<StickerSetEntity>> ->
             val start = System.currentTimeMillis()
             val where =
@@ -129,7 +129,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         }
     }
 
-    override fun getKeywordsStickers(accountId: Int, s: String?): Single<List<StickerDboEntity>> {
+    override fun getKeywordsStickers(accountId: Long, s: String?): Single<List<StickerDboEntity>> {
         return Single.create { e: SingleEmitter<List<StickerDboEntity>> ->
             val where = "${StickersKeywordsColumns.ACCOUNT_ID} = ?"
             val args = arrayOf(accountId.toString())
@@ -185,7 +185,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                 lhs.position.compareTo(rhs.position)
             }
 
-        internal fun createCv(accountId: Int, entity: StickerSetEntity, pos: Int): ContentValues {
+        internal fun createCv(accountId: Long, entity: StickerSetEntity, pos: Int): ContentValues {
             val cv = ContentValues()
             cv.put(BaseColumns._ID, entity.id)
             cv.put(StickerSetColumns.ACCOUNT_ID, accountId)
@@ -218,7 +218,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         }
 
         internal fun createCvStickersKeywords(
-            accountId: Int,
+            accountId: Long,
             entity: StickersKeywordsEntity,
             id: Int
         ): ContentValues {

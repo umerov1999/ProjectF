@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("users")
 class UsersEntity : FeedbackEntity {
-    var owners: IntArray? = null
+    var owners: LongArray? = null
         private set
 
     @Suppress("UNUSED")
@@ -18,7 +18,7 @@ class UsersEntity : FeedbackEntity {
         this.type = type
     }
 
-    fun setOwners(ids: IntArray?): UsersEntity {
+    fun setOwners(ids: LongArray?): UsersEntity {
         owners = ids
         return this
     }

@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable(with = FeedbackUserArrayDtoAdapter::class)
 class UserArray {
     var count = 0
-    var ids: IntArray? = null
+    var ids: LongArray? = null
 }

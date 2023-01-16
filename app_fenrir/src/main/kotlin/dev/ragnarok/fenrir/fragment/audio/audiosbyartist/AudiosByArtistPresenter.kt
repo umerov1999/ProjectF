@@ -19,7 +19,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.functions.Consumer
 
 class AudiosByArtistPresenter(
-    accountId: Int,
+    accountId: Long,
     private val artist: String,
     savedInstanceState: Bundle?
 ) :

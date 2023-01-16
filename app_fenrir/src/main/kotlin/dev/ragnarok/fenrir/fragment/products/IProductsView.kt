@@ -9,5 +9,5 @@ interface IProductsView : IMvpView, IErrorView {
     fun notifyDataSetChanged()
     fun notifyDataAdded(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
-    fun onOpenMarket(accountId: Int, market: Market)
+    fun onOpenMarket(accountId: Long, market: Market)
 }

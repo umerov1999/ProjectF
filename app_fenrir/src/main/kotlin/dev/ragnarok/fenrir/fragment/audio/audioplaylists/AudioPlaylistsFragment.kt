@@ -195,8 +195,8 @@ class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPl
         return object : IPresenterFactory<AudioPlaylistsPresenter> {
             override fun create(): AudioPlaylistsPresenter {
                 return AudioPlaylistsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     saveInstanceState
                 )
             }
@@ -256,7 +256,7 @@ class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPl
         )
     }
 
-    override fun doAddAudios(accountId: Int) {
+    override fun doAddAudios(accountId: Long) {
         requestAudioSelect.launch(createIntent(requireActivity(), accountId))
     }
 
@@ -282,19 +282,19 @@ class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPl
     companion object {
         const val EXTRA_IN_TABS_CONTAINER = "in_tabs_container"
         const val ACTION_SELECT = "AudioPlaylistsFragment.ACTION_SELECT"
-        fun newInstance(accountId: Int, ownerId: Int): AudioPlaylistsFragment {
+        fun newInstance(accountId: Long, ownerId: Long): AudioPlaylistsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             val fragment = AudioPlaylistsFragment()
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstanceSelect(accountId: Int): AudioPlaylistsFragment {
+        fun newInstanceSelect(accountId: Long): AudioPlaylistsFragment {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, accountId)
             args.putBoolean(ACTION_SELECT, true)
             val fragment = AudioPlaylistsFragment()
             fragment.arguments = args

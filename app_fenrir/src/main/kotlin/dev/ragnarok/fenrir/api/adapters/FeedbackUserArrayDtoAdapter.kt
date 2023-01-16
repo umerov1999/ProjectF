@@ -14,15 +14,15 @@ class FeedbackUserArrayDtoAdapter : AbsAdapter<UserArray>("UserArray") {
         dto.count = optInt(root, "count")
         if (hasArray(root, "items")) {
             val array = root.getAsJsonArray("items")
-            dto.ids = IntArray(array?.size.orZero())
+            dto.ids = LongArray(array?.size.orZero())
             for (i in 0 until array?.size.orZero()) {
                 if (!checkObject(array?.get(i))) {
                     continue
                 }
-                dto.ids?.set(i, optInt(array?.get(i)?.asJsonObject, "from_id", 0))
+                dto.ids?.set(i, optLong(array?.get(i)?.asJsonObject, "from_id", 0))
             }
         } else {
-            dto.ids = IntArray(0)
+            dto.ids = LongArray(0)
         }
         return dto
     }

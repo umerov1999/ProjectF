@@ -21,7 +21,7 @@ import dev.ragnarok.fenrir.util.Utils.needReloadNews
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 
-class FeedPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     PlaceSupportPresenter<IFeedView>(accountId, savedInstanceState) {
     private val feedInteractor: IFeedInteractor
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
@@ -344,7 +344,7 @@ class FeedPresenter(accountId: Int, savedInstanceState: Bundle?) :
         if (owners.isNullOrEmpty()) {
             return
         }
-        val iIds: MutableList<Int> = ArrayList(owners.size)
+        val iIds: MutableList<Long> = ArrayList(owners.size)
         for (i in owners) {
             iIds.add(i.ownerId)
         }
@@ -413,7 +413,7 @@ class FeedPresenter(accountId: Int, savedInstanceState: Bundle?) :
         )
     }
 
-    fun fireAddBookmark(ownerId: Int, postId: Int) {
+    fun fireAddBookmark(ownerId: Long, postId: Int) {
         appendDisposable(faveInteractor.addPost(accountId, ownerId, postId, null)
             .fromIOToMain()
             .subscribe({ onPostAddedToBookmarks() }) { t ->
@@ -485,7 +485,7 @@ class FeedPresenter(accountId: Int, savedInstanceState: Bundle?) :
         }
     }
 
-    private fun indexOf(sourceId: Int, postId: Int): Int {
+    private fun indexOf(sourceId: Long, postId: Int): Int {
         for (i in mFeed.indices) {
             if (mFeed[i].sourceId == sourceId && mFeed[i].postId == postId) {
                 return i

@@ -17,13 +17,13 @@ class CommentDtoAdapter : AbsAdapter<VKApiComment>("VKApiComment") {
         val dto = VKApiComment()
         val root = json.asJsonObject
         dto.id = optInt(root, "id")
-        dto.from_id = optInt(root, "from_id")
-        if (dto.from_id == 0) {
-            dto.from_id = optInt(root, "owner_id")
+        dto.from_id = optLong(root, "from_id")
+        if (dto.from_id == 0L) {
+            dto.from_id = optLong(root, "owner_id")
         }
         dto.date = optLong(root, "date")
         dto.text = optString(root, "text")
-        dto.reply_to_user = optInt(root, "reply_to_user")
+        dto.reply_to_user = optLong(root, "reply_to_user")
         dto.reply_to_comment = optInt(root, "reply_to_comment")
         if (hasArray(root, "attachments")) {
             dto.attachments = root["attachments"]?.let {

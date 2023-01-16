@@ -7,10 +7,10 @@ import dev.ragnarok.fenrir.api.model.VKApiWikiPage
 import dev.ragnarok.fenrir.api.services.IPagesService
 import io.reactivex.rxjava3.core.Single
 
-internal class PagesApi(accountId: Int, provider: IServiceProvider) :
+internal class PagesApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IPagesApi {
     override fun get(
-        ownerId: Int,
+        ownerId: Long,
         pageId: Int,
         global: Boolean?,
         sitePreview: Boolean?,

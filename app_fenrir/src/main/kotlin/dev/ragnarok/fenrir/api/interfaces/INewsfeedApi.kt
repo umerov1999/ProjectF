@@ -21,7 +21,7 @@ interface INewsfeedApi {
     ): Single<NewsfeedSearchResponse>
 
     @CheckResult
-    fun saveList(title: String?, listIds: Collection<Int>?): Single<Int>
+    fun saveList(title: String?, listIds: Collection<Long>?): Single<Int>
 
     @CheckResult
     fun deleteList(list_id: Int?): Single<Int>
@@ -35,7 +35,7 @@ interface INewsfeedApi {
 
     @CheckResult
     fun getMentions(
-        owner_id: Int?,
+        owner_id: Long?,
         count: Int?,
         offset: Int?,
         startTime: Long?,
@@ -70,13 +70,13 @@ interface INewsfeedApi {
     ): Single<NewsfeedResponse>
 
     @CheckResult
-    fun addBan(listIds: Collection<Int>): Single<Int>
+    fun addBan(listIds: Collection<Long>): Single<Int>
 
     @CheckResult
-    fun ignoreItem(type: String?, owner_id: Int?, item_id: Int?): Single<Int>
+    fun ignoreItem(type: String?, owner_id: Long?, item_id: Int?): Single<Int>
 
     @CheckResult
-    fun deleteBan(listIds: Collection<Int>): Single<Int>
+    fun deleteBan(listIds: Collection<Long>): Single<Int>
 
     @CheckResult
     fun getBanned(): Single<NewsfeedBanResponse>

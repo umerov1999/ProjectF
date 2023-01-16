@@ -5,5 +5,5 @@ class MessageFlagsSetUpdate :
     //[[2,1030891,128,216143660]]
     var messageId = 0
     var mask = 0
-    var peerId = 0
+    var peerId = 0L
 }

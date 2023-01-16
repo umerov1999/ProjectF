@@ -6,9 +6,9 @@ import dev.ragnarok.fenrir.api.interfaces.IStatusApi
 import dev.ragnarok.fenrir.api.services.IStatusService
 import io.reactivex.rxjava3.core.Single
 
-internal class StatusApi(accountId: Int, provider: IServiceProvider) :
+internal class StatusApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IStatusApi {
-    override fun set(text: String?, groupId: Int?): Single<Boolean> {
+    override fun set(text: String?, groupId: Long?): Single<Boolean> {
         return provideService(IStatusService(), TokenType.USER)
             .flatMap { service ->
                 service.set(text, groupId)

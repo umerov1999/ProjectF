@@ -20,7 +20,7 @@ import io.reactivex.rxjava3.core.SingleEmitter
 
 internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFeedbackStorage {
     override fun insert(
-        accountId: Int,
+        accountId: Long,
         dbos: List<FeedbackEntity>,
         owners: OwnerEntities?,
         clearBefore: Boolean
@@ -109,7 +109,7 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
 
 
     override fun insertOfficial(
-        accountId: Int,
+        accountId: Long,
         dbos: List<FeedbackVKOfficial>,
         clearBefore: Boolean
     ): Single<IntArray> {

@@ -11,13 +11,13 @@ class VKApiWallReply : VKApiAttachment {
     var id = 0
 
     @SerialName("from_id")
-    var from_id = 0
+    var from_id = 0L
 
     @SerialName("post_id")
     var post_id = 0
 
     @SerialName("owner_id")
-    var owner_id = 0
+    var owner_id = 0L
 
     @SerialName("text")
     var text: String? = null

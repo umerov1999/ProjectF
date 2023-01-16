@@ -27,7 +27,7 @@ import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import java.util.regex.Pattern
 
 class NewPostPushMessage {
-    private var accountId = 0
+    private var accountId = 0L
     private var url: String? = null
     private var body: String? = null
     private var title: String? = null
@@ -49,7 +49,7 @@ class NewPostPushMessage {
         if (matcher.find()) {
             matcher.group(1)?.let {
                 val app = context.applicationContext
-                getRx(app, accountId, it.toInt())
+                getRx(app, accountId, it.toLong())
                     .subscribeOn(INSTANCE)
                     .subscribe({ ownerInfo: OwnerInfo ->
                         notifyImpl(
@@ -101,7 +101,7 @@ class NewPostPushMessage {
         private val PATTERN_WALL_POST =
             Pattern.compile("vk.com/(?:[\\w.\\d]+\\?(?:[\\w=&]+)?w=)?wall(-?\\d*)_(\\d*)")
 
-        fun fromRemoteMessage(accountId: Int, remote: RemoteMessage): NewPostPushMessage {
+        fun fromRemoteMessage(accountId: Long, remote: RemoteMessage): NewPostPushMessage {
             val message = NewPostPushMessage()
             message.accountId = accountId
             val data = remote.data

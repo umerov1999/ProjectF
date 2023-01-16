@@ -11,8 +11,8 @@ import dev.ragnarok.fenrir.model.User
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class VotersPresenter(
-    accountId: Int,
-    private val ownerId: Int,
+    accountId: Long,
+    private val ownerId: Long,
     private val pollId: Int,
     private val answerId: Long,
     private val isBoard: Boolean,

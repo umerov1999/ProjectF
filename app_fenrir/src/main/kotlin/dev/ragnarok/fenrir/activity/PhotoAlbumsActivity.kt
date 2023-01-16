@@ -13,8 +13,8 @@ class PhotoAlbumsActivity : NoMainActivity(), PlaceProvider {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             val intent = intent
-            val accountId = (intent.extras ?: return).getInt(Extra.ACCOUNT_ID)
-            val ownerId = (intent.extras ?: return).getInt(Extra.OWNER_ID)
+            val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
+            val ownerId = (intent.extras ?: return).getLong(Extra.OWNER_ID)
             val action = intent.getStringExtra(Extra.ACTION)
             val fragment =
                 VKPhotoAlbumsFragment.newInstance(accountId, ownerId, action, null, false)

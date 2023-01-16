@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 import dev.ragnarok.fenrir.util.serializeble.json.JsonPrimitive
-import dev.ragnarok.fenrir.util.serializeble.json.int
+import dev.ragnarok.fenrir.util.serializeble.json.long
 
 class ChatDtoAdapter : AbsAdapter<VKApiChat>("VKApiChat") {
     @Throws(Exception::class)
@@ -20,13 +20,13 @@ class ChatDtoAdapter : AbsAdapter<VKApiChat>("VKApiChat") {
         }
         val dto = VKApiChat()
         val root = json.asJsonObject
-        dto.id = optInt(root, "id")
+        dto.id = optLong(root, "id")
         dto.type = optString(root, "type")
         dto.title = optString(root, "title")
         dto.photo_50 = optString(root, "photo_50")
         dto.photo_100 = optString(root, "photo_100")
         dto.photo_200 = optString(root, "photo_200")
-        dto.admin_id = optInt(root, "admin_id")
+        dto.admin_id = optLong(root, "admin_id")
         if (hasArray(root, "users")) {
             val users = root.getAsJsonArray("users")
             dto.users = ArrayList(users?.size.orZero())
@@ -34,7 +34,7 @@ class ChatDtoAdapter : AbsAdapter<VKApiChat>("VKApiChat") {
                 val userElement = users?.get(i)
                 if (userElement is JsonPrimitive) {
                     val user = VKApiUser()
-                    user.id = userElement.int
+                    user.id = userElement.long
                     val chatUserDto = ChatUserDto()
                     chatUserDto.user = user
                     dto.users?.add(chatUserDto)
@@ -46,7 +46,7 @@ class ChatDtoAdapter : AbsAdapter<VKApiChat>("VKApiChat") {
                     val type = optString(jsonObject, "type")
                     val chatUserDto = ChatUserDto()
                     chatUserDto.type = type
-                    chatUserDto.invited_by = optInt(jsonObject, "invited_by", 0)
+                    chatUserDto.invited_by = optLong(jsonObject, "invited_by", 0)
                     if ("profile" == type) {
                         chatUserDto.user =
                             kJson.decodeFromJsonElement(VKApiUser.serializer(), userElement)

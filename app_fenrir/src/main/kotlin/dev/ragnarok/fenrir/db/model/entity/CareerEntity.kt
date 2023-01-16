@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Keep
 @Serializable
 class CareerEntity {
-    var groupId = 0
+    var groupId = 0L
         private set
     var company: String? = null
         private set
@@ -36,7 +36,7 @@ class CareerEntity {
         return this
     }
 
-    fun setGroupId(groupId: Int): CareerEntity {
+    fun setGroupId(groupId: Long): CareerEntity {
         this.groupId = groupId
         return this
     }

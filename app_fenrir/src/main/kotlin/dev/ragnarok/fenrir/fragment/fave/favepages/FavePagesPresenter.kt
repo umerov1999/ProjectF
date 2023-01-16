@@ -21,7 +21,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
-class FavePagesPresenter(accountId: Int, isUser: Boolean, savedInstanceState: Bundle?) :
+class FavePagesPresenter(accountId: Long, isUser: Boolean, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFavePagesView>(accountId, savedInstanceState) {
     private val pages: MutableList<FavePage>
     private val faveInteractor: IFaveInteractor
@@ -178,7 +178,7 @@ class FavePagesPresenter(accountId: Int, isUser: Boolean, savedInstanceState: Bu
         )
     }
 
-    private fun onUserRemoved(accountId: Int, ownerId: Int) {
+    private fun onUserRemoved(accountId: Long, ownerId: Long) {
         if (accountId != ownerId) {
             return
         }

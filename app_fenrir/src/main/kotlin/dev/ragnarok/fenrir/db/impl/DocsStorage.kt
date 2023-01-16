@@ -54,8 +54,8 @@ internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
     }
 
     override fun store(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         entities: List<DocumentDboEntity>,
         clearBeforeInsert: Boolean
     ): Completable {
@@ -123,7 +123,7 @@ internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
         }
     }
 
-    override fun delete(accountId: Int, docId: Int, ownerId: Int): Completable {
+    override fun delete(accountId: Long, docId: Int, ownerId: Long): Completable {
         return Completable.fromAction {
             val uri = getDocsContentUriFor(accountId)
             val where = DocColumns.DOC_ID + " = ? AND " + DocColumns.OWNER_ID + " = ?"
@@ -135,7 +135,7 @@ internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
     companion object {
         internal fun map(cursor: Cursor): DocumentDboEntity {
             val id = cursor.getInt(DocColumns.DOC_ID)
-            val ownerId = cursor.getInt(DocColumns.OWNER_ID)
+            val ownerId = cursor.getLong(DocColumns.OWNER_ID)
             val document = DocumentDboEntity().set(id, ownerId)
                 .setTitle(cursor.getString(DocColumns.TITLE))
                 .setSize(cursor.getLong(DocColumns.SIZE))

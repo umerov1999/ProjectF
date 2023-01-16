@@ -11,11 +11,11 @@ class Networker(settings: IProxySettings) : INetworker {
     private val otherVkRestProvider: IOtherVkRestProvider
     private val vkRestProvider: IVkRestProvider
     private val uploadRestProvider: IUploadRestProvider
-    override fun vkDefault(accountId: Int): IAccountApis {
+    override fun vkDefault(accountId: Long): IAccountApis {
         return VkApies[accountId, vkRestProvider]
     }
 
-    override fun vkManual(accountId: Int, accessToken: String): IAccountApis {
+    override fun vkManual(accountId: Long, accessToken: String): IAccountApis {
         return VkApies.create(accountId, accessToken, vkRestProvider)
     }
 

@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.util.Utils.getSelected
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class ImportantMessagesPresenter(accountId: Int, savedInstanceState: Bundle?) :
+class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AbsMessageListPresenter<IImportantMessagesView>(accountId, savedInstanceState) {
     private val fInteractor: IMessagesRepository = messages
     private val actualDataDisposable = CompositeDisposable()

@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Poll
 import dev.ragnarok.fenrir.nonNullNoEmpty
 
-class PollPresenter(accountId: Int, private var mPoll: Poll, savedInstanceState: Bundle?) :
+class PollPresenter(accountId: Long, private var mPoll: Poll, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IPollView>(accountId, savedInstanceState) {
     private val pollInteractor: IPollInteractor
     private var mTempCheckedId: MutableSet<Long>

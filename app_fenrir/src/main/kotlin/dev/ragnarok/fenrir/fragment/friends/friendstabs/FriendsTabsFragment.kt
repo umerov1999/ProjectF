@@ -96,8 +96,8 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
         return object : IPresenterFactory<FriendsTabsPresenter> {
             override fun create(): FriendsTabsPresenter {
                 return FriendsTabsPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.USER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.USER_ID),
                     requireArguments().getParcelableCompat(Extra.COUNTERS),
                     saveInstanceState
                 )
@@ -116,7 +116,7 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
         }
     }
 
-    override fun configTabs(accountId: Int, userId: Int, isNotMyPage: Boolean) {
+    override fun configTabs(accountId: Long, userId: Long, isNotMyPage: Boolean) {
         adapter = Adapter(requireActivity(), this, accountId, userId, isNotMyPage)
         viewPager?.adapter = adapter
         tabLayout?.let {
@@ -163,7 +163,7 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
         }
     }
 
-    override fun onFriendsBirthday(accountId: Int, ownerId: Int) {
+    override fun onFriendsBirthday(accountId: Long, ownerId: Long) {
         PlaceFactory.getFriendsBirthdaysPlace(accountId, ownerId).tryOpenWith(requireActivity())
     }
 
@@ -174,8 +174,8 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
     private class Adapter(
         context: Context,
         fm: Fragment,
-        accountId: Int,
-        userId: Int,
+        accountId: Long,
+        userId: Long,
         private val isNotMyPage: Boolean
     ) : FragmentStateAdapter(fm) {
         val mFragmentTitles: MutableList<FriendSource>
@@ -305,10 +305,10 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
         const val TAB_REQUESTS = 3
         const val TAB_MUTUAL = 4
         const val TAB_RECOMMENDATIONS = 5
-        fun buildArgs(accountId: Int, userId: Int, tab: Int, counters: FriendsCounters?): Bundle {
+        fun buildArgs(accountId: Long, userId: Long, tab: Int, counters: FriendsCounters?): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.USER_ID, userId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.USER_ID, userId)
             args.putInt(Extra.TAB, tab)
             args.putParcelable(Extra.COUNTERS, counters)
             return args
@@ -321,8 +321,8 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
         }
 
         fun newInstance(
-            accountId: Int,
-            userId: Int,
+            accountId: Long,
+            userId: Long,
             tab: Int,
             counters: FriendsCounters?
         ): FriendsTabsFragment {

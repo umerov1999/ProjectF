@@ -12,8 +12,8 @@ import dev.ragnarok.fenrir.model.FriendsCounters
 import dev.ragnarok.fenrir.model.Owner
 
 class FriendsTabsPresenter(
-    accountId: Int,
-    private val userId: Int,
+    accountId: Long,
+    private val userId: Long,
     counters: FriendsCounters?,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IFriendsTabsView>(accountId, savedInstanceState) {

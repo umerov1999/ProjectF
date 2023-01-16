@@ -159,10 +159,10 @@ class SearchTabsFragment : Fragment() {
         const val TAB_PHOTOS = 8
         const val TAB_ARTISTS = 9
         private const val SAVE_CURRENT_TAB = "save_current_tab"
-        fun buildArgs(accountId: Int, tab: Int): Bundle {
+        fun buildArgs(accountId: Long, tab: Int): Bundle {
             val args = Bundle()
             args.putInt(Extra.TAB, tab)
-            args.putInt(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
             return args
         }
 

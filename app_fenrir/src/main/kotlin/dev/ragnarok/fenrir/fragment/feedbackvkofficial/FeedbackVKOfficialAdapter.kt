@@ -407,7 +407,7 @@ class FeedbackVKOfficialAdapter(
     }
 
     interface ClickListener {
-        fun openOwnerWall(owner_id: Int)
+        fun openOwnerWall(owner_id: Long)
         fun openAction(action: FeedbackVKOfficial.Action)
     }
 

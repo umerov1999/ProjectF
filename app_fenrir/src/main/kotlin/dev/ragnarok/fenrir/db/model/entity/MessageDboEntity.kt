@@ -10,9 +10,9 @@ import kotlinx.serialization.Serializable
 class MessageDboEntity : DboEntity() {
     var id = 0
         private set
-    var peerId = 0
+    var peerId = 0L
         private set
-    var fromId = 0
+    var fromId = 0L
         private set
     var date: Long = 0
         private set
@@ -44,7 +44,7 @@ class MessageDboEntity : DboEntity() {
     @ChatAction
     var action = 0
         private set
-    var actionMemberId = 0
+    var actionMemberId = 0L
         private set
     var actionEmail: String? = null
         private set
@@ -68,7 +68,7 @@ class MessageDboEntity : DboEntity() {
     var updateTime: Long = 0
         private set
 
-    operator fun set(id: Int, peerId: Int, fromId: Int): MessageDboEntity {
+    operator fun set(id: Int, peerId: Long, fromId: Long): MessageDboEntity {
         this.id = id
         this.peerId = peerId
         this.fromId = fromId
@@ -85,7 +85,7 @@ class MessageDboEntity : DboEntity() {
         return this
     }
 
-    fun setFromId(fromId: Int): MessageDboEntity {
+    fun setFromId(fromId: Long): MessageDboEntity {
         this.fromId = fromId
         return this
     }
@@ -150,7 +150,7 @@ class MessageDboEntity : DboEntity() {
         return this
     }
 
-    fun setActionMemberId(actionMemberId: Int): MessageDboEntity {
+    fun setActionMemberId(actionMemberId: Long): MessageDboEntity {
         this.actionMemberId = actionMemberId
         return this
     }

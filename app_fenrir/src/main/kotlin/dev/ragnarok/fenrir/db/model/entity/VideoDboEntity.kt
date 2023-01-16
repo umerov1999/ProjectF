@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 class VideoDboEntity : DboEntity() {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var albumId = 0
         private set
@@ -81,7 +81,7 @@ class VideoDboEntity : DboEntity() {
     var isCanRepost = false
         private set
 
-    operator fun set(id: Int, ownerId: Int): VideoDboEntity {
+    operator fun set(id: Int, ownerId: Long): VideoDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this

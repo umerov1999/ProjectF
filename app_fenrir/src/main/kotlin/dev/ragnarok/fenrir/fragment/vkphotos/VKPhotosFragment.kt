@@ -269,9 +269,9 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
     }
 
     override fun displayGallery(
-        accountId: Int,
+        accountId: Long,
         albumId: Int,
-        ownerId: Int,
+        ownerId: Long,
         source: TmpSource,
         position: Int
     ) {
@@ -287,9 +287,9 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
     }
 
     override fun displayGalleryUnSafe(
-        accountId: Int,
+        accountId: Long,
         albumId: Int,
-        ownerId: Int,
+        ownerId: Long,
         parcelNativePointer: Long,
         position: Int
     ) {
@@ -413,8 +413,8 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
                 val owner = ownerWrapper?.get()
                 val album: PhotoAlbum? = requireArguments().getParcelableCompat(Extra.ALBUM)
                 return VkPhotosPresenter(
-                    requireArguments().getInt(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.OWNER_ID),
+                    requireArguments().getLong(Extra.ACCOUNT_ID),
+                    requireArguments().getLong(Extra.OWNER_ID),
                     requireArguments().getInt(Extra.ALBUM_ID),
                     requireArguments().getString(Extra.ACTION, IVkPhotosView.ACTION_SHOW_PHOTOS),
                     owner,
@@ -429,15 +429,15 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
     companion object {
         private val TAG = VKPhotosFragment::class.java.simpleName
         fun buildArgs(
-            accountId: Int,
-            ownerId: Int,
+            accountId: Long,
+            ownerId: Long,
             albumId: Int,
             action: String?,
             selected: Int
         ): Bundle {
             val args = Bundle()
-            args.putInt(Extra.ACCOUNT_ID, accountId)
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.ACCOUNT_ID, accountId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putInt(Extra.ALBUM_ID, albumId)
             args.putInt(Extra.SELECTED, selected)
             args.putString(Extra.ACTION, action)
@@ -451,8 +451,8 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
         }
 
         fun newInstance(
-            accountId: Int,
-            ownerId: Int,
+            accountId: Long,
+            ownerId: Long,
             albumId: Int,
             action: String?
         ): VKPhotosFragment {

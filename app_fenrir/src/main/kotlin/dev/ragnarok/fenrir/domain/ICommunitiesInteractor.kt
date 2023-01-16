@@ -5,17 +5,17 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
 interface ICommunitiesInteractor {
-    fun getCachedData(accountId: Int, userId: Int): Single<List<Community>>
+    fun getCachedData(accountId: Long, userId: Long): Single<List<Community>>
     fun getActual(
-        accountId: Int,
-        userId: Int,
+        accountId: Long,
+        userId: Long,
         count: Int,
         offset: Int,
         store: Boolean
     ): Single<List<Community>>
 
     fun search(
-        accountId: Int,
+        accountId: Long,
         q: String?,
         type: String?,
         countryId: Int?,
@@ -26,6 +26,6 @@ interface ICommunitiesInteractor {
         offset: Int
     ): Single<List<Community>>
 
-    fun join(accountId: Int, groupId: Int): Completable
-    fun leave(accountId: Int, groupId: Int): Completable
+    fun join(accountId: Long, groupId: Long): Completable
+    fun leave(accountId: Long, groupId: Long): Completable
 }

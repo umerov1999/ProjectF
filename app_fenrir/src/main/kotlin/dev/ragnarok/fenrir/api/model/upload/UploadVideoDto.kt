@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class UploadVideoDto {
     @SerialName("owner_id")
-    var owner_id = 0
+    var owner_id = 0L
 
     @SerialName("video_id")
     var video_id = 0

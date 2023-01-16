@@ -10,7 +10,7 @@ import dev.ragnarok.fenrir.util.Utils
 class FavePhotoPagerPresenter(
     photos: ArrayList<Photo>,
     index: Int,
-    accountId: Int,
+    accountId: Long,
     context: Context,
     savedInstanceState: Bundle?
 ) : PhotoPagerPresenter(photos, accountId, false, context, savedInstanceState) {

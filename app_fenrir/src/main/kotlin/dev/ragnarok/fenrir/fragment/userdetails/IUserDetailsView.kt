@@ -11,16 +11,16 @@ import dev.ragnarok.fenrir.model.menu.AdvancedItem
 interface IUserDetailsView : IMvpView, IErrorView {
     fun displayData(items: List<AdvancedItem>)
     fun displayToolbarTitle(user: User?)
-    fun openOwnerProfile(accountId: Int, ownerId: Int, owner: Owner?)
+    fun openOwnerProfile(accountId: Long, ownerId: Long, owner: Owner?)
     fun onPhotosLoaded(photo: Photo)
     fun openPhotoAlbum(
-        accountId: Int,
-        ownerId: Int,
+        accountId: Long,
+        ownerId: Long,
         albumId: Int,
         photos: ArrayList<Photo>,
         position: Int
     )
 
-    fun openChatWith(accountId: Int, messagesOwnerId: Int, peer: Peer)
+    fun openChatWith(accountId: Long, messagesOwnerId: Long, peer: Peer)
     fun openPhotoUser(user: User)
 }

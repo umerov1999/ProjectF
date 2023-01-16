@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 
 internal class GroupLongpoll(
     private val networker: INetworker,
-    private val groupId: Int,
+    private val groupId: Long,
     private val callback: Callback
 ) : ILongpoll {
     private val compositeDisposable = CompositeDisposable()
@@ -24,7 +24,7 @@ internal class GroupLongpoll(
     private var key: String? = null
     private var server: String? = null
     private var ts: String? = null
-    override val accountId: Int
+    override val accountId: Long
         get() = -groupId
 
     private fun resetServerAttrs() {
@@ -109,7 +109,7 @@ internal class GroupLongpoll(
         }
 
     interface Callback {
-        fun onUpdates(groupId: Int, updates: VkApiGroupLongpollUpdates)
+        fun onUpdates(groupId: Long, updates: VkApiGroupLongpollUpdates)
     }
 
     companion object {
