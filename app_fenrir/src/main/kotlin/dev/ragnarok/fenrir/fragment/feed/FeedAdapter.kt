@@ -84,22 +84,27 @@ class FeedAdapter(
                     force = true
                     viewHolder.tvText.setText(R.string.public_photo)
                 }
+
                 "wall_photo" -> {
                     force = true
                     viewHolder.tvText.setText(R.string.public_photo_wall)
                 }
+
                 "photo_tag" -> {
                     force = true
                     viewHolder.tvText.setText(R.string.public_photo_tag)
                 }
+
                 "friend" -> {
                     force = true
                     viewHolder.tvText.setText(R.string.public_friends)
                 }
+
                 "audio" -> {
                     force = true
                     viewHolder.tvText.setText(R.string.public_audio)
                 }
+
                 "video" -> {
                     force = true
                     viewHolder.tvText.setText(R.string.public_video)

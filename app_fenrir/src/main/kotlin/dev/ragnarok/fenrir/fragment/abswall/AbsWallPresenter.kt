@@ -615,12 +615,14 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
                     VKApiPost.Type.POSTPONE,
                     VKApiPost.Type.SUGGEST
                 )
+
                 WallCriteria.MODE_OWNER -> return (post.authorId == post.ownerId
                         && intValueNotIn(
                     post.postType,
                     VKApiPost.Type.POSTPONE,
                     VKApiPost.Type.SUGGEST
                 ))
+
                 WallCriteria.MODE_SCHEDULED -> return post.postType == VKApiPost.Type.POSTPONE
                 WallCriteria.MODE_SUGGEST -> return post.postType == VKApiPost.Type.SUGGEST
             }

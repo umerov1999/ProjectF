@@ -14,7 +14,11 @@ import dev.ragnarok.fenrir.domain.impl.GroupSettingsInteractor
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformUser
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.ContactInfo
+import dev.ragnarok.fenrir.model.Manager
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime

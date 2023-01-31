@@ -1,7 +1,7 @@
 package de.maxr1998.modernpreferences.preferences.colorpicker
 
 import android.graphics.Color
-import java.util.*
+import java.util.Locale
 import kotlin.math.roundToInt
 
 object Utils {

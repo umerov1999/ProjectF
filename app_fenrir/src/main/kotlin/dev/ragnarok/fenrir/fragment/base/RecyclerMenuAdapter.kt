@@ -65,9 +65,11 @@ class RecyclerMenuAdapter : RecyclerView.Adapter<MenuItemHolder> {
             section == null -> {
                 false
             }
+
             position == 0 -> {
                 true
             }
+
             else -> {
                 val previous = getItem(position - 1)
                 section != previous.section

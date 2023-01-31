@@ -216,6 +216,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 if (player is AudioPlayerFragment) player.dismiss()
                 AudioPlayerFragment().show(supportFragmentManager, "audio_player")
             }
+
             Place.VIDEO_PLAYER -> {
                 val intent = Intent(this, VideoPlayerActivity::class.java)
                 intent.putExtras(args)
@@ -236,6 +237,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 presenter?.fireSaveOnDriveClick()
                 return true
             }
+
             R.id.detect_qr -> presenter?.fireDetectQRClick(this)
         }
         return super.onOptionsItemSelected(item)
@@ -256,6 +258,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             saveInstanceState
                         )
                     }
+
                     Place.PHOTO_LOCAL -> {
                         val source: Long = requireArguments().getLong(EXTRA_PHOTOS)
                         requireArguments().putLong(EXTRA_PHOTOS, 0)
@@ -551,6 +554,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             container.requestDisallowInterceptTouchEvent(true)
                             return@setOnTouchListener false
                         }
+
                         MotionEvent.ACTION_UP -> {
                             container.requestDisallowInterceptTouchEvent(false)
                             return@setOnTouchListener true

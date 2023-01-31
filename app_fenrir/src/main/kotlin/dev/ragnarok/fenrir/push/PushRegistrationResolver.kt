@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.service.ApiErrorCodes
 import dev.ragnarok.fenrir.settings.ISettings
-import dev.ragnarok.fenrir.settings.VkPushRegistration
+import dev.ragnarok.fenrir.settings.VKPushRegistration
 import dev.ragnarok.fenrir.util.Logger.d
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.empty
@@ -18,7 +18,7 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.*
+import java.util.Locale
 
 class PushRegistrationResolver(
     private val deviceIdProvider: IDeviceIdProvider,
@@ -53,7 +53,7 @@ class PushRegistrationResolver(
                 if (accountId <= 0 || settings.accounts()
                         .getType(settings.accounts().current) != Constants.DEFAULT_ACCOUNT_TYPE
                 ) return@flatMapCompletable Completable.never()
-                val needUnregister: MutableSet<VkPushRegistration> = HashSet(0)
+                val needUnregister: MutableSet<VKPushRegistration> = HashSet(0)
                 val optionalAccountId: Optional<Long> = if (hasAuth) wrap(accountId) else empty()
                 var hasOk = false
                 var hasRemove = false
@@ -74,12 +74,12 @@ class PushRegistrationResolver(
                 for (unreg in needUnregister) {
                     completable = completable.andThen(unregister(unreg))
                 }
-                val target: MutableList<VkPushRegistration> = ArrayList()
+                val target: MutableList<VKPushRegistration> = ArrayList()
                 if (!hasOk && hasAuth) {
                     val vkToken = settings.accounts().getAccessToken(accountId)
                     vkToken ?: return@flatMapCompletable Completable.complete()
                     val current =
-                        VkPushRegistration().set(
+                        VKPushRegistration().set(
                             accountId,
                             data.deviceId ?: "",
                             vkToken,
@@ -95,7 +95,7 @@ class PushRegistrationResolver(
             }
     }
 
-    private fun register(registration: VkPushRegistration): Completable {
+    private fun register(registration: VKPushRegistration): Completable {
         //try {
         /*
             JSONArray fr_of_fr = new JSONArray();
@@ -168,7 +168,7 @@ class PushRegistrationResolver(
         //}
     }
 
-    private fun unregister(registration: VkPushRegistration): Completable {
+    private fun unregister(registration: VKPushRegistration): Completable {
         return networker.vkManual(registration.userId, registration.vkToken)
             .account()
             .unregisterDevice(registration.deviceId)
@@ -183,7 +183,7 @@ class PushRegistrationResolver(
     }
 
     private fun analizeRegistration(
-        available: VkPushRegistration,
+        available: VKPushRegistration,
         data: Data,
         optionAccountId: Optional<Long>
     ): Reason {

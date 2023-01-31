@@ -23,7 +23,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.textfield.TextInputEditText
 import com.squareup.picasso3.Transformation
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.AccountType
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
@@ -31,6 +33,7 @@ import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders.IViewHolde
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.AudioSearchCriteria
+import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
@@ -52,6 +55,8 @@ import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2Layout.CATALOG_V2_HOL
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2Layout.CATALOG_V2_HOLDER.Companion.TYPE_CATALOG_TRIPLE_STACKED_SLIDER
 import dev.ragnarok.fenrir.model.menu.options.AudioOption
 import dev.ragnarok.fenrir.module.StringHash
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.picasso.transforms.ImageHelper
 import dev.ragnarok.fenrir.picasso.transforms.PolyTransformation
@@ -59,7 +64,13 @@ import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.*
+import dev.ragnarok.fenrir.toMainThread
+import dev.ragnarok.fenrir.util.AppPerms
+import dev.ragnarok.fenrir.util.AppTextUtils
+import dev.ragnarok.fenrir.util.DownloadWorkUtils
+import dev.ragnarok.fenrir.util.Mp3InfoHelper
+import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.ViewUtils
 import dev.ragnarok.fenrir.util.hls.M3U8
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast
@@ -100,12 +111,15 @@ class CatalogV2SectionAdapter(
                     type
                 )
             }
+
             AbsModelType.MODEL_AUDIO -> {
                 AudioHolder(view)
             }
+
             AbsModelType.MODEL_AUDIO_PLAYLIST -> {
                 PlaylistHolder(view)
             }
+
             else -> CatalogV2Layout.createHolder(type).create(view)
         }
     }
@@ -115,12 +129,15 @@ class CatalogV2SectionAdapter(
             TYPE_CATALOG_SLIDER, TYPE_CATALOG_LIST, TYPE_CATALOG_TRIPLE_STACKED_SLIDER -> {
                 R.layout.item_catalog_v2_content_horizontal
             }
+
             AbsModelType.MODEL_AUDIO -> {
                 R.layout.item_audio
             }
+
             AbsModelType.MODEL_AUDIO_PLAYLIST -> {
                 R.layout.item_catalog_v2_audio_playlist
             }
+
             else -> CatalogV2Layout.createHolder(type).getLayout()
         }
     }
@@ -195,11 +212,13 @@ class CatalogV2SectionAdapter(
                     3,
                     StaggeredGridLayoutManager.HORIZONTAL
                 )
+
                 TYPE_CATALOG_LIST, TYPE_CATALOG_SLIDER -> LinearLayoutManager(
                     itemView.context,
                     LinearLayoutManager.HORIZONTAL,
                     false
                 )
+
                 else -> {
                     throw UnsupportedOperationException()
                 }
@@ -488,6 +507,7 @@ class CatalogV2SectionAdapter(
                 currAudio = currentAudio
                 updateAudio(currAudio)
             }
+
             PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
         }
     }
@@ -519,6 +539,7 @@ class CatalogV2SectionAdapter(
                 Utils.doWavesLottie(holder.visual, true)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
             }
+
             2 -> {
                 Utils.doWavesLottie(holder.visual, false)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
@@ -730,17 +751,21 @@ class CatalogV2SectionAdapter(
                         AudioOption.play_item_audio -> {
                             doPlay(position, audio)
                         }
+
                         AudioOption.play_item_after_current_audio -> MusicPlaybackController.playAfterCurrent(
                             audio
                         )
+
                         AudioOption.edit_track -> {
                             fireEditTrackIn(position, audio)
                         }
+
                         AudioOption.share_button -> SendAttachmentsActivity.startForSendAttachments(
                             mContext,
                             Settings.get().accounts().current,
                             audio
                         )
+
                         AudioOption.search_by_artist -> PlaceFactory.getSingleTabSearchPlace(
                             Settings.get().accounts().current,
                             SearchContentType.AUDIOS,
@@ -748,16 +773,19 @@ class CatalogV2SectionAdapter(
                                 audio.artist, by_artist = true, in_main_page = false
                             )
                         ).tryOpenWith(mContext)
+
                         AudioOption.get_lyrics_menu -> get_lyrics(audio)
                         AudioOption.get_recommendation_by_audio -> PlaceFactory.SearchByAudioPlace(
                             Settings.get().accounts().current, audio.ownerId, audio.id
                         ).tryOpenWith(mContext)
+
                         AudioOption.open_album -> PlaceFactory.getAudiosInAlbumPlace(
                             Settings.get().accounts().current,
                             audio.album_owner_id,
                             audio.albumId,
                             audio.album_access_key
                         ).tryOpenWith(mContext)
+
                         AudioOption.copy_url -> {
                             val clipboard =
                                 mContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
@@ -765,6 +793,7 @@ class CatalogV2SectionAdapter(
                             clipboard?.setPrimaryClip(clip)
                             CustomToast.createCustomToast(mContext).showToast(R.string.copied)
                         }
+
                         AudioOption.add_item_audio -> {
                             val myAudio = audio.ownerId == Settings.get().accounts().current
                             if (myAudio) {
@@ -773,6 +802,7 @@ class CatalogV2SectionAdapter(
                                 addTrack(Settings.get().accounts().current, audio)
                             }
                         }
+
                         AudioOption.add_and_download_button -> {
                             if (audio.ownerId != Settings.get().accounts().current) {
                                 addTrack(Settings.get().accounts().current, audio)
@@ -793,6 +823,7 @@ class CatalogV2SectionAdapter(
                             when (ret) {
                                 0 -> CustomToast.createCustomToast(mContext)
                                     .showToastBottom(R.string.saved_audio)
+
                                 1, 2 -> {
                                     CustomSnackbars.createCustomSnackbars(view)
                                         ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
@@ -810,6 +841,7 @@ class CatalogV2SectionAdapter(
                                         }
                                         ?.show()
                                 }
+
                                 else -> {
                                     audio.downloadIndicator = 0
                                     updateDownloadState(holder, audio)
@@ -818,6 +850,7 @@ class CatalogV2SectionAdapter(
                                 }
                             }
                         }
+
                         AudioOption.save_item_audio -> {
                             if (!AppPerms.hasReadWriteStoragePermission(mContext)) {
                                 clickListener?.onRequestWritePermissions()
@@ -835,6 +868,7 @@ class CatalogV2SectionAdapter(
                             when (ret) {
                                 0 -> CustomToast.createCustomToast(mContext)
                                     .showToastBottom(R.string.saved_audio)
+
                                 1, 2 -> {
                                     CustomSnackbars.createCustomSnackbars(view)
                                         ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
@@ -852,6 +886,7 @@ class CatalogV2SectionAdapter(
                                         }
                                         ?.show()
                                 }
+
                                 else -> {
                                     audio.downloadIndicator = 0
                                     updateDownloadState(holder, audio)
@@ -860,9 +895,11 @@ class CatalogV2SectionAdapter(
                                 }
                             }
                         }
+
                         AudioOption.bitrate_item_audio -> getMp3AndBitrate(
                             Settings.get().accounts().current, audio
                         )
+
                         AudioOption.goto_artist -> {
                             val artists = Utils.getArrayFromHash(
                                 audio.main_artists
@@ -984,9 +1021,11 @@ class CatalogV2SectionAdapter(
                     audio.url.isNullOrEmpty() -> {
                         isSelectedView.setCardBackgroundColor(Color.parseColor("#ff0000"))
                     }
+
                     DownloadWorkUtils.TrackIsDownloaded(audio) != 0 -> {
                         isSelectedView.setCardBackgroundColor(Color.parseColor("#00aa00"))
                     }
+
                     else -> {
                         isSelectedView.setCardBackgroundColor(
                             CurrentTheme.getColorPrimary(
@@ -1061,6 +1100,7 @@ class CatalogV2SectionAdapter(
                     when (ret) {
                         0 -> CustomToast.createCustomToast(mContext)
                             .showToastBottom(R.string.saved_audio)
+
                         1, 2 -> {
                             v?.let {
                                 CustomSnackbars.createCustomSnackbars(it)
@@ -1080,6 +1120,7 @@ class CatalogV2SectionAdapter(
                                     ?.show()
                             }
                         }
+
                         else -> {
                             audio.downloadIndicator = 0
                             updateDownloadState(this, audio)

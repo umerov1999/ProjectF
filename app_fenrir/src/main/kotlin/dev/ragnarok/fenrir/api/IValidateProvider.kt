@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.api
 import io.reactivex.rxjava3.core.Observable
 
 interface IValidateProvider {
-    fun requestValidate(url: String?)
+    fun requestValidate(url: String?, accountId: Long)
     fun cancel(url: String)
     fun observeCanceling(): Observable<String>
 

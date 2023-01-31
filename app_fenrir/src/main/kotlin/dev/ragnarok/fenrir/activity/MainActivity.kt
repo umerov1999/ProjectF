@@ -71,6 +71,7 @@ import dev.ragnarok.fenrir.fragment.communitycontrol.communitymanageredit.Commun
 import dev.ragnarok.fenrir.fragment.communitycontrol.communitymembers.CommunityMembersFragment
 import dev.ragnarok.fenrir.fragment.conversation.ConversationFragmentFactory
 import dev.ragnarok.fenrir.fragment.createphotoalbum.CreatePhotoAlbumFragment
+import dev.ragnarok.fenrir.fragment.createpin.CreatePinFragment
 import dev.ragnarok.fenrir.fragment.createpoll.CreatePollFragment
 import dev.ragnarok.fenrir.fragment.docs.DocsFragment
 import dev.ragnarok.fenrir.fragment.docs.DocsListPresenter
@@ -123,7 +124,7 @@ import dev.ragnarok.fenrir.fragment.videos.IVideosListView
 import dev.ragnarok.fenrir.fragment.videos.VideosFragment
 import dev.ragnarok.fenrir.fragment.videos.VideosTabsFragment
 import dev.ragnarok.fenrir.fragment.vkphotoalbums.VKPhotoAlbumsFragment
-import dev.ragnarok.fenrir.fragment.vkphotos.IVkPhotosView
+import dev.ragnarok.fenrir.fragment.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.fragment.vkphotos.VKPhotosFragment
 import dev.ragnarok.fenrir.fragment.voters.VotersFragment
 import dev.ragnarok.fenrir.fragment.wallattachments.WallAttachmentsFragmentFactory
@@ -235,6 +236,23 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     protected var mLayoutRes = if (Settings.get().main().isSnow_mode) snowLayout else normalLayout
     protected var mLastBackPressedTime: Long = 0
 
+    private val requestCreatePin = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val values = CreatePinFragment.extractValueFromIntent(result.data)
+            Settings.get()
+                .security()
+                .setPin(values)
+            Settings.get().security().isUsePinForSecurity = true
+        }
+    }
+
+    private fun startCreatePinActivity() {
+        val o = Intent(this, CreatePinActivity::class.java)
+        requestCreatePin.launch(o)
+    }
+
     /**
      * Атрибуты секции, которая на данный момент находится на главном контейнере экрана
      */
@@ -254,6 +272,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         } else {
             Settings.get().ui().getDefaultPage(mAccountId).tryOpenWith(this)
             checkFCMRegistration(true)
+
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP && needHelp(
                     HelperSimple.LOLLIPOP_21,
                     1
@@ -263,8 +282,14 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     .setTitle(R.string.info)
                     .setMessage(R.string.lollipop21)
                     .setCancelable(false)
-                    .setPositiveButton(R.string.button_ok, null)
+                    .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                        if (!Settings.get().security().isUsePinForSecurity) {
+                            startCreatePinActivity()
+                        }
+                    }
                     .show()
+            } else if (!Settings.get().security().isUsePinForSecurity) {
+                startCreatePinActivity()
             }
         }
     }
@@ -634,6 +659,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                                                 )
                                             })
                                     }
+
                                     option.id == R.id.button_cancel -> {
                                         val clipBoard =
                                             getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
@@ -651,10 +677,12 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                                             )
                                         }
                                     }
+
                                     option.id == R.id.action_preferences -> {
                                         PlaceFactory.getPreferencesPlace(mAccountId)
                                             .tryOpenWith(this@MainActivity)
                                     }
+
                                     option.id == R.id.button_camera && FenrirNative.isNativeLoaded -> {
                                         val intent =
                                             Intent(
@@ -971,6 +999,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     null
                 )
             )
+
             AbsNavigationView.PAGE_FRIENDS -> openPlace(
                 PlaceFactory.getFriendsFollowersPlace(
                     aid,
@@ -979,12 +1008,14 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     null
                 )
             )
+
             AbsNavigationView.PAGE_GROUPS -> openPlace(
                 PlaceFactory.getCommunitiesPlace(
                     aid,
                     aid
                 )
             )
+
             AbsNavigationView.PAGE_PREFERENSES -> openPlace(PlaceFactory.getPreferencesPlace(aid))
             AbsNavigationView.PAGE_MUSIC -> openPlace(PlaceFactory.getAudiosPlace(aid, aid))
             AbsNavigationView.PAGE_DOCUMENTS -> openPlace(
@@ -994,20 +1025,23 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     DocsListPresenter.ACTION_SHOW
                 )
             )
+
             AbsNavigationView.PAGE_FEED -> openPlace(PlaceFactory.getFeedPlace(aid))
             AbsNavigationView.PAGE_NOTIFICATION -> openPlace(
                 PlaceFactory.getNotificationsPlace(
                     aid
                 )
             )
+
             AbsNavigationView.PAGE_PHOTOS -> openPlace(
                 PlaceFactory.getVKPhotoAlbumsPlace(
                     aid,
                     aid,
-                    IVkPhotosView.ACTION_SHOW_PHOTOS,
+                    IVKPhotosView.ACTION_SHOW_PHOTOS,
                     null
                 )
             )
+
             AbsNavigationView.PAGE_VIDEOS -> openPlace(
                 PlaceFactory.getVideosPlace(
                     aid,
@@ -1015,23 +1049,27 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     IVideosListView.ACTION_SHOW
                 )
             )
+
             AbsNavigationView.PAGE_BOOKMARKS -> openPlace(
                 PlaceFactory.getBookmarksPlace(
                     aid,
                     FaveTabsFragment.TAB_PAGES
                 )
             )
+
             AbsNavigationView.PAGE_SEARCH -> openPlace(
                 PlaceFactory.getSearchPlace(
                     aid,
                     SearchTabsFragment.TAB_PEOPLE
                 )
             )
+
             AbsNavigationView.PAGE_NEWSFEED_COMMENTS -> openPlace(
                 PlaceFactory.getNewsfeedCommentsPlace(
                     aid
                 )
             )
+
             else -> throw IllegalArgumentException("Unknown place!!! $item")
         }
     }
@@ -1116,12 +1154,16 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             when (sectionDrawerItem.section) {
                 AbsNavigationView.PAGE_FEED -> mBottomNavigation?.menu?.getItem(0)?.isChecked =
                     true
+
                 AbsNavigationView.PAGE_SEARCH -> mBottomNavigation?.menu?.getItem(1)?.isChecked =
                     true
+
                 AbsNavigationView.PAGE_DIALOGS -> mBottomNavigation?.menu?.getItem(2)?.isChecked =
                     true
+
                 AbsNavigationView.PAGE_NOTIFICATION -> mBottomNavigation?.menu?.getItem(3)?.isChecked =
                     true
+
                 else -> mBottomNavigation?.menu?.getItem(4)?.isChecked = true
             }
         }
@@ -1237,6 +1279,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 this,
                 StoryPagerActivity.newInstance(this, args)
             )
+
             Place.FRIENDS_AND_FOLLOWERS -> attachToFront(FriendsTabsFragment.newInstance(args))
             Place.EXTERNAL_LINK -> attachToFront(BrowserFragment.newInstance(args))
             Place.DOC_PREVIEW -> {
@@ -1250,6 +1293,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     attachToFront(DocPreviewFragment.newInstance(args))
                 }
             }
+
             Place.WALL_POST -> attachToFront(WallPostFragment.newInstance(args))
             Place.COMMENTS -> attachToFront(CommentsFragment.newInstance(place))
             Place.WALL -> attachToFront(AbsWallFragment.newInstance(args))
@@ -1258,11 +1302,13 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     args
                 )
             )
+
             Place.PLAYER -> {
                 val player = supportFragmentManager.findFragmentByTag("audio_player")
                 if (player is AudioPlayerFragment) player.dismiss()
                 AudioPlayerFragment.newInstance(args).show(supportFragmentManager, "audio_player")
             }
+
             Place.CHAT -> {
                 val peer: Peer = args.getParcelableCompat(Extra.PEER) ?: return
                 openChat(
@@ -1272,6 +1318,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     place.isNeedFinishMain
                 )
             }
+
             Place.SEARCH -> attachToFront(SearchTabsFragment.newInstance(args))
             Place.AUDIOS_SEARCH_TABS -> attachToFront(AudioSearchTabsFragment.newInstance(args))
             Place.GROUP_CHATS -> attachToFront(GroupChatsFragment.newInstance(args))
@@ -1279,6 +1326,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 val postCreateFragment = PostCreateFragment.newInstance(args)
                 attachToFront(postCreateFragment)
             }
+
             Place.EDIT_COMMENT -> {
                 val comment: Comment? = args.getParcelableCompat(Extra.COMMENT)
                 val accountId = args.getLong(Extra.ACCOUNT_ID)
@@ -1288,14 +1336,17 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 place.applyFragmentListener(commentEditFragment, supportFragmentManager)
                 attachToFront(commentEditFragment)
             }
+
             Place.EDIT_POST -> {
                 val postEditFragment = PostEditFragment.newInstance(args)
                 attachToFront(postEditFragment)
             }
+
             Place.REPOST -> {
                 val repostFragment = RepostFragment.newInstance(args)
                 attachToFront(repostFragment)
             }
+
             Place.DIALOGS -> attachToFront(
                 DialogsFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
@@ -1303,6 +1354,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     args.getString(Extra.SUBTITLE)
                 )
             )
+
             Place.FORWARD_MESSAGES -> attachToFront(FwdsFragment.newInstance(args))
             Place.TOPICS -> attachToFront(TopicsFragment.newInstance(args))
             Place.CHAT_MEMBERS -> attachToFront(ChatMembersFragment.newInstance(args))
@@ -1315,6 +1367,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 )
                 attachToFront(communitiesFragment)
             }
+
             Place.AUDIOS -> attachToFront(
                 if (Settings.get().other().isAudio_catalog_v2) CatalogV2ListFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
@@ -1324,6 +1377,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     args.getLong(Extra.OWNER_ID)
                 )
             )
+
             Place.MENTIONS -> attachToFront(
                 NewsfeedMentionsFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID), args.getLong(
@@ -1331,11 +1385,13 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     )
                 )
             )
+
             Place.CATALOG_V2_AUDIO_SECTION -> attachToFront(
                 CatalogV2SectionFragment.newInstance(
                     args
                 )
             )
+
             Place.CATALOG_V2_AUDIO_CATALOG -> attachToFront(CatalogV2ListFragment.newInstance(args))
             Place.AUDIOS_IN_ALBUM -> attachToFront(AudiosFragment.newInstance(args))
             Place.SEARCH_BY_AUDIO -> attachToFront(
@@ -1345,6 +1401,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     ), args.getLong(Extra.OWNER_ID), false, args.getInt(Extra.ID)
                 )
             )
+
             Place.LOCAL_SERVER_PHOTO -> attachToFront(
                 PhotosLocalServerFragment.newInstance(
                     args.getLong(
@@ -1352,6 +1409,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     )
                 )
             )
+
             Place.VIDEO_ALBUM -> attachToFront(VideosFragment.newInstance(args))
             Place.VIDEOS -> attachToFront(VideosTabsFragment.newInstance(args))
             Place.VK_PHOTO_ALBUMS -> attachToFront(
@@ -1362,6 +1420,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     args.getParcelableCompat(Extra.OWNER), false
                 )
             )
+
             Place.VK_PHOTO_ALBUM -> attachToFront(VKPhotosFragment.newInstance(args))
             Place.VK_PHOTO_ALBUM_GALLERY, Place.FAVE_PHOTOS_GALLERY, Place.SIMPLE_PHOTO_GALLERY, Place.VK_PHOTO_TMP_SOURCE, Place.VK_PHOTO_ALBUM_GALLERY_SAVED, Place.VK_PHOTO_ALBUM_GALLERY_NATIVE -> newInstance(
                 this,
@@ -1373,14 +1432,17 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     it
                 )
             }
+
             Place.SINGLE_PHOTO -> place.launchActivityForResult(
                 this,
                 SinglePhotoActivity.newInstance(this, args)
             )
+
             Place.GIF_PAGER -> place.launchActivityForResult(
                 this,
                 GifPagerActivity.newInstance(this, args)
             )
+
             Place.POLL -> attachToFront(PollFragment.newInstance(args))
             Place.BOOKMARKS -> attachToFront(FaveTabsFragment.newInstance(args))
             Place.DOCS -> attachToFront(DocsFragment.newInstance(args))
@@ -1399,31 +1461,37 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     attachToFront(FeedbackFragment.newInstance(args))
                 }
             }
+
             Place.PREFERENCES -> attachToFront(PreferencesFragment.newInstance(args))
             Place.RESOLVE_DOMAIN -> {
                 val domainDialog = ResolveDomainDialog.newInstance(args)
                 domainDialog.show(supportFragmentManager, "resolve-domain")
             }
+
             Place.VK_INTERNAL_PLAYER -> {
                 val intent = Intent(this, VideoPlayerActivity::class.java)
                 intent.putExtras(args)
                 startActivity(intent)
             }
+
             Place.NOTIFICATION_SETTINGS -> attachToFront(NotificationPreferencesFragment())
             Place.LIKES_AND_COPIES -> attachToFront(LikesFragment.newInstance(args))
             Place.CREATE_PHOTO_ALBUM, Place.EDIT_PHOTO_ALBUM -> {
                 val createPhotoAlbumFragment = CreatePhotoAlbumFragment.newInstance(args)
                 attachToFront(createPhotoAlbumFragment)
             }
+
             Place.MESSAGE_LOOKUP -> attachToFront(MessagesLookFragment.newInstance(args))
             Place.SEARCH_COMMENTS -> attachToFront(
                 WallSearchCommentsAttachmentsFragment.newInstance(
                     args
                 )
             )
+
             Place.COMMUNITY_MEMBERS -> attachToFront(
                 CommunityMembersFragment.newInstance(args)
             )
+
             Place.UNREAD_MESSAGES -> attachToFront(NotReadMessagesFragment.newInstance(args))
             Place.SECURITY -> attachToFront(SecurityPreferencesFragment())
             Place.CREATE_POLL -> {
@@ -1431,12 +1499,14 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 place.applyFragmentListener(createPollFragment, supportFragmentManager)
                 attachToFront(createPollFragment)
             }
+
             Place.COMMENT_CREATE -> openCommentCreatePlace(place)
             Place.LOGS -> attachToFront(LogsFragment.newInstance())
             Place.SINGLE_SEARCH -> {
                 val singleTabSearchFragment = SingleTabSearchFragment.newInstance(args)
                 attachToFront(singleTabSearchFragment)
             }
+
             Place.NEWSFEED_COMMENTS -> {
                 val newsfeedCommentsFragment = NewsfeedCommentsFragment.newInstance(
                     args.getLong(
@@ -1445,6 +1515,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 )
                 attachToFront(newsfeedCommentsFragment)
             }
+
             Place.COMMUNITY_CONTROL -> {
                 val communityControlFragment = CommunityControlFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
@@ -1453,6 +1524,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 )
                 attachToFront(communityControlFragment)
             }
+
             Place.COMMUNITY_INFO -> {
                 val communityInfoFragment = CommunityInfoContactsFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
@@ -1460,6 +1532,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 )
                 attachToFront(communityInfoFragment)
             }
+
             Place.COMMUNITY_INFO_LINKS -> {
                 val communityLinksFragment = CommunityInfoLinksFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
@@ -1467,6 +1540,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 )
                 attachToFront(communityLinksFragment)
             }
+
             Place.SETTINGS_THEME -> {
                 val themes = ThemeFragment()
                 attachToFront(themes)
@@ -1475,6 +1549,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     return
                 }
             }
+
             Place.COMMUNITY_BAN_EDIT -> {
                 val communityBanEditFragment = CommunityBanEditFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
@@ -1483,6 +1558,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 )
                 attachToFront(communityBanEditFragment)
             }
+
             Place.COMMUNITY_ADD_BAN -> attachToFront(
                 CommunityBanEditFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
@@ -1490,6 +1566,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     args.getParcelableArrayListCompat(Extra.USERS)
                 )
             )
+
             Place.COMMUNITY_MANAGER_ADD -> attachToFront(
                 CommunityManagerEditFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
@@ -1497,6 +1574,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     args.getParcelableArrayListCompat(Extra.USERS)
                 )
             )
+
             Place.COMMUNITY_MANAGER_EDIT -> attachToFront(
                 CommunityManagerEditFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
@@ -1504,6 +1582,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     args.getParcelableCompat<Manager>(Extra.MANAGER)
                 )
             )
+
             Place.REQUEST_EXECUTOR -> attachToFront(
                 RequestExecuteFragment.newInstance(
                     args.getLong(
@@ -1511,6 +1590,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     )
                 )
             )
+
             Place.USER_BLACKLIST -> attachToFront(UserBannedFragment.newInstance(args.getLong(Extra.ACCOUNT_ID)))
             Place.FRIENDS_BIRTHDAYS -> attachToFront(BirthDayFragment.newInstance(args))
             Place.DRAWER_EDIT -> attachToFront(DrawerEditFragment.newInstance())
@@ -1519,6 +1599,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.ARTIST -> {
                 attachToFront(AudiosByArtistFragment.newInstance(args))
             }
+
             Place.SHORT_LINKS -> attachToFront(ShortedLinksFragment.newInstance(args.getLong(Extra.ACCOUNT_ID)))
 
             Place.SHORTCUTS -> attachToFront(ShortcutsViewFragment())
@@ -1529,6 +1610,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     )
                 )
             )
+
             Place.OWNER_ARTICLES -> attachToFront(
                 OwnerArticlesFragment.newInstance(
                     args.getLong(
@@ -1536,12 +1618,14 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     ), args.getLong(Extra.OWNER_ID)
                 )
             )
+
             Place.USER_DETAILS -> {
                 val accountId = args.getLong(Extra.ACCOUNT_ID)
                 val user: User = args.getParcelableCompat(Extra.USER) ?: return
                 val details: UserDetails = args.getParcelableCompat("details") ?: return
                 attachToFront(newInstance(accountId, user, details))
             }
+
             Place.WALL_ATTACHMENTS -> {
                 val wall_attachments = WallAttachmentsFragmentFactory.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
@@ -1551,18 +1635,21 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     ?: throw IllegalArgumentException("wall_attachments cant bee null")
                 attachToFront(wall_attachments)
             }
+
             Place.MARKET_ALBUMS -> attachToFront(
                 ProductAlbumsFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
                     args.getLong(Extra.OWNER_ID)
                 )
             )
+
             Place.NARRATIVES -> attachToFront(
                 NarrativesFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
                     args.getLong(Extra.OWNER_ID)
                 )
             )
+
             Place.MARKETS -> attachToFront(
                 ProductsFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
@@ -1571,18 +1658,21 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     args.getBoolean(Extra.SERVICE)
                 )
             )
+
             Place.PHOTO_ALL_COMMENT -> attachToFront(
                 PhotoAllCommentFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
                     args.getLong(Extra.OWNER_ID)
                 )
             )
+
             Place.GIFTS -> attachToFront(
                 GiftsFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
                     args.getLong(Extra.OWNER_ID)
                 )
             )
+
             Place.MARKET_VIEW -> attachToFront(MarketViewFragment.newInstance(args))
             Place.ALBUMS_BY_VIDEO -> attachToFront(VideoAlbumsByVideoFragment.newInstance(args))
             Place.FRIENDS_BY_PHONES -> attachToFront(FriendsByPhonesFragment.newInstance(args))
@@ -1674,18 +1764,22 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 openPageAndCloseSheet(AbsNavigationView.SECTION_ITEM_FEED)
                 return true
             }
+
             R.id.menu_search -> {
                 openPageAndCloseSheet(AbsNavigationView.SECTION_ITEM_SEARCH)
                 return true
             }
+
             R.id.menu_messages -> {
                 openPageAndCloseSheet(AbsNavigationView.SECTION_ITEM_DIALOGS)
                 return true
             }
+
             R.id.menu_feedback -> {
                 openPageAndCloseSheet(AbsNavigationView.SECTION_ITEM_FEEDBACK)
                 return true
             }
+
             R.id.menu_other -> {
                 if (navigationView?.isSheetOpen == true) {
                     navigationView?.closeSheet()
@@ -1694,6 +1788,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 }
                 return true
             }
+
             else -> return false
         }
     }

@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.api.interfaces
 
-import dev.ragnarok.fenrir.api.model.longpoll.VkApiGroupLongpollUpdates
-import dev.ragnarok.fenrir.api.model.longpoll.VkApiLongpollUpdates
+import dev.ragnarok.fenrir.api.model.longpoll.VKApiGroupLongpollUpdates
+import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
 import io.reactivex.rxjava3.core.Single
 
 interface ILongpollApi {
@@ -12,12 +12,12 @@ interface ILongpollApi {
         wait: Int,
         mode: Int,
         version: Int
-    ): Single<VkApiLongpollUpdates>
+    ): Single<VKApiLongpollUpdates>
 
     fun getGroupUpdates(
         server: String,
         key: String?,
         ts: String?,
         wait: Int
-    ): Single<VkApiGroupLongpollUpdates>
+    ): Single<VKApiGroupLongpollUpdates>
 }

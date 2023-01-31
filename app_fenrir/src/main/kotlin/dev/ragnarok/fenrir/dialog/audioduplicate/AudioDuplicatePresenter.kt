@@ -159,6 +159,7 @@ class AudioDuplicatePresenter(
                     new_audio,
                     old_audio
                 )
+
             PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
         }
     }

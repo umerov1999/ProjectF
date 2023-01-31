@@ -7,7 +7,7 @@ import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
 import dev.ragnarok.filegallery.settings.Settings
-import java.util.*
+import java.util.Arrays
 
 class EnterPinPresenter(savedState: Bundle?) : RxSupportPresenter<IEnterPinView>(savedState) {
     private val mValues: IntArray?

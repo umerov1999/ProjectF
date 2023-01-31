@@ -119,12 +119,14 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                     context, video, it1, "Local"
                                 )
                             }
+
                             VideoLocalServerOption.play_item_video -> {
                                 videoOnClickListener?.onVideoClick(
                                     holder.bindingAdapterPosition,
                                     video
                                 )
                             }
+
                             VideoLocalServerOption.update_time_item_video -> {
                                 val hash = parseLocalServerURL(video.link)
                                 if (hash.isNullOrEmpty()) {
@@ -141,6 +143,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                             ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(t)
                                     }
                             }
+
                             VideoLocalServerOption.edit_item_video -> {
                                 val hash2 = parseLocalServerURL(video.link)
                                 if (hash2.isNullOrEmpty()) {
@@ -186,6 +189,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                             ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(t)
                                     }
                             }
+
                             VideoLocalServerOption.delete_item_video -> MaterialAlertDialogBuilder(
                                 context
                             )
@@ -211,6 +215,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                 }
                                 .setNegativeButton(R.string.button_cancel, null)
                                 .show()
+
                             else -> {}
                         }
                     }

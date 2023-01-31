@@ -2,7 +2,16 @@ package dev.ragnarok.fenrir.domain.impl
 
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.db.interfaces.IStorages
-import dev.ragnarok.fenrir.db.model.entity.feedback.*
+import dev.ragnarok.fenrir.db.model.entity.feedback.CopyEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.FeedbackEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.LikeCommentEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.LikeEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.MentionCommentEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.MentionEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.NewCommentEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.PostFeedbackEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.ReplyCommentEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.UsersEntity
 import dev.ragnarok.fenrir.domain.IFeedbackInteractor
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.buildFeedbackDbo
@@ -139,27 +148,35 @@ class FeedbackInteractor(
                 is CopyEntity -> {
                     populateOwnerIds(ids, dbo)
                 }
+
                 is LikeCommentEntity -> {
                     populateOwnerIds(ids, dbo)
                 }
+
                 is LikeEntity -> {
                     populateOwnerIds(ids, dbo)
                 }
+
                 is MentionCommentEntity -> {
                     populateOwnerIds(ids, dbo)
                 }
+
                 is MentionEntity -> {
                     populateOwnerIds(ids, dbo)
                 }
+
                 is NewCommentEntity -> {
                     populateOwnerIds(ids, dbo)
                 }
+
                 is PostFeedbackEntity -> {
                     populateOwnerIds(ids, dbo)
                 }
+
                 is ReplyCommentEntity -> {
                     populateOwnerIds(ids, dbo)
                 }
+
                 is UsersEntity -> {
                     populateOwnerIds(ids, dbo)
                 }

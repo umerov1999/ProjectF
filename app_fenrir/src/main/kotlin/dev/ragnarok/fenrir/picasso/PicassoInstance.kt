@@ -13,8 +13,7 @@ import android.provider.MediaStore
 import androidx.core.content.ContextCompat
 import com.squareup.picasso3.BitmapSafeResize
 import com.squareup.picasso3.Picasso
-import dev.ragnarok.fenrir.AccountType
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
 import dev.ragnarok.fenrir.api.ProxyUtil
@@ -76,7 +75,7 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request = chain.toRequestBuilder(false)
                     .vkHeader(true)
-                    .addHeader("User-Agent", Constants.USER_AGENT(AccountType.BY_TYPE)).build()
+                    .addHeader("User-Agent", UserAgentTool.USER_AGENT_CURRENT_ACCOUNT).build()
                 chain.proceed(request)
             }).addInterceptor(UncompressDefaultInterceptor)
         /*
@@ -132,10 +131,12 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
                     Uri.parse("content://media/external/images/media/"),
                     id
                 )
+
                 Content_Local.VIDEO -> return ContentUris.withAppendedId(
                     Uri.parse("content://media/external/videos/media/"),
                     id
                 )
+
                 Content_Local.AUDIO -> return ContentUris.withAppendedId(
                     Uri.parse("content://media/external/audios/media/"),
                     id
@@ -154,10 +155,12 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     id
                 )
+
                 Content_Local.VIDEO -> return ContentUris.withAppendedId(
                     MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                     id
                 )
+
                 Content_Local.AUDIO -> return ContentUris.withAppendedId(
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                     id

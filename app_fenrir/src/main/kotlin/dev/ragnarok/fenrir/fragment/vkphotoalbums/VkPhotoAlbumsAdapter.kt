@@ -13,8 +13,8 @@ import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 
-class VkPhotoAlbumsAdapter(private val context: Context, private var data: List<PhotoAlbum>) :
-    RecyclerView.Adapter<VkPhotoAlbumsAdapter.Holder>() {
+class VKPhotoAlbumsAdapter(private val context: Context, private var data: List<PhotoAlbum>) :
+    RecyclerView.Adapter<VKPhotoAlbumsAdapter.Holder>() {
     private var clickListener: ClickListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         return Holder(

@@ -40,6 +40,9 @@ private sealed class AbstractJsonTreeEncoder(
 
     private var polymorphicDiscriminator: String? = null
 
+    override fun elementName(descriptor: SerialDescriptor, index: Int): String =
+        descriptor.getJsonElementName(json, index)
+
     override fun encodeJsonElement(element: JsonElement) {
         encodeSerializableValue(JsonElementSerializer, element)
     }
@@ -114,18 +117,37 @@ private sealed class AbstractJsonTreeEncoder(
         putElement(tag, JsonPrimitive(value.toString()))
     }
 
-    @SuppressAnimalSniffer // Long(Integer).toUnsignedString(long)
     override fun encodeTaggedInline(tag: String, inlineDescriptor: SerialDescriptor): Encoder =
-        if (inlineDescriptor.isUnsignedNumber) object : AbstractEncoder() {
-            override val serializersModule: SerializersModule = json.serializersModule
+        when {
+            inlineDescriptor.isUnsignedNumber -> inlineUnsignedNumberEncoder(tag)
+            inlineDescriptor.isUnquotedLiteral -> inlineUnquotedLiteralEncoder(
+                tag,
+                inlineDescriptor
+            )
 
-            fun putUnquotedString(s: String) = putElement(tag, JsonLiteral(s, isString = false))
-            override fun encodeInt(value: Int) = putUnquotedString(value.toUInt().toString())
-            override fun encodeLong(value: Long) = putUnquotedString(value.toULong().toString())
-            override fun encodeByte(value: Byte) = putUnquotedString(value.toUByte().toString())
-            override fun encodeShort(value: Short) = putUnquotedString(value.toUShort().toString())
+            else -> super.encodeTaggedInline(tag, inlineDescriptor)
         }
-        else super.encodeTaggedInline(tag, inlineDescriptor)
+
+    @SuppressAnimalSniffer // Long(Integer).toUnsignedString(long)
+    private fun inlineUnsignedNumberEncoder(tag: String) = object : AbstractEncoder() {
+        override val serializersModule: SerializersModule = json.serializersModule
+
+        fun putUnquotedString(s: String) = putElement(tag, JsonLiteral(s, isString = false))
+        override fun encodeInt(value: Int) = putUnquotedString(value.toUInt().toString())
+        override fun encodeLong(value: Long) = putUnquotedString(value.toULong().toString())
+        override fun encodeByte(value: Byte) = putUnquotedString(value.toUByte().toString())
+        override fun encodeShort(value: Short) = putUnquotedString(value.toUShort().toString())
+    }
+
+    private fun inlineUnquotedLiteralEncoder(tag: String, inlineDescriptor: SerialDescriptor) =
+        object : AbstractEncoder() {
+            override val serializersModule: SerializersModule get() = json.serializersModule
+
+            override fun encodeString(value: String) = putElement(
+                tag,
+                JsonLiteral(value, isString = false, coerceToInlineType = inlineDescriptor)
+            )
+        }
 
     override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
         val consumer =
@@ -139,6 +161,7 @@ private sealed class AbstractJsonTreeEncoder(
                 { JsonTreeMapEncoder(json, consumer) },
                 { JsonTreeListEncoder(json, consumer) }
             )
+
             else -> JsonTreeEncoder(json, consumer)
         }
 

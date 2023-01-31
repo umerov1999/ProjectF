@@ -173,6 +173,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                 Utils.doWavesLottie(holder.visual, true)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
             }
+
             2 -> {
                 Utils.doWavesLottie(holder.visual, false)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
@@ -257,18 +258,22 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                         AudioLocalOption.upload_item_audio -> {
                             mClickListener?.onUpload(position, audio)
                         }
+
                         AudioLocalOption.play_via_local_server -> {
                             mClickListener?.onRemotePlay(position, audio)
                         }
+
                         AudioLocalOption.play_item_audio -> {
                             mClickListener?.onClick(position, audio)
                             if (Settings.get().other().isShow_mini_player) getPlayerPlace(
                                 Settings.get().accounts().current
                             ).tryOpenWith(mContext)
                         }
+
                         AudioLocalOption.play_item_after_current_audio -> playAfterCurrent(
                             audio
                         )
+
                         AudioLocalOption.bitrate_item_audio -> getLocalBitrate(audio.url)
                         AudioLocalOption.strip_metadata_item_audio -> {
                             audio.url?.let { it ->
@@ -286,6 +291,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                                 )
                             }
                         }
+
                         AudioLocalOption.delete_item_audio -> try {
                             if (mContext.getContentResolver()
                                     .delete(Uri.parse(audio.url), null, null) == 1
@@ -299,6 +305,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                         } catch (e: Exception) {
                             createCustomToast(mContext).showToastError(e.localizedMessage)
                         }
+
                         else -> {}
                     }
                 }
@@ -400,6 +407,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                 currAudio = currentAudio
                 updateAudio(currAudio)
             }
+
             PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
         }
     }

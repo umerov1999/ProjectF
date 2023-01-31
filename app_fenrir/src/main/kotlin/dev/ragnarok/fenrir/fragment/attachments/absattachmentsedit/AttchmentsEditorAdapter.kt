@@ -10,7 +10,25 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.fragment.base.holder.IdentificableHolder
 import dev.ragnarok.fenrir.fragment.base.holder.SharedHolders
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.AbsModelType
+import dev.ragnarok.fenrir.model.Article
+import dev.ragnarok.fenrir.model.AttachmentEntry
+import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.model.AudioArtist
+import dev.ragnarok.fenrir.model.AudioPlaylist
+import dev.ragnarok.fenrir.model.Document
+import dev.ragnarok.fenrir.model.Event
+import dev.ragnarok.fenrir.model.Graffiti
+import dev.ragnarok.fenrir.model.Link
+import dev.ragnarok.fenrir.model.Market
+import dev.ragnarok.fenrir.model.MarketAlbum
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.PhotoSize
+import dev.ragnarok.fenrir.model.Poll
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
@@ -73,14 +91,17 @@ class AttchmentsEditorAdapter(
                 holder.tvTitle.setText(R.string.error)
                 holder.tvTitle.setTextColor(ERROR_COLOR)
             }
+
             Upload.STATUS_QUEUE -> {
                 holder.tvTitle.setText(R.string.in_order)
                 holder.tvTitle.setTextColor(nonErrorTextColor)
             }
+
             Upload.STATUS_CANCELLING -> {
                 holder.tvTitle.setText(R.string.cancelling)
                 holder.tvTitle.setTextColor(nonErrorTextColor)
             }
+
             else -> {
                 holder.tvTitle.setTextColor(nonErrorTextColor)
                 val progressLine = upload.progress.toString() + "%"
@@ -346,69 +367,91 @@ class AttchmentsEditorAdapter(
             AbsModelType.MODEL_PHOTO -> {
                 bindPhoto(holder, model as Photo)
             }
+
             AbsModelType.MODEL_VIDEO -> {
                 bindVideo(holder, model as Video)
             }
+
             AbsModelType.MODEL_AUDIO -> {
                 bindAudio(holder, model as Audio)
             }
+
             AbsModelType.MODEL_POLL -> {
                 bindPoll(holder, model as Poll)
             }
+
             AbsModelType.MODEL_POST -> {
                 bindPost(holder, model as Post)
             }
+
             AbsModelType.MODEL_DOCUMENT -> {
                 bindDoc(holder, model as Document)
             }
+
             AbsModelType.MODEL_FWDMESSAGES -> {
                 bindFwdMessages(holder)
             }
+
             AbsModelType.MODEL_UPLOAD -> {
                 configUploadObject(model as Upload, holder)
             }
+
             AbsModelType.MODEL_LINK -> {
                 bindLink(holder, model as Link)
             }
+
             AbsModelType.MODEL_ARTICLE -> {
                 bindArticle(holder, model as Article)
             }
+
             AbsModelType.MODEL_STORY -> {
                 bindStory(holder, model as Story)
             }
+
             AbsModelType.MODEL_CALL -> {
                 bindCall(holder)
             }
+
             AbsModelType.MODEL_GEO -> {
                 bindGeo(holder)
             }
+
             AbsModelType.MODEL_NOT_SUPPORTED -> {
                 bindNotSupported(holder)
             }
+
             AbsModelType.MODEL_EVENT -> {
                 bindEvent(holder, model as Event)
             }
+
             AbsModelType.MODEL_MARKET -> {
                 bindMarket(holder, model as Market)
             }
+
             AbsModelType.MODEL_MARKET_ALBUM -> {
                 bindMarketAlbum(holder, model as MarketAlbum)
             }
+
             AbsModelType.MODEL_AUDIO_ARTIST -> {
                 bindAudioArtist(holder, model as AudioArtist)
             }
+
             AbsModelType.MODEL_AUDIO_PLAYLIST -> {
                 bindAudioPlaylist(holder, model as AudioPlaylist)
             }
+
             AbsModelType.MODEL_GRAFFITI -> {
                 bindGraffiti(holder, model as Graffiti)
             }
+
             AbsModelType.MODEL_PHOTO_ALBUM -> {
                 bindPhotoAlbum(holder, model as PhotoAlbum)
             }
+
             AbsModelType.MODEL_WALL_REPLY -> {
                 bindWallReplies(holder)
             }
+
             else -> {
                 throw UnsupportedOperationException("Type " + model.javaClass + " in not supported")
             }

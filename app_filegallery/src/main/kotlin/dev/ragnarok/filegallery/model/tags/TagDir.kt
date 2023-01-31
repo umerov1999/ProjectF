@@ -57,8 +57,8 @@ class TagDir : Parcelable {
 
     val fileNameHash: Int
         get() = calculateCRC32(name!!)
-    val filePathHash: Int
-        get() = calculateCRC32(path!!)
+    val filePathHash: Long
+        get() = calculateCRC32(path!!).toLong()
 
     fun setId(id: Int): TagDir {
         this.id = id

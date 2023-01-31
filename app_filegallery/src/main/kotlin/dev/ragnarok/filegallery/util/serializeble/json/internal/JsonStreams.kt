@@ -2,6 +2,7 @@ package dev.ragnarok.filegallery.util.serializeble.json.internal
 
 import dev.ragnarok.filegallery.util.serializeble.json.DecodeSequenceMode
 import dev.ragnarok.filegallery.util.serializeble.json.Json
+import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.BATCH_SIZE
 import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.ReaderJsonLexer
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -42,10 +43,14 @@ internal fun <T> Json.decodeByReader(
     reader: SerialReader
 ): T {
     val lexer = ReaderJsonLexer(reader)
-    val input = StreamingJsonDecoder(this, WriteMode.OBJ, lexer, deserializer.descriptor, null)
-    val result = input.decodeSerializableValue(deserializer)
-    lexer.expectEof()
-    return result
+    try {
+        val input = StreamingJsonDecoder(this, WriteMode.OBJ, lexer, deserializer.descriptor, null)
+        val result = input.decodeSerializableValue(deserializer)
+        lexer.expectEof()
+        return result
+    } finally {
+        lexer.release()
+    }
 }
 
 @PublishedApi
@@ -55,7 +60,10 @@ internal fun <T> Json.decodeToSequenceByReader(
     deserializer: DeserializationStrategy<T>,
     format: DecodeSequenceMode = DecodeSequenceMode.AUTO_DETECT
 ): Sequence<T> {
-    val lexer = ReaderJsonLexer(reader)
+    val lexer = ReaderJsonLexer(
+        reader,
+        CharArray(BATCH_SIZE)
+    ) // Unpooled buffer due to lazy nature of sequence
     val iter = JsonIterator(format, this, lexer, deserializer)
     return Sequence { iter }.constrainOnce()
 }

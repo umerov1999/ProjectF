@@ -109,6 +109,7 @@ class FfmpegAudioDecoder(
             result == AUDIO_DECODER_ERROR_OTHER -> {
                 return FfmpegDecoderException("Error decoding (see logcat).")
             }
+
             result == AUDIO_DECODER_ERROR_INVALID_DATA -> {
                 // Treat invalid data errors as non-fatal to match the behavior of MediaCodec. No output will
                 // be produced for this buffer, so mark it as decode-only to ensure that the audio sink's
@@ -116,11 +117,13 @@ class FfmpegAudioDecoder(
                 outputBuffer.setFlags(C.BUFFER_FLAG_DECODE_ONLY)
                 return null
             }
+
             result == 0 -> {
                 // There's no need to output empty buffers.
                 outputBuffer.setFlags(C.BUFFER_FLAG_DECODE_ONLY)
                 return null
             }
+
             !hasOutputFormat -> {
                 channelCount = ffmpegGetChannelCount(nativeContext)
                 sampleRate = ffmpegGetSampleRate(nativeContext)
@@ -187,9 +190,11 @@ class FfmpegAudioDecoder(
                 MimeTypes.AUDIO_ALAC -> getAlacExtraData(
                     initializationData
                 )
+
                 MimeTypes.AUDIO_VORBIS -> getVorbisExtraData(
                     initializationData
                 )
+
                 else ->                 // Other codecs do not require extra data.
                     null
             }

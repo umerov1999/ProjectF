@@ -5,7 +5,6 @@ import android.content.ContentProviderResult
 import android.content.ContentValues
 import android.database.Cursor
 import android.provider.BaseColumns
-import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.db.AttachToType
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getCommentsContentUriFor
@@ -16,15 +15,28 @@ import dev.ragnarok.fenrir.db.interfaces.ICommentsStorage
 import dev.ragnarok.fenrir.db.model.entity.CommentEntity
 import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
 import dev.ragnarok.fenrir.exception.DatabaseException
+import dev.ragnarok.fenrir.getBlob
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.getInt
+import dev.ragnarok.fenrir.getLong
+import dev.ragnarok.fenrir.getString
+import dev.ragnarok.fenrir.ifNonNullNoEmpty
 import dev.ragnarok.fenrir.model.CommentUpdate
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.DraftComment
 import dev.ragnarok.fenrir.model.criteria.CommentsCriteria
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Exestime.log
 import dev.ragnarok.fenrir.util.Unixtime.now
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.*
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Maybe
+import io.reactivex.rxjava3.core.MaybeEmitter
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.subjects.PublishSubject
 import kotlinx.serialization.builtins.ListSerializer
 

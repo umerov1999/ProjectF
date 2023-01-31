@@ -29,6 +29,7 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
             TYPE_THEME -> return ThemeHolder(
                 LayoutInflater.from(parent.context).inflate(R.layout.item_theme, parent, false)
             )
+
             TYPE_SPECIAL -> return SpecialThemeHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_special_theme, parent, false)

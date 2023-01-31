@@ -21,9 +21,11 @@ object ErrorLocalizer {
                 val error = throwable.error
                 api().getMessage(context, error.errorCode, error.errorMsg) ?: "null"
             }
+
             is SocketTimeoutException -> {
                 context.getString(R.string.error_timeout_message)
             }
+
             is InterruptedIOException -> {
                 if ("timeout" == throwable.message || "executor rejected" == throwable.message) {
                     context.getString(R.string.error_timeout_message)
@@ -31,12 +33,15 @@ object ErrorLocalizer {
                     throwable.message.nonNullNoEmpty({ it }, { throwable.toString() })
                 }
             }
+
             is ConnectException, is UnknownHostException -> {
                 context.getString(R.string.error_unknown_host)
             }
+
             is NotFoundException -> {
                 context.getString(R.string.error_not_found_message)
             }
+
             is HttpException -> {
                 if (throwable.code < 0) {
                     context.getString(R.string.client_rest_shutdown)
@@ -44,6 +49,7 @@ object ErrorLocalizer {
                     context.getString(R.string.vk_servers_error, throwable.code)
                 }
             }
+
             else -> throwable.message.nonNullNoEmpty({ it }, { throwable.toString() })
         }
     }

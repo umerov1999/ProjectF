@@ -121,9 +121,11 @@ class VideoPreviewPresenter(
             video != null -> {
                 displayFullVideoInfo(viewHost, video ?: return)
             }
+
             refreshingNow -> {
                 viewHost.displayLoading()
             }
+
             else -> {
                 viewHost.displayLoadingError()
             }

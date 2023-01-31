@@ -86,6 +86,7 @@ class Conversation(private val id: Long) {
                     title
                 } else interlocutor?.fullName
             }
+
             Peer.CHAT, Peer.CONTACT -> title
             else -> throw IllegalStateException("Unknown peer id: $id")
         }
@@ -103,6 +104,7 @@ class Conversation(private val id: Long) {
                     title
                 } else interlocutor?.fullName
             }
+
             Peer.CHAT, Peer.CONTACT -> title
             else -> throw IllegalStateException("Unknown peer id: $id")
         }

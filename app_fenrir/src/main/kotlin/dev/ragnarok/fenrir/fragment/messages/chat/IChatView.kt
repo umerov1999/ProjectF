@@ -6,7 +6,15 @@ import dev.ragnarok.fenrir.crypt.KeyLocationPolicy
 import dev.ragnarok.fenrir.fragment.base.core.IErrorView
 import dev.ragnarok.fenrir.fragment.base.core.IToastView
 import dev.ragnarok.fenrir.fragment.messages.IBasicMessageListView
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.AttachmentEntry
+import dev.ragnarok.fenrir.model.Keyboard
+import dev.ragnarok.fenrir.model.LoadMoreState
+import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.ModelsBundle
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Peer
+import dev.ragnarok.fenrir.model.Sticker
+import dev.ragnarok.fenrir.model.WriteText
 import dev.ragnarok.fenrir.upload.UploadDestination
 
 interface IChatView : IBasicMessageListView, IErrorView, IToastView {

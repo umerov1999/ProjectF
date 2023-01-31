@@ -6,7 +6,7 @@ import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
-import java.util.*
+import java.util.Random
 import java.util.concurrent.atomic.AtomicInteger
 
 class AttachmentEntry : Parcelable {

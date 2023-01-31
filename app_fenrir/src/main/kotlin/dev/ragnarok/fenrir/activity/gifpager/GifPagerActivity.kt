@@ -159,6 +159,7 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
                 if (player is AudioPlayerFragment) player.dismiss()
                 AudioPlayerFragment.newInstance(args).show(supportFragmentManager, "audio_player")
             }
+
             else -> Utils.openPlaceWithSwipebleActivity(this, place)
         }
     }
@@ -277,6 +278,7 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
                             container.requestDisallowInterceptTouchEvent(true)
                             return@setOnTouchListener false
                         }
+
                         MotionEvent.ACTION_UP -> {
                             container.requestDisallowInterceptTouchEvent(false)
                             return@setOnTouchListener true
@@ -316,7 +318,7 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
 
         fun buildArgs(aid: Long, documents: ArrayList<Document>, index: Int): Bundle {
             val args = Bundle()
-            args.getLong(Extra.ACCOUNT_ID, aid)
+            args.putLong(Extra.ACCOUNT_ID, aid)
             args.putInt(Extra.INDEX, index)
             args.putParcelableArrayList(Extra.DOCS, documents)
             return args

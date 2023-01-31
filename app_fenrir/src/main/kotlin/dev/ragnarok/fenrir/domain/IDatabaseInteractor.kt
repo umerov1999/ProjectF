@@ -1,7 +1,12 @@
 package dev.ragnarok.fenrir.domain
 
 import dev.ragnarok.fenrir.model.City
-import dev.ragnarok.fenrir.model.database.*
+import dev.ragnarok.fenrir.model.database.Chair
+import dev.ragnarok.fenrir.model.database.Country
+import dev.ragnarok.fenrir.model.database.Faculty
+import dev.ragnarok.fenrir.model.database.School
+import dev.ragnarok.fenrir.model.database.SchoolClazz
+import dev.ragnarok.fenrir.model.database.University
 import io.reactivex.rxjava3.core.Single
 
 interface IDatabaseInteractor {

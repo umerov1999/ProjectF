@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
-import java.util.*
+import java.util.EventListener
 
 class SelectedProfilesAdapter(private val mContext: Context, private val mData: List<Owner>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -26,6 +26,7 @@ class SelectedProfilesAdapter(private val mContext: Context, private val mData: 
                 LayoutInflater.from(mContext)
                     .inflate(R.layout.item_selection_check, parent, false)
             )
+
             VIEW_TYPE_USER -> return ProfileViewHolder(
                 LayoutInflater.from(mContext)
                     .inflate(R.layout.item_selected_user, parent, false)

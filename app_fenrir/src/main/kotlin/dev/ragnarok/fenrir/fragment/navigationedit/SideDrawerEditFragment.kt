@@ -83,11 +83,13 @@ class SideDrawerEditFragment : AbsMvpFragment<SideDrawerEditPresenter, IDrawerEd
                 presenter?.fireSaveClick()
                 true
             }
+
             R.id.action_reset -> {
                 Settings.get().sideDrawerSettings().reset()
                 presenter?.fireResetClick()
                 true
             }
+
             else -> false
         }
     }

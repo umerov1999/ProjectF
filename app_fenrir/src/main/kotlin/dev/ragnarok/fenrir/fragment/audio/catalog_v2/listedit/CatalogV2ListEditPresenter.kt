@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.fragment.audio.catalog_v2.listedit
 import android.os.Bundle
 import dev.ragnarok.fenrir.fragment.base.core.AbsPresenter
 import dev.ragnarok.fenrir.settings.Settings
-import java.util.*
+import java.util.Collections
 
 class CatalogV2ListEditPresenter(savedInstanceState: Bundle?) :
     AbsPresenter<ICatalogV2ListEditView>(savedInstanceState) {

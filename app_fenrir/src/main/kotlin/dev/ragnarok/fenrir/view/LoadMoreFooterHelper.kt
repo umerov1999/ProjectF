@@ -25,6 +25,7 @@ class LoadMoreFooterHelper {
                 holder?.bLoadMore?.visibility = View.INVISIBLE
                 holder?.progress?.visibility = View.VISIBLE
             }
+
             LoadMoreState.END_OF_LIST -> {
                 holder?.tvEndOfList?.visibility = View.VISIBLE
                 holder?.tvEndOfList?.setAutoRepeat(false)
@@ -42,6 +43,7 @@ class LoadMoreFooterHelper {
                             )
                         )
                     }
+
                     1 -> {
                         holder?.tvEndOfList?.setAutoRepeat(false)
                         holder?.tvEndOfList?.fromRes(
@@ -55,6 +57,7 @@ class LoadMoreFooterHelper {
                             )
                         )
                     }
+
                     else -> {
                         holder?.tvEndOfList?.setAutoRepeat(true)
                         holder?.tvEndOfList?.fromRes(
@@ -75,12 +78,14 @@ class LoadMoreFooterHelper {
                 holder?.bLoadMore?.visibility = View.INVISIBLE
                 holder?.progress?.visibility = View.INVISIBLE
             }
+
             LoadMoreState.CAN_LOAD_MORE -> {
                 holder?.tvEndOfList?.setImageDrawable(null)
                 holder?.tvEndOfList?.visibility = View.INVISIBLE
                 holder?.bLoadMore?.visibility = View.VISIBLE
                 holder?.progress?.visibility = View.INVISIBLE
             }
+
             LoadMoreState.INVISIBLE -> {}
         }
     }

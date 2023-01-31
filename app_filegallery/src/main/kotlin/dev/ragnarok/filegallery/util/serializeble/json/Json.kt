@@ -76,10 +76,7 @@ sealed class Json(
      *
      * @throws [SerializationException] if the given value cannot be serialized to JSON.
      */
-    final override fun <T> encodeToString(
-        serializer: SerializationStrategy<T>,
-        value: T
-    ): String {
+    final override fun <T> encodeToString(serializer: SerializationStrategy<T>, value: T): String {
         val result = JsonToStringWriter()
         try {
             encodeByWriter(result, serializer, value)
@@ -112,10 +109,7 @@ sealed class Json(
      * @throws [SerializationException] if the given value cannot be serialized to JSON
      */
     @OptIn(InternalSerializationApi::class)
-    fun <T> encodeToJsonElement(
-        serializer: SerializationStrategy<T>,
-        value: T
-    ): JsonElement {
+    fun <T> encodeToJsonElement(serializer: SerializationStrategy<T>, value: T): JsonElement {
         return writeJson(value, serializer)
     }
 
@@ -350,7 +344,21 @@ class JsonBuilder internal constructor(json: Json) {
     var useAlternativeNames: Boolean = json.configuration.useAlternativeNames
 
     /**
+     * Specifies [JsonNamingStrategy] that should be used for all properties in classes for serialization and deserialization.
+     *
+     * `null` by default.
+     *
+     * This strategy is applied for all entities that have StructureKind.CLASS.
+     */
+    @ExperimentalSerializationApi
+    var namingStrategy: JsonNamingStrategy? = json.configuration.namingStrategy
+
+    /**
      * Module with contextual and polymorphic serializers to be used in the resulting [Json] instance.
+     *
+     * @see SerializersModule
+     * @see Contextual
+     * @see Polymorphic
      */
     var serializersModule: SerializersModule = json.serializersModule
 
@@ -377,7 +385,8 @@ class JsonBuilder internal constructor(json: Json) {
             encodeDefaults, ignoreUnknownKeys, isLenient,
             allowStructuredMapKeys, prettyPrint, explicitNulls, prettyPrintIndent,
             coerceInputValues, useArrayPolymorphism,
-            classDiscriminator, allowSpecialFloatingPointValues, useAlternativeNames
+            classDiscriminator, allowSpecialFloatingPointValues, useAlternativeNames,
+            namingStrategy
         )
     }
 }

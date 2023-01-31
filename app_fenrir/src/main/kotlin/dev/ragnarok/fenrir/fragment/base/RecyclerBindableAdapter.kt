@@ -169,11 +169,13 @@ abstract class RecyclerBindableAdapter<T, VH : RecyclerView.ViewHolder>(private 
                 //add our view to a header view and display it
                 prepareHeaderFooter(vh as HeaderFooterViewHolder, v)
             }
+
             isFooter(position) -> {
                 val v = footers[position - realItemCount - headersCount]
                 //add our view to a footer view and display it
                 prepareHeaderFooter(vh as HeaderFooterViewHolder, v)
             }
+
             else -> {
                 //it's one of our items, display as required
                 onBindItemViewHolder(vh, position - headers.size, getItemType(position))

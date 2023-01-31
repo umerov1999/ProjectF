@@ -18,7 +18,9 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.squareup.picasso3.Transformation
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.AccountType
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.domain.IAudioInteractor
@@ -26,6 +28,7 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.AudioSearchCriteria
+import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.canPlayAfterCurrent
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.currentAudio
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.isNowPlayingOrPreparingOrPaused
@@ -40,6 +43,8 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.menu.options.AudioOption
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.PolyTransformation
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
@@ -50,6 +55,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleTabSearchPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.TrackIsDownloaded
@@ -216,6 +222,7 @@ class AudioRecyclerAdapter(
                 currAudio = currentAudio
                 updateAudio(currAudio)
             }
+
             PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
         }
     }
@@ -275,6 +282,7 @@ class AudioRecyclerAdapter(
                 Utils.doWavesLottie(holder.visual, true)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
             }
+
             2 -> {
                 Utils.doWavesLottie(holder.visual, false)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
@@ -450,17 +458,21 @@ class AudioRecyclerAdapter(
                                 Settings.get().accounts().current
                             ).tryOpenWith(mContext)
                         }
+
                         AudioOption.play_item_after_current_audio -> playAfterCurrent(
                             audio
                         )
+
                         AudioOption.edit_track -> {
                             mClickListener?.onEdit(position, audio)
                         }
+
                         AudioOption.share_button -> startForSendAttachments(
                             mContext,
                             Settings.get().accounts().current,
                             audio
                         )
+
                         AudioOption.search_by_artist -> getSingleTabSearchPlace(
                             Settings.get().accounts().current,
                             SearchContentType.AUDIOS,
@@ -468,16 +480,19 @@ class AudioRecyclerAdapter(
                                 audio.artist, by_artist = true, in_main_page = false
                             )
                         ).tryOpenWith(mContext)
+
                         AudioOption.get_lyrics_menu -> get_lyrics(audio)
                         AudioOption.get_recommendation_by_audio -> SearchByAudioPlace(
                             Settings.get().accounts().current, audio.ownerId, audio.id
                         ).tryOpenWith(mContext)
+
                         AudioOption.open_album -> getAudiosInAlbumPlace(
                             Settings.get().accounts().current,
                             audio.album_owner_id,
                             audio.albumId,
                             audio.album_access_key
                         ).tryOpenWith(mContext)
+
                         AudioOption.copy_url -> {
                             val clipboard =
                                 mContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
@@ -485,6 +500,7 @@ class AudioRecyclerAdapter(
                             clipboard?.setPrimaryClip(clip)
                             createCustomToast(mContext).showToast(R.string.copied)
                         }
+
                         AudioOption.add_item_audio -> {
                             val myAudio = audio.ownerId == Settings.get().accounts().current
                             if (myAudio) {
@@ -493,6 +509,7 @@ class AudioRecyclerAdapter(
                                 addTrack(Settings.get().accounts().current, audio)
                             }
                         }
+
                         AudioOption.add_and_download_button -> {
                             if (audio.ownerId != Settings.get().accounts().current) {
                                 addTrack(Settings.get().accounts().current, audio)
@@ -529,6 +546,7 @@ class AudioRecyclerAdapter(
                                         }
                                         ?.show()
                                 }
+
                                 else -> {
                                     audio.downloadIndicator = 0
                                     updateDownloadState(holder, audio)
@@ -536,6 +554,7 @@ class AudioRecyclerAdapter(
                                 }
                             }
                         }
+
                         AudioOption.save_item_audio -> {
                             if (!hasReadWriteStoragePermission(mContext)) {
                                 mClickListener?.onRequestWritePermissions()
@@ -569,6 +588,7 @@ class AudioRecyclerAdapter(
                                         }
                                         ?.show()
                                 }
+
                                 else -> {
                                     audio.downloadIndicator = 0
                                     updateDownloadState(holder, audio)
@@ -576,9 +596,11 @@ class AudioRecyclerAdapter(
                                 }
                             }
                         }
+
                         AudioOption.bitrate_item_audio -> getMp3AndBitrate(
                             Settings.get().accounts().current, audio
                         )
+
                         AudioOption.goto_artist -> {
                             val artists = Utils.getArrayFromHash(
                                 audio.main_artists
@@ -646,9 +668,11 @@ class AudioRecyclerAdapter(
                 audio.url.isNullOrEmpty() -> {
                     viewHolder.isSelectedView.setCardBackgroundColor(Color.parseColor("#ff0000"))
                 }
+
                 TrackIsDownloaded(audio) != 0 -> {
                     viewHolder.isSelectedView.setCardBackgroundColor(Color.parseColor("#00aa00"))
                 }
+
                 else -> {
                     viewHolder.isSelectedView.setCardBackgroundColor(
                         CurrentTheme.getColorPrimary(
@@ -743,6 +767,7 @@ class AudioRecyclerAdapter(
                                     ?.show()
                             }
                         }
+
                         else -> {
                             audio.downloadIndicator = 0
                             updateDownloadState(viewHolder, audio)
@@ -770,9 +795,11 @@ class AudioRecyclerAdapter(
                     audio.url.isNullOrEmpty() -> {
                         viewHolder.isSelectedView.setCardBackgroundColor(Color.parseColor("#ff0000"))
                     }
+
                     TrackIsDownloaded(audio) != 0 -> {
                         viewHolder.isSelectedView.setCardBackgroundColor(Color.parseColor("#00aa00"))
                     }
+
                     else -> {
                         viewHolder.isSelectedView.setCardBackgroundColor(
                             CurrentTheme.getColorPrimary(

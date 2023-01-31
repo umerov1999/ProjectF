@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.api.model.Error
 import dev.ragnarok.fenrir.api.model.Params
 import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
-import dev.ragnarok.fenrir.api.model.response.VkResponse
+import dev.ragnarok.fenrir.api.model.response.VKResponse
 import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import dev.ragnarok.fenrir.service.ApiErrorCodes
@@ -96,7 +96,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
     private fun rawVKRequestOnly(
         method: String,
         postParams: Map<String, String>
-    ): Single<VkResponse> {
+    ): Single<VKResponse> {
         val bodyBuilder = FormBody.Builder()
         for ((key, value) in postParams) {
             bodyBuilder.add(key, value)
@@ -127,9 +127,9 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
             }
             .map {
                 if (it.body.isMsgPack()) MsgPack().decodeFromOkioStream(
-                    VkResponse.serializer(),
+                    VKResponse.serializer(),
                     it.body.source()
-                ) else kJson.decodeFromStream(VkResponse.serializer(), it.body.byteStream())
+                ) else kJson.decodeFromStream(VKResponse.serializer(), it.body.byteStream())
             }
     }
 
@@ -137,11 +137,12 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
         var handle = true
         when (error.errorCode) {
             ApiErrorCodes.TOO_MANY_REQUESTS_PER_SECOND -> {
-                synchronized(AbsVkApiInterceptor::class.java) {
+                synchronized(AbsVKApiInterceptor::class.java) {
                     val sleepMs = 1000 + RANDOM.nextInt(500)
                     SystemClock.sleep(sleepMs.toLong())
                 }
             }
+
             ApiErrorCodes.REFRESH_TOKEN, ApiErrorCodes.CLIENT_VERSION_DEPRECATED -> {
                 val token = error.requests()["access_token"] ?: Settings.get().accounts()
                     .getAccessToken(accountId)
@@ -156,9 +157,10 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                         Settings.get().accounts().getAccessToken(accountId).orEmpty()
                 }
             }
+
             ApiErrorCodes.VALIDATE_NEED -> {
                 val provider = Includes.validationProvider
-                provider.requestValidate(error.redirectUri)
+                provider.requestValidate(error.redirectUri, accountId)
                 var code = false
                 while (true) {
                     try {
@@ -178,6 +180,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                         Settings.get().accounts().getAccessToken(accountId).orEmpty()
                 }
             }
+
             ApiErrorCodes.CAPTCHA_NEED -> {
                 val captcha = Captcha(error.captchaSid, error.captchaImg)
                 val provider = Includes.captchaProvider
@@ -200,6 +203,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                     params["captcha_key"] = code
                 }
             }
+
             else -> {
                 handle = false
             }
@@ -233,8 +237,8 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
         }
     }
 
-    fun checkResponseWithErrorHandling(): Function<VkResponse, Completable> {
-        return Function { response: VkResponse ->
+    fun checkResponseWithErrorHandling(): Function<VKResponse, Completable> {
+        return Function { response: VKResponse ->
             response.error.requireNonNull {
                 val params = it.requests()
                 if (!handleError(it, params)) {

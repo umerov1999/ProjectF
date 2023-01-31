@@ -3,13 +3,16 @@ package dev.ragnarok.filegallery.db.impl
 import android.content.ContentValues
 import android.content.Context
 import android.provider.BaseColumns
-import dev.ragnarok.filegallery.*
 import dev.ragnarok.filegallery.db.SearchRequestHelper
 import dev.ragnarok.filegallery.db.column.FilesColumns
 import dev.ragnarok.filegallery.db.column.SearchRequestColumns
 import dev.ragnarok.filegallery.db.column.TagDirsColumns
 import dev.ragnarok.filegallery.db.column.TagOwnerColumns
 import dev.ragnarok.filegallery.db.interfaces.ISearchRequestHelperStorage
+import dev.ragnarok.filegallery.getBoolean
+import dev.ragnarok.filegallery.getInt
+import dev.ragnarok.filegallery.getLong
+import dev.ragnarok.filegallery.getString
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.model.FileItem
 import dev.ragnarok.filegallery.model.FileType
@@ -17,12 +20,13 @@ import dev.ragnarok.filegallery.model.tags.TagDir
 import dev.ragnarok.filegallery.model.tags.TagFull
 import dev.ragnarok.filegallery.model.tags.TagOwner
 import dev.ragnarok.filegallery.settings.Settings
+import dev.ragnarok.filegallery.trimmedIsNullOrEmpty
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import java.io.File
-import java.util.*
+import java.util.Collections
 
 class SearchRequestHelperStorage internal constructor(context: Context) :
     ISearchRequestHelperStorage {

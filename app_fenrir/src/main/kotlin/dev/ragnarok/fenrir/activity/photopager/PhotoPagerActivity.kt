@@ -354,6 +354,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 if (player is AudioPlayerFragment) player.dismiss()
                 AudioPlayerFragment.newInstance(args).show(supportFragmentManager, "audio_player")
             }
+
             else -> {
                 val intent = Intent(this, SwipebleActivity::class.java)
                 intent.action = MainActivity.ACTION_OPEN_PLACE
@@ -374,6 +375,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 presenter?.fireSaveOnDriveClick()
                 return true
             }
+
             R.id.save_yourself -> presenter?.fireSaveYourselfClick()
             R.id.action_delete -> presenter?.fireDeleteClick()
             R.id.info -> presenter?.fireInfoButtonClick()
@@ -445,6 +447,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             saveInstanceState
                         )
                     }
+
                     Place.VK_PHOTO_ALBUM_GALLERY_SAVED -> {
                         val indexx = requireArguments().getInt(Extra.INDEX)
                         val ownerId = requireArguments().getLong(Extra.OWNER_ID)
@@ -465,6 +468,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             saveInstanceState
                         )
                     }
+
                     Place.VK_PHOTO_ALBUM_GALLERY, Place.VK_PHOTO_ALBUM_GALLERY_NATIVE -> {
                         val indexx = requireArguments().getInt(Extra.INDEX)
                         val ownerId = requireArguments().getLong(Extra.OWNER_ID)
@@ -496,6 +500,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             saveInstanceState
                         )
                     }
+
                     Place.FAVE_PHOTOS_GALLERY -> {
                         val findex = requireArguments().getInt(Extra.INDEX)
                         val favePhotos: ArrayList<Photo> =
@@ -508,6 +513,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             saveInstanceState
                         )
                     }
+
                     Place.VK_PHOTO_TMP_SOURCE -> {
                         if (!FenrirNative.isNativeLoaded || !Settings.get()
                                 .other().isNative_parcel_photo
@@ -591,6 +597,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                         accountId,
                         photo
                     )
+
                     2 -> presenter?.firePostToMyWallClick()
                 }
             }
@@ -897,6 +904,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             container.requestDisallowInterceptTouchEvent(true)
                             return@setOnTouchListener false
                         }
+
                         MotionEvent.ACTION_UP -> {
                             container.requestDisallowInterceptTouchEvent(false)
                             return@setOnTouchListener true

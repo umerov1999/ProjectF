@@ -79,6 +79,7 @@ class FeedInteractor(
                     "likes" -> networker.vkDefault(accountId)
                         .newsfeed()
                         .getFeedLikes(maxPhotos, startFrom, count, Fields.FIELDS_BASE_OWNER)
+
                     "recommendation" -> networker.vkDefault(accountId)
                         .newsfeed()
                         .getRecommended(
@@ -89,6 +90,7 @@ class FeedInteractor(
                             count,
                             Fields.FIELDS_BASE_OWNER
                         )
+
                     else -> networker.vkDefault(accountId)
                         .newsfeed()
                         .getTop(
@@ -140,6 +142,7 @@ class FeedInteractor(
                         }
                 }
             }
+
             else -> {
                 networker.vkDefault(accountId)
                     .newsfeed()[filters, null, null, null, maxPhotos, if (setOf(

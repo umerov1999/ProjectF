@@ -18,7 +18,6 @@ import static android.content.ContentValues.TAG;
 import static com.google.android.gms.common.internal.Preconditions.checkArgument;
 import static com.google.firebase.installations.BuildConfig.VERSION_NAME;
 
-import android.content.Context;
 import android.net.TrafficStats;
 import android.text.TextUtils;
 import android.util.JsonReader;
@@ -97,19 +96,15 @@ public class FirebaseInstallationServiceClient {
     private static final String X_ANDROID_IID_MIGRATION_KEY = "x-goog-fis-android-iid-migration-auth";
     private static final String API_KEY_HEADER = "x-goog-api-key";
     private static final int NETWORK_TIMEOUT_MILLIS = 10000;
-    private static final Pattern EXPIRATION_TIMESTAMP_PATTERN = Pattern.compile("[0-9]+s");
+    private static final Pattern EXPIRATION_TIMESTAMP_PATTERN = Pattern.compile("\\d+s");
     private static final int MAX_RETRIES = 1;
     private static final Charset UTF_8 = StandardCharsets.UTF_8;
     private static final String SDK_VERSION_PREFIX = "a:";
     private static final String FIS_TAG = "Firebase-Installations";
-    private final Context context;
     private final Provider<HeartBeatController> heartBeatProvider;
     private final RequestLimiter requestLimiter;
-    private boolean shouldServerErrorRetry;
 
-    public FirebaseInstallationServiceClient(
-            @NonNull Context context, @NonNull Provider<HeartBeatController> heartBeatProvider) {
-        this.context = context;
+    public FirebaseInstallationServiceClient(@NonNull Provider<HeartBeatController> heartBeatProvider) {
         this.heartBeatProvider = heartBeatProvider;
         requestLimiter = new RequestLimiter();
     }

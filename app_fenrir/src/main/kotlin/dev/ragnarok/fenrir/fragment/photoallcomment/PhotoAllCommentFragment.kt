@@ -270,6 +270,7 @@ class PhotoAllCommentFragment :
                             presenter?.fireGoPhotoClick(
                                 comment
                             )
+
                         CommentsPhotoOption.copy_item_comment -> {
                             val clipboard = requireActivity()
                                 .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
@@ -278,21 +279,26 @@ class PhotoAllCommentFragment :
                             createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
                                 .showToast(R.string.copied_to_clipboard)
                         }
+
                         CommentsPhotoOption.report_item_comment -> presenter?.fireReport(
                             comment,
                             requireActivity()
                         )
+
                         CommentsPhotoOption.like_item_comment -> presenter?.fireCommentLikeClick(
                             comment,
                             true
                         )
+
                         CommentsPhotoOption.dislike_item_comment -> presenter?.fireCommentLikeClick(
                             comment,
                             false
                         )
+
                         CommentsPhotoOption.who_like_item_comment -> presenter?.fireWhoLikesClick(
                             comment
                         )
+
                         CommentsPhotoOption.send_to_friend_item_comment -> presenter?.fireReplyToChat(
                             comment,
                             requireActivity()

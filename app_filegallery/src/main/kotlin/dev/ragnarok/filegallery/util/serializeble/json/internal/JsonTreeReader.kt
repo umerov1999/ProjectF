@@ -4,8 +4,23 @@
 
 package dev.ragnarok.filegallery.util.serializeble.json.internal
 
-import dev.ragnarok.filegallery.util.serializeble.json.*
-import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.*
+import dev.ragnarok.filegallery.util.serializeble.json.JsonArray
+import dev.ragnarok.filegallery.util.serializeble.json.JsonConfiguration
+import dev.ragnarok.filegallery.util.serializeble.json.JsonElement
+import dev.ragnarok.filegallery.util.serializeble.json.JsonLiteral
+import dev.ragnarok.filegallery.util.serializeble.json.JsonNull
+import dev.ragnarok.filegallery.util.serializeble.json.JsonObject
+import dev.ragnarok.filegallery.util.serializeble.json.JsonPrimitive
+import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.AbstractJsonLexer
+import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.NULL
+import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.TC_BEGIN_LIST
+import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.TC_BEGIN_OBJ
+import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.TC_COLON
+import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.TC_COMMA
+import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.TC_END_LIST
+import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.TC_END_OBJ
+import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.TC_OTHER
+import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.TC_STRING
 
 internal class JsonTreeReader(
     configuration: JsonConfiguration,
@@ -99,6 +114,7 @@ internal class JsonTreeReader(
                 --stackDepth
                 result
             }
+
             TC_BEGIN_LIST -> readArray()
             else -> lexer.fail("Cannot begin reading element, unexpected token: $token")
         }

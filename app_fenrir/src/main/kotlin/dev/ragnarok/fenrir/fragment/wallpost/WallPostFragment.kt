@@ -168,56 +168,69 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                 presenter?.fireDeleteClick()
                 return true
             }
+
             R.id.restore_post -> {
                 presenter?.fireRestoreClick()
                 return true
             }
+
             R.id.pin_post -> {
                 presenter?.firePinClick()
                 return true
             }
+
             R.id.unpin_post -> {
                 presenter?.fireUnpinClick()
                 return true
             }
+
             R.id.goto_user_post -> {
                 presenter?.fireGoToOwnerClick()
                 return true
             }
+
             R.id.copy_url_post -> {
                 presenter?.fireCopyLinkClick()
                 return true
             }
+
             R.id.action_export -> {
                 presenter?.fireExportClick()
                 return true
             }
+
             R.id.report -> {
                 presenter?.fireReport()
                 return true
             }
+
             R.id.copy_text -> {
                 presenter?.fireCopyTextClick()
                 return true
             }
+
             R.id.action_allow_text_selection -> {
                 mTextSelectionAllowed = true
                 resolveTextSelection()
                 requireActivity().invalidateOptionsMenu()
                 return true
             }
+
             R.id.add_to_bookmarks -> {
                 presenter?.fireBookmark()
                 return true
             }
+
             R.id.edit_post -> {
                 presenter?.firePostEditClick()
                 return true
             }
+
             R.id.refresh -> {
                 presenter?.fireRefresh()
                 return true
             }
+
             else -> return false
         }
     }
@@ -316,6 +329,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                     formattedDate
                 )
             )
+
             IWallPostView.SUBTITLE_PHOTO_UPDATE -> setToolbarSubtitle(
                 getString(
                     R.string.updated_profile_photo_at,

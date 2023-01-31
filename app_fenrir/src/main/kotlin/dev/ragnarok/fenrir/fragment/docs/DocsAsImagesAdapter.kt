@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
-import java.util.*
+import java.util.EventListener
 
 class DocsAsImagesAdapter(data: MutableList<Document>) :
     RecyclerBindableAdapter<Document, DocsAsImagesAdapter.DocViewHolder>(data) {

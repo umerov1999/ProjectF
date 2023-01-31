@@ -74,26 +74,37 @@ class FcmListenerService : FirebaseMessagingService() {
             when (pushType) {
                 PushType.MSG, PushType.CHAT -> FCMMessage.fromRemoteMessage(message)
                     .notify(accountId)
+
                 PushType.POST -> WallPostFCMMessage.fromRemoteMessage(message)
                     ?.nofify(context, accountId)
+
                 PushType.COMMENT -> CommentFCMMessage.fromRemoteMessage(message)
                     ?.notify(context, accountId)
+
                 PushType.FRIEND -> FriendFCMMessage.fromRemoteMessage(message)
                     ?.notify(context, accountId)
+
                 PushType.NEW_POST -> NewPostPushMessage.fromRemoteMessage(accountId, message)
                     .notifyIfNeed(context)
+
                 PushType.LIKE -> LikeFCMMessage.fromRemoteMessage(accountId, message)
                     ?.notifyIfNeed(context)
+
                 PushType.REPLY -> ReplyFCMMessage.fromRemoteMessage(message)
                     ?.notify(context, accountId)
+
                 PushType.WALL_PUBLISH -> WallPublishFCMMessage.fromRemoteMessage(message)
                     ?.notify(context, accountId)
+
                 PushType.FRIEND_ACCEPTED -> FriendAcceptedFCMMessage.fromRemoteMessage(message)
                     ?.notify(context, accountId)
+
                 PushType.GROUP_INVITE -> GroupInviteFCMMessage.fromRemoteMessage(message)
                     ?.notify(context, accountId)
+
                 PushType.BIRTHDAY -> BirthdayFCMMessage.fromRemoteMessage(message)
                     ?.notify(context, accountId)
+
                 PushType.VALIDATE_DEVICE -> NotificationHelper.showSimpleNotification(
                     context,
                     message.data["body"],
@@ -101,6 +112,7 @@ class FcmListenerService : FirebaseMessagingService() {
                     null,
                     message.data["url"]
                 )
+
                 PushType.SHOW_MESSAGE -> NotificationHelper.showSimpleNotification(
                     context,
                     message.data["body"],
@@ -108,8 +120,10 @@ class FcmListenerService : FirebaseMessagingService() {
                     null,
                     null
                 )
+
                 PushType.MENTION -> MentionMessage.fromRemoteMessage(message)
                     .notify(context, accountId)
+
                 else -> {}
             }
         } catch (e: Exception) {

@@ -295,6 +295,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                                     }
                                 }
+
                                 option.id == 1 && FenrirNative.isNativeLoaded -> {
                                     val intent =
                                         Intent(this@MainActivity, CameraScanActivity::class.java)
@@ -324,15 +325,19 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
             SectionItem.FILE_MANAGER -> {
                 mBottomNavigation?.menu?.findItem(R.id.menu_files)?.isChecked = true
             }
+
             SectionItem.LOCAL_SERVER -> {
                 mBottomNavigation?.menu?.findItem(R.id.menu_local_server)?.isChecked = true
             }
+
             SectionItem.NULL -> {
 
             }
+
             SectionItem.SETTINGS -> {
                 mBottomNavigation?.menu?.findItem(R.id.menu_settings)?.isChecked = true
             }
+
             SectionItem.TAGS -> {
                 mBottomNavigation?.menu?.findItem(R.id.menu_tags)?.isChecked = true
             }
@@ -435,15 +440,19 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
             Place.FILE_MANAGER -> {
                 attachToFront(FileManagerFragment.newInstance(args))
             }
+
             Place.PREFERENCES -> {
                 attachToFront(PreferencesFragment())
             }
+
             Place.LOCAL_MEDIA_SERVER -> {
                 attachToFront(LocalServerTabsFragment())
             }
+
             Place.SETTINGS_THEME -> {
                 attachToFront(ThemeFragment())
             }
+
             Place.AUDIO_PLAYER -> {
                 val player = supportFragmentManager.findFragmentByTag("audio_player")
                 if (player is AudioPlayerFragment) {
@@ -451,6 +460,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                 }
                 AudioPlayerFragment().show(supportFragmentManager, "audio_player")
             }
+
             Place.PHOTO_LOCAL, Place.PHOTO_LOCAL_SERVER -> {
                 PhotoPagerActivity.newInstance(this, place.type, args)?.let {
                     place.launchActivityForResult(
@@ -459,17 +469,21 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                     )
                 }
             }
+
             Place.VIDEO_PLAYER -> {
                 val intent = Intent(this, VideoPlayerActivity::class.java)
                 intent.putExtras(args)
                 startActivity(intent)
             }
+
             Place.TAGS -> {
                 attachToFront(TagOwnerFragment.newInstance(args))
             }
+
             Place.TAG_DIRS -> {
                 attachToFront(TagDirFragment.newInstance(args))
             }
+
             Place.SECURITY -> attachToFront(SecurityPreferencesFragment())
         }
     }
@@ -542,6 +556,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                     }
                 openPlace(getFileManagerPlace(path.absolutePath, false, isSelect))
             }
+
             SectionItem.LOCAL_SERVER -> {
                 if (!Settings.get().main().getLocalServer().enabled) {
                     createCustomToast(this, mViewFragment, mBottomNavigation)
@@ -552,12 +567,15 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                     openPlace(getLocalMediaServerPlace())
                 }
             }
+
             SectionItem.NULL -> {
                 throw UnsupportedOperationException()
             }
+
             SectionItem.SETTINGS -> {
                 openPlace(getPreferencesPlace())
             }
+
             SectionItem.TAGS -> {
                 openPlace(getTagsPlace(isSelect))
             }
@@ -574,6 +592,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                 )
                 true
             }
+
             R.id.menu_settings -> {
                 openNavigationPage(
                     SectionItem.SETTINGS,
@@ -582,6 +601,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                 )
                 true
             }
+
             R.id.menu_local_server -> {
                 openNavigationPage(
                     SectionItem.LOCAL_SERVER,
@@ -590,10 +610,12 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                 )
                 true
             }
+
             R.id.menu_tags -> {
                 openNavigationPage(SectionItem.TAGS, clearBackStack = false, isSelect = isSelected)
                 true
             }
+
             else -> false
         }
     }

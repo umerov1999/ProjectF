@@ -44,6 +44,7 @@ open class MsgPackTimestampExtensionSerializer :
                 val timestamp = extension.data.joinToNumber<Long>()
                 return MsgPackTimestamp.T32(timestamp)
             }
+
             MsgPackExtension.Type.FIXEXT8 -> {
                 // Working with Timestamp 64
                 val nanoseconds = extension.data
@@ -59,6 +60,7 @@ open class MsgPackTimestampExtensionSerializer :
                             .joinToNumber<Long>()
                 return MsgPackTimestamp.T64(seconds, nanoseconds)
             }
+
             MsgPackExtension.Type.EXT8 -> {
                 // Working with Timestamp 96
                 if (extension.data.size != TIMESTAMP_96_DATA_SIZE) {
@@ -77,6 +79,7 @@ open class MsgPackTimestampExtensionSerializer :
                     .joinToNumber<Long>()
                 return MsgPackTimestamp.T92(seconds, nanoseconds)
             }
+
             else -> throw MsgPackSerializationException.genericExtensionError(
                 extension,
                 "Unsupported extension type for timestamp: ${extension.type}"
@@ -91,6 +94,7 @@ open class MsgPackTimestampExtensionSerializer :
                 extTypeId,
                 extension.seconds.toInt().splitToByteArray()
             )
+
             is MsgPackTimestamp.T64 -> {
                 val nanoseconds = extension.nanoseconds.shl(2).splitToByteArray()
                 val nanoLastByte = nanoseconds.last().toInt() and 0xff
@@ -104,6 +108,7 @@ open class MsgPackTimestampExtensionSerializer :
                     nanoseconds.take(3).toByteArray() + combinedByte + seconds.takeLast(4)
                 )
             }
+
             is MsgPackTimestamp.T92 -> MsgPackExtension(
                 MsgPackExtension.Type.EXT8,
                 extTypeId,

@@ -1,5 +1,6 @@
 package dev.ragnarok.intellij.getter_setter_plugin
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -7,6 +8,10 @@ import com.intellij.openapi.command.WriteCommandAction
 import java.util.regex.Pattern
 
 open class GetterSetterFixAction : AnAction() {
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.EDT
+    }
+
     override fun actionPerformed(event: AnActionEvent) {
         try {
             val editor = event.getRequiredData(CommonDataKeys.EDITOR)

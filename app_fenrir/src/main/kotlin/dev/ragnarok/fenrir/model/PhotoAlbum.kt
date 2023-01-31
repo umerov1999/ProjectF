@@ -3,7 +3,11 @@ package dev.ragnarok.fenrir.model
 import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.putBoolean
+import dev.ragnarok.fenrir.readTypedObjectCompat
+import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class PhotoAlbum : AbsModel, ISomeones {
     private val id: Int
@@ -90,15 +94,19 @@ class PhotoAlbum : AbsModel, ISomeones {
             "All photos" -> {
                 context.getString(R.string.all_photos)
             }
+
             "Local Server" -> {
                 context.getString(R.string.on_server)
             }
+
             "Wall Photos" -> {
                 context.getString(R.string.wall_photos)
             }
+
             "With User photos" -> {
                 context.getString(R.string.photos_with_user)
             }
+
             else -> title
         }
     }

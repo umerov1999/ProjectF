@@ -156,9 +156,8 @@ class FileManagerSelectPresenter(
             view?.resolveEmptyText(fileList.isEmpty())
             view?.resolveLoading(isLoading)
             view?.notifyAllChanged()
-            val k = directoryScrollPositions.remove(path.absolutePath)
-            if (k != null) {
-                view?.restoreScroll(k)
+            directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
+                view?.restoreScroll(scroll)
             }
         }, {
             view?.onError(it)

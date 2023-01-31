@@ -79,14 +79,17 @@ class AudioSearchTabsFragment : Fragment() {
                     SearchContentType.AUDIOS,
                     AudioSearchCriteria("", by_artist = false, in_main_page = true)
                 )
+
                 TAB_AUDIO_PLAYLISTS -> SingleTabSearchFragment.newInstance(
                     accountId,
                     SearchContentType.AUDIO_PLAYLISTS
                 )
+
                 TAB_ARTISTS -> SingleTabSearchFragment.newInstance(
                     accountId,
                     SearchContentType.ARTISTS
                 )
+
                 else -> throw IllegalArgumentException()
             }
             return fragment

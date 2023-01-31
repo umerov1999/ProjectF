@@ -21,6 +21,7 @@ class HorizontalOptionsAdapter<T : Entry>(data: MutableList<T>) :
             when {
                 (title
                     ?: return).startsWith("#") -> title
+
                 item.isCustom -> title
                 else -> "#$title"
             }

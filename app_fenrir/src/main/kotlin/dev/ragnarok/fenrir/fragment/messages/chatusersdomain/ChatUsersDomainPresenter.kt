@@ -6,7 +6,7 @@ import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AppChatUser
-import java.util.*
+import java.util.Locale
 
 class ChatUsersDomainPresenter(
     accountId: Long,

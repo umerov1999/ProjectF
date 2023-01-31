@@ -3,7 +3,9 @@ package dev.ragnarok.fenrir.domain.impl
 import dev.ragnarok.fenrir.db.AttachToType
 import dev.ragnarok.fenrir.db.interfaces.IAttachmentsStorage
 import dev.ragnarok.fenrir.domain.IAttachmentsRepository
-import dev.ragnarok.fenrir.domain.IAttachmentsRepository.*
+import dev.ragnarok.fenrir.domain.IAttachmentsRepository.IAddEvent
+import dev.ragnarok.fenrir.domain.IAttachmentsRepository.IBaseEvent
+import dev.ragnarok.fenrir.domain.IAttachmentsRepository.IRemoveEvent
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildAttachmentFromDbo
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.fillOwnerIds

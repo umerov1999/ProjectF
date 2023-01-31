@@ -3,13 +3,23 @@ package dev.ragnarok.fenrir.domain.impl
 import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.CommentsDto
-import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.*
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.Dto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.PhotoDto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.PostDto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.TopicDto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.VideoDto
 import dev.ragnarok.fenrir.domain.INewsfeedInteractor
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.buildComment
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformOwners
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.IOwnersBundle
+import dev.ragnarok.fenrir.model.NewsfeedComment
+import dev.ragnarok.fenrir.model.PhotoWithOwner
+import dev.ragnarok.fenrir.model.TopicWithOwner
+import dev.ragnarok.fenrir.model.VideoWithOwner
 import dev.ragnarok.fenrir.nonNullNoEmptyOrNullable
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Pair
@@ -86,16 +96,19 @@ class NewsfeedInteractor(
                             ownIds.append(post)
                             ownIds.append(post.comments)
                         }
+
                         is PhotoDto -> {
                             val photo = dto.photo ?: continue
                             ownIds.append(photo.owner_id)
                             ownIds.append(photo.comments)
                         }
+
                         is TopicDto -> {
                             val topic = dto.topic ?: continue
                             ownIds.append(topic.owner_id)
                             ownIds.append(topic.comments)
                         }
+
                         is VideoDto -> {
                             val video = dto.video ?: continue
                             ownIds.append(video.owner_id)

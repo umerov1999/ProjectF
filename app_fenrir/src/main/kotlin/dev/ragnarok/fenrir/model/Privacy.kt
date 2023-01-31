@@ -115,9 +115,11 @@ class Privacy : Parcelable, Cloneable {
             Type.FRIENDS_OF_FRIENDS, Type.FRIENDS_OF_FRIENDS_ONLY -> context.getString(
                 R.string.privacy_to_friends_and_friends_of_friends
             )
+
             Type.ONLY_ME, Type.NOBODY -> context.getString(
                 R.string.privacy_to_only_me
             )
+
             else -> context.getString(R.string.privacy_to_all_users)
         }
         val users = join(", ", allowedUsers)

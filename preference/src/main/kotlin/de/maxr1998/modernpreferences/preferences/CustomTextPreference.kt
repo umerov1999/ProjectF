@@ -173,10 +173,12 @@ class CustomTextPreference(key: String, val fragmentManager: FragmentManager) :
                             visibility = View.VISIBLE
                             text = message
                         }
+
                         messageRes != DEFAULT_RES_ID -> {
                             visibility = View.VISIBLE
                             setText(messageRes)
                         }
+
                         else -> {
                             visibility = View.GONE
                         }

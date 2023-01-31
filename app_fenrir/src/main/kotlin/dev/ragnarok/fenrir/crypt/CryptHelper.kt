@@ -56,7 +56,7 @@ object CryptHelper {
     // проверяем удовлетворяет ли текст формату AES{$key_location_policy}{$session_id}:{$encrypted_body}
     // (А-аптемезацея)
     private fun isAes(text: String?): Boolean {
-        if (text == null || text.isEmpty()) {
+        if (text.isNullOrEmpty()) {
             return false
         }
         var digitsCount = 0
@@ -70,12 +70,15 @@ object CryptHelper {
                 } else {
                     break@out
                 }
+
                 1 -> if ('E' != c) {
                     yesAes = false
                 }
+
                 2 -> if ('S' != c) {
                     yesAes = false
                 }
+
                 else -> {
                     val digit = Character.isDigit(c)
                     if (digit) {

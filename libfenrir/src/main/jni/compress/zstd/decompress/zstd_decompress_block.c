@@ -20,7 +20,6 @@
 #include "../common/mem.h"         /* low level memory routines */
 #define FSE_STATIC_LINKING_ONLY
 #include "../common/fse.h"
-#define HUF_STATIC_LINKING_ONLY
 #include "../common/huf.h"
 #include "../common/zstd_internal.h"
 #include "zstd_decompress_internal.h"   /* ZSTD_DCtx */
@@ -142,6 +141,9 @@ size_t ZSTD_decodeLiteralsBlock(ZSTD_DCtx* dctx,
                 U32 const lhc = MEM_readLE32(istart);
                 size_t hufSuccess;
                 size_t expectedWriteSize = MIN(ZSTD_BLOCKSIZE_MAX, dstCapacity);
+                int const flags = 0
+                    | (ZSTD_DCtx_get_bmi2(dctx) ? HUF_flags_bmi2 : 0)
+                    | (dctx->disableHufAsm ? HUF_flags_disableAsm : 0);
                 switch(lhlCode)
                 {
                 case 0: case 1: default:   /* note : default is impossible, since lhlCode into [0..3] */
@@ -181,14 +183,14 @@ size_t ZSTD_decodeLiteralsBlock(ZSTD_DCtx* dctx,
 
                 if (litEncType==set_repeat) {
                     if (singleStream) {
-                        hufSuccess = HUF_decompress1X_usingDTable_bmi2(
+                        hufSuccess = HUF_decompress1X_usingDTable(
                             dctx->litBuffer, litSize, istart+lhSize, litCSize,
-                            dctx->HUFptr, ZSTD_DCtx_get_bmi2(dctx));
+                            dctx->HUFptr, flags);
                     } else {
                         assert(litSize >= MIN_LITERALS_FOR_4_STREAMS);
-                        hufSuccess = HUF_decompress4X_usingDTable_bmi2(
+                        hufSuccess = HUF_decompress4X_usingDTable(
                             dctx->litBuffer, litSize, istart+lhSize, litCSize,
-                            dctx->HUFptr, ZSTD_DCtx_get_bmi2(dctx));
+                            dctx->HUFptr, flags);
                     }
                 } else {
                     if (singleStream) {
@@ -196,18 +198,18 @@ size_t ZSTD_decodeLiteralsBlock(ZSTD_DCtx* dctx,
                         hufSuccess = HUF_decompress1X_DCtx_wksp(
                             dctx->entropy.hufTable, dctx->litBuffer, litSize,
                             istart+lhSize, litCSize, dctx->workspace,
-                            sizeof(dctx->workspace));
+                            sizeof(dctx->workspace), flags);
 #else
-                        hufSuccess = HUF_decompress1X1_DCtx_wksp_bmi2(
+                        hufSuccess = HUF_decompress1X1_DCtx_wksp(
                             dctx->entropy.hufTable, dctx->litBuffer, litSize,
                             istart+lhSize, litCSize, dctx->workspace,
-                            sizeof(dctx->workspace), ZSTD_DCtx_get_bmi2(dctx));
+                            sizeof(dctx->workspace), flags);
 #endif
                     } else {
-                        hufSuccess = HUF_decompress4X_hufOnly_wksp_bmi2(
+                        hufSuccess = HUF_decompress4X_hufOnly_wksp(
                             dctx->entropy.hufTable, dctx->litBuffer, litSize,
                             istart+lhSize, litCSize, dctx->workspace,
-                            sizeof(dctx->workspace), ZSTD_DCtx_get_bmi2(dctx));
+                            sizeof(dctx->workspace), flags);
                     }
                 }
                 if (dctx->litBufferLocation == ZSTD_split)
@@ -1218,6 +1220,10 @@ ZSTD_decodeSequence(seqState_t* seqState, const ZSTD_longOffset_e longOffsets)
         U32 const llnbBits = llDInfo->nbBits;
         U32 const mlnbBits = mlDInfo->nbBits;
         U32 const ofnbBits = ofDInfo->nbBits;
+
+        assert(llBits <= MaxLLBits);
+        assert(mlBits <= MaxMLBits);
+        assert(ofBits <= MaxOff);
         /*
          * As gcc has better branch and block analyzers, sometimes it is only
          * valuable to mark likeliness for clang, it gives around 3-4% of
@@ -1233,13 +1239,16 @@ ZSTD_decodeSequence(seqState_t* seqState, const ZSTD_longOffset_e longOffsets)
     #endif
                 ZSTD_STATIC_ASSERT(ZSTD_lo_isLongOffset == 1);
                 ZSTD_STATIC_ASSERT(LONG_OFFSETS_MAX_EXTRA_BITS_32 == 5);
-                assert(ofBits <= MaxOff);
+                ZSTD_STATIC_ASSERT(STREAM_ACCUMULATOR_MIN_32 > LONG_OFFSETS_MAX_EXTRA_BITS_32);
+                ZSTD_STATIC_ASSERT(STREAM_ACCUMULATOR_MIN_32 - LONG_OFFSETS_MAX_EXTRA_BITS_32 >= MaxMLBits);
                 if (MEM_32bits() && longOffsets && (ofBits >= STREAM_ACCUMULATOR_MIN_32)) {
-                    U32 const extraBits = ofBits - MIN(ofBits, 32 - seqState->DStream.bitsConsumed);
+                    /* Always read extra bits, this keeps the logic simple,
+                     * avoids branches, and avoids accidentally reading 0 bits.
+                     */
+                    U32 const extraBits = LONG_OFFSETS_MAX_EXTRA_BITS_32;
                     offset = ofBase + (BIT_readBitsFast(&seqState->DStream, ofBits - extraBits) << extraBits);
                     BIT_reloadDStream(&seqState->DStream);
-                    if (extraBits) offset += BIT_readBitsFast(&seqState->DStream, extraBits);
-                    assert(extraBits <= LONG_OFFSETS_MAX_EXTRA_BITS_32);   /* to avoid another reload */
+                    offset += BIT_readBitsFast(&seqState->DStream, extraBits);
                 } else {
                     offset = ofBase + BIT_readBitsFast(&seqState->DStream, ofBits/*>0*/);   /* <=  (ZSTD_WINDOWLOG_MAX-1) bits */
                     if (MEM_32bits()) BIT_reloadDStream(&seqState->DStream);

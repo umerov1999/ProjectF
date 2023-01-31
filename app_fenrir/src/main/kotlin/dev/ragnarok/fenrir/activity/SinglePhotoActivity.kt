@@ -136,6 +136,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                         mContentRoot?.requestDisallowInterceptTouchEvent(true)
                         return@setOnTouchListener false
                     }
+
                     MotionEvent.ACTION_UP -> {
                         mContentRoot?.requestDisallowInterceptTouchEvent(false)
                         return@setOnTouchListener true
@@ -186,6 +187,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 if (player is AudioPlayerFragment) player.dismiss()
                 AudioPlayerFragment.newInstance(args).show(supportFragmentManager, "audio_player")
             }
+
             else -> Utils.openPlaceWithSwipebleActivity(this, place)
         }
     }

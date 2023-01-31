@@ -374,6 +374,7 @@ class Post : AbsModel, Cloneable {
                 text.nonNullNoEmpty() -> {
                     return text
                 }
+
                 hasCopyHierarchy() -> {
                     for (copy in copyHierarchy.orEmpty()) {
                         if (copy.text.nonNullNoEmpty()) {

@@ -125,7 +125,7 @@ internal fun escapeToChar(c: Int): Char = if (c < ESC2C_MAX) ESCAPE_2_CHAR[c] el
 /**
  * The base class that reads the JSON from the given char sequence source.
  * It has two implementations: one over the raw [String] instance, [StringJsonLexer],
- * and one over an arbitrary stream of data, ReaderJsonLexer (JVM-only).
+ * and one over an arbitrary stream of data, [ReaderJsonLexer] (JVM-only).
  *
  * [AbstractJsonLexer] contains base implementation for cold or not performance-sensitive
  * methods on top of [CharSequence], but [StringJsonLexer] overrides some
@@ -500,6 +500,7 @@ internal abstract class AbstractJsonLexer {
                 TC_BEGIN_LIST, TC_BEGIN_OBJ -> {
                     tokenStack.add(lastToken)
                 }
+
                 TC_END_LIST -> {
                     if (tokenStack.last() != TC_BEGIN_LIST) throw JsonDecodingException(
                         currentPosition,
@@ -508,6 +509,7 @@ internal abstract class AbstractJsonLexer {
                     )
                     tokenStack.removeLast()
                 }
+
                 TC_END_OBJ -> {
                     if (tokenStack.last() != TC_BEGIN_OBJ) throw JsonDecodingException(
                         currentPosition,
@@ -516,6 +518,7 @@ internal abstract class AbstractJsonLexer {
                     )
                     tokenStack.removeLast()
                 }
+
                 TC_EOF -> fail("Unexpected end of input due to malformed JSON during ignoring unknown keys")
             }
             consumeNextToken()
@@ -634,18 +637,22 @@ internal abstract class AbstractJsonLexer {
                 consumeBooleanLiteral("rue", current)
                 true
             }
+
             'f'.code -> {
                 consumeBooleanLiteral("alse", current)
                 false
             }
+
             '1'.code -> {
                 currentPosition = current
                 true
             }
+
             '0'.code -> {
                 currentPosition = current
                 false
             }
+
             else -> {
                 fail("Expected valid boolean literal prefix, but had '${consumeStringLenient()}'")
             }

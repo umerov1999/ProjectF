@@ -1,12 +1,22 @@
 package dev.ragnarok.fenrir.api.interfaces
 
 import androidx.annotation.CheckResult
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.AccessIdPair
+import dev.ragnarok.fenrir.api.model.Items
+import dev.ragnarok.fenrir.api.model.VKApiComment
+import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
+import dev.ragnarok.fenrir.api.model.VKApiPhotoTags
+import dev.ragnarok.fenrir.api.model.VKApiPrivacy
 import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.UploadChatPhotoResponse
 import dev.ragnarok.fenrir.api.model.response.UploadOwnerPhotoResponse
-import dev.ragnarok.fenrir.api.model.server.*
+import dev.ragnarok.fenrir.api.model.server.VKApiChatPhotoUploadServer
+import dev.ragnarok.fenrir.api.model.server.VKApiOwnerPhotoUploadServer
+import dev.ragnarok.fenrir.api.model.server.VKApiPhotoMessageServer
+import dev.ragnarok.fenrir.api.model.server.VKApiUploadServer
+import dev.ragnarok.fenrir.api.model.server.VKApiWallUploadServer
 import io.reactivex.rxjava3.core.Single
 
 interface IPhotosApi {
@@ -86,7 +96,7 @@ interface IPhotosApi {
 
     @CheckResult
     fun saveWallPhoto(
-        userId: Long?, groupId: Long?, photo: String?, server: Int,
+        userId: Long?, groupId: Long?, photo: String?, server: Long,
         hash: String?, latitude: Double?, longitude: Double?, caption: String?
     ): Single<List<VKApiPhoto>>
 
@@ -95,7 +105,7 @@ interface IPhotosApi {
 
     @CheckResult
     fun save(
-        albumId: Int, groupId: Long?, server: Int, photosList: String?, hash: String?,
+        albumId: Int, groupId: Long?, server: Long, photosList: String?, hash: String?,
         latitude: Double?, longitude: Double?, caption: String?
     ): Single<List<VKApiPhoto>>
 
@@ -127,7 +137,7 @@ interface IPhotosApi {
     val messagesUploadServer: Single<VKApiPhotoMessageServer>
 
     @CheckResult
-    fun saveMessagesPhoto(server: Int?, photo: String?, hash: String?): Single<List<VKApiPhoto>>
+    fun saveMessagesPhoto(server: Long?, photo: String?, hash: String?): Single<List<VKApiPhoto>>
 
     @CheckResult
     fun getAlbums(

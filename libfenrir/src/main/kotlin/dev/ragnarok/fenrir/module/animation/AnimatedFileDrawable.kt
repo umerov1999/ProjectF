@@ -498,10 +498,12 @@ class AnimatedFileDrawable(
                     canvas.rotate(90f)
                     canvas.translate(0f, -dstRect.width().toFloat())
                 }
+
                 metaData[2] == 180 -> {
                     canvas.rotate(180f)
                     canvas.translate(-dstRect.width().toFloat(), -dstRect.height().toFloat())
                 }
+
                 metaData[2] == 270 -> {
                     canvas.rotate(270f)
                     canvas.translate(-dstRect.height().toFloat(), 0f)

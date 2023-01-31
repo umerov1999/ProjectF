@@ -388,6 +388,7 @@ class MessagesRepository(
                     optional.requireNonEmpty()
                 )
             }
+
             Mode.NET -> return actual
             Mode.CACHE -> return cached
                 .flatMap { optional ->
@@ -395,6 +396,7 @@ class MessagesRepository(
                         NotFoundException()
                     ) else Single.just(optional.requireNonEmpty())
                 }
+
             else -> {}
         }
         throw IllegalArgumentException("Unsupported mode: $mode")
@@ -456,6 +458,7 @@ class MessagesRepository(
                     )
                 }
                 .toFlowable()
+
             Mode.NET -> actual.toFlowable()
             Mode.CACHE -> cached
                 .flatMap { optional ->
@@ -464,6 +467,7 @@ class MessagesRepository(
                     ) else Single.just(optional.requireNonEmpty())
                 }
                 .toFlowable()
+
             Mode.CACHE_THEN_ACTUAL -> {
                 val cachedFlowable = cached.toFlowable()
                     .filter { it.nonEmpty() }

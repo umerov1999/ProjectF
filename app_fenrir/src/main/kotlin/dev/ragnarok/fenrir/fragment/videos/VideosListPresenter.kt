@@ -17,9 +17,13 @@ import dev.ragnarok.fenrir.fragment.search.nextfrom.IntNextFrom
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import dev.ragnarok.fenrir.upload.*
+import dev.ragnarok.fenrir.upload.IUploadManager
 import dev.ragnarok.fenrir.upload.IUploadManager.IProgressUpdate
+import dev.ragnarok.fenrir.upload.Upload
+import dev.ragnarok.fenrir.upload.UploadDestination
 import dev.ragnarok.fenrir.upload.UploadDestination.Companion.forVideo
+import dev.ragnarok.fenrir.upload.UploadIntent
+import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermission
 import dev.ragnarok.fenrir.util.FindAtWithContent
 import dev.ragnarok.fenrir.util.Pair
@@ -30,7 +34,7 @@ import dev.ragnarok.fenrir.util.Utils.safeCheck
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class VideosListPresenter(
@@ -358,9 +362,11 @@ class VideosListPresenter(
                         showError(getCauseIfRuntime(t))
                     })
             }
+
             R.id.action_edit -> {
                 fireEditVideo(context, position, video)
             }
+
             R.id.action_delete_from_my_videos -> {
                 netDisposable.add(interactor.delete(accountId, video.id, video.ownerId, accountId)
                     .fromIOToMain()
@@ -373,6 +379,7 @@ class VideosListPresenter(
                         showError(getCauseIfRuntime(t))
                     })
             }
+
             R.id.share_button -> {
                 view?.displayShareDialog(
                     accountId,

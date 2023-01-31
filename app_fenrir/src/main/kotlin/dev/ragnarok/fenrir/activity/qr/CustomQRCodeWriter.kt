@@ -97,10 +97,12 @@ class CustomQRCodeWriter {
                     x = padding
                     y = padding
                 }
+
                 1 -> {
                     x = size - sideQuadSize * multiple - padding
                     y = padding
                 }
+
                 else -> {
                     x = padding
                     y = size - sideQuadSize * multiple - padding

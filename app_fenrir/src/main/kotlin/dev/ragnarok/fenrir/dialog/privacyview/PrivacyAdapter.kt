@@ -19,7 +19,7 @@ import dev.ragnarok.fenrir.model.Privacy
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.util.Utils
-import java.util.*
+import java.util.EventListener
 
 class PrivacyAdapter(private val mContext: Context, private val mPrivacy: Privacy) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -35,6 +35,7 @@ class PrivacyAdapter(private val mContext: Context, private val mPrivacy: Privac
                     false
                 )
             )
+
             TYPE_TITLE -> return TitleViewHolder(
                 inflater.inflate(
                     R.layout.item_privacy_title,

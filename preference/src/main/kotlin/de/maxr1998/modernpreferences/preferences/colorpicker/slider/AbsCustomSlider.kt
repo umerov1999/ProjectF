@@ -127,8 +127,10 @@ abstract class AbsCustomSlider : View {
         when (widthMode) {
             MeasureSpec.UNSPECIFIED -> width =
                 widthMeasureSpec
+
             MeasureSpec.AT_MOST -> width =
                 MeasureSpec.getSize(widthMeasureSpec)
+
             MeasureSpec.EXACTLY -> width =
                 MeasureSpec.getSize(widthMeasureSpec)
         }
@@ -137,8 +139,10 @@ abstract class AbsCustomSlider : View {
         when (heightMode) {
             MeasureSpec.UNSPECIFIED -> height =
                 heightMeasureSpec
+
             MeasureSpec.AT_MOST -> height =
                 MeasureSpec.getSize(heightMeasureSpec)
+
             MeasureSpec.EXACTLY -> height =
                 MeasureSpec.getSize(heightMeasureSpec)
         }
@@ -159,6 +163,7 @@ abstract class AbsCustomSlider : View {
                     invalidate()
                 }
             }
+
             MotionEvent.ACTION_UP -> {
                 onValueChanged(value)
                 valueChangedListener?.onValueChanged(value)

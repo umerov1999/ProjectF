@@ -28,7 +28,7 @@ import kotlin.math.abs
 
 class AccountAdapter(
     private val context: Context,
-    private val data: List<Account>,
+    private var data: List<Account>,
     private val callback: Callback
 ) : RecyclerView.Adapter<AccountAdapter.AccountHolder>() {
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
@@ -38,6 +38,11 @@ class AccountAdapter(
                 context
             ).inflate(R.layout.item_account, parent, false)
         )
+    }
+
+    fun setData(data: List<Account>) {
+        this.data = data
+        notifyDataSetChanged()
     }
 
     fun getByPosition(position: Int): Account {

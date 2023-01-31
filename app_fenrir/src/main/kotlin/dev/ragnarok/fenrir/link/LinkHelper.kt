@@ -17,7 +17,7 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.fave.FaveTabsFragment
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
-import dev.ragnarok.fenrir.fragment.vkphotos.IVkPhotosView
+import dev.ragnarok.fenrir.fragment.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.types.*
 import dev.ragnarok.fenrir.link.types.FaveLink
@@ -57,7 +57,7 @@ import kotlin.math.abs
 object LinkHelper {
     @SuppressLint("CheckResult")
     fun openUrl(context: Activity, accountId: Long, link: String?, isMain: Boolean) {
-        if (link == null || link.isEmpty()) {
+        if (link.isNullOrEmpty()) {
             createCustomToast(context).showToastError(R.string.empty_clipboard_url)
             return
         }
@@ -113,18 +113,22 @@ object LinkHelper {
                     plLink.access_key
                 ).tryOpenWith(context)
             }
+
             AbsLink.POLL -> {
                 val pollLink = link as PollLink
                 getPollPlace(accountId, Poll(pollLink.Id, pollLink.ownerId)).tryOpenWith(context)
             }
+
             AbsLink.APP_LINK -> {
                 val appLink = link as AppLink
                 getExternalLinkPlace(accountId, appLink.url).tryOpenWith(context)
             }
+
             AbsLink.ARTICLE_LINK -> {
                 val articleLink = link as ArticleLink
                 getExternalLinkPlace(accountId, articleLink.url).tryOpenWith(context)
             }
+
             AbsLink.WALL_COMMENT_THREAD -> {
                 val wallCommentThreadLink = link as WallCommentThreadLink
                 val commentedThread = Commented(
@@ -153,6 +157,7 @@ object LinkHelper {
                     }
                     .show()
             }
+
             AbsLink.WALL_COMMENT -> {
                 val wallCommentLink = link as WallCommentLink
                 val commented = Commented(
@@ -165,6 +170,7 @@ object LinkHelper {
                     context
                 )
             }
+
             AbsLink.DIALOGS -> getDialogsPlace(accountId, accountId, null).tryOpenWith(context)
             AbsLink.PHOTO -> {
                 val photoLink = link as PhotoLink
@@ -179,6 +185,7 @@ object LinkHelper {
                     true
                 ).setNeedFinishMain(isMain).tryOpenWith(context)
             }
+
             AbsLink.PHOTO_ALBUM -> {
                 val photoAlbumLink = link as PhotoAlbumLink
                 getVKPhotosAlbumPlace(
@@ -186,6 +193,7 @@ object LinkHelper {
                     photoAlbumLink.albumId, null
                 ).tryOpenWith(context)
             }
+
             AbsLink.PROFILE, AbsLink.GROUP -> {
                 val ownerLink = link as OwnerLink
                 var ownId = ownerLink.ownerId
@@ -194,6 +202,7 @@ object LinkHelper {
                 }
                 getOwnerWallPlace(accountId, ownId, null).tryOpenWith(context)
             }
+
             AbsLink.TOPIC -> {
                 val topicLink = link as TopicLink
                 getCommentsPlace(
@@ -203,30 +212,35 @@ object LinkHelper {
                     ), null
                 ).tryOpenWith(context)
             }
+
             AbsLink.WALL_POST -> {
                 val wallPostLink = link as WallPostLink
                 getPostPreviewPlace(accountId, wallPostLink.postId, wallPostLink.ownerId)
                     .tryOpenWith(context)
             }
+
             AbsLink.ALBUMS -> {
                 val photoAlbumsLink = link as PhotoAlbumsLink
                 getVKPhotoAlbumsPlace(
                     accountId,
                     photoAlbumsLink.ownerId,
-                    IVkPhotosView.ACTION_SHOW_PHOTOS,
+                    IVKPhotosView.ACTION_SHOW_PHOTOS,
                     null
                 ).tryOpenWith(context)
             }
+
             AbsLink.DIALOG -> {
                 val dialogLink = link as DialogLink
                 val peer = Peer(dialogLink.peerId)
                 getChatPlace(accountId, accountId, peer).setNeedFinishMain(isMain)
                     .tryOpenWith(context)
             }
+
             AbsLink.WALL -> {
                 val wallLink = link as WallLink
                 getOwnerWallPlace(accountId, wallLink.ownerId, null).tryOpenWith(context)
             }
+
             AbsLink.VIDEO -> {
                 val videoLink = link as VideoLink
                 getVideoPreviewPlace(
@@ -238,6 +252,7 @@ object LinkHelper {
                 )
                     .tryOpenWith(context)
             }
+
             AbsLink.VIDEO_ALBUM -> {
                 val videoAlbumLink = link as VideoAlbumLink
                 getVideoAlbumPlace(
@@ -249,6 +264,7 @@ object LinkHelper {
                 )
                     .tryOpenWith(context)
             }
+
             AbsLink.VIDEOS -> {
                 val videosLink = link as VideosLink
                 getVideosPlace(
@@ -258,18 +274,22 @@ object LinkHelper {
                 )
                     .tryOpenWith(context)
             }
+
             AbsLink.AUDIOS -> {
                 val audiosLink = link as AudiosLink
                 getAudiosPlace(accountId, audiosLink.ownerId).tryOpenWith(context)
             }
+
             AbsLink.DOMAIN -> {
                 val domainLink = link as DomainLink
                 getResolveDomainPlace(accountId, domainLink.fullLink, domainLink.domain)
                     .tryOpenWith(context)
             }
+
             AbsLink.PAGE -> getExternalLinkPlace(accountId, (link as PageLink).link).tryOpenWith(
                 context
             )
+
             AbsLink.DOC -> {
                 val docLink = link as DocLink
                 getDocPreviewPlace(
@@ -280,6 +300,7 @@ object LinkHelper {
                     null
                 ).setNeedFinishMain(isMain).tryOpenWith(context)
             }
+
             AbsLink.FAVE -> {
                 val faveLink = link as FaveLink
                 val targetTab = FaveTabsFragment.getTabByLinkSection(faveLink.section)
@@ -288,10 +309,12 @@ object LinkHelper {
                 }
                 getBookmarksPlace(accountId, targetTab).tryOpenWith(context)
             }
+
             AbsLink.BOARD -> {
                 val boardLink = link as BoardLink
                 getTopicsPlace(accountId, -abs(boardLink.groupId)).tryOpenWith(context)
             }
+
             AbsLink.CATALOG_V2_SECTION_LINK -> {
                 val catalogLink = link as CatalogV2SectionLink
                 getCatalogV2AudioCatalogPlace(
@@ -302,6 +325,7 @@ object LinkHelper {
                     catalogLink.section
                 ).tryOpenWith(context)
             }
+
             AbsLink.FEED_SEARCH -> {
                 val feedSearchLink = link as FeedSearchLink
                 val criteria = NewsFeedCriteria(feedSearchLink.q)
@@ -309,10 +333,12 @@ object LinkHelper {
                     context
                 )
             }
+
             AbsLink.ARTISTS -> {
                 val artistSearchLink = link as ArtistsLink
                 getArtistPlace(accountId, artistSearchLink.Id).tryOpenWith(context)
             }
+
             AbsLink.AUDIO_TRACK -> {
                 val audioLink = link as AudioTrackLink
                 InteractorFactory.createAudioInteractor().getById(
@@ -325,6 +351,7 @@ object LinkHelper {
                         getPlayerPlace(Settings.get().accounts().current).tryOpenWith(context)
                     }) { e -> createCustomToast(context).showToastThrowable(e) }
             }
+
             else -> return false
         }
         return true
@@ -336,7 +363,7 @@ object LinkHelper {
         url: String,
         isMain: Boolean
     ): Boolean {
-        val link = VkLinkParser.parse(url)
+        val link = VKLinkParser.parse(url)
         return link != null && openVKLink(activity, accountId, link, isMain)
     }
 
@@ -391,7 +418,7 @@ object LinkHelper {
     }
 
     fun findCommentedFrom(url: String): Commented? {
-        val link = VkLinkParser.parse(url)
+        val link = VKLinkParser.parse(url)
         var commented: Commented? = null
         if (link != null) {
             when (link.type) {
@@ -404,16 +431,19 @@ object LinkHelper {
                         null
                     )
                 }
+
                 AbsLink.PHOTO -> {
                     val photoLink = link as PhotoLink
                     commented =
                         Commented(photoLink.id, photoLink.ownerId, CommentedType.PHOTO, null)
                 }
+
                 AbsLink.VIDEO -> {
                     val videoLink = link as VideoLink
                     commented =
                         Commented(videoLink.videoId, videoLink.ownerId, CommentedType.VIDEO, null)
                 }
+
                 AbsLink.TOPIC -> {
                     val topicLink = link as TopicLink
                     commented =

@@ -2,7 +2,7 @@ plugins {
     id("com.android.library")
 }
 
-//1.8.0-rc01
+//1.9.0-alpha01
 
 def srcDirs = [
         'com/google/android/material/animation',
@@ -15,6 +15,7 @@ def srcDirs = [
         'com/google/android/material/button',
         'com/google/android/material/canvas',
         'com/google/android/material/card',
+        'com/google/android/material/carousel',
         'com/google/android/material/checkbox',
         'com/google/android/material/chip',
         'com/google/android/material/circularreveal',

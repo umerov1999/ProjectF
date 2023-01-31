@@ -27,6 +27,7 @@ object ChatEntryFetcher {
                         response
                     }
             }
+
             Peer.CHAT, Peer.CONTACT -> return messages
                 .getConversation(accountId, peerId, Mode.ANY).singleOrError()
                 .flatMap { chat ->

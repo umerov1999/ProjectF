@@ -6,6 +6,9 @@ plugins {
 
 android {
     namespace "dev.ragnarok.filegallery"
+    buildFeatures {
+        aidl = true
+    }
     configurations {
         compile.exclude module: 'support-v4'
     }
@@ -39,6 +42,7 @@ android {
         applicationId = "dev.ragnarok.filegallery"
 
         ndk {
+            //noinspection ChromeOsAbiSupport
             abiFilters = targetAbi
         }
         resConfigs "en", "ru", "be"

@@ -11,9 +11,10 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.activity.slidr.Slidr.attach
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
@@ -22,6 +23,7 @@ import dev.ragnarok.fenrir.api.IValidateProvider
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.fenrir.util.Logger
@@ -32,6 +34,7 @@ class ValidateActivity : AppCompatActivity() {
     private var validateProvider: IValidateProvider? = null
     private val mCompositeDisposable = CompositeDisposable()
     private var urlVal: String? = null
+    private var accountId: Long = ISettings.IAccountsSettings.INVALID_ID
 
     @SuppressLint("SetJavaScriptEnabled")
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +43,7 @@ class ValidateActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         urlVal = (intent.getStringExtra(EXTRA_VALIDATE) ?: return)
+        accountId = intent.getLongExtra(Extra.ACCOUNT_ID, ISettings.IAccountsSettings.INVALID_ID)
 
         validateProvider = Includes.validationProvider
 
@@ -82,7 +86,7 @@ class ValidateActivity : AppCompatActivity() {
         val webview = findViewById<WebView>(R.id.vkontakteview)
         webview.settings.javaScriptEnabled = true
         webview.clearCache(true)
-        webview.settings.userAgentString = Constants.USER_AGENT_ACCOUNT
+        webview.settings.userAgentString = UserAgentTool.getAccountUserAgent(accountId)
 
         //Чтобы получать уведомления об окончании загрузки страницы
         webview.webViewClient = VkontakteWebViewClient()
@@ -159,9 +163,10 @@ class ValidateActivity : AppCompatActivity() {
         private const val EXTRA_VALIDATE = "validate"
 
 
-        fun createIntent(context: Context, validate_url: String?): Intent {
+        fun createIntent(context: Context, validate_url: String?, accountId: Long): Intent {
             return Intent(context, ValidateActivity::class.java)
                 .putExtra(EXTRA_VALIDATE, validate_url)
+                .putExtra(Extra.ACCOUNT_ID, accountId)
         }
 
         internal fun tryExtractAccessToken(url: String): String? {

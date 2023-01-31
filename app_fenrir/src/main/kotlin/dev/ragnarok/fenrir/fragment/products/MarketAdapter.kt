@@ -51,10 +51,12 @@ class MarketAdapter(private var data: List<Market>, private val context: Context
                 holder.available.setTextColor(CurrentTheme.getColorOnSurface(context))
                 holder.available.setText(R.string.markets_available)
             }
+
             2 -> {
                 holder.available.setTextColor(Color.parseColor("#ffaa00"))
                 holder.available.setText(R.string.markets_not_available)
             }
+
             else -> {
                 holder.available.setTextColor(Color.parseColor("#ff0000"))
                 holder.available.setText(R.string.markets_deleted)

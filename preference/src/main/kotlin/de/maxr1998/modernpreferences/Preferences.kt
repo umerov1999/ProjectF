@@ -116,42 +116,54 @@ open class Preference(key: String) : AbstractPreference(key) {
             is AccentButtonPreference -> {
                 pref = AccentButtonPreference(key)
             }
+
             is CheckBoxPreference -> {
                 pref = CheckBoxPreference(key).copyTwoState(this)
             }
+
             is ColorPickPreference -> {
                 pref = ColorPickPreference(key, fragmentManager).copyColorPick(this)
             }
+
             is EditTextPreference -> {
                 pref = EditTextPreference(key, fragmentManager).copyEdit(this)
             }
+
             is SeparatorSpaceTextPreference -> {
                 pref = SeparatorSpaceTextPreference(key, fragmentManager).copySeparator(this)
             }
+
             is MultiLineEditTextPreference -> {
                 pref = MultiLineEditTextPreference(key, fragmentManager).copyMultiLine(this)
             }
+
             is CustomTextPreference -> {
                 pref = CustomTextPreference(key, fragmentManager).copyCustomText(this)
             }
+
             is ExpandableTextPreference -> {
                 pref = ExpandableTextPreference(key).copyExpandable(this)
             }
+
             is ImagePreference -> {
                 pref = ImagePreference(key).copyImage(this)
             }
+
             is SeekBarPreference -> {
                 pref = SeekBarPreference(key).copySeek(this)
             }
+
             is SwitchPreference -> {
                 pref = SwitchPreference(key).copyTwoState(this)
             }
+
             is MultiChoiceDialogPreference -> {
                 pref =
                     MultiChoiceDialogPreference(key, cloneItems(), fragmentManager).copyMultiChoice(
                         this
                     )
             }
+
             is SingleChoiceDialogPreference -> {
                 pref = SingleChoiceDialogPreference(
                     key,
@@ -159,6 +171,7 @@ open class Preference(key: String) : AbstractPreference(key) {
                     fragmentManager
                 ).copySingleChoice(this)
             }
+
             else -> {
                 pref = Preference(key)
             }
@@ -245,6 +258,7 @@ open class Preference(key: String) : AbstractPreference(key) {
         !enabled && summaryDisabledRes != DEFAULT_RES_ID -> context.resources.getText(
             summaryDisabledRes
         )
+
         !enabled && summaryDisabled != null -> summaryDisabled
         summaryRes != DEFAULT_RES_ID -> context.resources.getText(summaryRes)
         summary != null -> summary
@@ -559,6 +573,7 @@ class PreferenceScreen internal constructor(builder: Builder) : Preference(build
         this::class.java == other::class.java &&
                 key == (other as PreferenceScreen).key &&
                 preferences == other.preferences -> true
+
         else -> false
     }
 

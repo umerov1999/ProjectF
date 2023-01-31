@@ -28,6 +28,7 @@ class MyStickersAdapter(private val context: Context) :
                     context
                 ).inflate(R.layout.sticker_grid_item, parent, false)
             )
+
             TYPE_ANIMATED -> return StickerAnimatedHolder(
                 LayoutInflater.from(
                     context
@@ -57,6 +58,7 @@ class MyStickersAdapter(private val context: Context) :
                     true
                 }
             }
+
             TYPE_IMAGE -> {
                 val normalHolder = holder as StickerHolder
                 normalHolder.image.visibility = View.VISIBLE
@@ -76,6 +78,7 @@ class MyStickersAdapter(private val context: Context) :
                     }
                 }
             }
+
             else -> {
                 val animatedHolder = holder as StickerAnimatedHolder
                 animatedHolder.animation.fromFile(File(item.path), Utils.dp(128f), Utils.dp(128f))

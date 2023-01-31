@@ -19,7 +19,7 @@ import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.City
-import java.util.*
+import java.util.Collections
 
 class SelectCityDialog : AccountDependencyDialogFragment(), CitiesAdapter.Listener {
     private val mHandler = Handler(Looper.getMainLooper())

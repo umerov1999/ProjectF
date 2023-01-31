@@ -2,8 +2,8 @@ package dev.ragnarok.fenrir.push
 
 import java.util.regex.Pattern
 
-open class VkPlace {
-    class Photo(val ownerId: Long, val photoId: Int) : VkPlace() {
+open class VKPlace {
+    class Photo(val ownerId: Long, val photoId: Int) : VKPlace() {
         override fun toString(): String {
             return "Photo{" +
                     "ownerId=" + ownerId +
@@ -12,7 +12,7 @@ open class VkPlace {
         }
     }
 
-    class PhotoComment(val ownerId: Long, val photoId: Int) : VkPlace() {
+    class PhotoComment(val ownerId: Long, val photoId: Int) : VKPlace() {
         override fun toString(): String {
             return "PhotoComment{" +
                     "ownerId=" + ownerId +
@@ -21,7 +21,7 @@ open class VkPlace {
         }
     }
 
-    class WallComment(val ownerId: Long, val postId: Int) : VkPlace() {
+    class WallComment(val ownerId: Long, val postId: Int) : VKPlace() {
         override fun toString(): String {
             return "WallComment{" +
                     "ownerId=" + ownerId +
@@ -30,7 +30,7 @@ open class VkPlace {
         }
     }
 
-    class WallPost(val ownerId: Long, val postId: Int) : VkPlace() {
+    class WallPost(val ownerId: Long, val postId: Int) : VKPlace() {
         override fun toString(): String {
             return "WallPost{" +
                     "ownerId=" + ownerId +
@@ -39,7 +39,7 @@ open class VkPlace {
         }
     }
 
-    class Video(val ownerId: Long, val videoId: Int) : VkPlace() {
+    class Video(val ownerId: Long, val videoId: Int) : VKPlace() {
         override fun toString(): String {
             return "Video{" +
                     "ownerId=" + ownerId +
@@ -48,7 +48,7 @@ open class VkPlace {
         }
     }
 
-    class VideoComment(val ownerId: Long, val videoId: Int) : VkPlace() {
+    class VideoComment(val ownerId: Long, val videoId: Int) : VKPlace() {
         override fun toString(): String {
             return "VideoComment{" +
                     "ownerId=" + ownerId +
@@ -70,7 +70,7 @@ open class VkPlace {
         private val PATTERN_VIDEO_COMMENT = Pattern.compile("video_comment(-?\\d+)_(\\d+)")
         private val PATTERN_WALL = Pattern.compile("wall(-?\\d+)_(\\d+)")
         private val PATTERN_WALL_COMMENT = Pattern.compile("wall_comment(-?\\d+)_(\\d+)")
-        fun parse(obj: String?): VkPlace? {
+        fun parse(obj: String?): VKPlace? {
             var matcher = obj?.let { PATTERN_PHOTO.matcher(it) }
             if (matcher?.find() == true) {
                 val ownerId = matcher.group(1)?.toLong() ?: return null

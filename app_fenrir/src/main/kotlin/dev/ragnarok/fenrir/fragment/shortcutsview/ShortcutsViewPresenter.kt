@@ -157,9 +157,11 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
             tryAccount(context, shortcut) -> {
                 return
             }
+
             tryWall(context, shortcut) -> {
                 return
             }
+
             tryPeer(context, shortcut) -> {
                 return
             }

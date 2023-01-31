@@ -29,6 +29,7 @@ class SectionsAdapter(private val data: List<AbsSection>, private val mContext: 
                 holder.icon.setImageDrawable(emojiSection.drawable)
                 holder.icon.drawable.setTint(CurrentTheme.getColorOnSurface(mContext))
             }
+
             AbsSection.TYPE_STICKER -> {
                 val stickerSection = section as StickerSection
                 if (stickerSection.stickerSet.getTitle() != null && stickerSection.stickerSet.getTitle() == "recent") {
@@ -42,6 +43,7 @@ class SectionsAdapter(private val data: List<AbsSection>, private val mContext: 
                     holder.icon.colorFilter = null
                 }
             }
+
             AbsSection.TYPE_PHOTO_ALBUM -> {
                 with()
                     .cancelRequest(holder.icon)

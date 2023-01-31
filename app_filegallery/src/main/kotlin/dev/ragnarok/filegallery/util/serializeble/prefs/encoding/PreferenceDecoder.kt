@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2021 Eduard Wolf
+// SPDX-FileCopyrightText: 2020-2022 Eduard Wolf
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -54,8 +54,9 @@ internal class PreferenceDecoder(
                 name in sharedPreferences || // found key
                 sharedPreferences.all.any { it.key.startsWith("$name.") } || // found key of child
                 childDescriptor.isNullable // doesn't encode null, so could be null
-            )
+            ) {
                 return currentIndex - 1
+            }
             if (isCollection) {
                 // if map does not contain key we look for, then indices in collection have ended
                 break

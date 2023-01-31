@@ -93,6 +93,7 @@ class CommunitiesAdapter(
                     if (community.closed == VKApiCommunity.Status.OPEN) R.string.type_opened else R.string.type_closed,
                     context.getString(R.string.type_event)
                 )
+
                 VKApiCommunity.Type.PAGE -> return context.getString(R.string.type_page)
             }
             return context.getString(

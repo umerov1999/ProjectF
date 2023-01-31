@@ -204,7 +204,7 @@ class MessageAttachmentsFragment :
             .with(LocalPhotosSelectableSource())
             .with(LocalGallerySelectableSource())
             .with(LocalVideosSelectableSource())
-            .with(VkPhotosSelectableSource(accountId, ownerId))
+            .with(VKPhotosSelectableSource(accountId, ownerId))
             .with(FileManagerSelectableSource())
         val intent = createIntent(requireActivity(), 10, sources)
         openRequestPhoto.launch(intent)

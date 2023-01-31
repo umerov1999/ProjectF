@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.database.Country
 import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import java.util.*
+import java.util.Locale
 
 class CountriesPresenter(private val accountId: Long, savedInstanceState: Bundle?) :
     RxSupportPresenter<ICountriesView>(savedInstanceState) {

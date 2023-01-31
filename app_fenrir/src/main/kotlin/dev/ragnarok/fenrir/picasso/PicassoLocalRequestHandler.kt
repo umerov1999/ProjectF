@@ -27,12 +27,15 @@ class PicassoLocalRequestHandler : RequestHandler() {
                 requestUri.path?.contains("videos") == true -> {
                     Content_Local.VIDEO
                 }
+
                 requestUri.path?.contains("images") == true -> {
                     Content_Local.PHOTO
                 }
+
                 requestUri.path?.contains("audios") == true -> {
                     Content_Local.AUDIO
                 }
+
                 else -> {
                     callback.onError(Throwable("Picasso Thumb Not Support"))
                     return

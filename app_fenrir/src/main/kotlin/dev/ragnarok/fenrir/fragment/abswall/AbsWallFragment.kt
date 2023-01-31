@@ -27,7 +27,7 @@ import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.WallSearchCriteria
 import dev.ragnarok.fenrir.fragment.userwall.UserWallFragment
 import dev.ragnarok.fenrir.fragment.videos.IVideosListView
-import dev.ragnarok.fenrir.fragment.vkphotos.IVkPhotosView
+import dev.ragnarok.fenrir.fragment.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
@@ -310,10 +310,12 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
                 presenter?.fireToggleMonitor()
                 return true
             }
+
             R.id.action_refresh -> {
                 presenter?.fireRefresh()
                 return true
             }
+
             R.id.action_show_qr -> {
                 if (!AppPerms.hasReadWriteStoragePermission(requireActivity())) {
                     requestWriteQRPermission.launch()
@@ -324,30 +326,37 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
                 }
                 return true
             }
+
             R.id.action_edit -> {
                 presenter?.fireEdit(requireActivity())
                 return true
             }
+
             R.id.action_copy_url -> {
                 presenter?.fireCopyUrlClick()
                 return true
             }
+
             R.id.action_copy_id -> {
                 presenter?.fireCopyIdClick()
                 return true
             }
+
             R.id.action_add_to_shortcut -> {
                 presenter?.fireAddToShortcutClick()
                 return true
             }
+
             R.id.action_search -> {
                 presenter?.fireSearchClick()
                 return true
             }
+
             R.id.wall_attachments -> {
                 presenter?.openConversationAttachments()
                 return true
             }
+
             R.id.search_stories -> {
                 val menus = ModalBottomSheetDialogFragment.Builder()
                 menus.add(
@@ -380,6 +389,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
                     })
                 return true
             }
+
             R.id.action_open_url -> {
                 val clipBoard =
                     requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
@@ -393,10 +403,12 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
                 }
                 return true
             }
+
             R.id.action_jump_offset -> {
                 presenter?.fireRequestSkipOffset()
                 return true
             }
+
             else -> return false
         }
     }
@@ -508,7 +520,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         getVKPhotoAlbumsPlace(
             accountId,
             ownerId,
-            IVkPhotosView.ACTION_SHOW_PHOTOS,
+            IVKPhotosView.ACTION_SHOW_PHOTOS,
             ParcelableOwnerWrapper.wrap(owner)
         )
             .tryOpenWith(requireActivity())

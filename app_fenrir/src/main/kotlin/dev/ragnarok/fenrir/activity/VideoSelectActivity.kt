@@ -47,6 +47,7 @@ class VideoSelectActivity : NoMainActivity(), PlaceProvider {
                     .addToBackStack("video-album")
                     .commit()
             }
+
             Place.SINGLE_SEARCH -> {
                 val singleTabSearchFragment =
                     SingleTabSearchFragment.newInstance(place.safeArguments())
@@ -57,6 +58,7 @@ class VideoSelectActivity : NoMainActivity(), PlaceProvider {
                     .addToBackStack("video-search")
                     .commit()
             }
+
             Place.VIDEO_PREVIEW -> {
                 setResult(
                     RESULT_OK, Intent().putParcelableArrayListExtra(

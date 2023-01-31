@@ -101,6 +101,7 @@ class Photo2WallUploadable(
         when (dest.method) {
             Method.TO_COMMENT -> return repository
                 .attach(accountId, AttachToType.COMMENT, dest.id, listOf(photo))
+
             Method.TO_WALL -> return repository
                 .attach(accountId, AttachToType.POST, dest.id, listOf(photo))
         }

@@ -2,8 +2,16 @@ package dev.ragnarok.fenrir.fragment.comments
 
 import androidx.annotation.StringRes
 import dev.ragnarok.fenrir.fragment.base.IAttachmentsPlacesView
-import dev.ragnarok.fenrir.fragment.base.core.*
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.fragment.base.core.IErrorView
+import dev.ragnarok.fenrir.fragment.base.core.IMvpView
+import dev.ragnarok.fenrir.fragment.base.core.IProgressView
+import dev.ragnarok.fenrir.fragment.base.core.IToastView
+import dev.ragnarok.fenrir.fragment.base.core.IToolbarView
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.LoadMoreState
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Sticker
+import dev.ragnarok.fenrir.model.User
 
 interface ICommentsView : IAttachmentsPlacesView, IMvpView, IErrorView,
     IToolbarView, IProgressView, IToastView {

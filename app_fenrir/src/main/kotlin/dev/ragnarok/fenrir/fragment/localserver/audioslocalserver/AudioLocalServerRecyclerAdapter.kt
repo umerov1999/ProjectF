@@ -20,10 +20,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.textfield.TextInputEditText
 import com.squareup.picasso3.Transformation
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.ILocalServerInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
-import dev.ragnarok.fenrir.link.VkLinkParser
+import dev.ragnarok.fenrir.fromIOToMain
+import dev.ragnarok.fenrir.link.VKLinkParser
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.canPlayAfterCurrent
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.currentAudio
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.isNowPlayingOrPreparingOrPaused
@@ -38,12 +40,14 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.menu.options.AudioLocalServerOption
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.PolyTransformation
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.doDownloadAudio
 import dev.ragnarok.fenrir.util.Utils
@@ -126,6 +130,7 @@ class AudioLocalServerRecyclerAdapter(
                 Utils.doWavesLottie(holder.visual, true)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
             }
+
             2 -> {
                 Utils.doWavesLottie(holder.visual, false)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
@@ -258,6 +263,7 @@ class AudioLocalServerRecyclerAdapter(
                                         }
                                         ?.show()
                                 }
+
                                 else -> {
                                     audio.downloadIndicator = 0
                                     updateDownloadState(holder, audio)
@@ -265,21 +271,25 @@ class AudioLocalServerRecyclerAdapter(
                                 }
                             }
                         }
+
                         AudioLocalServerOption.play_item_audio -> {
                             mClickListener?.onClick(position, audio)
                             if (Settings.get().other().isShow_mini_player) getPlayerPlace(
                                 Settings.get().accounts().current
                             ).tryOpenWith(mContext)
                         }
+
                         AudioLocalServerOption.play_item_after_current_audio -> playAfterCurrent(
                             audio
                         )
+
                         AudioLocalServerOption.bitrate_item_audio -> getBitrate(
                             audio.url,
                             audio.duration
                         )
+
                         AudioLocalServerOption.update_time_item_audio -> {
-                            val hash = VkLinkParser.parseLocalServerURL(audio.url)
+                            val hash = VKLinkParser.parseLocalServerURL(audio.url)
                             if (hash.isNullOrEmpty()) {
                                 return
                             }
@@ -289,8 +299,9 @@ class AudioLocalServerRecyclerAdapter(
                                     createCustomToast(mContext).showToastThrowable(t)
                                 }
                         }
+
                         AudioLocalServerOption.edit_item_audio -> {
-                            val hash2 = VkLinkParser.parseLocalServerURL(audio.url)
+                            val hash2 = VKLinkParser.parseLocalServerURL(audio.url)
                             if (hash2.isNullOrEmpty()) {
                                 return
                             }
@@ -329,6 +340,7 @@ class AudioLocalServerRecyclerAdapter(
                                     createCustomToast(mContext).showToastThrowable(t)
                                 }
                         }
+
                         AudioLocalServerOption.delete_item_audio -> MaterialAlertDialogBuilder(
                             mContext
                         )
@@ -336,7 +348,7 @@ class AudioLocalServerRecyclerAdapter(
                             .setTitle(R.string.confirmation)
                             .setCancelable(true)
                             .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
-                                val hash1 = VkLinkParser.parseLocalServerURL(audio.url)
+                                val hash1 = VKLinkParser.parseLocalServerURL(audio.url)
                                 if (hash1.isNullOrEmpty()) {
                                     return@setPositiveButton
                                 }
@@ -348,8 +360,9 @@ class AudioLocalServerRecyclerAdapter(
                             }
                             .setNegativeButton(R.string.button_cancel, null)
                             .show()
+
                         AudioLocalServerOption.upload_item_audio -> {
-                            val hash1 = VkLinkParser.parseLocalServerURL(audio.url)
+                            val hash1 = VKLinkParser.parseLocalServerURL(audio.url)
                             if (hash1.isNullOrEmpty()) {
                                 return
                             }
@@ -359,6 +372,7 @@ class AudioLocalServerRecyclerAdapter(
                                     createCustomToast(mContext).showToastThrowable(o)
                                 }
                         }
+
                         else -> {}
                     }
                 }
@@ -473,6 +487,7 @@ class AudioLocalServerRecyclerAdapter(
                             }?.show()
                     }
                 }
+
                 else -> {
                     audio.downloadIndicator = 0
                     updateDownloadState(holder, audio)
@@ -516,6 +531,7 @@ class AudioLocalServerRecyclerAdapter(
                 currAudio = currentAudio
                 updateAudio(currAudio)
             }
+
             PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
         }
     }

@@ -4,7 +4,6 @@ import android.content.ContentProviderOperation
 import android.content.ContentValues
 import android.database.Cursor
 import android.provider.BaseColumns
-import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.api.model.VKApiPost
 import dev.ragnarok.fenrir.db.AttachToType
 import dev.ragnarok.fenrir.db.FenrirContentProvider
@@ -20,8 +19,17 @@ import dev.ragnarok.fenrir.db.model.entity.DboEntity
 import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
 import dev.ragnarok.fenrir.db.model.entity.PostDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PostDboEntity.SourceDbo
+import dev.ragnarok.fenrir.getBlob
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.getInt
+import dev.ragnarok.fenrir.getLong
+import dev.ragnarok.fenrir.getString
+import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.criteria.WallCriteria
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
+import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
@@ -281,13 +289,17 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
             WallCriteria.MODE_ALL ->                 // Загружаем все посты, кроме отложенных и предлагаемых
                 where =
                     where + " AND " + PostsColumns.POST_TYPE + " NOT IN (" + VKApiPost.Type.POSTPONE + ", " + VKApiPost.Type.SUGGEST + ") "
+
             WallCriteria.MODE_OWNER -> where = where +
                     " AND " + PostsColumns.FROM_ID + " = " + criteria.ownerId +
                     " AND " + PostsColumns.POST_TYPE + " NOT IN (" + VKApiPost.Type.POSTPONE + ", " + VKApiPost.Type.SUGGEST + ") "
+
             WallCriteria.MODE_SCHEDULED -> where =
                 where + " AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.POSTPONE
+
             WallCriteria.MODE_SUGGEST -> where =
                 where + " AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.SUGGEST
+
             WallCriteria.MODE_DONUT -> where =
                 where + " AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.DONUT
         }

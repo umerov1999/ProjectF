@@ -4,7 +4,12 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IUsersApi
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.AccessIdPair
+import dev.ragnarok.fenrir.api.model.Items
+import dev.ragnarok.fenrir.api.model.VKApiGift
+import dev.ragnarok.fenrir.api.model.VKApiNarratives
+import dev.ragnarok.fenrir.api.model.VKApiStory
+import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.StoryGetResponse
 import dev.ragnarok.fenrir.api.model.response.StoryResponse
 import dev.ragnarok.fenrir.api.model.response.UserWallInfoResponse

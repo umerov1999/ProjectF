@@ -1,14 +1,18 @@
 package dev.ragnarok.fenrir.fragment.communities
 
 import android.os.Bundle
-import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.domain.ICommunitiesInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
+import dev.ragnarok.fenrir.fromIOToMain
+import dev.ragnarok.fenrir.fromIOToMainComputation
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.model.DataWrapper
 import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.trimmedIsNullOrEmpty
+import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.Translit.cyr2lat
 import dev.ragnarok.fenrir.util.Translit.lat2cyr
@@ -19,7 +23,7 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInstanceState: Bundle?) :

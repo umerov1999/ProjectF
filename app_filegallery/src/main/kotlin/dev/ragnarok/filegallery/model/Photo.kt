@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 class Photo : Parcelable, ParcelNative.ParcelableNative {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var photo_url: String? = null
         private set
@@ -31,7 +31,7 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
     constructor()
     internal constructor(parcel: ParcelNative) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         photo_url = parcel.readString()
         preview_url = parcel.readString()
         text = parcel.readString()
@@ -42,7 +42,7 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         photo_url = parcel.readString()
         preview_url = parcel.readString()
         text = parcel.readString()
@@ -70,7 +70,7 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): Photo {
+    fun setOwnerId(ownerId: Long): Photo {
         this.ownerId = ownerId
         return this
     }
@@ -101,7 +101,7 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
 
     override fun writeToParcel(parcel: Parcel, i: Int) {
         parcel.writeInt(id)
-        parcel.writeInt(ownerId)
+        parcel.writeLong(ownerId)
         parcel.writeString(photo_url)
         parcel.writeString(preview_url)
         parcel.writeString(text)
@@ -119,13 +119,13 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + ownerId
+        result = 31 * result + ownerId.hashCode()
         return result
     }
 
     override fun writeToParcelNative(dest: ParcelNative) {
         dest.writeInt(id)
-        dest.writeInt(ownerId)
+        dest.writeLong(ownerId)
         dest.writeString(photo_url)
         dest.writeString(preview_url)
         dest.writeString(text)

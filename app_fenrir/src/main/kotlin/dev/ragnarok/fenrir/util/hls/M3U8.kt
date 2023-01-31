@@ -5,13 +5,22 @@ import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.core.Single
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.*
+import java.io.BufferedReader
+import java.io.Closeable
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.OutputStream
 import java.net.URL
 import java.security.InvalidAlgorithmParameterException
 import java.security.InvalidKeyException
 import java.security.Key
 import java.security.NoSuchAlgorithmException
-import java.util.*
+import java.util.AbstractMap
+import java.util.Arrays
 import javax.crypto.Cipher
 import javax.crypto.CipherInputStream
 import javax.crypto.NoSuchPaddingException
@@ -271,6 +280,7 @@ class M3U8 {
                         bytes = ByteStreams.toByteArray(stream)
                         closeQuietly(stream)
                     }
+
                     KeyType.NONE -> {
                         bytes = ByteStreams.toByteArray(iis)
                     }

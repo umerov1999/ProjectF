@@ -4,7 +4,12 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -15,19 +20,27 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.PhotosActivity
 import dev.ragnarok.fenrir.dialog.ImageSizeAlertDialog
 import dev.ragnarok.fenrir.dialog.ImageSizeAlertDialog.Companion.showUploadPhotoSizeIfNeed
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
-import dev.ragnarok.fenrir.fragment.vkphotos.BigVkPhotosAdapter.UploadActionListener
+import dev.ragnarok.fenrir.fragment.vkphotos.BigVKPhotosAdapter.UploadActionListener
+import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
+import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.LocalPhoto
+import dev.ragnarok.fenrir.model.ParcelableOwnerWrapper
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.model.wrappers.SelectablePhotoWrapper
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.PlaceFactory.getPhotoAlbumGalleryPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.Upload
@@ -38,8 +51,8 @@ import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentThem
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
-class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
-    BigVkPhotosAdapter.PhotosActionListener, UploadActionListener, IVkPhotosView, MenuProvider {
+class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
+    BigVKPhotosAdapter.PhotosActionListener, UploadActionListener, IVKPhotosView, MenuProvider {
     private val requestUploadPhoto = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -77,14 +90,14 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
         }
     }
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
-    private var mAdapter: BigVkPhotosAdapter? = null
+    private var mAdapter: BigVKPhotosAdapter? = null
     private var mEmptyText: TextView? = null
     private var mFab: FloatingActionButton? = null
     private var mAction: String? = null
     private var mRecyclerView: RecyclerView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mAction = requireArguments().getString(Extra.ACTION, IVkPhotosView.ACTION_SHOW_PHOTOS)
+        mAction = requireArguments().getString(Extra.ACTION, IVKPhotosView.ACTION_SHOW_PHOTOS)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -117,7 +130,7 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
         mEmptyText = root.findViewById(R.id.empty)
         mFab = root.findViewById(R.id.fr_photo_gallery_attach)
         mFab?.setOnClickListener { onFabClicked() }
-        mAdapter = BigVkPhotosAdapter(requireActivity(), emptyList(), emptyList(), TAG)
+        mAdapter = BigVKPhotosAdapter(requireActivity(), emptyList(), emptyList(), TAG)
         mAdapter?.setPhotosActionListener(this)
         mAdapter?.setUploadActionListener(this)
         mRecyclerView?.adapter = mAdapter
@@ -150,7 +163,7 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
     }
 
     private val isSelectionMode: Boolean
-        get() = IVkPhotosView.ACTION_SELECT_PHOTOS == mAction
+        get() = IVKPhotosView.ACTION_SELECT_PHOTOS == mAction
 
     private fun onPhotosForUploadSelected(photos: List<LocalPhoto>) {
         showUploadPhotoSizeIfNeed(
@@ -185,7 +198,7 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
     }
 
     override fun onPhotoClick(
-        holder: BigVkPhotosAdapter.PhotoViewHolder,
+        holder: BigVKPhotosAdapter.PhotoViewHolder,
         photoWrapper: SelectablePhotoWrapper
     ) {
         if (isSelectionMode) {
@@ -208,8 +221,8 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
 
     override fun displayData(photos: List<SelectablePhotoWrapper>, uploads: List<Upload>) {
         if (mAdapter != null) {
-            mAdapter?.setData(BigVkPhotosAdapter.DATA_TYPE_UPLOAD, uploads)
-            mAdapter?.setData(BigVkPhotosAdapter.DATA_TYPE_PHOTO, photos)
+            mAdapter?.setData(BigVKPhotosAdapter.DATA_TYPE_UPLOAD, uploads)
+            mAdapter?.setData(BigVKPhotosAdapter.DATA_TYPE_PHOTO, photos)
             mAdapter?.notifyDataSetChanged()
             resolveEmptyTextVisibility()
         }
@@ -224,7 +237,7 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
 
     override fun notifyPhotosAdded(position: Int, count: Int) {
         if (mAdapter != null) {
-            mAdapter?.notifyItemRangeInserted(position, count, BigVkPhotosAdapter.DATA_TYPE_PHOTO)
+            mAdapter?.notifyItemRangeInserted(position, count, BigVKPhotosAdapter.DATA_TYPE_PHOTO)
             resolveEmptyTextVisibility()
         }
     }
@@ -242,14 +255,14 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
 
     override fun notifyUploadAdded(position: Int, count: Int) {
         if (mAdapter != null) {
-            mAdapter?.notifyItemRangeInserted(position, count, BigVkPhotosAdapter.DATA_TYPE_UPLOAD)
+            mAdapter?.notifyItemRangeInserted(position, count, BigVKPhotosAdapter.DATA_TYPE_UPLOAD)
             resolveEmptyTextVisibility()
         }
     }
 
     override fun notifyUploadRemoved(index: Int) {
         if (mAdapter != null) {
-            mAdapter?.notifyItemRemoved(index, BigVkPhotosAdapter.DATA_TYPE_UPLOAD)
+            mAdapter?.notifyItemRemoved(index, BigVKPhotosAdapter.DATA_TYPE_UPLOAD)
             resolveEmptyTextVisibility()
         }
     }
@@ -261,7 +274,7 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
     }
 
     override fun notifyUploadItemChanged(index: Int) {
-        mAdapter?.notifyItemChanged(index, BigVkPhotosAdapter.DATA_TYPE_UPLOAD)
+        mAdapter?.notifyItemChanged(index, BigVKPhotosAdapter.DATA_TYPE_UPLOAD)
     }
 
     override fun notifyUploadProgressChanged(id: Int, progress: Int) {
@@ -379,11 +392,13 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
                 presenter?.loadDownload()
                 return true
             }
+
             R.id.action_show_date -> {
                 presenter?.doToggleDate()
                 requireActivity().invalidateOptionsMenu()
                 return true
             }
+
             R.id.action_toggle_rev -> {
                 presenter?.togglePhotoInvert()
                 requireActivity().invalidateOptionsMenu()
@@ -405,18 +420,18 @@ class VKPhotosFragment : BaseMvpFragment<VkPhotosPresenter, IVkPhotosView>(),
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<VkPhotosPresenter> {
-        return object : IPresenterFactory<VkPhotosPresenter> {
-            override fun create(): VkPhotosPresenter {
+    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<VKPhotosPresenter> {
+        return object : IPresenterFactory<VKPhotosPresenter> {
+            override fun create(): VKPhotosPresenter {
                 val ownerWrapper: ParcelableOwnerWrapper? =
                     requireArguments().getParcelableCompat(Extra.OWNER)
                 val owner = ownerWrapper?.get()
                 val album: PhotoAlbum? = requireArguments().getParcelableCompat(Extra.ALBUM)
-                return VkPhotosPresenter(
+                return VKPhotosPresenter(
                     requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getLong(Extra.OWNER_ID),
                     requireArguments().getInt(Extra.ALBUM_ID),
-                    requireArguments().getString(Extra.ACTION, IVkPhotosView.ACTION_SHOW_PHOTOS),
+                    requireArguments().getString(Extra.ACTION, IVKPhotosView.ACTION_SHOW_PHOTOS),
                     owner,
                     album,
                     requireArguments().getInt(Extra.SELECTED),

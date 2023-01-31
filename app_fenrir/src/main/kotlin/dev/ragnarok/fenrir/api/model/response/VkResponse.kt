@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-open class VkResponse {
+open class VKResponse {
     @SerialName("error")
     var error: Error? = null
 

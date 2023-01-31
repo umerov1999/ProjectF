@@ -21,8 +21,10 @@ object UncompressDefaultInterceptor : Interceptor {
         val decompressedSource = when {
             encoding.equals("zstd", ignoreCase = true) ->
                 ZstdInputStream(body.source().inputStream()).source().buffer()
+
             encoding.equals("gzip", ignoreCase = true) ->
                 GzipSource(body.source()).buffer()
+
             else -> return response
         }
 

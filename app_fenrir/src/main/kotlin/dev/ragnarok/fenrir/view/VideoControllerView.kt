@@ -320,6 +320,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
                 }
                 return true
             }
+
             KeyEvent.KEYCODE_MEDIA_PLAY -> {
                 if (uniqueDown && mPlayer?.isPlaying != true) {
                     mPlayer?.start()
@@ -328,6 +329,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
                 }
                 return true
             }
+
             KeyEvent.KEYCODE_MEDIA_STOP,
             KeyEvent.KEYCODE_MEDIA_PAUSE
             -> {
@@ -338,16 +340,19 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
                 }
                 return true
             }
+
             KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_MUTE -> {
                 // don't show the controls for volume adjustment
                 return super.dispatchKeyEvent(event)
             }
+
             KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_MENU -> {
                 if (uniqueDown) {
                     hide()
                 }
                 return true
             }
+
             else -> {
                 show(sDefaultTimeout)
                 return super.dispatchKeyEvent(event)

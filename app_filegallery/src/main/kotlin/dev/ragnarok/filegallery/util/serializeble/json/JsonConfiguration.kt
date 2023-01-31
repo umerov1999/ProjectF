@@ -14,7 +14,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
  *
  * Detailed description of each property is available in [JsonBuilder] class.
  */
-class JsonConfiguration internal constructor(
+class JsonConfiguration @OptIn(ExperimentalSerializationApi::class) internal constructor(
     val encodeDefaults: Boolean = false,
     val ignoreUnknownKeys: Boolean = false,
     val isLenient: Boolean = false,
@@ -26,7 +26,8 @@ class JsonConfiguration internal constructor(
     val useArrayPolymorphism: Boolean = false,
     val classDiscriminator: String = "type",
     val allowSpecialFloatingPointValues: Boolean = false,
-    val useAlternativeNames: Boolean = true
+    val useAlternativeNames: Boolean = true,
+    @ExperimentalSerializationApi val namingStrategy: JsonNamingStrategy? = null,
 ) {
 
     /** @suppress Dokka **/
@@ -35,6 +36,7 @@ class JsonConfiguration internal constructor(
         return "JsonConfiguration(encodeDefaults=$encodeDefaults, ignoreUnknownKeys=$ignoreUnknownKeys, isLenient=$isLenient, " +
                 "allowStructuredMapKeys=$allowStructuredMapKeys, prettyPrint=$prettyPrint, explicitNulls=$explicitNulls, " +
                 "prettyPrintIndent='$prettyPrintIndent', coerceInputValues=$coerceInputValues, useArrayPolymorphism=$useArrayPolymorphism, " +
-                "classDiscriminator='$classDiscriminator', allowSpecialFloatingPointValues=$allowSpecialFloatingPointValues)"
+                "classDiscriminator='$classDiscriminator', allowSpecialFloatingPointValues=$allowSpecialFloatingPointValues, useAlternativeNames=$useAlternativeNames, " +
+                "namingStrategy=$namingStrategy)"
     }
 }

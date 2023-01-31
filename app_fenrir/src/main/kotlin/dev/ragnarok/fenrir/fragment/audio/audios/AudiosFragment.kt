@@ -157,6 +157,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
             isSelectMode -> View.GONE
             Settings.get()
                 .other().isAudio_save_mode_button -> View.VISIBLE
+
             else -> View.GONE
         }
         save_mode.setOnClickListener {

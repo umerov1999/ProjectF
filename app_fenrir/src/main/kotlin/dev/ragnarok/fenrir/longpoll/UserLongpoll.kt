@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.longpoll
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiLongpollServer
-import dev.ragnarok.fenrir.api.model.longpoll.VkApiLongpollUpdates
+import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.notDisposed
@@ -101,7 +101,7 @@ internal class UserLongpoll(
         mCurrentUpdatesDisposable = disposable
     }
 
-    private fun onUpdates(updates: VkApiLongpollUpdates) {
+    private fun onUpdates(updates: VKApiLongpollUpdates) {
         d(TAG, "onUpdates, updates: $updates")
         if (updates.failed > 0) {
             resetServerAttrs()
@@ -116,7 +116,7 @@ internal class UserLongpoll(
         }
     }
 
-    private fun fixUpdates(updates: VkApiLongpollUpdates) {
+    private fun fixUpdates(updates: VKApiLongpollUpdates) {
         updates.add_message_updates.nonNullNoEmpty {
             for (update in it) {
                 if (update.peerId == accountId) {
@@ -140,7 +140,7 @@ internal class UserLongpoll(
         }
 
     interface Callback {
-        fun onUpdates(aid: Long, updates: VkApiLongpollUpdates)
+        fun onUpdates(aid: Long, updates: VKApiLongpollUpdates)
     }
 
     companion object {

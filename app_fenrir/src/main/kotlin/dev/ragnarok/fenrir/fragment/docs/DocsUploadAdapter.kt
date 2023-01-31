@@ -41,6 +41,7 @@ class DocsUploadAdapter(
                 val precentText = upload.progress.toString() + "%"
                 holder.status.text = precentText
             }
+
             Upload.STATUS_CANCELLING -> holder.status.setText(R.string.cancelling)
             Upload.STATUS_QUEUE -> holder.status.setText(R.string.in_order)
             Upload.STATUS_ERROR -> {

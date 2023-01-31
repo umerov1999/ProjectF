@@ -26,7 +26,13 @@ import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.LinkHelper
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.AccessIdPair
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.FunctionSource
+import dev.ragnarok.fenrir.model.IOwnersBundle
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.place.PlaceFactory
@@ -42,7 +48,7 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import io.reactivex.rxjava3.core.Completable
 import java.io.File
-import java.util.*
+import java.util.Calendar
 import kotlin.math.abs
 
 open class PhotoPagerPresenter internal constructor(

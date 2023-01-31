@@ -37,6 +37,7 @@ class FileManagerSelectAdapter(private var data: List<FileItem>) :
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_folder, parent, false)
             )
+
             else -> {
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_file, parent, false)

@@ -136,10 +136,12 @@ class CatalogV2SectionFragment :
                     val columnCount = resources.getInteger(R.integer.photos_column_count)
                     GridLayoutManager(requireActivity(), columnCount)
                 }
+
                 "videos", "artist_videos" -> {
                     val columnCount = resources.getInteger(R.integer.videos_column_count)
                     GridLayoutManager(requireActivity(), columnCount)
                 }
+
                 else -> {
                     LinearLayoutManager(requireActivity())
                 }

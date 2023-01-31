@@ -1,8 +1,19 @@
 package dev.ragnarok.fenrir.db.interfaces
 
 import androidx.annotation.CheckResult
-import dev.ragnarok.fenrir.db.model.entity.*
-import dev.ragnarok.fenrir.model.criteria.*
+import dev.ragnarok.fenrir.db.model.entity.ArticleDboEntity
+import dev.ragnarok.fenrir.db.model.entity.FaveLinkEntity
+import dev.ragnarok.fenrir.db.model.entity.FavePageEntity
+import dev.ragnarok.fenrir.db.model.entity.MarketDboEntity
+import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
+import dev.ragnarok.fenrir.db.model.entity.PhotoDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PostDboEntity
+import dev.ragnarok.fenrir.db.model.entity.VideoDboEntity
+import dev.ragnarok.fenrir.model.criteria.FaveArticlesCriteria
+import dev.ragnarok.fenrir.model.criteria.FavePhotosCriteria
+import dev.ragnarok.fenrir.model.criteria.FavePostsCriteria
+import dev.ragnarok.fenrir.model.criteria.FaveProductsCriteria
+import dev.ragnarok.fenrir.model.criteria.FaveVideosCriteria
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 

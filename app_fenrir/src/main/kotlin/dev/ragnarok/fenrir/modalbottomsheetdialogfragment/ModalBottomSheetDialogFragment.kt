@@ -271,6 +271,7 @@ class ModalBottomSheetDialogFragment(listener: Listener) : BottomSheetDialogFrag
                         )
                     return HeaderViewHolder(view)
                 }
+
                 VIEW_TYPE_ITEM -> {
                     val view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.modal_bottom_sheet_dialog_fragment_item, parent, false)

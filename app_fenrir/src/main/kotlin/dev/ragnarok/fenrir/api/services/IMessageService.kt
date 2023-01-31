@@ -1,7 +1,22 @@
 package dev.ragnarok.fenrir.api.services
 
-import dev.ragnarok.fenrir.api.model.*
-import dev.ragnarok.fenrir.api.model.response.*
+import dev.ragnarok.fenrir.api.model.Items
+import dev.ragnarok.fenrir.api.model.VKApiConversation
+import dev.ragnarok.fenrir.api.model.VKApiJsonString
+import dev.ragnarok.fenrir.api.model.VKApiLongpollServer
+import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.response.AttachmentsHistoryResponse
+import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.ChatsInfoResponse
+import dev.ragnarok.fenrir.api.model.response.ConversationDeleteResult
+import dev.ragnarok.fenrir.api.model.response.ConversationMembersResponse
+import dev.ragnarok.fenrir.api.model.response.ConversationsResponse
+import dev.ragnarok.fenrir.api.model.response.DialogsResponse
+import dev.ragnarok.fenrir.api.model.response.ItemsProfilesGroupsResponse
+import dev.ragnarok.fenrir.api.model.response.LongpollHistoryResponse
+import dev.ragnarok.fenrir.api.model.response.MessageHistoryResponse
+import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
+import dev.ragnarok.fenrir.api.model.response.UploadChatPhotoResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
 import kotlinx.serialization.builtins.MapSerializer

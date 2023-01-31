@@ -341,6 +341,7 @@ class UploadManagerImpl(
                 context,
                 networker
             )
+
             Method.TO_MESSAGE -> return when (destination.messageMethod) {
                 MessageMethod.PHOTO -> Photo2MessageUploadable(
                     context,
@@ -348,48 +349,58 @@ class UploadManagerImpl(
                     attachmentsRepository,
                     storages.messages()
                 )
+
                 MessageMethod.VIDEO -> VideoToMessageUploadable(
                     context,
                     networker,
                     attachmentsRepository,
                     storages.messages()
                 )
+
                 MessageMethod.AUDIO -> AudioToMessageUploadable(
                     context,
                     networker,
                     attachmentsRepository,
                     storages.messages()
                 )
+
                 else -> throw UnsupportedOperationException()
             }
+
             Method.PHOTO_TO_ALBUM -> return Photo2AlbumUploadable(
                 context,
                 networker,
                 storages.photos()
             )
+
             Method.DOCUMENT -> return DocumentUploadable(
                 context,
                 networker,
                 storages.docs()
             )
+
             Method.TO_COMMENT, Method.TO_WALL -> return when (destination.messageMethod) {
                 MessageMethod.PHOTO -> Photo2WallUploadable(
                     context,
                     networker,
                     attachmentsRepository
                 )
+
                 MessageMethod.VIDEO -> Video2WallUploadable(
                     context,
                     networker,
                     attachmentsRepository
                 )
+
                 else -> throw UnsupportedOperationException()
             }
+
             Method.PHOTO_TO_PROFILE -> return OwnerPhotoUploadable(
                 context,
                 networker,
                 walls
             )
+
             Method.PHOTO_TO_CHAT -> return ChatPhotoUploadable(context, networker)
         }
         throw UnsupportedOperationException()
@@ -430,12 +441,14 @@ class UploadManagerImpl(
                 Method.DOCUMENT, Method.VIDEO, Method.AUDIO, Method.TO_COMMENT, Method.TO_WALL -> if (dest.ownerId < 0) {
                     builder.append(Extra.GROUP_ID).append(abs(dest.ownerId))
                 }
+
                 Method.PHOTO_TO_ALBUM -> {
                     builder.append(Extra.ALBUM_ID).append(dest.id)
                     if (dest.ownerId < 0) {
                         builder.append(Extra.GROUP_ID).append(abs(dest.ownerId))
                     }
                 }
+
                 Method.STORY, Method.REMOTE_PLAY_AUDIO, Method.TO_MESSAGE -> {}
                 Method.PHOTO_TO_PROFILE, Method.PHOTO_TO_CHAT -> builder.append(
                     Extra.OWNER_ID

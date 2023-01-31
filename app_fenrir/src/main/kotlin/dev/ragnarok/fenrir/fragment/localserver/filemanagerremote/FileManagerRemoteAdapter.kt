@@ -21,7 +21,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.ILocalServerInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.link.VkLinkParser
+import dev.ragnarok.fenrir.link.VKLinkParser
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
 import dev.ragnarok.fenrir.media.music.PlayerStatus
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
@@ -77,6 +77,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                 currAudio = MusicPlaybackController.currentAudio
                 updateAudio(currAudio)
             }
+
             PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
         }
     }
@@ -110,10 +111,12 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_file, parent, false)
             )
+
             FileType.folder -> return FileHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_folder, parent, false)
             )
+
             FileType.audio -> return AudioHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_audio, parent, false)
@@ -164,6 +167,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                 Utils.doWavesLottieBig(holder.visual, true)
                 holder.icon.setColorFilter(Color.parseColor("#44000000"))
             }
+
             2 -> {
                 Utils.doWavesLottieBig(holder.visual, false)
                 holder.icon.setColorFilter(Color.parseColor("#44000000"))
@@ -265,6 +269,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         FileLocalServerOption.play_item_after_current_audio -> MusicPlaybackController.playAfterCurrent(
                             t
                         )
+
                         FileLocalServerOption.save_item -> {
                             when (DownloadWorkUtils.doDownloadAudio(
                                 context, t, Settings.get().accounts().current,
@@ -274,6 +279,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 0 -> {
                                     createCustomToast(context).showToastBottom(R.string.saved_audio)
                                 }
+
                                 1 -> {
                                     CustomSnackbars.createCustomSnackbars(view)
                                         ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
@@ -288,6 +294,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                         }
                                         ?.show()
                                 }
+
                                 2 -> {
                                     CustomSnackbars.createCustomSnackbars(view)
                                         ?.setDurationSnack(Snackbar.LENGTH_LONG)
@@ -303,6 +310,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                             )
                                         }?.show()
                                 }
+
                                 else -> {
                                     createCustomToast(context).showToastBottom(R.string.error_audio)
                                 }
@@ -310,7 +318,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         }
 
                         FileLocalServerOption.upload_item_audio -> {
-                            val hash1 = VkLinkParser.parseLocalServerURL(audio.url)
+                            val hash1 = VKLinkParser.parseLocalServerURL(audio.url)
                             if (hash1.isNullOrEmpty()) {
                                 return
                             }
@@ -320,6 +328,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                     createCustomToast(context).showToastThrowable(o)
                                 }
                         }
+
                         FileLocalServerOption.delete_item -> {
                             MaterialAlertDialogBuilder(
                                 context
@@ -329,7 +338,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 .setCancelable(true)
                                 .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
                                     val hash1 =
-                                        VkLinkParser.parseLocalServerURL(audio.url)
+                                        VKLinkParser.parseLocalServerURL(audio.url)
                                     if (hash1.isNullOrEmpty()) {
                                         return@setPositiveButton
                                     }
@@ -344,9 +353,10 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 .setNegativeButton(R.string.button_cancel, null)
                                 .show()
                         }
+
                         FileLocalServerOption.update_time_item -> {
                             val hash =
-                                VkLinkParser.parseLocalServerURL(audio.url)
+                                VKLinkParser.parseLocalServerURL(audio.url)
                             if (hash.isNullOrEmpty()) {
                                 return
                             }
@@ -360,7 +370,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
 
                         FileLocalServerOption.edit_item -> {
                             val hash2 =
-                                VkLinkParser.parseLocalServerURL(audio.url)
+                                VKLinkParser.parseLocalServerURL(audio.url)
                             if (hash2.isNullOrEmpty()) {
                                 return
                             }
@@ -405,12 +415,14 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                         createCustomToast(context).showToastThrowable(t)
                                     }
                         }
+
                         FileLocalServerOption.play_item_audio -> {
                             clickListener?.onClick(position, audio)
                             if (Settings.get().other().isShow_mini_player) getPlayerPlace(
                                 Settings.get().accounts().current
                             ).tryOpenWith(context)
                         }
+
                         else -> {}
                     }
                 }
@@ -521,7 +533,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 .setCancelable(true)
                                 .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
                                     val hash1 =
-                                        VkLinkParser.parseLocalServerURL(file.url)
+                                        VKLinkParser.parseLocalServerURL(file.url)
                                     if (hash1.isNullOrEmpty()) {
                                         return@setPositiveButton
                                     }
@@ -536,9 +548,10 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 .setNegativeButton(R.string.button_cancel, null)
                                 .show()
                         }
+
                         FileLocalServerOption.update_time_item -> {
                             val hash =
-                                VkLinkParser.parseLocalServerURL(file.url)
+                                VKLinkParser.parseLocalServerURL(file.url)
                             if (hash.isNullOrEmpty()) {
                                 return
                             }
@@ -549,9 +562,10 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                         createCustomToast(context).showToastThrowable(t)
                                     }
                         }
+
                         FileLocalServerOption.edit_item -> {
                             val hash2 =
-                                VkLinkParser.parseLocalServerURL(file.url)
+                                VKLinkParser.parseLocalServerURL(file.url)
                             if (hash2.isNullOrEmpty()) {
                                 return
                             }
@@ -596,6 +610,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                         createCustomToast(context).showToastThrowable(t)
                                     }
                         }
+
                         else -> {}
                     }
                 }

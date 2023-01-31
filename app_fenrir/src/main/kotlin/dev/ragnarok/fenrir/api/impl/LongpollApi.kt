@@ -1,13 +1,13 @@
 package dev.ragnarok.fenrir.api.impl
 
-import dev.ragnarok.fenrir.api.IOtherVkRestProvider
+import dev.ragnarok.fenrir.api.IOtherVKRestProvider
 import dev.ragnarok.fenrir.api.interfaces.ILongpollApi
-import dev.ragnarok.fenrir.api.model.longpoll.VkApiGroupLongpollUpdates
-import dev.ragnarok.fenrir.api.model.longpoll.VkApiLongpollUpdates
+import dev.ragnarok.fenrir.api.model.longpoll.VKApiGroupLongpollUpdates
+import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
 import dev.ragnarok.fenrir.api.services.ILongpollUpdatesService
 import io.reactivex.rxjava3.core.Single
 
-class LongpollApi internal constructor(private val provider: IOtherVkRestProvider) :
+class LongpollApi internal constructor(private val provider: IOtherVKRestProvider) :
     ILongpollApi {
     override fun getUpdates(
         server: String,
@@ -16,7 +16,7 @@ class LongpollApi internal constructor(private val provider: IOtherVkRestProvide
         wait: Int,
         mode: Int,
         version: Int
-    ): Single<VkApiLongpollUpdates> {
+    ): Single<VKApiLongpollUpdates> {
         return provider.provideLongpollRest()
             .flatMap {
                 val ret = ILongpollUpdatesService()
@@ -30,7 +30,7 @@ class LongpollApi internal constructor(private val provider: IOtherVkRestProvide
         key: String?,
         ts: String?,
         wait: Int
-    ): Single<VkApiGroupLongpollUpdates> {
+    ): Single<VKApiGroupLongpollUpdates> {
         return provider.provideLongpollRest()
             .flatMap {
                 val ret = ILongpollUpdatesService()

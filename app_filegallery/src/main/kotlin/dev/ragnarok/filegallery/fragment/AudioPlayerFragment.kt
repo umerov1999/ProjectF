@@ -148,6 +148,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 updateNowPlayingInfo()
                 resolveControlViews()
             }
+
             PlayerStatus.UPDATE_PLAY_PAUSE -> {
                 updatePlaybackControls()
                 resolveTotalTime()
@@ -164,16 +165,20 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                     }
                 }
             }
+
             PlayerStatus.REPEATMODE_CHANGED -> {
                 mRepeatButton?.updateRepeatState()
             }
+
             PlayerStatus.SHUFFLEMODE_CHANGED -> {
                 mShuffleButton?.updateShuffleState()
                 updateCovers()
             }
+
             PlayerStatus.UPDATE_PLAY_LIST -> {
                 updateCovers()
             }
+
             PlayerStatus.SERVICE_KILLED -> {
                 updatePlaybackControls()
                 updateNowPlayingInfo()
@@ -313,6 +318,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 createCustomToast(requireActivity(), view)?.showToast(R.string.saved_audio)
                 ivSave?.setImageResource(R.drawable.succ)
             }
+
             1 -> {
                 CustomSnackbars.createCustomSnackbars(v, mPlayPauseButton)
                     ?.setDurationSnack(Snackbar.LENGTH_LONG)
@@ -326,6 +332,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                         )
                     }?.show()
             }
+
             else -> createCustomToast(requireActivity(), view)?.showToast(R.string.error_audio)
         }
     }
@@ -447,9 +454,11 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 TrackIsDownloaded(current) -> {
                     ivSave?.setImageResource(R.drawable.succ)
                 }
+
                 current.url.isNullOrEmpty() -> {
                     ivSave?.setImageResource(R.drawable.audio_died)
                 }
+
                 else -> ivSave?.setImageResource(R.drawable.save)
             }
         } else ivSave?.setImageResource(R.drawable.save)
@@ -639,6 +648,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                     MusicPlaybackController.isPlaying -> {
                         mCurrentTime?.visibility = View.VISIBLE
                     }
+
                     else -> {
                         // blink the counter
                         val vis = mCurrentTime?.visibility

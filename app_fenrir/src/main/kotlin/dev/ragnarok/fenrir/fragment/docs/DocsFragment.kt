@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
@@ -23,6 +25,7 @@ import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
+import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.DocFilter
@@ -31,6 +34,7 @@ import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.model.selection.FileManagerSelectableSource
 import dev.ragnarok.fenrir.model.selection.LocalPhotosSelectableSource
 import dev.ragnarok.fenrir.model.selection.Sources
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getDocPreviewPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getGifPagerPlace

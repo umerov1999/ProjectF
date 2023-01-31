@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class BaseResponse<T> : VkResponse() {
+class BaseResponse<T> : VKResponse() {
     @SerialName("response")
     var response: T? = null
 }

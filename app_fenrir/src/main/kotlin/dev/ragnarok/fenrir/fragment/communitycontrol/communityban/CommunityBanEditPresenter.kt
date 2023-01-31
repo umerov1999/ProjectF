@@ -14,7 +14,8 @@ import dev.ragnarok.fenrir.util.Logger.wtf
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import java.text.DateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 class CommunityBanEditPresenter : AccountDependencyPresenter<ICommunityBanEditView> {
     private val groupId: Long
@@ -114,15 +115,19 @@ class CommunityBanEditPresenter : AccountDependencyPresenter<ICommunityBanEditVi
             BlockReason.SPAM -> view?.displayReason(
                 getString(R.string.reason_spam)
             )
+
             BlockReason.IRRELEVANT_MESSAGES -> view?.displayReason(
                 getString(R.string.reason_irrelevant_messages)
             )
+
             BlockReason.STRONG_LANGUAGE -> view?.displayReason(
                 getString(R.string.reason_strong_language)
             )
+
             BlockReason.VERBAL_ABUSE -> view?.displayReason(
                 getString(R.string.reason_verbal_abuse)
             )
+
             else -> view?.displayReason(
                 getString(R.string.reason_other)
             )

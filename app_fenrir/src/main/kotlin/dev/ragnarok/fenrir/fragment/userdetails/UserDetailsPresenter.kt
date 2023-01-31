@@ -8,7 +8,14 @@ import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Icon
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Peer
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.Sex
+import dev.ragnarok.fenrir.model.Text
+import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.model.UserDetails
 import dev.ragnarok.fenrir.model.menu.AdvancedItem
 import dev.ragnarok.fenrir.model.menu.Section
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -533,6 +540,7 @@ class UserDetailsPresenter(
                 VKApiUser.Relation.IN_LOVE -> return R.string.relationship_man_in_love
                 VKApiUser.Relation.IN_A_CIVIL_UNION -> return R.string.in_a_civil_union
             }
+
             Sex.WOMAN -> when (relation) {
                 VKApiUser.Relation.SINGLE -> return R.string.relationship_woman_single
                 VKApiUser.Relation.RELATIONSHIP -> return R.string.relationship_woman_in_relationship

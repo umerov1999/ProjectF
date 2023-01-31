@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.model.selection
 import android.os.Parcel
 import android.os.Parcelable
 
-class VkPhotosSelectableSource : AbsSelectableSource {
+class VKPhotosSelectableSource : AbsSelectableSource {
     val accountId: Long
     val ownerId: Long
 
@@ -31,12 +31,12 @@ class VkPhotosSelectableSource : AbsSelectableSource {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<VkPhotosSelectableSource> {
-        override fun createFromParcel(parcel: Parcel): VkPhotosSelectableSource {
-            return VkPhotosSelectableSource(parcel)
+    companion object CREATOR : Parcelable.Creator<VKPhotosSelectableSource> {
+        override fun createFromParcel(parcel: Parcel): VKPhotosSelectableSource {
+            return VKPhotosSelectableSource(parcel)
         }
 
-        override fun newArray(size: Int): Array<VkPhotosSelectableSource?> {
+        override fun newArray(size: Int): Array<VKPhotosSelectableSource?> {
             return arrayOfNulls(size)
         }
     }

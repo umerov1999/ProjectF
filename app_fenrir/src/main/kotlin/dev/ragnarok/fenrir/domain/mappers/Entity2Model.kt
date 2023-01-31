@@ -476,6 +476,7 @@ object Entity2Model {
                     it
                 )
             })
+
             else -> throw IllegalArgumentException("Invalid peer_id")
         }
         return dialog
@@ -566,78 +567,103 @@ object Entity2Model {
             is PhotoDboEntity -> {
                 return map(dboEntity)
             }
+
             is VideoDboEntity -> {
                 return buildVideoFromDbo(dboEntity)
             }
+
             is PostDboEntity -> {
                 return buildPostFromDbo(dboEntity, owners)
             }
+
             is LinkDboEntity -> {
                 return buildLinkFromDbo(dboEntity)
             }
+
             is ArticleDboEntity -> {
                 return buildArticleFromDbo(dboEntity)
             }
+
             is StoryDboEntity -> {
                 return buildStoryFromDbo(dboEntity, owners)
             }
+
             is PhotoAlbumDboEntity -> {
                 return mapPhotoAlbum(dboEntity)
             }
+
             is GraffitiDboEntity -> {
                 return buildGraffitiFromDbo(dboEntity)
             }
+
             is AudioPlaylistDboEntity -> {
                 return buildAudioPlaylistFromDbo(dboEntity)
             }
+
             is CallDboEntity -> {
                 return buildCallFromDbo(dboEntity)
             }
+
             is GeoDboEntity -> {
                 return buildGeoFromDbo(dboEntity)
             }
+
             is WallReplyDboEntity -> {
                 return buildWallReplyDbo(dboEntity, owners)
             }
+
             is NotSupportedDboEntity -> {
                 return buildNotSupportedFromDbo(dboEntity)
             }
+
             is EventDboEntity -> {
                 return buildEventFromDbo(dboEntity, owners)
             }
+
             is MarketDboEntity -> {
                 return buildMarketFromDbo(dboEntity)
             }
+
             is MarketAlbumDboEntity -> {
                 return buildMarketAlbumFromDbo(dboEntity)
             }
+
             is AudioArtistDboEntity -> {
                 return buildAudioArtistFromDbo(dboEntity)
             }
+
             is PollDboEntity -> {
                 return buildPollFromDbo(dboEntity)
             }
+
             is DocumentDboEntity -> {
                 return buildDocumentFromDbo(dboEntity)
             }
+
             is PageDboEntity -> {
                 return buildWikiPageFromDbo(dboEntity)
             }
+
             is StickerDboEntity -> {
                 return buildStickerFromDbo(dboEntity)
             }
+
             is AudioDboEntity -> {
                 return buildAudioFromDbo(dboEntity)
             }
+
             is TopicDboEntity -> {
                 return buildTopicFromDbo(dboEntity, owners)
             }
+
             is AudioMessageDboEntity -> {
                 return map(dboEntity)
             }
+
             is GiftItemDboEntity -> {
                 return buildGiftItemFromDbo(dboEntity)
             }
+
             else -> throw UnsupportedOperationException("Unsupported DBO class: " + dboEntity.javaClass)
         }
     }
@@ -1184,18 +1210,23 @@ object Entity2Model {
             is MessageDboEntity -> {
                 fillMessageOwnerIds(ids, dboEntity)
             }
+
             is PostDboEntity -> {
                 fillPostOwnerIds(ids, dboEntity)
             }
+
             is StoryDboEntity -> {
                 fillStoryOwnerIds(ids, dboEntity)
             }
+
             is WallReplyDboEntity -> {
                 fillWallReplyOwnerIds(ids, dboEntity)
             }
+
             is EventDboEntity -> {
                 fillEventIds(ids, dboEntity)
             }
+
             else -> {}
         }
     }

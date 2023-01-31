@@ -13,15 +13,23 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso3.Transformation
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.AttachmentsHolder
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActionCallback
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.VoiceActionListener
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
+import dev.ragnarok.fenrir.ifNonNullNoEmpty
 import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.CryptStatus
+import dev.ragnarok.fenrir.model.Keyboard
+import dev.ragnarok.fenrir.model.LastReadId
+import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.MessageStatus
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
@@ -37,7 +45,7 @@ import dev.ragnarok.fenrir.view.emoji.BotKeyboardView.BotKeyboardViewDelegate
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 class MessagesAdapter(
     private val context: Context,
@@ -83,11 +91,13 @@ class MessagesAdapter(
                 message,
                 position
             )
+
             TYPE_STICKER_FRIEND, TYPE_STICKER_MY -> bindStickerHolder(
                 viewHolder as StickerMessageHolder,
                 message,
                 position
             )
+
             TYPE_GIFT_FRIEND, TYPE_GIFT_MY -> bindGiftHolder(
                 viewHolder as GiftMessageHolder,
                 message,
@@ -197,6 +207,7 @@ class MessagesAdapter(
                     )
                 )
             }
+
             MessageStatus.QUEUE -> {
                 textView.text = context.getString(R.string.in_order)
                 textView.setTextColor(
@@ -206,10 +217,12 @@ class MessagesAdapter(
                     )
                 )
             }
+
             MessageStatus.ERROR -> {
                 textView.text = context.getString(R.string.error)
                 textView.setTextColor(Color.RED)
             }
+
             MessageStatus.WAITING_FOR_UPLOAD -> {
                 textView.setText(R.string.waiting_for_upload)
                 textView.setTextColor(
@@ -219,6 +232,7 @@ class MessagesAdapter(
                     )
                 )
             }
+
             else -> {
                 var text = AppTextUtils.getDateFromUnixTime(time)
                 if (updateTime != 0L) {
@@ -298,6 +312,7 @@ class MessagesAdapter(
         when (message.cryptStatus) {
             CryptStatus.NO_ENCRYPTION, CryptStatus.ENCRYPTED, CryptStatus.DECRYPT_FAILED -> displayedBody =
                 message.body
+
             CryptStatus.DECRYPTED -> displayedBody = message.decryptedBody
         }
         if (!message.isGraffiti) {
@@ -305,6 +320,7 @@ class MessagesAdapter(
                 CryptStatus.ENCRYPTED, CryptStatus.DECRYPT_FAILED -> holder.bubble.setNonGradientColor(
                     Color.parseColor("#D4ff0000")
                 )
+
                 CryptStatus.NO_ENCRYPTION, CryptStatus.DECRYPTED -> if (message.isOut) {
                     if (Settings.get().other().isCustom_MyMessage) holder.bubble.setGradientColor(
                         Settings.get().other().colorMyMessage,
@@ -417,6 +433,7 @@ class MessagesAdapter(
             TYPE_GRAFFITI_FRIEND, TYPE_GRAFFITI_MY, TYPE_MY_MESSAGE, TYPE_FRIEND_MESSAGE -> return MessageHolder(
                 view
             )
+
             TYPE_SERVICE -> return ServiceMessageHolder(view)
             TYPE_STICKER_FRIEND, TYPE_STICKER_MY -> return StickerMessageHolder(view)
             TYPE_GIFT_FRIEND, TYPE_GIFT_MY -> return GiftMessageHolder(view)

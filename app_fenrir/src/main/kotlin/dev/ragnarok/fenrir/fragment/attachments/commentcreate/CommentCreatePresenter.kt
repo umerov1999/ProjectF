@@ -5,7 +5,9 @@ import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.db.AttachToType
 import dev.ragnarok.fenrir.domain.IAttachmentsRepository
-import dev.ragnarok.fenrir.domain.IAttachmentsRepository.*
+import dev.ragnarok.fenrir.domain.IAttachmentsRepository.IAddEvent
+import dev.ragnarok.fenrir.domain.IAttachmentsRepository.IBaseEvent
+import dev.ragnarok.fenrir.domain.IAttachmentsRepository.IRemoveEvent
 import dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit.AbsAttachmentsEditPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AbsModel

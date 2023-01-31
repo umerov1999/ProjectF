@@ -173,6 +173,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                         })
                         .show()
                 }
+
                 else -> presenter?.fireEditPhotoMaked(defaultSize)
             }
         }
@@ -432,18 +433,22 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     reference.get()?.presenter?.fireActionModeEditClick()
                     hide()
                 }
+
                 R.id.buttonForward -> {
                     reference.get()?.presenter?.onActionModeForwardClick()
                     hide()
                 }
+
                 R.id.buttonCopy -> {
                     reference.get()?.presenter?.fireActionModeCopyClick()
                     hide()
                 }
+
                 R.id.buttonDelete -> {
                     reference.get()?.presenter?.fireActionModeDeleteClick()
                     hide()
                 }
+
                 R.id.buttonSpam -> {
                     val dlgAlert =
                         reference.get()?.let { MaterialAlertDialogBuilder(it.requireActivity()) }
@@ -459,10 +464,12 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     dlgAlert?.setCancelable(true)
                     dlgAlert?.create()?.show()
                 }
+
                 R.id.buttonPin -> {
                     reference.get()?.presenter?.fireActionModePinClick()
                     hide()
                 }
+
                 R.id.buttonStar -> {
                     reference.get()?.presenter?.fireActionModeStarClick()
                     hide()
@@ -939,6 +946,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     })
                     .show()
             }
+
             Upload.IMAGE_SIZE_CROPPING -> {
                 if (photos.size == 1) {
                     var to_up = photos[0].getFullImageUri() ?: return
@@ -958,6 +966,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     presenter?.fireEditLocalPhotosSelected(photos, Upload.IMAGE_SIZE_FULL)
                 }
             }
+
             else -> presenter?.fireEditLocalPhotosSelected(photos, defaultSize)
         }
     }
@@ -983,6 +992,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                             })
                             .show()
                     }
+
                     Upload.IMAGE_SIZE_CROPPING -> {
                         openRequestPhotoResize.launch(
                             Intent(requireContext(), IMGEditActivity::class.java)
@@ -996,6 +1006,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                                 )
                         )
                     }
+
                     else -> presenter?.fireFilePhotoForUploadSelected(file, defaultSize)
                 }
                 return
@@ -1041,6 +1052,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                                 })
                                 .show()
                         }
+
                         Upload.IMAGE_SIZE_CROPPING -> {
                             openRequestPhotoResize.launch(
                                 Intent(requireContext(), IMGEditActivity::class.java)
@@ -1054,6 +1066,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                                     )
                             )
                         }
+
                         else -> presenter?.fireFilePhotoForUploadSelected(file, defaultSize)
                     }
                 }
@@ -1105,7 +1118,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             .with(LocalPhotosSelectableSource())
             .with(LocalGallerySelectableSource())
             .with(LocalVideosSelectableSource())
-            .with(VkPhotosSelectableSource(accountId, ownerId))
+            .with(VKPhotosSelectableSource(accountId, ownerId))
             .with(FileManagerSelectableSource())
 
         val intent = DualTabPhotoActivity.createIntent(requireActivity(), 10, sources)
@@ -1781,30 +1794,36 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 }
                 return true
             }
+
             R.id.action_refresh -> {
                 recyclerView?.scrollToPosition(0)
                 presenter?.resetChronology()
                 presenter?.fireRefreshClick()
                 return true
             }
+
             R.id.show_profile -> {
                 presenter?.fireShow_Profile()
                 return true
             }
+
             R.id.action_short_link -> {
                 presenter?.fireShortLinkClick(requireActivity())
                 return true
             }
+
             R.id.change_hrono_history -> {
                 recyclerView?.scrollToPosition(0)
                 presenter?.invertChronology()
                 presenter?.fireRefreshClick()
                 return true
             }
+
             R.id.action_leave_chat -> {
                 presenter?.fireLeaveChatClick()
                 return true
             }
+
             R.id.delete_chat -> {
                 CustomSnackbars.createCustomSnackbars(view, InputView)
                     ?.setDurationSnack(Snackbar.LENGTH_LONG)?.themedSnack(R.string.delete_chat_do)
@@ -1813,10 +1832,12 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     ) { presenter?.removeDialog() }?.show()
                 return true
             }
+
             R.id.action_edit_chat -> {
                 presenter?.fireChatTitleClick()
                 return true
             }
+
             R.id.action_chat_members -> {
                 presenter?.fireChatMembersClick()
                 return true

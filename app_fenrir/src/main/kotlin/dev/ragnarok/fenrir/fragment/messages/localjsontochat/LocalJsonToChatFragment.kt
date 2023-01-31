@@ -13,13 +13,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.StubAnimatorListener
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter.OnMessageActionListener
+import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
@@ -27,6 +31,7 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Keyboard
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Peer
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.settings.CurrentTheme

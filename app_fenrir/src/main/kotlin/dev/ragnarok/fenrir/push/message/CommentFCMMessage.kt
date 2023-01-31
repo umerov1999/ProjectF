@@ -69,10 +69,12 @@ class CommentFCMMessage {
                 title = context.getString(R.string.photo_comment_push_title)
                 commented = Commented(item_id, owner_id, CommentedType.PHOTO, null)
             }
+
             "video_comment" -> {
                 title = context.getString(R.string.video_comment_push_title)
                 commented = Commented(item_id, owner_id, CommentedType.VIDEO, null)
             }
+
             "comment" -> {
                 title = context.getString(R.string.wall_comment_push_title)
                 commented = Commented(item_id, owner_id, CommentedType.POST, null)

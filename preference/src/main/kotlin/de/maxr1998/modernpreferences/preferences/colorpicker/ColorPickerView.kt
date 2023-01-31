@@ -170,8 +170,10 @@ class ColorPickerView : View {
         when (widthMode) {
             MeasureSpec.UNSPECIFIED -> width =
                 widthMeasureSpec
+
             MeasureSpec.AT_MOST -> width =
                 MeasureSpec.getSize(widthMeasureSpec)
+
             MeasureSpec.EXACTLY -> width =
                 MeasureSpec.getSize(widthMeasureSpec)
         }
@@ -180,8 +182,10 @@ class ColorPickerView : View {
         when (heightMode) {
             MeasureSpec.UNSPECIFIED -> height =
                 heightMeasureSpec
+
             MeasureSpec.AT_MOST -> height =
                 MeasureSpec.getSize(heightMeasureSpec)
+
             MeasureSpec.EXACTLY -> height =
                 MeasureSpec.getSize(heightMeasureSpec)
         }
@@ -202,6 +206,7 @@ class ColorPickerView : View {
                 updateColorWheel()
                 invalidate()
             }
+
             MotionEvent.ACTION_UP -> {
                 val selectedColor = selectedColor
                 for (listener in listeners) {

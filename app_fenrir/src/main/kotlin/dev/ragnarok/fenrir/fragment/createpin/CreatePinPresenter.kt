@@ -6,7 +6,7 @@ import android.os.Looper
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import java.util.*
+import java.util.Arrays
 
 class CreatePinPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<ICreatePinView>(savedInstanceState) {

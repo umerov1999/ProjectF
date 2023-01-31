@@ -79,6 +79,7 @@ class MultiChoiceDialogPreference(
                 else -> title1
             }
         }
+
         else -> super.resolveSummary(context)
     }
 

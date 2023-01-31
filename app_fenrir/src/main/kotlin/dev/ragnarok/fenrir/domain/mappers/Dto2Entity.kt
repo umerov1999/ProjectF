@@ -45,6 +45,7 @@ object Dto2Entity {
                 usersDbo.setDate(feedback.date)
                 return usersDbo
             }
+
             FeedbackType.MENTION -> {
                 val mentionWallFeedback = feedback as VKApiMentionWallFeedback
                 val mentionDbo = MentionEntity(type)
@@ -65,6 +66,7 @@ object Dto2Entity {
                 mentionDbo.setDate(feedback.date)
                 return mentionDbo
             }
+
             FeedbackType.MENTION_COMMENT_POST, FeedbackType.MENTION_COMMENT_PHOTO, FeedbackType.MENTION_COMMENT_VIDEO -> {
                 val mentionCommentFeedback = feedback as VKApiMentionCommentFeedback
                 val entity = createFromCommentable(
@@ -95,6 +97,7 @@ object Dto2Entity {
                 }
                 return mentionCommentDbo
             }
+
             FeedbackType.WALL, FeedbackType.WALL_PUBLISH -> {
                 val wallFeedback = feedback as VKApiWallFeedback
                 val postEntity =
@@ -115,6 +118,7 @@ object Dto2Entity {
                 }
                 return postFeedbackEntity
             }
+
             FeedbackType.COMMENT_POST, FeedbackType.COMMENT_PHOTO, FeedbackType.COMMENT_VIDEO -> {
                 val commentFeedback = feedback as VKApiCommentFeedback
                 val commented = createFromCommentable(
@@ -145,6 +149,7 @@ object Dto2Entity {
                 }
                 return commentEntity
             }
+
             FeedbackType.REPLY_COMMENT, FeedbackType.REPLY_COMMENT_PHOTO, FeedbackType.REPLY_COMMENT_VIDEO, FeedbackType.REPLY_TOPIC -> {
                 val replyCommentFeedback = feedback as VKApiReplyCommentFeedback
                 val c = createFromCommentable(
@@ -187,6 +192,7 @@ object Dto2Entity {
                 }
                 return replyCommentEntity
             }
+
             FeedbackType.LIKE_POST, FeedbackType.LIKE_PHOTO, FeedbackType.LIKE_VIDEO -> {
                 val likeFeedback = feedback as VKApiLikeFeedback
                 val likeEntity = LikeEntity(type)
@@ -199,6 +205,7 @@ object Dto2Entity {
                 likeEntity.setDate(feedback.date)
                 return likeEntity
             }
+
             FeedbackType.LIKE_COMMENT_POST, FeedbackType.LIKE_COMMENT_PHOTO, FeedbackType.LIKE_COMMENT_VIDEO, FeedbackType.LIKE_COMMENT_TOPIC -> {
                 val likeCommentFeedback = feedback as VKApiLikeCommentFeedback
                 val ce = createFromCommentable(
@@ -219,6 +226,7 @@ object Dto2Entity {
                 likeCommentEntity.setLikesOwnerIds(likeCommentFeedback.users?.ids)
                 return likeCommentEntity
             }
+
             FeedbackType.COPY_POST, FeedbackType.COPY_PHOTO, FeedbackType.COPY_VIDEO -> {
                 val copyFeedback = feedback as VKApiCopyFeedback
                 val copyEntity = CopyEntity(type)
@@ -227,9 +235,11 @@ object Dto2Entity {
                     FeedbackType.COPY_POST -> {
                         copyEntity.setCopied(mapPost(copyFeedback.what as VKApiPost))
                     }
+
                     FeedbackType.COPY_PHOTO -> {
                         copyEntity.setCopied(mapPhoto(copyFeedback.what as VKApiPhoto))
                     }
+
                     else -> {
                         copyEntity.setCopied(mapVideo(copyFeedback.what as VKApiVideo))
                     }
@@ -243,6 +253,7 @@ object Dto2Entity {
                 copyEntity.setCopies(copiesEntity)
                 return copyEntity
             }
+
             FeedbackType.NULL -> {}
         }
         throw UnsupportedOperationException("Unsupported feedback type: " + feedback.type)
@@ -876,75 +887,99 @@ object Dto2Entity {
             VKApiAttachment.TYPE_PHOTO -> {
                 return mapPhoto(dto as VKApiPhoto)
             }
+
             VKApiAttachment.TYPE_VIDEO -> {
                 return mapVideo(dto as VKApiVideo)
             }
+
             VKApiAttachment.TYPE_DOC -> {
                 return mapDoc(dto as VKApiDoc)
             }
+
             VKApiAttachment.TYPE_LINK -> {
                 return mapLink(dto as VKApiLink)
             }
+
             VKApiAttachment.TYPE_ARTICLE -> {
                 return mapArticle(dto as VKApiArticle)
             }
+
             VKApiAttachment.TYPE_AUDIO_PLAYLIST -> {
                 return mapAudioPlaylist(dto as VKApiAudioPlaylist)
             }
+
             VKApiAttachment.TYPE_STORY -> {
                 return mapStory(dto as VKApiStory)
             }
+
             VKApiAttachment.TYPE_GRAFFITI -> {
                 return mapGraffiti(dto as VKApiGraffiti)
             }
+
             VKApiAttachment.TYPE_ALBUM -> {
                 return buildPhotoAlbumDbo(dto as VKApiPhotoAlbum)
             }
+
             VKApiAttachment.TYPE_CALL -> {
                 return mapCall(dto as VKApiCall)
             }
+
             VKApiAttachment.TYPE_GEO -> {
                 return mapGeo(dto as VKApiGeo)
             }
+
             VKApiAttachment.TYPE_WALL_REPLY -> {
                 return mapWallReply(dto as VKApiWallReply)
             }
+
             VKApiAttachment.TYPE_NOT_SUPPORT -> {
                 return mapNotSupported(dto as VKApiNotSupported)
             }
+
             VKApiAttachment.TYPE_EVENT -> {
                 return mapEvent(dto as VKApiEvent)
             }
+
             VKApiAttachment.TYPE_MARKET -> {
                 return mapMarket(dto as VKApiMarket)
             }
+
             VKApiAttachment.TYPE_MARKET_ALBUM -> {
                 return mapMarketAlbum(dto as VKApiMarketAlbum)
             }
+
             VKApiAttachment.TYPE_ARTIST -> {
                 return mapAudioArtist(dto as VKApiAudioArtist)
             }
+
             VKApiAttachment.TYPE_WIKI_PAGE -> {
                 return mapWikiPage(dto as VKApiWikiPage)
             }
+
             VKApiAttachment.TYPE_STICKER -> {
                 return mapSticker(dto as VKApiSticker)
             }
+
             VKApiAttachment.TYPE_POST -> {
                 return mapPost(dto as VKApiPost)
             }
+
             VKApiAttachment.TYPE_POLL -> {
                 return buildPollEntity(dto as VKApiPoll)
             }
+
             VKApiAttachment.TYPE_AUDIO -> {
                 return mapAudio(dto as VKApiAudio)
             }
+
             VKApiAttachment.TYPE_AUDIO_MESSAGE -> {
                 return mapAudioMessage(dto as VKApiAudioMessage)
             }
+
             VKApiAttachment.TYPE_GIFT -> {
                 return mapGiftItem(dto as VKApiGiftItem)
             }
+
             else -> throw UnsupportedOperationException("Unsupported attachment, class: " + dto.javaClass)
         }
     }

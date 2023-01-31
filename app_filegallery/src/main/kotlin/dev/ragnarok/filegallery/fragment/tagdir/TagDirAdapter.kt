@@ -50,6 +50,7 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
                 currAudio = MusicPlaybackController.currentAudio
                 updateAudio(currAudio)
             }
+
             PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
         }
     }
@@ -77,10 +78,12 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_file, parent, false)
             )
+
             FileType.folder -> return FileHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_folder, parent, false)
             )
+
             FileType.audio -> return AudioHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_audio, parent, false)
@@ -186,6 +189,7 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
                 Utils.doWavesLottieBig(holder.visual, true)
                 holder.icon.setColorFilter(Color.parseColor("#44000000"))
             }
+
             2 -> {
                 Utils.doWavesLottieBig(holder.visual, false)
                 holder.icon.setColorFilter(Color.parseColor("#44000000"))

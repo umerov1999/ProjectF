@@ -3,7 +3,12 @@ package dev.ragnarok.fenrir.db.interfaces
 import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.db.model.BanAction
 import dev.ragnarok.fenrir.db.model.UserPatch
-import dev.ragnarok.fenrir.db.model.entity.*
+import dev.ragnarok.fenrir.db.model.entity.CommunityDetailsEntity
+import dev.ragnarok.fenrir.db.model.entity.CommunityEntity
+import dev.ragnarok.fenrir.db.model.entity.FriendListEntity
+import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
+import dev.ragnarok.fenrir.db.model.entity.UserDetailsEntity
+import dev.ragnarok.fenrir.db.model.entity.UserEntity
 import dev.ragnarok.fenrir.model.Manager
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.util.Optional

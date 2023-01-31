@@ -2,7 +2,11 @@ package dev.ragnarok.fenrir.fragment.videos
 
 import android.Manifest
 import android.app.Activity
-import android.content.*
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,13 +23,16 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.docs.DocsUploadAdapter
+import dev.ragnarok.fenrir.getParcelableExtraCompat
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
@@ -37,6 +44,7 @@ import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.selection.FileManagerSelectableSource
 import dev.ragnarok.fenrir.model.selection.LocalVideosSelectableSource
 import dev.ragnarok.fenrir.model.selection.Sources
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.PlaceFactory.getAlbumsByVideoPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
@@ -415,14 +423,17 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
                     clipboard?.setPrimaryClip(clip)
                     createCustomToast(requireActivity()).showToast(R.string.copied_url)
                 }
+
                 R.id.check_show_author -> {
                     getOwnerWallPlace(accountId, video.ownerId, null).tryOpenWith(requireActivity())
                 }
+
                 R.id.album_container -> {
                     getAlbumsByVideoPlace(accountId, ownerId, video.ownerId, video.id).tryOpenWith(
                         requireActivity()
                     )
                 }
+
                 else -> {
                     presenter?.fireVideoOption(
                         it.id,
@@ -473,6 +484,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
                             "https://vk.com/video" + video.ownerId + "_" + video.id,
                             video.title
                         )
+
                         1 -> startForSendAttachments(requireActivity(), accountId, video)
                         2 -> goToPostCreation(
                             requireActivity(),

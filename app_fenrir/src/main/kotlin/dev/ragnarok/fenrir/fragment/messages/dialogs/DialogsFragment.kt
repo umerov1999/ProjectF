@@ -154,6 +154,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                 presenter?.fireSearchClick()
                 return true
             }
+
             R.id.action_star -> {
                 presenter?.fireImportantClick()
                 return true
@@ -339,6 +340,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                                 )
                             }
                             ?.show()
+
                         2 -> if (contextView.pIsPinned) {
                             presenter?.fireUnPin(
                                 dialog
@@ -348,9 +350,11 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                                 dialog
                             )
                         }
+
                         3 -> presenter?.fireCreateShortcutClick(
                             dialog
                         )
+
                         4 -> if (hasOreo()) {
                             val accountId = Settings.get().accounts().current
                             var mask = Settings.get()
@@ -370,9 +374,11 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                                 dialog
                             )
                         }
+
                         5 -> presenter?.fireAddToLauncherShortcuts(
                             dialog
                         )
+
                         6 -> if (!Settings.get().security().isUsePinForSecurity) {
                             createCustomToast(requireActivity()).showToastError(R.string.not_supported_hide)
                             securitySettingsPlace.tryOpenWith(requireActivity())
@@ -384,11 +390,13 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                                 showSnackbar(R.string.hidden_dialogs_helper, true)
                             }
                         }
+
                         7 -> {
                             Settings.get().security().removeHiddenDialog(dialog.getOwnerObjectId())
                             ReconfigureOptionsHide(Settings.get().security().showHiddenDialogs)
                             notifyDataSetChanged()
                         }
+
                         8 -> presenter?.fireRead(
                             dialog
                         )

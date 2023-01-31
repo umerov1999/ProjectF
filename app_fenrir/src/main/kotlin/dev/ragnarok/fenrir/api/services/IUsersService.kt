@@ -1,6 +1,10 @@
 package dev.ragnarok.fenrir.api.services
 
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.Items
+import dev.ragnarok.fenrir.api.model.VKApiGift
+import dev.ragnarok.fenrir.api.model.VKApiNarratives
+import dev.ragnarok.fenrir.api.model.VKApiStory
+import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.StoryGetResponse
 import dev.ragnarok.fenrir.api.model.response.StoryResponse

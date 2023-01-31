@@ -167,7 +167,7 @@ object Utils {
         }
 
     private fun capitalize(s: String?): String {
-        if (s == null || s.isEmpty()) {
+        if (s.isNullOrEmpty()) {
             return ""
         }
         val first = s[0]
@@ -341,21 +341,25 @@ object Utils {
                 "%.2f TB",
                 Bytes.toDouble() / tb
             )
+
             Bytes >= gb -> String.format(
                 Locale.getDefault(),
                 "%.2f GB",
                 Bytes.toDouble() / gb
             )
+
             Bytes >= mb -> String.format(
                 Locale.getDefault(),
                 "%.2f MB",
                 Bytes.toDouble() / mb
             )
+
             Bytes >= kb -> String.format(
                 Locale.getDefault(),
                 "%.2f KB",
                 Bytes.toDouble() / kb
             )
+
             else -> String.format(Locale.getDefault(), "%d Bytes", Bytes)
         }
     }
@@ -365,12 +369,15 @@ object Utils {
             Lang.ENGLISH -> {
                 return Locale.ENGLISH
             }
+
             Lang.RUSSIA -> {
                 return Locale("ru", "RU")
             }
+
             Lang.BELORUSSIAN -> {
                 return Locale("be", "BY")
             }
+
             Lang.DEFAULT -> {}
         }
         return Locale.getDefault()

@@ -1,32 +1,46 @@
 package dev.ragnarok.fenrir.api.impl
 
-import dev.ragnarok.fenrir.api.*
-import dev.ragnarok.fenrir.api.interfaces.*
+import dev.ragnarok.fenrir.AccountType
+import dev.ragnarok.fenrir.api.IDirectLoginSeviceProvider
+import dev.ragnarok.fenrir.api.ILocalServerServiceProvider
+import dev.ragnarok.fenrir.api.IOtherVKRestProvider
+import dev.ragnarok.fenrir.api.IUploadRestProvider
+import dev.ragnarok.fenrir.api.IVKRestProvider
+import dev.ragnarok.fenrir.api.OtherVKRestProvider
+import dev.ragnarok.fenrir.api.UploadRestProvider
+import dev.ragnarok.fenrir.api.VKMethodHttpClientFactory
+import dev.ragnarok.fenrir.api.VKRestProvider
+import dev.ragnarok.fenrir.api.interfaces.IAccountApis
+import dev.ragnarok.fenrir.api.interfaces.IAuthApi
+import dev.ragnarok.fenrir.api.interfaces.ILocalServerApi
+import dev.ragnarok.fenrir.api.interfaces.ILongpollApi
+import dev.ragnarok.fenrir.api.interfaces.INetworker
+import dev.ragnarok.fenrir.api.interfaces.IUploadApi
 import dev.ragnarok.fenrir.api.services.IAuthService
 import dev.ragnarok.fenrir.api.services.ILocalServerService
 import dev.ragnarok.fenrir.settings.IProxySettings
 import io.reactivex.rxjava3.core.Single
 
 class Networker(settings: IProxySettings) : INetworker {
-    private val otherVkRestProvider: IOtherVkRestProvider
-    private val vkRestProvider: IVkRestProvider
+    private val otherVkRestProvider: IOtherVKRestProvider
+    private val vkRestProvider: IVKRestProvider
     private val uploadRestProvider: IUploadRestProvider
     override fun vkDefault(accountId: Long): IAccountApis {
-        return VkApies[accountId, vkRestProvider]
+        return VKApies[accountId, vkRestProvider]
     }
 
     override fun vkManual(accountId: Long, accessToken: String): IAccountApis {
-        return VkApies.create(accountId, accessToken, vkRestProvider)
+        return VKApies.create(accountId, accessToken, vkRestProvider)
     }
 
-    override fun getVkRestProvider(): IVkRestProvider {
+    override fun getVkRestProvider(): IVKRestProvider {
         return vkRestProvider
     }
 
-    override fun vkDirectAuth(): IAuthApi {
+    override fun vkDirectAuth(@AccountType accountType: Int, customDevice: String?): IAuthApi {
         return AuthApi(object : IDirectLoginSeviceProvider {
             override fun provideAuthService(): Single<IAuthService> {
-                return otherVkRestProvider.provideAuthRest()
+                return otherVkRestProvider.provideAuthRest(accountType, customDevice)
                     .map {
                         val ret = IAuthService()
                         ret.addon(it)
@@ -71,8 +85,8 @@ class Networker(settings: IProxySettings) : INetworker {
     }
 
     init {
-        otherVkRestProvider = OtherVkRestProvider(settings)
-        vkRestProvider = VkRestProvider(settings, VkMethodHttpClientFactory())
+        otherVkRestProvider = OtherVKRestProvider(settings)
+        vkRestProvider = VKRestProvider(settings, VKMethodHttpClientFactory())
         uploadRestProvider = UploadRestProvider(settings)
     }
 }

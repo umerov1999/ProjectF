@@ -13,7 +13,7 @@ import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.model.tags.TagDir
 import dev.ragnarok.filegallery.util.Objects
-import java.util.*
+import java.util.Locale
 
 class TagDirPresenter(private val owner_id: Int, savedInstanceState: Bundle?) :
     RxSupportPresenter<ITagDirView>(savedInstanceState) {

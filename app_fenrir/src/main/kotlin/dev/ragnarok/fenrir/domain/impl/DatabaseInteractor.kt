@@ -5,7 +5,12 @@ import dev.ragnarok.fenrir.db.interfaces.IDatabaseStore
 import dev.ragnarok.fenrir.db.model.entity.CountryDboEntity
 import dev.ragnarok.fenrir.domain.IDatabaseInteractor
 import dev.ragnarok.fenrir.model.City
-import dev.ragnarok.fenrir.model.database.*
+import dev.ragnarok.fenrir.model.database.Chair
+import dev.ragnarok.fenrir.model.database.Country
+import dev.ragnarok.fenrir.model.database.Faculty
+import dev.ragnarok.fenrir.model.database.School
+import dev.ragnarok.fenrir.model.database.SchoolClazz
+import dev.ragnarok.fenrir.model.database.University
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import io.reactivex.rxjava3.core.Single
 

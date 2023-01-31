@@ -162,6 +162,15 @@ internal class AccountApi(accountId: Long, provider: IServiceProvider) :
             }
     }
 
+    override fun getExchangeToken(): Single<RefreshToken> {
+        return provideService(IAccountService(), TokenType.USER)
+            .flatMap { service ->
+                service
+                    .getExchangeToken()
+                    .map(AuthApi.extractResponseWithErrorHandling())
+            }
+    }
+
     override fun importMessagesContacts(contacts: String?): Completable {
         return provideService(IAccountService(), TokenType.USER)
             .flatMapCompletable { service ->

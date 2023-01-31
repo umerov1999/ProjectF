@@ -284,9 +284,11 @@ class InputViewController(
             } else if (canStartRecording) {
                 mRecordActionsCallback?.onSwithToRecordMode()
             }
+
             Mode.VOICE_RECORD -> {
                 mRecordActionsCallback?.onRecordSendClick()
             }
+
             Mode.EDITING -> callback.onSaveClick()
         }
     }
@@ -298,11 +300,13 @@ class InputViewController(
                 vgVoiceInput.visibility = View.GONE
                 vgMessageInput.visibility = View.VISIBLE
             }
+
             Mode.VOICE_RECORD -> {
                 //                vgInputViewHolder.setVisibility(View.VISIBLE);
                 vgVoiceInput.visibility = View.VISIBLE
                 vgMessageInput.visibility = View.GONE
             }
+
             Mode.DISABLED -> vgInputViewHolder.visibility = View.GONE
         }
     }
@@ -313,10 +317,12 @@ class InputViewController(
                 mButtonSend.setImageResource(R.drawable.check)
                 setupPrimaryButton(true)
             }
+
             Mode.NORMAL -> {
                 mButtonSend.setImageResource(if (!canNormalSend && canStartRecording) R.drawable.voice else R.drawable.send)
                 setupPrimaryButton(canNormalSend || canStartRecording)
             }
+
             Mode.EDITING -> {
                 mButtonSend.setImageResource(R.drawable.check)
                 setupPrimaryButton(canEditingSave)

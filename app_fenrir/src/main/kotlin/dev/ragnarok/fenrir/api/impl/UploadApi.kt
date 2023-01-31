@@ -4,7 +4,15 @@ import dev.ragnarok.fenrir.api.IUploadRestProvider
 import dev.ragnarok.fenrir.api.PercentagePublisher
 import dev.ragnarok.fenrir.api.interfaces.IUploadApi
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
-import dev.ragnarok.fenrir.api.model.upload.*
+import dev.ragnarok.fenrir.api.model.upload.UploadAudioDto
+import dev.ragnarok.fenrir.api.model.upload.UploadChatPhotoDto
+import dev.ragnarok.fenrir.api.model.upload.UploadDocDto
+import dev.ragnarok.fenrir.api.model.upload.UploadOwnerPhotoDto
+import dev.ragnarok.fenrir.api.model.upload.UploadPhotoToAlbumDto
+import dev.ragnarok.fenrir.api.model.upload.UploadPhotoToMessageDto
+import dev.ragnarok.fenrir.api.model.upload.UploadPhotoToWallDto
+import dev.ragnarok.fenrir.api.model.upload.UploadStoryDto
+import dev.ragnarok.fenrir.api.model.upload.UploadVideoDto
 import dev.ragnarok.fenrir.api.services.IUploadService
 import dev.ragnarok.fenrir.api.util.ProgressRequestBody
 import dev.ragnarok.fenrir.api.util.ProgressRequestBody.UploadCallbacks

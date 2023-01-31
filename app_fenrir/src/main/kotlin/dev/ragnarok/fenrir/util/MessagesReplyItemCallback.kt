@@ -47,6 +47,7 @@ class MessagesReplyItemCallback(
                 viewHolder.itemView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                 swipe.onReplySwiped(viewHolder.bindingAdapterPosition)
             }
+
             dX == .0f -> {
                 invoked = false
             }

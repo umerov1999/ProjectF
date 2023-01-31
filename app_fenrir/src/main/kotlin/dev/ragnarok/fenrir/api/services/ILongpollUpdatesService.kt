@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.api.services
 
-import dev.ragnarok.fenrir.api.model.longpoll.VkApiGroupLongpollUpdates
-import dev.ragnarok.fenrir.api.model.longpoll.VkApiLongpollUpdates
+import dev.ragnarok.fenrir.api.model.longpoll.VKApiGroupLongpollUpdates
+import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
 
@@ -14,7 +14,7 @@ class ILongpollUpdatesService : IServiceRest() {
         wait: Int,
         mode: Int,
         version: Int
-    ): Single<VkApiLongpollUpdates> {
+    ): Single<VKApiLongpollUpdates> {
         return rest.requestFullUrl(
             server,
             form(
@@ -25,7 +25,7 @@ class ILongpollUpdatesService : IServiceRest() {
                 "mode" to mode,
                 "version" to version
             ),
-            VkApiLongpollUpdates.serializer()
+            VKApiLongpollUpdates.serializer()
         )
     }
 
@@ -35,11 +35,11 @@ class ILongpollUpdatesService : IServiceRest() {
         key: String?,
         ts: String?,
         wait: Int
-    ): Single<VkApiGroupLongpollUpdates> {
+    ): Single<VKApiGroupLongpollUpdates> {
         return rest.requestFullUrl(
             server,
             form("act" to act, "key" to key, "ts" to ts, "wait" to wait),
-            VkApiGroupLongpollUpdates.serializer()
+            VKApiGroupLongpollUpdates.serializer()
         )
     }
 }

@@ -30,6 +30,8 @@ internal class BasicMsgPackDecoder(
 ) : AbstractDecoder(), MsgPackTypeDecoder {
     fun decodeMsgPackElement(): JsonElement = MsgPackTreeReader(this).read()
 
+    val depthStack: ArrayDeque<Unit> = ArrayDeque()
+
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
         if (descriptor.kind in arrayOf(StructureKind.CLASS, StructureKind.OBJECT)) {
             val next = dataBuffer.peekSafely()
@@ -37,7 +39,7 @@ internal class BasicMsgPackDecoder(
                 val fieldName = kotlin.runCatching { decodeString() }.getOrNull()
                     ?: return CompositeDecoder.UNKNOWN_NAME
                 val index = descriptor.getElementIndex(fieldName)
-                return if (index == CompositeDecoder.UNKNOWN_NAME && configuration.ignoreUnknownKeys) {
+                return if (index == CompositeDecoder.UNKNOWN_NAME && configuration.ignoreUnknownKeys && depthStack.isEmpty()) {
                     MsgPackNullableDynamicSerializer.deserialize(this)
                     decodeElementIndex(descriptor)
                 } else {
@@ -145,6 +147,7 @@ internal class BasicMsgPackDecoder(
                     MsgPackType.Array.FIXARRAY_SIZE_MASK.test(next) -> MsgPackType.Array.FIXARRAY_SIZE_MASK.unMaskValue(
                         next
                     ).toInt()
+
                     next == MsgPackType.Array.ARRAY16 -> dataBuffer.takeNext(2).joinToNumber()
                     next == MsgPackType.Array.ARRAY32 -> {
                         if (configuration.preventOverflows) {
@@ -158,6 +161,7 @@ internal class BasicMsgPackDecoder(
                             dataBuffer.takeNext(4).joinToNumber()
                         }
                     }
+
                     else -> {
                         throw MsgPackSerializationException.deserialization(
                             dataBuffer,
@@ -171,6 +175,7 @@ internal class BasicMsgPackDecoder(
                     MsgPackType.Map.FIXMAP_SIZE_MASK.test(next) -> MsgPackType.Map.FIXMAP_SIZE_MASK.unMaskValue(
                         next
                     ).toInt()
+
                     next == MsgPackType.Map.MAP16 -> dataBuffer.takeNext(2).joinToNumber()
                     next == MsgPackType.Map.MAP32 -> {
                         if (configuration.preventOverflows) {
@@ -184,6 +189,7 @@ internal class BasicMsgPackDecoder(
                             dataBuffer.takeNext(4).joinToNumber()
                         }
                     }
+
                     else -> {
                         throw MsgPackSerializationException.deserialization(
                             dataBuffer,
@@ -215,11 +221,18 @@ internal class BasicMsgPackDecoder(
             if (descriptor.serialName == "dev.ragnarok.fenrir.util.serializeble.msgpack.extensions.MsgPackExtension") {
                 return ExtensionTypeDecoder(this)
             }
+
+            depthStack.addFirst(Unit)
             // Handle extension types as arrays
             val size = decodeCollectionSize(descriptor)
             return ClassMsgPackDecoder(this, size)
         }
         return this
+    }
+
+    override fun endStructure(descriptor: SerialDescriptor) {
+        super.endStructure(descriptor)
+        depthStack.removeFirstOrNull()
     }
 
     override fun peekNextType(): Byte {
@@ -247,7 +260,7 @@ internal class ClassMsgPackDecoder(
                 val fieldName = kotlin.runCatching { decodeString() }.getOrNull()
                     ?: return CompositeDecoder.UNKNOWN_NAME
                 val index = descriptor.getElementIndex(fieldName)
-                return if (index == CompositeDecoder.UNKNOWN_NAME && basicMsgPackDecoder.configuration.ignoreUnknownKeys) {
+                return if (index == CompositeDecoder.UNKNOWN_NAME && basicMsgPackDecoder.configuration.ignoreUnknownKeys && basicMsgPackDecoder.depthStack.isEmpty()) {
                     MsgPackNullableDynamicSerializer.deserialize(this)
                     decodedElements++
                     if (decodedElements >= size) CompositeDecoder.DECODE_DONE else decodeElemIndex(
@@ -270,7 +283,12 @@ internal class ClassMsgPackDecoder(
         if (decodedElements >= size) return CompositeDecoder.DECODE_DONE
         val result = decodeElemIndex(descriptor, size)
         if (result != CompositeDecoder.DECODE_DONE) decodedElements++
-        return result
+        return if (result == CompositeDecoder.UNKNOWN_NAME) {
+            MsgPackNullableDynamicSerializer.deserialize(this)
+            decodeElementIndex(descriptor)
+        } else {
+            result
+        }
     }
 
     override fun decodeSequentially(): Boolean = false

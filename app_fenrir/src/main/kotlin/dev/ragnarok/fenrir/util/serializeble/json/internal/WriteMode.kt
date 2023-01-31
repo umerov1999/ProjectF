@@ -52,6 +52,7 @@ internal fun SerialDescriptor.carrierDescriptor(module: SerializersModule): Seri
     when {
         kind == SerialKind.CONTEXTUAL -> module.getContextualDescriptor(this)
             ?.carrierDescriptor(module) ?: this
+
         isInline -> getElementDescriptor(0).carrierDescriptor(module)
         else -> this
     }

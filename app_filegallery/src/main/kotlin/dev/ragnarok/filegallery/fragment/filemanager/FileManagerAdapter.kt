@@ -80,6 +80,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                 currAudio = MusicPlaybackController.currentAudio
                 updateAudio(currAudio)
             }
+
             PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
         }
     }
@@ -113,10 +114,12 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_file, parent, false)
             )
+
             FileType.folder -> return FileHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_folder, parent, false)
             )
+
             FileType.audio -> return AudioHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_audio, parent, false)
@@ -167,6 +170,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                 Utils.doWavesLottieBig(holder.visual, true)
                 holder.icon.setColorFilter(Color.parseColor("#44000000"))
             }
+
             2 -> {
                 Utils.doWavesLottieBig(holder.visual, false)
                 holder.icon.setColorFilter(Color.parseColor("#44000000"))
@@ -332,20 +336,25 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                         AudioLocalOption.play_via_local_server -> {
                             clickListener?.onRemotePlay(audio)
                         }
+
                         AudioLocalOption.add_dir_tag_item -> {
                             clickListener?.onDirTag(audio)
                         }
+
                         AudioLocalOption.delete_item -> {
                             clickListener?.onDelete(audio)
                         }
+
                         AudioLocalOption.play_item_audio -> {
                             clickListener?.onClick(position, audio)
                             if (Settings.get().main().isShow_mini_player()) getPlayerPlace(
                             ).tryOpenWith(context)
                         }
+
                         AudioLocalOption.play_item_after_current_audio -> MusicPlaybackController.playAfterCurrent(
                             t
                         )
+
                         AudioLocalOption.bitrate_item_audio -> getLocalBitrate(t.url)
                         AudioLocalOption.open_with_item -> {
                             val intent_open = Intent(Intent.ACTION_VIEW)
@@ -359,6 +368,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                             ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             context.startActivity(intent_open)
                         }
+
                         AudioLocalOption.share_item -> {
                             val intent_send = Intent(Intent.ACTION_SEND)
                             intent_send.type = MimeTypeMap.getSingleton()
@@ -372,9 +382,11 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                             ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             context.startActivity(intent_send)
                         }
+
                         AudioLocalOption.update_file_time_item -> {
                             clickListener?.onUpdateTimeFile(audio)
                         }
+
                         else -> {}
                     }
                 }
@@ -499,9 +511,11 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                         AudioLocalOption.add_dir_tag_item -> {
                             clickListener?.onDirTag(file)
                         }
+
                         AudioLocalOption.delete_item -> {
                             clickListener?.onDelete(file)
                         }
+
                         AudioLocalOption.open_with_item -> {
                             val intent_open = Intent(Intent.ACTION_VIEW)
                             intent_open.setDataAndType(
@@ -514,6 +528,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                             ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             context.startActivity(intent_open)
                         }
+
                         AudioLocalOption.share_item -> {
                             val intent_send = Intent(Intent.ACTION_SEND)
                             intent_send.type = MimeTypeMap.getSingleton()
@@ -527,9 +542,11 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                             ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             context.startActivity(intent_send)
                         }
+
                         AudioLocalOption.update_file_time_item -> {
                             clickListener?.onUpdateTimeFile(file)
                         }
+
                         else -> {}
                     }
                 }
@@ -573,12 +590,15 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                         AudioLocalOption.fix_dir_time_item -> {
                             clickListener?.onFixDir(file)
                         }
+
                         AudioLocalOption.add_dir_tag_item -> {
                             clickListener?.onDirTag(file)
                         }
+
                         AudioLocalOption.delete_item -> {
                             clickListener?.onDelete(file)
                         }
+
                         else -> {}
                     }
                 }

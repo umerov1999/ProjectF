@@ -83,6 +83,7 @@ class ChatActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                     newInstance(args.getLong(Extra.ACCOUNT_ID), args.getLong(Extra.OWNER_ID), peer)
                 attachToFront(chatFragment)
             }
+
             Place.VK_PHOTO_ALBUM_GALLERY, Place.FAVE_PHOTOS_GALLERY, Place.SIMPLE_PHOTO_GALLERY, Place.VK_PHOTO_TMP_SOURCE, Place.VK_PHOTO_ALBUM_GALLERY_SAVED, Place.VK_PHOTO_ALBUM_GALLERY_NATIVE -> newInstance(
                 this,
                 place.type,
@@ -93,18 +94,22 @@ class ChatActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                     it
                 )
             }
+
             Place.STORY_PLAYER -> place.launchActivityForResult(
                 this,
                 StoryPagerActivity.newInstance(this, args)
             )
+
             Place.SINGLE_PHOTO -> place.launchActivityForResult(
                 this,
                 SinglePhotoActivity.newInstance(this, args)
             )
+
             Place.GIF_PAGER -> place.launchActivityForResult(
                 this,
                 GifPagerActivity.newInstance(this, args)
             )
+
             Place.DOC_PREVIEW -> {
                 val document: Document? = args.getParcelableCompat(Extra.DOC)
                 if (document != null && document.hasValidGifVideoLink()) {
@@ -116,11 +121,13 @@ class ChatActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                     Utils.openPlaceWithSwipebleActivity(this, place)
                 }
             }
+
             Place.PLAYER -> {
                 val player = supportFragmentManager.findFragmentByTag("audio_player")
                 if (player is AudioPlayerFragment) player.dismiss()
                 newInstance(args).show(supportFragmentManager, "audio_player")
             }
+
             else -> Utils.openPlaceWithSwipebleActivity(this, place)
         }
     }

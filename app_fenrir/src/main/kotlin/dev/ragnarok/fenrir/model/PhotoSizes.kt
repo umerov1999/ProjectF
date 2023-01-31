@@ -161,27 +161,32 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
                 m,
                 s
             ) else firstNonNull(o, x, m, s)
+
             PhotoSize.P -> if (excludeNonAspectRatio) firstNonNull(
                 x,
                 m,
                 s
             ) else firstNonNull(p, o, x, m, s)
+
             PhotoSize.Q -> if (excludeNonAspectRatio) firstNonNull(
                 x,
                 m,
                 s
             ) else firstNonNull(q, p, o, x, m, s)
+
             PhotoSize.R -> if (excludeNonAspectRatio) firstNonNull(
                 x,
                 m,
                 s
             ) else firstNonNull(r, q, p, o, x, m, s)
+
             PhotoSize.Y -> if (excludeNonAspectRatio) firstNonNull(
                 y,
                 x,
                 m,
                 s
             ) else firstNonNull(y, r, q, p, o, x, m, s)
+
             PhotoSize.Z -> if (excludeNonAspectRatio) firstNonNull(
                 z,
                 y,
@@ -189,6 +194,7 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
                 m,
                 s
             ) else firstNonNull(z, y, r, q, p, o, x, m, s)
+
             PhotoSize.W -> if (excludeNonAspectRatio) firstNonNull(
                 w,
                 z,
@@ -197,6 +203,7 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
                 m,
                 s
             ) else firstNonNull(w, z, y, r, q, p, o, x, m, s)
+
             else -> throw IllegalArgumentException("Invalid max photo size: $max")
         }
     }

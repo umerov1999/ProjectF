@@ -10,7 +10,7 @@ import androidx.core.view.ScrollingView
 import androidx.viewpager2.widget.ViewPager2
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
 import dev.ragnarok.fenrir.view.TouchImageView
-import java.util.*
+import java.util.Stack
 
 object ViewHelper {
     fun hasScrollableChildUnderPoint(

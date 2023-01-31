@@ -26,7 +26,7 @@ object VKStringUtils {
 
     fun firstNonEmptyString(vararg array: String?): String? {
         for (s in array) {
-            if (s != null && s.isNotEmpty()) {
+            if (!s.isNullOrEmpty()) {
                 return s
             }
         }

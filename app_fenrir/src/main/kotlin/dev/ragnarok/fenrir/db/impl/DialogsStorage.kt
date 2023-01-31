@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.database.Cursor
 import android.provider.BaseColumns
-import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.api.model.VKApiChat
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getDialogsContentUriFor
@@ -21,9 +20,18 @@ import dev.ragnarok.fenrir.db.model.entity.DialogDboEntity
 import dev.ragnarok.fenrir.db.model.entity.KeyboardEntity
 import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
 import dev.ragnarok.fenrir.db.model.entity.SimpleDialogEntity
+import dev.ragnarok.fenrir.getBlob
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.getInt
+import dev.ragnarok.fenrir.getLong
+import dev.ragnarok.fenrir.getString
+import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.model.Chat
 import dev.ragnarok.fenrir.model.ChatAction
 import dev.ragnarok.fenrir.model.criteria.DialogsCriteria
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
+import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Exestime.log
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
@@ -31,7 +39,11 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.*
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.CompletableEmitter
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsStorage {

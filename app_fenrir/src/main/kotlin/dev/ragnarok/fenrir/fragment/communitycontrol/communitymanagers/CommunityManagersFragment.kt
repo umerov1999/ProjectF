@@ -21,7 +21,11 @@ import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.PeopleSearchCriteria
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.getParcelableCompat
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.Manager
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.SelectProfileCriteria
+import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.place.PlaceFactory.getCommunityManagerAddPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getCommunityManagerEditPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace

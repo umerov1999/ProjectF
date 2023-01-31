@@ -181,11 +181,13 @@ internal object Utils {
                     throw FileNotFoundException("Last path segment is not a resource ID: " + data.uri)
                 }
             }
+
             2 -> {
                 val type = segments[0]
                 val name = segments[1]
                 resources.getIdentifier(name, type, pkg)
             }
+
             else -> throw FileNotFoundException("More than two path segments: " + data.uri)
         }
     }

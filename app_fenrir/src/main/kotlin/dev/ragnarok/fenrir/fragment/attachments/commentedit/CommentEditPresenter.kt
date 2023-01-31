@@ -10,7 +10,11 @@ import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.impl.CommentsInteractor
 import dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit.AbsAttachmentsEditPresenter
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.AbsModel
+import dev.ragnarok.fenrir.model.AttachmentEntry
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.LocalPhoto
+import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.upload.UploadDestination

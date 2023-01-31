@@ -67,6 +67,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
                 .setPin(values)
         }
     }
+
     private val requestCreatePin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->

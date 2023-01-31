@@ -83,11 +83,13 @@ class DrawerEditFragment : AbsMvpFragment<DrawerEditPresenter, IDrawerEditView>(
                 presenter?.fireSaveClick()
                 true
             }
+
             R.id.action_reset -> {
                 Settings.get().drawerSettings().reset()
                 presenter?.fireResetClick()
                 true
             }
+
             else -> false
         }
     }

@@ -7,10 +7,14 @@ import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
 import dev.ragnarok.filegallery.fromIOToMain
-import dev.ragnarok.filegallery.model.*
+import dev.ragnarok.filegallery.model.Audio
+import dev.ragnarok.filegallery.model.FileRemote
+import dev.ragnarok.filegallery.model.FileType
+import dev.ragnarok.filegallery.model.Photo
+import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.util.Objects.safeEquals
-import java.util.*
+import java.util.Locale
 
 class FileManagerRemotePresenter(
     savedInstanceState: Bundle?
@@ -212,7 +216,7 @@ class FileManagerRemotePresenter(
         loadFiles()
     }
 
-    fun scrollTo(id: Int, ownerId: Int): Boolean {
+    fun scrollTo(id: Int, ownerId: Long): Boolean {
         var ret = false
         val list = if (q == null) fileList else fileListSearch
         for (i in list.indices) {
@@ -247,9 +251,8 @@ class FileManagerRemotePresenter(
                     view?.resolveEmptyText(fileList.isEmpty())
                     view?.resolveLoading(isLoading)
                     view?.notifyAllChanged()
-                    val k = directoryScrollPositions.remove(buildPath())
-                    if (k != null) {
-                        view?.restoreScroll(k)
+                    directoryScrollPositions.remove(buildPath())?.let { scroll ->
+                        view?.restoreScroll(scroll)
                     }
                 }, {
                     view?.showThrowable(it)

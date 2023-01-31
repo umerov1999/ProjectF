@@ -2,9 +2,17 @@ package dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit
 
 import android.net.Uri
 import android.os.Bundle
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Includes
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.getParcelableArrayListCompat
+import dev.ragnarok.fenrir.getParcelableCompat
+import dev.ragnarok.fenrir.model.AbsModel
+import dev.ragnarok.fenrir.model.AttachmentEntry
+import dev.ragnarok.fenrir.model.LocalPhoto
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.Poll
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.IUploadManager
 import dev.ragnarok.fenrir.upload.IUploadManager.IProgressUpdate

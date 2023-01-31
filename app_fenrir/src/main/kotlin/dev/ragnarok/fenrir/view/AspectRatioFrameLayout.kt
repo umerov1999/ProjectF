@@ -83,11 +83,13 @@ class AspectRatioFrameLayout @JvmOverloads constructor(
             } else {
                 height = (width / frameAspectRatio).toInt()
             }
+
             RESIZE_MODE_FIT -> if (aspectDeformation > 0) {
                 height = (width / frameAspectRatio).toInt()
             } else {
                 width = (height * frameAspectRatio).toInt()
             }
+
             RESIZE_MODE_FILL -> {}
             else -> {}
         }

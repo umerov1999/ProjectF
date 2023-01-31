@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.ISettings.ISecuritySettings
 import dev.ragnarok.fenrir.settings.Settings
-import java.util.*
+import java.util.Arrays
 
 class EnterPinPresenter(savedState: Bundle?) : RxSupportPresenter<IEnterPinView>(savedState) {
     private val ownersRepository: IOwnersRepository = owners

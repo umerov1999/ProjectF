@@ -459,34 +459,42 @@ internal class Dispatcher internal constructor(
                     val action = msg.obj as Action
                     dispatcher.performSubmit(action)
                 }
+
                 REQUEST_CANCEL -> {
                     val action = msg.obj as Action
                     dispatcher.performCancel(action)
                 }
+
                 TAG_PAUSE -> {
                     val tag = msg.obj
                     dispatcher.performPauseTag(tag)
                 }
+
                 TAG_RESUME -> {
                     val tag = msg.obj
                     dispatcher.performResumeTag(tag)
                 }
+
                 HUNTER_COMPLETE -> {
                     val hunter = msg.obj as BitmapHunter
                     dispatcher.performComplete(hunter)
                 }
+
                 HUNTER_RETRY -> {
                     val hunter = msg.obj as BitmapHunter
                     dispatcher.performRetry(hunter)
                 }
+
                 HUNTER_DECODE_FAILED -> {
                     val hunter = msg.obj as BitmapHunter
                     dispatcher.performError(hunter)
                 }
+
                 NETWORK_STATE_CHANGE -> {
                     val hasNetwork = msg.obj as Boolean
                     dispatcher.performNetworkStateChange(hasNetwork)
                 }
+
                 else -> {
                     Picasso.HANDLER.post {
                         throw AssertionError("Unknown handler message received: ${msg.what}")

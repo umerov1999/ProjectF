@@ -1,7 +1,12 @@
 package dev.ragnarok.fenrir.fragment.videos
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -128,11 +133,13 @@ class VideosTabsFragment : BaseFragment(), MenuProvider {
             LOCAL_SERVER -> return VideosLocalServerFragment.newInstance(
                 accountId
             )
+
             VIDEOS -> {
                 val fragment = VideosFragment.newInstance(accountId, ownerId, 0, action, null)
                 fragment.requireArguments().putBoolean(VideosFragment.EXTRA_IN_TABS_CONTAINER, true)
                 return fragment
             }
+
             ALBUMS -> return VideoAlbumsFragment.newInstance(accountId, ownerId, action)
         }
         throw UnsupportedOperationException()

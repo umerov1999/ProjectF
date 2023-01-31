@@ -19,6 +19,7 @@ class ChatsInfoAdapter : AbsAdapter<ChatsInfoResponse>("ChatsInfoResponse") {
                     )
                 )
             }
+
             checkArray(json) -> {
                 val array = json.asJsonArray
                 parseArray(
@@ -27,6 +28,7 @@ class ChatsInfoAdapter : AbsAdapter<ChatsInfoResponse>("ChatsInfoResponse") {
                     VKApiChat.serializer()
                 )
             }
+
             else -> {
                 emptyList()
             }

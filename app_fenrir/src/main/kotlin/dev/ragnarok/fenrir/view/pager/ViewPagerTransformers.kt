@@ -14,6 +14,7 @@ class DepthTransformer : ViewPager2.PageTransformer {
                     // This page is way off-screen to the left.
                     alpha = 0f
                 }
+
                 position <= 0 -> { // [-1,0]
                     // Use the default slide transition when moving to the left page
                     alpha = 1f
@@ -22,6 +23,7 @@ class DepthTransformer : ViewPager2.PageTransformer {
                     scaleX = 1f
                     scaleY = 1f
                 }
+
                 position <= 1 -> { // (0,1]
                     // Fade the page out.
                     alpha = 1 - position
@@ -37,6 +39,7 @@ class DepthTransformer : ViewPager2.PageTransformer {
                     scaleX = scaleFactor
                     scaleY = scaleFactor
                 }
+
                 else -> { // (1,+Infinity]
                     // This page is way off-screen to the right.
                     alpha = 0f
@@ -60,6 +63,7 @@ class ZoomOutTransformer : ViewPager2.PageTransformer {
                     // This page is way off-screen to the left.
                     alpha = 0f
                 }
+
                 position <= 1 -> { // [-1,1]
                     // Modify the default slide transition to shrink the page as well
                     val scaleFactor = (1 - abs(position)).coerceAtLeast(MIN_SCALE)
@@ -79,6 +83,7 @@ class ZoomOutTransformer : ViewPager2.PageTransformer {
                     alpha = (MIN_ALPHA +
                             (((scaleFactor - MIN_SCALE) / (1 - MIN_SCALE)) * (1 - MIN_ALPHA)))
                 }
+
                 else -> { // (1,+Infinity]
                     // This page is way off-screen to the right.
                     alpha = 0f
@@ -108,14 +113,17 @@ class ClockSpinTransformer : ViewPager2.PageTransformer {
                 // This page is way off-screen to the left.
                 page.alpha = 0f
             }
+
             position <= 0 -> {   // [-1,0]
                 page.alpha = 1f
                 page.rotation = 360 * abs(position)
             }
+
             position <= 1 -> {   // (0,1]
                 page.alpha = 1f
                 page.rotation = -360 * abs(position)
             }
+
             else -> {  // (1,+Infinity]
                 // This page is way off-screen to the right.
                 page.alpha = 0f
@@ -148,16 +156,19 @@ class CubeInDepthTransformer : ViewPager2.PageTransformer {
             position < -1 -> {
                 page.alpha = 0f
             }
+
             position <= 0 -> {
                 page.alpha = 1f
                 page.pivotX = page.width.toFloat()
                 page.rotationY = 90 * abs(position)
             }
+
             position <= 1 -> {
                 page.alpha = 1f
                 page.pivotX = 0f
                 page.rotationY = -90 * abs(position)
             }
+
             else -> {
                 page.alpha = 0f
             }
@@ -181,14 +192,17 @@ class FanTransformer : ViewPager2.PageTransformer {
                 // This page is way off-screen to the left.
                 page.alpha = 0f
             }
+
             position <= 0 -> {    // [-1,0]
                 page.alpha = 1f
                 page.rotationY = -120 * abs(position)
             }
+
             position <= 1 -> {    // (0,1]
                 page.alpha = 1f
                 page.rotationY = 120 * abs(position)
             }
+
             else -> {    // (1,+Infinity]
                 // This page is way off-screen to the right.
                 page.alpha = 0f
@@ -205,16 +219,19 @@ class GateTransformer : ViewPager2.PageTransformer {
                 // This page is way off-screen to the left.
                 page.alpha = 0f
             }
+
             position <= 0 -> {    // [-1,0]
                 page.alpha = 1f
                 page.pivotX = 0f
                 page.rotationY = 90 * abs(position)
             }
+
             position <= 1 -> {    // (0,1]
                 page.alpha = 1f
                 page.pivotX = page.width.toFloat()
                 page.rotationY = -90 * abs(position)
             }
+
             else -> {    // (1,+Infinity]
                 // This page is way off-screen to the right.
                 page.alpha = 0f
@@ -246,12 +263,14 @@ class SliderTransformer(private val offscreenPageLimit: Int) : ViewPager2.PageTr
                     scaleY = DEFAULT_SCALE
                     alpha = DEFAULT_ALPHA + position
                 }
+
                 position <= offscreenPageLimit - 1 -> {
                     scaleX = scaleFactor
                     scaleY = scaleFactor
                     translationX = -(width / DEFAULT_TRANSLATION_FACTOR) * position
                     alpha = alphaFactor
                 }
+
                 else -> {
                     translationX = DEFAULT_TRANSLATION_X
                     scaleX = DEFAULT_SCALE

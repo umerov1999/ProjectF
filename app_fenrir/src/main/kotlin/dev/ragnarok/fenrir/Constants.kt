@@ -1,10 +1,6 @@
 package dev.ragnarok.fenrir
 
 import android.content.res.Resources
-import android.os.Build
-import dev.ragnarok.fenrir.settings.ISettings
-import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.Utils
 import java.util.*
 
 object Constants {
@@ -37,134 +33,9 @@ object Constants {
 
     var DEVICE_COUNTRY_CODE = "ru"
 
-    val KATE_USER_AGENT
-        get() = String.format(
-            Locale.US,
-            "KateMobileAndroid/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
-            KATE_APP_VERSION_NAME,
-            KATE_APP_VERSION_CODE,
-            Build.VERSION.RELEASE,
-            Build.VERSION.SDK_INT,
-            Build.SUPPORTED_ABIS[0],
-            Utils.deviceName,
-            DEVICE_COUNTRY_CODE,
-            SCREEN_RESOLUTION
-        )
-
-    private val KATE_USER_AGENT_FAKE
-        get() = String.format(
-            Locale.US,
-            "KateMobileAndroid/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
-            KATE_APP_VERSION_NAME,
-            KATE_APP_VERSION_CODE,
-            Build.VERSION.RELEASE,
-            Build.VERSION.SDK_INT,
-            BuildConfig.FAKE_ABI,
-            BuildConfig.FAKE_DEVICE,
-            DEVICE_COUNTRY_CODE,
-            SCREEN_RESOLUTION
-        )
-    private val VK_ANDROID_USER_AGENT
-        get() = String.format(
-            Locale.US,
-            "VKAndroidApp/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
-            VK_ANDROID_APP_VERSION_NAME,
-            VK_ANDROID_APP_VERSION_CODE,
-            Build.VERSION.RELEASE,
-            Build.VERSION.SDK_INT,
-            Build.SUPPORTED_ABIS[0],
-            Utils.deviceName,
-            DEVICE_COUNTRY_CODE,
-            SCREEN_RESOLUTION
-        )
-    private val VK_ANDROID_USER_AGENT_FAKE
-        get() = String.format(
-            Locale.US,
-            "VKAndroidApp/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
-            VK_ANDROID_APP_VERSION_NAME,
-            VK_ANDROID_APP_VERSION_CODE,
-            Build.VERSION.RELEASE,
-            Build.VERSION.SDK_INT,
-            BuildConfig.FAKE_ABI,
-            BuildConfig.FAKE_DEVICE,
-            DEVICE_COUNTRY_CODE,
-            SCREEN_RESOLUTION
-        )
-
-    private val SCREEN_RESOLUTION
-        get() = Resources.getSystem().displayMetrics?.let {
-            it.heightPixels.toString() + "x" + it.widthPixels
-        } ?: "1920x1080"
-
     val SCREEN_WIDTH
         get() = Resources.getSystem().displayMetrics?.widthPixels ?: 1920
 
     val SCREEN_HEIGHT
         get() = Resources.getSystem().displayMetrics?.heightPixels ?: 1080
-
-    private fun getTypedUserAgent(@AccountType type: Int): String {
-        if (type == AccountType.VK_ANDROID_HIDDEN || type == AccountType.KATE_HIDDEN) {
-            val device = Settings.get().accounts().getDevice(Settings.get().accounts().current)
-            if (device.nonNullNoEmpty()) {
-                return if (type == AccountType.KATE_HIDDEN) String.format(
-                    Locale.US,
-                    "KateMobileAndroid/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
-                    KATE_APP_VERSION_NAME,
-                    KATE_APP_VERSION_CODE,
-                    Build.VERSION.RELEASE,
-                    Build.VERSION.SDK_INT,
-                    BuildConfig.FAKE_ABI,
-                    device,
-                    DEVICE_COUNTRY_CODE,
-                    SCREEN_RESOLUTION
-                ) else String.format(
-                    Locale.US,
-                    "VKAndroidApp/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
-                    VK_ANDROID_APP_VERSION_NAME,
-                    VK_ANDROID_APP_VERSION_CODE,
-                    Build.VERSION.RELEASE,
-                    Build.VERSION.SDK_INT,
-                    BuildConfig.FAKE_ABI,
-                    device,
-                    DEVICE_COUNTRY_CODE,
-                    SCREEN_RESOLUTION
-                )
-            }
-        }
-        when (type) {
-            AccountType.BY_TYPE, AccountType.VK_ANDROID -> return VK_ANDROID_USER_AGENT
-            AccountType.VK_ANDROID_HIDDEN -> return VK_ANDROID_USER_AGENT_FAKE
-            AccountType.KATE -> return KATE_USER_AGENT
-            AccountType.KATE_HIDDEN -> return KATE_USER_AGENT_FAKE
-        }
-        return Utils.BY_DEFAULT_ACCOUNT_TYPE(VK_ANDROID_USER_AGENT, KATE_USER_AGENT)
-    }
-
-    val USER_AGENT_ACCOUNT
-        get() = Settings.get().accounts().current.let {
-            if (it == ISettings.IAccountsSettings.INVALID_ID) {
-                Utils.BY_DEFAULT_ACCOUNT_TYPE(
-                    VK_ANDROID_USER_AGENT,
-                    KATE_USER_AGENT
-                )
-            } else getTypedUserAgent(
-                Settings.get().accounts().getType(it)
-            )
-        }
-
-
-    fun USER_AGENT(@AccountType type: Int): String {
-        if (type != AccountType.BY_TYPE) {
-            return getTypedUserAgent(type)
-        }
-        val accountId = Settings.get().accounts().current
-        return if (accountId == ISettings.IAccountsSettings.INVALID_ID) {
-            Utils.BY_DEFAULT_ACCOUNT_TYPE(
-                VK_ANDROID_USER_AGENT,
-                KATE_USER_AGENT
-            )
-        } else getTypedUserAgent(
-            Settings.get().accounts().getType(accountId)
-        )
-    }
 }

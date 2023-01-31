@@ -115,6 +115,7 @@ class SliderPanel : FrameLayout {
                     // State Closed
                     listener?.onClosed()
                 }
+
                 ViewDragHelper.STATE_DRAGGING, ViewDragHelper.STATE_SETTLING -> {}
             }
         }
@@ -192,6 +193,7 @@ class SliderPanel : FrameLayout {
                     // State Closed
                     listener?.onClosed()
                 }
+
                 ViewDragHelper.STATE_DRAGGING, ViewDragHelper.STATE_SETTLING -> {}
             }
         }
@@ -267,6 +269,7 @@ class SliderPanel : FrameLayout {
                     // State Closed
                     listener?.onClosed()
                 }
+
                 ViewDragHelper.STATE_DRAGGING, ViewDragHelper.STATE_SETTLING -> {}
             }
         }
@@ -342,6 +345,7 @@ class SliderPanel : FrameLayout {
                     // State Closed
                     listener?.onClosed()
                 }
+
                 ViewDragHelper.STATE_DRAGGING, ViewDragHelper.STATE_SETTLING -> {}
             }
         }
@@ -434,6 +438,7 @@ class SliderPanel : FrameLayout {
                     // State Closed
                     listener?.onClosed()
                 }
+
                 ViewDragHelper.STATE_DRAGGING, ViewDragHelper.STATE_SETTLING -> {}
             }
         }
@@ -525,6 +530,7 @@ class SliderPanel : FrameLayout {
                     // State Closed
                     listener?.onClosed()
                 }
+
                 ViewDragHelper.STATE_DRAGGING, ViewDragHelper.STATE_SETTLING -> {}
             }
         }
@@ -603,22 +609,27 @@ class SliderPanel : FrameLayout {
                 callback = rightCallback
                 edgePosition = ViewDragHelper.EDGE_RIGHT
             }
+
             SlidrPosition.TOP -> {
                 callback = topCallback
                 edgePosition = ViewDragHelper.EDGE_TOP
             }
+
             SlidrPosition.BOTTOM -> {
                 callback = bottomCallback
                 edgePosition = ViewDragHelper.EDGE_BOTTOM
             }
+
             SlidrPosition.VERTICAL -> {
                 callback = verticalCallback
                 edgePosition = ViewDragHelper.EDGE_TOP or ViewDragHelper.EDGE_BOTTOM
             }
+
             SlidrPosition.HORIZONTAL -> {
                 callback = horizontalCallback
                 edgePosition = ViewDragHelper.EDGE_LEFT or ViewDragHelper.EDGE_RIGHT
             }
+
             else -> {
                 callback = leftCallback
                 edgePosition = ViewDragHelper.EDGE_LEFT
@@ -670,6 +681,7 @@ class SliderPanel : FrameLayout {
             SlidrPosition.HORIZONTAL -> x < config.getEdgeSize(width.toFloat()) || x > width - config.getEdgeSize(
                 width.toFloat()
             )
+
             SlidrPosition.VERTICAL -> y < config.getEdgeSize(height.toFloat()) || y > height - config.getEdgeSize(
                 height.toFloat()
             )

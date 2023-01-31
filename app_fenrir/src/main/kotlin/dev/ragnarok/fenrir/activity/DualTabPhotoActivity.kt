@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.DualTabPhotosFragment
 import dev.ragnarok.fenrir.fragment.localphotos.LocalPhotosFragment
-import dev.ragnarok.fenrir.fragment.vkphotos.IVkPhotosView
+import dev.ragnarok.fenrir.fragment.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.fragment.vkphotos.VKPhotosFragment
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.getParcelableExtraCompat
@@ -58,7 +58,7 @@ class DualTabPhotoActivity : NoMainActivity(), PlaceProvider {
                     accountId,
                     ownerId,
                     albumId,
-                    IVkPhotosView.ACTION_SELECT_PHOTOS
+                    IVKPhotosView.ACTION_SELECT_PHOTOS
                 )
                 supportFragmentManager
                     .beginTransaction()
@@ -67,14 +67,17 @@ class DualTabPhotoActivity : NoMainActivity(), PlaceProvider {
                     .addToBackStack("vk-album-photos")
                     .commit()
             }
+
             Place.VK_INTERNAL_PLAYER -> {
                 val intent = Intent(this, VideoPlayerActivity::class.java)
                 intent.putExtras(args)
                 startActivity(intent)
             }
+
             Place.SINGLE_PHOTO -> {
                 place.launchActivityForResult(this, SinglePhotoActivity.newInstance(this, args))
             }
+
             Place.LOCAL_IMAGE_ALBUM -> {
                 val album: LocalImageAlbum? = args.getParcelableCompat(Extra.ALBUM)
                 val localPhotosFragment =

@@ -49,12 +49,15 @@ abstract class IServiceRest {
                 is String -> {
                     obj
                 }
+
                 is Byte, is Short, is Int, is Long, is Float, is Double -> {
                     obj.toString()
                 }
+
                 is Boolean -> {
                     if (obj) "1" else "0"
                 }
+
                 else -> null
             }
         }

@@ -37,9 +37,11 @@ class MenuAdapter(context: Context, items: List<Item>, private val big: Boolean)
             section == null -> {
                 false
             }
+
             position == 0 -> {
                 true
             }
+
             else -> {
                 val previous = getItem(position - 1)
                 section != previous?.section

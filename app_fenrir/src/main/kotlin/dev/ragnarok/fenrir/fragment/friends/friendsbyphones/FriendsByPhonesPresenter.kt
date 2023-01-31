@@ -10,12 +10,15 @@ import dev.ragnarok.fenrir.domain.IAccountsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
+import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.ContactConversation
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.serializeble.json.Json
+import dev.ragnarok.fenrir.util.serializeble.json.decodeFromStream
 import kotlinx.serialization.builtins.ListSerializer
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.*
 
@@ -34,12 +37,6 @@ class FriendsByPhonesPresenter(accountId: Long, context: Context, savedInstanceS
         )
     }
 
-    fun fireImport(reader: List<ContactConversation>) {
-        data.clear()
-        data.addAll(reader)
-        view?.notifyDataSetChanged()
-    }
-
     private fun requestActualData() {
         netLoadingNow = true
         resolveRefreshingView()
@@ -50,6 +47,23 @@ class FriendsByPhonesPresenter(accountId: Long, context: Context, savedInstanceS
                     t
                 )
             })
+    }
+
+    fun fireImportContacts(path: String) {
+        try {
+            val file = File(path)
+            if (file.exists()) {
+                val contacts: List<ContactConversation> = kJson.decodeFromStream(
+                    ListSerializer(ContactConversation.serializer()),
+                    FileInputStream(file)
+                )
+                data.clear()
+                data.addAll(contacts)
+                view?.notifyDataSetChanged()
+            }
+        } catch (e: Exception) {
+            view?.customToast?.showToastError(e.localizedMessage)
+        }
     }
 
     @Suppress("DEPRECATION")

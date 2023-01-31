@@ -15,7 +15,7 @@ import kotlinx.serialization.Serializable
 class Audio : Parcelable {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var thumb_image: String? = null
         private set
@@ -38,7 +38,7 @@ class Audio : Parcelable {
     constructor()
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         artist = parcel.readString()
         title = parcel.readString()
         duration = parcel.readInt()
@@ -53,7 +53,7 @@ class Audio : Parcelable {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(id)
-        dest.writeInt(ownerId)
+        dest.writeLong(ownerId)
         dest.writeString(artist)
         dest.writeString(title)
         dest.writeInt(duration)
@@ -81,7 +81,7 @@ class Audio : Parcelable {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): Audio {
+    fun setOwnerId(ownerId: Long): Audio {
         this.ownerId = ownerId
         return this
     }
@@ -130,7 +130,7 @@ class Audio : Parcelable {
 
     override fun hashCode(): Int {
         var result = id
-        result = 31 * result + ownerId
+        result = 31 * result + ownerId.hashCode()
         return result
     }
 

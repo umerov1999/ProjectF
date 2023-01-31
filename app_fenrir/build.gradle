@@ -6,6 +6,9 @@ plugins {
 
 android {
     namespace "dev.ragnarok.fenrir"
+    buildFeatures {
+        aidl = true
+    }
     configurations {
         compile.exclude module: 'support-v4'
     }
@@ -40,6 +43,7 @@ android {
         buildConfigField("boolean", "FORCE_DEVELOPER_MODE", is_developer_build ? "true" : "false")
 
         ndk {
+            //noinspection ChromeOsAbiSupport
             abiFilters = targetAbi
         }
         resConfigs "en", "ru", "be"

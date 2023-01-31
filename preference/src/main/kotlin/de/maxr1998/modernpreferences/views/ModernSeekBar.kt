@@ -56,6 +56,7 @@ class ModernSeekBar(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                     null -> ContextCompat.getDrawable(context, R.drawable.map_seekbar_tick_mark)
                     else -> tickMarkDrawable
                 }
+
                 else -> null
             }
         }

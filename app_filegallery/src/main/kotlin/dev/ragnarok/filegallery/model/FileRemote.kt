@@ -17,7 +17,7 @@ class FileRemote : Parcelable, ParcelNative.ParcelableNative {
         private set
 
     @SerialName("owner_Id")
-    var owner_Id = 0
+    var owner_Id = 0L
         private set
 
     @SerialName("file_name")
@@ -53,7 +53,7 @@ class FileRemote : Parcelable, ParcelNative.ParcelableNative {
     constructor()
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        owner_Id = parcel.readInt()
+        owner_Id = parcel.readLong()
         file_name = parcel.readString()
         type = parcel.readInt()
         modification_time = parcel.readLong()
@@ -65,7 +65,7 @@ class FileRemote : Parcelable, ParcelNative.ParcelableNative {
 
     internal constructor(parcel: ParcelNative) {
         id = parcel.readInt()
-        owner_Id = parcel.readInt()
+        owner_Id = parcel.readLong()
         file_name = parcel.readString()
         type = parcel.readInt()
         modification_time = parcel.readLong()
@@ -77,7 +77,7 @@ class FileRemote : Parcelable, ParcelNative.ParcelableNative {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(id)
-        dest.writeInt(owner_Id)
+        dest.writeLong(owner_Id)
         dest.writeString(file_name)
         dest.writeInt(type)
         dest.writeLong(modification_time)
@@ -89,7 +89,7 @@ class FileRemote : Parcelable, ParcelNative.ParcelableNative {
 
     override fun writeToParcelNative(dest: ParcelNative) {
         dest.writeInt(id)
-        dest.writeInt(owner_Id)
+        dest.writeLong(owner_Id)
         dest.writeString(file_name)
         dest.writeInt(type)
         dest.writeLong(modification_time)
@@ -108,7 +108,7 @@ class FileRemote : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): FileRemote {
+    fun setOwnerId(ownerId: Long): FileRemote {
         this.owner_Id = ownerId
         return this
     }

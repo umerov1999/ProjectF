@@ -4,7 +4,11 @@ import dev.ragnarok.fenrir.api.model.CountersDto
 import dev.ragnarok.fenrir.api.model.RefreshToken
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfoResponse
-import dev.ragnarok.fenrir.api.model.response.*
+import dev.ragnarok.fenrir.api.model.response.AccountsBannedResponse
+import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.ContactsResponse
+import dev.ragnarok.fenrir.api.model.response.PushSettingsResponse
+import dev.ragnarok.fenrir.api.model.response.VKResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
 
@@ -145,16 +149,24 @@ class IAccountService : IServiceRest() {
         )
     }
 
+    fun getExchangeToken(): Single<BaseResponse<RefreshToken>> {
+        return rest.request(
+            "auth.getExchangeToken",
+            null,
+            base(RefreshToken.serializer())
+        )
+    }
+
     val resetMessagesContacts: Single<BaseResponse<Int>>
         get() = rest.request("account.resetMessagesContacts", null, baseInt)
 
     fun importMessagesContacts(
         contacts: String?
-    ): Single<VkResponse> {
+    ): Single<VKResponse> {
         return rest.request(
             "account.importMessagesContacts",
             form("contacts" to contacts),
-            VkResponse.serializer()
+            VKResponse.serializer()
         )
     }
 

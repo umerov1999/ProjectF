@@ -100,6 +100,7 @@ class Commented : Parcelable {
                 is Post -> {
                     Commented(model.vkid, model.ownerId, CommentedType.POST, null)
                 }
+
                 is Photo -> {
                     Commented(
                         model.getObjectId(),
@@ -108,6 +109,7 @@ class Commented : Parcelable {
                         model.accessKey
                     )
                 }
+
                 is Video -> {
                     Commented(
                         model.id,
@@ -116,6 +118,7 @@ class Commented : Parcelable {
                         model.accessKey
                     )
                 }
+
                 is Topic -> {
                     Commented(
                         model.id,
@@ -124,6 +127,7 @@ class Commented : Parcelable {
                         null
                     )
                 }
+
                 else -> {
                     throw IllegalArgumentException("Invalid model, class: " + model.javaClass)
                 }

@@ -2,7 +2,12 @@ package dev.ragnarok.fenrir.fragment.communitycontrol.communityoptions
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.core.view.MenuProvider
@@ -126,11 +131,13 @@ class CommunityOptionsFragment :
                 view?.findViewById<MaterialRadioButton>(R.id.age_16_to_18)?.isChecked = false
                 view?.findViewById<MaterialRadioButton>(R.id.age_under16)?.isChecked = true
             }
+
             2 -> {
                 view?.findViewById<MaterialRadioButton>(R.id.age_after_18)?.isChecked = false
                 view?.findViewById<MaterialRadioButton>(R.id.age_16_to_18)?.isChecked = true
                 view?.findViewById<MaterialRadioButton>(R.id.age_under16)?.isChecked = false
             }
+
             3 -> {
                 view?.findViewById<MaterialRadioButton>(R.id.age_after_18)?.isChecked = true
                 view?.findViewById<MaterialRadioButton>(R.id.age_16_to_18)?.isChecked = false

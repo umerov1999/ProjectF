@@ -25,6 +25,7 @@ class AttachmentsActivity : NoMainActivity(), PlaceProvider {
             when (type) {
                 AttachmentsTypes.DOC -> fragment =
                     DocsFragment.newInstance(accountId, accountId, DocsListPresenter.ACTION_SELECT)
+
                 AttachmentsTypes.VIDEO -> fragment = VideosTabsFragment.newInstance(
                     accountId,
                     accountId,

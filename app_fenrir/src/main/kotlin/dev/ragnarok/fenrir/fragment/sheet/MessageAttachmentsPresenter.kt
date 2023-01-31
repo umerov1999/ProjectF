@@ -203,9 +203,11 @@ class MessageAttachmentsPresenter(
             photos.nonNullNoEmpty() -> {
                 fireAttachmentsSelected(photos)
             }
+
             localPhotos.nonNullNoEmpty() -> {
                 doUploadPhotos(localPhotos)
             }
+
             video != null -> {
                 doUploadVideo(video.getData().toString())
             }
@@ -224,11 +226,13 @@ class MessageAttachmentsPresenter(
                             file
                         )
                     }
+
                     Upload.IMAGE_SIZE_CROPPING -> {
                         view?.displayCropPhotoDialog(
                             Uri.fromFile(File(file))
                         )
                     }
+
                     else -> {
                         doUploadFile(file, size, 1)
                     }
@@ -282,11 +286,13 @@ class MessageAttachmentsPresenter(
                             file
                         )
                     }
+
                     Upload.IMAGE_SIZE_CROPPING -> {
                         view?.displayCropPhotoDialog(
                             Uri.fromFile(File(file))
                         )
                     }
+
                     else -> {
                         doUploadFile(file, size, 1)
                     }
@@ -326,9 +332,11 @@ class MessageAttachmentsPresenter(
                     ), file, size, true
                 )
             }
+
             1 -> {
                 UploadUtils.createIntents(messageOwnerId, destination, file, size, true)
             }
+
             else -> {
                 UploadUtils.createIntents(
                     messageOwnerId, UploadDestination.forMessage(

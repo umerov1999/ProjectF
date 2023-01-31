@@ -146,6 +146,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
                 callback.onSuccess(Result.Bitmap(target, Picasso.LoadedFrom.DISK))
                 return
             }
+
             isExtension(
                 requestUri.toString(),
                 Settings.get().main().videoExt()
@@ -171,6 +172,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
                 callback.onSuccess(Result.Bitmap(target, Picasso.LoadedFrom.DISK))
                 return
             }
+
             isExtension(requestUri.toString(), Settings.get().main().photoExt()) -> {
                 val s = getSource(requestUri)
                 var target: Bitmap
@@ -211,6 +213,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
                 callback.onSuccess(Result.Bitmap(target, Picasso.LoadedFrom.DISK))
                 return
             }
+
             else -> callback.onError(Throwable("Thumb not handle"))
         }
     }

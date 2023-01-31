@@ -204,6 +204,7 @@ class CameraScanActivity : NoMainActivity() {
                 MotionEvent.ACTION_DOWN -> {
                     true
                 }
+
                 MotionEvent.ACTION_UP -> {
                     val factory: MeteringPointFactory = SurfaceOrientedMeteringPointFactory(
                         textureView.width.toFloat(), textureView.height.toFloat()
@@ -224,6 +225,7 @@ class CameraScanActivity : NoMainActivity() {
                     }
                     true
                 }
+
                 else -> false // Unhandled event.
             }
         }

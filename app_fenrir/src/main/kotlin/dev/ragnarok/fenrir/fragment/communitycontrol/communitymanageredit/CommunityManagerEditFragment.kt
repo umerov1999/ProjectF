@@ -1,21 +1,34 @@
 package dev.ragnarok.fenrir.fragment.communitycontrol.communitymanageredit
 
 import android.os.Bundle
-import android.view.*
-import android.widget.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.CompoundButton
+import android.widget.ImageView
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textfield.TextInputEditText
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
+import dev.ragnarok.fenrir.getParcelableArrayListCompat
+import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.Manager
 import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.settings.AvatarStyle
@@ -71,9 +84,11 @@ class CommunityManagerEditFragment :
                 R.id.button_moderator -> {
                     presenter?.fireModeratorChecked()
                 }
+
                 R.id.button_editor -> {
                     presenter?.fireEditorChecked()
                 }
+
                 R.id.button_admin -> {
                     presenter?.fireAdminChecked()
                 }
@@ -124,10 +139,12 @@ class CommunityManagerEditFragment :
                 presenter?.fireButtonSaveClick()
                 true
             }
+
             R.id.action_delete -> {
                 presenter?.fireDeleteClick()
                 true
             }
+
             else -> false
         }
     }

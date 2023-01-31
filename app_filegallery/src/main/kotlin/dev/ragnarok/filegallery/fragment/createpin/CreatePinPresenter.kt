@@ -6,7 +6,7 @@ import android.os.Looper
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
-import java.util.*
+import java.util.Arrays
 
 class CreatePinPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<ICreatePinView>(savedInstanceState) {

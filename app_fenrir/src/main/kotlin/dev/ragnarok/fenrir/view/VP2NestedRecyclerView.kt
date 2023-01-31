@@ -107,6 +107,7 @@ class VP2NestedRecyclerView @JvmOverloads constructor(
             0 -> {
                 return canScrollHorizontally(direction)
             }
+
             1 -> {
                 return canScrollVertically(direction)
             }

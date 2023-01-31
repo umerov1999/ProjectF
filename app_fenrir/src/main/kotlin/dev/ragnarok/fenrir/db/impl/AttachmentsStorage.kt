@@ -151,9 +151,11 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
                 AttachToType.COMMENT -> getCommentsAttachmentsContentUriFor(
                     accountId
                 )
+
                 AttachToType.MESSAGE -> getMessagesAttachmentsContentUriFor(
                     accountId
                 )
+
                 AttachToType.POST -> getPostsAttachmentsContentUriFor(accountId)
                 else -> throw IllegalArgumentException()
             }

@@ -14,7 +14,7 @@ class AudioDtoAdapter : AbsAdapter<Audio>("Audio") {
         val dto = Audio()
         val root = json.asJsonObject
         dto.setId(optInt(root, "id"))
-        dto.setOwnerId(optInt(root, "owner_id"))
+        dto.setOwnerId(optLong(root, "owner_id"))
         dto.setArtist(optString(root, "artist"))
         dto.setTitle(optString(root, "title"))
         dto.setDuration(optInt(root, "duration"))

@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.module
 import android.os.SystemClock
 import androidx.annotation.UiThread
 import java.security.SecureRandom
-import java.util.*
+import java.util.LinkedList
 
 class DispatchQueuePool(private val maxCount: Int) {
     private val queues = LinkedList<DispatchQueue>()

@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.crypt
 
 import java.security.PrivateKey
-import java.util.*
+import java.util.Collections
 
 class KeyExchangeSession private constructor(
     val id: Long,

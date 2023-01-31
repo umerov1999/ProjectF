@@ -45,6 +45,7 @@ internal class BasicMsgPacker : MsgPacker {
                     value <= MsgPackType.Int.MAX_UBYTE && !strict -> MsgPackType.Int.UINT8.also {
                         uByte = true
                     }
+
                     else -> MsgPackType.Int.UINT16
                 }
             if (uByte) {
@@ -66,6 +67,7 @@ internal class BasicMsgPacker : MsgPacker {
                     value <= MsgPackType.Int.MAX_USHORT && !strict -> MsgPackType.Int.UINT16.also {
                         uShort = true
                     }
+
                     else -> MsgPackType.Int.UINT32
                 }
             if (uShort) {
@@ -87,6 +89,7 @@ internal class BasicMsgPacker : MsgPacker {
                     value <= MsgPackType.Int.MAX_UINT && !strict -> MsgPackType.Int.UINT32.also {
                         uInt = true
                     }
+
                     else -> MsgPackType.Int.UINT64
                 }
             if (uInt) {
@@ -111,15 +114,19 @@ internal class BasicMsgPacker : MsgPacker {
             bytes.size <= MsgPackType.String.MAX_FIXSTR_LENGTH -> {
                 byteArrayOf(MsgPackType.String.FIXSTR_SIZE_MASK.maskValue(bytes.size.toByte()))
             }
+
             bytes.size <= MsgPackType.String.MAX_STR8_LENGTH && !rawCompatibility -> {
                 byteArrayOf(MsgPackType.String.STR8) + bytes.size.toByte().splitToByteArray()
             }
+
             bytes.size <= MsgPackType.String.MAX_STR16_LENGTH -> {
                 byteArrayOf(MsgPackType.String.STR16) + bytes.size.toShort().splitToByteArray()
             }
+
             bytes.size <= MsgPackType.String.MAX_STR32_LENGTH -> {
                 byteArrayOf(MsgPackType.String.STR32) + bytes.size.splitToByteArray()
             }
+
             else -> throw MsgPackSerializationException.packingError("String too long. Byte size: ${bytes.size}. Max size: ${MsgPackType.String.MAX_STR32_LENGTH}")
         }
         return prefix + bytes
@@ -130,12 +137,15 @@ internal class BasicMsgPacker : MsgPacker {
             value.size <= MsgPackType.Bin.MAX_BIN8_LENGTH -> {
                 byteArrayOf(MsgPackType.Bin.BIN8) + value.size.toByte().splitToByteArray()
             }
+
             value.size <= MsgPackType.Bin.MAX_BIN16_LENGTH -> {
                 byteArrayOf(MsgPackType.Bin.BIN16) + value.size.toShort().splitToByteArray()
             }
+
             value.size <= MsgPackType.Bin.MAX_BIN32_LENGTH -> {
                 byteArrayOf(MsgPackType.Bin.BIN32) + value.size.splitToByteArray()
             }
+
             else -> throw MsgPackSerializationException.packingError("Byte array too long. Byte size: ${value.size}. Max size: ${MsgPackType.Bin.MAX_BIN32_LENGTH}")
         }
         return prefix + value

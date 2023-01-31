@@ -2,7 +2,24 @@ package dev.ragnarok.fenrir.fragment.base
 
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.BaseSearchCriteria
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.model.AudioArtist
+import dev.ragnarok.fenrir.model.AudioPlaylist
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.Document
+import dev.ragnarok.fenrir.model.Link
+import dev.ragnarok.fenrir.model.Market
+import dev.ragnarok.fenrir.model.MarketAlbum
+import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.Peer
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.Poll
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.model.WallReply
+import dev.ragnarok.fenrir.model.WikiPage
 
 interface IAttachmentsPlacesView {
     fun openChatWith(accountId: Long, messagesOwnerId: Long, peer: Peer)

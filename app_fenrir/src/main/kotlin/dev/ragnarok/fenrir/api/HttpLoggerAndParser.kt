@@ -80,6 +80,17 @@ object HttpLoggerAndParser {
         return o
     }
 
+    fun Request.Builder.makeVK(supportCompressGzip: Boolean): Request.Builder {
+        val request = build()
+        if (supportCompressGzip && request.body is FormBody && Utils.isCompressOutgoingTraffic) {
+            (request.body as FormBody).gzipFormBody().let {
+                addHeader("Content-Encoding", "gzip")
+                post(it)
+            }
+        }
+        return this
+    }
+
     @Suppress("unused_parameter")
     fun Request.Builder.vkHeader(onlyJson: Boolean): Request.Builder {
         addHeader("X-VK-Android-Client", "new")

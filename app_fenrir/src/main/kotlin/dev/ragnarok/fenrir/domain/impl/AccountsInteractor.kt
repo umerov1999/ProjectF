@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.domain.impl
 import android.content.Context
 import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
+import dev.ragnarok.fenrir.api.model.RefreshToken
 import dev.ragnarok.fenrir.api.model.VKApiConversation
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
 import dev.ragnarok.fenrir.api.model.VKApiUser
@@ -12,7 +13,13 @@ import dev.ragnarok.fenrir.domain.IAccountsInteractor
 import dev.ragnarok.fenrir.domain.IBlacklistRepository
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Account
+import dev.ragnarok.fenrir.model.BannedPart
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.ContactConversation
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Peer
+import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.settings.ISettings.IAccountsSettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
@@ -81,6 +88,26 @@ class AccountsInteractor(
                     status
                 )
             }
+    }
+
+    override fun refreshToken(
+        accountId: Long,
+        receipt: String?,
+        receipt2: String?,
+        nonce: String?,
+        timestamp: Long?
+    ): Single<RefreshToken> {
+        return networker.vkDefault(accountId)
+            .account()
+            .refreshToken(receipt, receipt2, nonce, timestamp)
+    }
+
+    override fun getExchangeToken(
+        accountId: Long
+    ): Single<RefreshToken> {
+        return networker.vkDefault(accountId)
+            .account()
+            .getExchangeToken()
     }
 
     override fun setOffline(accountId: Long): Single<Boolean> {

@@ -14,7 +14,12 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils
 import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.fragment.base.compat.AbsMvpBottomSheetDialogFragment
-import dev.ragnarok.fenrir.fragment.base.core.*
+import dev.ragnarok.fenrir.fragment.base.core.AbsPresenter
+import dev.ragnarok.fenrir.fragment.base.core.IErrorView
+import dev.ragnarok.fenrir.fragment.base.core.IMvpView
+import dev.ragnarok.fenrir.fragment.base.core.IProgressView
+import dev.ragnarok.fenrir.fragment.base.core.IToastView
+import dev.ragnarok.fenrir.fragment.base.core.IToolbarView
 import dev.ragnarok.fenrir.service.ErrorLocalizer.localizeThrowable
 import dev.ragnarok.fenrir.util.ViewUtils
 import dev.ragnarok.fenrir.util.spots.SpotsDialog

@@ -2,15 +2,21 @@ package dev.ragnarok.fenrir.api.rest
 
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser
 import dev.ragnarok.fenrir.api.model.Params
-import dev.ragnarok.fenrir.api.model.response.VkResponse
+import dev.ragnarok.fenrir.api.model.response.VKResponse
+import dev.ragnarok.fenrir.api.model.response.VKUrlResponse
 import dev.ragnarok.fenrir.ifNonNull
+import dev.ragnarok.fenrir.isJson
 import dev.ragnarok.fenrir.isMsgPack
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.decodeFromStream
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Single
 import kotlinx.serialization.KSerializer
-import okhttp3.*
+import okhttp3.FormBody
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 
 class SimplePostHttp(
     private val baseUrl: String?,
@@ -33,6 +39,46 @@ class SimplePostHttp(
             body,
             serial, onlySuccessful
         )
+    }
+
+    fun requestAndGetURLFromRedirects(
+        methodOrFullUrl: String,
+        body: RequestBody?
+    ): Single<VKUrlResponse> {
+        return Single.create { emitter ->
+            val request = Request.Builder()
+                .url(
+                    if (baseUrl.isNullOrEmpty()) methodOrFullUrl else "$baseUrl/$methodOrFullUrl"
+                )
+            body.ifNonNull(
+                { request.post(it) }, { request.get() }
+            )
+            val call = client.newCall(request.build())
+            emitter.setCancellable { call.cancel() }
+            try {
+                val response = call.execute()
+                if (response.isSuccessful) {
+                    val ret = VKUrlResponse()
+                    ret.resultUrl = response.request.url.toString()
+                    emitter.onSuccess(ret)
+                } else {
+                    val ret = if (response.body.isMsgPack()) MsgPack().decodeFromOkioStream(
+                        VKUrlResponse.serializer(), response.body.source()
+                    ) else if (response.body.isJson()) kJson.decodeFromStream(
+                        VKUrlResponse.serializer(), response.body.byteStream()
+                    ) else {
+                        throw UnsupportedOperationException()
+                    }
+                    ret.resultUrl = null
+                    emitter.onSuccess(
+                        ret
+                    )
+                }
+                response.close()
+            } catch (e: Exception) {
+                emitter.tryOnError(e)
+            }
+        }
     }
 
     fun <T : Any> request(
@@ -74,7 +120,7 @@ class SimplePostHttp(
                     ) else kJson.decodeFromStream(
                         serial, response.body.byteStream()
                     )
-                    if (ret is VkResponse) {
+                    if (ret is VKResponse) {
                         ret.error?.let {
                             it.serializer = serial
                             val o: ArrayList<Params> = when (val stmp = response.request.body) {
@@ -88,11 +134,13 @@ class SimplePostHttp(
                                     }
                                     f
                                 }
+
                                 is HttpLoggerAndParser.GzipFormBody -> {
                                     val f = ArrayList<Params>(stmp.original.size)
                                     f.addAll(stmp.original)
                                     f
                                 }
+
                                 else -> {
                                     ArrayList()
                                 }

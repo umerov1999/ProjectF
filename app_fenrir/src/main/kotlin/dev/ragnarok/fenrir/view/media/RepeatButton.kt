@@ -24,16 +24,19 @@ class RepeatButton(context: Context, attrs: AttributeSet?) : AppCompatImageButto
                     context, R.drawable.repeat
                 )
             )
+
             MusicPlaybackService.REPEAT_CURRENT -> setImageDrawable(
                 AppCompatResources.getDrawable(
                     context, R.drawable.repeat_once
                 )
             )
+
             MusicPlaybackService.REPEAT_NONE -> setImageDrawable(
                 AppCompatResources.getDrawable(
                     context, R.drawable.repeat_off
                 )
             )
+
             else -> {}
         }
     }

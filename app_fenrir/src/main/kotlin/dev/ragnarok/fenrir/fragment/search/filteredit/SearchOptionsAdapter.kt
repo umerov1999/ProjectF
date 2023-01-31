@@ -8,7 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
-import dev.ragnarok.fenrir.fragment.search.options.*
+import dev.ragnarok.fenrir.fragment.search.options.BaseOption
+import dev.ragnarok.fenrir.fragment.search.options.DatabaseOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleBooleanOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleDateOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleGPSOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleNumberOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleTextOption
+import dev.ragnarok.fenrir.fragment.search.options.SpinnerOption
 import dev.ragnarok.fenrir.util.AppTextUtils
 
 class SearchOptionsAdapter(items: MutableList<BaseOption>) :
@@ -42,6 +49,7 @@ class SearchOptionsAdapter(items: MutableList<BaseOption>) :
                     bindSimpleDateHolder(option, normalHolder)
                 }
             }
+
             TYPE_BOOLEAN -> {
                 val simpleBooleanHolder = viewHolder as SimpleBooleanHolder
                 bindSimpleBooleanHolder(option as SimpleBooleanOption, simpleBooleanHolder)

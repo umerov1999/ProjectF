@@ -12,6 +12,7 @@ import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.COLON
 import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.COMMA
 import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.INVALID
 import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.NULL
+import dev.ragnarok.filegallery.util.serializeble.json.jsonUnquotedLiteralDescriptor
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.builtins.serializer
@@ -30,6 +31,9 @@ private val unsignedNumberDescriptors = setOf(
 
 internal val SerialDescriptor.isUnsignedNumber: Boolean
     get() = this.isInline && this in unsignedNumberDescriptors
+
+internal val SerialDescriptor.isUnquotedLiteral: Boolean
+    get() = this.isInline && this == jsonUnquotedLiteralDescriptor
 
 @OptIn(ExperimentalSerializationApi::class)
 internal class StreamingJsonEncoder(
@@ -120,6 +124,7 @@ internal class StreamingJsonEncoder(
                     composer.print(COMMA)
                 composer.nextItem()
             }
+
             WriteMode.MAP -> {
                 if (!composer.writingFirst) {
                     forceQuoting = if (index % 2 == 0) {
@@ -136,6 +141,7 @@ internal class StreamingJsonEncoder(
                     composer.nextItem()
                 }
             }
+
             WriteMode.POLY_OBJ -> {
                 if (index == 0)
                     forceQuoting = true
@@ -145,11 +151,12 @@ internal class StreamingJsonEncoder(
                     forceQuoting = false
                 }
             }
+
             else -> {
                 if (!composer.writingFirst)
                     composer.print(COMMA)
                 composer.nextItem()
-                encodeString(descriptor.getElementName(index))
+                encodeString(descriptor.getJsonElementName(json, index))
                 composer.print(COLON)
                 composer.space()
             }
@@ -169,17 +176,30 @@ internal class StreamingJsonEncoder(
     }
 
     override fun encodeInline(descriptor: SerialDescriptor): Encoder =
-        if (descriptor.isUnsignedNumber) StreamingJsonEncoder(
-            composerForUnsignedNumbers(), json, mode, null
-        )
-        else super.encodeInline(descriptor)
+        when {
+            descriptor.isUnsignedNumber -> StreamingJsonEncoder(
+                composerAs(::ComposerForUnsignedNumbers),
+                json,
+                mode,
+                null
+            )
 
-    private fun composerForUnsignedNumbers(): Composer {
+            descriptor.isUnquotedLiteral -> StreamingJsonEncoder(
+                composerAs(::ComposerForUnquotedLiterals),
+                json,
+                mode,
+                null
+            )
+
+            else -> super.encodeInline(descriptor)
+        }
+
+    private inline fun <reified T : Composer> composerAs(composerCreator: (writer: JsonWriter, forceQuoting: Boolean) -> T): T {
         // If we're inside encodeInline().encodeSerializableValue, we should preserve the forceQuoting state
         // inside the composer, but not in the encoder (otherwise we'll get into `if (forceQuoting) encodeString(value.toString())` part
         // and unsigned numbers would be encoded incorrectly)
-        return if (composer is ComposerForUnsignedNumbers) composer
-        else ComposerForUnsignedNumbers(composer.writer, forceQuoting)
+        return if (composer is T) composer
+        else composerCreator(composer.writer, forceQuoting)
     }
 
     override fun encodeNull() {

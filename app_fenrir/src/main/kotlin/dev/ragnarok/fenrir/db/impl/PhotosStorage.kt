@@ -4,7 +4,6 @@ import android.content.ContentProviderOperation
 import android.content.ContentValues
 import android.database.Cursor
 import android.provider.BaseColumns
-import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getPhotosContentUriFor
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getPhotosExtendedContentUriFor
@@ -14,7 +13,16 @@ import dev.ragnarok.fenrir.db.interfaces.IPhotosStorage
 import dev.ragnarok.fenrir.db.model.PhotoPatch
 import dev.ragnarok.fenrir.db.model.entity.PhotoDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PhotoSizeEntity
+import dev.ragnarok.fenrir.getBlob
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.getInt
+import dev.ragnarok.fenrir.getLong
+import dev.ragnarok.fenrir.getString
+import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.model.criteria.PhotoCriteria
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
+import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable

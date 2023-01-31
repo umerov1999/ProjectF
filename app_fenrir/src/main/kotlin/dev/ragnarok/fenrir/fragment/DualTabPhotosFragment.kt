@@ -126,7 +126,7 @@ class DualTabPhotosFragment : BaseFragment(), BackPressCallback {
                 fragment.arguments = args
                 return fragment
             }
-            if (source is VkPhotosSelectableSource) {
+            if (source is VKPhotosSelectableSource) {
                 return VKPhotoAlbumsFragment.newInstance(
                     source.accountId,
                     source.ownerId,

@@ -19,13 +19,22 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.AbsModel
+import dev.ragnarok.fenrir.model.DocFilter
+import dev.ragnarok.fenrir.model.Document
+import dev.ragnarok.fenrir.model.EditingPostType
+import dev.ragnarok.fenrir.model.LocalPhoto
+import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.model.menu.options.DocsOption
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.place.PlaceUtil.goToPostCreation
-import dev.ragnarok.fenrir.upload.*
+import dev.ragnarok.fenrir.upload.IUploadManager
 import dev.ragnarok.fenrir.upload.IUploadManager.IProgressUpdate
+import dev.ragnarok.fenrir.upload.Upload
+import dev.ragnarok.fenrir.upload.UploadDestination
 import dev.ragnarok.fenrir.upload.UploadDestination.Companion.forDocuments
+import dev.ragnarok.fenrir.upload.UploadIntent
+import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils.createIntents
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermission
 import dev.ragnarok.fenrir.util.DisposableHolder
@@ -174,6 +183,7 @@ class DocsListPresenter(
                                     showError(getCauseIfRuntime(t))
                                 })
                         }
+
                         DocsOption.delete_item_doc -> MaterialAlertDialogBuilder(context)
                             .setTitle(R.string.remove_confirm)
                             .setMessage(R.string.doc_remove_confirm_message)
@@ -185,6 +195,7 @@ class DocsListPresenter(
                             }
                             .setNegativeButton(R.string.cancel, null)
                             .show()
+
                         DocsOption.go_to_owner_doc -> getOwnerWallPlace(
                             accountId,
                             doc.ownerId,
@@ -218,6 +229,7 @@ class DocsListPresenter(
                         String.format("vk.com/doc%s_%s", document.ownerId, document.id),
                         document.title
                     )
+
                     1 -> startForSendAttachments(context, accountId, document)
                     2 -> postToMyWall(context, document)
                 }

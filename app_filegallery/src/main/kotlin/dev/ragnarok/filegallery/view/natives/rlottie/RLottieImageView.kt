@@ -69,7 +69,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     fun fromNet(url: String?, client: OkHttpClient.Builder, w: Int, h: Int) {
-        if (!FenrirNative.isNativeLoaded || url == null || url.isEmpty()) {
+        if (!FenrirNative.isNativeLoaded || url.isNullOrEmpty()) {
             return
         }
         clearAnimationDrawable()

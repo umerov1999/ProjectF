@@ -111,10 +111,12 @@ class MarketViewFragment : BaseMvpFragment<MarketViewPresenter, IMarketViewView>
                 available?.setTextColor(CurrentTheme.getColorOnSurface(requireActivity()))
                 available?.setText(R.string.markets_available)
             }
+
             2 -> {
                 available?.setTextColor(Color.parseColor("#ffaa00"))
                 available?.setText(R.string.markets_not_available)
             }
+
             else -> {
                 available?.setTextColor(Color.parseColor("#ff0000"))
                 available?.setText(R.string.markets_deleted)

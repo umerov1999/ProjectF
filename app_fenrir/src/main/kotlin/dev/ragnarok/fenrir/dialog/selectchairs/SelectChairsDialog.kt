@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.database.Chair
-import java.util.*
+import java.util.Collections
 
 class SelectChairsDialog : AccountDependencyDialogFragment(), ChairsAdapter.Listener {
     private var chairId = 0

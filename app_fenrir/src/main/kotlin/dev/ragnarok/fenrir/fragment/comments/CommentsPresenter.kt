@@ -215,6 +215,7 @@ class CommentsPresenter(
                     "asc"
                 )
             }
+
             directionDesc -> {
                 interactor.getCommentsPortion(
                     accountId,
@@ -227,6 +228,7 @@ class CommentsPresenter(
                     "desc"
                 )
             }
+
             else -> {
                 interactor.getCommentsPortion(
                     accountId,
@@ -312,6 +314,7 @@ class CommentsPresenter(
                     comments.size
                 )
             }
+
             LoadingState.DOWN -> {
                 if (comments.nonNullNoEmpty()) {
                     comments.removeAt(comments.size - 1) // последним комментарием приходит комментарий к кодом, который был передан в startCommentId
@@ -404,6 +407,7 @@ class CommentsPresenter(
                 view?.setupLoadUpHeader(if (isCommentsAvailableUp) LoadMoreState.CAN_LOAD_MORE else LoadMoreState.END_OF_LIST)
                 view?.setupLoadDownFooter(if (isCommentsAvailableDown) LoadMoreState.CAN_LOAD_MORE else LoadMoreState.END_OF_LIST)
             }
+
             LoadingState.DOWN -> {
                 view?.setupLoadDownFooter(
                     LoadMoreState.LOADING
@@ -412,6 +416,7 @@ class CommentsPresenter(
                     LoadMoreState.END_OF_LIST
                 )
             }
+
             LoadingState.UP -> {
                 view?.setupLoadDownFooter(
                     LoadMoreState.END_OF_LIST
@@ -420,6 +425,7 @@ class CommentsPresenter(
                     LoadMoreState.LOADING
                 )
             }
+
             LoadingState.INITIAL -> {
                 view?.setupLoadDownFooter(
                     LoadMoreState.END_OF_LIST
@@ -802,6 +808,7 @@ class CommentsPresenter(
                     false
                 )
             }
+
             loadingAvailableAuthorsNow -> {
                 view?.displayProgressDialog(
                     R.string.please_wait,
@@ -809,6 +816,7 @@ class CommentsPresenter(
                     false
                 )
             }
+
             else -> {
                 view?.dismissProgressDialog()
             }
@@ -888,12 +896,15 @@ class CommentsPresenter(
                     .setAccessKey(commented.accessKey)
                 firePhotoClick(singletonArrayList(photo), 0, true)
             }
+
             CommentedType.POST -> view?.goToWallPost(
                 authorId, commented.sourceId, commented.sourceOwnerId
             )
+
             CommentedType.VIDEO -> view?.goToVideoPreview(
                 authorId, commented.sourceId, commented.sourceOwnerId
             )
+
             CommentedType.TOPIC -> {}
         }
     }

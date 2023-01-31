@@ -1,7 +1,12 @@
 package dev.ragnarok.fenrir.api.interfaces
 
 import androidx.annotation.CheckResult
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.FaveLinkDto
+import dev.ragnarok.fenrir.api.model.Items
+import dev.ragnarok.fenrir.api.model.VKApiArticle
+import dev.ragnarok.fenrir.api.model.VKApiMarket
+import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.VKApiVideo
 import dev.ragnarok.fenrir.api.model.response.FavePageResponse
 import dev.ragnarok.fenrir.api.model.response.FavePostsResponse
 import io.reactivex.rxjava3.core.Single

@@ -22,26 +22,31 @@ class Sources : Parcelable {
                         FileManagerSelectableSource.CREATOR
                     )!!
                 )
+
                 Types.LOCAL_PHOTOS -> sources.add(
                     parcel.readTypedObjectCompat(
                         LocalPhotosSelectableSource.CREATOR
                     )!!
                 )
+
                 Types.LOCAL_GALLERY -> sources.add(
                     parcel.readTypedObjectCompat(
                         LocalGallerySelectableSource.CREATOR
                     )!!
                 )
+
                 Types.VIDEOS -> sources.add(
                     parcel.readTypedObjectCompat(
                         LocalVideosSelectableSource.CREATOR
                     )!!
                 )
+
                 Types.VK_PHOTOS -> sources.add(
                     parcel.readTypedObjectCompat(
-                        VkPhotosSelectableSource.CREATOR
+                        VKPhotosSelectableSource.CREATOR
                     )!!
                 )
+
                 else -> throw UnsupportedOperationException("Invalid type $type")
             }
         }

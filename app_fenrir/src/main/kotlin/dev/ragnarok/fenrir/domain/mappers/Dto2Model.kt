@@ -544,6 +544,7 @@ object Dto2Model {
                 } else {
                     friendListMap[entry.getId()]?.let { privacy.disallowFor(it) }
                 }
+
                 VKApiPrivacy.Entry.TYPE_OWNER -> if (entry.isAllowed()) {
                     privacy.allowFor(owners.getById(entry.getId()) as User)
                 } else {
@@ -1063,51 +1064,73 @@ object Dto2Model {
                 VKApiAttachment.TYPE_AUDIO -> attachments.prepareAudios().add(
                     transform(attachment as VKApiAudio)
                 )
+
                 VKApiAttachment.TYPE_STICKER -> attachments.prepareStickers()
                     .add(transform(attachment as VKApiSticker))
+
                 VKApiAttachment.TYPE_PHOTO -> attachments.preparePhotos()
                     .add(transform(attachment as VKApiPhoto))
+
                 VKApiAttachment.TYPE_DOC -> attachments.prepareDocs()
                     .add(transform(attachment as VKApiDoc))
+
                 VKApiAttachment.TYPE_AUDIO_MESSAGE -> attachments.prepareVoiceMessages().add(
                     transform(attachment as VKApiAudioMessage)
                 )
+
                 VKApiAttachment.TYPE_VIDEO -> attachments.prepareVideos()
                     .add(transform(attachment as VKApiVideo))
+
                 VKApiAttachment.TYPE_LINK -> attachments.prepareLinks()
                     .add(transform(attachment as VKApiLink))
+
                 VKApiAttachment.TYPE_ARTICLE -> attachments.prepareArticles()
                     .add(transform(attachment as VKApiArticle))
+
                 VKApiAttachment.TYPE_STORY -> attachments.prepareStories()
                     .add(transformStory(attachment as VKApiStory, owners))
+
                 VKApiAttachment.TYPE_ALBUM -> attachments.preparePhotoAlbums().add(
                     transform(attachment as VKApiPhotoAlbum)
                 )
+
                 VKApiAttachment.TYPE_CALL -> attachments.prepareCalls()
                     .add(transform(attachment as VKApiCall))
+
                 VKApiAttachment.TYPE_GEO -> attachments.prepareGeos()
                     .add(transform(attachment as VKApiGeo))
+
                 VKApiAttachment.TYPE_WALL_REPLY -> attachments.prepareWallReply()
                     .add(transform(attachment as VKApiWallReply, owners))
+
                 VKApiAttachment.TYPE_NOT_SUPPORT -> attachments.prepareNotSupporteds()
                     .add(transform(attachment as VKApiNotSupported))
+
                 VKApiAttachment.TYPE_EVENT -> attachments.prepareEvents()
                     .add(transformEvent(attachment as VKApiEvent, owners))
+
                 VKApiAttachment.TYPE_MARKET -> attachments.prepareMarkets()
                     .add(transform(attachment as VKApiMarket))
+
                 VKApiAttachment.TYPE_MARKET_ALBUM -> attachments.prepareMarketAlbums()
                     .add(transform(attachment as VKApiMarketAlbum))
+
                 VKApiAttachment.TYPE_ARTIST -> attachments.prepareAudioArtist()
                     .add(transform(attachment as VKApiAudioArtist))
+
                 VKApiAttachment.TYPE_AUDIO_PLAYLIST -> attachments.prepareAudioPlaylists().add(
                     transform(attachment as VKApiAudioPlaylist)
                 )
+
                 VKApiAttachment.TYPE_GRAFFITI -> attachments.prepareGraffiti()
                     .add(transform(attachment as VKApiGraffiti))
+
                 VKApiAttachment.TYPE_POLL -> attachments.preparePolls()
                     .add(transform(attachment as VKApiPoll))
+
                 VKApiAttachment.TYPE_WIKI_PAGE -> attachments.prepareWikiPages()
                     .add(transform(attachment as VKApiWikiPage))
+
                 VKApiAttachment.TYPE_POST -> attachments.preparePosts()
                     .add(transform(attachment as VKApiPost, owners))
             }

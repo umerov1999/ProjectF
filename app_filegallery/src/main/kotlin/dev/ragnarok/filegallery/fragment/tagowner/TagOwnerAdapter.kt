@@ -1,7 +1,12 @@
 package dev.ragnarok.filegallery.fragment.tagowner
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.Shader
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
 import android.view.LayoutInflater
@@ -47,38 +52,47 @@ class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Con
                 color1 = "#cfe1b9"
                 color2 = "#718355"
             }
+
             2 -> {
                 color1 = "#e3d0d8"
                 color2 = "#c6d2ed"
             }
+
             3 -> {
                 color1 = "#38a3a5"
                 color2 = "#80ed99"
             }
+
             4 -> {
                 color1 = "#9400D6"
                 color2 = "#D6008E"
             }
+
             5 -> {
                 color1 = "#cd8fff"
                 color2 = "#9100ff"
             }
+
             6 -> {
                 color1 = "#ff7f69"
                 color2 = "#fe0bdb"
             }
+
             7 -> {
                 color1 = "#07beb8"
                 color2 = "#c4fff9"
             }
+
             8 -> {
                 color1 = "#3a7ca5"
                 color2 = "#d9dcd6"
             }
+
             9 -> {
                 color1 = "#004e64"
                 color2 = "#7ae582"
             }
+
             else -> {
                 color1 = "#f5efff"
                 color2 = "#adadff"

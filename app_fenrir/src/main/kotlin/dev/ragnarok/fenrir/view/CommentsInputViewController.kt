@@ -15,8 +15,11 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup
-import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.*
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.Companion.input
+import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnEmojiconBackspaceClickedListener
+import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnEmojiconClickedListener
+import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnSoftKeyboardOpenCloseListener
+import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnStickerClickedListener
 import dev.ragnarok.fenrir.view.emoji.section.Emojicon
 
 class CommentsInputViewController(

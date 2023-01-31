@@ -233,11 +233,13 @@ class Request internal constructor(builder: Builder) {
                 builder.ensureCapacity(data.stableKey.length + KEY_PADDING)
                 builder.append(data.stableKey)
             }
+
             data.uri != null -> {
                 val path = data.uri.toString()
                 builder.ensureCapacity(path.length + KEY_PADDING)
                 builder.append(path)
             }
+
             else -> {
                 builder.ensureCapacity(KEY_PADDING)
                 builder.append(data.resourceId)

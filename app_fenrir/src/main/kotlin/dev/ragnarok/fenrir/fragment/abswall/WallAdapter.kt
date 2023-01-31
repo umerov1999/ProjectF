@@ -58,11 +58,13 @@ class WallAdapter(
                 configNormalPost(normalHolder, item)
                 fillNormalPostButtonsBlock(normalHolder, item)
             }
+
             TYPE_SCHEDULED -> {
                 val scheludedHolder = viewHolder as ScheludedHolder
                 configNormalPost(scheludedHolder, item)
                 bindScheludedButtonsBlock(scheludedHolder, item)
             }
+
             TYPE_DELETED -> bindDeleted(viewHolder as DeletedHolder, item)
         }
     }
@@ -160,6 +162,7 @@ class WallAdapter(
             when (it.getData()) {
                 VKApiPostSource.Data.PROFILE_ACTIVITY -> postSubtitle =
                     mContext.getString(R.string.updated_status_at, formattedDate)
+
                 VKApiPostSource.Data.PROFILE_PHOTO -> postSubtitle =
                     mContext.getString(R.string.updated_profile_photo_at, formattedDate)
             }

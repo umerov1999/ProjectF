@@ -1,7 +1,14 @@
 package dev.ragnarok.filegallery.view.media
 
 import android.content.res.ColorStateList
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.Paint
+import android.graphics.PixelFormat
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.view.animation.DecelerateInterpolator
@@ -244,6 +251,7 @@ class MediaActionDrawable : Drawable() {
                     d = Utils.dp(7f) * backProgress * scale
                     alpha = (255 * 1.0f.coerceAtMost(backProgress * 2.0f)).toInt()
                 }
+
                 ICON_NONE -> {
                     val progress = transitionProgress
                     val backProgress = 1.0f - progress
@@ -254,6 +262,7 @@ class MediaActionDrawable : Drawable() {
                     iconScaleX = bounds.centerX().toFloat()
                     iconScaleY = bounds.centerY().toFloat()
                 }
+
                 ICON_CANCEL -> {
                     val progress = transitionProgress
                     val backProgress = 1.0f - progress
@@ -269,6 +278,7 @@ class MediaActionDrawable : Drawable() {
                     iconScaleX = bounds.centerX().toFloat()
                     iconScaleY = bounds.centerY().toFloat()
                 }
+
                 else -> {
                     rotation = 0f
                     d = Utils.dp(7f) * scale
@@ -327,9 +337,11 @@ class MediaActionDrawable : Drawable() {
             nextIcon -> {
                 1.0f
             }
+
             ICON_NONE -> {
                 transitionProgress
             }
+
             else -> {
                 1.0f.coerceAtMost(transitionProgress / 0.5f)
             }
@@ -370,9 +382,11 @@ class MediaActionDrawable : Drawable() {
                     ms < 384 -> {
                         95 * CubicBezierInterpolator.EASE_BOTH.getInterpolation(ms / 384)
                     }
+
                     ms < 484 -> {
                         95 - 5 * CubicBezierInterpolator.EASE_BOTH.getInterpolation((ms - 384) / 100.0f)
                     }
+
                     else -> {
                         90f
                     }

@@ -20,26 +20,33 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
             "follow", "friend_accepted" -> USERS_PARSER.parse(
                 root
             )
+
             "mention" -> MENTION_WALL_PARSER.parse(root)
             "wall", "wall_publish" -> WALL_PARSER.parse(root)
             "comment_photo", "comment_post", "comment_video" -> CREATE_COMMENT_PARSER.parse(
                 root
             )
+
             "reply_comment", "reply_comment_photo", "reply_comment_video", "reply_topic" -> REPLY_COMMENT_PARSER.parse(
                 root
             )
+
             "like_video", "like_photo", "like_post" -> LIKE_PARSER.parse(
                 root
             )
+
             "like_comment_photo", "like_comment_video", "like_comment_topic", "like_comment" -> LIKE_COMMENT_PARSER.parse(
                 root
             )
+
             "copy_post", "copy_photo", "copy_video" -> COPY_PARSER.parse(
                 root
             )
+
             "mention_comment_photo", "mention_comment_video", "mention_comments" -> MENTION_COMMENT_PARSER.parse(
                 root
             )
+
             else -> throw UnsupportedOperationException("unsupported type $type")
         }
     }
@@ -76,14 +83,17 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                     VKApiPost.serializer(),
                     root["parent"]
                 )
+
                 "copy_photo" -> kJson.decodeFromJsonElementOrNull(
                     VKApiPhoto.serializer(),
                     root["parent"]
                 )
+
                 "copy_video" -> kJson.decodeFromJsonElementOrNull(
                     VKApiVideo.serializer(),
                     root["parent"]
                 )
+
                 else -> throw UnsupportedOperationException("Unsupported feedback type: " + dto.type)
             }
             return dto
@@ -109,18 +119,21 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                         it
                     )
                 }
+
                 "comment_photo" -> root["parent"]?.let {
                     kJson.decodeFromJsonElement(
                         VKApiPhoto.serializer(),
                         it
                     )
                 }
+
                 "comment_video" -> root["parent"]?.let {
                     kJson.decodeFromJsonElement(
                         VKApiVideo.serializer(),
                         it
                     )
                 }
+
                 else -> throw UnsupportedOperationException("Unsupported feedback type: " + dto.type)
             }
             return dto
@@ -159,6 +172,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                         )
                     }
                 }
+
                 "reply_comment_photo" -> {
                     root.getAsJsonObject("parent")?.get("photo")?.let {
                         kJson.decodeFromJsonElement(
@@ -167,6 +181,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                         )
                     }
                 }
+
                 "reply_comment_video" -> {
                     root.getAsJsonObject("parent")?.get("video")?.let {
                         kJson.decodeFromJsonElement(
@@ -175,6 +190,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                         )
                     }
                 }
+
                 else -> throw UnsupportedOperationException("Unsupported feedback type: " + dto.type)
             }
             return dto
@@ -210,12 +226,15 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                 "like_photo" -> root["parent"]?.let {
                     kJson.decodeFromJsonElement(VKApiPhoto.serializer(), it)
                 }
+
                 "like_post" -> root["parent"]?.let {
                     kJson.decodeFromJsonElement(VKApiPost.serializer(), it)
                 }
+
                 "like_video" -> root["parent"]?.let {
                     kJson.decodeFromJsonElement(VKApiVideo.serializer(), it)
                 }
+
                 else -> throw UnsupportedOperationException("Unsupported feedback type: " + dto.type)
             }
             dto.users = root["feedback"]?.let {
@@ -243,6 +262,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                         )
                     }
                 }
+
                 "like_comment_photo" -> {
                     root.getAsJsonObject("parent")?.get("photo")?.let {
                         kJson.decodeFromJsonElement(
@@ -251,6 +271,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                         )
                     }
                 }
+
                 "like_comment_video" -> {
                     root.getAsJsonObject("parent")?.get("video")?.let {
                         kJson.decodeFromJsonElement(
@@ -259,6 +280,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                         )
                     }
                 }
+
                 "like_comment_topic" -> {
                     root.getAsJsonObject("parent")?.get("topic")?.let {
                         kJson.decodeFromJsonElement(
@@ -267,6 +289,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                         )
                     }
                 }
+
                 else -> throw UnsupportedOperationException("Unsupported feedback type: " + dto.type)
             }
             dto.users = root["feedback"]?.let {
@@ -328,14 +351,17 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                     root["parent"]?.let {
                         kJson.decodeFromJsonElement(VKApiPost.serializer(), it)
                     }
+
                 "mention_comment_photo" ->
                     root["parent"]?.let {
                         kJson.decodeFromJsonElement(VKApiPhoto.serializer(), it)
                     }
+
                 "mention_comment_video" ->
                     root["parent"]?.let {
                         kJson.decodeFromJsonElement(VKApiVideo.serializer(), it)
                     }
+
                 else -> throw UnsupportedOperationException("Unsupported feedback type: " + dto.type)
             }
             return dto

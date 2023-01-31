@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.ISettings.ISecuritySettings
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import java.security.NoSuchAlgorithmException
-import java.util.*
+import java.util.Collections
 
 class SecuritySettings internal constructor(context: Context) : ISecuritySettings {
     private val mPrefs: SharedPreferences =
@@ -108,15 +108,25 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
             .getBoolean("hide_notif_message_body", false)
     }
 
-    override val isUsePinForSecurity: Boolean
+    override var isUsePinForSecurity: Boolean
         get() = hasPinHash() && getPreferences(mApplication)
             .getBoolean(KEY_USE_PIN_FOR_SECURITY, false)
-    override val isEntranceByFingerprintAllowed: Boolean
+        set(value) = getPreferences(mApplication).edit()
+            .putBoolean(KEY_USE_PIN_FOR_SECURITY, value && hasPinHash())
+            .apply()
+
+    override var isEntranceByFingerprintAllowed: Boolean
         get() = getPreferences(mApplication).getBoolean("allow_fingerprint", false)
-    override val isUsePinForEntrance: Boolean
+        set(value) = getPreferences(mApplication).edit().putBoolean("allow_fingerprint", value)
+            .apply()
+
+    override var isUsePinForEntrance: Boolean
         get() = hasPinHash() && getPreferences(mApplication)
             .getBoolean(KEY_USE_PIN_FOR_ENTRANCE, false)
-    override val isDelayedAllow: Boolean
+        set(value) = getPreferences(mApplication).edit().putBoolean(KEY_USE_PIN_FOR_ENTRANCE, value)
+            .apply()
+
+    override var isDelayedAllow: Boolean
         get() {
             if (!getPreferences(mApplication).getBoolean(DELAYED_PIN_FOR_ENTRANCE, false)) {
                 return false
@@ -128,6 +138,8 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
             val fin = System.currentTimeMillis() - last
             return fin in 1..600000
         }
+        set(value) = getPreferences(mApplication).edit().putBoolean(DELAYED_PIN_FOR_ENTRANCE, value)
+            .apply()
 
     override fun updateLastPinTime() {
         getPreferences(mApplication).edit().putLong(LAST_PIN_ENTERED, System.currentTimeMillis())

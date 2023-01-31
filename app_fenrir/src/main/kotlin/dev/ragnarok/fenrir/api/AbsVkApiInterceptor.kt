@@ -3,6 +3,9 @@ package dev.ragnarok.fenrir.api
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes.provideApplicationContext
+import dev.ragnarok.fenrir.UserAgentTool.getAccountUserAgent
+import dev.ragnarok.fenrir.api.HttpLoggerAndParser.makeVK
+import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
 import dev.ragnarok.fenrir.exception.UnauthorizedException
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
@@ -12,13 +15,14 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
-abstract class AbsVkApiInterceptor(private val version: String) :
+abstract class AbsVKApiInterceptor(private val version: String) :
     Interceptor {
     protected abstract val token: String?
 
     @AccountType
-    abstract val type: Int
+    protected abstract val type: Int
     protected abstract val accountId: Long
+    protected abstract val customDeviceName: String?
 
     /*
    private String RECEIPT_GMS_TOKEN() {
@@ -54,6 +58,7 @@ abstract class AbsVkApiInterceptor(private val version: String) :
                     "v" -> {
                         hasVersion = true
                     }
+
                     "device_id" -> hasDeviceId = true
                     "access_token" -> hasAccessToken = true
                 }
@@ -76,8 +81,10 @@ abstract class AbsVkApiInterceptor(private val version: String) :
             )
         }
         return chain.proceed(
-            original.newBuilder()
+            original.newBuilder().vkHeader(false)
+                .addHeader("User-Agent", getAccountUserAgent(type, customDeviceName))
                 .post(formBuilder.build())
+                .makeVK(true)
                 .build()
         )
     }

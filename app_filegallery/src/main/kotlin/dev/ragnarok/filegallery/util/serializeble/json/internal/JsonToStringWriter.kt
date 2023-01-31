@@ -90,6 +90,7 @@ internal class JsonToStringWriter : JsonWriter {
                     0.toByte() -> {
                         array[sz++] = ch.toChar()
                     }
+
                     1.toByte() -> {
                         val escapedString = ESCAPE_STRINGS[ch] ?: return
                         sz = ensureTotalCapacity(sz, escapedString.length)
@@ -97,6 +98,7 @@ internal class JsonToStringWriter : JsonWriter {
                         sz += escapedString.length
                         size = sz // Update size so the next resize will take it into account
                     }
+
                     else -> {
                         array[sz] = '\\'
                         array[sz + 1] = marker.toInt().toChar()

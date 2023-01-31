@@ -18,7 +18,7 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
-import java.util.*
+import java.util.EventListener
 
 class GroupChatsAdapter(
     context: Context,

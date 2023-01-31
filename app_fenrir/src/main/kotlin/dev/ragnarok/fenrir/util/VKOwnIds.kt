@@ -1,6 +1,15 @@
 package dev.ragnarok.fenrir.util
 
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.CommentsDto
+import dev.ragnarok.fenrir.api.model.VKApiAttachments
+import dev.ragnarok.fenrir.api.model.VKApiComment
+import dev.ragnarok.fenrir.api.model.VKApiConversation
+import dev.ragnarok.fenrir.api.model.VKApiDialog
+import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.VKApiNews
+import dev.ragnarok.fenrir.api.model.VKApiPost
+import dev.ragnarok.fenrir.api.model.VKApiStory
+import dev.ragnarok.fenrir.api.model.VKApiTopic
 import dev.ragnarok.fenrir.api.model.feedback.Copies
 import dev.ragnarok.fenrir.api.model.feedback.UserArray
 import dev.ragnarok.fenrir.api.model.feedback.VKApiUsersFeedback

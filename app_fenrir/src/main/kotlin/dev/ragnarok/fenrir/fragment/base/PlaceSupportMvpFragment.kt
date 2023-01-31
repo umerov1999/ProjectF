@@ -14,7 +14,26 @@ import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.BaseSearchCriteria
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService.Companion.startForPlayList
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Article
+import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.model.AudioArtist
+import dev.ragnarok.fenrir.model.AudioPlaylist
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.CommentedType
+import dev.ragnarok.fenrir.model.Document
+import dev.ragnarok.fenrir.model.Link
+import dev.ragnarok.fenrir.model.Market
+import dev.ragnarok.fenrir.model.MarketAlbum
+import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.Peer
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.Poll
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.model.WallReply
+import dev.ragnarok.fenrir.model.WikiPage
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
@@ -51,11 +70,13 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
                     post1?.generateVkPostLink(),
                     post1?.text
                 )
+
                 PostShareDialog.Methods.REPOST_YOURSELF -> PlaceFactory.getRepostPlace(
                     accountId1,
                     null,
                     post1
                 ).tryOpenWith(requireActivity())
+
                 PostShareDialog.Methods.SEND_MESSAGE -> post1?.let {
                     SendAttachmentsActivity.startForSendAttachments(
                         requireActivity(),
@@ -63,6 +84,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
                         it
                     )
                 }
+
                 PostShareDialog.Methods.REPOST_GROUP -> {
                     val ownerId = PostShareDialog.extractOwnerId(result)
                     PlaceFactory.getRepostPlace(accountId1, abs(ownerId), post1)

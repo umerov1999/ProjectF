@@ -91,6 +91,7 @@ class AudioDuplicateDialog :
                 Utils.doWavesLottie(holder.visual, true)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
             }
+
             2 -> {
                 Utils.doWavesLottie(holder.visual, false)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))

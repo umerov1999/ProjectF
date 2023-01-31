@@ -70,6 +70,7 @@ class UserWallPresenter(
             localPhotos.nonNullNoEmpty() -> {
                 doUploadPhotos(localPhotos)
             }
+
             video != null -> {
                 doUploadVideo(video.getData().toString())
             }
@@ -502,10 +503,12 @@ class UserWallPresenter(
                 strRes = R.string.friend_request_sent
                 newFriendStatus = VKApiUser.FRIEND_STATUS_REQUEST_SENT
             }
+
             IRelationshipInteractor.FRIEND_ADD_REQUEST_FROM_USER_APPROVED -> {
                 strRes = R.string.friend_request_from_user_approved
                 newFriendStatus = VKApiUser.FRIEND_STATUS_IS_FRIEDND
             }
+
             IRelationshipInteractor.FRIEND_ADD_RESENDING -> {
                 strRes = R.string.request_resending
                 newFriendStatus = VKApiUser.FRIEND_STATUS_REQUEST_SENT
@@ -611,14 +614,17 @@ class UserWallPresenter(
                 newFriendStatus = VKApiUser.FRIEND_STATUS_HAS_INPUT_REQUEST
                 strRes = R.string.friend_deleted
             }
+
             IRelationshipInteractor.DeletedCodes.OUT_REQUEST_DELETED -> {
                 newFriendStatus = VKApiUser.FRIEND_STATUS_IS_NOT_FRIEDND
                 strRes = R.string.out_request_deleted
             }
+
             IRelationshipInteractor.DeletedCodes.IN_REQUEST_DELETED -> {
                 newFriendStatus = VKApiUser.FRIEND_STATUS_IS_NOT_FRIEDND
                 strRes = R.string.in_request_deleted
             }
+
             IRelationshipInteractor.DeletedCodes.SUGGESTION_DELETED -> {
                 newFriendStatus = VKApiUser.FRIEND_STATUS_IS_NOT_FRIEDND
                 strRes = R.string.suggestion_deleted
@@ -718,9 +724,7 @@ class UserWallPresenter(
                 .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                     val request =
                         chain.toRequestBuilder(false).vkHeader(true).addHeader(
-                            "User-Agent", Constants.USER_AGENT(
-                                AccountType.BY_TYPE
-                            )
+                            "User-Agent", UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
                         ).build()
                     chain.proceed(request)
                 })

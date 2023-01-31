@@ -286,17 +286,18 @@ interface ISettings {
     }
 
     interface IPushSettings {
-        fun savePushRegistations(data: Collection<VkPushRegistration>)
-        val registrations: List<VkPushRegistration>
+        fun savePushRegistations(data: Collection<VKPushRegistration>)
+        val registrations: List<VKPushRegistration>
     }
 
     interface ISecuritySettings {
         var isKeyEncryptionPolicyAccepted: Boolean
         fun isPinValid(values: IntArray): Boolean
         fun setPin(pin: IntArray?)
-        val isUsePinForEntrance: Boolean
-        val isUsePinForSecurity: Boolean
-        val isEntranceByFingerprintAllowed: Boolean
+        var isUsePinForSecurity: Boolean
+        var isUsePinForEntrance: Boolean
+        var isDelayedAllow: Boolean
+        var isEntranceByFingerprintAllowed: Boolean
 
         @KeyLocationPolicy
         fun getEncryptionLocationPolicy(accountId: Long, peerId: Long): Int
@@ -315,7 +316,6 @@ interface ISettings {
         fun isHiddenDialog(peerId: Long): Boolean
         var showHiddenDialogs: Boolean
         fun reloadHiddenDialogSettings()
-        val isDelayedAllow: Boolean
         fun updateLastPinTime()
         fun IsShow_hidden_accounts(): Boolean
     }

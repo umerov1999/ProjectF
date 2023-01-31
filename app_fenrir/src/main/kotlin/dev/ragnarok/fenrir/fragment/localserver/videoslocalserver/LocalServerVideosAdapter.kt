@@ -16,7 +16,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.ILocalServerInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.link.VkLinkParser
+import dev.ragnarok.fenrir.link.VKLinkParser
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
@@ -127,14 +127,16 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                     )
                                 }
                             }
+
                             VideoLocalServerOption.play_item_video -> {
                                 videoOnClickListener?.onVideoClick(
                                     holder.bindingAdapterPosition,
                                     video
                                 )
                             }
+
                             VideoLocalServerOption.update_time_item_video -> {
-                                val hash = VkLinkParser.parseLocalServerURL(video.mp4link720)
+                                val hash = VKLinkParser.parseLocalServerURL(video.mp4link720)
                                 if (hash.isNullOrEmpty()) {
                                     return
                                 }
@@ -148,8 +150,9 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                         createCustomToast(context).showToastThrowable(t)
                                     }
                             }
+
                             VideoLocalServerOption.edit_item_video -> {
-                                val hash2 = VkLinkParser.parseLocalServerURL(video.mp4link720)
+                                val hash2 = VKLinkParser.parseLocalServerURL(video.mp4link720)
                                 if (hash2.isNullOrEmpty()) {
                                     return
                                 }
@@ -189,6 +192,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                         createCustomToast(context).showToastThrowable(t)
                                     }
                             }
+
                             VideoLocalServerOption.delete_item_video -> MaterialAlertDialogBuilder(
                                 context
                             )
@@ -196,7 +200,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                 .setTitle(R.string.confirmation)
                                 .setCancelable(true)
                                 .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
-                                    val hash1 = VkLinkParser.parseLocalServerURL(video.mp4link720)
+                                    val hash1 = VKLinkParser.parseLocalServerURL(video.mp4link720)
                                     if (hash1.isNullOrEmpty()) {
                                         return@setPositiveButton
                                     }
@@ -213,6 +217,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                 }
                                 .setNegativeButton(R.string.button_cancel, null)
                                 .show()
+
                             else -> {}
                         }
                     }

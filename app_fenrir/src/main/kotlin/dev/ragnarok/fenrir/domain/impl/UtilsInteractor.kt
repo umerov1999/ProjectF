@@ -108,6 +108,7 @@ class UtilsInteractor(
                                     )
                                         .map { pp -> wrap(pp) }
                                 }
+
                                 "group" -> {
                                     val ownerId = -abs(
                                         it.toLong()
@@ -119,6 +120,7 @@ class UtilsInteractor(
                                     )
                                         .map { pp -> wrap(pp) }
                                 }
+
                                 else -> Single.just(empty())
                             }
                         } ?: Single.just(empty())

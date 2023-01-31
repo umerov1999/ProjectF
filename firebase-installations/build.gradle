@@ -57,6 +57,7 @@ dependencies {
     implementation("com.google.firebase:firebase-common:$firebaseCommonVersion")
     implementation("com.google.firebase:firebase-installations-interop:$firebaseInstallationsInteropVersion")
     implementation("com.google.firebase:firebase-components:$firebaseComponentsVersion")
+    implementation("com.google.firebase:firebase-annotations:$firebaseAnnotationsVersion")
     implementation("com.google.android.gms:play-services-tasks:$playServicesTasksVersion")
 
     compileOnly("com.google.auto.value:auto-value-annotations:$autoValueVersion")

@@ -470,6 +470,7 @@ class MusicPlaybackService : Service() {
                     .build()
                 mMediaSession?.setPlaybackState(pmc)
             }
+
             META_CHANGED -> fetchCoverAndUpdateMetadata()
         }
     }
@@ -902,6 +903,7 @@ class MusicPlaybackService : Service() {
                     shuffleMode = SHUFFLE_NONE
                 }
             }
+
             else -> repeatMode = REPEAT_NONE
         }
     }
@@ -947,7 +949,7 @@ class MusicPlaybackService : Service() {
         var isInitialized = false
         var isPreparing = false
         val factory = Utils.getExoPlayerFactory(
-            Constants.USER_AGENT(AccountType.BY_TYPE),
+            UserAgentTool.USER_AGENT_CURRENT_ACCOUNT,
             Includes.proxySettings.activeProxy
         )
         val factoryLocal =
@@ -1103,9 +1105,11 @@ class MusicPlaybackService : Service() {
                             mService.get()?.notifyChange(PREPARED)
                             mService.get()?.play()
                         }
+
                         Player.STATE_ENDED -> if (!isPreparing && isInitialized) {
                             isInitialized = mService.get()?.gotoNext(false) == false
                         }
+
                         else -> {
                         }
                     }

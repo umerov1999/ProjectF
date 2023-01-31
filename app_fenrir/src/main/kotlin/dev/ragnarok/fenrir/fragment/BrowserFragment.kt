@@ -4,8 +4,14 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -15,10 +21,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
-import dev.ragnarok.fenrir.AccountType
-import dev.ragnarok.fenrir.Constants.USER_AGENT
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.domain.IUtilsInteractor
@@ -27,7 +32,7 @@ import dev.ragnarok.fenrir.fragment.base.BaseFragment
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.LinkHelper.openLinkInBrowser
 import dev.ragnarok.fenrir.link.LinkHelper.openVKLink
-import dev.ragnarok.fenrir.link.VkLinkParser.parse
+import dev.ragnarok.fenrir.link.VKLinkParser.parse
 import dev.ragnarok.fenrir.link.types.AwayLink
 import dev.ragnarok.fenrir.link.types.DomainLink
 import dev.ragnarok.fenrir.link.types.PageLink
@@ -42,7 +47,7 @@ import dev.ragnarok.fenrir.util.Logger.d
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import java.io.File
 import java.net.URL
-import java.util.*
+import java.util.Calendar
 
 class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
     View.OnCreateContextMenuListener {
@@ -106,17 +111,19 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
         if (mWebView != null) {
             registerForContextMenu(mWebView ?: return null)
         }
-        mWebView?.settings?.userAgentString = USER_AGENT(AccountType.BY_TYPE)
+        mWebView?.settings?.userAgentString = UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
         mWebView?.settings?.javaScriptEnabled = true // из-за этого не срабатывал метод
         // shouldOverrideUrlLoading в WebClient
         when {
             savedInstanceState != null -> {
                 restoreFromInstanceState(savedInstanceState)
             }
+
             webState != null -> {
                 mWebView?.restoreState(webState ?: return null)
                 webState = null
             }
+
             else -> {
                 loadAtFirst()
             }

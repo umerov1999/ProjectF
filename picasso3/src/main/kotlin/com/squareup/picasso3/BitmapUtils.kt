@@ -180,10 +180,12 @@ object BitmapUtils {
                     imageDecoder.isMutableRequired = true
                     ImageDecoder.ALLOCATOR_DEFAULT
                 }
+
                 BitmapSafeResize.isHardwareRendering() == 2 -> {
                     imageDecoder.isMutableRequired = false
                     ImageDecoder.ALLOCATOR_HARDWARE
                 }
+
                 else -> {
                     imageDecoder.isMutableRequired = true
                     ImageDecoder.ALLOCATOR_SOFTWARE

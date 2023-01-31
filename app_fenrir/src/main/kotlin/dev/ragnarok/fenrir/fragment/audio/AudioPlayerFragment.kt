@@ -169,6 +169,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 updateNowPlayingInfo()
                 resolveControlViews()
             }
+
             PlayerStatus.UPDATE_PLAY_PAUSE -> {
                 updatePlaybackControls()
                 resolveTotalTime()
@@ -185,16 +186,20 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                     }
                 }
             }
+
             PlayerStatus.REPEATMODE_CHANGED -> {
                 mRepeatButton?.updateRepeatState()
             }
+
             PlayerStatus.SHUFFLEMODE_CHANGED -> {
                 mShuffleButton?.updateShuffleState()
                 updateCovers()
             }
+
             PlayerStatus.UPDATE_PLAY_LIST -> {
                 updateCovers()
             }
+
             PlayerStatus.SERVICE_KILLED -> {
                 updatePlaybackControls()
                 updateNowPlayingInfo()
@@ -457,6 +462,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 createCustomToast(requireActivity()).showToastBottom(R.string.saved_audio)
                 ivSave?.setImageResource(R.drawable.succ)
             }
+
             1 -> {
                 CustomSnackbars.createCustomSnackbars(v, mPlayPauseButton)
                     ?.setDurationSnack(Snackbar.LENGTH_LONG)
@@ -472,6 +478,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                         )
                     }?.show()
             }
+
             2 -> {
                 CustomSnackbars.createCustomSnackbars(v, mPlayPauseButton)
                     ?.setDurationSnack(Snackbar.LENGTH_LONG)
@@ -488,6 +495,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                     }?.show()
                 ivSave?.setImageResource(R.drawable.succ)
             }
+
             else -> createCustomToast(requireActivity()).showToastBottom(R.string.error_audio)
         }
     }
@@ -767,15 +775,19 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 TrackIsDownloaded(current) == 1 -> {
                     ivSave?.setImageResource(R.drawable.succ)
                 }
+
                 TrackIsDownloaded(current) == 2 -> {
                     ivSave?.setImageResource(R.drawable.remote_cloud)
                 }
+
                 current.url.isNullOrEmpty() -> {
                     ivSave?.setImageResource(R.drawable.audio_died)
                 }
+
                 ("https://vk.com/mp3/audio_api_unavailable.mp3" == current.url) -> {
                     ivSave?.setImageResource(R.drawable.report)
                 }
+
                 else -> ivSave?.setImageResource(R.drawable.save)
             }
         } else ivSave?.setImageResource(R.drawable.save)
@@ -982,6 +994,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                     MusicPlaybackController.isPlaying -> {
                         mCurrentTime?.visibility = View.VISIBLE
                     }
+
                     else -> {
                         // blink the counter
                         val vis = mCurrentTime?.visibility

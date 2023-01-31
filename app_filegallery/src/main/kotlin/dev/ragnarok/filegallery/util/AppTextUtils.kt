@@ -3,7 +3,9 @@ package dev.ragnarok.filegallery.util
 import android.content.Context
 import dev.ragnarok.filegallery.R
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 object AppTextUtils {
     private const val ONE_DAY_SEC = (24 * 60 * 60).toLong()

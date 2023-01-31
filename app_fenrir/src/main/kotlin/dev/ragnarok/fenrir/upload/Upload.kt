@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.util.ParcelUtils.readObjectLong
 import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectLong
 import dev.ragnarok.fenrir.writeTypedObjectCompat
-import java.util.*
+import java.util.Random
 import java.util.concurrent.atomic.AtomicInteger
 
 open class Upload : AbsModel, Identificable {

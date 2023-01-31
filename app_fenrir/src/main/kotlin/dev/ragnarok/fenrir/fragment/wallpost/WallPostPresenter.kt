@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiPostSource
 import dev.ragnarok.fenrir.db.model.PostUpdate
 import dev.ragnarok.fenrir.domain.IFaveInteractor
@@ -16,7 +16,16 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.Repository.walls
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.fromIOToMain
+import dev.ragnarok.fenrir.getParcelableCompat
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.CommentedType
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.ParcelableOwnerWrapper
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 
@@ -146,9 +155,11 @@ class WallPostPresenter(
             post != null -> {
                 view?.displayPostInfo(post ?: return)
             }
+
             loadingPostNow -> {
                 view?.displayLoading()
             }
+
             else -> {
                 view?.displayLoadingFail()
             }
@@ -383,6 +394,7 @@ class WallPostPresenter(
                 when ((post ?: return).source?.getData()) {
                     VKApiPostSource.Data.PROFILE_ACTIVITY -> type =
                         IWallPostView.SUBTITLE_STATUS_UPDATE
+
                     VKApiPostSource.Data.PROFILE_PHOTO -> type = IWallPostView.SUBTITLE_PHOTO_UPDATE
                 }
             }

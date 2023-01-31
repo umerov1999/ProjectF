@@ -44,28 +44,35 @@ class CatalogV2Layout : Parcelable {
             "header", "header_extended", "header_compact", "horizontal_buttons" -> {
                 CATALOG_V2_HOLDER.TYPE_CATALOG_HEADER
             }
+
             "separator", "in_block_separator" -> {
                 CATALOG_V2_HOLDER.TYPE_CATALOG_SEPARATOR
             }
+
             "list", "music_chart_list" -> {
                 CATALOG_V2_HOLDER.TYPE_CATALOG_LIST
             }
+
             "categories_list", "large_list", "slider", "recomms_slider", "large_slider", "music_chart_large_slider" -> {
                 CATALOG_V2_HOLDER.TYPE_CATALOG_SLIDER
             }
+
             "triple_stacked_slider", "music_chart_triple_stacked_slider" -> {
                 CATALOG_V2_HOLDER.TYPE_CATALOG_TRIPLE_STACKED_SLIDER
             }
+
             "banner" -> {
                 when (data_type) {
                     "artist" -> {
                         CATALOG_V2_HOLDER.TYPE_ARTIST_BANNER
                     }
+
                     else -> {
                         CATALOG_V2_HOLDER.TYPE_EMPTY
                     }
                 }
             }
+
             else -> {
                 CATALOG_V2_HOLDER.TYPE_EMPTY
             }
@@ -112,18 +119,23 @@ class CatalogV2Layout : Parcelable {
                 CATALOG_V2_HOLDER.TYPE_ARTIST_BANNER -> {
                     ArtistBannerViewHolder.Fabric()
                 }
+
                 CATALOG_V2_HOLDER.TYPE_CATALOG_HEADER -> {
                     HeaderViewHolder.Fabric()
                 }
+
                 CATALOG_V2_HOLDER.TYPE_CATALOG_SEPARATOR -> {
                     SeparatorViewHolder.Fabric()
                 }
+
                 AbsModelType.MODEL_CATALOG_V2_LINK -> {
                     LinkViewHolder.Fabric()
                 }
+
                 AbsModelType.MODEL_VIDEO -> {
                     VideoViewHolder.Fabric()
                 }
+
                 else -> HeaderViewHolder.Fabric()
             }
         }

@@ -4,7 +4,6 @@ import android.content.ContentProviderOperation
 import android.content.ContentValues
 import android.database.Cursor
 import android.provider.BaseColumns
-import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getGroupsContentUriFor
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getTopicsContentUriFor
@@ -15,7 +14,14 @@ import dev.ragnarok.fenrir.db.interfaces.ITopicsStore
 import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
 import dev.ragnarok.fenrir.db.model.entity.PollDboEntity
 import dev.ragnarok.fenrir.db.model.entity.TopicDboEntity
+import dev.ragnarok.fenrir.getBlob
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.getInt
+import dev.ragnarok.fenrir.getLong
+import dev.ragnarok.fenrir.getString
+import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.model.criteria.TopicsCriteria
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable

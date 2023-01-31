@@ -462,6 +462,7 @@ class MusicPlaybackService : Service() {
                     .build()
                 mMediaSession?.setPlaybackState(pmc)
             }
+
             META_CHANGED -> fetchCoverAndUpdateMetadata()
         }
     }
@@ -892,6 +893,7 @@ class MusicPlaybackService : Service() {
                     shuffleMode = SHUFFLE_NONE
                 }
             }
+
             else -> repeatMode = REPEAT_NONE
         }
     }
@@ -1044,9 +1046,11 @@ class MusicPlaybackService : Service() {
                             mService.get()?.notifyChange(PREPARED)
                             mService.get()?.play()
                         }
+
                         Player.STATE_ENDED -> if (!isPreparing && isInitialized) {
                             isInitialized = mService.get()?.gotoNext(false) == false
                         }
+
                         else -> {
                         }
                     }

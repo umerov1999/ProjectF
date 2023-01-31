@@ -2,7 +2,11 @@ package dev.ragnarok.fenrir.fragment.groupwall
 
 import androidx.annotation.StringRes
 import dev.ragnarok.fenrir.fragment.abswall.IWallView
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.CommunityDetails
+import dev.ragnarok.fenrir.model.GroupSettings
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.PostFilter
 
 interface IGroupWallView : IWallView {
     fun displayBaseCommunityData(community: Community, details: CommunityDetails)

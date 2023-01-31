@@ -28,7 +28,6 @@
 #include "../zstd.h"
 #define FSE_STATIC_LINKING_ONLY
 #include "fse.h"
-#define HUF_STATIC_LINKING_ONLY
 #include "huf.h"
 #ifndef XXH_STATIC_LINKING_ONLY
 #  define XXH_STATIC_LINKING_ONLY  /* XXH64_state_t */
@@ -114,6 +113,8 @@ typedef enum { set_basic, set_rle, set_compressed, set_repeat } symbolEncodingTy
 #define LLFSELog    9
 #define OffFSELog   8
 #define MaxFSELog  MAX(MAX(MLFSELog, LLFSELog), OffFSELog)
+#define MaxMLBits 16
+#define MaxLLBits 16
 
 #define ZSTD_MAX_HUF_HEADER_SIZE 128 /* header + <= 127 byte tree description */
 /* Each table cannot take more than #symbols * FSELog bits */
@@ -347,7 +348,7 @@ typedef struct {
 } ZSTD_frameSizeInfo;   /* decompress & legacy */
 
 const seqStore_t* ZSTD_getSeqStore(const ZSTD_CCtx* ctx);   /* compress & dictBuilder */
-void ZSTD_seqToCodes(const seqStore_t* seqStorePtr);   /* compress, dictBuilder, decodeCorpus (shouldn't get its definition from here) */
+int ZSTD_seqToCodes(const seqStore_t* seqStorePtr);   /* compress, dictBuilder, decodeCorpus (shouldn't get its definition from here) */
 
 /* custom memory allocation functions */
 void* ZSTD_customMalloc(size_t size, ZSTD_customMem customMem);

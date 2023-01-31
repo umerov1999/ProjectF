@@ -2,7 +2,13 @@ package dev.ragnarok.fenrir.fragment.friends.friendstabs
 
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -10,7 +16,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
@@ -22,8 +29,11 @@ import dev.ragnarok.fenrir.fragment.friends.mutualfriends.MutualFriendsFragment
 import dev.ragnarok.fenrir.fragment.friends.onlinefriends.OnlineFriendsFragment
 import dev.ragnarok.fenrir.fragment.friends.recommendationsfriends.RecommendationsFriendsFragment
 import dev.ragnarok.fenrir.fragment.friends.requests.RequestsFragment
+import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.model.FriendsCounters
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.Settings

@@ -1,6 +1,12 @@
 package dev.ragnarok.fenrir.domain
 
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.AbsModel
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.CommentIntent
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.CommentsBundle
+import dev.ragnarok.fenrir.model.DraftComment
+import dev.ragnarok.fenrir.model.Owner
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single

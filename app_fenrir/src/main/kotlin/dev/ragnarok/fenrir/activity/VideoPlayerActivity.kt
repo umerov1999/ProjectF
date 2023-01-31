@@ -463,6 +463,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
                     packageName
                 ) == AppOpsManager.MODE_ALLOWED
             }
+
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
                 appsOps?.checkOpNoThrow(
                     AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
@@ -470,6 +471,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
                     packageName
                 ) == AppOpsManager.MODE_ALLOWED
             }
+
             else -> {
                 false
             }

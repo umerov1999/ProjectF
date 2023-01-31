@@ -1,6 +1,14 @@
 package dev.ragnarok.fenrir.api.services
 
-import dev.ragnarok.fenrir.api.model.response.*
+import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.CommentCreateResponse
+import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
+import dev.ragnarok.fenrir.api.model.response.PostCreateResponse
+import dev.ragnarok.fenrir.api.model.response.PostsResponse
+import dev.ragnarok.fenrir.api.model.response.RepostReponse
+import dev.ragnarok.fenrir.api.model.response.WallEditResponse
+import dev.ragnarok.fenrir.api.model.response.WallResponse
+import dev.ragnarok.fenrir.api.model.response.WallSearchResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
 

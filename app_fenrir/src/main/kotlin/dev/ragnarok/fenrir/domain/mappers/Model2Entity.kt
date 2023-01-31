@@ -219,72 +219,95 @@ object Model2Entity {
                 AbsModelType.MODEL_AUDIO -> {
                     entities.add(buildAudioEntity(model as Audio))
                 }
+
                 AbsModelType.MODEL_STICKER -> {
                     entities.add(buildStickerEntity(model as Sticker))
                 }
+
                 AbsModelType.MODEL_PHOTO -> {
                     entities.add(buildPhotoEntity(model as Photo))
                 }
+
                 AbsModelType.MODEL_DOCUMENT -> {
                     entities.add(buildDocumentDbo(model as Document))
                 }
+
                 AbsModelType.MODEL_VIDEO -> {
                     entities.add(buildVideoDbo(model as Video))
                 }
+
                 AbsModelType.MODEL_POST -> {
                     entities.add(buildPostDbo(model as Post))
                 }
+
                 AbsModelType.MODEL_LINK -> {
                     entities.add(buildLinkDbo(model as Link))
                 }
+
                 AbsModelType.MODEL_ARTICLE -> {
                     entities.add(buildArticleDbo(model as Article))
                 }
+
                 AbsModelType.MODEL_PHOTO_ALBUM -> {
                     entities.add(buildPhotoAlbumEntity(model as PhotoAlbum))
                 }
+
                 AbsModelType.MODEL_STORY -> {
                     entities.add(buildStoryDbo(model as Story))
                 }
+
                 AbsModelType.MODEL_AUDIO_PLAYLIST -> {
                     entities.add(buildAudioPlaylistEntity(model as AudioPlaylist))
                 }
+
                 AbsModelType.MODEL_CALL -> {
                     entities.add(buildCallDbo(model as Call))
                 }
+
                 AbsModelType.MODEL_GEO -> {
                     entities.add(buildGeoDbo(model as Geo))
                 }
+
                 AbsModelType.MODEL_NOT_SUPPORTED -> {
                     entities.add(buildNotSupportedDbo(model as NotSupported))
                 }
+
                 AbsModelType.MODEL_EVENT -> {
                     entities.add(buildEventDbo(model as Event))
                 }
+
                 AbsModelType.MODEL_MARKET -> {
                     entities.add(buildMarketDbo(model as Market))
                 }
+
                 AbsModelType.MODEL_MARKET_ALBUM -> {
                     entities.add(buildMarketAlbumDbo(model as MarketAlbum))
                 }
+
                 AbsModelType.MODEL_AUDIO_ARTIST -> {
                     entities.add(buildAudioArtistDbo(model as AudioArtist))
                 }
+
                 AbsModelType.MODEL_WALL_REPLY -> {
                     entities.add(buildWallReplyDbo(model as WallReply))
                 }
+
                 AbsModelType.MODEL_GRAFFITI -> {
                     entities.add(buildGraffitiDbo(model as Graffiti))
                 }
+
                 AbsModelType.MODEL_POLL -> {
                     entities.add(buildPollDbo(model as Poll))
                 }
+
                 AbsModelType.MODEL_WIKI_PAGE -> {
                     entities.add(buildPageEntity(model as WikiPage))
                 }
+
                 AbsModelType.MODEL_GIFT_ITEM -> {
                     entities.add(buildGiftItemEntity(model as GiftItem))
                 }
+
                 else -> {
                     throw UnsupportedOperationException("Unsupported model")
                 }

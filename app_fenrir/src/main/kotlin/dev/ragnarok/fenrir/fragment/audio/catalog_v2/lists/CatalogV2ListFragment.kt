@@ -3,7 +3,12 @@ package dev.ragnarok.fenrir.fragment.audio.catalog_v2.lists
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -11,7 +16,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.StubAnimatorListener
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.audio.audioplaylists.AudioPlaylistsFragment
@@ -22,6 +29,7 @@ import dev.ragnarok.fenrir.fragment.audio.local.audioslocal.AudiosLocalFragment
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.localserver.audioslocalserver.AudiosLocalServerFragment
+import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2List
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_AUDIO
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_CATALOG
@@ -29,9 +37,11 @@ import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Comp
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_LOCAL_SERVER_AUDIO
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_PLAYLIST
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_RECOMMENDATIONS
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
 import dev.ragnarok.fenrir.view.MySearchView
@@ -73,6 +83,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 )
                 return true
             }
+
             R.id.action_catalog_v2_find_friends -> {
                 PlaceFactory.getCatalogV2AudioCatalogPlace(
                     requireArguments().getLong(Extra.ACCOUNT_ID),
@@ -83,6 +94,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 ).tryOpenWith(requireActivity())
                 return true
             }
+
             R.id.action_catalog_v2_find_groups -> {
                 PlaceFactory.getCatalogV2AudioCatalogPlace(
                     requireArguments().getLong(Extra.ACCOUNT_ID),
@@ -93,6 +105,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 ).tryOpenWith(requireActivity())
                 return true
             }
+
             R.id.action_catalog_v2_recent -> {
                 PlaceFactory.getCatalogV2AudioCatalogPlace(
                     requireArguments().getLong(Extra.ACCOUNT_ID),
@@ -103,6 +116,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 ).tryOpenWith(requireActivity())
                 return true
             }
+
             R.id.action_catalog_v2_artists -> {
                 PlaceFactory.getCatalogV2AudioCatalogPlace(
                     requireArguments().getLong(Extra.ACCOUNT_ID),
@@ -113,6 +127,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 ).tryOpenWith(requireActivity())
                 return true
             }
+
             else -> return false
         }
     }
@@ -315,9 +330,11 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 TYPE_LOCAL_AUDIO -> return AudiosLocalFragment.newInstance(
                     requireArguments().getLong(Extra.ACCOUNT_ID)
                 )
+
                 TYPE_LOCAL_SERVER_AUDIO -> return AudiosLocalServerFragment.newInstance(
                     requireArguments().getLong(Extra.ACCOUNT_ID)
                 )
+
                 TYPE_AUDIO -> {
                     val args = AudiosFragment.buildArgs(
                         requireArguments().getLong(Extra.ACCOUNT_ID),
@@ -328,6 +345,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                     args.putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
                     return AudiosFragment.newInstance(args)
                 }
+
                 TYPE_PLAYLIST -> {
                     val fragment = AudioPlaylistsFragment.newInstance(
                         requireArguments().getLong(Extra.ACCOUNT_ID),
@@ -337,6 +355,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                         .putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
                     return fragment
                 }
+
                 TYPE_RECOMMENDATIONS -> {
                     val fragment = AudiosRecommendationFragment.newInstance(
                         requireArguments().getLong(Extra.ACCOUNT_ID),

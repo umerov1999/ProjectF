@@ -110,6 +110,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                     .ui().isEmojis_full_screen -> mContext.resources.getDimension(
                     R.dimen.keyboard_max_height
                 ).toInt()
+
                 keyBoardHeight > 0 -> keyBoardHeight
                 else -> mContext.resources.getDimension(
                     R.dimen.keyboard_height
@@ -297,6 +298,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                     })
                     gridView.adapter = mAdapter
                 }
+
                 7 -> {
                     val recyclerView: RecyclerView =
                         holder.itemView.findViewById(R.id.grid_stickers)
@@ -314,6 +316,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                         recyclerView.context.getString(R.string.my)
                     recyclerView.adapter = myStickersAdapter
                 }
+
                 else -> {
                     val recyclerView: RecyclerView =
                         holder.itemView.findViewById(R.id.grid_stickers)
@@ -388,6 +391,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                     clickListener.onClick(view)
                     return true
                 }
+
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_OUTSIDE -> {
                     handler.removeCallbacksAndMessages(downView)
                     downView = null

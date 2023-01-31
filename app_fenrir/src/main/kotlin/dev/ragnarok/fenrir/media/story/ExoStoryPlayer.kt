@@ -5,9 +5,8 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.App.Companion.instance
-import dev.ragnarok.fenrir.Constants.USER_AGENT
+import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.media.story.IStoryPlayer.IStatus
 import dev.ragnarok.fenrir.media.story.IStoryPlayer.IStatusChangeListener
 import dev.ragnarok.fenrir.model.ProxyConfig
@@ -54,7 +53,7 @@ class ExoStoryPlayer(
     private fun preparePlayer() {
         setStatus(IStatus.PREPARING)
         internalPlayer = ExoPlayer.Builder(instance).build()
-        val userAgent = USER_AGENT(AccountType.BY_TYPE)
+        val userAgent = UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
 
         // This is the MediaSource representing the media to be played:
         // FOR SD CARD SOURCE:

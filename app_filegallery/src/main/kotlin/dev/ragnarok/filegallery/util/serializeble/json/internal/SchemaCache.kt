@@ -15,18 +15,16 @@ private typealias DescriptorData<T> = MutableMap<DescriptorSchemaCache.Key<T>, T
  * To be able to work with it from multiple threads in Kotlin/Native, use @[ThreadLocal] in appropriate places.
  */
 internal class DescriptorSchemaCache {
-    private val map: MutableMap<SerialDescriptor, DescriptorData<Any>> = createMapForCache(1)
+    // 16 is default CHM size, as we do not know number of descriptors in an application (but it's likely not 1)
+    private val map: MutableMap<SerialDescriptor, DescriptorData<Any>> = createMapForCache(16)
 
     @Suppress("UNCHECKED_CAST")
     operator fun <T : Any> set(descriptor: SerialDescriptor, key: Key<T>, value: T) {
-        map.getOrPut(descriptor) { createMapForCache(1) }[key as Key<Any>] = value as Any
+        // Initial capacity = number of known DescriptorSchemaCache.Key instances
+        map.getOrPut(descriptor) { createMapForCache(2) }[key as Key<Any>] = value as Any
     }
 
-    fun <T : Any> getOrPut(
-        descriptor: SerialDescriptor,
-        key: Key<T>,
-        defaultValue: () -> T
-    ): T {
+    fun <T : Any> getOrPut(descriptor: SerialDescriptor, key: Key<T>, defaultValue: () -> T): T {
         get(descriptor, key)?.let { return it }
         val value = defaultValue()
         set(descriptor, key, value)

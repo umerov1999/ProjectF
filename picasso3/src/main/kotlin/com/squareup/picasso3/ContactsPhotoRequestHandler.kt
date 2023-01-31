@@ -91,6 +91,7 @@ internal class ContactsPhotoRequestHandler(private val context: Context) : Reque
                         ?: throw IOException("no contact found")
                 Contacts.openContactPhotoInputStream(contentResolver, contactUri, true)
             }
+
             ID_CONTACT -> Contacts.openContactPhotoInputStream(contentResolver, uri, true)
             ID_THUMBNAIL, ID_DISPLAY_PHOTO -> contentResolver.openInputStream(uri)
             else -> throw IllegalStateException("Invalid uri: $uri")

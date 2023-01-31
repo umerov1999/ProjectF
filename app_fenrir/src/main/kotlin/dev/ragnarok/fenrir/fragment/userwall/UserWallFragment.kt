@@ -594,11 +594,13 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                         "id" + usr.getOwnerObjectId()
                     ).tryOpenWith(requireActivity())
                 }
+
                 2 -> {
                     val attachPhotoIntent = Intent(requireActivity(), PhotosActivity::class.java)
                     attachPhotoIntent.putExtra(PhotosActivity.EXTRA_MAX_SELECTION_COUNT, 1)
                     openRequestSelectAvatar.launch(attachPhotoIntent)
                 }
+
                 3 -> {
                     val sources = Sources()
                         .with(LocalPhotosSelectableSource())

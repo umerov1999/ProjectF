@@ -4,7 +4,7 @@ import dev.ragnarok.fenrir.api.adapters.AttachmentsDtoAdapter
 import dev.ragnarok.fenrir.api.adapters.AttachmentsEntryDtoAdapter
 import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import kotlinx.serialization.Serializable
-import java.util.*
+import java.util.Collections
 
 @Serializable(with = AttachmentsDtoAdapter::class)
 class VKApiAttachments {

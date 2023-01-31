@@ -73,6 +73,7 @@ class DialogsAdapter(private val mContext: Context, private var mDialogs: List<D
             DATA_TYPE_HIDDEN -> return HiddenViewHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.line_hidden, parent, false)
             )
+
             DATA_TYPE_NORMAL -> return DialogViewHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.item_dialog, parent, false)
             )
@@ -259,18 +260,22 @@ class DialogsAdapter(private val mContext: Context, private var mDialogs: List<D
                     holder.mHeaderTitle.visibility = View.VISIBLE
                     holder.mHeaderTitle.setText(R.string.dialog_day_today)
                 }
+
                 DIV_OLD -> {
                     holder.mHeaderTitle.visibility = View.VISIBLE
                     holder.mHeaderTitle.setText(R.string.dialog_day_older)
                 }
+
                 DIV_YESTERDAY -> {
                     holder.mHeaderTitle.visibility = View.VISIBLE
                     holder.mHeaderTitle.setText(R.string.dialog_day_yesterday)
                 }
+
                 DIV_THIS_WEEK -> {
                     holder.mHeaderTitle.visibility = View.VISIBLE
                     holder.mHeaderTitle.setText(R.string.dialog_day_ten_days)
                 }
+
                 DIV_PINNED -> {
                     holder.mHeaderTitle.visibility = View.VISIBLE
                     holder.mHeaderTitle.setText(R.string.dialog_pinned)

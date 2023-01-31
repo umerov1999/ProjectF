@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.safeCountOfMultiple
-import java.util.*
+import java.util.Collections
 import java.util.regex.Pattern
 import kotlin.math.abs
 
@@ -18,7 +18,8 @@ object OwnerLinkSpanFactory {
     private val ownerPattern: Pattern = Pattern.compile("\\[(id|club)(\\d+)\\|([^]]+)]")
     private val topicCommentPattern: Pattern =
         Pattern.compile("\\[(id|club)(\\d*):bp(-\\d*)_(\\d*)\\|([^]]+)]")
-    private val linkPattern: Pattern = Pattern.compile("\\[(https:[^]]+)\\|([^]]+)]")
+    private val linkPattern: Pattern =
+        Pattern.compile("\\[(https:[^]]+|http:[^]]+|vk\\.com[^]]+|)\\|([^]]+)]")
 
     fun findPatterns(
         input: String?,

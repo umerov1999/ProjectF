@@ -66,6 +66,7 @@ object Common {
                     getColorSecondary(context)
                 )
             )
+
             11 -> PaganSymbolWall(R.raw.svg_pagan_triskel, 108f, 108f)
             12 -> PaganSymbolWall(R.raw.svg_pagan_hell, 140f, 140f)
             13 -> PaganSymbolWall(R.raw.svg_pagan_odin, 178f, 120f)
@@ -82,6 +83,7 @@ object Common {
                     getColorPrimary(context)
                 ), true
             )
+
             22 -> PaganSymbolWall(R.raw.svg_pagan_valkyrie_1, 170f, 170f)
             23 -> PaganSymbolWall(R.raw.svg_pagan_valkyrie_2, 180f, 180f)
             else -> PaganSymbolWall(R.raw.svg_pagan_cat, 160f, 160f)

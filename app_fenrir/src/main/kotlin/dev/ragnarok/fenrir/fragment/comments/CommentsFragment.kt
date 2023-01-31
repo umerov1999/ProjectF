@@ -5,7 +5,12 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -35,7 +40,11 @@ import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Sticker
+import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.menu.options.CommentsOption
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
@@ -567,32 +576,41 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
                             createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
                                 .showToast(R.string.copied_to_clipboard)
                         }
+
                         CommentsOption.reply_item_comment -> presenter?.fireReplyToCommentClick(
                             comment
                         )
+
                         CommentsOption.report_item_comment -> presenter?.fireReport(
                             comment
                         )
+
                         CommentsOption.delete_item_comment -> presenter?.fireCommentDeleteClick(
                             comment
                         )
+
                         CommentsOption.edit_item_comment -> presenter?.fireCommentEditClick(
                             comment
                         )
+
                         CommentsOption.block_author_item_comment -> presenter?.fireBanClick(
                             comment
                         )
+
                         CommentsOption.like_item_comment -> presenter?.fireCommentLikeClick(
                             comment,
                             true
                         )
+
                         CommentsOption.dislike_item_comment -> presenter?.fireCommentLikeClick(
                             comment,
                             false
                         )
+
                         CommentsOption.who_like_item_comment -> presenter?.fireWhoLikesClick(
                             comment
                         )
+
                         CommentsOption.send_to_friend_item_comment -> presenter?.fireReplyToChat(
                             comment
                         )
@@ -647,20 +665,24 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
                 presenter?.fireRefreshClick()
                 return true
             }
+
             R.id.open_poll -> {
                 presenter?.fireTopicPollClick()
                 return true
             }
+
             R.id.to_commented -> {
                 presenter?.fireGotoSourceClick()
                 return true
             }
+
             R.id.direction -> {
                 val decs = Settings.get().other().toggleCommentsDirection()
                 menuItem.setIcon(getDirectionIcon(decs))
                 presenter?.fireDirectionChanged()
                 return true
             }
+
             else -> return false
         }
     }

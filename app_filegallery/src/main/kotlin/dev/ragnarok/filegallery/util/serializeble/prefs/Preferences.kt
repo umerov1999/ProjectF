@@ -64,8 +64,7 @@ class PreferencesTest {
  * ```
  */
 // <!--- KNIT example-preferences-01.kt -->
-sealed class Preferences(internal val configuration: PreferenceConfiguration) :
-    SerialFormat {
+sealed class Preferences(internal val configuration: PreferenceConfiguration) : SerialFormat {
 
     /**
      * Contains all serializers registered by format user for [Contextual] and [Polymorphic] serialization.

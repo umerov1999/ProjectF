@@ -56,10 +56,12 @@ class AudioDtoAdapter : AbsAdapter<VKApiAudio>("VKApiAudio") {
                         thmb,
                         "photo_135"
                     )
+
                     thmb.has("photo_68") -> dto.thumb_image_little = optString(
                         thmb,
                         "photo_68"
                     )
+
                     thmb.has("photo_34") -> dto.thumb_image_little =
                         optString(thmb, "photo_34")
                 }

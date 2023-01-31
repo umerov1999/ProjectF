@@ -123,10 +123,12 @@ class PhotosViewHelper internal constructor(
                     ) else LayoutInflater.from(context)
                         .inflate(R.layout.item_photo_gif, container, false)
                 }
+
                 2 -> {
                     LayoutInflater.from(context)
                         .inflate(R.layout.item_photo_gif_not_round, container, false)
                 }
+
                 else -> {
                     LayoutInflater.from(context)
                         .inflate(R.layout.item_photo_gif, container, false)
@@ -160,6 +162,7 @@ class PhotosViewHelper internal constructor(
                             val video = image.attachment as Video
                             attachmentsActionCallback.onVideoPlay(video)
                         }
+
                         PostImage.TYPE_GIF -> {
                             val document = image.attachment as Document
                             attachmentsActionCallback.onDocPreviewOpen(document)
@@ -172,6 +175,7 @@ class PhotosViewHelper internal constructor(
                         val video = image.attachment as Video
                         holder.tvTitle.text = AppTextUtils.getDurationString(video.duration)
                     }
+
                     PostImage.TYPE_GIF -> {
                         val document = image.attachment as Document
                         holder.tvTitle.text = context.getString(

@@ -29,7 +29,7 @@ import dev.ragnarok.fenrir.activity.PhotosActivity
 import dev.ragnarok.fenrir.db.model.AttachmentsTypes
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.createpoll.CreatePollFragment
-import dev.ragnarok.fenrir.fragment.vkphotos.IVkPhotosView
+import dev.ragnarok.fenrir.fragment.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.BackPressCallback
@@ -251,7 +251,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
         val intent = Intent(requireActivity(), PhotoAlbumsActivity::class.java)
         intent.putExtra(Extra.OWNER_ID, accountId)
         intent.putExtra(Extra.ACCOUNT_ID, ownerId)
-        intent.putExtra(Extra.ACTION, IVkPhotosView.ACTION_SELECT_PHOTOS)
+        intent.putExtra(Extra.ACTION, IVKPhotosView.ACTION_SELECT_PHOTOS)
         openRequestPhotoFromVK.launch(intent)
     }
 

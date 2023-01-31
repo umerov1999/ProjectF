@@ -20,7 +20,11 @@ import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoAlbumEditor
 import dev.ragnarok.fenrir.view.steppers.base.AbsStepHolder
 import dev.ragnarok.fenrir.view.steppers.base.AbsSteppersVerticalAdapter
-import dev.ragnarok.fenrir.view.steppers.impl.*
+import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStep1Holder
+import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStep2Holder
+import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStep3Holder
+import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStep4Holder
+import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStepsHost
 
 class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditPhotoAlbumView>(),
     BackPressCallback, IEditPhotoAlbumView, CreatePhotoAlbumStep4Holder.ActionListener,
@@ -83,17 +87,21 @@ class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditP
             CreatePhotoAlbumStepsHost.STEP_TITLE_AND_DESCRIPTION -> CreatePhotoAlbumStep1Holder(
                 parent, this
             )
+
             CreatePhotoAlbumStepsHost.STEP_UPLOAD_AND_COMMENTS -> CreatePhotoAlbumStep2Holder(
                 parent, this
             )
+
             CreatePhotoAlbumStepsHost.STEP_PRIVACY_VIEW -> CreatePhotoAlbumStep3Holder(
                 parent,
                 this
             )
+
             CreatePhotoAlbumStepsHost.STEP_PRIVACY_COMMENT -> CreatePhotoAlbumStep4Holder(
                 parent,
                 this
             )
+
             else -> throw IllegalArgumentException("Inavalid step index: $step")
         }
     }

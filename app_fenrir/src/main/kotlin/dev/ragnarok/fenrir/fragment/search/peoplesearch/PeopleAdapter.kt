@@ -36,6 +36,7 @@ class PeopleAdapter(private val mContext: Context, private var mData: List<Owner
             TYPE_USER -> return PeopleHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.item_people, parent, false)
             )
+
             TYPE_COMMUNITY -> return CommunityHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.item_group, parent, false)
             )

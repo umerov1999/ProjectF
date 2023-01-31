@@ -186,7 +186,7 @@ class FileManagerPresenter(
         if (parent != null && parent.canRead()) {
             path = parent
             view?.updatePathString(path.absolutePath)
-            loadFiles(true, caches = true, false)
+            loadFiles(back = true, caches = true, fromCache = false)
         }
     }
 
@@ -200,7 +200,7 @@ class FileManagerPresenter(
         if (file.canRead()) {
             path = file
             view?.updatePathString(path.absolutePath)
-            loadFiles(back = false, caches = true, false)
+            loadFiles(back = false, caches = true, fromCache = false)
         }
     }
 
@@ -226,19 +226,22 @@ class FileManagerPresenter(
                     fileList.addAll(it)
                     view?.resolveEmptyText(fileList.isEmpty())
                     view?.notifyAllChanged()
-                    val k = directoryScrollPositions.remove(path.absolutePath)
-                    if (k != null) {
-                        view?.restoreScroll(k)
+                    directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
+                        view?.restoreScroll(scroll)
                     }
                     if (back && fileList.isEmpty() || !back) {
-                        loadFiles(back = false, caches = false, true)
+                        loadFiles(
+                            back = false, caches = false, fromCache = true
+                        )
                     } else {
                         isLoading = false
                         view?.resolveLoading(isLoading)
                     }
                 }, {
                     view?.showThrowable(it)
-                    loadFiles(back = false, caches = false, true)
+                    loadFiles(
+                        back = false, caches = false, fromCache = true
+                    )
                 })
         )
     }
@@ -263,9 +266,8 @@ class FileManagerPresenter(
             view?.resolveEmptyText(fileList.isEmpty())
             view?.resolveLoading(isLoading)
             view?.notifyAllChanged()
-            val k = directoryScrollPositions.remove(path.absolutePath)
-            if (k != null) {
-                view?.restoreScroll(k)
+            directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
+                view?.restoreScroll(scroll)
             }
         }, {
             view?.showThrowable(it)
@@ -441,7 +443,7 @@ class FileManagerPresenter(
         fixDirTimeRx(dir).fromIOToMain().subscribe({
             view?.showMessage(R.string.success)
             isLoading = false
-            loadFiles(back = false, caches = false, false)
+            loadFiles(back = false, caches = false, fromCache = false)
         }, { view?.showThrowable(it) })
     }
 
@@ -652,7 +654,7 @@ class FileManagerPresenter(
                 isLoading = false
                 view?.resolveLoading(isLoading)
                 view?.showMessage(R.string.success)
-                loadFiles(back = false, caches = false, false)
+                loadFiles(back = false, caches = false, fromCache = false)
             }, {
                 view?.showThrowable(it)
             })
@@ -689,6 +691,6 @@ class FileManagerPresenter(
     }
 
     init {
-        loadFiles(back = false, caches = true, false)
+        loadFiles(back = false, caches = true, fromCache = false)
     }
 }

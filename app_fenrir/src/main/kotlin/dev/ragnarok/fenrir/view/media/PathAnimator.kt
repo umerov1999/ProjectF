@@ -31,6 +31,7 @@ class PathAnimator(
                         keyFrame.commands.add(moveTo)
                         a += 2
                     }
+
                     'C' -> {
                         val curveTo = CurveTo()
                         curveTo.x1 = (args[a + 1].toFloat() + tx) * scale
@@ -42,6 +43,7 @@ class PathAnimator(
                         keyFrame.commands.add(curveTo)
                         a += 6
                     }
+
                     'L' -> {
                         val lineTo = LineTo()
                         lineTo.x = (args[a + 1].toFloat() + tx) * scale

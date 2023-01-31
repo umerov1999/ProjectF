@@ -11,7 +11,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
@@ -19,9 +21,17 @@ import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter.OnMessageActionListener
+import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.FwdMessages
+import dev.ragnarok.fenrir.model.Keyboard
+import dev.ragnarok.fenrir.model.LastReadId
+import dev.ragnarok.fenrir.model.LoadMoreState
+import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.Peer
+import dev.ragnarok.fenrir.model.VoiceMessage
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory
@@ -389,6 +399,7 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
                 R.id.buttonClose -> {
                     hide()
                 }
+
                 R.id.buttonForward -> {
                     safeObjectCall(reference.get(), object : SafeCallInt {
                         override fun call() {
@@ -397,6 +408,7 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
                     })
                     hide()
                 }
+
                 R.id.buttonCopy -> {
                     safeObjectCall(reference.get(), object : SafeCallInt {
                         override fun call() {
@@ -405,6 +417,7 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
                     })
                     hide()
                 }
+
                 R.id.buttonDelete -> {
                     safeObjectCall(reference.get(), object : SafeCallInt {
                         override fun call() {
@@ -413,6 +426,7 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
                     })
                     hide()
                 }
+
                 R.id.buttonSpam -> {
                     MaterialAlertDialogBuilder(requireActivity())
                         .setIcon(R.drawable.report_red)

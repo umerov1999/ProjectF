@@ -94,18 +94,22 @@ class LocalJsonToChatActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                     it
                 )
             }
+
             Place.STORY_PLAYER -> place.launchActivityForResult(
                 this,
                 StoryPagerActivity.newInstance(this, args)
             )
+
             Place.SINGLE_PHOTO -> place.launchActivityForResult(
                 this,
                 SinglePhotoActivity.newInstance(this, args)
             )
+
             Place.GIF_PAGER -> place.launchActivityForResult(
                 this,
                 GifPagerActivity.newInstance(this, args)
             )
+
             Place.DOC_PREVIEW -> {
                 val document: Document? = args.getParcelableCompat(Extra.DOC)
                 if (document != null && document.hasValidGifVideoLink()) {
@@ -117,11 +121,13 @@ class LocalJsonToChatActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                     Utils.openPlaceWithSwipebleActivity(this, place)
                 }
             }
+
             Place.PLAYER -> {
                 val player = supportFragmentManager.findFragmentByTag("audio_player")
                 if (player is AudioPlayerFragment) player.dismiss()
                 newInstance(args).show(supportFragmentManager, "audio_player")
             }
+
             else -> Utils.openPlaceWithSwipebleActivity(this, place)
         }
     }

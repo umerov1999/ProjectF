@@ -221,6 +221,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                                             )
                                             context.startActivity(intent)
                                         }
+
                                         2 -> {
                                             if (AppPrefs.isNewPipeInstalled(context)) {
                                                 val intent = Intent()
@@ -238,6 +239,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                                                 )
                                             }
                                         }
+
                                         3 -> {
                                             val intent = Intent()
                                             intent.data = Uri.parse(url)
@@ -248,6 +250,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                                             )
                                             context.startActivity(intent)
                                         }
+
                                         4 -> {
                                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                                             context.startActivity(intent)

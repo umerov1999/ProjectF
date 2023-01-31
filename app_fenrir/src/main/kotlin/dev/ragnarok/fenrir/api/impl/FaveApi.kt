@@ -5,7 +5,12 @@ import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IFaveApi
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.FaveLinkDto
+import dev.ragnarok.fenrir.api.model.Items
+import dev.ragnarok.fenrir.api.model.VKApiArticle
+import dev.ragnarok.fenrir.api.model.VKApiMarket
+import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.VKApiVideo
 import dev.ragnarok.fenrir.api.model.response.FavePageResponse
 import dev.ragnarok.fenrir.api.model.response.FavePostsResponse
 import dev.ragnarok.fenrir.api.services.IFaveService

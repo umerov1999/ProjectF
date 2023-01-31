@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.longpoll
 
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.api.interfaces.INetworker
-import dev.ragnarok.fenrir.api.model.longpoll.VkApiGroupLongpollUpdates
+import dev.ragnarok.fenrir.api.model.longpoll.VKApiGroupLongpollUpdates
 import dev.ragnarok.fenrir.api.model.response.GroupLongpollServer
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -85,7 +85,7 @@ internal class GroupLongpoll(
         }
     }
 
-    private fun onUpdates(updates: VkApiGroupLongpollUpdates) {
+    private fun onUpdates(updates: VKApiGroupLongpollUpdates) {
         if (updates.failed > 0) {
             resetServerAttrs()
             withDelay
@@ -109,7 +109,7 @@ internal class GroupLongpoll(
         }
 
     interface Callback {
-        fun onUpdates(groupId: Long, updates: VkApiGroupLongpollUpdates)
+        fun onUpdates(groupId: Long, updates: VKApiGroupLongpollUpdates)
     }
 
     companion object {

@@ -29,6 +29,7 @@ internal fun <T> JsonIterator(
         lexer,
         deserializer
     )
+
     DecodeSequenceMode.AUTO_DETECT -> error("AbstractJsonLexer.determineFormat must be called beforehand.")
 }
 
@@ -40,6 +41,7 @@ private fun AbstractJsonLexer.determineFormat(suggested: DecodeSequenceMode): De
         DecodeSequenceMode.ARRAY_WRAPPED ->
             if (tryConsumeStartArray()) DecodeSequenceMode.ARRAY_WRAPPED
             else fail(TC_BEGIN_LIST)
+
         DecodeSequenceMode.AUTO_DETECT ->
             if (tryConsumeStartArray()) DecodeSequenceMode.ARRAY_WRAPPED
             else DecodeSequenceMode.WHITESPACE_SEPARATED

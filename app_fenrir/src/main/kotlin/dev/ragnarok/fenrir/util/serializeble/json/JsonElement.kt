@@ -6,11 +6,16 @@
 
 package dev.ragnarok.fenrir.util.serializeble.json
 
+import dev.ragnarok.fenrir.util.serializeble.json.internal.JsonEncodingException
 import dev.ragnarok.fenrir.util.serializeble.json.internal.SuppressAnimalSniffer
 import dev.ragnarok.fenrir.util.serializeble.json.internal.printQuoted
 import dev.ragnarok.fenrir.util.serializeble.json.internal.toBooleanStrictOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.internal.InlinePrimitiveDescriptor
 
 /**
  * Class representing single JSON element.
@@ -79,12 +84,58 @@ fun JsonPrimitive(value: String?): JsonPrimitive {
 @Suppress("FunctionName", "UNUSED_PARAMETER") // allows to call `JsonPrimitive(null)`
 fun JsonPrimitive(value: Nothing?): JsonNull = JsonNull
 
+/**
+ * Creates a [JsonPrimitive] from the given string, without surrounding it in quotes.
+ *
+ * This function is provided for encoding raw JSON values that cannot be encoded using the [JsonPrimitive] functions.
+ * For example,
+ *
+ * * precise numeric values (avoiding floating-point precision errors associated with [Double] and [Float]),
+ * * large numbers,
+ * * or complex JSON objects.
+ *
+ * Be aware that it is possible to create invalid JSON using this function.
+ *
+ * Creating a literal unquoted value of `null` (as in, `value == "null"`) is forbidden. If you want to create
+ * JSON null literal, use [JsonNull] object, otherwise, use [JsonPrimitive].
+ *
+ * @see JsonPrimitive is the preferred method for encoding JSON primitives.
+ * @throws JsonEncodingException if `value == "null"`
+ */
+@ExperimentalSerializationApi
+@Suppress("FunctionName")
+fun JsonUnquotedLiteral(value: String?): JsonPrimitive {
+    return when (value) {
+        null -> JsonNull
+        JsonNull.content -> throw JsonEncodingException("Creating a literal unquoted value of 'null' is forbidden. If you want to create JSON null literal, use JsonNull object, otherwise, use JsonPrimitive")
+        else -> JsonLiteral(
+            value,
+            isString = false,
+            coerceToInlineType = jsonUnquotedLiteralDescriptor
+        )
+    }
+}
+
+/** Used as a marker to indicate during encoding that the [JsonEncoder] should use `encodeInline()` */
+@OptIn(InternalSerializationApi::class)
+internal val jsonUnquotedLiteralDescriptor: SerialDescriptor =
+    InlinePrimitiveDescriptor(
+        "dev.ragnarok.fenrir.util.serializeble.json.JsonUnquotedLiteral",
+        String.serializer()
+    )
+
+
 // JsonLiteral is deprecated for public use and no longer available. Please use JsonPrimitive instead
 internal class JsonLiteral internal constructor(
     body: Any,
-    override val isString: Boolean
+    override val isString: Boolean,
+    internal val coerceToInlineType: SerialDescriptor? = null,
 ) : JsonPrimitive() {
     override val content: String = body.toString()
+
+    init {
+        if (coerceToInlineType != null) require(coerceToInlineType.isInline)
+    }
 
     override fun toString(): String =
         if (isString) buildString { printQuoted(content) }
@@ -124,8 +175,9 @@ object JsonNull : JsonPrimitive() {
  * traditional methods like [Map.get] or [Map.getValue] to obtain Json elements.
  */
 @Serializable(JsonObjectSerializer::class)
-class JsonObject(private val content: Map<String, JsonElement>) : JsonElement(),
-    Map<String, JsonElement> by content {
+class JsonObject(
+    private val content: Map<String, JsonElement>
+) : JsonElement(), Map<String, JsonElement> by content {
     override fun equals(other: Any?): Boolean = content == other
     override fun hashCode(): Int = content.hashCode()
     override fun toString(): String {

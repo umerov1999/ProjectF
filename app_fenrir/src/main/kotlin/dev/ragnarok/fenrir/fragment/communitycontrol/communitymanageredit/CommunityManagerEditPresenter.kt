@@ -282,12 +282,15 @@ class CommunityManagerEditPresenter : AccountDependencyPresenter<ICommunityManag
                 "moderator".equals(role, ignoreCase = true) -> {
                     VKApiCommunity.AdminLevel.MODERATOR
                 }
+
                 "editor".equals(role, ignoreCase = true) -> {
                     VKApiCommunity.AdminLevel.EDITOR
                 }
+
                 "administrator".equals(role, ignoreCase = true) -> {
                     VKApiCommunity.AdminLevel.ADMIN
                 }
+
                 else -> 0
             }
         }

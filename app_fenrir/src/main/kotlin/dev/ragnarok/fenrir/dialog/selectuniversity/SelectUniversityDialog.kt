@@ -19,7 +19,7 @@ import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.database.University
-import java.util.*
+import java.util.Collections
 
 class SelectUniversityDialog : AccountDependencyDialogFragment(), UniversitiesAdapter.Listener {
     private val mHandler = Handler(Looper.getMainLooper())

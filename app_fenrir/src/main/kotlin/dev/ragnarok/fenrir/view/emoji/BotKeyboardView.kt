@@ -114,7 +114,7 @@ class BotKeyboardView : ScrollView {
         container?.removeAllViews()
         buttonViews.clear()
         scrollTo(0, 0)
-        if (buttons != null && buttons.isNotEmpty()) {
+        if (!buttons.isNullOrEmpty()) {
             buttonHeight = if (!isFullSize) 42 else 42f.coerceAtLeast(
                 (panelHeight - Utils.dp(30f) - ((botButtons?.size
                     ?: 0) - 1) * Utils.dp(10f)).toFloat() / (botButtons?.size
@@ -152,6 +152,7 @@ class BotKeyboardView : ScrollView {
                             holder.button.setTextColor(Color.parseColor("#000000"))
                             holder.button.setBackgroundColor(Color.parseColor("#eeeeee"))
                         }
+
                         "negative" -> holder.button.setBackgroundColor(Color.parseColor("#E64646"))
                         "positive" -> holder.button.setBackgroundColor(Color.parseColor("#4BB34B"))
                         else -> holder.button.setBackgroundColor(Color.parseColor("#5181B8"))

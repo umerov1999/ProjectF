@@ -11,9 +11,20 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActionCallback
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.fragment.feedback.FeedbackAdapter.FeedbackHolder
-import dev.ragnarok.fenrir.model.feedback.*
+import dev.ragnarok.fenrir.model.feedback.CommentFeedback
+import dev.ragnarok.fenrir.model.feedback.CopyFeedback
+import dev.ragnarok.fenrir.model.feedback.Feedback
+import dev.ragnarok.fenrir.model.feedback.FeedbackType
+import dev.ragnarok.fenrir.model.feedback.LikeCommentFeedback
+import dev.ragnarok.fenrir.model.feedback.LikeFeedback
+import dev.ragnarok.fenrir.model.feedback.MentionCommentFeedback
+import dev.ragnarok.fenrir.model.feedback.MentionFeedback
+import dev.ragnarok.fenrir.model.feedback.PostPublishFeedback
+import dev.ragnarok.fenrir.model.feedback.ReplyCommentFeedback
+import dev.ragnarok.fenrir.model.feedback.UsersFeedback
 import dev.ragnarok.fenrir.view.OnlineView
-import java.util.*
+import java.util.Calendar
+import java.util.EventListener
 
 class FeedbackAdapter(
     context: Activity,
@@ -36,14 +47,17 @@ class FeedbackAdapter(
                 viewHolder.headerRoot.visibility = View.VISIBLE
                 viewHolder.headerText.text = mContext.getString(R.string.dialog_day_older)
             }
+
             HEADER_TODAY -> {
                 viewHolder.headerRoot.visibility = View.VISIBLE
                 viewHolder.headerText.text = mContext.getString(R.string.dialog_day_today)
             }
+
             HEADER_YESTERDAY -> {
                 viewHolder.headerRoot.visibility = View.VISIBLE
                 viewHolder.headerText.text = mContext.getString(R.string.dialog_day_yesterday)
             }
+
             HEADER_THIS_WEEK -> {
                 viewHolder.headerRoot.visibility = View.VISIBLE
                 viewHolder.headerText.text = mContext.getString(R.string.dialog_day_ten_days)
@@ -70,50 +84,62 @@ class FeedbackAdapter(
                 notification as PostPublishFeedback,
                 holder
             )
+
             FeedbackType.WALL -> mFeedbackViewBinder.configWallFeedback(
                 notification as PostPublishFeedback,
                 holder
             )
+
             FeedbackType.MENTION -> mFeedbackViewBinder.configMentionFeedback(
                 notification as MentionFeedback,
                 holder
             )
+
             FeedbackType.REPLY_COMMENT -> mFeedbackViewBinder.configReplyCommentFeedback(
                 notification as ReplyCommentFeedback,
                 holder
             )
+
             FeedbackType.REPLY_TOPIC -> mFeedbackViewBinder.configReplyTopicFeedback(
                 notification as ReplyCommentFeedback,
                 holder
             )
+
             FeedbackType.REPLY_COMMENT_PHOTO -> mFeedbackViewBinder.configReplyCommentPhotoFeedback(
                 notification as ReplyCommentFeedback,
                 holder
             )
+
             FeedbackType.REPLY_COMMENT_VIDEO -> mFeedbackViewBinder.configReplyCommentVideoFeedback(
                 notification as ReplyCommentFeedback,
                 holder
             )
+
             FeedbackType.MENTION_COMMENT_POST -> mFeedbackViewBinder.configMentionCommentsFeedback(
                 notification as MentionCommentFeedback,
                 holder
             )
+
             FeedbackType.MENTION_COMMENT_PHOTO -> mFeedbackViewBinder.configMentionCommentsPhotoFeedback(
                 notification as MentionCommentFeedback,
                 holder
             )
+
             FeedbackType.MENTION_COMMENT_VIDEO -> mFeedbackViewBinder.configMentionCommentsVideoFeedback(
                 notification as MentionCommentFeedback,
                 holder
             )
+
             FeedbackType.COMMENT_POST -> mFeedbackViewBinder.configCommentPostFeedback(
                 notification as CommentFeedback,
                 holder
             )
+
             FeedbackType.COMMENT_PHOTO -> mFeedbackViewBinder.configCommentPhotoFeedback(
                 notification as CommentFeedback,
                 holder
             )
+
             FeedbackType.COMMENT_VIDEO -> mFeedbackViewBinder.configCommentVideoFeedback(
                 notification as CommentFeedback,
                 holder
@@ -127,46 +153,57 @@ class FeedbackAdapter(
                 notification as LikeFeedback,
                 holder
             )
+
             FeedbackType.LIKE_PHOTO -> mFeedbackViewBinder.configLikePhotoFeedback(
                 notification as LikeFeedback,
                 holder
             )
+
             FeedbackType.LIKE_VIDEO -> mFeedbackViewBinder.configLikeVideoFeedback(
                 notification as LikeFeedback,
                 holder
             )
+
             FeedbackType.LIKE_COMMENT_POST -> mFeedbackViewBinder.configLikeCommentFeedback(
                 notification as LikeCommentFeedback,
                 holder
             )
+
             FeedbackType.LIKE_COMMENT_TOPIC -> mFeedbackViewBinder.configLikeCommentTopicFeedback(
                 notification as LikeCommentFeedback,
                 holder
             )
+
             FeedbackType.FOLLOW -> mFeedbackViewBinder.configFollowFeedback(
                 notification as UsersFeedback,
                 holder
             )
+
             FeedbackType.FRIEND_ACCEPTED -> mFeedbackViewBinder.configFriendAcceptedFeedback(
                 notification as UsersFeedback,
                 holder
             )
+
             FeedbackType.LIKE_COMMENT_PHOTO -> mFeedbackViewBinder.configLikeCommentForPhotoFeedback(
                 notification as LikeCommentFeedback,
                 holder
             )
+
             FeedbackType.LIKE_COMMENT_VIDEO -> mFeedbackViewBinder.configLikeCommentVideoFeedback(
                 notification as LikeCommentFeedback,
                 holder
             )
+
             FeedbackType.COPY_POST -> mFeedbackViewBinder.configCopyPostFeedback(
                 notification as CopyFeedback,
                 holder
             )
+
             FeedbackType.COPY_PHOTO -> mFeedbackViewBinder.configCopyPhotoFeedback(
                 notification as CopyFeedback,
                 holder
             )
+
             FeedbackType.COPY_VIDEO -> mFeedbackViewBinder.configCopyVideoFeedback(
                 notification as CopyFeedback,
                 holder
@@ -231,12 +268,15 @@ class FeedbackAdapter(
             time >= today -> {
                 HEADER_TODAY
             }
+
             time >= yesterday -> {
                 HEADER_YESTERDAY
             }
+
             time >= week -> {
                 HEADER_THIS_WEEK
             }
+
             else -> HEADER_OLD
         }
     }

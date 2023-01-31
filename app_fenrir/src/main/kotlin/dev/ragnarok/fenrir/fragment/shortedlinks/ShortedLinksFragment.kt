@@ -158,10 +158,12 @@ class ShortedLinksFragment : BaseMvpFragment<ShortedLinksPresenter, IShortedLink
                 stat = getString(R.string.link_not_banned)
                 color = Color.parseColor("#cc00aa00")
             }
+
             "banned" -> {
                 stat = getString(R.string.link_banned)
                 color = Color.parseColor("#ccaa0000")
             }
+
             "processing" -> {
                 stat = getString(R.string.link_processing)
                 color = Color.parseColor("#cc0000aa")

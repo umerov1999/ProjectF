@@ -1,17 +1,17 @@
 package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.api.model.longpoll.AbsLongpollEvent
-import dev.ragnarok.fenrir.api.model.longpoll.VkApiLongpollUpdates
+import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 
-class LongpollUpdatesAdapter : AbsAdapter<VkApiLongpollUpdates>("VkApiLongpollUpdates") {
+class LongpollUpdatesAdapter : AbsAdapter<VKApiLongpollUpdates>("VkApiLongpollUpdates") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
-    ): VkApiLongpollUpdates {
-        val updates = VkApiLongpollUpdates()
+    ): VKApiLongpollUpdates {
+        val updates = VKApiLongpollUpdates()
         if (!checkObject(json)) {
             throw Exception("$TAG error parse object")
         }

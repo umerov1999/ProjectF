@@ -1,6 +1,12 @@
 package dev.ragnarok.fenrir.domain
 
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Article
+import dev.ragnarok.fenrir.model.FaveLink
+import dev.ragnarok.fenrir.model.FavePage
+import dev.ragnarok.fenrir.model.Market
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Video
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 

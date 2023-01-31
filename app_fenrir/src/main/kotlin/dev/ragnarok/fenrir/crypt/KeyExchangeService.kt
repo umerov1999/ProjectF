@@ -84,6 +84,7 @@ class KeyExchangeService : Service() {
                 val message: ExchangeMessage = intent.getParcelableExtraCompat(Extra.MESSAGE)!!
                 processNewKeyExchangeMessage(accountId, peerId, messageId, message)
             }
+
             ACTION_INICIATE_KEY_EXCHANGE -> {
                 val accountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
                 val peerId = intent.extras!!.getLong(Extra.PEER_ID)
@@ -92,6 +93,7 @@ class KeyExchangeService : Service() {
                 )
                 initiateKeyExchange(accountId, peerId, keyLocationPolicy)
             }
+
             ACTION_APPLY_EXHANGE -> {
                 val accountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
                 val peerId = intent.extras!!.getLong(Extra.PEER_ID)
@@ -105,6 +107,7 @@ class KeyExchangeService : Service() {
                 }
                 processKeyExchangeMessage(accountId, peerId, messageId, message, false)
             }
+
             ACTION_DECLINE -> {
                 val accountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
                 val peerId = intent.extras!!.getLong(Extra.PEER_ID)
@@ -139,9 +142,11 @@ class KeyExchangeService : Service() {
                 message,
                 true
             )
+
             SessionState.INITIATOR_EMPTY, SessionState.NO_INITIATOR_EMPTY -> throw IllegalStateException(
                 "Invalid session state"
             )
+
             SessionState.FAILED -> onReceiveSessionFailStatus(message)
             SessionState.CLOSED -> {}
         }
@@ -406,22 +411,27 @@ class KeyExchangeService : Service() {
                     assertSessionState(session, SessionState.NO_INITIATOR_EMPTY)
                     processNoIniciatorEmptyState(accountId, peerId, session, message)
                 }
+
                 SessionState.NO_INITIATOR_STATE_1 -> {
                     assertSessionState(session, SessionState.INITIATOR_STATE_1)
                     processIniciatorState1(accountId, peerId, session, message)
                 }
+
                 SessionState.INITIATOR_STATE_2 -> {
                     assertSessionState(session, SessionState.NO_INITIATOR_STATE_1)
                     processNoIniciatorState1(accountId, peerId, session, message)
                 }
+
                 SessionState.NO_INITIATOR_FINISHED -> {
                     assertSessionState(session, SessionState.INITIATOR_STATE_2)
                     processIniciatorState2(accountId, peerId, session, message)
                 }
+
                 SessionState.INITIATOR_FINISHED -> {
                     assertSessionState(session, SessionState.NO_INITIATOR_FINISHED)
                     processNoIniciatorFinished(accountId, peerId, session)
                 }
+
                 SessionState.CLOSED, SessionState.FAILED, SessionState.INITIATOR_EMPTY, SessionState.NO_INITIATOR_EMPTY -> {}
             }
         } catch (e: InvalidSessionStateException) {

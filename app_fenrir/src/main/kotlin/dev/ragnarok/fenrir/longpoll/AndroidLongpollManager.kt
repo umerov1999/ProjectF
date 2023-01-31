@@ -5,8 +5,8 @@ import android.os.Looper
 import android.os.Message
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.api.interfaces.INetworker
-import dev.ragnarok.fenrir.api.model.longpoll.VkApiGroupLongpollUpdates
-import dev.ragnarok.fenrir.api.model.longpoll.VkApiLongpollUpdates
+import dev.ragnarok.fenrir.api.model.longpoll.VKApiGroupLongpollUpdates
+import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.realtime.IRealtimeMessagesProcessor
 import dev.ragnarok.fenrir.util.Logger.d
@@ -24,10 +24,10 @@ class AndroidLongpollManager internal constructor(
 ) : ILongpollManager, UserLongpoll.Callback, GroupLongpoll.Callback {
     private val map: HashMap<Long, LongpollEntry> = HashMap(1)
     private val keepAlivePublisher: PublishProcessor<Long> = PublishProcessor.create()
-    private val actionsPublisher: PublishProcessor<VkApiLongpollUpdates> = PublishProcessor.create()
+    private val actionsPublisher: PublishProcessor<VKApiLongpollUpdates> = PublishProcessor.create()
     private val lock = Any()
     private val compositeDisposable = CompositeDisposable()
-    override fun observe(): Flowable<VkApiLongpollUpdates> {
+    override fun observe(): Flowable<VKApiLongpollUpdates> {
         return actionsPublisher.onBackpressureBuffer()
     }
 
@@ -72,7 +72,7 @@ class AndroidLongpollManager internal constructor(
         keepAlivePublisher.onNext(entry.accountId)
     }
 
-    override fun onUpdates(aid: Long, updates: VkApiLongpollUpdates) {
+    override fun onUpdates(aid: Long, updates: VKApiLongpollUpdates) {
         d(TAG, "updates, accountId: $aid")
         updates.add_message_updates.nonNullNoEmpty {
             messagesProcessor.process(aid, it)
@@ -86,11 +86,11 @@ class AndroidLongpollManager internal constructor(
         )
     }
 
-    private fun onUpdatesSaved(updates: VkApiLongpollUpdates) {
+    private fun onUpdatesSaved(updates: VKApiLongpollUpdates) {
         actionsPublisher.onNext(updates)
     }
 
-    override fun onUpdates(groupId: Long, updates: VkApiGroupLongpollUpdates) {}
+    override fun onUpdates(groupId: Long, updates: VKApiGroupLongpollUpdates) {}
     class LongpollEntry(
         val longpoll: ILongpoll,
         manager: AndroidLongpollManager
@@ -149,6 +149,7 @@ class AndroidLongpollManager internal constructor(
                         postDestroy()
                         holder.firePreDestroy()
                     }
+
                     DESTROY -> holder.destroy()
                 }
             }

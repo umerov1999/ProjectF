@@ -11,7 +11,7 @@ import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs
 
-object VkLinkParser {
+object VKLinkParser {
     internal class Patterns {
         val PARSERS: MutableList<IParser> = LinkedList()
 

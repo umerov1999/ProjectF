@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.api.impl
 
 import android.annotation.SuppressLint
 import dev.ragnarok.fenrir.api.IServiceProvider
-import dev.ragnarok.fenrir.api.IVkRestProvider
+import dev.ragnarok.fenrir.api.IVKRestProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.*
 import dev.ragnarok.fenrir.api.rest.IServiceRest
@@ -10,11 +10,11 @@ import dev.ragnarok.fenrir.api.rest.SimplePostHttp
 import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.core.Single
 
-internal class VkApies private constructor(
+internal class VKApies private constructor(
     accountId: Long,
     useCustomToken: Boolean,
     customAccessToken: String?,
-    provider: IVkRestProvider
+    provider: IVKRestProvider
 ) : IAccountApis {
     private val messagesApi: IMessagesApi
     private val photosApi: IPhotosApi
@@ -133,16 +133,16 @@ internal class VkApies private constructor(
 
     companion object {
         @SuppressLint("UseSparseArrays")
-        private val APIS: MutableMap<Long, VkApies> = HashMap(1)
-        fun create(accountId: Long, accessToken: String?, provider: IVkRestProvider): VkApies {
-            return VkApies(accountId, true, accessToken, provider)
+        private val APIS: MutableMap<Long, VKApies> = HashMap(1)
+        fun create(accountId: Long, accessToken: String?, provider: IVKRestProvider): VKApies {
+            return VKApies(accountId, true, accessToken, provider)
         }
 
         @Synchronized
-        operator fun get(accountId: Long, provider: IVkRestProvider): VkApies {
+        operator fun get(accountId: Long, provider: IVKRestProvider): VKApies {
             var apies = APIS[accountId]
             if (apies == null) {
-                apies = VkApies(accountId, false, null, provider)
+                apies = VKApies(accountId, false, null, provider)
                 APIS[accountId] = apies
             }
             return apies
@@ -175,9 +175,11 @@ internal class VkApies private constructor(
                         Utils.intValueIn(TokenType.COMMUNITY, *tokenPolicy) -> {
                             provider.provideNormalRest(aid)
                         }
+
                         Utils.intValueIn(TokenType.SERVICE, *tokenPolicy) -> {
                             provider.provideServiceRest()
                         }
+
                         else -> {
                             Single.error(
                                 UnsupportedOperationException(
@@ -191,9 +193,11 @@ internal class VkApies private constructor(
                         Utils.intValueIn(TokenType.USER, *tokenPolicy) -> {
                             provider.provideNormalRest(aid)
                         }
+
                         Utils.intValueIn(TokenType.SERVICE, *tokenPolicy) -> {
                             provider.provideServiceRest()
                         }
+
                         else -> {
                             Single.error(
                                 UnsupportedOperationException(

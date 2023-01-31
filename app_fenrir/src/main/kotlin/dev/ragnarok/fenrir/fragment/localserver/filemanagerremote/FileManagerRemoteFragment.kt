@@ -18,15 +18,24 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.StubAnimatorListener
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
+import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.listener.UpdatableNavigation
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.model.FileRemote
+import dev.ragnarok.fenrir.model.FileType
+import dev.ragnarok.fenrir.model.InternalVideoSize
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.service.ErrorLocalizer
@@ -41,7 +50,7 @@ import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
-import java.util.*
+import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 class FileManagerRemoteFragment :

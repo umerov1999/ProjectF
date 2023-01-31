@@ -11,7 +11,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import dev.ragnarok.fenrir.*
-import dev.ragnarok.fenrir.Constants.USER_AGENT
+import dev.ragnarok.fenrir.UserAgentTool.getUserAgentByType
 import dev.ragnarok.fenrir.api.Auth
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.model.Token
@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
         val webview = findViewById<WebView>(R.id.vkontakteview)
         webview.settings.javaScriptEnabled = true
         webview.clearCache(true)
-        webview.settings.userAgentString = USER_AGENT(Constants.DEFAULT_ACCOUNT_TYPE)
+        webview.settings.userAgentString = getUserAgentByType(Constants.DEFAULT_ACCOUNT_TYPE)
 
         //Чтобы получать уведомления об окончании загрузки страницы
         webview.webViewClient = VkontakteWebViewClient()
@@ -47,14 +47,11 @@ class LoginActivity : AppCompatActivity() {
                 "Cookie removed: $aBoolean"
             )
         }
-        if (intent.getStringExtra(EXTRA_VALIDATE) == null) {
+        if (intent.getStringExtra(EXTRA_VALIDATE).isNullOrEmpty()) {
             val clientId = intent.getStringExtra(EXTRA_CLIENT_ID) ?: return
             val scope = intent.getStringExtra(EXTRA_SCOPE) ?: return
-            val groupIds = intent.getStringExtra(EXTRA_GROUP_IDS) ?: return
+            val groupIds = intent.getStringExtra(EXTRA_GROUP_IDS)
             try {
-                if (groupIds.nonNullNoEmpty()) {
-                    webview.settings.userAgentString = Constants.KATE_USER_AGENT
-                }
                 val url = Auth.getUrl(clientId, scope, groupIds)
                 webview.loadUrl(url)
             } catch (e: UnsupportedEncodingException) {
@@ -85,7 +82,7 @@ class LoginActivity : AppCompatActivity() {
                         val accessToken = tryExtractAccessToken(url)
                         val userId = tryExtractUserId(url)
                         intent.putExtra(Extra.TOKEN, accessToken)
-                        intent.putExtra(Extra.USER_ID, userId?.toInt())
+                        intent.putExtra(Extra.USER_ID, userId?.toLong())
                         intent.putExtra(Extra.LOGIN, TLogin)
                         intent.putExtra(Extra.PASSWORD, TPassword)
                         intent.putExtra(Extra.TWO_FA, TwoFA)
@@ -117,13 +114,11 @@ class LoginActivity : AppCompatActivity() {
         private const val EXTRA_SAVE = "save"
         private const val EXTRA_GROUP_IDS = "group_ids"
 
-
         fun createIntent(context: Context?, clientId: String?, scope: String?): Intent {
             return Intent(context, LoginActivity::class.java)
                 .putExtra(EXTRA_CLIENT_ID, clientId)
                 .putExtra(EXTRA_SCOPE, scope)
         }
-
 
         fun createIntent(
             context: Context?,
@@ -182,7 +177,6 @@ class LoginActivity : AppCompatActivity() {
         internal fun tryExtractUserId(url: String): String? {
             return VKStringUtils.extractPattern(url, "user_id=(\\d*)")
         }
-
 
         fun extractGroupTokens(data: Intent): ArrayList<Token>? {
             return data.getParcelableArrayListExtraCompat("group_tokens")

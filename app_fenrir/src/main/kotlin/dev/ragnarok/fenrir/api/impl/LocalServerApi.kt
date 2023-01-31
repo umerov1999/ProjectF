@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.api.impl
 
-import dev.ragnarok.fenrir.AccountType
-import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.api.ILocalServerServiceProvider
 import dev.ragnarok.fenrir.api.interfaces.ILocalServerApi
 import dev.ragnarok.fenrir.api.model.Items
@@ -156,9 +155,9 @@ internal class LocalServerApi(private val service: ILocalServerServiceProvider) 
         return service.provideLocalServerService()
             .flatMap { service ->
                 service.uploadAudio(
-                    hash, Settings.get().accounts().currentAccessToken, Constants.USER_AGENT(
-                        AccountType.BY_TYPE
-                    )
+                    hash,
+                    Settings.get().accounts().currentAccessToken,
+                    UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
                 )
                     .map(extractResponseWithErrorHandling())
             }

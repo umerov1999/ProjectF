@@ -147,17 +147,20 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
                 updatePlaybackControls()
                 resolveControlViews()
             }
+
             PlayerStatus.UPDATE_PLAY_PAUSE -> {
                 updateVisibility()
                 updatePlaybackControls()
                 resolveControlViews()
             }
+
             PlayerStatus.SERVICE_KILLED -> {
                 updateVisibility()
                 updatePlaybackControls()
                 updateNowPlayingInfo()
                 resolveControlViews()
             }
+
             PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {
             }
         }

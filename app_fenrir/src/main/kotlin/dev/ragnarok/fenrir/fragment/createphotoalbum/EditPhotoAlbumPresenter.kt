@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.Includes.networkInterfaces
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fragment.vkphotos.IVkPhotosView
+import dev.ragnarok.fenrir.fragment.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoAlbumEditor
@@ -154,7 +154,7 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
     private fun goToAlbum(album: VKApiPhotoAlbum) {
         getVKPhotosAlbumPlace(
             accountId, album.owner_id, album.id,
-            IVkPhotosView.ACTION_SHOW_PHOTOS
+            IVKPhotosView.ACTION_SHOW_PHOTOS
         )
             .withParcelableExtra(Extra.ALBUM, PhotoAlbum(album.id, album.owner_id))
             .tryOpenWith(context)
@@ -164,7 +164,7 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
         if (ret == null || !ret) return
         getVKPhotosAlbumPlace(
             accountId, (album ?: return).ownerId, album.getObjectId(),
-            IVkPhotosView.ACTION_SHOW_PHOTOS
+            IVKPhotosView.ACTION_SHOW_PHOTOS
         )
             .withParcelableExtra(Extra.ALBUM, album)
             .tryOpenWith(context)

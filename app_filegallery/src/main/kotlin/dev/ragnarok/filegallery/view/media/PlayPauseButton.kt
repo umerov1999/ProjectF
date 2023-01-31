@@ -33,9 +33,11 @@ class PlayPauseButton(context: Context, attrs: AttributeSet?) : MaterialPlayPaus
             MusicPlaybackController.currentAudio == null -> {
                 setIcon(MediaActionDrawable.ICON_EMPTY, true)
             }
+
             MusicPlaybackController.isPlaying -> {
                 setIcon(MediaActionDrawable.ICON_PAUSE, true)
             }
+
             else -> {
                 setIcon(MediaActionDrawable.ICON_PLAY, true)
             }

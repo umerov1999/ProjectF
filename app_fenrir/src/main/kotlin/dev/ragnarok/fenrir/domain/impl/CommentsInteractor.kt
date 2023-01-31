@@ -24,7 +24,15 @@ import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildCommentFromDbo
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.fillCommentOwnerIds
 import dev.ragnarok.fenrir.domain.mappers.Model2Dto.createTokens
 import dev.ragnarok.fenrir.exception.NotFoundException
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.AbsModel
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.CommentIntent
+import dev.ragnarok.fenrir.model.CommentUpdate
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.CommentedType
+import dev.ragnarok.fenrir.model.CommentsBundle
+import dev.ragnarok.fenrir.model.DraftComment
+import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.criteria.CommentsCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
@@ -298,6 +306,7 @@ class CommentsInteractor(
                     photosApi.restoreComment(ownerId, commentId)
                 }
             }
+
             CommentedType.POST -> {
                 val wallApi = apis.wall()
                 if (delete) {
@@ -306,6 +315,7 @@ class CommentsInteractor(
                     wallApi.restoreComment(ownerId, commentId)
                 }
             }
+
             CommentedType.VIDEO -> {
                 val videoApi = apis.video()
                 if (delete) {
@@ -314,6 +324,7 @@ class CommentsInteractor(
                     videoApi.restoreComment(ownerId, commentId)
                 }
             }
+
             CommentedType.TOPIC -> {
                 val groupId = abs(ownerId)
                 val topicId = commented.sourceId
@@ -324,6 +335,7 @@ class CommentsInteractor(
                     boardApi.restoreComment(groupId, topicId, commentId)
                 }
             }
+
             else -> throw UnsupportedOperationException()
         }
         return single.flatMapCompletable {
@@ -455,10 +467,12 @@ class CommentsInteractor(
                 .vkDefault(accountId)
                 .wall()
                 .editComment(commented.sourceOwnerId, commentId, body, tokens)
+
             CommentedType.PHOTO -> networker
                 .vkDefault(accountId)
                 .photos()
                 .editComment(commented.sourceOwnerId, commentId, body, tokens)
+
             CommentedType.TOPIC -> {
                 val groupId = abs(commented.sourceOwnerId)
                 val topicId = commented.sourceId
@@ -467,10 +481,12 @@ class CommentsInteractor(
                     .board()
                     .editComment(groupId, topicId, commentId, body, tokens)
             }
+
             CommentedType.VIDEO -> networker
                 .vkDefault(accountId)
                 .video()
                 .editComment(commented.sourceOwnerId, commentId, body, tokens)
+
             else -> return Single.error(IllegalArgumentException("Unknown commented source type"))
         }
         return editSingle.flatMap {
@@ -544,6 +560,7 @@ class CommentsInteractor(
                     extended,
                     fields
                 )
+
             CommentedType.PHOTO -> return networker.vkDefault(accountId)
                 .photos()
                 .getComments(
@@ -558,6 +575,7 @@ class CommentsInteractor(
                     extended,
                     fields
                 )
+
             CommentedType.VIDEO -> return networker.vkDefault(accountId)
                 .video()
                 .getComments(
@@ -571,6 +589,7 @@ class CommentsInteractor(
                     extended,
                     fields
                 )
+
             CommentedType.TOPIC -> return networker.vkDefault(accountId)
                 .board()
                 .getComments(
@@ -605,6 +624,7 @@ class CommentsInteractor(
                         attachments, intent.getStickerId(), intent.getDraftMessageId()
                     )
             }
+
             CommentedType.PHOTO -> apies.photos()
                 .createComment(
                     commented.sourceOwnerId,
@@ -617,12 +637,14 @@ class CommentsInteractor(
                     commented.accessKey,
                     intent.getDraftMessageId()
                 )
+
             CommentedType.VIDEO -> apies.video()
                 .createComment(
                     commented.sourceOwnerId, commented.sourceId,
                     intent.getMessage(), attachments, intent.getAuthorId() < 0,
                     intent.getReplyToComment(), intent.getStickerId(), intent.getDraftMessageId()
                 )
+
             CommentedType.TOPIC -> {
                 val topicGroupId = abs(commented.sourceOwnerId)
                 apies.board()
@@ -636,6 +658,7 @@ class CommentsInteractor(
                         intent.getDraftMessageId()
                     )
             }
+
             else -> throw UnsupportedOperationException()
         }
     }

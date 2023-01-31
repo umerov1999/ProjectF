@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 class Video : Parcelable, ParcelNative.ParcelableNative {
     var id = 0
         private set
-    var ownerId = 0
+    var ownerId = 0L
         private set
     var title: String? = null
         private set
@@ -32,7 +32,7 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
     constructor()
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         title = parcel.readString()
         description = parcel.readString()
         link = parcel.readString()
@@ -44,7 +44,7 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
 
     internal constructor(parcel: ParcelNative) {
         id = parcel.readInt()
-        ownerId = parcel.readInt()
+        ownerId = parcel.readLong()
         title = parcel.readString()
         description = parcel.readString()
         link = parcel.readString()
@@ -56,7 +56,7 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(id)
-        dest.writeInt(ownerId)
+        dest.writeLong(ownerId)
         dest.writeString(title)
         dest.writeString(description)
         dest.writeString(link)
@@ -68,7 +68,7 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
 
     override fun writeToParcelNative(dest: ParcelNative) {
         dest.writeInt(id)
-        dest.writeInt(ownerId)
+        dest.writeLong(ownerId)
         dest.writeString(title)
         dest.writeString(description)
         dest.writeString(link)
@@ -87,7 +87,7 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun setOwnerId(ownerId: Int): Video {
+    fun setOwnerId(ownerId: Long): Video {
         this.ownerId = ownerId
         return this
     }

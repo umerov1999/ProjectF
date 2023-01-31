@@ -3,11 +3,30 @@ package dev.ragnarok.fenrir.fragment.base
 import android.content.Context
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.model.AttachmentsTypes
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.AbsModel
+import dev.ragnarok.fenrir.model.AbsModelType
+import dev.ragnarok.fenrir.model.AudioArtist
+import dev.ragnarok.fenrir.model.AudioPlaylist
+import dev.ragnarok.fenrir.model.Call
+import dev.ragnarok.fenrir.model.Document
+import dev.ragnarok.fenrir.model.Event
+import dev.ragnarok.fenrir.model.Geo
+import dev.ragnarok.fenrir.model.Graffiti
+import dev.ragnarok.fenrir.model.Link
+import dev.ragnarok.fenrir.model.Market
+import dev.ragnarok.fenrir.model.MarketAlbum
+import dev.ragnarok.fenrir.model.NotSupported
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.Poll
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.WallReply
+import dev.ragnarok.fenrir.model.WikiPage
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class DocLink(val attachment: AbsModel) {
     @AttachmentsTypes
@@ -19,6 +38,7 @@ class DocLink(val attachment: AbsModel) {
                     val doc = attachment as Document
                     return doc.getPreviewWithSize(Settings.get().main().prefPreviewImageSize, true)
                 }
+
                 AttachmentsTypes.POST -> return (attachment as Post).authorPhoto
                 AttachmentsTypes.EVENT -> return (attachment as Event).subjectPhoto
                 AttachmentsTypes.WALL_REPLY -> return (attachment as WallReply).authorPhoto
@@ -31,12 +51,14 @@ class DocLink(val attachment: AbsModel) {
                         true
                     )
                 }
+
                 AttachmentsTypes.MARKET_ALBUM -> {
                     val market_album = attachment as MarketAlbum
                     return market_album.getPhoto()?.sizes?.getUrlForSize(
                         Settings.get().main().prefPreviewImageSize, true
                     )
                 }
+
                 AttachmentsTypes.ARTIST -> return (attachment as AudioArtist).getMaxPhoto()
                 AttachmentsTypes.MARKET -> return (attachment as Market).thumb_photo
                 AttachmentsTypes.AUDIO_PLAYLIST -> return (attachment as AudioPlaylist).getThumb_image()
@@ -76,11 +98,13 @@ class DocLink(val attachment: AbsModel) {
                 }
                 return title
             }
+
             AttachmentsTypes.NOT_SUPPORTED -> return context.getString(R.string.not_yet_implemented_message)
             AttachmentsTypes.POLL -> {
                 val poll = attachment as Poll
                 return context.getString(if (poll.isAnonymous) R.string.anonymous_poll else R.string.open_poll)
             }
+
             AttachmentsTypes.STORY -> return (attachment as Story).owner?.fullName
             AttachmentsTypes.WIKI_PAGE -> return context.getString(R.string.wiki_page)
             AttachmentsTypes.CALL -> {
@@ -89,6 +113,7 @@ class DocLink(val attachment: AbsModel) {
                         .accounts().current
                 ) context.getString(R.string.input_call) else context.getString(R.string.output_call)
             }
+
             AttachmentsTypes.GEO -> {
                 return (attachment as Geo).title
             }
@@ -113,10 +138,12 @@ class DocLink(val attachment: AbsModel) {
             AttachmentsTypes.DOC -> return AppTextUtils.getSizeString(
                 (attachment as Document).size
             )
+
             AttachmentsTypes.NOT_SUPPORTED -> {
                 val ns = attachment as NotSupported
                 return ns.getType() + ": " + ns.getBody()
             }
+
             AttachmentsTypes.POST -> {
                 val post = attachment as Post
                 return when {
@@ -127,6 +154,7 @@ class DocLink(val attachment: AbsModel) {
                     )
                 }
             }
+
             AttachmentsTypes.EVENT -> {
                 val event = attachment as Event
                 return Utils.firstNonEmptyString(
@@ -134,16 +162,19 @@ class DocLink(val attachment: AbsModel) {
                     " "
                 ) + ", " + Utils.firstNonEmptyString(event.text)
             }
+
             AttachmentsTypes.WALL_REPLY -> {
                 val comment = attachment as WallReply
                 return comment.text
             }
+
             AttachmentsTypes.LINK -> return (attachment as Link).url
             AttachmentsTypes.ALBUM -> return Utils.firstNonEmptyString(
                 (attachment as PhotoAlbum).getDescription(),
                 " "
             ) +
                     " " + context.getString(R.string.photos_count, attachment.getSize())
+
             AttachmentsTypes.POLL -> return (attachment as Poll).question
             AttachmentsTypes.WIKI_PAGE -> return (attachment as WikiPage).title
             AttachmentsTypes.CALL -> return (attachment as Call).getLocalizedState(context)
@@ -152,15 +183,18 @@ class DocLink(val attachment: AbsModel) {
                     attachment.description, " "
                 )
             )
+
             AttachmentsTypes.MARKET_ALBUM -> return context.getString(
                 R.string.markets_count,
                 (attachment as MarketAlbum).getCount()
             )
+
             AttachmentsTypes.AUDIO_PLAYLIST -> return Utils.firstNonEmptyString(
                 (attachment as AudioPlaylist).getArtist_name(),
                 " "
             ) + " " +
                     attachment.getCount() + " " + context.getString(R.string.audios_pattern_count)
+
             AttachmentsTypes.STORY -> {
                 val item = attachment as Story
                 return if (item.expires <= 0) null else {
@@ -181,6 +215,7 @@ class DocLink(val attachment: AbsModel) {
                     }
                 }
             }
+
             AttachmentsTypes.GEO -> {
                 val geo = attachment as Geo
                 return geo.latitude.orEmpty() + " " + geo.longitude.orEmpty() + "\r\n" + geo.address.orEmpty()
@@ -199,54 +234,71 @@ class DocLink(val attachment: AbsModel) {
                 AbsModelType.MODEL_DOCUMENT -> {
                     return AttachmentsTypes.DOC
                 }
+
                 AbsModelType.MODEL_POST -> {
                     return AttachmentsTypes.POST
                 }
+
                 AbsModelType.MODEL_LINK -> {
                     return AttachmentsTypes.LINK
                 }
+
                 AbsModelType.MODEL_POLL -> {
                     return AttachmentsTypes.POLL
                 }
+
                 AbsModelType.MODEL_WIKI_PAGE -> {
                     return AttachmentsTypes.WIKI_PAGE
                 }
+
                 AbsModelType.MODEL_STORY -> {
                     return AttachmentsTypes.STORY
                 }
+
                 AbsModelType.MODEL_CALL -> {
                     return AttachmentsTypes.CALL
                 }
+
                 AbsModelType.MODEL_GEO -> {
                     return AttachmentsTypes.GEO
                 }
+
                 AbsModelType.MODEL_AUDIO_ARTIST -> {
                     return AttachmentsTypes.ARTIST
                 }
+
                 AbsModelType.MODEL_WALL_REPLY -> {
                     return AttachmentsTypes.WALL_REPLY
                 }
+
                 AbsModelType.MODEL_AUDIO_PLAYLIST -> {
                     return AttachmentsTypes.AUDIO_PLAYLIST
                 }
+
                 AbsModelType.MODEL_GRAFFITI -> {
                     return AttachmentsTypes.GRAFFITI
                 }
+
                 AbsModelType.MODEL_PHOTO_ALBUM -> {
                     return AttachmentsTypes.ALBUM
                 }
+
                 AbsModelType.MODEL_NOT_SUPPORTED -> {
                     return AttachmentsTypes.NOT_SUPPORTED
                 }
+
                 AbsModelType.MODEL_EVENT -> {
                     return AttachmentsTypes.EVENT
                 }
+
                 AbsModelType.MODEL_MARKET -> {
                     return AttachmentsTypes.MARKET
                 }
+
                 AbsModelType.MODEL_MARKET_ALBUM -> {
                     return AttachmentsTypes.MARKET_ALBUM
                 }
+
                 else -> throw IllegalArgumentException()
             }
         }

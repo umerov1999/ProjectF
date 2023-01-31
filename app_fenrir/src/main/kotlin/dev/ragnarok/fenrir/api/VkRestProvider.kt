@@ -10,10 +10,10 @@ import okhttp3.OkHttpClient
 import java.util.*
 
 @SuppressLint("CheckResult")
-class VkRestProvider(
+class VKRestProvider(
     private val proxyManager: IProxySettings,
-    private val clientFactory: IVkMethodHttpClientFactory
-) : IVkRestProvider {
+    private val clientFactory: IVKMethodHttpClientFactory
+) : IVKRestProvider {
     private val restCacheLock = Any()
     private val serviceRestLock = Any()
 
@@ -84,10 +84,14 @@ class VkRestProvider(
         }
     }
 
-    override fun provideRawHttpClient(@AccountType type: Int): Single<OkHttpClient.Builder> {
+    override fun provideRawHttpClient(
+        @AccountType type: Int,
+        customDeviceName: String?
+    ): Single<OkHttpClient.Builder> {
         return Single.fromCallable {
             clientFactory.createRawVkApiOkHttpClient(
                 type,
+                customDeviceName,
                 proxyManager.activeProxy
             )
         }

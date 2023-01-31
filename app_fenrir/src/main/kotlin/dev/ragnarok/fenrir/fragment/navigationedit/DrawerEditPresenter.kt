@@ -4,7 +4,7 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.fragment.base.core.AbsPresenter
 import dev.ragnarok.fenrir.model.DrawerCategory
 import dev.ragnarok.fenrir.settings.Settings
-import java.util.*
+import java.util.Collections
 
 class DrawerEditPresenter(savedInstanceState: Bundle?) :
     AbsPresenter<IDrawerEditView>(savedInstanceState) {

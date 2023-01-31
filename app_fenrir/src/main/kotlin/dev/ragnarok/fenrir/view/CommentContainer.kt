@@ -33,7 +33,7 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
-import java.util.*
+import java.util.Locale
 
 class CommentContainer : LinearLayout {
     private var transformation: Transformation? = null
@@ -81,7 +81,7 @@ class CommentContainer : LinearLayout {
         listener: OnCommentActionListener?,
         onHashTagClickListener: EmojiconTextView.OnHashTagClickListener?
     ) {
-        if (commentsData == null || commentsData.isEmpty()) {
+        if (commentsData.isNullOrEmpty()) {
             visibility = View.GONE
             return
         }

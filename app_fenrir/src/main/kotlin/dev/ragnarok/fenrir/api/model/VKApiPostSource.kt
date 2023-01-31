@@ -48,18 +48,23 @@ class VKApiPostSource {
                 "vk" -> {
                     VK
                 }
+
                 "widget" -> {
                     WIDGET
                 }
+
                 "api" -> {
                     API
                 }
+
                 "rss" -> {
                     RSS
                 }
+
                 "sms" -> {
                     SMS
                 }
+
                 else -> {
                     0
                 }
@@ -80,21 +85,27 @@ class VKApiPostSource {
                 "vk" -> {
                     VK
                 }
+
                 "profile_activity" -> {
                     PROFILE_ACTIVITY
                 }
+
                 "profile_photo" -> {
                     PROFILE_PHOTO
                 }
+
                 "widget" -> {
                     WIDGET
                 }
+
                 "like" -> {
                     LIKE
                 }
+
                 "poll" -> {
                     POLL
                 }
+
                 else -> {
                     0
                 }

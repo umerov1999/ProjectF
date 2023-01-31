@@ -2,11 +2,13 @@ package dev.ragnarok.fenrir.fragment.audio.catalog_v2.lists
 
 import android.content.Context
 import android.os.Bundle
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
+import dev.ragnarok.fenrir.fromIOToMain
+import dev.ragnarok.fenrir.ifNonNullNoEmpty
 import dev.ragnarok.fenrir.model.AudioArtist
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2List
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory
@@ -16,6 +18,8 @@ import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Comp
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_LOCAL_SERVER_AUDIO
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_PLAYLIST
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_RECOMMENDATIONS
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -133,11 +137,13 @@ class CatalogV2ListPresenter(
                     )
                 )
             }
+
             TYPE_CATALOG -> {
                 if (catalogSections != null) {
                     mSections.addAll(catalogSections)
                 }
             }
+
             TYPE_LOCAL_AUDIO -> {
                 if (accountId == owner_id) {
                     mSections.add(
@@ -148,6 +154,7 @@ class CatalogV2ListPresenter(
                     )
                 }
             }
+
             TYPE_LOCAL_SERVER_AUDIO -> {
                 if (accountId == owner_id && accountId >= 0 && Settings.get()
                         .other().localServer.enabled
@@ -160,6 +167,7 @@ class CatalogV2ListPresenter(
                     )
                 }
             }
+
             TYPE_PLAYLIST -> {
                 mSections.add(
                     CatalogV2List.CatalogV2ListItem(
@@ -168,6 +176,7 @@ class CatalogV2ListPresenter(
                     )
                 )
             }
+
             TYPE_RECOMMENDATIONS -> {
                 mSections.add(
                     CatalogV2List.CatalogV2ListItem(

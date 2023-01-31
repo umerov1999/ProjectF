@@ -157,6 +157,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
                 )
                 return pendingIntent
             }
+
             ACTION_NEXT -> {
                 // Skip tracks
                 action = Intent(MusicPlaybackService.NEXT_ACTION)
@@ -169,6 +170,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
                 )
                 return pendingIntent
             }
+
             ACTION_PREV -> {
                 // Previous tracks
                 action = Intent(MusicPlaybackService.PREVIOUS_ACTION)
@@ -181,6 +183,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
                 )
                 return pendingIntent
             }
+
             SWIPE_DISMISS_ACTION -> {
                 // Stop and collapse the notification
                 action = Intent(MusicPlaybackService.SWIPE_DISMISS_ACTION)
@@ -193,6 +196,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
                 )
                 return pendingIntent
             }
+
             else -> {
             }
         }

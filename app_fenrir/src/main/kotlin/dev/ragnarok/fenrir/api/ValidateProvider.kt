@@ -16,18 +16,18 @@ class ValidateProvider(private val app: Context, private val uiScheduler: Schedu
     private val entryMap: MutableMap<String, Entry> = Collections.synchronizedMap(HashMap())
     private val cancelingNotifier: PublishSubject<String> = PublishSubject.create()
     private val waitingNotifier: PublishSubject<String> = PublishSubject.create()
-    override fun requestValidate(url: String?) {
+    override fun requestValidate(url: String?, accountId: Long) {
         url ?: return
         entryMap[url] = Entry()
-        startValidateActivity(app, url)
+        startValidateActivity(app, url, accountId)
     }
 
     @SuppressLint("CheckResult")
-    private fun startValidateActivity(context: Context, url: String) {
+    private fun startValidateActivity(context: Context, url: String, accountId: Long) {
         Completable.complete()
             .observeOn(Includes.provideMainThreadScheduler())
             .subscribe {
-                val intent = ValidateActivity.createIntent(context, url)
+                val intent = ValidateActivity.createIntent(context, url, accountId)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intent)
             }

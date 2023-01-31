@@ -3,10 +3,15 @@ package dev.ragnarok.fenrir.view.steppers.impl
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Privacy
+import dev.ragnarok.fenrir.putBoolean
+import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.view.steppers.base.AbsStepsHost
 import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStepsHost.PhotoAlbumState
+import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class CreatePhotoAlbumStepsHost : AbsStepsHost<PhotoAlbumState>(PhotoAlbumState()) {
     var isAdditionalOptionsEnable = false
@@ -33,6 +38,7 @@ class CreatePhotoAlbumStepsHost : AbsStepsHost<PhotoAlbumState>(PhotoAlbumState(
         return when (index) {
             STEP_TITLE_AND_DESCRIPTION -> !state.title.isNullOrEmpty() && (state.title?.trim { it <= ' ' }?.length
                 ?: 0) > 1
+
             STEP_UPLOAD_AND_COMMENTS, STEP_PRIVACY_VIEW, STEP_PRIVACY_COMMENT -> true
             else -> throw IllegalStateException("Invalid step index, index: $index")
         }

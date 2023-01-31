@@ -1,7 +1,12 @@
 package dev.ragnarok.fenrir.fragment.communitycontrol.communitymembers
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
@@ -75,6 +80,7 @@ class CommunityMembersFragment :
                 presenter?.fireSearch()
                 return true
             }
+
             R.id.action_options -> {
                 presenter?.fireFilter()
                 return true

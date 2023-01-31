@@ -112,7 +112,7 @@ class AttachmentsViewBinder(
         messageId: Int?,
         peerId: Long?
     ) {
-        if (voices == null || voices.isEmpty() || container == null) {
+        if (voices.isNullOrEmpty() || container == null) {
             container?.visibility = View.GONE
             return
         }
@@ -295,7 +295,7 @@ class AttachmentsViewBinder(
     }
 
     private fun displayStickers(stickers: List<Sticker>?, stickersContainer: ViewGroup?) {
-        if (stickers == null || stickers.isEmpty() || stickersContainer == null) {
+        if (stickers.isNullOrEmpty() || stickersContainer == null) {
             stickersContainer?.visibility = View.GONE
             return
         }
@@ -347,7 +347,7 @@ class AttachmentsViewBinder(
         reduce: Boolean,
         layout: Int
     ) {
-        if (posts == null || posts.isEmpty() || container == null) {
+        if (posts.isNullOrEmpty() || container == null) {
             container?.visibility = View.GONE
             return
         }
@@ -410,7 +410,7 @@ class AttachmentsViewBinder(
 
     @SuppressLint("SetTextI18n")
     fun displayFriendsPost(users: List<User>?, container: ViewGroup?, layout: Int) {
-        if (users == null || users.isEmpty() || container == null) {
+        if (users.isNullOrEmpty() || container == null) {
             container?.visibility = View.GONE
             return
         }
@@ -466,7 +466,7 @@ class AttachmentsViewBinder(
         fwdContainer: ViewGroup?,
         postsAsLinks: Boolean
     ) {
-        if (fwds == null || fwds.isEmpty() || fwdContainer == null) {
+        if (fwds.isNullOrEmpty() || fwdContainer == null) {
             fwdContainer?.visibility = View.GONE
             return
         }
@@ -548,7 +548,7 @@ class AttachmentsViewBinder(
     }
 
     private fun displayDocs(docs: List<DocLink>?, root: ViewGroup?) {
-        if (docs == null || docs.isEmpty() || root == null) {
+        if (docs.isNullOrEmpty() || root == null) {
             root?.visibility = View.GONE
             return
         }
@@ -662,6 +662,7 @@ class AttachmentsViewBinder(
                         ivPhotoT.visibility = View.GONE
                         ivType.setImageResource(R.drawable.file)
                     }
+
                     AttachmentsTypes.GRAFFITI -> {
                         ivPhotoT.visibility = View.GONE
                         if (imageUrl != null) {
@@ -673,6 +674,7 @@ class AttachmentsViewBinder(
                             ivType.setImageResource(R.drawable.counter)
                         }
                     }
+
                     AttachmentsTypes.AUDIO_PLAYLIST -> if (imageUrl != null) {
                         ivType.visibility = View.VISIBLE
                         ivPhotoT.visibility = View.VISIBLE
@@ -681,6 +683,7 @@ class AttachmentsViewBinder(
                     } else {
                         ivPhotoT.visibility = View.GONE
                     }
+
                     AttachmentsTypes.ALBUM -> if (imageUrl != null) {
                         ivType.visibility = View.VISIBLE
                         ivPhotoT.visibility = View.VISIBLE
@@ -689,6 +692,7 @@ class AttachmentsViewBinder(
                     } else {
                         ivPhotoT.visibility = View.GONE
                     }
+
                     AttachmentsTypes.MARKET_ALBUM -> if (imageUrl != null) {
                         ivType.visibility = View.VISIBLE
                         ivPhotoT.visibility = View.VISIBLE
@@ -697,6 +701,7 @@ class AttachmentsViewBinder(
                     } else {
                         ivPhotoT.visibility = View.GONE
                     }
+
                     AttachmentsTypes.ARTIST -> if (imageUrl != null) {
                         ivType.visibility = View.VISIBLE
                         ivPhotoT.visibility = View.VISIBLE
@@ -705,6 +710,7 @@ class AttachmentsViewBinder(
                     } else {
                         ivPhotoT.visibility = View.GONE
                     }
+
                     AttachmentsTypes.MARKET -> if (imageUrl != null) {
                         ivType.visibility = View.VISIBLE
                         ivPhotoT.visibility = View.VISIBLE
@@ -713,6 +719,7 @@ class AttachmentsViewBinder(
                     } else {
                         ivPhotoT.visibility = View.GONE
                     }
+
                     AttachmentsTypes.STORY -> {
                         ivPhotoT.visibility = View.GONE
                         ivType.visibility = View.GONE
@@ -733,6 +740,7 @@ class AttachmentsViewBinder(
                                 PhotoSize.X,
                                 true
                             )
+
                             st.video != null -> st.video?.image
                             else -> null
                         }
@@ -743,6 +751,7 @@ class AttachmentsViewBinder(
                             ivPhotoT.visibility = View.GONE
                         }
                     }
+
                     AttachmentsTypes.POST -> {
                         ivPhotoT.visibility = View.GONE
                         ivType.visibility = View.GONE
@@ -767,6 +776,7 @@ class AttachmentsViewBinder(
                             null, null
                         )
                     }
+
                     AttachmentsTypes.WALL_REPLY -> {
                         ivPhotoT.visibility = View.GONE
                         ivType.visibility = View.VISIBLE
@@ -793,6 +803,7 @@ class AttachmentsViewBinder(
                             null, null
                         )
                     }
+
                     AttachmentsTypes.EVENT -> {
                         ivPhotoT.visibility = View.GONE
                         ivType.visibility = View.VISIBLE
@@ -809,6 +820,7 @@ class AttachmentsViewBinder(
                             ivPhoto_Post.visibility = View.GONE
                         }
                     }
+
                     AttachmentsTypes.LINK, AttachmentsTypes.WIKI_PAGE -> {
                         ivType.visibility = View.VISIBLE
                         if (imageUrl != null) {
@@ -819,26 +831,31 @@ class AttachmentsViewBinder(
                         }
                         ivType.setImageResource(R.drawable.attachment)
                     }
+
                     AttachmentsTypes.NOT_SUPPORTED -> {
                         ivType.visibility = View.GONE
                         ivPhotoT.visibility = View.VISIBLE
                         ivPhotoT.setImageResource(R.drawable.not_supported)
                     }
+
                     AttachmentsTypes.POLL -> {
                         ivType.visibility = View.VISIBLE
                         ivPhotoT.visibility = View.GONE
                         ivType.setImageResource(R.drawable.chart_bar)
                     }
+
                     AttachmentsTypes.CALL -> {
                         ivType.visibility = View.VISIBLE
                         ivPhotoT.visibility = View.GONE
                         ivType.setImageResource(R.drawable.phone_call)
                     }
+
                     AttachmentsTypes.GEO -> {
                         ivType.visibility = View.VISIBLE
                         ivPhotoT.visibility = View.GONE
                         ivType.setImageResource(R.drawable.geo)
                     }
+
                     else -> {
                         ivType.visibility = View.GONE
                         ivPhotoT.visibility = View.GONE
@@ -852,7 +869,7 @@ class AttachmentsViewBinder(
     }
 
     private fun displayArticles(articles: List<Article>?, root: ViewGroup?) {
-        if (articles == null || articles.isEmpty() || root == null) {
+        if (articles.isNullOrEmpty() || root == null) {
             root?.visibility = View.GONE
             return
         }
@@ -939,26 +956,32 @@ class AttachmentsViewBinder(
             AttachmentsTypes.DOC -> mAttachmentsActionCallback?.onDocPreviewOpen(
                 link.attachment as Document
             )
+
             AttachmentsTypes.POST -> mAttachmentsActionCallback?.onPostOpen(link.attachment as Post)
             AttachmentsTypes.LINK -> mAttachmentsActionCallback?.onLinkOpen(link.attachment as Link)
             AttachmentsTypes.POLL -> mAttachmentsActionCallback?.onPollOpen(link.attachment as Poll)
             AttachmentsTypes.WIKI_PAGE -> mAttachmentsActionCallback?.onWikiPageOpen(
                 link.attachment as WikiPage
             )
+
             AttachmentsTypes.STORY -> mAttachmentsActionCallback?.onStoryOpen(link.attachment as Story)
             AttachmentsTypes.AUDIO_PLAYLIST -> mAttachmentsActionCallback?.onAudioPlaylistOpen(
                 link.attachment as AudioPlaylist
             )
+
             AttachmentsTypes.WALL_REPLY -> mAttachmentsActionCallback?.onWallReplyOpen(
                 link.attachment as WallReply
             )
+
             AttachmentsTypes.EVENT -> mAttachmentsActionCallback?.onOpenOwner(-1 * abs((link.attachment as Event).id))
             AttachmentsTypes.ALBUM -> mAttachmentsActionCallback?.onPhotoAlbumOpen(
                 link.attachment as PhotoAlbum
             )
+
             AttachmentsTypes.MARKET_ALBUM -> mAttachmentsActionCallback?.onMarketAlbumOpen(
                 link.attachment as MarketAlbum
             )
+
             AttachmentsTypes.MARKET -> mAttachmentsActionCallback?.onMarketOpen(link.attachment as Market)
             AttachmentsTypes.ARTIST -> mAttachmentsActionCallback?.onArtistOpen(link.attachment as AudioArtist)
             AttachmentsTypes.NOT_SUPPORTED -> {
@@ -969,6 +992,7 @@ class AttachmentsViewBinder(
                 clipboard?.setPrimaryClip(clip)
                 CustomToast.createCustomToast(mContext).showToast(R.string.copied)
             }
+
             AttachmentsTypes.GEO -> {
                 val geo = link.attachment as Geo
                 if (geo.latitude.nonNullNoEmpty() && geo.longitude.nonNullNoEmpty() && mContext is Activity) {

@@ -341,9 +341,11 @@ object ThemesController {
             ThemeOverlay.AMOLED -> {
                 t.themeAmoledRes
             }
+
             ThemeOverlay.MD1 -> {
                 t.themeMD1Res
             }
+
             else -> {
                 t.themeRes
             }

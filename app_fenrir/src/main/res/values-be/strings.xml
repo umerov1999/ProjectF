@@ -1208,6 +1208,7 @@
     <string name="button_settings">Налады</string>
     <string name="login_password_hint">Пароль</string>
     <string name="login_phone_or_email_hint">Тэлефон ці email</string>
+    <string name="login_hint">Увайсці</string>
     <string name="login_title">УВАХОД | ВК</string>
     <string name="button_login_via_web">Праз Web</string>
     <string name="button_login">Увайсці</string>
@@ -1536,7 +1537,7 @@
     <string name="end_list_anim">Анімацыя "канец спісу"</string>
     <string name="radius">Радыус</string>
     <string name="gps">Геалакацыя</string>
-    <string name="restore_login_info">Лагін: %1$s, Пароль %2$s, Токен %3$s, Валідацыя %4$s</string>
+    <string name="restore_login_info">Лагін: %1$s, Пароль %2$s, Валідацыя %3$s</string>
     <string name="registration_date_info">Зарэгістраваны: %1$s\nАтарызацыя: %2$s\nЗмяненне сцяны %3$s</string>
     <string name="all_photos">Усе фота</string>
     <string name="detect_qr">Разнаць QR</string>
@@ -1601,7 +1602,6 @@
     <string name="fade_saturation">Мігатлівая насычанасць</string>
     <string name="player_background">Настройка фону плэера</string>
     <string name="do_report">Адправіць скаргу?</string>
-    <string name="full_data">Цалкам</string>
     <string name="data">Дадзеныя</string>
     <string name="notification_force_link">Адкрываць спасылкі адразу ў апавяшчэннях</string>
     <string name="disrate">Разжалаваць</string>
@@ -1716,4 +1716,5 @@
     <string name="photos_with_user">Фатаграфіі з карыстальнікам</string>
     <string name="wall_photos">Фатаграфіі на сцяне</string>
     <string name="block_or_delete">Заблакаваць падпісчыка? Рэжым захавацца на сесію</string>
+    <string name="exchange_token">Токен абмену</string>
 </resources>

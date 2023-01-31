@@ -61,8 +61,8 @@ class FileItem : Parcelable {
 
     val fileNameHash: Int
         get() = file_name?.let { calculateCRC32(it) } ?: -1
-    val filePathHash: Int
-        get() = file_path?.let { calculateCRC32(it) } ?: -1
+    val filePathHash: Long
+        get() = file_path?.let { calculateCRC32(it).toLong() } ?: -1
 
     fun setSelected(selected: Boolean): FileItem {
         isSelected = selected

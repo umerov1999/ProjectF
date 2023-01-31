@@ -353,6 +353,16 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
         mItemTouchHelperGestureListener = new ItemTouchHelperGestureListener();
         mGestureDetector = new GestureDetectorCompat(mRecyclerView.getContext(),
                 mItemTouchHelperGestureListener);
+    }
+
+    private void stopGestureDetection() {
+        if (mItemTouchHelperGestureListener != null) {
+            mItemTouchHelperGestureListener.doNotReactToLongPress();
+            mItemTouchHelperGestureListener = null;
+        }
+        if (mGestureDetector != null) {
+            mGestureDetector = null;
+        }
     }    /**
      * When user drags a view to the edge, we start scrolling the LayoutManager as long as View
      * is partially out of bounds.
@@ -370,16 +380,6 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
             }
         }
     };
-
-    private void stopGestureDetection() {
-        if (mItemTouchHelperGestureListener != null) {
-            mItemTouchHelperGestureListener.doNotReactToLongPress();
-            mItemTouchHelperGestureListener = null;
-        }
-        if (mGestureDetector != null) {
-            mGestureDetector = null;
-        }
-    }
 
     private void getSelectedDxDy(float[] outPosition) {
         if ((mSelectedFlags & (LEFT | RIGHT)) != 0) {
@@ -1096,6 +1096,59 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
             }
         }
         return 0;
+    }
+
+    private int checkHorizontalSwipe(ViewHolder viewHolder, int flags) {
+        if ((flags & (LEFT | RIGHT)) != 0) {
+            int dirFlag = mDx > 0 ? RIGHT : LEFT;
+            if (mVelocityTracker != null && mActivePointerId > -1) {
+                mVelocityTracker.computeCurrentVelocity(PIXELS_PER_SECOND,
+                        mCallback.getSwipeVelocityThreshold(mMaxSwipeVelocity));
+                float xVelocity = mVelocityTracker.getXVelocity(mActivePointerId);
+                float yVelocity = mVelocityTracker.getYVelocity(mActivePointerId);
+                int velDirFlag = xVelocity > 0f ? RIGHT : LEFT;
+                float absXVelocity = Math.abs(xVelocity);
+                if ((velDirFlag & flags) != 0 && dirFlag == velDirFlag
+                        && absXVelocity >= mCallback.getSwipeEscapeVelocity(mSwipeEscapeVelocity)
+                        && absXVelocity > Math.abs(yVelocity)) {
+                    return velDirFlag;
+                }
+            }
+
+            float threshold = mRecyclerView.getWidth() * mCallback
+                    .getSwipeThreshold(viewHolder);
+
+            if ((flags & dirFlag) != 0 && Math.abs(mDx) > threshold) {
+                return dirFlag;
+            }
+        }
+        return 0;
+    }
+
+    private int checkVerticalSwipe(ViewHolder viewHolder, int flags) {
+        if ((flags & (UP | DOWN)) != 0) {
+            int dirFlag = mDy > 0 ? DOWN : UP;
+            if (mVelocityTracker != null && mActivePointerId > -1) {
+                mVelocityTracker.computeCurrentVelocity(PIXELS_PER_SECOND,
+                        mCallback.getSwipeVelocityThreshold(mMaxSwipeVelocity));
+                float xVelocity = mVelocityTracker.getXVelocity(mActivePointerId);
+                float yVelocity = mVelocityTracker.getYVelocity(mActivePointerId);
+                int velDirFlag = yVelocity > 0f ? DOWN : UP;
+                float absYVelocity = Math.abs(yVelocity);
+                if ((velDirFlag & flags) != 0 && velDirFlag == dirFlag
+                        && absYVelocity >= mCallback.getSwipeEscapeVelocity(mSwipeEscapeVelocity)
+                        && absYVelocity > Math.abs(xVelocity)) {
+                    return velDirFlag;
+                }
+            }
+
+            float threshold = mRecyclerView.getHeight() * mCallback
+                    .getSwipeThreshold(viewHolder);
+            if ((flags & dirFlag) != 0 && Math.abs(mDy) > threshold) {
+                return dirFlag;
+            }
+        }
+        return 0;
     }    private final OnItemTouchListener mOnItemTouchListener = new OnItemTouchListener() {
         @Override
         public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView,
@@ -1209,59 +1262,6 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
             select(null, ACTION_STATE_IDLE);
         }
     };
-
-    private int checkHorizontalSwipe(ViewHolder viewHolder, int flags) {
-        if ((flags & (LEFT | RIGHT)) != 0) {
-            int dirFlag = mDx > 0 ? RIGHT : LEFT;
-            if (mVelocityTracker != null && mActivePointerId > -1) {
-                mVelocityTracker.computeCurrentVelocity(PIXELS_PER_SECOND,
-                        mCallback.getSwipeVelocityThreshold(mMaxSwipeVelocity));
-                float xVelocity = mVelocityTracker.getXVelocity(mActivePointerId);
-                float yVelocity = mVelocityTracker.getYVelocity(mActivePointerId);
-                int velDirFlag = xVelocity > 0f ? RIGHT : LEFT;
-                float absXVelocity = Math.abs(xVelocity);
-                if ((velDirFlag & flags) != 0 && dirFlag == velDirFlag
-                        && absXVelocity >= mCallback.getSwipeEscapeVelocity(mSwipeEscapeVelocity)
-                        && absXVelocity > Math.abs(yVelocity)) {
-                    return velDirFlag;
-                }
-            }
-
-            float threshold = mRecyclerView.getWidth() * mCallback
-                    .getSwipeThreshold(viewHolder);
-
-            if ((flags & dirFlag) != 0 && Math.abs(mDx) > threshold) {
-                return dirFlag;
-            }
-        }
-        return 0;
-    }
-
-    private int checkVerticalSwipe(ViewHolder viewHolder, int flags) {
-        if ((flags & (UP | DOWN)) != 0) {
-            int dirFlag = mDy > 0 ? DOWN : UP;
-            if (mVelocityTracker != null && mActivePointerId > -1) {
-                mVelocityTracker.computeCurrentVelocity(PIXELS_PER_SECOND,
-                        mCallback.getSwipeVelocityThreshold(mMaxSwipeVelocity));
-                float xVelocity = mVelocityTracker.getXVelocity(mActivePointerId);
-                float yVelocity = mVelocityTracker.getYVelocity(mActivePointerId);
-                int velDirFlag = yVelocity > 0f ? DOWN : UP;
-                float absYVelocity = Math.abs(yVelocity);
-                if ((velDirFlag & flags) != 0 && velDirFlag == dirFlag
-                        && absYVelocity >= mCallback.getSwipeEscapeVelocity(mSwipeEscapeVelocity)
-                        && absYVelocity > Math.abs(xVelocity)) {
-                    return velDirFlag;
-                }
-            }
-
-            float threshold = mRecyclerView.getHeight() * mCallback
-                    .getSwipeThreshold(viewHolder);
-            if ((flags & dirFlag) != 0 && Math.abs(mDy) > threshold) {
-                return dirFlag;
-            }
-        }
-        return 0;
-    }
 
     private void addChildDrawingOrderCallback() {
         if (Build.VERSION.SDK_INT >= 21) {

@@ -99,14 +99,14 @@ inline fun <reified T> Collection<T>?.nonNullNoEmpty(): Boolean {
     contract {
         returns(true) implies (this@nonNullNoEmpty != null)
     }
-    return this != null && !this.isEmpty()
+    return !this.isNullOrEmpty()
 }
 
 inline fun <reified T : CharSequence> T?.nonNullNoEmpty(): Boolean {
     contract {
         returns(true) implies (this@nonNullNoEmpty != null)
     }
-    return this != null && this.isNotEmpty()
+    return !this.isNullOrEmpty()
 }
 
 inline fun <reified T : CharSequence> T?.ifNonNullNoEmpty(yes: (T) -> Unit, no: () -> Unit) {
@@ -142,7 +142,7 @@ inline fun <reified T> Array<T>?.nonNullNoEmpty(): Boolean {
     contract {
         returns(true) implies (this@nonNullNoEmpty != null)
     }
-    return this != null && this.isNotEmpty()
+    return !this.isNullOrEmpty()
 }
 
 fun ByteArray?.nonNullNoEmpty(): Boolean {
@@ -184,7 +184,7 @@ inline fun <reified T> Array<T>?.nullOrEmpty(): Boolean {
     contract {
         returns(false) implies (this@nullOrEmpty != null)
     }
-    return this == null || this.isEmpty()
+    return this.isNullOrEmpty()
 }
 
 fun ByteArray?.nullOrEmpty(): Boolean {
@@ -266,7 +266,7 @@ inline fun IntArray?.nonNullNoEmpty(block: (IntArray) -> Unit) {
 }
 
 inline fun <reified T> Array<T>?.nonNullNoEmpty(block: (Array<T>) -> Unit) {
-    if (this != null && this.isNotEmpty()) apply(block)
+    if (!this.isNullOrEmpty()) apply(block)
 }
 
 inline fun DoubleArray?.nonNullNoEmpty(block: (DoubleArray) -> Unit) {
@@ -442,6 +442,10 @@ open class StubAnimatorListener : Animator.AnimatorListener {
 
 fun ResponseBody.isMsgPack(): Boolean {
     return contentType()?.toString()?.contains("msgpack") == true
+}
+
+fun ResponseBody.isJson(): Boolean {
+    return contentType()?.toString()?.contains("json") == true
 }
 
 inline fun <reified T : Parcelable> Parcel.readTypedObjectCompat(c: Parcelable.Creator<T>): T? {

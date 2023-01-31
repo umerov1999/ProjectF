@@ -1,11 +1,11 @@
 package dev.ragnarok.fenrir.util
 
-import java.util.*
+import java.util.Locale
 
 object Translit {
 
     fun lat2cyr(s: String?): String? {
-        if (s == null || s.isEmpty()) {
+        if (s.isNullOrEmpty()) {
             return s
         }
         val sb = StringBuilder(s.length)
@@ -25,6 +25,7 @@ object Translit {
                     } else {
                         sb.append(ch('Ь', lc))
                     }
+
                     'U' -> sb.append(ch('Ю', lc))
                     'A' -> sb.append(ch('Я', lc))
                     else -> throw IllegalArgumentException("Illegal transliterated symbol '$ch' at position $i")
@@ -40,6 +41,7 @@ object Translit {
                     } else {
                         sb.append(ch('Ш', lc))
                     }
+
                     'E' -> sb.append(ch('Э', lc))
                     'I' -> sb.append(ch('Ы', lc))
                     else -> throw IllegalArgumentException("Illegal transliterated symbol '$ch' at position $i")
@@ -117,7 +119,7 @@ object Translit {
 
 
     fun cyr2lat(s: String?): String? {
-        if (s == null || s.isEmpty()) {
+        if (s.isNullOrEmpty()) {
             return s
         }
         val sb = StringBuilder(s.length * 2)

@@ -253,7 +253,7 @@ Java_dev_ragnarok_fenrir_module_BufferWriteNative_deCompressLZ4Buffer(JNIEnv *en
     out.resize(hdr.size);
     LZ4_decompress_safe(((const char *) bufPointer->data() + sizeof(MY_LZ4HDR_PUSH)),
                         (char *) out.data(),
-                        (int) bufPointer->size() - (int) sizeof(MY_LZ4HDR_PUSH), hdr.size);
+                        (int) bufPointer->size() - (int) sizeof(MY_LZ4HDR_PUSH), (int) hdr.size);
 
     auto d = env->NewByteArray((int) hdr.size);
     env->SetByteArrayRegion(d, 0, (int) hdr.size,

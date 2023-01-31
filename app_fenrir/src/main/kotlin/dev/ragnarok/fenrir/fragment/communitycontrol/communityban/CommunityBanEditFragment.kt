@@ -3,7 +3,12 @@ package dev.ragnarok.fenrir.fragment.communitycontrol.communityban
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -12,14 +17,22 @@ import androidx.core.view.MenuProvider
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
+import dev.ragnarok.fenrir.getParcelableArrayListCompat
+import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Banned
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.IdOption
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.settings.AvatarStyle
@@ -162,9 +175,11 @@ class CommunityBanEditFragment :
             user.domain.nonNullNoEmpty() -> {
                 safelySetText(mDomain, "@" + user.domain)
             }
+
             user is User -> {
                 safelySetText(mDomain, "@id" + user.getOwnerObjectId())
             }
+
             user is Community -> {
                 safelySetText(mDomain, "@club" + user.id)
             }

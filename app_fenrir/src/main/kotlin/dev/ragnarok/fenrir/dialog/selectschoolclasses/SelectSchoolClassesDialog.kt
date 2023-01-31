@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.database.SchoolClazz
-import java.util.*
+import java.util.Collections
 
 class SelectSchoolClassesDialog : AccountDependencyDialogFragment(), SchoolClassesAdapter.Listener {
     private var schoolClassesId = 0

@@ -5,7 +5,26 @@ import dev.ragnarok.fenrir.Includes.networkInterfaces
 import dev.ragnarok.fenrir.Includes.settings
 import dev.ragnarok.fenrir.Includes.stores
 import dev.ragnarok.fenrir.domain.Repository.owners
-import dev.ragnarok.fenrir.domain.impl.*
+import dev.ragnarok.fenrir.domain.impl.AccountsInteractor
+import dev.ragnarok.fenrir.domain.impl.AudioInteractor
+import dev.ragnarok.fenrir.domain.impl.BoardInteractor
+import dev.ragnarok.fenrir.domain.impl.CommunitiesInteractor
+import dev.ragnarok.fenrir.domain.impl.DatabaseInteractor
+import dev.ragnarok.fenrir.domain.impl.DialogsInteractor
+import dev.ragnarok.fenrir.domain.impl.DocsInteractor
+import dev.ragnarok.fenrir.domain.impl.FaveInteractor
+import dev.ragnarok.fenrir.domain.impl.FeedInteractor
+import dev.ragnarok.fenrir.domain.impl.FeedbackInteractor
+import dev.ragnarok.fenrir.domain.impl.GroupSettingsInteractor
+import dev.ragnarok.fenrir.domain.impl.LikesInteractor
+import dev.ragnarok.fenrir.domain.impl.LocalServerInteractor
+import dev.ragnarok.fenrir.domain.impl.NewsfeedInteractor
+import dev.ragnarok.fenrir.domain.impl.PhotosInteractor
+import dev.ragnarok.fenrir.domain.impl.PollInteractor
+import dev.ragnarok.fenrir.domain.impl.RelationshipInteractor
+import dev.ragnarok.fenrir.domain.impl.StickersInteractor
+import dev.ragnarok.fenrir.domain.impl.UtilsInteractor
+import dev.ragnarok.fenrir.domain.impl.VideosInteractor
 import dev.ragnarok.fenrir.settings.Settings
 
 object InteractorFactory {

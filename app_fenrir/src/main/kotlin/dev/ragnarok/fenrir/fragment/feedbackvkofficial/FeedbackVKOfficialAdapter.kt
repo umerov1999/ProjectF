@@ -154,14 +154,17 @@ class FeedbackVKOfficialAdapter(
                 holder.mHeaderTitle.visibility = View.VISIBLE
                 holder.mHeaderTitle.setText(R.string.dialog_day_older)
             }
+
             DIV_TODAY -> {
                 holder.mHeaderTitle.visibility = View.VISIBLE
                 holder.mHeaderTitle.setText(R.string.dialog_day_today)
             }
+
             DIV_YESTERDAY -> {
                 holder.mHeaderTitle.visibility = View.VISIBLE
                 holder.mHeaderTitle.setText(R.string.dialog_day_yesterday)
             }
+
             DIV_THIS_WEEK -> {
                 holder.mHeaderTitle.visibility = View.VISIBLE
                 holder.mHeaderTitle.setText(R.string.dialog_day_ten_days)
@@ -237,6 +240,7 @@ class FeedbackVKOfficialAdapter(
                 holder.attachments.visibility = View.GONE
                 holder.attachments.adapter = null
             }
+
             Page.attachments?.size == 1 -> {
                 holder.photo_image.visibility = View.VISIBLE
                 holder.attachments.visibility = View.GONE
@@ -258,6 +262,7 @@ class FeedbackVKOfficialAdapter(
                     }
                 }
             }
+
             else -> {
                 with().cancelRequest(holder.photo_image)
                 holder.photo_image.visibility = View.GONE

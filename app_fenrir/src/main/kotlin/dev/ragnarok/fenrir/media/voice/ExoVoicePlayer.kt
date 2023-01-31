@@ -2,12 +2,15 @@ package dev.ragnarok.fenrir.media.voice
 
 import android.content.Context
 import android.os.Build
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import dev.ragnarok.fenrir.AccountType
-import dev.ragnarok.fenrir.Constants.USER_AGENT
+import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.media.exo.ExoUtil.pausePlayer
 import dev.ragnarok.fenrir.media.exo.ExoUtil.startPlayer
 import dev.ragnarok.fenrir.media.voice.IVoicePlayer.IErrorListener
@@ -65,7 +68,7 @@ class ExoVoicePlayer(context: Context, config: ProxyConfig?) : IVoicePlayer {
             DefaultRenderersFactory(app).setExtensionRendererMode(extensionRenderer)
         ).build()
         exoPlayer?.setWakeMode(C.WAKE_MODE_NETWORK)
-        val userAgent = USER_AGENT(AccountType.BY_TYPE)
+        val userAgent = UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
         val url = if (isOpusSupported) firstNonEmptyString(
             playingEntry?.audio?.getLinkOgg(), playingEntry?.audio?.getLinkMp3()
         ) else playingEntry?.audio?.getLinkMp3()
@@ -107,6 +110,7 @@ class ExoVoicePlayer(context: Context, config: ProxyConfig?) : IVoicePlayer {
                 setSupposedToBePlaying(false)
                 exoPlayer?.seekTo(0)
             }
+
             Player.STATE_BUFFERING, Player.STATE_IDLE -> {}
         }
     }
@@ -130,9 +134,11 @@ class ExoVoicePlayer(context: Context, config: ProxyConfig?) : IVoicePlayer {
             exoPlayer == null -> {
                 0f
             }
+
             status != IVoicePlayer.STATUS_PREPARED -> {
                 0f
             }
+
             else -> {
                 val duration = duration
                 val position = exoPlayer?.currentPosition ?: 0

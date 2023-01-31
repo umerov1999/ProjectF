@@ -101,42 +101,52 @@ class SearchTabsFragment : Fragment() {
                     accountId,
                     SearchContentType.PEOPLE
                 )
+
                 TAB_COMMUNITIES -> SingleTabSearchFragment.newInstance(
                     accountId,
                     SearchContentType.COMMUNITIES
                 )
+
                 TAB_MUSIC -> SingleTabSearchFragment.newInstance(
                     accountId,
                     SearchContentType.AUDIOS
                 )
+
                 TAB_AUDIO_PLAYLISTS -> SingleTabSearchFragment.newInstance(
                     accountId,
                     SearchContentType.AUDIO_PLAYLISTS
                 )
+
                 TAB_VIDEOS -> SingleTabSearchFragment.newInstance(
                     accountId,
                     SearchContentType.VIDEOS
                 )
+
                 TAB_DOCUMENTS -> SingleTabSearchFragment.newInstance(
                     accountId,
                     SearchContentType.DOCUMENTS
                 )
+
                 TAB_PHOTOS -> SingleTabSearchFragment.newInstance(
                     accountId,
                     SearchContentType.PHOTOS
                 )
+
                 TAB_NEWS -> SingleTabSearchFragment.newInstance(
                     accountId,
                     SearchContentType.NEWS
                 )
+
                 TAB_MESSAGES -> SingleTabSearchFragment.newInstance(
                     accountId,
                     SearchContentType.MESSAGES
                 )
+
                 TAB_ARTISTS -> SingleTabSearchFragment.newInstance(
                     accountId,
                     SearchContentType.ARTISTS
                 )
+
                 else -> throw IllegalArgumentException()
             }
             return fragment

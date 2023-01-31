@@ -86,6 +86,7 @@ internal class UISettings(context: Context) : IUISettings {
                     FriendsTabsFragment.TAB_ALL_FRIENDS,
                     null
                 )
+
                 Place.NOTIFICATIONS -> return getNotificationsPlace(accountId)
                 Place.NEWSFEED_COMMENTS -> return getNewsfeedCommentsPlace(accountId)
                 Place.COMMUNITIES -> return getCommunitiesPlace(accountId, accountId)
@@ -95,6 +96,7 @@ internal class UISettings(context: Context) : IUISettings {
                     null,
                     null
                 )
+
                 Place.AUDIOS -> return getAudiosPlace(accountId, accountId)
                 Place.DOCS -> return getDocumentsPlace(accountId, accountId, null)
                 Place.BOOKMARKS -> return getBookmarksPlace(accountId, FaveTabsFragment.TAB_PAGES)
@@ -110,6 +112,7 @@ internal class UISettings(context: Context) : IUISettings {
                 FriendsTabsFragment.TAB_ALL_FRIENDS,
                 null
             )
+
             "3" -> getFeedPlace(accountId)
             "4" -> getNotificationsPlace(accountId)
             "5" -> getCommunitiesPlace(accountId, accountId)

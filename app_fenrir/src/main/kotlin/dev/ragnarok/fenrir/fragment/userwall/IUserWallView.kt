@@ -4,7 +4,12 @@ import android.net.Uri
 import androidx.annotation.DrawableRes
 import dev.ragnarok.fenrir.fragment.abswall.IWallView
 import dev.ragnarok.fenrir.fragment.base.core.IProgressView
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.FriendsCounters
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.PostFilter
+import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.model.UserDetails
 
 interface IUserWallView : IWallView, IProgressView {
     fun displayWallFilters(filters: MutableList<PostFilter>)

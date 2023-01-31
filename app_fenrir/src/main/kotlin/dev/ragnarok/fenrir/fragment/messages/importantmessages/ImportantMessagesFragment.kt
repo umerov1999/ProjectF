@@ -29,7 +29,11 @@ import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.FwdMessages
+import dev.ragnarok.fenrir.model.Keyboard
+import dev.ragnarok.fenrir.model.LastReadId
+import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.VoiceMessage
 import dev.ragnarok.fenrir.place.PlaceFactory.getMessagesLookupPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.MessagesReplyItemCallback
@@ -340,6 +344,7 @@ class ImportantMessagesFragment :
                 R.id.buttonClose -> {
                     hide()
                 }
+
                 R.id.buttonForward -> {
                     Utils.safeObjectCall(reference.get(), object : Utils.SafeCallInt {
                         override fun call() {
@@ -348,6 +353,7 @@ class ImportantMessagesFragment :
                     })
                     hide()
                 }
+
                 R.id.buttonCopy -> {
                     Utils.safeObjectCall(reference.get(), object : Utils.SafeCallInt {
                         override fun call() {
@@ -356,6 +362,7 @@ class ImportantMessagesFragment :
                     })
                     hide()
                 }
+
                 R.id.buttonDelete -> {
                     Utils.safeObjectCall(reference.get(), object : Utils.SafeCallInt {
                         override fun call() {
@@ -364,6 +371,7 @@ class ImportantMessagesFragment :
                     })
                     hide()
                 }
+
                 R.id.buttonSpam -> {
                     MaterialAlertDialogBuilder(requireActivity())
                         .setIcon(R.drawable.report_red)

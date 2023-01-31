@@ -18,15 +18,23 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
-import dev.ragnarok.filegallery.*
+import dev.ragnarok.filegallery.Constants
+import dev.ragnarok.filegallery.Extra
+import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.StubAnimatorListener
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
 import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
+import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.listener.BackPressCallback
 import dev.ragnarok.filegallery.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.filegallery.listener.UpdatableNavigation
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.MusicPlaybackService
-import dev.ragnarok.filegallery.model.*
+import dev.ragnarok.filegallery.model.Audio
+import dev.ragnarok.filegallery.model.FileRemote
+import dev.ragnarok.filegallery.model.FileType
+import dev.ragnarok.filegallery.model.Photo
+import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.place.PlaceFactory
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
@@ -38,7 +46,7 @@ import dev.ragnarok.filegallery.view.MySearchView
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
-import java.util.*
+import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 class FileManagerRemoteFragment :

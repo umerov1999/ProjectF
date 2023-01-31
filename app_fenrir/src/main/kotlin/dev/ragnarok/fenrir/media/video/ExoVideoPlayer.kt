@@ -12,8 +12,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.video.VideoSize
-import dev.ragnarok.fenrir.AccountType
-import dev.ragnarok.fenrir.Constants.USER_AGENT
+import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.media.exo.ExoUtil.pausePlayer
 import dev.ragnarok.fenrir.media.exo.ExoUtil.startPlayer
 import dev.ragnarok.fenrir.media.video.IVideoPlayer.IUpdatePlayListener
@@ -165,7 +164,7 @@ class ExoVideoPlayer(
             proxyConfig: ProxyConfig?,
             isHLS: Boolean
         ): MediaSource {
-            val userAgent = USER_AGENT(AccountType.BY_TYPE)
+            val userAgent = UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
             return if (!isHLS) {
                 if (url?.contains("file://") == true || url?.contains("content://") == true) {
                     ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context))

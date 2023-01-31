@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020-2021 Eduard Wolf
+// SPDX-FileCopyrightText: 2020-2022 Eduard Wolf
 //
 // SPDX-License-Identifier: Apache-2.0
 

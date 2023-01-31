@@ -20,6 +20,9 @@
         android:name="android.hardware.microphone"
         android:required="false" />
     <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
         android:name="android.hardware.camera2"
         android:required="false" />
 
@@ -54,10 +57,7 @@
     <application
         android:name="dev.ragnarok.fenrir.App"
         android:allowAudioPlaybackCapture="true"
-        android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
-        android:fullBackupContent="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -361,30 +361,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:host="vk.com"
-                    android:scheme="http" />
-                <data
-                    android:host="vk.com"
-                    android:scheme="https" />
-                <data
-                    android:host="vk.cc"
-                    android:scheme="http" />
-                <data
-                    android:host="vk.cc"
-                    android:scheme="https" />
-                <data
-                    android:host="vk.me"
-                    android:scheme="http" />
-                <data
-                    android:host="vk.me"
-                    android:scheme="https" />
-                <data
-                    android:host="m.vk.com"
-                    android:scheme="http" />
-                <data
-                    android:host="m.vk.com"
-                    android:scheme="https" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="vk.com" />
+                <data android:host="vk.cc" />
+                <data android:host="vk.me" />
+                <data android:host="m.vk.com" />
             </intent-filter>
         </activity>
 
@@ -428,7 +410,11 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="image/*" />
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
             </intent-filter>
         </activity>
 
@@ -453,13 +439,13 @@
                 <data android:scheme="file" />
                 <data android:scheme="content" />
 
-                <data android:mimeType="application/javascript" />
                 <data android:mimeType="application/json" />
-                <data android:mimeType="application/typescript" />
-                <data android:mimeType="application/x-sh" />
-                <data android:mimeType="application/x-shellscript" />
-                <data android:mimeType="application/xml" />
-                <data android:mimeType="text/*" />
+                <data android:mimeType="application/x-javascript" />
+                <data android:mimeType="text/javascript" />
+                <data android:mimeType="text/x-javascript" />
+                <data android:mimeType="text/x-json" />
+                <data android:mimeType="text/json" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
 
@@ -480,13 +466,13 @@
                 <data android:scheme="file" />
                 <data android:scheme="content" />
 
-                <data android:mimeType="application/javascript" />
                 <data android:mimeType="application/json" />
-                <data android:mimeType="application/typescript" />
-                <data android:mimeType="application/x-sh" />
-                <data android:mimeType="application/x-shellscript" />
-                <data android:mimeType="application/xml" />
-                <data android:mimeType="text/*" />
+                <data android:mimeType="application/x-javascript" />
+                <data android:mimeType="text/javascript" />
+                <data android:mimeType="text/x-javascript" />
+                <data android:mimeType="text/x-json" />
+                <data android:mimeType="text/json" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
 
         </activity>
@@ -560,13 +546,14 @@
                 <data android:host="*" />
                 <data android:scheme="file" />
                 <data android:scheme="content" />
-                <data android:mimeType="application/javascript" />
+
                 <data android:mimeType="application/json" />
-                <data android:mimeType="application/typescript" />
-                <data android:mimeType="application/x-sh" />
-                <data android:mimeType="application/x-shellscript" />
-                <data android:mimeType="application/xml" />
-                <data android:mimeType="text/*" />
+                <data android:mimeType="application/x-javascript" />
+                <data android:mimeType="text/javascript" />
+                <data android:mimeType="text/x-javascript" />
+                <data android:mimeType="text/x-json" />
+                <data android:mimeType="text/json" />
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
 
@@ -577,7 +564,6 @@
         <activity
             android:name="dev.ragnarok.fenrir.activity.VideoPlayerActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:resizeableActivity="true"
             android:supportsPictureInPicture="true"

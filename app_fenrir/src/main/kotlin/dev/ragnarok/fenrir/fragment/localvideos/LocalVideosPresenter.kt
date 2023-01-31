@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.model.LocalVideo
 import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.Utils.countOfSelection
 import dev.ragnarok.fenrir.util.Utils.getSelected
-import java.util.*
+import java.util.Locale
 
 class LocalVideosPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<ILocalVideosView>(savedInstanceState) {

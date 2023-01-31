@@ -100,15 +100,18 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
                 presenter?.fireRefresh()
                 true
             }
+
             R.id.action_create_list -> {
                 requestProfileSelect.launch(startFaveSelection(requireActivity()))
                 true
             }
+
             R.id.action_feed_ban -> {
                 PlaceFactory.getFeedBanPlace(Settings.get().accounts().current)
                     .tryOpenWith(requireActivity())
                 true
             }
+
             else -> false
         }
     }
@@ -353,6 +356,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
                         kJson.decodeFromString(LinearLayoutManager_SavedState.serializer(), state)
                     mFeedLayoutManager?.onRestoreInstanceState(savedState)
                 }
+
                 is StaggeredGridLayoutManager -> {
                     val savedState = kJson.decodeFromString(
                         StaggeredGridLayoutManager_SavedState.serializer(),
@@ -373,12 +377,14 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
                     parcelable as LinearLayoutManager_SavedState
                 )
             }
+
             is StaggeredGridLayoutManager -> {
                 kJson.encodeToString(
                     StaggeredGridLayoutManager_SavedState.serializer(),
                     parcelable as StaggeredGridLayoutManager_SavedState
                 )
             }
+
             else -> {
                 super.onPause()
                 return

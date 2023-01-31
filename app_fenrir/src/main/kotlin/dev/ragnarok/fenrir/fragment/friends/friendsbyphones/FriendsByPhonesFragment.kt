@@ -25,7 +25,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.FileManagerSelectActivity
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
-import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.ContactConversation
 import dev.ragnarok.fenrir.model.Peer
@@ -35,12 +34,9 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
-import dev.ragnarok.fenrir.util.serializeble.json.decodeFromStream
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.MySearchView
-import kotlinx.serialization.builtins.ListSerializer
 import java.io.File
-import java.io.FileInputStream
 
 class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFriendsByPhonesView>(),
     ContactsAdapter.ClickListener, IFriendsByPhonesView, MenuProvider {
@@ -89,20 +85,7 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            try {
-                val file = File(
-                    result.data?.getStringExtra(Extra.PATH) ?: return@registerForActivityResult
-                )
-                if (file.exists()) {
-                    val contacts: List<ContactConversation> = kJson.decodeFromStream(
-                        ListSerializer(ContactConversation.serializer()),
-                        FileInputStream(file)
-                    )
-                    presenter?.fireImport(contacts)
-                }
-            } catch (e: Exception) {
-                CustomToast.createCustomToast(requireActivity()).showToastError(e.localizedMessage)
-            }
+            result.data?.getStringExtra(Extra.PATH)?.let { presenter?.fireImportContacts(it) }
         }
     }
 
@@ -186,6 +169,7 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
             R.id.action_reset -> {
                 presenter?.fireReset()
             }
+
             R.id.action_read -> {
                 if (!AppPerms.hasReadStoragePermission(requireActivity())) {
                     requestReadPermission.launch()
@@ -194,6 +178,7 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
                 startImportContacts()
                 return true
             }
+
             R.id.action_export -> {
                 if (!AppPerms.hasReadWriteStoragePermission(requireActivity())) {
                     requestWritePermission.launch()

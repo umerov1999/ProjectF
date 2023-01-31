@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.util
 
 import androidx.annotation.StringRes
 import dev.ragnarok.fenrir.R
-import java.util.*
+import java.util.Calendar
 
 object Month {
 

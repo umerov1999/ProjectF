@@ -1,7 +1,16 @@
 package dev.ragnarok.fenrir.settings
 
 import android.content.Context
-import dev.ragnarok.fenrir.settings.ISettings.*
+import dev.ragnarok.fenrir.settings.ISettings.IAccountsSettings
+import dev.ragnarok.fenrir.settings.ISettings.IDrawerSettings
+import dev.ragnarok.fenrir.settings.ISettings.IMainSettings
+import dev.ragnarok.fenrir.settings.ISettings.INotificationSettings
+import dev.ragnarok.fenrir.settings.ISettings.IOtherSettings
+import dev.ragnarok.fenrir.settings.ISettings.IPushSettings
+import dev.ragnarok.fenrir.settings.ISettings.IRecentChats
+import dev.ragnarok.fenrir.settings.ISettings.ISecuritySettings
+import dev.ragnarok.fenrir.settings.ISettings.ISideDrawerSettings
+import dev.ragnarok.fenrir.settings.ISettings.IUISettings
 
 class SettingsImpl(app: Context) : ISettings {
     private val recentChats: IRecentChats

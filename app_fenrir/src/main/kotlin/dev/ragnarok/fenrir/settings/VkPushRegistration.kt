@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class VkPushRegistration {
+class VKPushRegistration {
     @SerialName("userId")
     var userId = 0L
         private set
@@ -26,7 +26,7 @@ class VkPushRegistration {
         deviceId: String,
         vkToken: String,
         gmcToken: String
-    ): VkPushRegistration {
+    ): VKPushRegistration {
         this.userId = userId
         this.deviceId = deviceId
         this.vkToken = vkToken

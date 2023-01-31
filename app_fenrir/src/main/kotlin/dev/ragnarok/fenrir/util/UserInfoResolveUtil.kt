@@ -583,9 +583,11 @@ object UserInfoResolveUtil {
                 VKApiUser.SEX_MAN -> {
                     ", " + context.getString(R.string.last_seen_sex_man, activityTime)
                 }
+
                 VKApiUser.SEX_WOMAN -> {
                     ", " + context.getString(R.string.last_seen_sex_woman, activityTime)
                 }
+
                 else -> {
                     ", " + context.getString(R.string.last_seen_sex_unknown, activityTime)
                 }

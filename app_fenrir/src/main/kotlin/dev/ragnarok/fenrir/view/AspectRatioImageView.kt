@@ -25,10 +25,12 @@ class AspectRatioImageView @JvmOverloads constructor(
                 newWidth = measuredWidth
                 newHeight = (newWidth / aspectRatio).toInt()
             }
+
             MEASUREMENT_HEIGHT -> {
                 newHeight = measuredHeight
                 newWidth = (newHeight / aspectRatio).toInt()
             }
+
             else -> throw IllegalStateException("Unknown measurement with ID $dominantMeasurement")
         }
         setMeasuredDimension(newWidth, newHeight)

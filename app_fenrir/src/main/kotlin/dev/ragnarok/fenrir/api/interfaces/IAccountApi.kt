@@ -68,6 +68,9 @@ interface IAccountApi {
     ): Single<RefreshToken>
 
     @CheckResult
+    fun getExchangeToken(): Single<RefreshToken>
+
+    @CheckResult
     fun importMessagesContacts(contacts: String?): Completable
 
     @CheckResult

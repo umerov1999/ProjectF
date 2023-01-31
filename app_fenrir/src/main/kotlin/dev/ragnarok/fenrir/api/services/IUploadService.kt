@@ -1,7 +1,15 @@
 package dev.ragnarok.fenrir.api.services
 
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
-import dev.ragnarok.fenrir.api.model.upload.*
+import dev.ragnarok.fenrir.api.model.upload.UploadAudioDto
+import dev.ragnarok.fenrir.api.model.upload.UploadChatPhotoDto
+import dev.ragnarok.fenrir.api.model.upload.UploadDocDto
+import dev.ragnarok.fenrir.api.model.upload.UploadOwnerPhotoDto
+import dev.ragnarok.fenrir.api.model.upload.UploadPhotoToAlbumDto
+import dev.ragnarok.fenrir.api.model.upload.UploadPhotoToMessageDto
+import dev.ragnarok.fenrir.api.model.upload.UploadPhotoToWallDto
+import dev.ragnarok.fenrir.api.model.upload.UploadStoryDto
+import dev.ragnarok.fenrir.api.model.upload.UploadVideoDto
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
 import okhttp3.MultipartBody

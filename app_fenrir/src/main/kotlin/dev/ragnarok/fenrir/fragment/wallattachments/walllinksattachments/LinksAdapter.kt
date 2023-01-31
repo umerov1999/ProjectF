@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.model.Link
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
-import java.util.*
+import java.util.EventListener
 
 class LinksAdapter(data: MutableList<Link>) :
     RecyclerBindableAdapter<Link, LinksAdapter.LinkViewHolder>(data) {

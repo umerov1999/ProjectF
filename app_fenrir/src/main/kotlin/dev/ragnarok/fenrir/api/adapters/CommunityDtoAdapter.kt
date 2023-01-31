@@ -70,9 +70,11 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
             VKApiCommunity.TYPE_GROUP -> {
                 dto.type = VKApiCommunity.Type.GROUP
             }
+
             VKApiCommunity.TYPE_PAGE -> {
                 dto.type = VKApiCommunity.Type.PAGE
             }
+
             VKApiCommunity.TYPE_EVENT -> {
                 dto.type = VKApiCommunity.Type.EVENT
             }

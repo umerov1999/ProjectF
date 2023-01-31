@@ -54,7 +54,6 @@ import de.maxr1998.modernpreferences.preferences.CustomTextPreference
 import de.maxr1998.modernpreferences.preferences.choice.SelectionItem
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.Constants.API_VERSION
-import dev.ragnarok.fenrir.Constants.USER_AGENT_ACCOUNT
 import dev.ragnarok.fenrir.Extra.ACCOUNT_ID
 import dev.ragnarok.fenrir.Extra.PHOTOS
 import dev.ragnarok.fenrir.activity.*
@@ -2071,7 +2070,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             return
         }
         val view = View.inflate(requireActivity(), R.layout.dialog_additional_us, null)
-        view.findViewById<TextInputEditText>(R.id.item_user_agent).setText(USER_AGENT_ACCOUNT)
+        view.findViewById<TextInputEditText>(R.id.item_user_agent)
+            .setText(UserAgentTool.USER_AGENT_CURRENT_ACCOUNT)
         view.findViewById<TextInputEditText>(R.id.item_device_id)
             .setText(Utils.getDeviceId(requireActivity()))
         view.findViewById<TextInputEditText>(R.id.item_gcm_token).setText(pushToken())
@@ -2189,6 +2189,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     circle.visibility = View.VISIBLE
                     oval.visibility = View.INVISIBLE
                 }
+
                 AvatarStyle.OVAL -> {
                     circle.visibility = View.INVISIBLE
                     oval.visibility = View.VISIBLE

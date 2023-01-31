@@ -2,8 +2,7 @@ package dev.ragnarok.fenrir.api
 
 import android.annotation.SuppressLint
 import dev.ragnarok.fenrir.AccountType
-import dev.ragnarok.fenrir.Constants
-import dev.ragnarok.fenrir.Constants.USER_AGENT
+import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
 import dev.ragnarok.fenrir.api.rest.SimplePostHttp
@@ -18,8 +17,8 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
-class OtherVkRestProvider @SuppressLint("CheckResult") constructor(private val proxySettings: IProxySettings) :
-    IOtherVkRestProvider {
+class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val proxySettings: IProxySettings) :
+    IOtherVKRestProvider {
     private val longpollRestLock = Any()
     private val localServerRestLock = Any()
     private var longpollRestInstance: SimplePostHttp? = null
@@ -39,20 +38,24 @@ class OtherVkRestProvider @SuppressLint("CheckResult") constructor(private val p
         }
     }
 
-    override fun provideAuthRest(): Single<SimplePostHttp> {
+    override fun provideAuthRest(
+        @AccountType accountType: Int,
+        customDevice: String?
+    ): Single<SimplePostHttp> {
         return Single.fromCallable {
             val builder: OkHttpClient.Builder = OkHttpClient.Builder()
                 .readTimeout(15, TimeUnit.SECONDS)
                 .connectTimeout(15, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)
                 .callTimeout(15, TimeUnit.SECONDS)
+                .followRedirects(true)
+                .followSslRedirects(true)
                 .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                     val request =
                         chain.toRequestBuilder(false).vkHeader(true)
                             .addHeader(
-                                "User-Agent", USER_AGENT(
-                                    Constants.DEFAULT_ACCOUNT_TYPE
-                                )
+                                "User-Agent",
+                                UserAgentTool.getAccountUserAgent(accountType, customDevice)
                             ).build()
                     chain.proceed(request)
                 })
@@ -75,9 +78,7 @@ class OtherVkRestProvider @SuppressLint("CheckResult") constructor(private val p
                     val request =
                         chain.toRequestBuilder(false).vkHeader(true)
                             .addHeader(
-                                "User-Agent", USER_AGENT(
-                                    AccountType.BY_TYPE
-                                )
+                                "User-Agent", UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
                             ).build()
                     chain.proceed(request)
                 })
@@ -102,9 +103,7 @@ class OtherVkRestProvider @SuppressLint("CheckResult") constructor(private val p
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request =
                     chain.toRequestBuilder(false).vkHeader(false).addHeader(
-                        "User-Agent", USER_AGENT(
-                            AccountType.BY_TYPE
-                        )
+                        "User-Agent", UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
                     ).build()
                 chain.proceed(request)
             }).addInterceptor(Interceptor { chain: Interceptor.Chain ->
@@ -139,9 +138,7 @@ class OtherVkRestProvider @SuppressLint("CheckResult") constructor(private val p
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request =
                     chain.toRequestBuilder(false).vkHeader(true).addHeader(
-                        "User-Agent", USER_AGENT(
-                            AccountType.BY_TYPE
-                        )
+                        "User-Agent", UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
                     ).build()
                 chain.proceed(request)
             })

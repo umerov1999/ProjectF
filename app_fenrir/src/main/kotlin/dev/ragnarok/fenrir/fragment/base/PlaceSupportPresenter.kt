@@ -7,7 +7,24 @@ import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Article
+import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.model.AudioArtist
+import dev.ragnarok.fenrir.model.AudioPlaylist
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.Document
+import dev.ragnarok.fenrir.model.Link
+import dev.ragnarok.fenrir.model.Market
+import dev.ragnarok.fenrir.model.MarketAlbum
+import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.Poll
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.model.WallReply
+import dev.ragnarok.fenrir.model.WikiPage
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
 
 abstract class PlaceSupportPresenter<V>(accountId: Long, savedInstanceState: Bundle?) :

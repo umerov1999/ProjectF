@@ -25,7 +25,7 @@ import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.view.AspectRatioImageView
 import dev.ragnarok.fenrir.view.ProgressButton
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 class PollFragment : BaseMvpFragment<PollPresenter, IPollView>(), IPollView,
     OnAnswerChangedCallback {

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class UploadPhotoToWallDto {
     @SerialName("server")
-    var server = 0
+    var server = 0L
 
     @SerialName("photo")
     var photo: String? = null

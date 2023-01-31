@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.model.Story
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
-import java.util.*
+import java.util.Calendar
 
 class HorizontalStoryAdapter(data: MutableList<Story>) :
     RecyclerBindableAdapter<Story, HorizontalStoryAdapter.Holder>(data) {

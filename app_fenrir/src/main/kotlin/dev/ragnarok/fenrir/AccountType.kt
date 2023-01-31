@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir
 import androidx.annotation.IntDef
 
 @IntDef(
-    AccountType.BY_TYPE,
+    AccountType.NULL,
     AccountType.VK_ANDROID,
     AccountType.VK_ANDROID_HIDDEN,
     AccountType.KATE,
@@ -24,7 +24,7 @@ annotation class AccountType {
             }
         }
 
-        const val BY_TYPE = 0
+        const val NULL = 0
         const val VK_ANDROID = 1
         const val VK_ANDROID_HIDDEN = 2
         const val KATE = 3

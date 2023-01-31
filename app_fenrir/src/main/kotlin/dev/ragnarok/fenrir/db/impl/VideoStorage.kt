@@ -4,14 +4,20 @@ import android.content.ContentProviderOperation
 import android.content.ContentValues
 import android.database.Cursor
 import android.provider.BaseColumns
-import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getVideosContentUriFor
 import dev.ragnarok.fenrir.db.column.VideoColumns
 import dev.ragnarok.fenrir.db.interfaces.IVideoStorage
 import dev.ragnarok.fenrir.db.model.entity.PrivacyEntity
 import dev.ragnarok.fenrir.db.model.entity.VideoDboEntity
+import dev.ragnarok.fenrir.getBlob
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.getInt
+import dev.ragnarok.fenrir.getLong
+import dev.ragnarok.fenrir.getString
+import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.model.VideoCriteria
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
@@ -31,10 +37,12 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
                     where = BaseColumns._ID + " >= ? AND " + BaseColumns._ID + " <= ?"
                     args = arrayOf(range.first.toString(), range.last.toString())
                 }
+
                 criteria.getAlbumId() == 0 -> {
                     where = VideoColumns.OWNER_ID + " = ?"
                     args = arrayOf(criteria.getOwnerId().toString())
                 }
+
                 else -> {
                     where = VideoColumns.OWNER_ID + " = ? AND " + VideoColumns.ALBUM_ID + " = ?"
                     args =

@@ -5,12 +5,17 @@ import android.os.Parcelable
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.model.FileRemote
+import dev.ragnarok.fenrir.model.FileType
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoSizes
+import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Objects.safeEquals
-import java.util.*
+import java.util.Locale
 
 class FileManagerRemotePresenter(
     savedInstanceState: Bundle?
@@ -248,9 +253,8 @@ class FileManagerRemotePresenter(
                     view?.resolveEmptyText(fileList.isEmpty())
                     view?.resolveLoading(isLoading)
                     view?.notifyAllChanged()
-                    val k = directoryScrollPositions.remove(buildPath())
-                    if (k != null) {
-                        view?.restoreScroll(k)
+                    directoryScrollPositions.remove(buildPath())?.let { scroll ->
+                        view?.restoreScroll(scroll)
                     }
                 }, {
                     view?.onError(it)

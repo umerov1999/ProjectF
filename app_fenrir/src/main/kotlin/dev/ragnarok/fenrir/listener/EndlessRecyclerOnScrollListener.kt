@@ -53,10 +53,12 @@ abstract class EndlessRecyclerOnScrollListener : RecyclerView.OnScrollListener {
                     }
                 }
             }
+
             is LinearLayoutManager -> {
                 isLastElementVisible = isAtLastElementOfLinearLayoutManager(manager)
                 isFirstElementVisible = manager.findFirstVisibleItemPosition() == 0
             }
+
             is GridLayoutManager -> {
                 isLastElementVisible = isAtLastElementOfGridLayoutManager(manager)
                 isFirstElementVisible = manager.findFirstVisibleItemPosition() == 0

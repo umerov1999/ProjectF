@@ -56,60 +56,79 @@ class AttachmentsBottomSheetAdapter(
             AbsModelType.MODEL_PHOTO -> {
                 bindImageHolder(holder, model as Photo)
             }
+
             AbsModelType.MODEL_UPLOAD -> {
                 bindUploading(holder, model as Upload)
             }
+
             AbsModelType.MODEL_POST -> {
                 bindPost(holder, model as Post)
             }
+
             AbsModelType.MODEL_VIDEO -> {
                 bindVideo(holder, model as Video)
             }
+
             AbsModelType.MODEL_FWDMESSAGES -> {
                 bindMessages(holder, model as FwdMessages)
             }
+
             AbsModelType.MODEL_WALL_REPLY -> {
                 bindWallReplies(holder)
             }
+
             AbsModelType.MODEL_DOCUMENT -> {
                 bindDoc(holder, model as Document)
             }
+
             AbsModelType.MODEL_AUDIO -> {
                 bindAudio(holder, model as Audio)
             }
+
             AbsModelType.MODEL_ARTICLE -> {
                 bindArticle(holder, model as Article)
             }
+
             AbsModelType.MODEL_STORY -> {
                 bindStory(holder, model as Story)
             }
+
             AbsModelType.MODEL_CALL -> {
                 bindCall(holder)
             }
+
             AbsModelType.MODEL_GEO -> {
                 bindGeo(holder)
             }
+
             AbsModelType.MODEL_NOT_SUPPORTED -> {
                 bindNotSupported(holder)
             }
+
             AbsModelType.MODEL_EVENT -> {
                 bindEvent(holder, model as Event)
             }
+
             AbsModelType.MODEL_MARKET -> {
                 bindMarket(holder, model as Market)
             }
+
             AbsModelType.MODEL_MARKET_ALBUM -> {
                 bindMarketAlbum(holder, model as MarketAlbum)
             }
+
             AbsModelType.MODEL_AUDIO_ARTIST -> {
                 bindAudioArtist(holder, model as AudioArtist)
             }
+
             AbsModelType.MODEL_AUDIO_PLAYLIST -> {
                 bindAudioPlaylist(holder, model as AudioPlaylist)
             }
+
             AbsModelType.MODEL_GRAFFITI -> {
                 bindGraffiti(holder, model as Graffiti)
             }
+
             AbsModelType.MODEL_PHOTO_ALBUM -> {
                 bindPhotoAlbum(holder, model as PhotoAlbum)
             }
@@ -329,6 +348,7 @@ class AttachmentsBottomSheetAdapter(
                 val precentText = upload.progress.toString() + "%"
                 holder.title.text = precentText
             }
+
             Upload.STATUS_CANCELLING -> holder.title.setText(R.string.cancelling)
             Upload.STATUS_QUEUE -> holder.title.setText(R.string.in_order)
             Upload.STATUS_ERROR -> {

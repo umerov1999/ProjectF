@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.settings.ISettings.INotificationSettings
 import dev.ragnarok.fenrir.util.Utils.hasFlag
 import dev.ragnarok.fenrir.util.Utils.removeFlag
-import java.util.*
+import java.util.Collections
 
 class NotificationsPrefs internal constructor(context: Context) : INotificationSettings {
     private val app: Context = context.applicationContext

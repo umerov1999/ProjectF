@@ -1,8 +1,9 @@
 package dev.ragnarok.fenrir.fragment.vkphotos
 
 import android.os.Bundle
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.db.serialize.Serializers
@@ -11,16 +12,29 @@ import dev.ragnarok.fenrir.domain.IPhotosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
+import dev.ragnarok.fenrir.fromIOToMain
+import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.LocalPhoto
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.ParcelableOwnerWrapper
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.model.wrappers.SelectablePhotoWrapper
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.upload.*
+import dev.ragnarok.fenrir.upload.IUploadManager
 import dev.ragnarok.fenrir.upload.IUploadManager.IProgressUpdate
+import dev.ragnarok.fenrir.upload.Upload
+import dev.ragnarok.fenrir.upload.UploadDestination
 import dev.ragnarok.fenrir.upload.UploadDestination.Companion.forPhotoAlbum
+import dev.ragnarok.fenrir.upload.UploadIntent
+import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils.createIntents
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.findIndexById
@@ -29,7 +43,7 @@ import dev.ragnarok.fenrir.util.Utils.getSelected
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class VkPhotosPresenter(
+class VKPhotosPresenter(
     accountId: Long,
     private val ownerId: Long,
     private val albumId: Int,
@@ -38,7 +52,7 @@ class VkPhotosPresenter(
     album: PhotoAlbum?,
     private val loadedIdPhoto: Int,
     savedInstanceState: Bundle?
-) : AccountDependencyPresenter<IVkPhotosView>(accountId, savedInstanceState) {
+) : AccountDependencyPresenter<IVKPhotosView>(accountId, savedInstanceState) {
     private val interactor: IPhotosInteractor
     private val ownersRepository: IOwnersRepository
     private val uploadManager: IUploadManager
@@ -180,7 +194,7 @@ class VkPhotosPresenter(
         view?.notifyDataSetChanged()
     }
 
-    override fun onGuiCreated(viewHost: IVkPhotosView) {
+    override fun onGuiCreated(viewHost: IVKPhotosView) {
         super.onGuiCreated(viewHost)
         viewHost.displayData(photos, uploads)
         viewHost.onToggleShowDate(isShowBDate)
@@ -404,7 +418,7 @@ class VkPhotosPresenter(
     }
 
     private val isSelectionMode: Boolean
-        get() = IVkPhotosView.ACTION_SELECT_PHOTOS == action
+        get() = IVKPhotosView.ACTION_SELECT_PHOTOS == action
 
     private fun resolveButtonAddVisibility(anim: Boolean) {
         if (isSelectionMode) {

@@ -25,7 +25,7 @@ import dev.ragnarok.fenrir.util.Utils.safeCheck
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstanceState: Bundle?) :

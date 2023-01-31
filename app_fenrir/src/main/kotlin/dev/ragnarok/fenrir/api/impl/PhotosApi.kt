@@ -3,12 +3,22 @@ package dev.ragnarok.fenrir.api.impl
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IPhotosApi
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.AccessIdPair
+import dev.ragnarok.fenrir.api.model.Items
+import dev.ragnarok.fenrir.api.model.VKApiComment
+import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
+import dev.ragnarok.fenrir.api.model.VKApiPhotoTags
+import dev.ragnarok.fenrir.api.model.VKApiPrivacy
 import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.UploadChatPhotoResponse
 import dev.ragnarok.fenrir.api.model.response.UploadOwnerPhotoResponse
-import dev.ragnarok.fenrir.api.model.server.*
+import dev.ragnarok.fenrir.api.model.server.VKApiChatPhotoUploadServer
+import dev.ragnarok.fenrir.api.model.server.VKApiOwnerPhotoUploadServer
+import dev.ragnarok.fenrir.api.model.server.VKApiPhotoMessageServer
+import dev.ragnarok.fenrir.api.model.server.VKApiUploadServer
+import dev.ragnarok.fenrir.api.model.server.VKApiWallUploadServer
 import dev.ragnarok.fenrir.api.services.IPhotosService
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import io.reactivex.rxjava3.core.Single
@@ -255,7 +265,7 @@ internal class PhotosApi(accountId: Long, provider: IServiceProvider) :
 
     override fun saveWallPhoto(
         userId: Long?, groupId: Long?, photo: String?,
-        server: Int, hash: String?, latitude: Double?,
+        server: Long, hash: String?, latitude: Double?,
         longitude: Double?, caption: String?
     ): Single<List<VKApiPhoto>> {
         return provideService(IPhotosService(), TokenType.USER)
@@ -285,7 +295,7 @@ internal class PhotosApi(accountId: Long, provider: IServiceProvider) :
     }
 
     override fun save(
-        albumId: Int, groupId: Long?, server: Int, photosList: String?,
+        albumId: Int, groupId: Long?, server: Long, photosList: String?,
         hash: String?, latitude: Double?, longitude: Double?, caption: String?
     ): Single<List<VKApiPhoto>> {
         return provideService(IPhotosService(), TokenType.USER)
@@ -344,7 +354,7 @@ internal class PhotosApi(accountId: Long, provider: IServiceProvider) :
             }
 
     override fun saveMessagesPhoto(
-        server: Int?,
+        server: Long?,
         photo: String?,
         hash: String?
     ): Single<List<VKApiPhoto>> {

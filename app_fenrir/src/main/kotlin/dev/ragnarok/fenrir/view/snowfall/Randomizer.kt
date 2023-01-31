@@ -16,7 +16,7 @@
 
 package dev.ragnarok.fenrir.view.snowfall
 
-import java.util.*
+import java.util.Random
 
 internal class Randomizer {
     private val random by lazy { Random() }

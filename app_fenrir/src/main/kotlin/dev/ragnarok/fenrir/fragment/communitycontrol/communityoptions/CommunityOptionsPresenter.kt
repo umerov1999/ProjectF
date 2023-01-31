@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.model.GroupSettings
 import dev.ragnarok.fenrir.model.IdOption
 import dev.ragnarok.fenrir.util.Utils
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
 
 class CommunityOptionsPresenter(
     accountId: Long,
@@ -127,14 +127,17 @@ class CommunityOptionsPresenter(
                 settings.setCategory(option)
                 resolveCategoryView()
             }
+
             REQUEST_DAY -> {
                 settings.getDateCreated()?.day = option.getObjectId()
                 resolvePublicDateView()
             }
+
             REQUEST_MONTH -> {
                 settings.getDateCreated()?.month = option.getObjectId()
                 resolvePublicDateView()
             }
+
             REQUEST_YEAR -> {
                 settings.getDateCreated()?.year = option.getObjectId()
                 resolvePublicDateView()

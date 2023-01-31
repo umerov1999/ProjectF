@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class VkApiGroupLongpollUpdates {
+class VKApiGroupLongpollUpdates {
     @SerialName("failed")
     var failed = 0
 

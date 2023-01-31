@@ -47,7 +47,7 @@ class LikeFCMMessage {
     private var accountId = 0L
     private var id: String? = null
     private var title: String? = null
-    private var from_id = 0
+    private var from_id = 0L
     private var badge = 0
     private var item_id = 0
     private var owner_id = 0L
@@ -60,23 +60,28 @@ class LikeFCMMessage {
             "post" -> {
                 place = getPostPreviewPlace(accountId, item_id, owner_id, null)
             }
+
             "photo" -> {
                 val photos = singletonArrayList(
                     Photo().setId(item_id).setOwnerId(owner_id)
                 )
                 place = getSimpleGalleryPlace(accountId, photos, 0, true)
             }
+
             "video" -> {
                 place = getVideoPreviewPlace(accountId, owner_id, item_id, null, null)
             }
+
             "post_comment" -> {
                 val commented = Commented(item_id, owner_id, CommentedType.POST, null)
                 place = getCommentsPlace(accountId, commented, reply_id)
             }
+
             "photo_comment" -> {
                 val commented = Commented(item_id, owner_id, CommentedType.PHOTO, null)
                 place = getCommentsPlace(accountId, commented, reply_id)
             }
+
             "video_comment" -> {
                 val commented = Commented(item_id, owner_id, CommentedType.VIDEO, null)
                 place = getCommentsPlace(accountId, commented, reply_id)
@@ -154,7 +159,7 @@ class LikeFCMMessage {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         val contentIntent = PendingIntent.getActivity(
             context,
-            from_id,
+            from_id.hashCode(),
             intent,
             makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
@@ -201,7 +206,7 @@ class LikeFCMMessage {
             val data = remote.data
             message.id = data["id"]
             message.title = data["title"]
-            message.from_id = data["from_id"]?.toInt() ?: return null
+            message.from_id = data["from_id"]?.toLong() ?: return null
             message.badge = data["badge"]?.toInt() ?: 0
             val context: LikeContext =
                 kJson.decodeFromString(LikeContext.serializer(), data["context"] ?: return null)

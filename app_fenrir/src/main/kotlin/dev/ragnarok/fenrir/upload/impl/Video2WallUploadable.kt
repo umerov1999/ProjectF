@@ -9,7 +9,11 @@ import dev.ragnarok.fenrir.db.AttachToType
 import dev.ragnarok.fenrir.domain.IAttachmentsRepository
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.model.Video
-import dev.ragnarok.fenrir.upload.*
+import dev.ragnarok.fenrir.upload.IUploadable
+import dev.ragnarok.fenrir.upload.Method
+import dev.ragnarok.fenrir.upload.Upload
+import dev.ragnarok.fenrir.upload.UploadResult
+import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Utils.safelyClose
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
 import io.reactivex.rxjava3.core.Completable
@@ -94,6 +98,7 @@ class Video2WallUploadable(
         when (dest.method) {
             Method.TO_COMMENT -> return repository
                 .attach(accountId, AttachToType.COMMENT, dest.id, listOf(video))
+
             Method.TO_WALL -> return repository
                 .attach(accountId, AttachToType.POST, dest.id, listOf(video))
         }

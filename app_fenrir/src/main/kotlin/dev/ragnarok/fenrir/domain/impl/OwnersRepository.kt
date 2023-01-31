@@ -38,7 +38,20 @@ import dev.ragnarok.fenrir.domain.mappers.MapUtil.mapAll
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.fragment.search.criteria.PeopleSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.options.SpinnerOption
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.CommunityDetails
+import dev.ragnarok.fenrir.model.Gift
+import dev.ragnarok.fenrir.model.GroupChats
+import dev.ragnarok.fenrir.model.IOwnersBundle
+import dev.ragnarok.fenrir.model.Market
+import dev.ragnarok.fenrir.model.MarketAlbum
+import dev.ragnarok.fenrir.model.Narratives
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.SparseArrayOwnersBundle
+import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.model.UserDetails
+import dev.ragnarok.fenrir.model.UserUpdate
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
@@ -57,7 +70,7 @@ import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.functions.BiFunction
 import io.reactivex.rxjava3.processors.PublishProcessor
-import java.util.*
+import java.util.LinkedList
 
 class OwnersRepository(private val networker: INetworker, private val cache: IOwnersStorage) :
     IOwnersRepository {
@@ -728,6 +741,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         when (mode) {
             IOwnersRepository.MODE_CACHE -> return cache.findCommunityDbosByIds(accountId, gids)
                 .map { obj -> buildCommunitiesFromDbos(obj) }
+
             IOwnersRepository.MODE_ANY -> return cache.findCommunityDbosByIds(accountId, gids)
                 .flatMap { dbos ->
                     if (dbos.size == gids.size) {
@@ -735,6 +749,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
                     }
                     getActualCommunitiesAndStore(accountId, gids)
                 }
+
             IOwnersRepository.MODE_NET -> return getActualCommunitiesAndStore(accountId, gids)
         }
         throw IllegalArgumentException("Invalid mode: $mode")
@@ -791,6 +806,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         when (mode) {
             IOwnersRepository.MODE_CACHE -> return cache.findUserDbosByIds(accountId, uids)
                 .map { obj -> buildUsersFromDbo(obj) }
+
             IOwnersRepository.MODE_ANY -> return cache.findUserDbosByIds(accountId, uids)
                 .flatMap { dbos ->
                     if (dbos.size == uids.size) {
@@ -798,6 +814,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
                     }
                     getActualUsersAndStore(accountId, uids)
                 }
+
             IOwnersRepository.MODE_NET -> return getActualUsersAndStore(accountId, uids)
         }
         throw IllegalArgumentException("Invalid mode: $mode")
@@ -815,9 +832,11 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
                     id > 0 -> {
                         uids.add(id)
                     }
+
                     id < 0 -> {
                         gids.add(-id)
                     }
+
                     else -> {
                         uids.add(Settings.get().accounts().current)
                         //throw new IllegalArgumentException("Zero owner id!!!");

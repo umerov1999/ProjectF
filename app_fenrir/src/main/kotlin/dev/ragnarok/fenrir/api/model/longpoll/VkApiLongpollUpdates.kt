@@ -5,7 +5,7 @@ import dev.ragnarok.fenrir.util.Utils.safeCountOfMultiple
 import kotlinx.serialization.Serializable
 
 @Serializable(with = LongpollUpdatesAdapter::class)
-class VkApiLongpollUpdates {
+class VKApiLongpollUpdates {
     // TODO Message edit update
     //{"ts":1841741106,"updates":[[5,1200880,51,26632922,1528116889,"и тд",{"title":""},{},1000771599]]}
     var ts: Long = 0
@@ -27,23 +27,31 @@ class VkApiLongpollUpdates {
         when (update.action) {
             AbsLongpollEvent.ACTION_MESSAGES_FLAGS_SET -> message_flags_set_updates =
                 addAndReturn(message_flags_set_updates, update as MessageFlagsSetUpdate)
+
             AbsLongpollEvent.ACTION_MESSAGES_FLAGS_RESET -> message_flags_reset_updates =
                 addAndReturn(message_flags_reset_updates, update as MessageFlagsResetUpdate)
+
             AbsLongpollEvent.ACTION_MESSAGE_EDITED, AbsLongpollEvent.ACTION_MESSAGE_CHANGED, AbsLongpollEvent.ACTION_MESSAGE_ADDED -> add_message_updates =
                 addAndReturn(add_message_updates, update as AddMessageUpdate)
+
             AbsLongpollEvent.ACTION_USER_IS_ONLINE -> user_is_online_updates =
                 addAndReturn(user_is_online_updates, update as UserIsOnlineUpdate)
+
             AbsLongpollEvent.ACTION_USER_IS_OFFLINE -> user_is_offline_updates =
                 addAndReturn(user_is_offline_updates, update as UserIsOfflineUpdate)
+
             AbsLongpollEvent.ACTION_USER_WRITE_TEXT_IN_DIALOG, AbsLongpollEvent.ACTION_USER_WRITE_VOICE_IN_DIALOG -> write_text_in_dialog_updates =
                 addAndReturn(write_text_in_dialog_updates, update as WriteTextInDialogUpdate)
+
             AbsLongpollEvent.ACTION_SET_INPUT_MESSAGES_AS_READ -> input_messages_set_read_updates =
                 addAndReturn(input_messages_set_read_updates, update as InputMessagesSetReadUpdate)
+
             AbsLongpollEvent.ACTION_SET_OUTPUT_MESSAGES_AS_READ -> output_messages_set_read_updates =
                 addAndReturn(
                     output_messages_set_read_updates,
                     update as OutputMessagesSetReadUpdate
                 )
+
             AbsLongpollEvent.ACTION_COUNTER_UNREAD_WAS_CHANGED -> badge_count_change_updates =
                 addAndReturn(badge_count_change_updates, update as BadgeCountChangeUpdate)
         }

@@ -1,7 +1,12 @@
 package dev.ragnarok.fenrir.fragment.audio
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -65,14 +70,19 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
             when (val fid = adapter.pFragments[position]) {
                 MY_AUDIO -> tab.text =
                     getString(R.string.my_saved)
+
                 PLAYLISTS -> tab.text =
                     getString(R.string.playlists)
+
                 MY_RECOMMENDATIONS -> tab.text =
                     getString(R.string.recommendation)
+
                 LOCAL -> tab.text =
                     getString(R.string.local_audios)
+
                 LOCAL_SERVER -> tab.text =
                     getString(R.string.on_server)
+
                 else -> tab.text =
                     VKApiAudio.Genre.getTitleByGenre(requireActivity(), fid)
             }
@@ -86,19 +96,23 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
                 fragment.requireArguments().putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
                 fragment
             }
+
             LOCAL -> {
                 val fragment = AudiosLocalFragment.newInstance(accountId)
                 fragment.requireArguments().putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
                 fragment
             }
+
             LOCAL_SERVER -> {
                 AudiosLocalServerFragment.newInstance(accountId)
             }
+
             MY_AUDIO -> {
                 val args = AudiosFragment.buildArgs(accountId, ownerId, null, null)
                 args.putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
                 AudiosFragment.newInstance(args)
             }
+
             MY_RECOMMENDATIONS -> {
                 val fragment = AudiosRecommendationFragment.newInstance(
                     accountId, ownerId, false, 0
@@ -106,6 +120,7 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
                 fragment.requireArguments().putBoolean(AudiosFragment.EXTRA_IN_TABS_CONTAINER, true)
                 fragment
             }
+
             else -> {
                 val fragment = AudiosRecommendationFragment.newInstance(
                     accountId, ownerId, true, option_menu

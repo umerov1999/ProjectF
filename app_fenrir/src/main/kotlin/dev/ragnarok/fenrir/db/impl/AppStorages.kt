@@ -3,7 +3,28 @@ package dev.ragnarok.fenrir.db.impl
 import android.content.Context
 import android.content.ContextWrapper
 import dev.ragnarok.fenrir.crypt.KeyLocationPolicy
-import dev.ragnarok.fenrir.db.interfaces.*
+import dev.ragnarok.fenrir.db.interfaces.IAttachmentsStorage
+import dev.ragnarok.fenrir.db.interfaces.ICommentsStorage
+import dev.ragnarok.fenrir.db.interfaces.IDatabaseStore
+import dev.ragnarok.fenrir.db.interfaces.IDialogsStorage
+import dev.ragnarok.fenrir.db.interfaces.IDocsStorage
+import dev.ragnarok.fenrir.db.interfaces.IFaveStorage
+import dev.ragnarok.fenrir.db.interfaces.IFeedStorage
+import dev.ragnarok.fenrir.db.interfaces.IFeedbackStorage
+import dev.ragnarok.fenrir.db.interfaces.IKeysStorage
+import dev.ragnarok.fenrir.db.interfaces.ILocalMediaStorage
+import dev.ragnarok.fenrir.db.interfaces.IMessagesStorage
+import dev.ragnarok.fenrir.db.interfaces.IOwnersStorage
+import dev.ragnarok.fenrir.db.interfaces.IPhotoAlbumsStorage
+import dev.ragnarok.fenrir.db.interfaces.IPhotosStorage
+import dev.ragnarok.fenrir.db.interfaces.IRelativeshipStorage
+import dev.ragnarok.fenrir.db.interfaces.IStickersStorage
+import dev.ragnarok.fenrir.db.interfaces.IStorages
+import dev.ragnarok.fenrir.db.interfaces.ITempDataStorage
+import dev.ragnarok.fenrir.db.interfaces.ITopicsStore
+import dev.ragnarok.fenrir.db.interfaces.IVideoAlbumsStorage
+import dev.ragnarok.fenrir.db.interfaces.IVideoStorage
+import dev.ragnarok.fenrir.db.interfaces.IWallStorage
 
 class AppStorages(base: Context) : ContextWrapper(base), IStorages {
     private val tempData: ITempDataStorage = TempDataStorage(this)
@@ -153,12 +174,14 @@ class AppStorages(base: Context) : ContextWrapper(base), IStorages {
                 }
                 keysPersist!!
             }
+
             KeyLocationPolicy.RAM -> {
                 if (keysRam == null) {
                     keysRam = KeysRamStorage()
                 }
                 keysRam!!
             }
+
             else -> throw IllegalArgumentException("Unsupported key location policy")
         }
     }

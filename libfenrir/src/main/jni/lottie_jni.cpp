@@ -56,7 +56,7 @@ std::string doDecompressResource(size_t length, char *bytes, bool &orig) {
         memcpy(&hdr, bytes, sizeof(MY_LZ4HDR_PUSH));
         data.resize(hdr.size);
         LZ4_decompress_safe(((const char *) bytes + sizeof(MY_LZ4HDR_PUSH)), (char *) data.data(),
-                            (int) length - (int) sizeof(MY_LZ4HDR_PUSH), hdr.size);
+                            (int) length - (int) sizeof(MY_LZ4HDR_PUSH), (int) hdr.size);
     } else {
         orig = true;
     }

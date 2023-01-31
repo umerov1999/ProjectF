@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.api.impl
 
-import dev.ragnarok.fenrir.api.IVkRestProvider
+import dev.ragnarok.fenrir.api.IVKRestProvider
 import dev.ragnarok.fenrir.api.interfaces.IOtherApi
 import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.settings.Settings
@@ -13,7 +13,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 
-class OtherApi(private val accountId: Long, private val provider: IVkRestProvider) : IOtherApi {
+class OtherApi(private val accountId: Long, private val provider: IVKRestProvider) : IOtherApi {
     override fun rawRequest(
         method: String,
         postParams: Map<String, String>

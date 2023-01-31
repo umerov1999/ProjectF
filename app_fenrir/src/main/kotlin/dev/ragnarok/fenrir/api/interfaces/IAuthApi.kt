@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.api.interfaces
 
 import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
+import dev.ragnarok.fenrir.api.model.response.VKUrlResponse
 import io.reactivex.rxjava3.core.Single
 
 interface IAuthApi {
@@ -18,4 +19,16 @@ interface IAuthApi {
         sid: String?,
         v: String?
     ): Single<VKApiValidationResponse>
+
+    fun authByExchangeToken(
+        clientId: Int,
+        apiId: Int,
+        exchangeToken: String,
+        scope: String,
+        initiator: String,
+        deviceId: String?,
+        sakVersion: String?,
+        gaid: String?,
+        v: String?
+    ): Single<VKUrlResponse>
 }

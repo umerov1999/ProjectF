@@ -186,6 +186,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 if (player is AudioPlayerFragment) player.dismiss()
                 AudioPlayerFragment.newInstance(args).show(supportFragmentManager, "audio_player")
             }
+
             else -> Utils.openPlaceWithSwipebleActivity(this, place)
         }
     }
@@ -614,6 +615,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                             container.requestDisallowInterceptTouchEvent(true)
                             return@setOnTouchListener false
                         }
+
                         MotionEvent.ACTION_UP -> {
                             container.requestDisallowInterceptTouchEvent(false)
                             return@setOnTouchListener true

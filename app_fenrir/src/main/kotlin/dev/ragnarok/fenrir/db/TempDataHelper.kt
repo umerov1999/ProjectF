@@ -6,7 +6,13 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes
-import dev.ragnarok.fenrir.db.column.*
+import dev.ragnarok.fenrir.db.column.AudioColumns
+import dev.ragnarok.fenrir.db.column.LogColumns
+import dev.ragnarok.fenrir.db.column.SearchRequestColumns
+import dev.ragnarok.fenrir.db.column.ShortcutColumns
+import dev.ragnarok.fenrir.db.column.StickerSetColumns
+import dev.ragnarok.fenrir.db.column.StickersKeywordsColumns
+import dev.ragnarok.fenrir.db.column.TempDataColumns
 import dev.ragnarok.fenrir.module.FenrirNative
 
 class TempDataHelper(context: Context) :

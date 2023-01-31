@@ -10,7 +10,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.getParcelableCompat
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Topic
+import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.feedback.Feedback
 import dev.ragnarok.fenrir.model.feedback.ParcelableFeedbackWrapper
 import dev.ragnarok.fenrir.place.PlaceFactory.getCommentsPlace
@@ -20,7 +26,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getSimpleGalleryPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import java.lang.reflect.Field
-import java.util.*
+import java.util.Collections
 
 class FeedbackLinkDialog : DialogFragment(), FeedbackLinkAdapter.ActionListener {
     private var mFeedback: Feedback? = null

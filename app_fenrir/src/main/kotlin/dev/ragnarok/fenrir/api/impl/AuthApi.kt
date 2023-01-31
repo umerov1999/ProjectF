@@ -1,11 +1,16 @@
 package dev.ragnarok.fenrir.api.impl
 
 import dev.ragnarok.fenrir.Includes.provideApplicationContext
-import dev.ragnarok.fenrir.api.*
+import dev.ragnarok.fenrir.api.ApiException
+import dev.ragnarok.fenrir.api.AuthException
+import dev.ragnarok.fenrir.api.CaptchaNeedException
+import dev.ragnarok.fenrir.api.IDirectLoginSeviceProvider
+import dev.ragnarok.fenrir.api.NeedValidationException
 import dev.ragnarok.fenrir.api.interfaces.IAuthApi
 import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.VKUrlResponse
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getDeviceId
 import io.reactivex.rxjava3.core.Single
@@ -49,6 +54,7 @@ class AuthApi(private val service: IDirectLoginSeviceProvider) : IAuthApi {
                                     )
                                 )
                             }
+
                             "need_validation".equals(response.error, ignoreCase = true) -> {
                                 Single.error(
                                     NeedValidationException(
@@ -59,6 +65,7 @@ class AuthApi(private val service: IDirectLoginSeviceProvider) : IAuthApi {
                                     )
                                 )
                             }
+
                             response.error.nonNullNoEmpty() -> {
                                 Single.error(
                                     AuthException(
@@ -67,6 +74,7 @@ class AuthApi(private val service: IDirectLoginSeviceProvider) : IAuthApi {
                                     )
                                 )
                             }
+
                             else -> Single.just(response)
                         }
                     }
@@ -85,6 +93,43 @@ class AuthApi(private val service: IDirectLoginSeviceProvider) : IAuthApi {
                 service
                     .validatePhone(apiId, clientId, clientSecret, sid, v)
                     .map(extractResponseWithErrorHandling())
+            }
+    }
+
+    override fun authByExchangeToken(
+        clientId: Int,
+        apiId: Int,
+        exchangeToken: String,
+        scope: String,
+        initiator: String,
+        deviceId: String?,
+        sakVersion: String?,
+        gaid: String?,
+        v: String?
+    ): Single<VKUrlResponse> {
+        return service.provideAuthService()
+            .flatMap { service ->
+                service
+                    .authByExchangeToken(
+                        clientId,
+                        apiId,
+                        exchangeToken,
+                        scope,
+                        initiator,
+                        deviceId,
+                        sakVersion,
+                        gaid,
+                        v
+                    )
+                    .flatMap {
+                        if (it.error != null) {
+                            Single.error(
+                                AuthException(it.error.orEmpty(), it.errorDescription)
+                            )
+                        } else {
+                            Single.just(it)
+                        }
+                    }
             }
     }
 

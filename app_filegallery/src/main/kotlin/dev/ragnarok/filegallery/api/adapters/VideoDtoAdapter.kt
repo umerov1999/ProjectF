@@ -15,7 +15,7 @@ class VideoDtoAdapter : AbsAdapter<Video>("Video") {
         val root = json.asJsonObject
         val dto = Video()
         dto.setId(optInt(root, "id"))
-        dto.setOwnerId(optInt(root, "owner_id"))
+        dto.setOwnerId(optLong(root, "owner_id"))
         dto.setTitle(optString(root, "title"))
         dto.setDescription(optString(root, "description"))
         dto.setDuration(optInt(root, "duration"))

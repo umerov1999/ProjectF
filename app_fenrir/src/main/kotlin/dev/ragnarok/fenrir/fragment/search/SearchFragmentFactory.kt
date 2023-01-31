@@ -6,7 +6,19 @@ import dev.ragnarok.fenrir.fragment.search.audioplaylistsearch.AudioPlaylistSear
 import dev.ragnarok.fenrir.fragment.search.audiossearch.AudiosSearchFragment.Companion.newInstance
 import dev.ragnarok.fenrir.fragment.search.audiossearch.AudiosSearchFragment.Companion.newInstanceSelect
 import dev.ragnarok.fenrir.fragment.search.communitiessearch.CommunitiesSearchFragment
-import dev.ragnarok.fenrir.fragment.search.criteria.*
+import dev.ragnarok.fenrir.fragment.search.criteria.ArtistSearchCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.AudioPlaylistSearchCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.AudioSearchCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.BaseSearchCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.DialogsSearchCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.DocumentSearchCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.GroupSearchCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.MessageSearchCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.PeopleSearchCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.PhotoSearchCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.VideoSearchCriteria
+import dev.ragnarok.fenrir.fragment.search.criteria.WallSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.dialogssearch.DialogsSearchFragment.Companion.newInstance
 import dev.ragnarok.fenrir.fragment.search.docssearch.DocsSearchFragment.Companion.newInstance
 import dev.ragnarok.fenrir.fragment.search.messagessearch.MessagesSearchFragment.Companion.newInstance
@@ -28,54 +40,67 @@ object SearchFragmentFactory {
                 accountId,
                 if (criteria is PeopleSearchCriteria) criteria else null
             )
+
             SearchContentType.COMMUNITIES -> CommunitiesSearchFragment.newInstance(
                 accountId,
                 if (criteria is GroupSearchCriteria) criteria else null
             )
+
             SearchContentType.VIDEOS -> VideoSearchFragment.newInstance(
                 accountId,
                 if (criteria is VideoSearchCriteria) criteria else null
             )
+
             SearchContentType.AUDIOS -> newInstance(
                 accountId,
                 if (criteria is AudioSearchCriteria) criteria else null
             )
+
             SearchContentType.ARTISTS -> newInstance(
                 accountId,
                 if (criteria is ArtistSearchCriteria) criteria else null
             )
+
             SearchContentType.AUDIOS_SELECT -> newInstanceSelect(
                 accountId,
                 if (criteria is AudioSearchCriteria) criteria else null
             )
+
             SearchContentType.AUDIO_PLAYLISTS -> newInstance(
                 accountId,
                 if (criteria is AudioPlaylistSearchCriteria) criteria else null
             )
+
             SearchContentType.DOCUMENTS -> newInstance(
                 accountId,
                 if (criteria is DocumentSearchCriteria) criteria else null
             )
+
             SearchContentType.NEWS -> newInstance(
                 accountId,
                 if (criteria is NewsFeedCriteria) criteria else null
             )
+
             SearchContentType.MESSAGES -> newInstance(
                 accountId,
                 if (criteria is MessageSearchCriteria) criteria else null
             )
+
             SearchContentType.WALL -> WallSearchFragment.newInstance(
                 accountId,
                 if (criteria is WallSearchCriteria) criteria else null
             )
+
             SearchContentType.DIALOGS -> newInstance(
                 accountId,
                 if (criteria is DialogsSearchCriteria) criteria else null
             )
+
             SearchContentType.PHOTOS -> newInstance(
                 accountId,
                 if (criteria is PhotoSearchCriteria) criteria else null
             )
+
             else -> throw UnsupportedOperationException()
         }
     }

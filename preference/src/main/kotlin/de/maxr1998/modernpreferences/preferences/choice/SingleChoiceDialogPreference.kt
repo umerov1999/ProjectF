@@ -142,6 +142,7 @@ class SingleChoiceDialogPreference(
                 selection.titleRes != DEFAULT_RES_ID -> context.resources.getText(selection.titleRes)
                 else -> selection.title
             }
+
             else -> super.resolveSummary(context)
         }
     }

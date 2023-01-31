@@ -611,7 +611,7 @@ object NotificationHelper {
         val file = File(cache.absolutePath, prefix)
         try {
             if (!file.exists()) {
-                if (url == null || url.isEmpty()) throw Exception(mContext.getString(R.string.null_image_link))
+                if (url.isNullOrEmpty()) throw Exception(mContext.getString(R.string.null_image_link))
                 val output: OutputStream = FileOutputStream(file)
                 val builder: OkHttpClient.Builder = createOkHttp(5, false)
                 val request: Request = Request.Builder()

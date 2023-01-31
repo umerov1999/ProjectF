@@ -23,7 +23,10 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import dev.ragnarok.filegallery.*
+import dev.ragnarok.filegallery.Constants
+import dev.ragnarok.filegallery.Extra
+import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.StubAnimatorListener
 import dev.ragnarok.filegallery.activity.ActivityFeatures
 import dev.ragnarok.filegallery.activity.EnterPinActivity
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
@@ -32,10 +35,21 @@ import dev.ragnarok.filegallery.fragment.filemanager.FileManagerAdapter.ClickLis
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerBottomSheet
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerBottomSheet.Companion.REQUEST_TAG
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerBottomSheetSelected
-import dev.ragnarok.filegallery.listener.*
+import dev.ragnarok.filegallery.fromIOToMain
+import dev.ragnarok.filegallery.getParcelableCompat
+import dev.ragnarok.filegallery.getParcelableExtraCompat
+import dev.ragnarok.filegallery.listener.BackPressCallback
+import dev.ragnarok.filegallery.listener.CanBackPressedCallback
+import dev.ragnarok.filegallery.listener.OnSectionResumeCallback
+import dev.ragnarok.filegallery.listener.PicassoPauseOnScrollListener
+import dev.ragnarok.filegallery.listener.UpdatableNavigation
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.MusicPlaybackService
-import dev.ragnarok.filegallery.model.*
+import dev.ragnarok.filegallery.model.Audio
+import dev.ragnarok.filegallery.model.FileItem
+import dev.ragnarok.filegallery.model.FileType
+import dev.ragnarok.filegallery.model.SectionItem
+import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.place.PlaceFactory
 import dev.ragnarok.filegallery.place.PlaceFactory.getPhotoLocalPlace
 import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
@@ -49,7 +63,8 @@ import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
 import java.io.File
-import java.util.*
+import java.util.Calendar
+import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerView>(),
@@ -189,7 +204,10 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
             mSwipeRefreshLayout?.isRefreshing = false
             if (presenter?.canRefresh() == true) {
                 mLayoutManager?.onSaveInstanceState()?.let { presenter?.backupDirectoryScroll(it) }
-                presenter?.loadFiles(back = false, caches = false, false)
+                presenter?.loadFiles(
+                    back = false, caches = false,
+                    fromCache = false
+                )
             }
         }
         ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
@@ -271,7 +289,10 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
         val tmp = File(item.file_path ?: return)
         if (tmp.setLastModified(Calendar.getInstance().time.time)) {
             showMessage(R.string.success)
-            presenter?.loadFiles(back = false, caches = false, false)
+            presenter?.loadFiles(
+                back = false, caches = false,
+                fromCache = false
+            )
         }
     }
 

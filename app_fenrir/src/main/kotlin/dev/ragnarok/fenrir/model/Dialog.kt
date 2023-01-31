@@ -3,10 +3,17 @@ package dev.ragnarok.fenrir.model
 import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
+import dev.ragnarok.fenrir.putBoolean
+import dev.ragnarok.fenrir.readTypedObjectCompat
+import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
+import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Dialog : IdentificableOwner, Parcelable {
     var peerId = 0L
@@ -161,6 +168,7 @@ class Dialog : IdentificableOwner, Parcelable {
                     title
                 } else interlocutor?.fullName
             }
+
             Peer.CHAT, Peer.CONTACT -> title
             else -> throw IllegalStateException("Unknown peer id: $peerId")
         }
@@ -178,6 +186,7 @@ class Dialog : IdentificableOwner, Parcelable {
                     title
                 } else interlocutor?.fullName
             }
+
             Peer.CHAT, Peer.CONTACT -> title
             else -> throw IllegalStateException("Unknown peer id: $peerId")
         }

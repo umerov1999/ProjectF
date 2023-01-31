@@ -57,7 +57,8 @@ final class RightSheetDelegate extends SheetDelegate {
   @Override
   int getExpandedOffset() {
     // Calculate the expanded offset based on the width of the content.
-    return max(0, getHiddenOffset() - sheetBehavior.getChildWidth());
+    return max(
+        0, getHiddenOffset() - sheetBehavior.getChildWidth() - sheetBehavior.getInnerMargin());
   }
 
   /** Whether the view has been released from a drag close to the origin edge. */
@@ -111,7 +112,7 @@ final class RightSheetDelegate extends SheetDelegate {
 
   @Override
   boolean isSettling(View child, int state, boolean isReleasingView) {
-    int left = sheetBehavior.getOutwardEdgeOffsetForState(state);
+    int left = sheetBehavior.getOuterEdgeOffsetForState(state);
     ViewDragHelper viewDragHelper = sheetBehavior.getViewDragHelper();
     return viewDragHelper != null
         && (isReleasingView
@@ -120,12 +121,12 @@ final class RightSheetDelegate extends SheetDelegate {
   }
 
   @Override
-  <V extends View> int getOutwardEdge(@NonNull V child) {
-    return child.getLeft();
+  <V extends View> int getOuterEdge(@NonNull V child) {
+    return child.getLeft() - sheetBehavior.getInnerMargin();
   }
 
   @Override
-  float calculateSlideOffsetBasedOnOutwardEdge(int left) {
+  float calculateSlideOffset(int left) {
     float hiddenOffset = getHiddenOffset();
     float sheetWidth = hiddenOffset - getExpandedOffset();
 
@@ -142,5 +143,10 @@ final class RightSheetDelegate extends SheetDelegate {
     if (sheetLeft <= parentWidth) {
       coplanarSiblingLayoutParams.rightMargin = parentWidth - sheetLeft;
     }
+  }
+
+  @Override
+  int calculateInnerMargin(@NonNull MarginLayoutParams marginLayoutParams) {
+    return marginLayoutParams.rightMargin;
   }
 }

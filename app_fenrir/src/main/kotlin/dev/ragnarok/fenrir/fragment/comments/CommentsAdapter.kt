@@ -35,7 +35,7 @@ import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.view.CommentContainer
 import dev.ragnarok.fenrir.view.WeakViewAnimatorAdapter
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
-import java.util.*
+import java.util.Locale
 
 class CommentsAdapter(
     private val context: Context,
@@ -213,6 +213,7 @@ class CommentsAdapter(
             TYPE_DELETED -> DeletedHolder(
                 view
             )
+
             else -> throw IllegalArgumentException()
         }
     }

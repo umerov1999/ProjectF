@@ -3,7 +3,12 @@ package dev.ragnarok.filegallery.materialpopupmenu
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.View
-import androidx.annotation.*
+import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
+import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
+import androidx.annotation.StyleRes
+import androidx.annotation.UiThread
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.MaterialRecyclerViewPopupWindow
 import dev.ragnarok.filegallery.R

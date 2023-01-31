@@ -8,7 +8,8 @@ import dev.ragnarok.filegallery.util.AppPerms.hasReadWriteStoragePermission
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.CompletableEmitter
 import java.io.File
-import java.util.*
+import java.util.LinkedList
+import java.util.Locale
 
 class FileExistJVM : AbsFileExist {
     private val CachedAudios: MutableList<String> = LinkedList()

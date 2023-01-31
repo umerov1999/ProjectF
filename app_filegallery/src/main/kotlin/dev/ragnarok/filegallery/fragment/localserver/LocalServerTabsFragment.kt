@@ -84,10 +84,13 @@ class LocalServerTabsFragment : BaseFragment(), BackPressCallback {
             when ((mPagerAdapter ?: return@TabLayoutMediator).tFragments[position]) {
                 LOCAL_SERVER_AUDIO -> tab.text =
                     getString(R.string.local_server_audio)
+
                 LOCAL_SERVER_PHOTO -> tab.text =
                     getString(R.string.local_server_photo)
+
                 LOCAL_SERVER_VIDEO -> tab.text =
                     getString(R.string.local_server_video)
+
                 LOCAL_SERVER_FS -> tab.text =
                     getString(R.string.files)
             }
@@ -99,13 +102,16 @@ class LocalServerTabsFragment : BaseFragment(), BackPressCallback {
             LOCAL_SERVER_AUDIO -> {
                 AudiosLocalServerFragment()
             }
+
             LOCAL_SERVER_PHOTO -> PhotosLocalServerFragment()
             LOCAL_SERVER_VIDEO -> {
                 VideosLocalServerFragment()
             }
+
             LOCAL_SERVER_FS -> {
                 FileManagerRemoteFragment()
             }
+
             else -> throw UnsupportedOperationException()
         }
     }

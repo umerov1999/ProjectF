@@ -56,7 +56,35 @@ import dev.ragnarok.fenrir.fragment.vkphotos.VKPhotosFragment
 import dev.ragnarok.fenrir.fragment.voters.VotersFragment
 import dev.ragnarok.fenrir.fragment.wallattachments.wallsearchcommentsattachments.WallSearchCommentsAttachmentsFragment
 import dev.ragnarok.fenrir.fragment.wallpost.WallPostFragment
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.AbsModel
+import dev.ragnarok.fenrir.model.Banned
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.Document
+import dev.ragnarok.fenrir.model.EditingPostType
+import dev.ragnarok.fenrir.model.FriendsCounters
+import dev.ragnarok.fenrir.model.GroupSettings
+import dev.ragnarok.fenrir.model.InternalVideoSize
+import dev.ragnarok.fenrir.model.LocalImageAlbum
+import dev.ragnarok.fenrir.model.Manager
+import dev.ragnarok.fenrir.model.Market
+import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.ModelsBundle
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.ParcelableOwnerWrapper
+import dev.ragnarok.fenrir.model.Peer
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.PhotoAlbumEditor
+import dev.ragnarok.fenrir.model.Poll
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.TmpSource
+import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.model.UserDetails
+import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.model.WallEditorAttrs
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 
@@ -553,11 +581,11 @@ object PlaceFactory {
         return Place(Place.REPOST).setArguments(RepostFragment.buildArgs(accountId, gid, post))
     }
 
-    fun getEditCommentPlace(accountId: Long, comment: Comment?, commemtId: Int?): Place {
+    fun getEditCommentPlace(accountId: Long, comment: Comment?, commentId: Int?): Place {
         val ret = Place(Place.EDIT_COMMENT)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withParcelableExtra(Extra.COMMENT, comment)
-        if (commemtId != null) ret.withIntExtra(Extra.COMMENT_ID, commemtId)
+        if (commentId != null) ret.withIntExtra(Extra.COMMENT_ID, commentId)
         return ret
     }
 

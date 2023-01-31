@@ -41,8 +41,13 @@ import com.google.android.material.snackbar.Snackbar
 import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
 import de.maxr1998.modernpreferences.helpers.categoryHeader
 import de.maxr1998.modernpreferences.helpers.onLongClick
-import de.maxr1998.modernpreferences.preferences.*
-import java.util.*
+import de.maxr1998.modernpreferences.preferences.AccentButtonPreference
+import de.maxr1998.modernpreferences.preferences.CategoryHeader
+import de.maxr1998.modernpreferences.preferences.CollapsePreference
+import de.maxr1998.modernpreferences.preferences.ExpandableTextPreference
+import de.maxr1998.modernpreferences.preferences.ImagePreference
+import de.maxr1998.modernpreferences.preferences.SeekBarPreference
+import java.util.Stack
 import kotlin.math.max
 
 @Suppress("MemberVisibilityCanBePrivate", "NotifyDataSetChanged")
@@ -104,7 +109,7 @@ class PreferencesAdapter @VisibleForTesting constructor(
         query: String
     ): Boolean {
         val obj = if (res != DEFAULT_RES_ID) context.resources.getString(res) else str
-        if (obj == null || obj.isEmpty()) {
+        if (obj.isNullOrEmpty()) {
             return false
         }
         return obj.contains(query, true)
@@ -145,7 +150,7 @@ class PreferencesAdapter @VisibleForTesting constructor(
                     val ref = preference.makeCopyForFind()
                     val title = preference.parent?.title
                     val titleRes = preference.parent?.titleRes ?: DEFAULT_RES_ID
-                    if (title != null && title.isNotEmpty()) {
+                    if (!title.isNullOrEmpty()) {
                         ref.onLongClick {
                             Snackbar.make(view, title, Snackbar.LENGTH_LONG)
                                 .show()

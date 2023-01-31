@@ -21,9 +21,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.textfield.TextInputEditText
 import com.squareup.picasso3.Transformation
-import dev.ragnarok.filegallery.*
+import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Includes.networkInterfaces
+import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.api.interfaces.ILocalServerApi
+import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.PlayerStatus
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
@@ -31,6 +33,7 @@ import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.menu.options.AudioLocalServerOption
+import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.filegallery.picasso.transforms.PolyTransformation
 import dev.ragnarok.filegallery.picasso.transforms.RoundTransformation
@@ -38,6 +41,7 @@ import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorPrimary
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorSecondary
 import dev.ragnarok.filegallery.settings.Settings.get
+import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.DownloadWorkUtils.doDownloadAudio
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.toast.CustomSnackbars
@@ -125,6 +129,7 @@ class AudioLocalServerRecyclerAdapter(
                 Utils.doWavesLottie(holder.visual, true)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
             }
+
             2 -> {
                 Utils.doWavesLottie(holder.visual, false)
                 holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
@@ -218,6 +223,7 @@ class AudioLocalServerRecyclerAdapter(
                                         mContext, view
                                     )?.showToast(R.string.saved_audio)
                                 }
+
                                 1 -> {
                                     CustomSnackbars.createCustomSnackbars(view)
                                         ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
@@ -228,6 +234,7 @@ class AudioLocalServerRecyclerAdapter(
                                         ) { doDownloadAudio(mContext, audio, true) }
                                         ?.show()
                                 }
+
                                 else -> {
                                     audio.downloadIndicator = false
                                     updateDownloadState(holder, audio)
@@ -237,19 +244,23 @@ class AudioLocalServerRecyclerAdapter(
                                 }
                             }
                         }
+
                         AudioLocalServerOption.play_item_audio -> if (mClickListener != null) {
                             mClickListener?.onClick(position, audio)
                             if (get().main()
                                     .isShow_mini_player()
                             ) getPlayerPlace().tryOpenWith(mContext)
                         }
+
                         AudioLocalServerOption.play_item_after_current_audio -> MusicPlaybackController.playAfterCurrent(
                             audio
                         )
+
                         AudioLocalServerOption.bitrate_item_audio -> getBitrate(
                             audio.url,
                             audio.duration
                         )
+
                         AudioLocalServerOption.update_time_item_audio -> {
                             val hash = parseLocalServerURL(audio.url)
                             if (hash.isNullOrEmpty()) {
@@ -268,6 +279,7 @@ class AudioLocalServerRecyclerAdapter(
                                     )?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(t)
                                 }
                         }
+
                         AudioLocalServerOption.edit_item_audio -> {
                             val hash2 = parseLocalServerURL(audio.url)
                             if (hash2.isNullOrEmpty()) {
@@ -315,6 +327,7 @@ class AudioLocalServerRecyclerAdapter(
                                     )?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(t)
                                 }
                         }
+
                         AudioLocalServerOption.delete_item_audio -> MaterialAlertDialogBuilder(
                             mContext
                         )
@@ -341,6 +354,7 @@ class AudioLocalServerRecyclerAdapter(
                             }
                             .setNegativeButton(R.string.button_cancel, null)
                             .show()
+
                         else -> {}
                     }
                 }
@@ -415,6 +429,7 @@ class AudioLocalServerRecyclerAdapter(
                         mContext, holder.Track
                     )?.showToast(R.string.saved_audio)
                 }
+
                 1 -> {
                     CustomSnackbars.createCustomSnackbars(v)
                         ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
@@ -424,6 +439,7 @@ class AudioLocalServerRecyclerAdapter(
                             R.string.button_yes
                         ) { doDownloadAudio(mContext, audio, true) }?.show()
                 }
+
                 else -> {
                     audio.downloadIndicator = false
                     updateDownloadState(holder, audio)
@@ -469,6 +485,7 @@ class AudioLocalServerRecyclerAdapter(
                 currAudio = MusicPlaybackController.currentAudio
                 updateAudio(currAudio)
             }
+
             PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
         }
     }

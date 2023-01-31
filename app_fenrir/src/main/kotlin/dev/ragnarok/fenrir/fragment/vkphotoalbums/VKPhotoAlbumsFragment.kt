@@ -4,7 +4,12 @@ import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -41,11 +46,11 @@ import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentThem
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
 class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbumsView>(),
-    IPhotoAlbumsView, VkPhotoAlbumsAdapter.ClickListener, SwipeRefreshLayout.OnRefreshListener,
+    IPhotoAlbumsView, VKPhotoAlbumsAdapter.ClickListener, SwipeRefreshLayout.OnRefreshListener,
     MenuProvider {
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mFab: FloatingActionButton? = null
-    private var mAdapter: VkPhotoAlbumsAdapter? = null
+    private var mAdapter: VKPhotoAlbumsAdapter? = null
     private var mEmptyText: TextView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,7 +83,7 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
                 presenter?.fireScrollToEnd()
             }
         })
-        mAdapter = VkPhotoAlbumsAdapter(requireActivity(), emptyList())
+        mAdapter = VKPhotoAlbumsAdapter(requireActivity(), emptyList())
         mAdapter?.setClickListener(this)
         recyclerView.adapter = mAdapter
         mFab = view.findViewById(R.id.fab)
@@ -168,6 +173,7 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
                     0 -> presenter?.fireAlbumDeleteClick(
                         album
                     )
+
                     1 -> presenter?.fireAlbumEditClick(
                         album
                     )
@@ -255,11 +261,13 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
                 presenter?.fireAllComments()
                 true
             }
+
             R.id.action_photo_toggle_like -> {
                 Settings.get().other().isDisable_likes = !Settings.get().other().isDisable_likes
                 requireActivity().invalidateOptionsMenu()
                 true
             }
+
             else -> false
         }
     }

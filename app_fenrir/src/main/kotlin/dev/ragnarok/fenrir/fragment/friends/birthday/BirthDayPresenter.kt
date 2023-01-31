@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.BirthDay
 import dev.ragnarok.fenrir.model.User
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import java.util.*
+import java.util.Calendar
 
 class BirthDayPresenter(accountId: Long, private val ownerId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IBirthDayView>(accountId, savedInstanceState) {

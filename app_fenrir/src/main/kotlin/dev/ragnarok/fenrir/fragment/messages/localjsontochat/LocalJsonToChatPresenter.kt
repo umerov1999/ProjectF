@@ -52,24 +52,31 @@ class LocalJsonToChatPresenter(
             1 -> {
                 return message.attachments?.photos.nonNullNoEmpty()
             }
+
             2 -> {
                 return message.attachments?.videos.nonNullNoEmpty()
             }
+
             3 -> {
                 return message.attachments?.docs.nonNullNoEmpty()
             }
+
             4 -> {
                 return message.attachments?.audios.nonNullNoEmpty()
             }
+
             5 -> {
                 return message.attachments?.links.nonNullNoEmpty()
             }
+
             6 -> {
                 return message.attachments?.photoAlbums.nonNullNoEmpty()
             }
+
             7 -> {
                 return message.attachments?.audioPlaylists.nonNullNoEmpty()
             }
+
             9 -> {
                 return message.attachments?.posts.nonNullNoEmpty()
             }

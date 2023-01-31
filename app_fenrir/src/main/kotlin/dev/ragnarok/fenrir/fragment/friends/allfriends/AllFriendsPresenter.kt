@@ -18,7 +18,7 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.indexOf
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class AllFriendsPresenter(accountId: Long, private val userId: Long, savedInstanceState: Bundle?) :

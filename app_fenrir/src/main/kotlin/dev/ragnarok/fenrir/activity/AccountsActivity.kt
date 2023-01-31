@@ -32,6 +32,7 @@ class AccountsActivity : NoMainActivity(), PlaceProvider {
                     .addToBackStack("preferences")
                     .commit()
             }
+
             Place.SETTINGS_THEME -> {
                 supportFragmentManager
                     .beginTransaction()
@@ -39,6 +40,7 @@ class AccountsActivity : NoMainActivity(), PlaceProvider {
                     .addToBackStack("preferences_themes")
                     .commit()
             }
+
             Place.SHORTCUTS -> {
                 supportFragmentManager
                     .beginTransaction()
@@ -46,6 +48,7 @@ class AccountsActivity : NoMainActivity(), PlaceProvider {
                     .addToBackStack("shortcuts")
                     .commit()
             }
+
             else -> {
                 CustomSnackbars.createCustomSnackbars(findViewById(getMainContainerViewId()))
                     ?.coloredSnack(R.string.not_available, Color.RED)?.show()

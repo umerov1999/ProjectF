@@ -17,7 +17,7 @@ class VKApiPrivacy(var category: String?) {
         val typeValue = category
         val entriesLine = join(", ", entries)
         val option = ArrayList<String?>()
-        if (typeValue != null && typeValue.isNotEmpty()) {
+        if (!typeValue.isNullOrEmpty()) {
             option.add(typeValue)
         }
         if (entriesLine.isNotEmpty()) {

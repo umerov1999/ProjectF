@@ -29,10 +29,13 @@ object MusicPlaybackController {
                 when (intent.action) {
                     MusicPlaybackService.PREPARED, MusicPlaybackService.PLAYSTATE_CHANGED -> result =
                         PlayerStatus.UPDATE_PLAY_PAUSE
+
                     MusicPlaybackService.SHUFFLEMODE_CHANGED -> result =
                         PlayerStatus.SHUFFLEMODE_CHANGED
+
                     MusicPlaybackService.REPEATMODE_CHANGED -> result =
                         PlayerStatus.REPEATMODE_CHANGED
+
                     MusicPlaybackService.META_CHANGED -> result = PlayerStatus.UPDATE_TRACK_INFO
                     MusicPlaybackService.QUEUE_CHANGED -> result = PlayerStatus.UPDATE_PLAY_LIST
                 }
@@ -187,12 +190,14 @@ object MusicPlaybackController {
                 when (it.repeatMode) {
                     MusicPlaybackService.REPEAT_NONE -> it.repeatMode =
                         MusicPlaybackService.REPEAT_ALL
+
                     MusicPlaybackService.REPEAT_ALL -> {
                         it.repeatMode = MusicPlaybackService.REPEAT_CURRENT
                         if (it.shuffleMode != MusicPlaybackService.SHUFFLE_NONE) {
                             it.shuffleMode = MusicPlaybackService.SHUFFLE_NONE
                         }
                     }
+
                     else -> it.repeatMode = MusicPlaybackService.REPEAT_NONE
                 }
             }
@@ -213,8 +218,10 @@ object MusicPlaybackController {
                             it.repeatMode = MusicPlaybackService.REPEAT_ALL
                         }
                     }
+
                     MusicPlaybackService.SHUFFLE -> it.shuffleMode =
                         MusicPlaybackService.SHUFFLE_NONE
+
                     else -> {}
                 }
             }

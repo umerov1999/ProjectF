@@ -27,7 +27,7 @@ import dev.ragnarok.fenrir.util.Utils.listEmptyIfNullMutable
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import java.io.File
-import java.util.*
+import java.util.Arrays
 
 class StickersInteractor(private val networker: INetworker, private val storage: IStickersStorage) :
     IStickersInteractor {

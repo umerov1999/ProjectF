@@ -15,7 +15,7 @@ object Auth {
     private const val TAG = "Fenrir.Auth"
 
     @Throws(UnsupportedEncodingException::class)
-    fun getUrl(api_id: String, scope: String, groupIds: String): String {
+    fun getUrl(api_id: String, scope: String, groupIds: String?): String {
         var url = "https://oauth.vk.com/authorize?client_id=$api_id"
         url = (url + "&display=mobile&scope="
                 + scope + "&redirect_uri=" + URLEncoder.encode(
@@ -57,7 +57,7 @@ object Auth {
         Log.i(TAG, "access_token=$access_token")
         val user_id = extractPattern(url, "user_id=(\\d*)")
         Log.i(TAG, "user_id=$user_id")
-        if (user_id == null || user_id.isEmpty() || access_token == null || access_token.isEmpty()) {
+        if (user_id.isNullOrEmpty() || access_token.isNullOrEmpty()) {
             throw Exception("Failed to parse redirect url $url")
         }
         return arrayOf(access_token, user_id)

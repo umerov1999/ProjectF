@@ -4,8 +4,16 @@
 
 package dev.ragnarok.fenrir.util.serializeble.json
 
-import dev.ragnarok.fenrir.util.serializeble.json.internal.*
-import kotlinx.serialization.*
+import dev.ragnarok.fenrir.util.serializeble.json.internal.JavaStreamSerialReader
+import dev.ragnarok.fenrir.util.serializeble.json.internal.JsonToJavaStreamWriter
+import dev.ragnarok.fenrir.util.serializeble.json.internal.decodeByReader
+import dev.ragnarok.fenrir.util.serializeble.json.internal.decodeToSequenceByReader
+import dev.ragnarok.fenrir.util.serializeble.json.internal.encodeByWriter
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.serializer
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -58,7 +66,12 @@ fun <T> Json.decodeFromStream(
     deserializer: DeserializationStrategy<T>,
     stream: InputStream
 ): T {
-    return decodeByReader(deserializer, JavaStreamSerialReader(stream))
+    val reader = JavaStreamSerialReader(stream)
+    try {
+        return decodeByReader(deserializer, reader)
+    } finally {
+        reader.release()
+    }
 }
 
 /**

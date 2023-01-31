@@ -18,12 +18,15 @@ class NewsfeedCommentDtoAdapter : AbsAdapter<Dto>("Dto") {
             "photo" -> {
                 return PhotoDto(kJson.decodeFromJsonElement(VKApiPhoto.serializer(), root))
             }
+
             "post" -> {
                 return PostDto(kJson.decodeFromJsonElement(VKApiPost.serializer(), root))
             }
+
             "video" -> {
                 return VideoDto(kJson.decodeFromJsonElement(VKApiVideo.serializer(), root))
             }
+
             "topic" -> {
                 val topic = VKApiTopic()
                 topic.id = optInt(root, "post_id")

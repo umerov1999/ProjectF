@@ -3,11 +3,16 @@ package dev.ragnarok.fenrir.model
 import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.interfaces.Identificable
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.putBoolean
+import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.util.ParcelUtils.readIntStringMap
 import dev.ragnarok.fenrir.util.ParcelUtils.writeIntStringMap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Message : AbsModel, Identificable, ISelectable {
     var accountId = 0L
@@ -289,31 +294,40 @@ class Message : AbsModel, Identificable, ISelectable {
         when (action) {
             ChatAction.PHOTO_UPDATE -> result =
                 context.getString(R.string.service_update_chat_photo, senderUserName)
+
             ChatAction.PHOTO_REMOVE -> result =
                 context.getString(R.string.service_remove_chat_photo, senderUserName)
+
             ChatAction.CREATE -> result =
                 context.getString(R.string.service_create_chat, senderUserName, actionText)
+
             ChatAction.TITLE_UPDATE -> result = context.getString(
                 R.string.service_changed_chat_name,
                 senderUserName,
                 actionText
             )
+
             ChatAction.INVITE_USER -> result = if (itself) {
                 context.getString(R.string.service_return_to_chat, senderUserName)
             } else {
                 context.getString(R.string.service_invited, senderUserName, actionSubject)
             }
+
             ChatAction.KICK_USER -> result = if (itself) {
                 context.getString(R.string.service_left_this_chat, senderUserName)
             } else {
                 context.getString(R.string.service_removed, senderUserName, actionSubject)
             }
+
             ChatAction.PIN_MESSAGE -> result =
                 context.getString(R.string.service_pinned_message, senderUserName)
+
             ChatAction.UNPIN_MESSAGE -> result =
                 context.getString(R.string.service_unpinned_message, senderUserName)
+
             ChatAction.INVITE_USER_BY_LINK -> result =
                 context.getString(R.string.service_invite_user_by_link, senderUserName)
+
             ChatAction.NO_ACTION -> {}
         }
         return result
@@ -406,39 +420,51 @@ class Message : AbsModel, Identificable, ISelectable {
                 !isHasAttachments -> {
                     return MessageType.NO
                 }
+
                 attachments == null || attachments?.isEmptyAttachments == true -> {
                     return MessageType.OTHERS
                 }
+
                 isSticker -> {
                     return MessageType.STICKER
                 }
+
                 isGraffiti -> {
                     return MessageType.GRAFFITI
                 }
+
                 isCall -> {
                     return MessageType.CALL
                 }
+
                 isGift -> {
                     return MessageType.GIFT
                 }
+
                 isVoiceMessage -> {
                     return MessageType.VOICE
                 }
+
                 attachments?.audios.nonNullNoEmpty() && attachments?.photos.isNullOrEmpty() && attachments?.videos.isNullOrEmpty() && attachments?.docs.isNullOrEmpty() && attachments?.posts.isNullOrEmpty() -> {
                     return MessageType.AUDIO
                 }
+
                 attachments?.audios.isNullOrEmpty() && attachments?.photos.nonNullNoEmpty() && attachments?.videos.isNullOrEmpty() && attachments?.docs.isNullOrEmpty() && attachments?.posts.isNullOrEmpty() -> {
                     return MessageType.PHOTO
                 }
+
                 attachments?.audios.isNullOrEmpty() && attachments?.photos.isNullOrEmpty() && attachments?.videos.nonNullNoEmpty() && attachments?.docs.isNullOrEmpty() && attachments?.posts.isNullOrEmpty() -> {
                     return MessageType.VIDEO
                 }
+
                 attachments?.audios.isNullOrEmpty() && attachments?.photos.isNullOrEmpty() && attachments?.videos.isNullOrEmpty() && attachments?.docs.nonNullNoEmpty() && attachments?.posts.isNullOrEmpty() -> {
                     return MessageType.DOC
                 }
+
                 attachments?.audios.isNullOrEmpty() && attachments?.photos.isNullOrEmpty() && attachments?.videos.isNullOrEmpty() && attachments?.docs.isNullOrEmpty() && attachments?.posts.nonNullNoEmpty() -> {
                     return MessageType.WALL
                 }
+
                 else -> return MessageType.OTHERS
             }
         }

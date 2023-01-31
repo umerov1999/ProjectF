@@ -318,13 +318,16 @@ class ChatPresenter(
                 deleteMessageFromDbAsync(message)
                 return
             }
+
             MessageStatus.ERROR -> {
                 view?.showErrorSendDialog(message)
                 return
             }
+
             MessageStatus.EDITING -> {
 
             }
+
             MessageStatus.SENT -> {
 
             }
@@ -1729,17 +1732,20 @@ class ChatPresenter(
                         sent.add(message)
                     }
                 }
+
                 MessageStatus.QUEUE, MessageStatus.ERROR, MessageStatus.SENDING -> {
                     deleteMessageFromDbAsync(message)
                     iterator.remove()
                     hasChanged = true
                 }
+
                 MessageStatus.WAITING_FOR_UPLOAD -> {
                     cancelWaitingForUploadMessage(message.getObjectId())
                     deleteMessageFromDbAsync(message)
                     iterator.remove()
                     hasChanged = true
                 }
+
                 MessageStatus.EDITING -> {
 
                 }
@@ -1778,17 +1784,20 @@ class ChatPresenter(
                         sent.add(message.getObjectId())
                     }
                 }
+
                 MessageStatus.QUEUE, MessageStatus.ERROR, MessageStatus.SENDING -> {
                     deleteMessageFromDbAsync(message)
                     iterator.remove()
                     hasChanged = true
                 }
+
                 MessageStatus.WAITING_FOR_UPLOAD -> {
                     cancelWaitingForUploadMessage(message.getObjectId())
                     deleteMessageFromDbAsync(message)
                     iterator.remove()
                     hasChanged = true
                 }
+
                 MessageStatus.EDITING -> {
 
                 }
@@ -2363,6 +2372,7 @@ class ChatPresenter(
                         view?.showError(R.string.upload_not_resolved_exception_message)
                         return
                     }
+
                     else -> models.add(entry.attachment)
                 }
             }

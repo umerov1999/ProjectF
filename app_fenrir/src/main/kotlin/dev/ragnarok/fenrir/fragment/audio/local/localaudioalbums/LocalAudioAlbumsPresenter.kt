@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.model.LocalImageAlbum
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermission
 import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.PersistentLogger
-import java.util.*
+import java.util.Locale
 
 class LocalAudioAlbumsPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<ILocalAudioAlbumsView>(savedInstanceState) {

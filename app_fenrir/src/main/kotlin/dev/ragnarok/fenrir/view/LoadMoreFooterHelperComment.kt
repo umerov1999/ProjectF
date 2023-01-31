@@ -29,16 +29,19 @@ class LoadMoreFooterHelperComment {
                 holder?.bLoadMore?.visibility = View.INVISIBLE
                 holder?.progress?.visibility = View.VISIBLE
             }
+
             LoadMoreState.END_OF_LIST -> {
                 holder?.tvEndOfList?.visibility = View.VISIBLE
                 holder?.bLoadMore?.visibility = View.INVISIBLE
                 holder?.progress?.visibility = View.INVISIBLE
             }
+
             LoadMoreState.CAN_LOAD_MORE -> {
                 holder?.tvEndOfList?.visibility = View.INVISIBLE
                 holder?.bLoadMore?.visibility = View.VISIBLE
                 holder?.progress?.visibility = View.INVISIBLE
             }
+
             LoadMoreState.INVISIBLE -> {}
         }
     }

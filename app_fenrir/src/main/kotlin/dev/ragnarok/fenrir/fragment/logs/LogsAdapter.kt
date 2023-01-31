@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.model.LogEventWrapper
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
-import java.util.*
+import java.util.EventListener
 
 class LogsAdapter(data: MutableList<LogEventWrapper>, private val actionListener: ActionListener) :
     RecyclerBindableAdapter<LogEventWrapper, LogsAdapter.Holder>(data) {

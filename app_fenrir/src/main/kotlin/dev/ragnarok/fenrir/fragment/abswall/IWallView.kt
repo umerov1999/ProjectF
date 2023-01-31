@@ -5,7 +5,12 @@ import dev.ragnarok.fenrir.fragment.base.core.IErrorView
 import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 import dev.ragnarok.fenrir.fragment.base.core.ISnackbarView
 import dev.ragnarok.fenrir.fragment.base.core.IToastView
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.EditingPostType
+import dev.ragnarok.fenrir.model.LoadMoreState
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Story
 
 interface IWallView : IAttachmentsPlacesView, IMvpView, ISnackbarView,
     IErrorView, IToastView {

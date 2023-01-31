@@ -3,17 +3,30 @@ package dev.ragnarok.fenrir.fragment.groupwall
 import android.content.Context
 import android.os.Bundle
 import androidx.annotation.StringRes
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Includes
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
-import dev.ragnarok.fenrir.domain.*
+import dev.ragnarok.fenrir.domain.ICommunitiesInteractor
+import dev.ragnarok.fenrir.domain.IFaveInteractor
+import dev.ragnarok.fenrir.domain.IOwnersRepository
+import dev.ragnarok.fenrir.domain.IWallsRepository
+import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.Repository.walls
 import dev.ragnarok.fenrir.domain.impl.GroupSettingsInteractor
 import dev.ragnarok.fenrir.fragment.abswall.AbsWallPresenter
 import dev.ragnarok.fenrir.fragment.groupwall.IGroupWallView.IOptionMenuView
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.fromIOToMain
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.CommunityDetails
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Peer
+import dev.ragnarok.fenrir.model.PostFilter
+import dev.ragnarok.fenrir.model.Token
 import dev.ragnarok.fenrir.model.criteria.WallCriteria
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.PlaceFactory.getMentionsPlace
+import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.ISettings.IAccountsSettings
 import dev.ragnarok.fenrir.util.ShortcutUtils.createWallShortcutRx
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
@@ -318,17 +331,21 @@ class GroupWallPresenter(
                     VKApiCommunity.Status.CLOSED -> primaryText = R.string.community_send_request
                     VKApiCommunity.Status.OPEN -> primaryText = R.string.community_join
                 }
+
                 VKApiCommunity.Type.PAGE -> primaryText = R.string.community_follow
                 VKApiCommunity.Type.EVENT -> primaryText = R.string.community_to_go
             }
+
             VKApiCommunity.MemberStatus.IS_MEMBER -> when (community.communityType) {
                 VKApiCommunity.Type.GROUP -> primaryText = R.string.community_leave
                 VKApiCommunity.Type.PAGE -> primaryText = R.string.community_unsubscribe_from_news
                 VKApiCommunity.Type.EVENT -> primaryText = R.string.community_not_to_go
             }
+
             VKApiCommunity.MemberStatus.NOT_SURE -> primaryText = R.string.community_leave
             VKApiCommunity.MemberStatus.DECLINED_INVITATION -> primaryText =
                 R.string.community_send_request
+
             VKApiCommunity.MemberStatus.SENT_REQUEST -> primaryText = R.string.cancel_request
             VKApiCommunity.MemberStatus.INVITED -> {
                 primaryText = R.string.community_join
@@ -352,15 +369,18 @@ class GroupWallPresenter(
                 when (community.communityType) {
                     VKApiCommunity.Type.GROUP, VKApiCommunity.Type.EVENT -> resultMessage =
                         R.string.community_leave_success
+
                     VKApiCommunity.Type.PAGE -> resultMessage =
                         R.string.community_unsubscribe_from_news_success
                 }
             }
+
             VKApiCommunity.MemberStatus.SENT_REQUEST -> if (community.communityType == VKApiCommunity.Type.GROUP) {
                 community.setMemberStatus(VKApiCommunity.MemberStatus.IS_NOT_MEMBER)
                 community.setMember(false)
                 resultMessage = R.string.request_canceled
             }
+
             VKApiCommunity.MemberStatus.INVITED -> if (community.communityType == VKApiCommunity.Type.GROUP) {
                 community.setMember(false)
                 community.setMemberStatus(VKApiCommunity.MemberStatus.IS_NOT_MEMBER)
@@ -387,23 +407,27 @@ class GroupWallPresenter(
                         community.setMemberStatus(VKApiCommunity.MemberStatus.SENT_REQUEST)
                         resultMessage = R.string.community_send_request_success
                     }
+
                     VKApiCommunity.Status.OPEN -> {
                         community.setMember(true)
                         community.setMemberStatus(VKApiCommunity.MemberStatus.IS_MEMBER)
                         resultMessage = R.string.community_join_success
                     }
                 }
+
                 VKApiCommunity.Type.PAGE, VKApiCommunity.Type.EVENT -> {
                     community.setMember(true)
                     community.setMemberStatus(VKApiCommunity.MemberStatus.IS_MEMBER)
                     resultMessage = R.string.community_follow_success
                 }
             }
+
             VKApiCommunity.MemberStatus.DECLINED_INVITATION -> if (community.communityType == VKApiCommunity.Type.GROUP) {
                 community.setMember(false)
                 community.setMemberStatus(VKApiCommunity.MemberStatus.SENT_REQUEST)
                 resultMessage = R.string.community_send_request_success
             }
+
             VKApiCommunity.MemberStatus.INVITED -> if (community.communityType == VKApiCommunity.Type.GROUP) {
                 community.setMember(true)
                 community.setMemberStatus(VKApiCommunity.MemberStatus.IS_MEMBER)

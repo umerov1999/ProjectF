@@ -31,7 +31,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.*
-import dev.ragnarok.fenrir.Constants.USER_AGENT
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.Includes.proxySettings
 import dev.ragnarok.fenrir.activity.MainActivity
@@ -1013,38 +1012,47 @@ object Utils {
                 color1 = "#00ABD6"
                 color2 = "#8700D6"
             }
+
             2L -> {
                 color1 = "#FF7900"
                 color2 = "#FF9500"
             }
+
             3L -> {
                 color1 = "#55D600"
                 color2 = "#00D67A"
             }
+
             4L -> {
                 color1 = "#9400D6"
                 color2 = "#D6008E"
             }
+
             5L -> {
                 color1 = "#cd8fff"
                 color2 = "#9100ff"
             }
+
             6L -> {
                 color1 = "#ff7f69"
                 color2 = "#fe0bdb"
             }
+
             7L -> {
                 color1 = "#FE790B"
                 color2 = "#0BFEAB"
             }
+
             8L -> {
                 color1 = "#9D0BFE"
                 color2 = "#0BFEAB"
             }
+
             9L -> {
                 color1 = "#9D0BFE"
                 color2 = "#FEDF0B"
             }
+
             else -> {
                 color1 = "#FF0061"
                 color2 = "#FF4200"
@@ -1298,9 +1306,7 @@ object Utils {
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 chain.proceed(
                     chain.toRequestBuilder(false).vkHeader(true).addHeader(
-                        "User-Agent", USER_AGENT(
-                            AccountType.BY_TYPE
-                        )
+                        "User-Agent", UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
                     ).build()
                 )
             })
@@ -1311,16 +1317,9 @@ object Utils {
         return builder
     }
 
+    val isKateDefault: Boolean = Constants.DEFAULT_ACCOUNT_TYPE == AccountType.KATE
 
-    fun <T> BY_DEFAULT_ACCOUNT_TYPE(vk_official: T, kate: T): T {
-        return if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID) {
-            vk_official
-        } else kate
-    }
-
-
-    val isKateDeault: Boolean
-        get() = Constants.DEFAULT_ACCOUNT_TYPE == AccountType.KATE
+    val isOfficialDefault: Boolean = Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID
 
     /**
      * Returns the bitmap position inside an imageView.
@@ -1401,14 +1400,17 @@ object Utils {
                 Constants.DEVICE_COUNTRY_CODE = "en"
                 return Locale.ENGLISH
             }
+
             Lang.RUSSIA -> {
                 Constants.DEVICE_COUNTRY_CODE = "ru"
                 return Locale("ru", "RU")
             }
+
             Lang.BELORUSSIAN -> {
                 Constants.DEVICE_COUNTRY_CODE = "be"
                 return Locale("be", "BY")
             }
+
             Lang.DEFAULT -> {}
         }
         Constants.DEVICE_COUNTRY_CODE = "ru"
@@ -1548,21 +1550,25 @@ object Utils {
                 "%.2f TB",
                 Bytes.toDouble() / tb
             )
+
             Bytes >= gb -> String.format(
                 Locale.getDefault(),
                 "%.2f GB",
                 Bytes.toDouble() / gb
             )
+
             Bytes >= mb -> String.format(
                 Locale.getDefault(),
                 "%.2f MB",
                 Bytes.toDouble() / mb
             )
+
             Bytes >= kb -> String.format(
                 Locale.getDefault(),
                 "%.2f KB",
                 Bytes.toDouble() / kb
             )
+
             else -> String.format(Locale.getDefault(), "%d Bytes", Bytes)
         }
     }

@@ -228,7 +228,7 @@ open class TouchImageView @JvmOverloads constructor(
     }
 
     fun fromNet(key: String, url: String?, fallback: String?, client: OkHttpClient.Builder) {
-        if (!FenrirNative.isNativeLoaded || url == null || url.isEmpty()) {
+        if (!FenrirNative.isNativeLoaded || url.isNullOrEmpty()) {
             PicassoInstance.with().load(fallback).into(this)
             return
         }
@@ -801,10 +801,12 @@ open class TouchImageView @JvmOverloads constructor(
                 scaleY = 1f
                 scaleX = scaleY
             }
+
             ScaleType.CENTER_CROP -> {
                 scaleY = max(scaleX, scaleY)
                 scaleX = scaleY
             }
+
             ScaleType.CENTER_INSIDE -> {
                 run {
                     scaleY = min(1f, min(scaleX, scaleY))
@@ -815,10 +817,12 @@ open class TouchImageView @JvmOverloads constructor(
                     scaleX = scaleY
                 }
             }
+
             ScaleType.FIT_CENTER, ScaleType.FIT_START, ScaleType.FIT_END -> {
                 scaleY = min(scaleX, scaleY)
                 scaleX = scaleY
             }
+
             ScaleType.FIT_XY -> Unit
             else -> Unit
         }
@@ -935,10 +939,12 @@ open class TouchImageView @JvmOverloads constructor(
                 // The width/height of image is less than the view's width/height. Center it.
                 (viewSize - drawableSize * floatMatrix[Matrix.MSCALE_X]) * 0.5f
             }
+
             trans > 0 -> {
                 // The image is larger than the view, but was not before the view changed. Center it.
                 -((imageSize - viewSize) * 0.5f)
             }
+
             else -> {
                 // Where is the pixel in the View that we are keeping stable, as a fraction of the width/height of the View?
                 var fixedPixelPositionInView = 0.5f // CENTER
@@ -1066,6 +1072,7 @@ open class TouchImageView @JvmOverloads constructor(
                         fling?.cancelFling()
                         setState(ImageActionState.DRAG)
                     }
+
                     MotionEvent.ACTION_MOVE -> if (imageActionState == ImageActionState.DRAG) {
                         val deltaX = curr.x - last.x
                         val deltaY = curr.y - last.y
@@ -1075,6 +1082,7 @@ open class TouchImageView @JvmOverloads constructor(
                         fixTrans()
                         last[curr.x] = curr.y
                     }
+
                     MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> setState(
                         ImageActionState.NONE
                     )

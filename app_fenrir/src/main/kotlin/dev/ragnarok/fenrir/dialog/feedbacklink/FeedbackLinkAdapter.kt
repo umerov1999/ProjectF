@@ -10,12 +10,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoSize
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Topic
+import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
-import java.util.*
+import java.util.EventListener
 
 class FeedbackLinkAdapter(
     private val mContext: Context,
@@ -123,18 +129,23 @@ class FeedbackLinkAdapter(
                     is User -> {
                         mActionListener.onUserClick(item)
                     }
+
                     is Post -> {
                         mActionListener.onPostClick(item)
                     }
+
                     is Comment -> {
                         mActionListener.onCommentClick(item)
                     }
+
                     is Photo -> {
                         mActionListener.onPhotoClick(item)
                     }
+
                     is Video -> {
                         mActionListener.onVideoClick(item)
                     }
+
                     is Topic -> {
                         mActionListener.onTopicClick(item)
                     }

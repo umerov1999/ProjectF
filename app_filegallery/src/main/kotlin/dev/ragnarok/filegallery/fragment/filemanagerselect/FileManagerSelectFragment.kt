@@ -16,9 +16,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textview.MaterialTextView
-import dev.ragnarok.filegallery.*
+import dev.ragnarok.filegallery.Constants
+import dev.ragnarok.filegallery.Extra
+import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.StubAnimatorListener
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
 import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
+import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.listener.BackPressCallback
 import dev.ragnarok.filegallery.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.filegallery.listener.UpdatableNavigation
@@ -32,7 +36,7 @@ import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
 import java.io.File
-import java.util.*
+import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 

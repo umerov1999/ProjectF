@@ -7,7 +7,7 @@ import dev.ragnarok.filegallery.readTypedObjectCompat
 import dev.ragnarok.filegallery.util.ParcelUtils.readObjectLong
 import dev.ragnarok.filegallery.util.ParcelUtils.writeObjectLong
 import dev.ragnarok.filegallery.writeTypedObjectCompat
-import java.util.*
+import java.util.Random
 import java.util.concurrent.atomic.AtomicInteger
 
 open class Upload : Parcelable {

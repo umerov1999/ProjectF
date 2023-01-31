@@ -138,6 +138,7 @@ class FavePostAdapter(
             when (it.getData()) {
                 VKApiPostSource.Data.PROFILE_ACTIVITY -> postSubtitle =
                     mContext.getString(R.string.updated_status_at, formattedDate)
+
                 VKApiPostSource.Data.PROFILE_PHOTO -> postSubtitle =
                     mContext.getString(R.string.updated_profile_photo_at, formattedDate)
             }

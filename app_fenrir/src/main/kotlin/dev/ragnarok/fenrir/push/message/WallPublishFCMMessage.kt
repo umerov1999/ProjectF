@@ -11,7 +11,7 @@ import com.google.firebase.messaging.RemoteMessage
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.MainActivity
-import dev.ragnarok.fenrir.link.VkLinkParser.parse
+import dev.ragnarok.fenrir.link.VKLinkParser.parse
 import dev.ragnarok.fenrir.link.types.WallPostLink
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.getNewPostChannel
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.newPostChannelId

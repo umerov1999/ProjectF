@@ -1210,6 +1210,7 @@
     <string name="button_settings">Настройки</string>
     <string name="login_password_hint">Пароль</string>
     <string name="login_phone_or_email_hint">Телефон или email</string>
+    <string name="login_hint">Логин</string>
     <string name="login_title">ВХОД | ВК</string>
     <string name="button_login_via_web">Через Web</string>
     <string name="button_login">Войти</string>
@@ -1538,7 +1539,7 @@
     <string name="end_list_anim">Анимация “конец списка”</string>
     <string name="radius">Радиус</string>
     <string name="gps">Геолокация</string>
-    <string name="restore_login_info">Логин: %1$s, Пароль %2$s, Токен %3$s, Валидация %4$s</string>
+    <string name="restore_login_info">Логин: %1$s, Пароль %2$s, Валидация %3$s</string>
     <string name="registration_date_info">Зарегистрирован: %1$s\nАвторизация: %2$s\nИзменение стены %3$s</string>
     <string name="all_photos">Все фото</string>
     <string name="detect_qr">Распознать QR</string>
@@ -1603,7 +1604,6 @@
     <string name="fade_saturation">Мерцающая насыщенность</string>
     <string name="player_background">Настройка фона плеера</string>
     <string name="do_report">Отправить жалобу?</string>
-    <string name="full_data">Полностью</string>
     <string name="data">Данные</string>
     <string name="notification_force_link">Открывать ссылки сразу в уведомлениях</string>
     <string name="disrate">Разжаловать</string>
@@ -1718,4 +1718,5 @@
     <string name="photos_with_user">Фотографии с пользователем</string>
     <string name="wall_photos">Фотографии на стене</string>
     <string name="block_or_delete">Заблокировать подписчика? Режим сохраниться на сессию</string>
+    <string name="exchange_token">Токен обмена</string>
 </resources>

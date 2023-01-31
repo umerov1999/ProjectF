@@ -15,6 +15,7 @@ interface IFileManagerView : IMvpView, IErrorView {
     fun notifyAllChanged()
     fun updatePathString(file: String)
     fun restoreScroll(scroll: Parcelable)
+
     fun displayGalleryUnSafe(parcelNativePointer: Long, position: Int, reversed: Boolean)
     fun displayVideo(video: Video)
     fun startPlayAudios(audios: ArrayList<Audio>, position: Int)

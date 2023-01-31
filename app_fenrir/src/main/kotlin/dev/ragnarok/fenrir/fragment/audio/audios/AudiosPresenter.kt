@@ -30,7 +30,8 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
-import java.util.*
+import java.util.Collections
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class AudiosPresenter(

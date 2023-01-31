@@ -224,6 +224,7 @@ class SlidrConfig internal constructor() {
                     config.velocityThreshold = settings.horizontal_velocity_threshold
                     config.distanceThreshold = settings.horizontal_distance_threshold
                 }
+
                 SlidrPosition.TOP, SlidrPosition.BOTTOM, SlidrPosition.VERTICAL -> {
                     config.sensitivity = settings.vertical_sensitive
                     config.velocityThreshold = settings.vertical_velocity_threshold

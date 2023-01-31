@@ -197,6 +197,7 @@ internal open class BitmapHunter(
                 this.action = null
                 true
             }
+
             else -> actions?.remove(action) ?: false
         }
 

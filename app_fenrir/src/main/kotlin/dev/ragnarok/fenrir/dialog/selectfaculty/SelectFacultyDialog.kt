@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.database.Faculty
-import java.util.*
+import java.util.Collections
 
 class SelectFacultyDialog : AccountDependencyDialogFragment(), FacultiesAdapter.Listener {
     private var facultyId = 0

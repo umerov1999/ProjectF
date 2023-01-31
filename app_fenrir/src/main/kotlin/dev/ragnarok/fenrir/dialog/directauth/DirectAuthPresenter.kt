@@ -1,7 +1,8 @@
 package dev.ragnarok.fenrir.dialog.directauth
 
 import android.os.Bundle
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.AccountType
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes.networkInterfaces
 import dev.ragnarok.fenrir.api.Auth.scope
 import dev.ragnarok.fenrir.api.CaptchaNeedException
@@ -9,7 +10,10 @@ import dev.ragnarok.fenrir.api.NeedValidationException
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
+import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Captcha
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 
 class DirectAuthPresenter(savedInstanceState: Bundle?) :
@@ -93,9 +97,11 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                         requireSmsCode = true
                         RedirectUrl = t.validationURL
                     }
+
                     "2fa_app".equals(type, ignoreCase = true) -> {
                         requireAppCode = true
                     }
+
                     else -> {
                         showError(t)
                         RedirectUrl = t.validationURL
@@ -130,9 +136,11 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
             requiredCaptcha != null -> {
                 view?.moveFocusToCaptcha()
             }
+
             requireSmsCode -> {
                 view?.moveFocusToSmsCode()
             }
+
             requireAppCode -> {
                 view?.moveFocusToAppCode()
             }

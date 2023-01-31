@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.model.wrappers.SelectablePhotoWrapper
 import dev.ragnarok.fenrir.upload.Upload
 
-interface IVkPhotosView : IMvpView, IErrorView, IToolbarView {
+interface IVKPhotosView : IMvpView, IErrorView, IToolbarView {
     fun displayData(photos: List<SelectablePhotoWrapper>, uploads: List<Upload>)
     fun notifyDataSetChanged()
     fun notifyPhotosAdded(position: Int, count: Int)

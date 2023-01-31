@@ -1,8 +1,7 @@
 package dev.ragnarok.fenrir.api
 
 import android.annotation.SuppressLint
-import dev.ragnarok.fenrir.AccountType
-import dev.ragnarok.fenrir.Constants.USER_AGENT
+import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
 import dev.ragnarok.fenrir.api.rest.SimplePostHttp
@@ -50,9 +49,7 @@ class UploadRestProvider(private val proxySettings: IProxySettings) : IUploadRes
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request =
                     chain.toRequestBuilder(false).vkHeader(true).addHeader(
-                        "User-Agent", USER_AGENT(
-                            AccountType.BY_TYPE
-                        )
+                        "User-Agent", UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
                     ).build()
                 chain.proceed(request)
             })

@@ -16,7 +16,7 @@ class PhotoDtoAdapter : AbsAdapter<Photo>("Photo") {
         val root = json.asJsonObject
         photo.setId(optInt(root, "id"))
         photo.setDate(optLong(root, "date"))
-        photo.setOwnerId(optInt(root, "owner_id"))
+        photo.setOwnerId(optLong(root, "owner_id"))
         photo.setText(optString(root, "text"))
         if (hasArray(root, "sizes")) {
             val sizesArray = root.getAsJsonArray("sizes")

@@ -1,11 +1,19 @@
 package dev.ragnarok.fenrir.api.services
 
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.Items
+import dev.ragnarok.fenrir.api.model.VKApiComment
+import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
+import dev.ragnarok.fenrir.api.model.VKApiPhotoTags
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.UploadChatPhotoResponse
 import dev.ragnarok.fenrir.api.model.response.UploadOwnerPhotoResponse
-import dev.ragnarok.fenrir.api.model.server.*
+import dev.ragnarok.fenrir.api.model.server.VKApiChatPhotoUploadServer
+import dev.ragnarok.fenrir.api.model.server.VKApiOwnerPhotoUploadServer
+import dev.ragnarok.fenrir.api.model.server.VKApiPhotoMessageServer
+import dev.ragnarok.fenrir.api.model.server.VKApiUploadServer
+import dev.ragnarok.fenrir.api.model.server.VKApiWallUploadServer
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
 
@@ -339,7 +347,7 @@ class IPhotosService : IServiceRest() {
         userId: Long?,
         groupId: Long?,
         photo: String?,
-        server: Int,
+        server: Long,
         hash: String?,
         latitude: Double?,
         longitude: Double?,
@@ -370,7 +378,7 @@ class IPhotosService : IServiceRest() {
     fun save(
         albumId: Int,
         groupId: Long?,
-        server: Int,
+        server: Long,
         photosList: String?,
         hash: String?,
         latitude: Double?,
@@ -465,7 +473,7 @@ class IPhotosService : IServiceRest() {
         )
 
     fun saveMessagesPhoto(
-        server: Int?,
+        server: Long?,
         photo: String?,
         hash: String?
     ): Single<BaseResponse<List<VKApiPhoto>>> {

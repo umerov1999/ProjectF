@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import java.util.*
+import java.util.Locale
 
 class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IChatMembersView>(accountId, savedInstanceState) {

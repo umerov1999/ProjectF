@@ -27,7 +27,7 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.CircleRoadProgress
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 
-class BigVkPhotosAdapter(
+class BigVKPhotosAdapter(
     private val mContext: Context,
     uploads: List<Upload>,
     photoWrappers: List<SelectablePhotoWrapper>,
@@ -50,6 +50,7 @@ class BigVkPhotosAdapter(
             VIEW_TYPE_PHOTO -> return PhotoViewHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.vk_photo_item_big, parent, false)
             )
+
             VIEW_TYPE_UPLOAD -> return UploadViewHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.vk_upload_photo_item, parent, false)
             )
@@ -63,6 +64,7 @@ class BigVkPhotosAdapter(
                 holder as PhotoViewHolder,
                 getItem(adapterPosition)
             )
+
             VIEW_TYPE_UPLOAD -> bindUploadViewHolder(
                 holder as UploadViewHolder,
                 getItem(adapterPosition)
@@ -226,6 +228,7 @@ class BigVkPhotosAdapter(
                     val progressText = "$progress%"
                     title.text = progressText
                 }
+
                 Upload.STATUS_ERROR -> title.setText(R.string.error)
                 Upload.STATUS_CANCELLING -> title.setText(R.string.cancelling)
             }
@@ -270,7 +273,7 @@ class BigVkPhotosAdapter(
     companion object {
         const val DATA_TYPE_PHOTO = 1
         const val DATA_TYPE_UPLOAD = 0
-        private val TAG = BigVkPhotosAdapter::class.java.simpleName
+        private val TAG = BigVKPhotosAdapter::class.java.simpleName
         private const val VIEW_TYPE_PHOTO = 0
         private const val VIEW_TYPE_UPLOAD = 1
         private var holderIdGenerator = 0

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class UploadPhotoToAlbumDto {
     @SerialName("server")
-    var server = 0
+    var server = 0L
 
     @SerialName("photos_list")
     var photos_list: String? = null

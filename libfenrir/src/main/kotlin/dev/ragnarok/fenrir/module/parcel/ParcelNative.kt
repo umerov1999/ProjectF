@@ -95,7 +95,7 @@ class ParcelNative {
     }
 
     fun writeStringList(data: Collection<String>?): ParcelNative {
-        if (data == null || data.isEmpty()) {
+        if (data.isNullOrEmpty()) {
             putInt(nativePointer, 0)
             return this
         }
@@ -107,7 +107,7 @@ class ParcelNative {
     }
 
     fun writeIntegerList(data: Collection<Int>?): ParcelNative {
-        if (data == null || data.isEmpty()) {
+        if (data.isNullOrEmpty()) {
             putInt(nativePointer, 0)
             return this
         }
@@ -119,7 +119,7 @@ class ParcelNative {
     }
 
     fun writeLongList(data: Collection<Long>?): ParcelNative {
-        if (data == null || data.isEmpty()) {
+        if (data.isNullOrEmpty()) {
             putInt(nativePointer, 0)
             return this
         }
@@ -131,7 +131,7 @@ class ParcelNative {
     }
 
     fun writeFloatList(data: Collection<Float>?): ParcelNative {
-        if (data == null || data.isEmpty()) {
+        if (data.isNullOrEmpty()) {
             putInt(nativePointer, 0)
             return this
         }
@@ -143,7 +143,7 @@ class ParcelNative {
     }
 
     fun writeDoubleList(data: Collection<Double>?): ParcelNative {
-        if (data == null || data.isEmpty()) {
+        if (data.isNullOrEmpty()) {
             putInt(nativePointer, 0)
             return this
         }
@@ -320,7 +320,7 @@ class ParcelNative {
     }
 
     fun <T : ParcelableNative> writeParcelableList(data: Collection<T?>?): ParcelNative {
-        if (data == null || data.isEmpty()) {
+        if (data.isNullOrEmpty()) {
             putInt(nativePointer, 0)
             return this
         }
@@ -368,7 +368,7 @@ class ParcelNative {
         ): List<T>? {
             val ret = fromNative(pointer)
             val ls = ret.readParcelableList(loader)
-            return if (ls == null || ls.isEmpty()) {
+            return if (ls.isNullOrEmpty()) {
                 when (rootFlags) {
                     ParcelFlags.NULL_LIST -> null
                     ParcelFlags.EMPTY_LIST -> emptyList()
@@ -384,7 +384,7 @@ class ParcelNative {
         ): ArrayList<T>? {
             val ret = fromNative(pointer)
             val ls = ret.readParcelableArrayList(loader)
-            return if (ls == null || ls.isEmpty()) {
+            return if (ls.isNullOrEmpty()) {
                 if (rootFlags == ParcelFlags.NULL_LIST) {
                     null
                 } else ArrayList()

@@ -1366,138 +1366,172 @@ class FenrirContentProvider : ContentProvider() {
                 rowId = db.replace(UserColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(USER_CONTENT_URI, rowId)
             }
+
             URI_MESSAGES -> {
                 rowId = db.replace(MessageColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(MESSAGE_CONTENT_URI, rowId)
             }
+
             URI_MESSAGES_ATTACHMENTS -> {
                 rowId = db.replace(MessagesAttachmentsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(MESSAGES_ATTACHMENTS_CONTENT_URI, rowId)
             }
+
             URI_PHOTOS -> {
                 rowId = db.replace(PhotosColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(PHOTOS_CONTENT_URI, rowId)
             }
+
             URI_PHOTOS_EXTENDED -> {
                 rowId = db.replace(PhotosExtendedColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(PHOTOS_EXTENDED_CONTENT_URI, rowId)
             }
+
             URI_DIALOGS -> {
                 rowId = db.replace(DialogsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(DIALOGS_CONTENT_URI, rowId)
             }
+
             URI_PEERS -> {
                 rowId = db.replace(PeersColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(PEERS_CONTENT_URI, rowId)
             }
+
             URI_DOCS -> {
                 rowId = db.replace(DocColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(DOCS_CONTENT_URI, rowId)
             }
+
             URI_VIDEOS -> {
                 rowId = db.replace(VideoColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(VIDEOS_CONTENT_URI, rowId)
             }
+
             URI_POSTS -> {
                 rowId = db.replace(PostsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(POSTS_CONTENT_URI, rowId)
             }
+
             URI_POST_ATTACHMENTS -> {
                 rowId = db.replace(WallAttachmentsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(POSTS_ATTACHMENTS_CONTENT_URI, rowId)
             }
+
             URI_GROUPS -> {
                 rowId = db.replace(GroupColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(GROUPS_CONTENT_URI, rowId)
             }
+
             URI_RELATIVESHIP -> {
                 rowId = db.replace(RelationshipColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(RELATIVESHIP_CONTENT_URI, rowId)
             }
+
             URI_COMMENTS -> {
                 rowId = db.replace(CommentsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(COMMENTS_CONTENT_URI, rowId)
             }
+
             URI_COMMENTS_ATTACHMENTS -> {
                 rowId = db.replace(CommentsAttachmentsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(COMMENTS_ATTACHMENTS_CONTENT_URI, rowId)
             }
+
             URI_PHOTO_ALBUMS -> {
                 rowId = db.replace(PhotoAlbumsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(PHOTO_ALBUMS_CONTENT_URI, rowId)
             }
+
             URI_NEWS -> {
                 rowId = db.replace(NewsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(NEWS_CONTENT_URI, rowId)
             }
+
             URI_GROUPS_DET -> {
                 rowId = db.replace(GroupsDetColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(GROUPS_DET_CONTENT_URI, rowId)
             }
+
             URI_VIDEO_ALBUMS -> {
                 rowId = db.replace(VideoAlbumsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(VIDEO_ALBUMS_CONTENT_URI, rowId)
             }
+
             URI_TOPICS -> {
                 rowId = db.replace(TopicsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(TOPICS_CONTENT_URI, rowId)
             }
+
             URI_NOTIFICATIONS -> {
                 rowId = db.replace(NotificationColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(NOTIFICATIONS_CONTENT_URI, rowId)
             }
+
             URI_USER_DET -> {
                 rowId = db.replace(UsersDetColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(USER_DET_CONTENT_URI, rowId)
             }
+
             URI_FAVE_PHOTOS -> {
                 rowId = db.replace(FavePhotosColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FAVE_PHOTOS_CONTENT_URI, rowId)
             }
+
             URI_FAVE_VIDEOS -> {
                 rowId = db.replace(FaveVideosColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FAVE_VIDEOS_CONTENT_URI, rowId)
             }
+
             URI_FAVE_PAGES -> {
                 rowId = db.replace(FavePageColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FAVE_PAGES_CONTENT_URI, rowId)
             }
+
             URI_FAVE_GROUPS -> {
                 rowId = db.replace(FavePageColumns.GROUPSTABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FAVE_GROUPS_CONTENT_URI, rowId)
             }
+
             URI_FAVE_LINKS -> {
                 rowId = db.replace(FaveLinksColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FAVE_LINKS_CONTENT_URI, rowId)
             }
+
             URI_FAVE_ARTICLES -> {
                 rowId = db.replace(FaveArticlesColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FAVE_ARTICLES_CONTENT_URI, rowId)
             }
+
             URI_FAVE_PRODUCTS -> {
                 rowId = db.replace(FaveProductColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FAVE_PRODUCTS_CONTENT_URI, rowId)
             }
+
             URI_FAVE_POSTS -> {
                 rowId = db.replace(FavePostsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FAVE_POSTS_CONTENT_URI, rowId)
             }
+
             URI_COUNTRIES -> {
                 rowId = db.replace(CountriesColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(COUNTRIES_CONTENT_URI, rowId)
             }
+
             URI_FEED_LISTS -> {
                 rowId = db.replace(FeedListsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FEED_LISTS_CONTENT_URI, rowId)
             }
+
             URI_FRIEND_LISTS -> {
                 rowId = db.replace(FriendListsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FRIEND_LISTS_CONTENT_URI, rowId)
             }
+
             URI_KEYS -> {
                 rowId = db.replace(KeyColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(KEYS_CONTENT_URI, rowId)
             }
+
             else -> throw IllegalArgumentException("Unknown URI $uri")
         }
         safeNotifyChange(resultUri)
@@ -1527,23 +1561,27 @@ class FenrirContentProvider : ContentProvider() {
                 _QB.projectionMap = sUsersProjectionMap
                 URI_USERS
             }
+
             URI_USERS_ID -> {
                 _QB.tables = UserColumns.TABLENAME
                 _QB.projectionMap = sUsersProjectionMap
                 _QB.appendWhere(UserColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_USERS
             }
+
             URI_GROUPS -> {
                 _QB.tables = GroupColumns.TABLENAME
                 _QB.projectionMap = sGroupsProjectionMap
                 URI_GROUPS
             }
+
             URI_GROUPS_ID -> {
                 _QB.tables = GroupColumns.TABLENAME
                 _QB.projectionMap = sGroupsProjectionMap
                 _QB.appendWhere(GroupColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_GROUPS
             }
+
             URI_MESSAGES -> {
                 _QB.tables = MessageColumns.TABLENAME
                 //" LEFT OUTER JOIN " + PeerColumns.TABLENAME + " ON " + MessageColumns.FULL_FROM_ID + " = " + PeerColumns.FULL_ID +
@@ -1551,6 +1589,7 @@ class FenrirContentProvider : ContentProvider() {
                 _QB.projectionMap = sMessagesProjectionMap
                 URI_MESSAGES
             }
+
             URI_MESSAGES_ID -> {
                 _QB.tables = MessageColumns.TABLENAME
                 //" LEFT OUTER JOIN " + PeerColumns.TABLENAME + " ON " + MessageColumns.FULL_FROM_ID + " = " + PeerColumns.FULL_ID +
@@ -1559,6 +1598,7 @@ class FenrirContentProvider : ContentProvider() {
                 _QB.appendWhere(MessageColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_MESSAGES
             }
+
             URI_MESSAGES_ATTACHMENTS -> {
                 _QB.tables = MessagesAttachmentsColumns.TABLENAME
                 //" LEFT OUTER JOIN " + AudiosColumns.TABLENAME + " ON " + AttachmentsColumns.FULL_ATTACHMENT_ID + " = " + AudiosColumns.FULL_AUDIO_ID + " AND " + AttachmentsColumns.FULL_ATTACHMENT_OWNER_ID + " = " + AudiosColumns.FULL_OWNER_ID +
@@ -1570,6 +1610,7 @@ class FenrirContentProvider : ContentProvider() {
                 _QB.projectionMap = sMessagesAttachmentsProjectionMap
                 URI_MESSAGES_ATTACHMENTS
             }
+
             URI_MESSAGES_ATTACHMENTS_ID -> {
                 _QB.tables = MessagesAttachmentsColumns.TABLENAME
                 //" LEFT OUTER JOIN " + AudiosColumns.TABLENAME + " ON " + AttachmentsColumns.FULL_ATTACHMENT_ID + " = " + AudiosColumns.FULL_AUDIO_ID + " AND " + AttachmentsColumns.FULL_ATTACHMENT_OWNER_ID + " = " + AudiosColumns.FULL_OWNER_ID +
@@ -1582,77 +1623,91 @@ class FenrirContentProvider : ContentProvider() {
                 _QB.appendWhere(MessagesAttachmentsColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_MESSAGES_ATTACHMENTS
             }
+
             URI_PHOTOS -> {
                 _QB.tables = PhotosColumns.TABLENAME
                 _QB.projectionMap = sPhotosProjectionMap
                 URI_PHOTOS
             }
+
             URI_PHOTOS_EXTENDED -> {
                 _QB.tables = PhotosExtendedColumns.TABLENAME
                 _QB.projectionMap = sPhotosExtendedProjectionMap
                 URI_PHOTOS_EXTENDED
             }
+
             URI_PHOTOS_ID -> {
                 _QB.tables = PhotosColumns.TABLENAME
                 _QB.projectionMap = sPhotosProjectionMap
                 _QB.appendWhere(PhotosColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_PHOTOS
             }
+
             URI_DIALOGS -> {
                 _QB.tables =
                     DialogsColumns.TABLENAME + " LEFT OUTER JOIN " + MessageColumns.TABLENAME + " ON " + DialogsColumns.FULL_LAST_MESSAGE_ID + " = " + MessageColumns.FULL_ID
                 _QB.projectionMap = sDialogsProjectionMap
                 URI_DIALOGS
             }
+
             URI_PEERS -> {
                 _QB.tables = PeersColumns.TABLENAME
                 _QB.projectionMap = sPeersProjectionMap
                 URI_PEERS
             }
+
             URI_DOCS -> {
                 _QB.tables = DocColumns.TABLENAME
                 _QB.projectionMap = sDocsProjectionMap
                 URI_DOCS
             }
+
             URI_DOCS_ID -> {
                 _QB.tables = DocColumns.TABLENAME
                 _QB.projectionMap = sDocsProjectionMap
                 _QB.appendWhere(DocColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_DOCS
             }
+
             URI_VIDEOS -> {
                 _QB.tables = VideoColumns.TABLENAME
                 _QB.projectionMap = sVideosProjectionMap
                 URI_VIDEOS
             }
+
             URI_VIDEOS_ID -> {
                 _QB.tables = VideoColumns.TABLENAME
                 _QB.projectionMap = sVideosProjectionMap
                 _QB.appendWhere(VideoColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_DOCS
             }
+
             URI_POSTS -> {
                 _QB.tables = PostsColumns.TABLENAME
                 _QB.projectionMap = sPostsProjectionMap
                 URI_POSTS
             }
+
             URI_POSTS_ID -> {
                 _QB.tables = PostsColumns.TABLENAME
                 _QB.projectionMap = sPostsProjectionMap
                 _QB.appendWhere(PostsColumns.FULL_ID + " = " + uri.pathSegments[1])
                 URI_POSTS
             }
+
             URI_POST_ATTACHMENTS -> {
                 _QB.tables = WallAttachmentsColumns.TABLENAME
                 _QB.projectionMap = sPostsMessagesAttachmentsProjectionMap
                 URI_POST_ATTACHMENTS
             }
+
             URI_POST_ATTACHMENTS_ID -> {
                 _QB.tables = WallAttachmentsColumns.TABLENAME
                 _QB.projectionMap = sPostsMessagesAttachmentsProjectionMap
                 _QB.appendWhere(WallAttachmentsColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_POST_ATTACHMENTS
             }
+
             URI_RELATIVESHIP -> {
                 _QB.tables = RelationshipColumns.TABLENAME +
                         " LEFT OUTER JOIN " + UserColumns.TABLENAME + " ON " + RelationshipColumns.FULL_SUBJECT_ID + " = " + UserColumns.FULL_ID +
@@ -1660,17 +1715,20 @@ class FenrirContentProvider : ContentProvider() {
                 _QB.projectionMap = sRelativeshipProjectionMap
                 URI_RELATIVESHIP
             }
+
             URI_COMMENTS -> {
                 _QB.tables = CommentsColumns.TABLENAME
                 _QB.projectionMap = sCommentsProjectionMap
                 URI_COMMENTS
             }
+
             URI_COMMENTS_ID -> {
                 _QB.tables = CommentsColumns.TABLENAME
                 _QB.projectionMap = sCommentsProjectionMap
                 _QB.appendWhere(BaseColumns._ID + " = " + uri.pathSegments[1])
                 URI_COMMENTS
             }
+
             URI_COMMENTS_ATTACHMENTS -> {
                 _QB.tables = CommentsAttachmentsColumns.TABLENAME
                 //" LEFT OUTER JOIN " + AudiosColumns.TABLENAME + " ON " + CommentsAttachmentsColumns.FULL_ATTACHMENT_ID + " = " + AudiosColumns.FULL_AUDIO_ID + " AND " + CommentsAttachmentsColumns.FULL_ATTACHMENT_OWNER_ID + " = " + AudiosColumns.FULL_OWNER_ID +
@@ -1682,6 +1740,7 @@ class FenrirContentProvider : ContentProvider() {
                 _QB.projectionMap = sCommentsMessagesAttachmentsProjectionMap
                 URI_COMMENTS_ATTACHMENTS
             }
+
             URI_COMMENTS_ATTACHMENTS_ID -> {
                 _QB.tables = CommentsAttachmentsColumns.TABLENAME
                 //" LEFT OUTER JOIN " + AudiosColumns.TABLENAME + " ON " + CommentsAttachmentsColumns.FULL_ATTACHMENT_ID + " = " + AudiosColumns.FULL_AUDIO_ID + " AND " + CommentsAttachmentsColumns.FULL_ATTACHMENT_OWNER_ID + " = " + AudiosColumns.FULL_OWNER_ID +
@@ -1694,73 +1753,87 @@ class FenrirContentProvider : ContentProvider() {
                 _QB.appendWhere(CommentsAttachmentsColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_COMMENTS_ATTACHMENTS
             }
+
             URI_PHOTO_ALBUMS -> {
                 _QB.tables = PhotoAlbumsColumns.TABLENAME
                 _QB.projectionMap = sPhotoAlbumsProjectionMap
                 URI_PHOTO_ALBUMS
             }
+
             URI_NEWS -> {
                 _QB.tables = NewsColumns.TABLENAME
                 _QB.projectionMap = sNewsProjectionMap
                 URI_NEWS
             }
+
             URI_GROUPS_DET -> {
                 _QB.tables = GroupsDetColumns.TABLENAME
                 _QB.projectionMap = sGroupsDetProjectionMap
                 URI_GROUPS_DET
             }
+
             URI_GROUPS_DET_ID -> {
                 _QB.tables = GroupsDetColumns.TABLENAME
                 _QB.projectionMap = sGroupsDetProjectionMap
                 _QB.appendWhere(GroupsDetColumns.FULL_ID + " = " + uri.pathSegments[1])
                 URI_GROUPS_DET
             }
+
             URI_VIDEO_ALBUMS -> {
                 _QB.tables = VideoAlbumsColumns.TABLENAME
                 _QB.projectionMap = sVideoAlbumsProjectionMap
                 URI_VIDEO_ALBUMS
             }
+
             URI_TOPICS -> {
                 _QB.tables = TopicsColumns.TABLENAME
                 _QB.projectionMap = sTopicsProjectionMap
                 URI_TOPICS
             }
+
             URI_NOTIFICATIONS -> {
                 _QB.tables = NotificationColumns.TABLENAME
                 _QB.projectionMap = sNoticationsProjectionMap
                 URI_NOTIFICATIONS
             }
+
             URI_USER_DET -> {
                 _QB.tables = UsersDetColumns.TABLENAME
                 _QB.projectionMap = sUserDetProjectionMap
                 URI_USER_DET
             }
+
             URI_USER_DET_ID -> {
                 _QB.tables = UsersDetColumns.TABLENAME
                 _QB.projectionMap = sUserDetProjectionMap
                 _QB.appendWhere(UsersDetColumns.FULL_ID + " = " + uri.pathSegments[1])
                 URI_USER_DET
             }
+
             URI_FAVE_PHOTOS -> {
                 _QB.tables = FavePhotosColumns.TABLENAME
                 _QB.projectionMap = sFavePhotosProjectionMap
                 URI_FAVE_PHOTOS
             }
+
             URI_FAVE_VIDEOS -> {
                 _QB.tables = FaveVideosColumns.TABLENAME
                 _QB.projectionMap = sFaveVideosProjectionMap
                 URI_FAVE_VIDEOS
             }
+
             URI_FAVE_ARTICLES -> {
                 _QB.tables = FaveArticlesColumns.TABLENAME
                 _QB.projectionMap = sFaveArticlesProjectionMap
                 URI_FAVE_ARTICLES
             }
+
             URI_FAVE_PRODUCTS -> {
                 _QB.tables = FaveProductColumns.TABLENAME
                 _QB.projectionMap = sFaveProductsProjectionMap
                 URI_FAVE_PRODUCTS
             }
+
             URI_FAVE_PAGES -> {
                 _QB.tables = FavePageColumns.TABLENAME +
                         " LEFT OUTER JOIN " + UserColumns.TABLENAME +
@@ -1768,6 +1841,7 @@ class FenrirContentProvider : ContentProvider() {
                 _QB.projectionMap = sFaveUsersProjectionMap
                 URI_FAVE_PAGES
             }
+
             URI_FAVE_GROUPS -> {
                 _QB.tables = FavePageColumns.GROUPSTABLENAME +
                         " LEFT OUTER JOIN " + GroupColumns.TABLENAME +
@@ -1775,36 +1849,43 @@ class FenrirContentProvider : ContentProvider() {
                 _QB.projectionMap = sFaveGroupsProjectionMap
                 URI_FAVE_GROUPS
             }
+
             URI_FAVE_LINKS -> {
                 _QB.tables = FaveLinksColumns.TABLENAME
                 _QB.projectionMap = sFaveLinksProjectionMap
                 URI_FAVE_LINKS
             }
+
             URI_FAVE_POSTS -> {
                 _QB.tables = FavePostsColumns.TABLENAME
                 _QB.projectionMap = sFavePostsProjectionMap
                 URI_FAVE_POSTS
             }
+
             URI_COUNTRIES -> {
                 _QB.tables = CountriesColumns.TABLENAME
                 _QB.projectionMap = sCountriesProjectionMap
                 URI_COUNTRIES
             }
+
             URI_FEED_LISTS -> {
                 _QB.tables = FeedListsColumns.TABLENAME
                 _QB.projectionMap = sFeedListsProjectionMap
                 URI_FEED_LISTS
             }
+
             URI_FRIEND_LISTS -> {
                 _QB.tables = FriendListsColumns.TABLENAME
                 _QB.projectionMap = sFriendListsProjectionMap
                 URI_FRIEND_LISTS
             }
+
             URI_KEYS -> {
                 _QB.tables = KeyColumns.TABLENAME
                 _QB.projectionMap = sKeysProjectionMap
                 URI_KEYS
             }
+
             else -> throw IllegalArgumentException("Unknown URI $uri")
         }
 
@@ -1936,6 +2017,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = MessageColumns.TABLENAME
             }
+
             URI_DIALOGS -> tbName = DialogsColumns.TABLENAME
             URI_RELATIVESHIP -> tbName = RelationshipColumns.TABLENAME
             URI_POSTS -> tbName = PostsColumns.TABLENAME
@@ -1948,6 +2030,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = PostsColumns.TABLENAME
             }
+
             URI_PHOTOS -> tbName = PhotosColumns.TABLENAME
             URI_PHOTOS_EXTENDED -> tbName = PhotosExtendedColumns.TABLENAME
             URI_MESSAGES_ATTACHMENTS -> tbName = MessagesAttachmentsColumns.TABLENAME
@@ -1967,6 +2050,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = GroupsDetColumns.TABLENAME
             }
+
             URI_VIDEO_ALBUMS -> tbName = VideoAlbumsColumns.TABLENAME
             URI_VIDEOS -> tbName = VideoColumns.TABLENAME
             URI_TOPICS -> tbName = TopicsColumns.TABLENAME
@@ -1981,6 +2065,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = UsersDetColumns.TABLENAME
             }
+
             URI_FAVE_PHOTOS -> tbName = FavePhotosColumns.TABLENAME
             URI_FAVE_VIDEOS -> tbName = FaveVideosColumns.TABLENAME
             URI_FAVE_ARTICLES -> tbName = FaveArticlesColumns.TABLENAME
@@ -2020,6 +2105,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = MessageColumns.TABLENAME
             }
+
             URI_USERS -> tbName = UserColumns.TABLENAME
             URI_USERS_ID -> {
                 val userID = uri.lastPathSegment
@@ -2030,6 +2116,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = UserColumns.TABLENAME
             }
+
             URI_GROUPS -> tbName = GroupColumns.TABLENAME
             URI_GROUPS_ID -> {
                 val groupID = uri.lastPathSegment
@@ -2040,6 +2127,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = GroupColumns.TABLENAME
             }
+
             URI_DIALOGS -> tbName = DialogsColumns.TABLENAME
             URI_PEERS -> tbName = PeersColumns.TABLENAME
             URI_POSTS -> tbName = PostsColumns.TABLENAME
@@ -2052,6 +2140,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = PostsColumns.TABLENAME
             }
+
             URI_PHOTOS -> tbName = PhotosColumns.TABLENAME
             URI_PHOTOS_EXTENDED -> tbName = PhotosExtendedColumns.TABLENAME
             URI_PHOTOS_ID -> {
@@ -2063,6 +2152,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = PhotosColumns.TABLENAME
             }
+
             URI_VIDEOS -> tbName = VideoColumns.TABLENAME
             URI_COMMENTS -> tbName = CommentsColumns.TABLENAME
             URI_COMMENTS_ID -> {
@@ -2074,6 +2164,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = CommentsColumns.TABLENAME
             }
+
             URI_RELATIVESHIP -> tbName = RelationshipColumns.TABLENAME
             URI_PHOTO_ALBUMS -> tbName = PhotoAlbumsColumns.TABLENAME
             URI_NEWS -> tbName = NewsColumns.TABLENAME
@@ -2087,6 +2178,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = GroupsDetColumns.TABLENAME
             }
+
             URI_VIDEO_ALBUMS -> tbName = VideoAlbumsColumns.TABLENAME
             URI_TOPICS -> tbName = TopicsColumns.TABLENAME
             URI_NOTIFICATIONS -> tbName = NotificationColumns.TABLENAME
@@ -2100,6 +2192,7 @@ class FenrirContentProvider : ContentProvider() {
                 }
                 tbName = UsersDetColumns.TABLENAME
             }
+
             URI_FAVE_PHOTOS -> tbName = FavePhotosColumns.TABLENAME
             URI_FAVE_VIDEOS -> tbName = FaveVideosColumns.TABLENAME
             URI_FAVE_ARTICLES -> tbName = FaveArticlesColumns.TABLENAME

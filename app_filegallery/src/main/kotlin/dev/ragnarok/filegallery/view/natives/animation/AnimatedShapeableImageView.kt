@@ -98,7 +98,7 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
     }
 
     fun fromNet(key: String, url: String?, client: OkHttpClient.Builder) {
-        if (!FenrirNative.isNativeLoaded || url == null || url.isEmpty()) {
+        if (!FenrirNative.isNativeLoaded || url.isNullOrEmpty()) {
             decoderCallback?.onLoaded(false)
             return
         }

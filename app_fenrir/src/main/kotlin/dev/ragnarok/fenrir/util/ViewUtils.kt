@@ -72,12 +72,15 @@ object ViewUtils {
             6079611 -> {
                 return R.drawable.ic_xvii
             }
+
             4705861 -> {
                 return R.drawable.ic_boom
             }
+
             2685278 -> {
                 return R.drawable.ic_kate_mobile
             }
+
             else -> return when (platform) {
                 VKApiUser.Platform.WEB -> R.drawable.web
                 VKApiUser.Platform.MOBILE -> R.drawable.cellphone

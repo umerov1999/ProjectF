@@ -781,6 +781,7 @@ class Picasso internal constructor(
                         val hunter = msg.obj as BitmapHunter
                         hunter.picasso.complete(hunter)
                     }
+
                     REQUEST_BATCH_RESUME -> {
                         val batch = msg.obj as List<*>
                         for (i in batch.indices) {
@@ -788,6 +789,7 @@ class Picasso internal constructor(
                             action.picasso.resumeAction(action)
                         }
                     }
+
                     else -> throw AssertionError("Unknown handler message received: " + msg.what)
                 }
             }

@@ -9,11 +9,13 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.annotation.StringRes
+import com.google.android.material.materialswitch.MaterialSwitch
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.BackPressCallback
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.view.KeyboardView
 import dev.ragnarok.fenrir.view.KeyboardView.OnKeyboardClickListener
 
@@ -21,6 +23,9 @@ class CreatePinFragment : BaseMvpFragment<CreatePinPresenter, ICreatePinView>(),
     OnKeyboardClickListener, BackPressCallback {
     private var mTitle: TextView? = null
     private var mValuesRoot: View? = null
+    private var mAllowFingerprint: MaterialSwitch? = null
+    private var mPinCodeOnStart: MaterialSwitch? = null
+    private var mDontAskEveryTime: MaterialSwitch? = null
     private var mValuesCircles: Array<View?> = arrayOfNulls(Constants.PIN_DIGITS_COUNT)
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +42,38 @@ class CreatePinFragment : BaseMvpFragment<CreatePinPresenter, ICreatePinView>(),
         mValuesCircles[1] = root.findViewById(R.id.pincode_digit_1)
         mValuesCircles[2] = root.findViewById(R.id.pincode_digit_2)
         mValuesCircles[3] = root.findViewById(R.id.pincode_digit_3)
+
+        mAllowFingerprint = root.findViewById(R.id.fingerprint_sw)
+        mPinCodeOnStart = root.findViewById(R.id.pin_entrance_sw)
+        mDontAskEveryTime = root.findViewById(R.id.pin_delayed_pin_for_entrance_sw)
+
+        mAllowFingerprint?.setOnCheckedChangeListener { _, isChecked ->
+            Settings.get().security().isEntranceByFingerprintAllowed = isChecked
+        }
+
+        mPinCodeOnStart?.setOnCheckedChangeListener { _, isChecked ->
+            Settings.get().security().isUsePinForEntrance = isChecked
+        }
+
+        mDontAskEveryTime?.setOnCheckedChangeListener { _, isChecked ->
+            Settings.get().security().isDelayedAllow = isChecked
+        }
+
+        if (requireActivity().intent?.extras?.containsKey(
+                EXTRA_PREF_KEY
+            ) != true
+        ) {
+            mAllowFingerprint?.visibility = View.VISIBLE
+            mPinCodeOnStart?.visibility = View.VISIBLE
+            mDontAskEveryTime?.visibility = View.VISIBLE
+            Settings.get().security().isUsePinForEntrance = false
+            Settings.get().security().isEntranceByFingerprintAllowed = false
+            Settings.get().security().isDelayedAllow = false
+        } else {
+            mAllowFingerprint?.visibility = View.GONE
+            mPinCodeOnStart?.visibility = View.GONE
+            mDontAskEveryTime?.visibility = View.GONE
+        }
         return root
     }
 
@@ -62,7 +99,7 @@ class CreatePinFragment : BaseMvpFragment<CreatePinPresenter, ICreatePinView>(),
     override fun sendSuccessAndClose(values: IntArray) {
         val data = Intent()
         data.putExtra(EXTRA_PIN_VALUE, values)
-        if (requireActivity().intent != null && requireActivity().intent.extras != null && requireActivity().intent.extras?.containsKey(
+        if (requireActivity().intent?.extras?.containsKey(
                 EXTRA_PREF_KEY
             ) == true
         ) {

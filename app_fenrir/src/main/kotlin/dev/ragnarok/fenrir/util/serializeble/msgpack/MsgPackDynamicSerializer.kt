@@ -48,6 +48,7 @@ open class MsgPackNullableDynamicSerializer(
             MsgPackType.Int.POSITIVE_FIXNUM_MASK.test(type) ||
                     MsgPackType.Int.NEGATIVE_FIXNUM_MASK.test(type) ||
                     type == MsgPackType.Int.INT8 -> decoder.decodeByte()
+
             type == MsgPackType.Int.INT16 || type == MsgPackType.Int.UINT8 -> {
                 val result = decoder.decodeShort()
                 if (type == MsgPackType.Int.UINT8 && result <= Byte.MAX_VALUE && result >= Byte.MIN_VALUE) {
@@ -56,6 +57,7 @@ open class MsgPackNullableDynamicSerializer(
                     result
                 }
             }
+
             type == MsgPackType.Int.INT32 || type == MsgPackType.Int.UINT16 -> {
                 val result = decoder.decodeInt()
                 if (type == MsgPackType.Int.UINT16 && result <= Short.MAX_VALUE && result >= Short.MIN_VALUE) {
@@ -64,6 +66,7 @@ open class MsgPackNullableDynamicSerializer(
                     result
                 }
             }
+
             type == MsgPackType.Int.INT64 || type == MsgPackType.Int.UINT32 || type == MsgPackType.Int.UINT64 -> {
                 val result = decoder.decodeLong()
                 if (type == MsgPackType.Int.UINT32 && result <= Int.MAX_VALUE && result >= Int.MIN_VALUE) {
@@ -72,6 +75,7 @@ open class MsgPackNullableDynamicSerializer(
                     result
                 }
             }
+
             type == MsgPackType.Float.FLOAT -> decoder.decodeFloat()
             type == MsgPackType.Float.DOUBLE -> decoder.decodeDouble()
             MsgPackType.String.isString(type) -> decoder.decodeString()
@@ -104,16 +108,19 @@ open class MsgPackNullableDynamicSerializer(
                 ByteArraySerializer(),
                 value as ByteArray
             )
+
             else -> {
                 when (value) {
                     is Map<*, *> -> MapSerializer(this, this).serialize(
                         encoder,
                         value as Map<Any?, Any?>
                     )
+
                     is Array<*> -> ArraySerializer(this).serialize(
                         encoder,
                         value.map { it }.toTypedArray()
                     )
+
                     is List<*> -> ListSerializer(this).serialize(encoder, value.map { it })
                     is Map.Entry<*, *> -> MapEntrySerializer(this, this).serialize(encoder, value)
                     else -> {

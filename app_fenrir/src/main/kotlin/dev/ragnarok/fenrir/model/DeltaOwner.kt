@@ -68,7 +68,6 @@ class DeltaOwner : Parcelable {
         var name: String? = null
         var ownerList: List<Owner> = ArrayList()
 
-        @Suppress("unused")
         constructor()
 
         internal constructor(parcel: Parcel) {

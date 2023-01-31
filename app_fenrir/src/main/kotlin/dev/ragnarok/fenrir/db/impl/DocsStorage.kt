@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.db.impl
 import android.content.ContentProviderOperation
 import android.content.ContentValues
 import android.database.Cursor
-import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getDocsContentUriFor
 import dev.ragnarok.fenrir.db.column.DocColumns
@@ -12,8 +11,14 @@ import dev.ragnarok.fenrir.db.model.entity.DocumentDboEntity
 import dev.ragnarok.fenrir.db.model.entity.DocumentDboEntity.GraffitiDbo
 import dev.ragnarok.fenrir.db.model.entity.DocumentDboEntity.VideoPreviewDbo
 import dev.ragnarok.fenrir.db.model.entity.PhotoSizeEntity
+import dev.ragnarok.fenrir.getBlob
+import dev.ragnarok.fenrir.getInt
+import dev.ragnarok.fenrir.getLong
+import dev.ragnarok.fenrir.getString
+import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.model.DocFilter
 import dev.ragnarok.fenrir.model.criteria.DocsCriteria
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Exestime.log
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack

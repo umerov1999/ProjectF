@@ -17,8 +17,11 @@ import com.google.android.material.textfield.TextInputEditText
 import com.squareup.picasso3.Callback
 import com.squareup.picasso3.Picasso
 import dev.ragnarok.fenrir.module.FenrirNative
-import dev.ragnarok.filegallery.*
+import dev.ragnarok.filegallery.Constants
+import dev.ragnarok.filegallery.Includes
+import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.localserver.audioslocalserver.AudioLocalServerRecyclerAdapter
+import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.PlayerStatus
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
@@ -32,6 +35,7 @@ import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
+import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.DownloadWorkUtils
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.toast.CustomSnackbars
@@ -71,6 +75,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                 currAudio = MusicPlaybackController.currentAudio
                 updateAudio(currAudio)
             }
+
             PlayerStatus.REPEATMODE_CHANGED, PlayerStatus.SHUFFLEMODE_CHANGED, PlayerStatus.UPDATE_PLAY_LIST -> {}
         }
     }
@@ -104,10 +109,12 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_file, parent, false)
             )
+
             FileType.folder -> return FileHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_folder, parent, false)
             )
+
             FileType.audio -> return AudioHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_manager_audio, parent, false)
@@ -158,6 +165,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                 Utils.doWavesLottieBig(holder.visual, true)
                 holder.icon.setColorFilter(Color.parseColor("#44000000"))
             }
+
             2 -> {
                 Utils.doWavesLottieBig(holder.visual, false)
                 holder.icon.setColorFilter(Color.parseColor("#44000000"))
@@ -249,6 +257,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         FileLocalServerOption.play_item_after_current_audio -> MusicPlaybackController.playAfterCurrent(
                             t
                         )
+
                         FileLocalServerOption.save_item -> {
                             when (DownloadWorkUtils.doDownloadAudio(context, t, false)) {
                                 0 -> {
@@ -256,6 +265,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                         context, view
                                     )?.showToast(R.string.saved_audio)
                                 }
+
                                 1 -> {
                                     CustomSnackbars.createCustomSnackbars(view)
                                         ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
@@ -267,6 +277,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                         ) { DownloadWorkUtils.doDownloadAudio(context, t, true) }
                                         ?.show()
                                 }
+
                                 else -> {
                                     CustomToast.createCustomToast(
                                         context, view
@@ -274,6 +285,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 }
                             }
                         }
+
                         FileLocalServerOption.delete_item -> {
                             MaterialAlertDialogBuilder(
                                 context
@@ -304,6 +316,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 .setNegativeButton(R.string.button_cancel, null)
                                 .show()
                         }
+
                         FileLocalServerOption.update_time_item -> {
                             val hash =
                                 AudioLocalServerRecyclerAdapter.parseLocalServerURL(audio.url)
@@ -376,11 +389,13 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                             ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(t)
                                     }
                         }
+
                         FileLocalServerOption.play_item_audio -> {
                             clickListener?.onClick(position, audio)
                             if (Settings.get().main().isShow_mini_player()) getPlayerPlace(
                             ).tryOpenWith(context)
                         }
+
                         else -> {}
                     }
                 }
@@ -513,6 +528,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 .setNegativeButton(R.string.button_cancel, null)
                                 .show()
                         }
+
                         FileLocalServerOption.update_time_item -> {
                             val hash =
                                 AudioLocalServerRecyclerAdapter.parseLocalServerURL(file.url)
@@ -531,6 +547,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                             ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(t)
                                     }
                         }
+
                         FileLocalServerOption.edit_item -> {
                             val hash2 =
                                 AudioLocalServerRecyclerAdapter.parseLocalServerURL(file.url)
@@ -584,6 +601,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                             ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(t)
                                     }
                         }
+
                         else -> {}
                     }
                 }

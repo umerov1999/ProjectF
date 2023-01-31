@@ -122,94 +122,117 @@ class Attachments : Parcelable, Cloneable {
                 prepareAudios().add(model as Audio)
                 return
             }
+
             AbsModelType.MODEL_STICKER -> {
                 prepareStickers().add(model as Sticker)
                 return
             }
+
             AbsModelType.MODEL_PHOTO_ALBUM -> {
                 preparePhotoAlbums().add(model as PhotoAlbum)
                 return
             }
+
             AbsModelType.MODEL_PHOTO -> {
                 preparePhotos().add(model as Photo)
                 return
             }
+
             AbsModelType.MODEL_VOICE_MESSAGE -> {
                 prepareVoiceMessages().add(model as VoiceMessage)
                 return
             }
+
             AbsModelType.MODEL_DOCUMENT -> {
                 prepareDocs().add(model as Document)
                 return
             }
+
             AbsModelType.MODEL_VIDEO -> {
                 prepareVideos().add(model as Video)
                 return
             }
+
             AbsModelType.MODEL_POST -> {
                 preparePosts().add(model as Post)
                 return
             }
+
             AbsModelType.MODEL_LINK -> {
                 prepareLinks().add(model as Link)
                 return
             }
+
             AbsModelType.MODEL_ARTICLE -> {
                 prepareArticles().add(model as Article)
                 return
             }
+
             AbsModelType.MODEL_STORY -> {
                 prepareStories().add(model as Story)
                 return
             }
+
             AbsModelType.MODEL_CALL -> {
                 prepareCalls().add(model as Call)
                 return
             }
+
             AbsModelType.MODEL_GEO -> {
                 prepareGeos().add(model as Geo)
                 return
             }
+
             AbsModelType.MODEL_NOT_SUPPORTED -> {
                 prepareNotSupporteds().add(model as NotSupported)
                 return
             }
+
             AbsModelType.MODEL_EVENT -> {
                 prepareEvents().add(model as Event)
                 return
             }
+
             AbsModelType.MODEL_MARKET -> {
                 prepareMarkets().add(model as Market)
                 return
             }
+
             AbsModelType.MODEL_MARKET_ALBUM -> {
                 prepareMarketAlbums().add(model as MarketAlbum)
                 return
             }
+
             AbsModelType.MODEL_AUDIO_ARTIST -> {
                 prepareAudioArtist().add(model as AudioArtist)
                 return
             }
+
             AbsModelType.MODEL_WALL_REPLY -> {
                 prepareWallReply().add(model as WallReply)
                 return
             }
+
             AbsModelType.MODEL_AUDIO_PLAYLIST -> {
                 prepareAudioPlaylists().add(model as AudioPlaylist)
                 return
             }
+
             AbsModelType.MODEL_GRAFFITI -> {
                 prepareGraffiti().add(model as Graffiti)
                 return
             }
+
             AbsModelType.MODEL_POLL -> {
                 preparePolls().add(model as Poll)
                 return
             }
+
             AbsModelType.MODEL_WIKI_PAGE -> {
                 prepareWikiPages().add(model as WikiPage)
                 return
             }
+
             AbsModelType.MODEL_GIFT_ITEM -> {
                 prepareGifts().add(model as GiftItem)
                 return

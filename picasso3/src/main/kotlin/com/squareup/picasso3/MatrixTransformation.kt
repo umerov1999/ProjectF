@@ -141,9 +141,11 @@ internal class MatrixTransformation(private val data: Request) : Transformation 
                                 data.centerCropGravity and Gravity.TOP == Gravity.TOP -> {
                                     0
                                 }
+
                                 data.centerCropGravity and Gravity.BOTTOM == Gravity.BOTTOM -> {
                                     inHeight - newSize
                                 }
+
                                 else -> {
                                     (inHeight - newSize) / 2
                                 }
@@ -152,6 +154,7 @@ internal class MatrixTransformation(private val data: Request) : Transformation 
                             scaleX = widthRatio
                             scaleY = targetHeight / drawHeight.toFloat()
                         }
+
                         widthRatio < heightRatio -> {
                             val newSize =
                                 ceil((inWidth * (widthRatio / heightRatio)).toDouble()).toInt()
@@ -159,9 +162,11 @@ internal class MatrixTransformation(private val data: Request) : Transformation 
                                 data.centerCropGravity and Gravity.LEFT == Gravity.LEFT -> {
                                     0
                                 }
+
                                 data.centerCropGravity and Gravity.RIGHT == Gravity.RIGHT -> {
                                     inWidth - newSize
                                 }
+
                                 else -> {
                                     (inWidth - newSize) / 2
                                 }
@@ -170,6 +175,7 @@ internal class MatrixTransformation(private val data: Request) : Transformation 
                             scaleX = targetWidth / drawWidth.toFloat()
                             scaleY = heightRatio
                         }
+
                         else -> {
                             drawX = 0
                             drawWidth = inWidth
@@ -230,6 +236,7 @@ internal class MatrixTransformation(private val data: Request) : Transformation 
             when (orientation) {
                 ORIENTATION_FLIP_HORIZONTAL, ORIENTATION_FLIP_VERTICAL,
                 ORIENTATION_TRANSPOSE, ORIENTATION_TRANSVERSE -> -1
+
                 else -> 1
             }
     }

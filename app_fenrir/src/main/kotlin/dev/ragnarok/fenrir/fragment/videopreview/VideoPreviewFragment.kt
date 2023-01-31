@@ -1,12 +1,21 @@
 package dev.ragnarok.fenrir.fragment.videopreview
 
 import android.Manifest
-import android.content.*
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.ComponentName
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -14,21 +23,30 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso3.Transformation
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
+import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.link.LinkHelper.openLinkInBrowser
 import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory.withSpans
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.EditingPostType
+import dev.ragnarok.fenrir.model.InternalVideoSize
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Text
+import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.menu.Item
 import dev.ragnarok.fenrir.model.menu.Section
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.place.PlaceFactory.getCommentsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getLikesCopiesPlace
@@ -105,22 +123,26 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                 presenter?.fireAddToMyClick()
                 true
             }
+
             R.id.action_copy_url -> {
                 presenter?.fireCopyUrlClick(
                     requireActivity()
                 )
                 true
             }
+
             R.id.action_delete_from_my_videos -> {
                 presenter?.fireDeleteMyClick()
                 true
             }
+
             R.id.action_edit -> {
                 presenter?.fireEditVideo(
                     requireActivity()
                 )
                 true
             }
+
             else -> false
         }
     }
@@ -339,6 +361,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                             "https://vk.com/video" + video.ownerId + "_" + video.id,
                             video.title
                         )
+
                         1 -> startForSendAttachments(requireActivity(), accountId, video)
                         2 -> goToPostCreation(
                             requireActivity(),
@@ -565,12 +588,15 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                     AppPrefs.isVancedYoutubeInstalled(requireActivity()) -> {
                         playWithYoutubeVanced(video)
                     }
+
                     AppPrefs.isNewPipeInstalled(requireActivity()) -> {
                         playWithNewPipe(video)
                     }
+
                     AppPrefs.isYoutubeInstalled(requireActivity()) -> {
                         playWithYoutube(video)
                     }
+
                     else -> {
                         playWithExternalSoftware(video.externalLink ?: return)
                     }
@@ -632,6 +658,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                     "https://github.com/TeamNewPipe/NewPipe/releases"
                 )
             }
+
             Menu.YOUTUBE -> playWithYoutube(video)
             Menu.YOUTUBE_VANCED -> playWithYoutubeVanced(video)
             Menu.COUB -> playWithCoub(video)
@@ -642,6 +669,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             } else {
                 showDownloadPlayerMenu(video)
             }
+
             Menu.ADD_TO_FAVE -> presenter?.fireFaveVideo()
             Menu.COPY_LINK -> {
                 val clipboard =
@@ -690,24 +718,28 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                             it, "240"
                         )
                     }
+
                     Menu.P_360 -> video.mp4link360?.let {
                         doDownloadVideo(
                             requireActivity(), video,
                             it, "360"
                         )
                     }
+
                     Menu.P_480 -> video.mp4link480?.let {
                         doDownloadVideo(
                             requireActivity(), video,
                             it, "480"
                         )
                     }
+
                     Menu.P_720 -> video.mp4link720?.let {
                         doDownloadVideo(
                             requireActivity(), video,
                             it, "720"
                         )
                     }
+
                     Menu.P_1080 -> video.mp4link1080?.let {
                         doDownloadVideo(
                             requireActivity(),
@@ -716,6 +748,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                             "1080"
                         )
                     }
+
                     Menu.P_1440 -> video.mp4link1440?.let {
                         doDownloadVideo(
                             requireActivity(),
@@ -724,6 +757,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                             "2K"
                         )
                     }
+
                     Menu.P_2160 -> video.mp4link2160?.let {
                         doDownloadVideo(
                             requireActivity(),
@@ -810,9 +844,11 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             R.id.like_button -> {
                 presenter?.fireLikeClick()
             }
+
             R.id.comments_button -> {
                 presenter?.fireCommentsClick()
             }
+
             R.id.share_button -> {
                 presenter?.fireShareClick()
             }

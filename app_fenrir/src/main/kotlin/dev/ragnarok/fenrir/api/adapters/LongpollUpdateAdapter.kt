@@ -29,6 +29,7 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
             AbsLongpollEvent.ACTION_MESSAGE_EDITED, AbsLongpollEvent.ACTION_MESSAGE_CHANGED, AbsLongpollEvent.ACTION_MESSAGE_ADDED -> return deserializeAddMessageUpdate(
                 array
             )
+
             AbsLongpollEvent.ACTION_USER_WRITE_TEXT_IN_DIALOG -> {
                 val w = WriteTextInDialogUpdate(true)
                 w.peer_id = optLong(array, 1)
@@ -36,6 +37,7 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
                 w.from_ids_count = optInt(array, 3)
                 return w
             }
+
             AbsLongpollEvent.ACTION_USER_WRITE_VOICE_IN_DIALOG -> {
                 val v = WriteTextInDialogUpdate(false)
                 v.peer_id = optLong(array, 1)
@@ -43,6 +45,7 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
                 v.from_ids_count = optInt(array, 3)
                 return v
             }
+
             AbsLongpollEvent.ACTION_USER_IS_ONLINE -> {
                 val u = UserIsOnlineUpdate()
                 u.userId = -optLong(array, 1)
@@ -51,6 +54,7 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
                 u.app_id = optInt(array, 4)
                 return u
             }
+
             AbsLongpollEvent.ACTION_USER_IS_OFFLINE -> {
                 val u1 = UserIsOfflineUpdate()
                 u1.userId = -optLong(array, 1)
@@ -59,6 +63,7 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
                 u1.app_id = optInt(array, 4)
                 return u1
             }
+
             AbsLongpollEvent.ACTION_MESSAGES_FLAGS_RESET -> {
                 val update = MessageFlagsResetUpdate()
                 update.messageId = optInt(array, 1)
@@ -66,6 +71,7 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
                 update.peerId = optLong(array, 3)
                 return if (update.peerId != 0L && update.messageId != 0) update else null
             }
+
             AbsLongpollEvent.ACTION_MESSAGES_FLAGS_SET -> {
                 val update = MessageFlagsSetUpdate()
                 update.messageId = optInt(array, 1)
@@ -73,11 +79,13 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
                 update.peerId = optLong(array, 3)
                 return if (update.peerId != 0L && update.messageId != 0) update else null
             }
+
             AbsLongpollEvent.ACTION_COUNTER_UNREAD_WAS_CHANGED -> {
                 val c = BadgeCountChangeUpdate()
                 c.count = optInt(array, 1)
                 return c
             }
+
             AbsLongpollEvent.ACTION_SET_INPUT_MESSAGES_AS_READ -> {
                 val update = InputMessagesSetReadUpdate()
                 update.peerId = optLong(array, 1)
@@ -85,6 +93,7 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
                 update.unreadCount = optInt(array, 3) // undocumented
                 return if (update.peerId != 0L) update else null
             }
+
             AbsLongpollEvent.ACTION_SET_OUTPUT_MESSAGES_AS_READ -> {
                 val update = OutputMessagesSetReadUpdate()
                 update.peerId = optLong(array, 1)
@@ -148,7 +157,7 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
 
     companion object {
         internal fun parseLineWithSeparators(line: String?, separator: String): ArrayList<String>? {
-            if (line == null || line.isEmpty()) {
+            if (line.isNullOrEmpty()) {
                 return null
             }
             val tokens = line.split(separator.toRegex()).toTypedArray()

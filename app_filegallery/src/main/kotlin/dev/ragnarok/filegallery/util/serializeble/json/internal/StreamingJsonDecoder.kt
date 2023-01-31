@@ -60,7 +60,7 @@ internal open class StreamingJsonDecoder(
     override fun decodeJsonElement(): JsonElement = JsonTreeReader(json.configuration, lexer).read()
 
     @OptIn(InternalSerializationApi::class)
-    @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "UNCHECKED_CAST")
+    @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
     override fun <T> decodeSerializableValue(deserializer: DeserializationStrategy<T>): T {
         try {
             /*
@@ -83,7 +83,7 @@ internal open class StreamingJsonDecoder(
 
             val discriminator = deserializer.descriptor.classDiscriminator(json)
             val type = lexer.consumeLeadingMatchingValue(discriminator, configuration.isLenient)
-            var actualSerializer: DeserializationStrategy<out Any>? = null
+            var actualSerializer: DeserializationStrategy<Any>? = null
             if (type != null) {
                 actualSerializer = deserializer.findPolymorphicSerializerOrNull(this, type)
             }
@@ -93,6 +93,8 @@ internal open class StreamingJsonDecoder(
             }
 
             discriminatorHolder = DiscriminatorHolder(discriminator)
+
+            @Suppress("UNCHECKED_CAST")
             return actualSerializer.deserialize(this) as T
 
         } catch (e: MissingFieldException) {
@@ -118,6 +120,7 @@ internal open class StreamingJsonDecoder(
                 descriptor,
                 discriminatorHolder
             )
+
             else -> if (mode == newMode && json.configuration.explicitNulls) {
                 this
             } else {

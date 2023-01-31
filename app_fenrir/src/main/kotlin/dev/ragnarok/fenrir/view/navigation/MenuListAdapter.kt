@@ -45,10 +45,12 @@ class MenuListAdapter(
             } else {
                 bindIconNoStrokeHolder(viewHolder as NormalNoStrokeHolder, item as IconMenuItem)
             }
+
             AbsMenuItem.TYPE_RECENT_CHAT -> bindRecentChat(
                 viewHolder as RecentChatHolder,
                 item as RecentChat
             )
+
             AbsMenuItem.TYPE_WITHOUT_ICON -> bindWithoutIcon(
                 viewHolder as NoIconHolder,
                 item as NoIconMenuItem
@@ -128,6 +130,7 @@ class MenuListAdapter(
             AbsMenuItem.TYPE_ICON -> return if (paging || !noStroke) NormalHolder(view) else NormalNoStrokeHolder(
                 view
             )
+
             AbsMenuItem.TYPE_WITHOUT_ICON -> return NoIconHolder(view)
         }
         throw IllegalStateException()

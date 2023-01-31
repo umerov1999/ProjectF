@@ -58,6 +58,7 @@ class NewsfeedCommentsAdapter(
                     false
                 )
             )
+
             VTYPE_VIDEO -> return VideoHolder(
                 inflater.inflate(
                     R.layout.item_newsfeed_comment_video,
@@ -65,6 +66,7 @@ class NewsfeedCommentsAdapter(
                     false
                 )
             )
+
             VTYPE_PHOTO -> return PhotoHolder(
                 inflater.inflate(
                     R.layout.item_newsfeed_comment_photo,
@@ -72,6 +74,7 @@ class NewsfeedCommentsAdapter(
                     false
                 )
             )
+
             VTYPE_TOPIC -> return TopicHolder(
                 inflater.inflate(
                     R.layout.item_newsfeed_comment_topic,

@@ -141,8 +141,10 @@ class FfmpegAudioRenderer
             AudioSink.SINK_FORMAT_SUPPORTED_DIRECTLY ->                 // AC-3 is always 16-bit, so there's no point using floating point. Assume that it's worth
                 // using for all other formats.
                 MimeTypes.AUDIO_AC3 != inputFormat.sampleMimeType
+
             AudioSink.SINK_FORMAT_UNSUPPORTED, AudioSink.SINK_FORMAT_SUPPORTED_WITH_TRANSCODING ->                 // Always prefer 16-bit PCM if the sink does not provide direct support for floating point.
                 false
+
             else -> false
         }
     }
