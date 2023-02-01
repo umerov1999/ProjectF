@@ -4,7 +4,7 @@ buildscript {
 
     ext.appCompileSDK = 33
     ext.appBuildTools = "33.0.1"
-    ext.appNdk = "25.1.8937393"
+    ext.appNdk = "25.2.9519653"
     ext.appMinSDK = is_developer_build ? 29 : 21
     ext.appTargetSDK = 31
     ext.appFenrirVersionCode = 999

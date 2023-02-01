@@ -8,7 +8,7 @@
 
 <b>Инструкция по сборке:</b>
 Требуется:
-  1) Android Studio Electric Eel (2022.1.1) или выше. Kotlin 1.8.*
+  1) Android Studio Flamingo (2022.2.1) или выше. Kotlin 1.8.*
   2) Android SDK 33
   3) Android NDK 25.1.8937393
   
