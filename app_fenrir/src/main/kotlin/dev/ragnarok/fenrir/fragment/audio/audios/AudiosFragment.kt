@@ -264,7 +264,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
             }
 
             override fun onEdit(position: Int, audio: Audio) {
-                presenter?.fireEditTrackIn(
+                presenter?.fireEditTrack(
                     requireActivity(),
                     audio
                 )

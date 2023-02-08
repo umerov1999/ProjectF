@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
@@ -67,7 +66,7 @@
                             android:autoLink="web"
                             android:gravity="start"
                             android:textSize="@dimen/font_size_title"
-                            emojicon:emojiconSize="20sp"
+                            app:emojiconSize="20sp"
                             tools:text="Message" />
 
                         <LinearLayout

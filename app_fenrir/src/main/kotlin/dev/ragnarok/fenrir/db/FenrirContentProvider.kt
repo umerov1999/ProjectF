@@ -1133,6 +1133,8 @@ class FenrirContentProvider : ContentProvider() {
                 NewsColumns.FULL_USER_LIKE
             sNewsProjectionMap[NewsColumns.CAN_LIKE] =
                 NewsColumns.FULL_CAN_LIKE
+            sNewsProjectionMap[NewsColumns.IS_DONUT] =
+                NewsColumns.FULL_IS_DONUT
             sNewsProjectionMap[NewsColumns.CAN_PUBLISH] = NewsColumns.FULL_CAN_PUBLISH
             sNewsProjectionMap[NewsColumns.REPOSTS_COUNT] =
                 NewsColumns.FULL_REPOSTS_COUNT

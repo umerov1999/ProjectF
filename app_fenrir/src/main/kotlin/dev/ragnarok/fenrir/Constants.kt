@@ -5,7 +5,7 @@ import java.util.*
 
 object Constants {
     const val API_VERSION = "5.131"
-    const val DATABASE_FENRIR_VERSION = 26
+    const val DATABASE_FENRIR_VERSION = 27
     const val DATABASE_TEMPORARY_VERSION = 5
     const val EXPORT_SETTINGS_FORMAT = 1
     const val forceDeveloperMode = BuildConfig.FORCE_DEVELOPER_MODE
@@ -15,10 +15,10 @@ object Constants {
 
     val AUTH_VERSION = if (DEFAULT_ACCOUNT_TYPE == AccountType.KATE) API_VERSION else "5.122"
     const val FILE_PROVIDER_AUTHORITY: String = BuildConfig.APPLICATION_ID + ".file_provider"
-    const val VK_ANDROID_APP_VERSION_NAME = "8.12"
-    const val VK_ANDROID_APP_VERSION_CODE = "15090"
-    const val KATE_APP_VERSION_NAME = "96 lite"
-    const val KATE_APP_VERSION_CODE = "529"
+    const val VK_ANDROID_APP_VERSION_NAME = "8.15"
+    const val VK_ANDROID_APP_VERSION_CODE = "15271"
+    const val KATE_APP_VERSION_NAME = "97.1 lite"
+    const val KATE_APP_VERSION_CODE = "532"
     const val API_ID: Int = BuildConfig.VK_API_APP_ID
     const val SECRET: String = BuildConfig.VK_CLIENT_SECRET
     const val PHOTOS_PATH = "DCIM/Fenrir"
@@ -38,4 +38,12 @@ object Constants {
 
     val SCREEN_HEIGHT
         get() = Resources.getSystem().displayMetrics?.heightPixels ?: 1080
+
+    const val API_TIMEOUT = 25L
+    const val EXO_PLAYER_TIMEOUT = 60L
+    const val UPLOAD_TIMEOUT = 3600L
+    const val DOWNLOAD_TIMEOUT = 3600L
+    const val GIF_TIMEOUT = 5L
+    const val LONGPOLL_TIMEOUT = 25L
+    const val PICASSO_TIMEOUT = 15L
 }

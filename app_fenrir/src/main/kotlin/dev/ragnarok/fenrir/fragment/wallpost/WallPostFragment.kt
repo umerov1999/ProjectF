@@ -356,6 +356,9 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
         pRoot.findViewById<View>(R.id.fragment_post_deleted).visibility = View.GONE
         pRoot.findViewById<View>(R.id.post_content).visibility = View.VISIBLE
         pRoot.findViewById<View>(R.id.post_loading_root).visibility = View.GONE
+        pRoot.findViewById<View>(R.id.item_need_donate).visibility =
+            if (post.isDonut) View.VISIBLE else View.GONE
+
         val tvCopyright: TextView = pRoot.findViewById(R.id.item_post_copyright)
         post.copyright?.let { vit ->
             tvCopyright.visibility = View.VISIBLE

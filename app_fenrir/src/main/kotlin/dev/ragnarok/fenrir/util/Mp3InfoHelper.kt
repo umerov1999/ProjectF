@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.util
 
 import android.content.Context
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import io.reactivex.rxjava3.core.Single
 import okhttp3.Request
@@ -8,7 +9,7 @@ import okhttp3.Request
 object Mp3InfoHelper {
     fun getLength(url: String): Single<Long> {
         return Single.create {
-            val builder = Utils.createOkHttp(15, false)
+            val builder = Utils.createOkHttp(Constants.API_TIMEOUT, false)
             val request: Request = Request.Builder()
                 .url(url)
                 .build()

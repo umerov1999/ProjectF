@@ -11,7 +11,7 @@ class ILongpollUpdatesService : IServiceRest() {
         act: String?,
         key: String?,
         ts: Long,
-        wait: Int,
+        wait: Long,
         mode: Int,
         version: Int
     ): Single<VKApiLongpollUpdates> {
@@ -34,7 +34,7 @@ class ILongpollUpdatesService : IServiceRest() {
         act: String?,
         key: String?,
         ts: String?,
-        wait: Int
+        wait: Long
     ): Single<VKApiGroupLongpollUpdates> {
         return rest.requestFullUrl(
             server,

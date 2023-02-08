@@ -9,7 +9,7 @@ interface ILongpollApi {
         server: String,
         key: String?,
         ts: Long,
-        wait: Int,
+        wait: Long,
         mode: Int,
         version: Int
     ): Single<VKApiLongpollUpdates>
@@ -18,6 +18,6 @@ interface ILongpollApi {
         server: String,
         key: String?,
         ts: String?,
-        wait: Int
+        wait: Long
     ): Single<VKApiGroupLongpollUpdates>
 }

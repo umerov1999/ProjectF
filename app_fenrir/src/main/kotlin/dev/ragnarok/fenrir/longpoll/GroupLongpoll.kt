@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.longpoll
 
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.longpoll.VKApiGroupLongpollUpdates
@@ -64,7 +65,7 @@ internal class GroupLongpoll(
         if (validServer) {
             compositeDisposable.add(
                 networker.longpoll()
-                    .getGroupUpdates(server ?: return, key, ts, 25)
+                    .getGroupUpdates(server ?: return, key, ts, Constants.LONGPOLL_TIMEOUT)
                     .fromIOToMain()
                     .subscribe({ updates -> onUpdates(updates) }) { throwable ->
                         onUpdatesGetError(

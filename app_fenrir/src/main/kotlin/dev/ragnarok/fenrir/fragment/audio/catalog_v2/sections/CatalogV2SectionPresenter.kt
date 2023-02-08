@@ -31,6 +31,7 @@ class CatalogV2SectionPresenter(
     private var actualBlockLoading = false
     private var nextFrom: String? = null
     private var listContentType: String? = null
+    private var dataDisposable = Disposable.disposed()
 
     private fun resolveLoadMoreFooterView() {
         if (pages.nonNullNoEmpty() && nextFrom.isNullOrEmpty()) {
@@ -61,6 +62,14 @@ class CatalogV2SectionPresenter(
             true
         }
         loadActualData()
+    }
+
+    fun fireSearchRequestSubmitted(q: String?) {
+        dataDisposable.dispose()
+        if (q.isNullOrEmpty()) {
+            return
+        }
+        view?.search(accountId, q)
     }
 
     fun getAudioPos(dt: MutableList<AbsModel>?, audio: Audio?): Int {
@@ -189,6 +198,7 @@ class CatalogV2SectionPresenter(
 
     override fun onDestroyed() {
         actualDataDisposable.dispose()
+        dataDisposable.dispose()
         super.onDestroyed()
     }
 

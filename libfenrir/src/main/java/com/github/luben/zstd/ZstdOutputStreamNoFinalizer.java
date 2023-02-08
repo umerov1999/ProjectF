@@ -1,35 +1,45 @@
 package com.github.luben.zstd;
 
+import java.io.OutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 /**
  * OutputStream filter that compresses the data using Zstd compression.
+ *
  */
 
 public class ZstdOutputStreamNoFinalizer extends FilterOutputStream {
-
-    private static final int dstSize = (int) recommendedCOutSize();
-
     /* Opaque pointer to Zstd context object */
     private final long stream;
+    // Source and Destination positions
+    @SuppressWarnings("FieldCanBeLocal")
+    private long srcPos;
+    @SuppressWarnings("FieldMayBeFinal")
+    private long dstPos;
     private final BufferPool bufferPool;
     private final ByteBuffer dstByteBuffer;
     private final byte[] dst;
-    private final long dstPos = 0;
-    // Source and Destination positions
-    private long srcPos;
     private boolean isClosed;
+    private static final int dstSize = (int) recommendedCOutSize();
     private boolean closeFrameOnFlush;
     private boolean frameClosed = true;
 
+    /* JNI methods */
+    public static native long recommendedCOutSize();
+    private static native long createCStream();
+    private static native int  freeCStream(long ctx);
+    private native int resetCStream(long ctx);
+    private native int compressStream(long ctx, byte[] dst, int dst_size, byte[] src, int src_size);
+    private native int flushStream(long ctx, byte[] dst, int dst_size);
+    private native int endStream(long ctx, byte[] dst, int dst_size);
+
+
     /**
      * create a new compressing OutputStream
-     *
      * @param outStream the stream to wrap
-     * @param level     the compression level
+     * @param level the compression level
      */
     public ZstdOutputStreamNoFinalizer(OutputStream outStream, int level) throws IOException {
         this(outStream, NoPool.INSTANCE);
@@ -38,7 +48,6 @@ public class ZstdOutputStreamNoFinalizer extends FilterOutputStream {
 
     /**
      * create a new compressing OutputStream
-     *
      * @param outStream the stream to wrap
      */
     public ZstdOutputStreamNoFinalizer(OutputStream outStream) throws IOException {
@@ -47,8 +56,7 @@ public class ZstdOutputStreamNoFinalizer extends FilterOutputStream {
 
     /**
      * create a new compressing OutputStream
-     *
-     * @param outStream  the stream to wrap
+     * @param outStream the stream to wrap
      * @param bufferPool the pool to fetch and return buffers
      */
     public ZstdOutputStreamNoFinalizer(OutputStream outStream, BufferPool bufferPool, int level) throws IOException {
@@ -58,8 +66,7 @@ public class ZstdOutputStreamNoFinalizer extends FilterOutputStream {
 
     /**
      * create a new compressing OutputStream
-     *
-     * @param outStream  the stream to wrap
+     * @param outStream the stream to wrap
      * @param bufferPool the pool to fetch and return buffers
      */
     public ZstdOutputStreamNoFinalizer(OutputStream outStream, BufferPool bufferPool) throws IOException {
@@ -73,21 +80,6 @@ public class ZstdOutputStreamNoFinalizer extends FilterOutputStream {
         }
         dst = Zstd.extractArray(dstByteBuffer);
     }
-
-    /* JNI methods */
-    public static native long recommendedCOutSize();
-
-    private static native long createCStream();
-
-    private static native int freeCStream(long ctx);
-
-    private native int resetCStream(long ctx);
-
-    private native int compressStream(long ctx, byte[] dst, int dst_size, byte[] src, int src_size);
-
-    private native int flushStream(long ctx, byte[] dst, int dst_size);
-
-    private native int endStream(long ctx, byte[] dst, int dst_size);
 
     /**
      * Enable checksums for the compressed stream.
@@ -283,7 +275,7 @@ public class ZstdOutputStreamNoFinalizer extends FilterOutputStream {
                 } while (size > 0);
             }
             if (closeParentStream) {
-                out.close();
+                    out.close();
             }
         } finally {
             // release the resources even if underlying stream throw an exception

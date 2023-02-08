@@ -220,10 +220,10 @@ class IAudioService : IServiceRest() {
         )
     }
 
-    fun getLyrics(lyrics_id: Int): Single<BaseResponse<VKApiLyrics>> {
+    fun getLyrics(audio: String?): Single<BaseResponse<VKApiLyrics>> {
         return rest.request(
             "audio.getLyrics",
-            form("lyrics_id" to lyrics_id),
+            form("audio_id" to audio),
             base(VKApiLyrics.serializer())
         )
     }
@@ -321,8 +321,7 @@ class IAudioService : IServiceRest() {
         ownerId: Long,
         audioId: Int,
         artist: String?,
-        title: String?,
-        text: String?
+        title: String?
     ): Single<BaseResponse<Int>> {
         return rest.request(
             "audio.edit",
@@ -331,7 +330,6 @@ class IAudioService : IServiceRest() {
                 "audio_id" to audioId,
                 "artist" to artist,
                 "title" to title,
-                "text" to text
             ),
             baseInt
         )

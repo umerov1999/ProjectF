@@ -1081,10 +1081,10 @@ object Utils {
         proxyConfig: ProxyConfig?
     ): OkHttpDataSource.Factory {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .callTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(Constants.EXO_PLAYER_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(Constants.EXO_PLAYER_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(Constants.EXO_PLAYER_TIMEOUT, TimeUnit.SECONDS)
+            .callTimeout(Constants.EXO_PLAYER_TIMEOUT, TimeUnit.SECONDS)
         applyProxyConfig(builder, proxyConfig)
         return OkHttpDataSource.Factory(builder.build()).setUserAgent(userAgent)
     }
@@ -1297,12 +1297,12 @@ object Utils {
             .subscribe { function.call() }
     }
 
-    fun createOkHttp(timeouts: Int, compressIntercept: Boolean): OkHttpClient.Builder {
+    fun createOkHttp(timeouts: Long, compressIntercept: Boolean): OkHttpClient.Builder {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .connectTimeout(timeouts.toLong(), TimeUnit.SECONDS)
-            .readTimeout(timeouts.toLong(), TimeUnit.SECONDS)
-            .writeTimeout(timeouts.toLong(), TimeUnit.SECONDS)
-            .callTimeout(timeouts.toLong(), TimeUnit.SECONDS)
+            .connectTimeout(timeouts, TimeUnit.SECONDS)
+            .readTimeout(timeouts, TimeUnit.SECONDS)
+            .writeTimeout(timeouts, TimeUnit.SECONDS)
+            .callTimeout(timeouts, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 chain.proceed(
                     chain.toRequestBuilder(false).vkHeader(true).addHeader(

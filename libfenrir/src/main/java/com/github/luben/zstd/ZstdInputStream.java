@@ -1,8 +1,8 @@
 package com.github.luben.zstd;
 
+import java.io.InputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * InputStream filter that decompresses the data provided
@@ -13,11 +13,11 @@ import java.io.InputStream;
 
 public class ZstdInputStream extends FilterInputStream {
 
-    private final ZstdInputStreamNoFinalizer inner;
+    @SuppressWarnings("FieldMayBeFinal")
+    private ZstdInputStreamNoFinalizer inner;
 
     /**
      * create a new decompressing InputStream
-     *
      * @param inStream the stream to wrap
      */
     public ZstdInputStream(InputStream inStream) throws IOException {
@@ -27,8 +27,7 @@ public class ZstdInputStream extends FilterInputStream {
 
     /**
      * create a new decompressing InputStream
-     *
-     * @param inStream   the stream to wrap
+     * @param inStream the stream to wrap
      * @param bufferPool the pool to fetch and return buffers
      */
     public ZstdInputStream(InputStream inStream, BufferPool bufferPool) throws IOException {
@@ -36,19 +35,13 @@ public class ZstdInputStream extends FilterInputStream {
         inner = new ZstdInputStreamNoFinalizer(inStream, bufferPool);
     }
 
-    public static long recommendedDInSize() {
-        return ZstdInputStreamNoFinalizer.recommendedDInSize();
-    }
-
-    public static long recommendedDOutSize() {
-        return ZstdInputStreamNoFinalizer.recommendedDOutSize();
-    }
-
     /**
      * Enable or disable class finalizers
      *
      * @param finalize default `true` - finalizers are enabled
-     * @deprecated If you don't rely on finalizers, use `ZstdInputStreamNoFinalizer` instead, instances of
+     *
+     * @deprecated
+     * If you don't rely on finalizers, use `ZstdInputStreamNoFinalizer` instead, instances of
      * `ZstdInputStream` will always try to close/release in the finalizer.
      */
     @Deprecated
@@ -60,8 +53,12 @@ public class ZstdInputStream extends FilterInputStream {
         close();
     }
 
-    public boolean getContinuous() {
-        return inner.getContinuous();
+    public static long recommendedDInSize() {
+        return ZstdInputStreamNoFinalizer.recommendedDInSize();
+    }
+
+    public static long recommendedDOutSize() {
+        return ZstdInputStreamNoFinalizer.recommendedDOutSize();
     }
 
     /**
@@ -74,11 +71,14 @@ public class ZstdInputStream extends FilterInputStream {
         return this;
     }
 
+    public boolean getContinuous() {
+        return inner.getContinuous();
+    }
+
     public ZstdInputStream setDict(byte[] dict) throws IOException {
         inner.setDict(dict);
         return this;
     }
-
     public ZstdInputStream setDict(ZstdDictDecompress dict) throws IOException {
         inner.setDict(dict);
         return this;

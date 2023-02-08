@@ -48,6 +48,7 @@ class FeedAdapter(
     @SuppressLint("SetTextI18n")
     override fun onBindItemViewHolder(viewHolder: PostHolder, position: Int, type: Int) {
         val item = getItem(position)
+        viewHolder.tvDonut.visibility = if (item.isDonut) View.VISIBLE else View.GONE
         attachmentsViewBinder.displayAttachments(
             item.attachments,
             viewHolder.attachmentsHolder,
@@ -167,7 +168,7 @@ class FeedAdapter(
         return R.layout.item_feed
     }
 
-    internal fun genereateHolderId(): Int {
+    internal fun generateHolderId(): Int {
         nextHolderId++
         return nextHolderId
     }
@@ -245,6 +246,7 @@ class FeedAdapter(
         val viewsCounter: TextView
         val cardView: View
         val tvCopyright: TextView
+        val tvDonut: TextView
         override val holderId: Int
             get() = cardView.tag as Int
 
@@ -273,7 +275,7 @@ class FeedAdapter(
         init {
             itemView.setOnCreateContextMenuListener(this)
             cardView = root.findViewById(R.id.card_view)
-            cardView.tag = genereateHolderId()
+            cardView.tag = generateHolderId()
             ivOwnerAvatar = root.findViewById(R.id.item_post_avatar)
             tvOwnerName = root.findViewById(R.id.item_post_owner_name)
             tvText = root.findViewById(R.id.item_post_text)
@@ -286,6 +288,7 @@ class FeedAdapter(
             attachmentsHolder = forPost((root as ViewGroup))
             viewsCounter = itemView.findViewById(R.id.post_views_counter)
             tvCopyright = itemView.findViewById(R.id.item_post_copyright)
+            tvDonut = itemView.findViewById(R.id.item_need_donate)
         }
     }
 

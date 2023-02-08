@@ -191,7 +191,7 @@ class AudioContainer : LinearLayout {
 
     internal fun get_lyrics(audio: Audio) {
         audioListDisposable =
-            mAudioInteractor.getLyrics(Settings.get().accounts().current, audio.lyricsId)
+            mAudioInteractor.getLyrics(Settings.get().accounts().current, audio)
                 .fromIOToMain()
                 .subscribe({ t -> onAudioLyricsReceived(t, audio) }) { t ->
                     createCustomToast(context).showToastThrowable(t)

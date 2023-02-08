@@ -29,10 +29,10 @@ class OtherRestProvider @SuppressLint("CheckResult") constructor(private val mai
     private fun createLocalServerRest(): SimplePostHttp {
         val localSettings = mainSettings.getLocalServer()
         val builder = OkHttpClient.Builder()
-            .readTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .callTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .callTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request =
                     chain.request().newBuilder().serverHeader(false)

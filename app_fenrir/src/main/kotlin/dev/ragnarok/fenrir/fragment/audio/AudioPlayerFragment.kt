@@ -605,7 +605,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
 
     private fun get_lyrics(audio: Audio) {
         appendDisposable(
-            mAudioInteractor.getLyrics(mAccountId, audio.lyricsId)
+            mAudioInteractor.getLyrics(mAccountId, audio)
                 .fromIOToMain()
                 .subscribe({ Text -> onAudioLyricsReceived(Text) }) { showErrorInAdapter(it) })
     }

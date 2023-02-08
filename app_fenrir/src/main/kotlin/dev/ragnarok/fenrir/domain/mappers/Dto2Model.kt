@@ -1248,6 +1248,7 @@ object Dto2Model {
             .setFriends(original.friends?.let { buildUserArray(it, owners) })
             .setSource(owners.getById(original.source_id))
             .setViewCount(original.views)
+            .setDonut(original.is_donut)
             .setCopyright(original.copyright?.let { News.Copyright(it.name, it.link) })
         if (original.hasCopyHistory()) {
             val copies = ArrayList<Post>(original.copy_history?.size.orZero())

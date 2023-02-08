@@ -27,6 +27,7 @@ import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity
+import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders.IViewHolder
@@ -198,7 +199,11 @@ class CatalogV2SectionAdapter(
                                 )
                                 clickListener?.onNext(false)
                             }) {
-                                clickListener?.onError(it)
+                                if (it.cause !is ApiException || "Not found" != (it.cause as ApiException).error.errorMsg || it !is ApiException || "Not found" != it.error.errorMsg) {
+                                    clickListener?.onError(it)
+                                } else {
+                                    clickListener?.onNext(false)
+                                }
                             }
                     }
                 }
@@ -471,7 +476,7 @@ class CatalogV2SectionAdapter(
 
     internal fun get_lyrics(audio: Audio) {
         audioListDisposable =
-            mAudioInteractor.getLyrics(Settings.get().accounts().current, audio.lyricsId)
+            mAudioInteractor.getLyrics(Settings.get().accounts().current, audio)
                 .fromIOToMain()
                 .subscribe({ t ->
                     onAudioLyricsReceived(
@@ -559,26 +564,10 @@ class CatalogV2SectionAdapter(
             if (audio.downloadIndicator != 0) View.VISIBLE else View.GONE
     }
 
-    fun fireEditTrackIn(position: Int, audio: Audio) {
-        audioListDisposable = mAudioInteractor.getLyrics(
-            Settings.get().accounts().current,
-            audio.lyricsId
-        )
-            .fromIOToMain()
-            .subscribe({ t ->
-                fireEditTrack(
-                    position,
-                    audio,
-                    t
-                )
-            }) { fireEditTrack(position, audio, null) }
-    }
-
-    private fun fireEditTrack(position: Int, audio: Audio, lyrics: String?) {
+    private fun fireEditTrack(position: Int, audio: Audio) {
         val root = View.inflate(mContext, R.layout.entry_audio_info, null)
         (root.findViewById<View>(R.id.edit_artist) as TextInputEditText).setText(audio.artist)
         (root.findViewById<View>(R.id.edit_title) as TextInputEditText).setText(audio.title)
-        (root.findViewById<View>(R.id.edit_lyrics) as TextInputEditText).setText(lyrics)
         MaterialAlertDialogBuilder(mContext)
             .setTitle(R.string.enter_audio_info)
             .setCancelable(true)
@@ -588,15 +577,12 @@ class CatalogV2SectionAdapter(
                     (root.findViewById<View>(R.id.edit_artist) as TextInputEditText).text.toString()
                 val title =
                     (root.findViewById<View>(R.id.edit_title) as TextInputEditText).text.toString()
-                val lir =
-                    (root.findViewById<View>(R.id.edit_lyrics) as TextInputEditText).text.toString()
                 audioListDisposable = mAudioInteractor.edit(
                     account_id,
                     audio.ownerId,
                     audio.id,
                     artist,
-                    title,
-                    lir
+                    title
                 ).fromIOToMain()
                     .subscribe({
                         audio.setTitle(title).setArtist(artist)
@@ -757,7 +743,7 @@ class CatalogV2SectionAdapter(
                         )
 
                         AudioOption.edit_track -> {
-                            fireEditTrackIn(position, audio)
+                            fireEditTrack(position, audio)
                         }
 
                         AudioOption.share_button -> SendAttachmentsActivity.startForSendAttachments(

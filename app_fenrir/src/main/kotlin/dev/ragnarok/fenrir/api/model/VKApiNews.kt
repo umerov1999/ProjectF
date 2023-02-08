@@ -31,6 +31,7 @@ class VKApiNews {
     var mark_as_ads = 0
     var user_reposted = false
     var copyright: Copyright? = null
+    var is_donut = false
 
     /**
      * Information about attachments to the post (photos, links, etc.), if any;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,9 +24,9 @@
             android:linksClickable="false"
             android:paddingBottom="4dp"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-            emojicon:displayHashTags="true"
-            emojicon:emojiconSize="20sp"
-            emojicon:hashTagColor="?attr/colorAccent"
+            app:displayHashTags="true"
+            app:emojiconSize="20sp"
+            app:hashTagColor="?attr/colorAccent"
             tools:text="Message" />
 
         <TextView
@@ -53,6 +53,20 @@
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
         android:textColor="?attr/colorAccent" />
+
+    <TextView
+        android:id="@+id/item_need_donate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:drawablePadding="4dp"
+        android:text="@string/visible_only_dons"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/donate"
+        app:drawableTint="#FF812E" />
 
     <LinearLayout
         android:id="@+id/item_post_attachments"

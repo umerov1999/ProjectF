@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.api
 
 import android.annotation.SuppressLint
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
@@ -42,10 +43,10 @@ class UploadRestProvider(private val proxySettings: IProxySettings) : IUploadRes
 
     private fun createUploadRest(): SimplePostHttp {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .callTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(Constants.UPLOAD_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(Constants.UPLOAD_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(Constants.UPLOAD_TIMEOUT, TimeUnit.SECONDS)
+            .callTimeout(Constants.UPLOAD_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request =
                     chain.toRequestBuilder(false).vkHeader(true).addHeader(

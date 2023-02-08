@@ -14,4 +14,5 @@ interface ICatalogV2SectionView : IMvpView, IErrorView, IToastView {
     fun showRefreshing(refreshing: Boolean)
     fun setupLoadMoreFooter(@LoadMoreState state: Int)
     fun updateLayoutManager(type: String)
+    fun search(accountId: Long, q: String)
 }

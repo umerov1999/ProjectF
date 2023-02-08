@@ -498,12 +498,14 @@ add_library(fenrir_jni
         audio/ffmpeg/to_mp4_audio_jni.cpp
         audio/ts/mpegts_demux_jni.cpp
         audio/taglib/taglib_jni.cpp
-        compress/zstd/jni_inputstream_zstd.c
-        compress/zstd/jni_directbufferdecompress_zstd.c
-        compress/zstd/jni_zstd.c
+        compress/zstd/jni_bufferdecompress_zstd.c
         compress/zstd/jni_directbuffercompress_zstd.c
+        compress/zstd/jni_directbufferdecompress_zstd.c
+        compress/zstd/jni_fast_zstd.c
+        compress/zstd/jni_inputstream_zstd.c
         compress/zstd/jni_outputstream_zstd.c
-        compress/zstd/jni_fast_zstd.c)
+        compress/zstd/jni_zdict.c
+        compress/zstd/jni_zstd.c)
 
 target_include_directories(fenrir_jni
         PRIVATE

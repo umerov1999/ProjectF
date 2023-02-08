@@ -1,18 +1,19 @@
 package com.github.luben.zstd;
 
+import java.io.OutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * OutputStream filter that compresses the data using Zstd compression
  */
-public class ZstdOutputStream extends FilterOutputStream {
+public class ZstdOutputStream extends FilterOutputStream{
 
-    private final ZstdOutputStreamNoFinalizer inner;
+    @SuppressWarnings("FieldMayBeFinal")
+    private ZstdOutputStreamNoFinalizer inner;
 
     /**
-     * @deprecated Use ZstdOutputStream() or ZstdOutputStream(level) and set the other params with the setters
+     *  @deprecated
+     *  Use ZstdOutputStream() or ZstdOutputStream(level) and set the other params with the setters
      **/
     @Deprecated
     public ZstdOutputStream(OutputStream outStream, int level, boolean closeFrameOnFlush, boolean useChecksums) throws IOException {
@@ -23,7 +24,8 @@ public class ZstdOutputStream extends FilterOutputStream {
     }
 
     /**
-     * @deprecated Use ZstdOutputStream() or ZstdOutputStream(level) and set the other params with the setters
+     *  @deprecated
+     *  Use ZstdOutputStream() or ZstdOutputStream(level) and set the other params with the setters
      **/
     @Deprecated
     public ZstdOutputStream(OutputStream outStream, int level, boolean closeFrameOnFlush) throws IOException {
@@ -34,9 +36,8 @@ public class ZstdOutputStream extends FilterOutputStream {
 
     /**
      * create a new compressing OutputStream
-     *
      * @param outStream the stream to wrap
-     * @param level     the compression level
+     * @param level the compression level
      */
     public ZstdOutputStream(OutputStream outStream, int level) throws IOException {
         this(outStream, NoPool.INSTANCE);
@@ -45,7 +46,6 @@ public class ZstdOutputStream extends FilterOutputStream {
 
     /**
      * create a new compressing OutputStream
-     *
      * @param outStream the stream to wrap
      */
     public ZstdOutputStream(OutputStream outStream) throws IOException {
@@ -54,8 +54,7 @@ public class ZstdOutputStream extends FilterOutputStream {
 
     /**
      * create a new compressing OutputStream
-     *
-     * @param outStream  the stream to wrap
+     * @param outStream the stream to wrap
      * @param bufferPool the pool to fetch and return buffers
      */
     public ZstdOutputStream(OutputStream outStream, BufferPool bufferPool, int level) throws IOException {
@@ -65,17 +64,12 @@ public class ZstdOutputStream extends FilterOutputStream {
 
     /**
      * create a new compressing OutputStream
-     *
-     * @param outStream  the stream to wrap
+     * @param outStream the stream to wrap
      * @param bufferPool the pool to fetch and return buffers
      */
     public ZstdOutputStream(OutputStream outStream, BufferPool bufferPool) throws IOException {
         super(outStream);
         inner = new ZstdOutputStreamNoFinalizer(outStream, bufferPool);
-    }
-
-    public static long recommendedCOutSize() {
-        return ZstdOutputStreamNoFinalizer.recommendedCOutSize();
     }
 
     /**
@@ -84,7 +78,9 @@ public class ZstdOutputStream extends FilterOutputStream {
      * If finalizers are disabled the responsibility fir calling the `close` method is on the consumer.
      *
      * @param finalize default `true` - finalizers are enabled
-     * @deprecated If you don't rely on finalizers, use `ZstdOutputStreamNoFinalizer` instead.
+     *
+     * @deprecated
+     * If you don't rely on finalizers, use `ZstdOutputStreamNoFinalizer` instead.
      */
     @Deprecated
     public void setFinalize(boolean finalize) {
@@ -93,6 +89,10 @@ public class ZstdOutputStream extends FilterOutputStream {
     @Override
     protected void finalize() throws Throwable {
         close();
+    }
+
+    public static long recommendedCOutSize() {
+        return ZstdOutputStreamNoFinalizer.recommendedCOutSize();
     }
 
     /**

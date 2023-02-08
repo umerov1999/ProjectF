@@ -27,7 +27,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/get_lyrics"
             android:padding="12dp"
-            android:src="@drawable/player_get_lyric"
+            android:src="@drawable/lyric"
             android:stateListAnimator="@animator/clicked"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

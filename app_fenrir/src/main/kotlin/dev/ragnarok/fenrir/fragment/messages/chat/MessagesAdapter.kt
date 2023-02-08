@@ -122,7 +122,7 @@ class MessagesAdapter(
         if (sticker?.isAnimated == true) {
             holder.sticker.fromNet(
                 sticker.getAnimationByType(if (isNightSticker) "dark" else "light"),
-                Utils.createOkHttp(5, true),
+                Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                 Utils.dp(128f),
                 Utils.dp(128f)
             )

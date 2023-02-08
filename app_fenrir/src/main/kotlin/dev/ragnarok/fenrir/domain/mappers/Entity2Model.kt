@@ -990,6 +990,7 @@ object Entity2Model {
             .setCanPublish(dbo.isCanPublish)
             .setRepostsCount(dbo.repostCount)
             .setUserReposted(dbo.isUserReposted)
+            .setDonut(dbo.isDonut)
             .setCopyright(dbo.copyright?.let { News.Copyright(it.name, it.link) })
             .setFriends(
                 dbo.friendsTags?.let {

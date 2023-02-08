@@ -98,6 +98,20 @@
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                         android:textColor="?attr/colorAccent" />
+
+                    <TextView
+                        android:id="@+id/item_need_donate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:drawablePadding="4dp"
+                        android:text="@string/visible_only_dons"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                        android:visibility="gone"
+                        app:drawableStartCompat="@drawable/donate"
+                        app:drawableTint="#FF812E" />
                 </LinearLayout>
             </ScrollView>
 

@@ -72,23 +72,22 @@ struct SwTask : Task
 struct SwShapeTask : SwTask
 {
     SwShape shape;
-    const Shape* sdata = nullptr;
+    const RenderShape* rshape = nullptr;
     bool cmpStroking = false;
+    bool clipper = false;
 
     void run(unsigned tid) override
-    {
-        auto compMethod = CompositeMethod::None;
-        auto usedAsClip = (sdata->composite(nullptr, &compMethod) == Result::Success) && (compMethod == CompositeMethod::ClipPath);
-        if (opacity == 0 && !usedAsClip) return;  //Invisible
+    {    
+        if (opacity == 0 && !clipper) return;  //Invisible
 
         uint8_t strokeAlpha = 0;
         auto visibleStroke = false;
         bool visibleFill = false;
         auto clipRegion = bbox;
 
-        if (HALF_STROKE(sdata->strokeWidth()) > 0) {
-            sdata->strokeColor(nullptr, nullptr, nullptr, &strokeAlpha);
-            visibleStroke = sdata->strokeFill() || (static_cast<uint32_t>(strokeAlpha * opacity / 255) > 0);
+        if (HALF_STROKE(rshape->strokeWidth()) > 0) {
+            rshape->strokeColor(nullptr, nullptr, nullptr, &strokeAlpha);
+            visibleStroke = rshape->strokeFill() || (static_cast<uint32_t>(strokeAlpha * opacity / 255) > 0);
         }
 
         //This checks also for the case, if the invisible shape turned to visible by alpha.
@@ -98,12 +97,12 @@ struct SwShapeTask : SwTask
         //Shape
         if (flags & (RenderUpdateFlag::Path | RenderUpdateFlag::Transform) || prepareShape) {
             uint8_t alpha = 0;
-            sdata->fillColor(nullptr, nullptr, nullptr, &alpha);
+            rshape->fillColor(nullptr, nullptr, nullptr, &alpha);
             alpha = static_cast<uint8_t>(static_cast<uint32_t>(alpha) * opacity / 255);
-            visibleFill = (alpha > 0 || sdata->fill());
-            if (visibleFill || visibleStroke || usedAsClip) {
+            visibleFill = (alpha > 0 || rshape->fill);
+            if (visibleFill || visibleStroke || clipper) {
                 shapeReset(&shape);
-                if (!shapePrepare(&shape, sdata, transform, clipRegion, bbox, mpool, tid, clips.count > 0 ? true : false)) goto err;
+                if (!shapePrepare(&shape, rshape, transform, clipRegion, bbox, mpool, tid, clips.count > 0 ? true : false)) goto err;
             }
         }
 
@@ -113,16 +112,16 @@ struct SwShapeTask : SwTask
 
         //Fill
         if (flags & (RenderUpdateFlag::Gradient | RenderUpdateFlag::Transform | RenderUpdateFlag::Color)) {
-            if (visibleFill || usedAsClip) {
+            if (visibleFill || clipper) {
                 /* We assume that if stroke width is bigger than 2,
                    shape outline below stroke could be full covered by stroke drawing.
                    Thus it turns off antialising in that condition.
                    Also, it shouldn't be dash style. */
-                auto antiAlias = (strokeAlpha == 255 && sdata->strokeWidth() > 2 && sdata->strokeDash(nullptr) == 0) ? false : true;
+                auto antiAlias = (strokeAlpha == 255 && rshape->strokeWidth() > 2 && rshape->strokeDash(nullptr) == 0) ? false : true;
 
-                if (!shapeGenRle(&shape, sdata, antiAlias)) goto err;
+                if (!shapeGenRle(&shape, rshape, antiAlias)) goto err;
             }
-            if (auto fill = sdata->fill()) {
+            if (auto fill = rshape->fill) {
                 auto ctable = (flags & RenderUpdateFlag::Gradient) ? true : false;
                 if (ctable) shapeResetFill(&shape);
                 if (!shapeGenFillColors(&shape, fill, transform, surface, cmpStroking ? 255 : opacity, ctable)) goto err;
@@ -134,10 +133,10 @@ struct SwShapeTask : SwTask
         //Stroke
         if (flags & (RenderUpdateFlag::Stroke | RenderUpdateFlag::Transform)) {
             if (visibleStroke) {
-                shapeResetStroke(&shape, sdata, transform);
-                if (!shapeGenStrokeRle(&shape, sdata, transform, clipRegion, bbox, mpool, tid)) goto err;
+                shapeResetStroke(&shape, rshape, transform);
+                if (!shapeGenStrokeRle(&shape, rshape, transform, clipRegion, bbox, mpool, tid)) goto err;
 
-                if (auto fill = sdata->strokeFill()) {
+                if (auto fill = rshape->strokeFill()) {
                     auto ctable = (flags & RenderUpdateFlag::GradientStroke) ? true : false;
                     if (ctable) shapeResetStrokeFill(&shape);
                     if (!shapeGenStrokeFillColors(&shape, fill, transform, surface, cmpStroking ? 255 : opacity, ctable)) goto err;
@@ -398,18 +397,18 @@ bool SwRenderer::renderShape(RenderData data)
     //Main raster stage
     uint8_t r, g, b, a;
 
-    if (auto fill = task->sdata->fill()) {
+    if (auto fill = task->rshape->fill) {
         rasterGradientShape(surface, &task->shape, fill->identifier());
     } else {
-        task->sdata->fillColor(&r, &g, &b, &a);
+        task->rshape->fillColor(&r, &g, &b, &a);
         a = static_cast<uint8_t>((opacity * (uint32_t) a) / 255);
         if (a > 0) rasterShape(surface, &task->shape, r, g, b, a);
     }
 
-    if (auto strokeFill = task->sdata->strokeFill()) {
+    if (auto strokeFill = task->rshape->strokeFill()) {
         rasterGradientStroke(surface, &task->shape, strokeFill->identifier());
     } else {
-        if (task->sdata->strokeColor(&r, &g, &b, &a) == Result::Success) {
+        if (task->rshape->strokeColor(&r, &g, &b, &a)) {
             a = static_cast<uint8_t>((opacity * (uint32_t) a) / 255);
             if (a > 0) rasterStroke(surface, &task->shape, r, g, b, a);
         }
@@ -644,13 +643,14 @@ RenderData SwRenderer::prepare(Surface* image, Polygon* triangles, uint32_t tria
 }
 
 
-RenderData SwRenderer::prepare(const Shape& sdata, RenderData data, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flags)
+RenderData SwRenderer::prepare(const RenderShape& rshape, RenderData data, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flags, bool clipper)
 {
     //prepare task
     auto task = static_cast<SwShapeTask*>(data);
     if (!task) {
         task = new SwShapeTask;
-        task->sdata = &sdata;
+        task->rshape = &rshape;
+        task->clipper = clipper;
     }
     return prepareCommon(task, transform, opacity, clips, flags);
 }

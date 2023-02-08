@@ -1,7 +1,8 @@
 package com.github.luben.zstd;
 
 public class ZstdException extends RuntimeException {
-    private final long code;
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+    private long code;
 
     /**
      * Construct a ZstdException from the result of a Zstd library call.
@@ -21,7 +22,7 @@ public class ZstdException extends RuntimeException {
      * No transformation of either the code or message is done. It is advised
      * that one of the Zstd.err*() is used to obtain a stable error code.
      *
-     * @param code    a Zstd error code
+     * @param code a Zstd error code
      * @param message the exception's message
      */
     public ZstdException(long code, String message) {

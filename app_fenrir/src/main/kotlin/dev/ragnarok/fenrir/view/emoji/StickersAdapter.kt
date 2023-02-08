@@ -68,7 +68,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
                 val animatedHolder = holder as StickerAnimatedHolder
                 animatedHolder.animation.fromNet(
                     item?.getAnimationByType(if (isNightSticker) "dark" else "light"),
-                    Utils.createOkHttp(5, true),
+                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                     Utils.dp(128f),
                     Utils.dp(128f)
                 )
@@ -109,7 +109,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
                 val animatedHolder = holder as StickerAnimatedHolder
                 animatedHolder.animation.fromNet(
                     item?.getAnimationByType(if (isNightSticker) "dark" else "light"),
-                    Utils.createOkHttp(5, true),
+                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
                     Utils.dp(128f),
                     Utils.dp(128f)
                 )

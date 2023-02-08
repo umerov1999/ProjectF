@@ -33,7 +33,7 @@ internal class PreferenceEncoder(
         editor.remove(tag)
         sharedPreferences.all.keys
             .filter { it.startsWith("$tag.") }
-            .forEach { editor.remove(it) }
+            .forEach(editor::remove)
     }
 
     override fun encodeTaggedNull(tag: String) {

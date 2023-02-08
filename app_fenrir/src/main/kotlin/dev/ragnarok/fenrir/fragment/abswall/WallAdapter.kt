@@ -85,6 +85,7 @@ class WallAdapter(
 
     @SuppressLint("SetTextI18n")
     private fun configNormalPost(holder: AbsPostHolder, post: Post) {
+        holder.tvDonut.visibility = if (post.isDonut) View.VISIBLE else View.GONE
         post.copyright?.let { vit ->
             holder.tvCopyright.visibility = View.VISIBLE
             holder.tvCopyright.text = "©" + vit.name
@@ -261,6 +262,7 @@ class WallAdapter(
         val tvSignerName: TextView
         val attachmentContainers: AttachmentsHolder
         val tvCopyright: TextView
+        val tvDonut: TextView
 
         init {
             tvText.setOnHashTagClickListener(mOnHashTagClickListener)
@@ -273,6 +275,7 @@ class WallAdapter(
             attachmentContainers = forPost((itemView as ViewGroup))
             viewCounter = itemView.findViewById(R.id.post_views_counter)
             tvCopyright = itemView.findViewById(R.id.item_post_copyright)
+            tvDonut = itemView.findViewById(R.id.item_need_donate)
         }
     }
 

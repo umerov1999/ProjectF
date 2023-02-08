@@ -5,31 +5,26 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class ZstdDirectBufferDecompressingStream implements Closeable {
-
-    private final ZstdDirectBufferDecompressingStreamNoFinalizer inner;
-    private boolean finalize = true;
-
-    public ZstdDirectBufferDecompressingStream(ByteBuffer source) {
-        inner = new ZstdDirectBufferDecompressingStreamNoFinalizer(source) {
-            @Override
-            protected ByteBuffer refill(ByteBuffer toRefill) {
-                return ZstdDirectBufferDecompressingStream.this.refill(toRefill);
-            }
-        };
-    }
-
-    public static int recommendedTargetBufferSize() {
-        return ZstdDirectBufferDecompressingStreamNoFinalizer.recommendedTargetBufferSize();
-    }
-
     /**
      * Override this method in case the byte buffer passed to the constructor might not contain the full compressed stream
-     *
      * @param toRefill current buffer
      * @return either the current buffer (but refilled and flipped if there was new content) or a new buffer.
      */
     protected ByteBuffer refill(ByteBuffer toRefill) {
         return toRefill;
+    }
+
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+    private ZstdDirectBufferDecompressingStreamNoFinalizer inner;
+    private boolean finalize = true;
+
+    public ZstdDirectBufferDecompressingStream(ByteBuffer source) {
+        inner = new ZstdDirectBufferDecompressingStreamNoFinalizer(source) {
+                @Override
+                protected ByteBuffer refill(ByteBuffer toRefill) {
+                    return ZstdDirectBufferDecompressingStream.this.refill(toRefill);
+                }
+            };
     }
 
     /**
@@ -47,6 +42,10 @@ public class ZstdDirectBufferDecompressingStream implements Closeable {
         return inner.hasRemaining();
     }
 
+    public static int recommendedTargetBufferSize() {
+        return ZstdDirectBufferDecompressingStreamNoFinalizer.recommendedTargetBufferSize();
+    }
+
     public synchronized ZstdDirectBufferDecompressingStream setDict(byte[] dict) throws IOException {
         inner.setDict(dict);
         return this;
@@ -61,6 +60,7 @@ public class ZstdDirectBufferDecompressingStream implements Closeable {
         inner.setLongMax(windowLogMax);
         return this;
     }
+
 
     public synchronized int read(ByteBuffer target) throws IOException {
         return inner.read(target);

@@ -115,6 +115,21 @@
             app:layout_constraintStart_toStartOf="@id/item_post_text"
             app:layout_constraintTop_toBottomOf="@id/item_post_copyright" />
 
+        <TextView
+            android:id="@+id/item_need_donate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"
+            android:drawablePadding="4dp"
+            android:text="@string/visible_only_dons"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:visibility="gone"
+            app:drawableStartCompat="@drawable/donate"
+            app:drawableTint="#FF812E"
+            app:layout_constraintStart_toStartOf="@id/item_post_avatar"
+            app:layout_constraintTop_toBottomOf="@id/item_post_show_more" />
+
         <LinearLayout
             android:id="@+id/item_post_attachments"
             android:layout_width="0dp"
@@ -123,7 +138,7 @@
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/item_post_show_more">
+            app:layout_constraintTop_toBottomOf="@id/item_need_donate">
 
             <include
                 layout="@layout/post_attachment_links"

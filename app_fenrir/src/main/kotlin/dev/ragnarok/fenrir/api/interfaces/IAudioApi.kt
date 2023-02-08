@@ -49,8 +49,7 @@ interface IAudioApi {
         ownerId: Long,
         audioId: Int,
         artist: String?,
-        title: String?,
-        text: String?
+        title: String?
     ): Single<Int>
 
     @CheckResult
@@ -143,7 +142,7 @@ interface IAudioApi {
     fun getByIdOld(audios: List<Audio>): Single<List<VKApiAudio>>
 
     @CheckResult
-    fun getLyrics(lyrics_id: Int): Single<VKApiLyrics>
+    fun getLyrics(audio: Audio): Single<VKApiLyrics>
 
     @CheckResult
     fun getPlaylists(owner_id: Long, offset: Int, count: Int): Single<Items<VKApiAudioPlaylist>>

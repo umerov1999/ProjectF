@@ -1964,4 +1964,5 @@
     <string name="wall_photos">Photos on Wall</string>
     <string name="block_or_delete">Block a subscriber? Mode save per session</string>
     <string name="exchange_token">Exchange Token</string>
+    <string name="visible_only_dons">Visible only to dons!</string>
 </resources>

@@ -23,8 +23,7 @@ interface IAudioInteractor {
         ownerId: Long,
         audioId: Int,
         artist: String?,
-        title: String?,
-        text: String?
+        title: String?
     ): Completable
 
     fun restore(accountId: Long, audioId: Int, ownerId: Long): Completable
@@ -55,7 +54,7 @@ interface IAudioInteractor {
 
     fun getById(accountId: Long, audios: List<Audio>): Single<List<Audio>>
     fun getByIdOld(accountId: Long, audios: List<Audio>, old: Boolean): Single<List<Audio>>
-    fun getLyrics(accountId: Long, lyrics_id: Int): Single<String>
+    fun getLyrics(accountId: Long, audio: Audio): Single<String>
     fun getPopular(accountId: Long, foreign: Int, genre: Int, count: Int): Single<List<Audio>>
     fun getRecommendations(accountId: Long, audioOwnerId: Long, count: Int): Single<List<Audio>>
     fun getRecommendationsByAudio(

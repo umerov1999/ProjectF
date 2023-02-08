@@ -156,6 +156,9 @@ class News : AbsModel {
     var copyright: Copyright? = null
         private set
 
+    var isDonut = false
+        private set
+
     var viewCount = 0
         private set
 
@@ -187,6 +190,7 @@ class News : AbsModel {
         friends = parcel.createTypedArrayList(User.CREATOR)
         viewCount = parcel.readInt()
         copyright = parcel.readTypedObjectCompat(Copyright.CREATOR)
+        isDonut = parcel.getBoolean()
     }
 
     @AbsModelType
@@ -201,6 +205,11 @@ class News : AbsModel {
 
     fun setType(type: String?): News {
         this.type = type
+        return this
+    }
+
+    fun setDonut(donut: Boolean): News {
+        this.isDonut = donut
         return this
     }
 
@@ -350,6 +359,8 @@ class News : AbsModel {
             .setCanPostComment(isCommentCanPost)
             .setCanRepost(isCanPublish)
             .setViewCount(viewCount)
+            .setCopyright(copyright?.toPost())
+            .setIsDonut(isDonut)
     }
 
     override fun describeContents(): Int {
@@ -383,6 +394,7 @@ class News : AbsModel {
         parcel.writeTypedList(friends)
         parcel.writeInt(viewCount)
         parcel.writeTypedObjectCompat(copyright, flags)
+        parcel.putBoolean(isDonut)
     }
 
     fun hasAttachments(): Boolean {
@@ -407,6 +419,10 @@ class News : AbsModel {
 
         override fun describeContents(): Int {
             return 0
+        }
+
+        fun toPost(): Post.Copyright {
+            return Post.Copyright(name, link)
         }
 
         companion object CREATOR : Parcelable.Creator<Copyright> {

@@ -1717,4 +1717,5 @@
     <string name="wall_photos">Фатаграфіі на сцяне</string>
     <string name="block_or_delete">Заблакаваць падпісчыка? Рэжым захавацца на сесію</string>
     <string name="exchange_token">Токен абмену</string>
+    <string name="visible_only_dons">Відаць толькі донам!</string>
 </resources>

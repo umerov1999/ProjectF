@@ -9,6 +9,10 @@ public class ZstdCompressCtx extends AutoCloseBase {
 
     private ZstdDictCompress compression_dict;
 
+    private native void init();
+
+    private native void free();
+
     /**
      * Create a context for faster compress operations
      * One such context is required for each thread - put this in a ThreadLocal.
@@ -21,11 +25,7 @@ public class ZstdCompressCtx extends AutoCloseBase {
         storeFence();
     }
 
-    private native void init();
-
-    private native void free();
-
-    void doClose() {
+    void  doClose() {
         if (nativePtr != 0) {
             free();
             nativePtr = 0;
@@ -34,7 +34,6 @@ public class ZstdCompressCtx extends AutoCloseBase {
 
     /**
      * Set compression level
-     *
      * @param level compression level, default: {@link Zstd#defaultCompressionLevel()}
      */
     public ZstdCompressCtx setLevel(int level) {
@@ -51,7 +50,6 @@ public class ZstdCompressCtx extends AutoCloseBase {
 
     /**
      * Enable or disable magicless frames
-     *
      * @param magiclessFlag A 32-bits magic number is written at start of frame, default: false
      */
     public ZstdCompressCtx setMagicless(boolean magiclessFlag) {
@@ -63,10 +61,9 @@ public class ZstdCompressCtx extends AutoCloseBase {
         releaseSharedLock();
         return this;
     }
-
+    
     /**
      * Enable or disable compression checksums
-     *
      * @param checksumFlag A 32-bits checksum of content is written at end of frame, default: false
      */
     public ZstdCompressCtx setChecksum(boolean checksumFlag) {
@@ -78,7 +75,6 @@ public class ZstdCompressCtx extends AutoCloseBase {
         releaseSharedLock();
         return this;
     }
-
     private native void setChecksum0(boolean checksumFlag);
 
 
@@ -91,7 +87,6 @@ public class ZstdCompressCtx extends AutoCloseBase {
 
     /**
      * Enable or disable content size
-     *
      * @param contentSizeFlag Content size will be written into frame header _whenever known_, default: true
      */
     public ZstdCompressCtx setContentSize(boolean contentSizeFlag) {
@@ -103,12 +98,10 @@ public class ZstdCompressCtx extends AutoCloseBase {
         releaseSharedLock();
         return this;
     }
-
     private native void setContentSize0(boolean contentSizeFlag);
 
     /**
      * Enable or disable dictID
-     *
      * @param dictIDFlag When applicable, dictionary's ID is written into frame header, default: true
      */
     public ZstdCompressCtx setDictID(boolean dictIDFlag) {
@@ -120,16 +113,14 @@ public class ZstdCompressCtx extends AutoCloseBase {
         releaseSharedLock();
         return this;
     }
-
     private native void setDictID0(boolean dictIDFlag);
 
     /**
      * Enable or disable LongDistanceMatching and set the window size
-     *
      * @param windowLog Maximum allowed back-reference distance, expressed as power of 2.
      *                  This will set a memory budget for streaming decompression,
      *                  with larger values requiring more memory and typically compressing more.
-     *                  Must be clamped between 10 and 32/64 but values greater then 27 may not
+     *                  Must be clamped between 10 and 32/64 but values greater than 27 may not
      *                  be decompressable in all context as they require more memory.
      *                  0 disables LDM.
      */
@@ -168,7 +159,6 @@ public class ZstdCompressCtx extends AutoCloseBase {
         }
         return this;
     }
-
     private native long loadCDictFast0(ZstdDictCompress dict);
 
     /**
@@ -192,7 +182,6 @@ public class ZstdCompressCtx extends AutoCloseBase {
         }
         return this;
     }
-
     private native long loadCDict0(byte[] dict);
 
     private void ensureOpen() {
@@ -209,10 +198,8 @@ public class ZstdCompressCtx extends AutoCloseBase {
         ensureOpen();
         return getFrameProgression0();
     }
-
     private native ZstdFrameProgression getFrameProgression0();
-
-
+    
     /**
      * Clear all state and parameters from the compression context. This leaves the object in a
      * state identical to a newly created compression context.
@@ -224,7 +211,6 @@ public class ZstdCompressCtx extends AutoCloseBase {
             throw new ZstdException(result);
         }
     }
-
     private native long reset0();
 
     /**
@@ -233,7 +219,7 @@ public class ZstdCompressCtx extends AutoCloseBase {
      * the pledged size is stored in the header of the output stream, allowing decompressors to know
      * how much uncompressed data to expect.
      * <p>
-     * Attempting to compress more or less than than the pledged size will result in an error.
+     * Attempting to compress more or less than the pledged size will result in an error.
      */
     public void setPledgedSrcSize(long srcSize) {
         ensureOpen();
@@ -242,15 +228,14 @@ public class ZstdCompressCtx extends AutoCloseBase {
             throw new ZstdException(result);
         }
     }
-
     private native long setPledgedSrcSize0(long srcSize);
 
     /**
      * Compress as much of the <code>src</code> {@link ByteBuffer} into the <code>dst</code> {@link
      * ByteBuffer} as possible.
      *
-     * @param dst   destination of compressed data
-     * @param src   buffer to compress
+     * @param dst destination of compressed data
+     * @param src buffer to compress
      * @param endOp directive for handling the end of the stream
      * @return true if all state has been flushed from internal buffers
      */
@@ -261,8 +246,8 @@ public class ZstdCompressCtx extends AutoCloseBase {
             long code = result & 0xFF;
             throw new ZstdException(code, Zstd.getErrorName(code));
         }
-        src.position((int) (result & 0x7FFFFFFF));
-        dst.position((int) (result >>> 32) & 0x7FFFFFFF);
+        src.position((int)(result & 0x7FFFFFFF));
+        dst.position((int)(result >>> 32) & 0x7FFFFFFF);
         return (result >>> 63) == 1;
     }
 
@@ -283,13 +268,13 @@ public class ZstdCompressCtx extends AutoCloseBase {
      * ZSTD_compressBound(). This is a low-level function that does not take into
      * account or affect the `limit` or `position` of source or destination buffers.
      *
-     * @param dstBuff   the destination buffer - must be direct
+     * @param dstBuff the destination buffer - must be direct
      * @param dstOffset the start offset of 'dstBuff'
-     * @param dstSize   the size of 'dstBuff' (after 'dstOffset')
-     * @param srcBuff   the source buffer - must be direct
+     * @param dstSize the size of 'dstBuff' (after 'dstOffset')
+     * @param srcBuff the source buffer - must be direct
      * @param srcOffset the start offset of 'srcBuff'
-     * @param srcSize   the length of 'srcBuff' (after 'srcOffset')
-     * @return the number of bytes written into buffer 'dstBuff'.
+     * @param srcSize the length of 'srcBuff' (after 'srcOffset')
+     * @return  the number of bytes written into buffer 'dstBuff'.
      */
     public int compressDirectByteBuffer(ByteBuffer dstBuff, int dstOffset, int dstSize, ByteBuffer srcBuff, int srcOffset, int srcSize) {
         if (nativePtr == 0) {
@@ -327,13 +312,13 @@ public class ZstdCompressCtx extends AutoCloseBase {
      * data not compressible). Worst case size evaluation is provided by function
      * ZSTD_compressBound().
      *
-     * @param dstBuff   the destination buffer (byte array)
+     * @param dstBuff the destination buffer (byte array)
      * @param dstOffset the start offset of 'dstBuff'
-     * @param dstSize   the size of 'dstBuff' (after 'dstOffset')
-     * @param srcBuff   the source buffer (byte array)
+     * @param dstSize the size of 'dstBuff' (after 'dstOffset')
+     * @param srcBuff the source buffer (byte array)
      * @param srcOffset the start offset of 'srcBuff'
-     * @param srcSize   the length of 'srcBuff' (after 'srcOffset')
-     * @return the number of bytes written into buffer 'dstBuff'.
+     * @param srcSize the length of 'srcBuff' (after 'srcOffset')
+     * @return  the number of bytes written into buffer 'dstBuff'.
      */
     public int compressByteArray(byte[] dstBuff, int dstOffset, int dstSize, byte[] srcBuff, int srcOffset, int srcSize) {
         if (nativePtr == 0) {
@@ -358,7 +343,7 @@ public class ZstdCompressCtx extends AutoCloseBase {
 
     private native long compressByteArray0(byte[] dst, int dstOffset, int dstSize, byte[] src, int srcOffset, int srcSize);
 
-    /** Convenience methods */
+    /* Convenience methods */
 
     /**
      * Compresses the data in buffer 'srcBuf'
@@ -385,7 +370,7 @@ public class ZstdCompressCtx extends AutoCloseBase {
                 srcBuf,                              // read data to compress from srcBuf
                 srcBuf.position(),                   // start reading at position()
                 srcBuf.limit() - srcBuf.position()   // read limit() - position() bytes
-        );
+            );
         srcBuf.position(srcBuf.limit());
         dstBuf.position(dstBuf.position() + size);
         return size;
@@ -409,12 +394,12 @@ public class ZstdCompressCtx extends AutoCloseBase {
         }
         ByteBuffer dstBuf = ByteBuffer.allocateDirect((int) maxDstSize);
         int size = compressDirectByteBuffer(dstBuf,    // compress into dstBuf
-                0,                                   // starting at offset 0
-                (int) maxDstSize,                    // writing no more than maxDstSize
-                srcBuf,                              // read data to be compressed from srcBuf
-                srcBuf.position(),                   // start reading at offset position()
-                srcBuf.limit() - srcBuf.position()   // read limit() - position() bytes
-        );
+                  0,                                   // starting at offset 0
+                  (int) maxDstSize,                    // writing no more than maxDstSize
+                  srcBuf,                              // read data to be compressed from srcBuf
+                  srcBuf.position(),                   // start reading at offset position()
+                  srcBuf.limit() - srcBuf.position()   // read limit() - position() bytes
+            );
         srcBuf.position(srcBuf.limit());
 
         dstBuf.limit(size);

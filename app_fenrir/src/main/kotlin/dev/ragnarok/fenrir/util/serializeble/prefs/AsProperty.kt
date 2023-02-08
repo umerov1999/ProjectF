@@ -14,19 +14,16 @@ import kotlin.reflect.KProperty
 /* Knit setup
 <!--- INCLUDE .*-property-.*
 import android.content.*
-import androidx.test.filters.SmallTest
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlin.test.*
 import kotlinx.serialization.builtins.*
 import dev.ragnarok.fenrir.util.serializeble.prefs.*
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-@RunWith(AndroidJUnit4::class)
-@SmallTest
+@RunWith(RobolectricTestRunner::class)
 class PropertyTest {
 
-    val sharedPreferences = ApplicationProvider.getApplicationContext<Context>()
+    val sharedPreferences = createContext()
         .getSharedPreferences("test_preferences", Context.MODE_PRIVATE)
     val preferences = Preferences(sharedPreferences)
 

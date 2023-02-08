@@ -13,6 +13,7 @@ import android.provider.MediaStore
 import androidx.core.content.ContextCompat
 import com.squareup.picasso3.BitmapSafeResize
 import com.squareup.picasso3.Picasso
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
@@ -26,6 +27,7 @@ import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class PicassoInstance @SuppressLint("CheckResult") private constructor(
     private val app: Context,
@@ -71,6 +73,10 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
         Logger.d(TAG, "Picasso singleton creation")
         getCache_data()
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
+            .readTimeout(Constants.PICASSO_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(Constants.PICASSO_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(Constants.PICASSO_TIMEOUT, TimeUnit.SECONDS)
+            .callTimeout(Constants.PICASSO_TIMEOUT, TimeUnit.SECONDS)
             .cache(cache_data)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request = chain.toRequestBuilder(false)

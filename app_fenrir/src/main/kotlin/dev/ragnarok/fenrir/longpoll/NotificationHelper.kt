@@ -613,7 +613,7 @@ object NotificationHelper {
             if (!file.exists()) {
                 if (url.isNullOrEmpty()) throw Exception(mContext.getString(R.string.null_image_link))
                 val output: OutputStream = FileOutputStream(file)
-                val builder: OkHttpClient.Builder = createOkHttp(5, false)
+                val builder: OkHttpClient.Builder = createOkHttp(Constants.GIF_TIMEOUT, false)
                 val request: Request = Request.Builder()
                     .url(url)
                     .build()

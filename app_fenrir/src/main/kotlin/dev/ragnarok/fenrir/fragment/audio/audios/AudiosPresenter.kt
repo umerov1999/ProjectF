@@ -318,26 +318,10 @@ class AudiosPresenter(
         }
     }
 
-    fun fireEditTrackIn(context: Context, audio: Audio) {
-        audioListDisposable.add(audioInteractor.getLyrics(
-            Settings.get().accounts().current,
-            audio.lyricsId
-        )
-            .fromIOToMain()
-            .subscribe({ t ->
-                fireEditTrack(
-                    context,
-                    audio,
-                    t
-                )
-            }) { fireEditTrack(context, audio, null) })
-    }
-
-    private fun fireEditTrack(context: Context, audio: Audio, lyrics: String?) {
+    fun fireEditTrack(context: Context, audio: Audio) {
         val root = View.inflate(context, R.layout.entry_audio_info, null)
         (root.findViewById<View>(R.id.edit_artist) as TextInputEditText).setText(audio.artist)
         (root.findViewById<View>(R.id.edit_title) as TextInputEditText).setText(audio.title)
-        (root.findViewById<View>(R.id.edit_lyrics) as TextInputEditText).setText(lyrics)
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.enter_audio_info)
             .setCancelable(true)
@@ -348,8 +332,7 @@ class AudiosPresenter(
                     audio.ownerId,
                     audio.id,
                     (root.findViewById<View>(R.id.edit_artist) as TextInputEditText).text.toString(),
-                    (root.findViewById<View>(R.id.edit_title) as TextInputEditText).text.toString(),
-                    (root.findViewById<View>(R.id.edit_lyrics) as TextInputEditText).text.toString()
+                    (root.findViewById<View>(R.id.edit_title) as TextInputEditText).text.toString()
                 ).fromIOToMain()
                     .subscribe({ fireRefresh() }) { t ->
                         showError(getCauseIfRuntime(t))

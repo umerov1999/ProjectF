@@ -13,19 +13,13 @@
 
         <include layout="@layout/toolbar_no_card" />
 
-        <dev.ragnarok.fenrir.view.MySearchView
-            android:id="@+id/searchview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|enterAlways|snap"
-            app:search_source_id="3" />
-
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/fragment_audios_tabs"
             style="@style/Theme.Tablayout"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@android:color/transparent" />
+            android:background="@android:color/transparent"
+            app:layout_scrollFlags="scroll|enterAlways|snap" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

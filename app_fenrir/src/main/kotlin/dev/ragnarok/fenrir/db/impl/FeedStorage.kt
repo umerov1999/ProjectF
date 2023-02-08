@@ -201,6 +201,7 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
             .setRepostCount(cursor.getInt(NewsColumns.REPOSTS_COUNT))
             .setUserReposted(cursor.getBoolean(NewsColumns.USER_REPOSTED))
             .setViews(cursor.getInt(NewsColumns.VIEWS))
+            .setDonut(cursor.getBoolean(NewsColumns.IS_DONUT))
         cursor.getBlob(PostsColumns.COPYRIGHT_BLOB).nonNullNoEmpty {
             dbo.setCopyright(
                 MsgPack.decodeFromByteArrayEx(
@@ -263,6 +264,7 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
             cv.put(NewsColumns.CAN_PUBLISH, dbo.isCanPublish)
             cv.put(NewsColumns.REPOSTS_COUNT, dbo.repostCount)
             cv.put(NewsColumns.USER_REPOSTED, dbo.isUserReposted)
+            cv.put(NewsColumns.IS_DONUT, dbo.isDonut)
             cv.put(
                 NewsColumns.TAG_FRIENDS,
                 dbo.friendsTags?.let { join(",", it) }

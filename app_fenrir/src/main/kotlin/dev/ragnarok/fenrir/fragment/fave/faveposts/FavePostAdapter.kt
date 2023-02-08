@@ -116,6 +116,7 @@ class FavePostAdapter(
             holder.viewCounter.visibility = if (post.viewCount > 0) View.VISIBLE else View.GONE
             holder.viewCounter.text = post.viewCount.toString()
         }
+        holder.tvDonut.visibility = if (post.isDonut) View.VISIBLE else View.GONE
         post.copyright?.let { vit ->
             holder.tvCopyright.visibility = View.VISIBLE
             holder.tvCopyright.text = "©" + vit.name
@@ -229,6 +230,7 @@ class FavePostAdapter(
         val ivSignerIcon: ImageView
         val tvSignerName: TextView
         val attachmentContainers: AttachmentsHolder
+        val tvDonut: TextView
 
         init {
             tvCopyright = itemView.findViewById(R.id.item_post_copyright)
@@ -241,6 +243,7 @@ class FavePostAdapter(
             tvSignerName = itemView.findViewById(R.id.item_post_signer_name)
             attachmentContainers = AttachmentsHolder.forPost(itemView as ViewGroup)
             viewCounter = itemView.findViewById(R.id.post_views_counter)
+            tvDonut = itemView.findViewById(R.id.item_need_donate)
         }
     }
 

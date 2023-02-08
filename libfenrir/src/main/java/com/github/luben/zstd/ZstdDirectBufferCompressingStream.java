@@ -6,33 +6,29 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class ZstdDirectBufferCompressingStream implements Closeable, Flushable {
-
     ZstdDirectBufferCompressingStreamNoFinalizer inner;
     private boolean finalize;
-
-    public ZstdDirectBufferCompressingStream(ByteBuffer target, int level) throws IOException {
-        inner = new ZstdDirectBufferCompressingStreamNoFinalizer(target, level) {
-            @Override
-            protected ByteBuffer flushBuffer(ByteBuffer toFlush) throws IOException {
-                return ZstdDirectBufferCompressingStream.this.flushBuffer(toFlush);
-            }
-        };
-    }
-
-    public static int recommendedOutputBufferSize() {
-        return ZstdDirectBufferCompressingStreamNoFinalizer.recommendedOutputBufferSize();
-    }
 
     /**
      * This method should flush the buffer and either return the same buffer (but cleared) or a new buffer
      * that should be used from then on.
-     *
      * @param toFlush buffer that has to be flushed (or most cases, you want to call {@link ByteBuffer#flip()} first)
      * @return the new buffer to use, for most cases the same as the one passed in, after a call to {@link ByteBuffer#clear()}.
      */
     protected ByteBuffer flushBuffer(ByteBuffer toFlush) throws IOException {
         return toFlush;
     }
+
+    public ZstdDirectBufferCompressingStream(ByteBuffer target, int level) throws IOException {
+        inner = new ZstdDirectBufferCompressingStreamNoFinalizer(target, level) {
+                @Override
+                protected ByteBuffer flushBuffer(ByteBuffer toFlush) throws IOException {
+                    return ZstdDirectBufferCompressingStream.this.flushBuffer(toFlush);
+                }
+            };
+    }
+
+    public static int recommendedOutputBufferSize() { return ZstdDirectBufferCompressingStreamNoFinalizer.recommendedOutputBufferSize(); }
 
     public synchronized ZstdDirectBufferCompressingStream setDict(byte[] dict) throws IOException {
         inner.setDict(dict);

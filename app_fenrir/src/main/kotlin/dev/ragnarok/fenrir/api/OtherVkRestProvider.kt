@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.api
 
 import android.annotation.SuppressLint
 import dev.ragnarok.fenrir.AccountType
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
@@ -44,10 +45,10 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
     ): Single<SimplePostHttp> {
         return Single.fromCallable {
             val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-                .readTimeout(15, TimeUnit.SECONDS)
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .writeTimeout(15, TimeUnit.SECONDS)
-                .callTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+                .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+                .writeTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+                .callTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
                 .followRedirects(true)
                 .followSslRedirects(true)
                 .addInterceptor(Interceptor { chain: Interceptor.Chain ->
@@ -70,10 +71,10 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
     override fun provideAuthServiceRest(): Single<SimplePostHttp> {
         return Single.fromCallable {
             val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-                .readTimeout(15, TimeUnit.SECONDS)
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .writeTimeout(15, TimeUnit.SECONDS)
-                .callTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+                .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+                .writeTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+                .callTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
                 .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                     val request =
                         chain.toRequestBuilder(false).vkHeader(true)
@@ -96,10 +97,10 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
     private fun createLocalServerRest(): SimplePostHttp {
         val localSettings = Settings.get().other().localServer
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .callTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .callTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request =
                     chain.toRequestBuilder(false).vkHeader(false).addHeader(
@@ -131,10 +132,10 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
 
     private fun createLongpollRestInstance(): SimplePostHttp {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(25, TimeUnit.SECONDS)
-            .connectTimeout(25, TimeUnit.SECONDS)
-            .writeTimeout(25, TimeUnit.SECONDS)
-            .callTimeout(25, TimeUnit.SECONDS)
+            .readTimeout(Constants.LONGPOLL_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(Constants.LONGPOLL_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(Constants.LONGPOLL_TIMEOUT, TimeUnit.SECONDS)
+            .callTimeout(Constants.LONGPOLL_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request =
                     chain.toRequestBuilder(false).vkHeader(true).addHeader(

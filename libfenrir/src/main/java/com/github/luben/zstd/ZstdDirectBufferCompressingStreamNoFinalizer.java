@@ -6,15 +6,18 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class ZstdDirectBufferCompressingStreamNoFinalizer implements Closeable, Flushable {
-    private final long stream;
-    private final int level;
-    private int consumed;
-    private int produced;
     private ByteBuffer target;
-    private boolean closed;
-    private boolean initialized;
-    private byte[] dict;
-    private ZstdDictCompress fastDict;
+    private final long stream;
+
+    /**
+     * This method should flush the buffer and either return the same buffer (but cleared) or a new buffer
+     * that should be used from then on.
+     * @param toFlush buffer that has to be flushed (or most cases, you want to call {@link ByteBuffer#flip()} first)
+     * @return the new buffer to use, for most cases the same as the one passed in, after a call to {@link ByteBuffer#clear()}.
+     */
+    protected ByteBuffer flushBuffer(ByteBuffer toFlush) throws IOException {
+        return toFlush;
+    }
 
     public ZstdDirectBufferCompressingStreamNoFinalizer(ByteBuffer target, int level) throws IOException {
         if (!target.isDirect()) {
@@ -25,38 +28,28 @@ public class ZstdDirectBufferCompressingStreamNoFinalizer implements Closeable, 
         stream = createCStream();
     }
 
-    public static int recommendedOutputBufferSize() {
-        return (int) recommendedCOutSize();
-    }
+    public static int recommendedOutputBufferSize() { return (int)recommendedCOutSize(); }
+
+    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
+    private int consumed;
+    @SuppressWarnings("FieldMayBeFinal")
+    private int produced;
+    private boolean closed;
+    private boolean initialized;
+    @SuppressWarnings("UnusedAssignment")
+    private int level = Zstd.defaultCompressionLevel();
+    private byte[] dict;
+    private ZstdDictCompress fastDict;
 
     /* JNI methods */
     private static native long recommendedCOutSize();
-
     private static native long createCStream();
-
-    private static native long freeCStream(long ctx);
-
-    /**
-     * This method should flush the buffer and either return the same buffer (but cleared) or a new buffer
-     * that should be used from then on.
-     *
-     * @param toFlush buffer that has to be flushed (or most cases, you want to call {@link ByteBuffer#flip()} first)
-     * @return the new buffer to use, for most cases the same as the one passed in, after a call to {@link ByteBuffer#clear()}.
-     */
-    protected ByteBuffer flushBuffer(ByteBuffer toFlush) throws IOException {
-        return toFlush;
-    }
-
+    private static native long  freeCStream(long ctx);
     private native long initCStream(long ctx, int level);
-
     private native long initCStreamWithDict(long ctx, byte[] dict, int dict_size, int level);
-
     private native long initCStreamWithFastDict(long ctx, ZstdDictCompress dict);
-
     private native long compressDirectByteBuffer(long ctx, ByteBuffer dst, int dstOffset, int dstSize, ByteBuffer src, int srcOffset, int srcSize);
-
     private native long flushStream(long ctx, ByteBuffer dst, int dstOffset, int dstSize);
-
     private native long endStream(long ctx, ByteBuffer dst, int dstOffset, int dstSize);
 
     public ZstdDirectBufferCompressingStreamNoFinalizer setDict(byte[] dict) {
@@ -170,7 +163,8 @@ public class ZstdDirectBufferCompressingStreamNoFinalizer implements Closeable, 
                         }
                     } while (needed > 0);
                 }
-            } finally {
+            }
+            finally {
                 freeCStream(stream);
                 closed = true;
                 initialized = false;

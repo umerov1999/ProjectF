@@ -66,17 +66,20 @@ class DBHelper private constructor(context: Context, aid: Long) :
     }
      */
 
+    private fun doRecreateBase(db: SQLiteDatabase) {
+        dropAllTables(db)
+        onCreate(db)
+    }
+
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion != Constants.DATABASE_FENRIR_VERSION) {
-            dropAllTables(db)
-            onCreate(db)
+            doRecreateBase(db)
         }
     }
 
     override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion != Constants.DATABASE_FENRIR_VERSION) {
-            dropAllTables(db)
-            onCreate(db)
+            doRecreateBase(db)
         }
     }
 
@@ -133,18 +136,15 @@ class DBHelper private constructor(context: Context, aid: Long) :
         db.execSQL("DROP TABLE IF EXISTS " + DocColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + GroupColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + GroupsDetColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS links")
 
         //messages
         db.execSQL("DROP TRIGGER IF EXISTS zero_msg_upd")
         db.execSQL("DROP TRIGGER IF EXISTS zero_msg_del")
         db.execSQL("DROP TABLE IF EXISTS " + MessageColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS news_attachments")
         db.execSQL("DROP TABLE IF EXISTS " + NewsColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + PhotoAlbumsColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + PhotosColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + PhotosExtendedColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS polls")
         db.execSQL("DROP TABLE IF EXISTS " + WallAttachmentsColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + PostsColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + RelationshipColumns.TABLENAME)
@@ -162,7 +162,6 @@ class DBHelper private constructor(context: Context, aid: Long) :
         db.execSQL("DROP TABLE IF EXISTS " + FavePageColumns.GROUPSTABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + FaveLinksColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + FavePostsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + "peers")
         db.execSQL("DROP TABLE IF EXISTS " + CountriesColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + FeedListsColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + FriendListsColumns.TABLENAME)
@@ -669,6 +668,7 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 "  [" + NewsColumns.USER_REPOSTED + "] BOOLEAN, " +
                 "  [" + NewsColumns.ATTACHMENTS_BLOB + "] BLOB, " +
                 "  [" + NewsColumns.COPYRIGHT_BLOB + "] BLOB, " +
+                "  [" + NewsColumns.IS_DONUT + "] BOOLEAN, " +
                 "  [" + NewsColumns.VIEWS + "] INTEGER, " +
                 "  [" + NewsColumns.TAG_FRIENDS + "] TEXT);"
         db.execSQL(sql)

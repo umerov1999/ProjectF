@@ -60,6 +60,12 @@ class NewsAdapter : AbsAdapter<VKApiNews>("VKApiNews") {
             dto.can_like = optBoolean(likesRoot, "can_like")
             dto.can_publish = optBoolean(likesRoot, "can_publish")
         }
+        if (hasObject(root, "donut")) {
+            val donut = root.getAsJsonObject("donut")
+            dto.is_donut = optBoolean(donut, "is_donut")
+        } else {
+            dto.is_donut = false
+        }
         if (hasObject(root, "reposts")) {
             val repostsRoot = root.getAsJsonObject("reposts")
             dto.reposts_count = optInt(repostsRoot, "count")

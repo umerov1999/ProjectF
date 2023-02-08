@@ -173,7 +173,7 @@ class AudioRecyclerAdapter(
 
     internal fun get_lyrics(audio: Audio) {
         audioListDisposable =
-            mAudioInteractor.getLyrics(Settings.get().accounts().current, audio.lyricsId)
+            mAudioInteractor.getLyrics(Settings.get().accounts().current, audio)
                 .fromIOToMain()
                 .subscribe({ t ->
                     onAudioLyricsReceived(
@@ -659,7 +659,11 @@ class AudioRecyclerAdapter(
         viewHolder.title.text = audio.title
         if (audio.duration <= 0) viewHolder.time.visibility = View.INVISIBLE else {
             viewHolder.time.visibility = View.VISIBLE
-            viewHolder.time.text = AppTextUtils.getDurationString(audio.duration)
+            if (audio.isLocalServer) {
+                viewHolder.time.text = Utils.BytesToSize(audio.duration.toLong())
+            } else {
+                viewHolder.time.text = AppTextUtils.getDurationString(audio.duration)
+            }
         }
         viewHolder.lyric.visibility = if (audio.lyricsId != 0) View.VISIBLE else View.GONE
         viewHolder.isSelectedView.visibility = if (audio.isSelected) View.VISIBLE else View.GONE

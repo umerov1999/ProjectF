@@ -193,14 +193,14 @@
                     android:textIsSelectable="false"
                     tools:text="Name" />
 
-                <dev.ragnarok.fenrir.view.emoji.EmojiconTextView xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+                <dev.ragnarok.fenrir.view.emoji.EmojiconTextView
                     android:id="@+id/item_comment_reply_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoLink="web"
                     android:gravity="start"
                     android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-                    emojicon:emojiconSize="20sp"
+                    app:emojiconSize="20sp"
                     tools:text="Message" />
 
                 <LinearLayout

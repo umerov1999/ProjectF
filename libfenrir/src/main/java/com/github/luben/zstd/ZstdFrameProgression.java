@@ -1,16 +1,22 @@
 package com.github.luben.zstd;
 
 public class ZstdFrameProgression {
-
-    private final long ingested;
-    private final long consumed;
-    private final long produced;
-    private final long flushed;
-    private final int currentJobID;
-    private final int nbActiveWorkers;
-
+    
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+    private long ingested;
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+    private long consumed;
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+    private long produced;
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+    private long flushed;
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+    private int currentJobID;
+    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
+    private int nbActiveWorkers;
+    
     public ZstdFrameProgression(long ingested, long consumed, long produced, long flushed, int currentJobID,
-                                int nbActiveWorkers) {
+            int nbActiveWorkers) {
         this.ingested = ingested;
         this.consumed = consumed;
         this.produced = produced;
@@ -61,5 +67,5 @@ public class ZstdFrameProgression {
     public int getNbActiveWorkers() {
         return nbActiveWorkers;
     }
-
+    
 }

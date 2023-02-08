@@ -2,8 +2,13 @@ package com.github.luben.zstd;
 
 public class ZstdDictCompress extends SharedDictBase {
 
-    private final int level;
     private long nativePtr;
+    @SuppressWarnings("UnusedAssignment")
+    private int level = Zstd.defaultCompressionLevel();
+
+    private native void init(byte[] dict, int dict_offset, int dict_size, int level);
+
+    private native void free();
 
     /**
      * Convenience constructor to create a new dictionary for use with fast compress
@@ -39,16 +44,12 @@ public class ZstdDictCompress extends SharedDictBase {
         storeFence();
     }
 
-    private native void init(byte[] dict, int dict_offset, int dict_size, int level);
-
-    private native void free();
-
     int level() {
         return level;
     }
 
     @Override
-    void doClose() {
+    void  doClose() {
         if (nativePtr != 0) {
             free();
             nativePtr = 0;

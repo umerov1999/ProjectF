@@ -1719,4 +1719,5 @@
     <string name="wall_photos">Фотографии на стене</string>
     <string name="block_or_delete">Заблокировать подписчика? Режим сохраниться на сессию</string>
     <string name="exchange_token">Токен обмена</string>
+    <string name="visible_only_dons">Видно только донам!</string>
 </resources>

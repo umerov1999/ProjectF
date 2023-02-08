@@ -1,7 +1,6 @@
 package com.github.luben.zstd;
 
-/**
- * Enum that expresses desired flushing for a streaming compression call.
+/** Enum that expresses desired flushing for a streaming compression call.
  *
  * @see ZstdCompressCtx#compressDirectByteBufferStream
  */
@@ -11,7 +10,6 @@ public enum EndDirective {
     END(2);
 
     private final int value;
-
     EndDirective(int value) {
         this.value = value;
     }

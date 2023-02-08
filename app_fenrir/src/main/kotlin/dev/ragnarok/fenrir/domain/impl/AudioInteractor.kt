@@ -41,12 +41,11 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         ownerId: Long,
         audioId: Int,
         artist: String?,
-        title: String?,
-        text: String?
+        title: String?
     ): Completable {
         return networker.vkDefault(accountId)
             .audio()
-            .edit(ownerId, audioId, artist, title, text)
+            .edit(ownerId, audioId, artist, title)
             .ignoreElement()
     }
 
@@ -153,9 +152,9 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
             }
     }
 
-    override fun getLyrics(accountId: Long, lyrics_id: Int): Single<String> {
+    override fun getLyrics(accountId: Long, audio: Audio): Single<String> {
         return networker.vkDefault(accountId)
-            .audio().getLyrics(lyrics_id).map { checkNotNull(it.text) }
+            .audio().getLyrics(audio).map { it.text.orEmpty() }
     }
 
     override fun getArtistById(accountId: Long, artist_id: String): Single<ArtistInfo> {

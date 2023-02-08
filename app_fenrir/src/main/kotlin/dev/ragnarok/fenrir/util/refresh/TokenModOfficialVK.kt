@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.util.refresh
 
 import android.os.Build
 import android.util.Base64
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Constants.VK_ANDROID_APP_VERSION_CODE
 import dev.ragnarok.fenrir.Constants.VK_ANDROID_APP_VERSION_NAME
 import dev.ragnarok.fenrir.Includes.proxySettings
@@ -162,10 +163,10 @@ object TokenModOfficialVK {
     @Throws(IOException::class)
     private fun doRequest(str: String, list: List<String>, str3: String): String {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .callTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .callTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 chain.proceed(
                     chain.toRequestBuilder(false)

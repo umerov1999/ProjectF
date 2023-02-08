@@ -4,6 +4,10 @@ public class ZstdDictDecompress extends SharedDictBase {
 
     private long nativePtr;
 
+    private native void init(byte[] dict, int dict_offset, int dict_size);
+
+    private native void free();
+
     /**
      * Convenience constructor to create a new dictionary for use with fast decompress
      *
@@ -25,19 +29,16 @@ public class ZstdDictDecompress extends SharedDictBase {
         init(dict, offset, length);
 
         if (nativePtr == 0L) {
-            throw new IllegalStateException("ZSTD_createDDict failed");
+           throw new IllegalStateException("ZSTD_createDDict failed");
         }
         // Ensures that even if ZstdDictDecompress is created and published through a race, no thread could observe
         // nativePtr == 0.
         storeFence();
     }
 
-    private native void init(byte[] dict, int dict_offset, int dict_size);
-
-    private native void free();
 
     @Override
-    void doClose() {
+     void doClose() {
         if (nativePtr != 0) {
             free();
             nativePtr = 0;

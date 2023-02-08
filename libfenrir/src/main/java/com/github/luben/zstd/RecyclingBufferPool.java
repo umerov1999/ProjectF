@@ -6,7 +6,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 /**
- * An pool of buffers which uses a simple reference queue to recycle buffers.
+ * A pool of buffers which uses a simple reference queue to recycle buffers.
  * <p>
  * Do not use it as generic buffer pool - it is optimized and supports only
  * buffer sizes used by the Zstd classes.
@@ -15,8 +15,8 @@ public class RecyclingBufferPool implements BufferPool {
     public static final BufferPool INSTANCE = new RecyclingBufferPool();
 
     private static final int buffSize = Math.max(Math.max(
-                    (int) ZstdOutputStreamNoFinalizer.recommendedCOutSize(),
-                    (int) ZstdInputStreamNoFinalizer.recommendedDInSize()),
+            (int) ZstdOutputStreamNoFinalizer.recommendedCOutSize(),
+            (int) ZstdInputStreamNoFinalizer.recommendedDInSize()),
             (int) ZstdInputStreamNoFinalizer.recommendedDOutSize());
 
     private final Deque<SoftReference<ByteBuffer>> pool;
@@ -31,10 +31,10 @@ public class RecyclingBufferPool implements BufferPool {
         if (capacity > buffSize) {
             throw new RuntimeException(
                     "Unsupported buffer size: " + capacity +
-                            ". Supported buffer sizes: " + buffSize + " or smaller."
-            );
+                    ". Supported buffer sizes: " + buffSize + " or smaller."
+                );
         }
-        while (true) {
+        while(true) {
             SoftReference<ByteBuffer> sbuf = null;
 
             // This if statement introduces a possible race condition of allocating a buffer while we're trying to

@@ -26,4 +26,9 @@ object Constants {
     )
     const val AUDIO_PLAYER_SERVICE_IDLE = 300000
     const val FILE_PROVIDER_AUTHORITY = APPLICATION_ID + ".file_provider"
+
+    const val API_TIMEOUT = 60L
+    const val EXO_PLAYER_TIMEOUT = 60L
+    const val DOWNLOAD_TIMEOUT = 3600L
+    const val PICASSO_TIMEOUT = 15L
 }

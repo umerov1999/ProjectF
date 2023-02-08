@@ -13,7 +13,7 @@ class LongpollApi internal constructor(private val provider: IOtherVKRestProvide
         server: String,
         key: String?,
         ts: Long,
-        wait: Int,
+        wait: Long,
         mode: Int,
         version: Int
     ): Single<VKApiLongpollUpdates> {
@@ -29,7 +29,7 @@ class LongpollApi internal constructor(private val provider: IOtherVKRestProvide
         server: String,
         key: String?,
         ts: String?,
-        wait: Int
+        wait: Long
     ): Single<VKApiGroupLongpollUpdates> {
         return provider.provideLongpollRest()
             .flatMap {

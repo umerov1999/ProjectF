@@ -17,6 +17,7 @@ import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class PicassoInstance @SuppressLint("CheckResult") private constructor(
     private val app: Context
@@ -51,6 +52,10 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
         Logger.d(TAG, "Picasso singleton creation")
         getCache_data()
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
+            .readTimeout(Constants.PICASSO_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(Constants.PICASSO_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(Constants.PICASSO_TIMEOUT, TimeUnit.SECONDS)
+            .callTimeout(Constants.PICASSO_TIMEOUT, TimeUnit.SECONDS)
             .cache(cache_data).addNetworkInterceptor(Interceptor { chain: Interceptor.Chain ->
                 chain.proceed(chain.request()).newBuilder()
                     .header("Cache-Control", "max-age=86400").build()

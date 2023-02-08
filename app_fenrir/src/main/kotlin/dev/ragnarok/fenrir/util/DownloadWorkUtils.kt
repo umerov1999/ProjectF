@@ -646,7 +646,7 @@ object DownloadWorkUtils {
             try {
                 FileOutputStream(file).use { output ->
                     if (url.isNullOrEmpty()) throw Exception(applicationContext.getString(R.string.null_image_link))
-                    val builder = Utils.createOkHttp(180, false)
+                    val builder = Utils.createOkHttp(Constants.DOWNLOAD_TIMEOUT, false)
                     val request: Request = Request.Builder()
                         .url(url)
                         .build()
@@ -914,7 +914,7 @@ object DownloadWorkUtils {
                             val commentText = if (audio.lyricsId != 0) {
                                 val LyricString: String? = RxUtils.blockingGetSingle(
                                     InteractorFactory.createAudioInteractor()
-                                        .getLyrics(account_id, audio.lyricsId), null
+                                        .getLyrics(account_id, audio), null
                                 )
                                 if (LyricString.isNullOrEmpty()) {
                                     Audio.AudioCommentTag(audio.ownerId, audio.id).toText()

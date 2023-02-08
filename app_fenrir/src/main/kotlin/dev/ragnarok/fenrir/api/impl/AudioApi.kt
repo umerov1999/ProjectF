@@ -116,13 +116,12 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         ownerId: Long,
         audioId: Int,
         artist: String?,
-        title: String?,
-        text: String?
+        title: String?
     ): Single<Int> {
         return provideService(IAudioService())
             .flatMap { service ->
                 service
-                    .edit(ownerId, audioId, artist, title, text)
+                    .edit(ownerId, audioId, artist, title)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -403,11 +402,15 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
             }
     }
 
-    override fun getLyrics(lyrics_id: Int): Single<VKApiLyrics> {
+    override fun getLyrics(audio: Audio): Single<VKApiLyrics> {
         return provideService(IAudioService())
             .flatMap { service ->
                 service
-                    .getLyrics(lyrics_id)
+                    .getLyrics(
+                        join(
+                            listOf(AccessIdPair(audio.id, audio.ownerId, audio.accessKey)),
+                            ","
+                        ) { AccessIdPair.format(it) })
                     .map(extractResponseWithErrorHandling())
             }
     }

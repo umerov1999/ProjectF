@@ -8,6 +8,10 @@ public class ZstdDecompressCtx extends AutoCloseBase {
     private long nativePtr;
     private ZstdDictDecompress decompression_dict;
 
+    private native void init();
+
+    private native void free();
+
     /**
      * Create a context for faster compress operations
      * One such context is required for each thread - put this in a ThreadLocal.
@@ -20,10 +24,6 @@ public class ZstdDecompressCtx extends AutoCloseBase {
         storeFence();
     }
 
-    private native void init();
-
-    private native void free();
-
     void doClose() {
         if (nativePtr != 0) {
             free();
@@ -33,7 +33,6 @@ public class ZstdDecompressCtx extends AutoCloseBase {
 
     /**
      * Enable or disable magicless frames
-     *
      * @param magiclessFlag A 32-bits checksum of content is written at end of frame, default: false
      */
     public ZstdDecompressCtx setMagicless(boolean magiclessFlag) {
@@ -45,7 +44,7 @@ public class ZstdDecompressCtx extends AutoCloseBase {
         releaseSharedLock();
         return this;
     }
-
+    
     /**
      * Load decompression dictionary
      *
@@ -70,7 +69,6 @@ public class ZstdDecompressCtx extends AutoCloseBase {
         }
         return this;
     }
-
     private native long loadDDictFast0(ZstdDictDecompress dict);
 
     /**
@@ -94,7 +92,6 @@ public class ZstdDecompressCtx extends AutoCloseBase {
         }
         return this;
     }
-
     private native long loadDDict0(byte[] dict);
 
     /**
@@ -105,7 +102,6 @@ public class ZstdDecompressCtx extends AutoCloseBase {
         ensureOpen();
         reset0();
     }
-
     private native void reset0();
 
     private void ensureOpen() {
@@ -129,8 +125,8 @@ public class ZstdDecompressCtx extends AutoCloseBase {
             long code = result & 0xFF;
             throw new ZstdException(code, Zstd.getErrorName(code));
         }
-        src.position((int) (result & 0x7FFFFFFF));
-        dst.position((int) (result >>> 32) & 0x7FFFFFFF);
+        src.position((int)(result & 0x7FFFFFFF));
+        dst.position((int)(result >>> 32) & 0x7FFFFFFF);
         return (result >>> 63) == 1;
     }
 
@@ -150,12 +146,12 @@ public class ZstdDecompressCtx extends AutoCloseBase {
      * This is a low-level function that does not take into account or affect the `limit`
      * or `position` of source or destination buffers.
      *
-     * @param dstBuff   the destination buffer - must be direct
+     * @param dstBuff the destination buffer - must be direct
      * @param dstOffset the start offset of 'dstBuff'
-     * @param dstSize   the size of 'dstBuff'
-     * @param srcBuff   the source buffer - must be direct
+     * @param dstSize the size of 'dstBuff'
+     * @param srcBuff the source buffer - must be direct
      * @param srcOffset the start offset of 'srcBuff'
-     * @param srcSize   the size of 'srcBuff'
+     * @param srcSize the size of 'srcBuff'
      * @return the number of bytes decompressed into destination buffer (originalSize)
      */
     public int decompressDirectByteBuffer(ByteBuffer dstBuff, int dstOffset, int dstSize, ByteBuffer srcBuff, int srcOffset, int srcSize) {
@@ -192,12 +188,12 @@ public class ZstdDecompressCtx extends AutoCloseBase {
      * <p>
      * Destination buffer should be sized to be larger of equal to the originalSize.
      *
-     * @param dstBuff   the destination buffer
+     * @param dstBuff the destination buffer
      * @param dstOffset the start offset of 'dstBuff'
-     * @param dstSize   the size of 'dstBuff'
-     * @param srcBuff   the source buffer
+     * @param dstSize the size of 'dstBuff'
+     * @param srcBuff the source buffer
      * @param srcOffset the start offset of 'srcBuff'
-     * @param srcSize   the size of 'srcBuff'
+     * @param srcSize the size of 'srcBuff'
      * @return the number of bytes decompressed into destination buffer (originalSize)
      */
     public int decompressByteArray(byte[] dstBuff, int dstOffset, int dstSize, byte[] srcBuff, int srcOffset, int srcSize) {
@@ -223,13 +219,13 @@ public class ZstdDecompressCtx extends AutoCloseBase {
 
     private native long decompressByteArray0(byte[] dst, int dstOffset, int dstSize, byte[] src, int srcOffset, int srcSize);
 
-    /** Covenience methods */
+    /* Covenience methods */
 
     /**
      * Decompresses buffer 'srcBuff' into buffer 'dstBuff' using this ZstdDecompressCtx.
      * <p>
      * Destination buffer should be sized to be larger of equal to the originalSize.
-     *
+
      * @param dstBuf the destination buffer - must be direct. It is assumed that the `position()` of this buffer marks the offset
      *               at which the decompressed data are to be written, and that the `limit()` of this buffer is the maximum
      *               decompressed data size to allow.
@@ -271,14 +267,14 @@ public class ZstdDecompressCtx extends AutoCloseBase {
     }
 
     /**
-     * Decompress data
-     *
-     * @param src          the source buffer
-     * @param originalSize the maximum size of the uncompressed data.
-     *                     If originaSize is greater than the actuall uncompressed size, additional memory copy going to happen.
-     *                     If originalSize is smaller than the uncompressed size, ZstdExeption will be thrown.
-     * @return byte array with the decompressed data
-     */
+    * Decompress data
+    *
+    * @param src the source buffer
+    * @param originalSize the maximum size of the uncompressed data.
+    *                  If originaSize is greater than the actuall uncompressed size, additional memory copy going to happen.
+    *                  If originalSize is smaller than the uncompressed size, ZstdExeption will be thrown.
+    * @return byte array with the decompressed data
+    */
     public byte[] decompress(byte[] src, int originalSize) throws ZstdException {
         byte[] dst = new byte[originalSize];
         int size = decompress(dst, src);

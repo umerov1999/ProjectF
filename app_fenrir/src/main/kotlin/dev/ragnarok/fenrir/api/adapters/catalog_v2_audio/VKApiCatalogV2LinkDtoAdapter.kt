@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.api.adapters.catalog_v2_audio
 
 import dev.ragnarok.fenrir.api.adapters.AbsAdapter
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.VKApiCatalogV2Link
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 
 class VKApiCatalogV2LinkDtoAdapter : AbsAdapter<VKApiCatalogV2Link>("VKApiCatalogV2Link") {
@@ -27,9 +28,15 @@ class VKApiCatalogV2LinkDtoAdapter : AbsAdapter<VKApiCatalogV2Link>("VKApiCatalo
                 }
                 val res = i.asJsonObject
                 val curr_res = optInt(res, "height") * optInt(res, "width")
-                if (curr_res > max_res) {
+                if (curr_res in (max_res + 1)..40000) {
                     max_res = curr_res
                     dto.preview_photo = optString(res, "url")
+                }
+            }
+            if (dto.preview_photo.isNullOrEmpty() && arr?.size.orZero() > 0) {
+                val i = arr?.get(arr.size - 1)
+                if (checkObject(i)) {
+                    dto.preview_photo = optString(i, "url")
                 }
             }
         }

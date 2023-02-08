@@ -14,6 +14,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
@@ -294,7 +295,8 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
             holder.mGifView.fromNet(
                 data[position].ownerId.toString() + "_" + data[position].id.toString(),
                 data[position].videoPreview?.src,
-                data[position].getPreviewWithSize(PhotoSize.W, false), Utils.createOkHttp(5, true)
+                data[position].getPreviewWithSize(PhotoSize.W, false),
+                Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
             )
         }
 

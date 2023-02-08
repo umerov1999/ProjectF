@@ -680,6 +680,7 @@ object Dto2Entity {
             .setUserReposted(news.user_reposted)
             .setFriendsTags(news.friends)
             .setViews(news.views)
+            .setDonut(news.is_donut)
             .setCopyright(news.copyright?.let {
                 NewsDboEntity.CopyrightDboEntity(
                     it.name,

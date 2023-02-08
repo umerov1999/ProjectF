@@ -60,10 +60,10 @@ class VKMethodHttpClientFactory : IVKMethodHttpClientFactory {
     ): OkHttpClient.Builder {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
             .addInterceptor(interceptor)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .callTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .callTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(UncompressDefaultInterceptor)
         ProxyUtil.applyProxyConfig(builder, config)
         HttpLoggerAndParser.adjust(builder)
@@ -77,10 +77,10 @@ class VKMethodHttpClientFactory : IVKMethodHttpClientFactory {
         config: ProxyConfig?
     ): OkHttpClient.Builder {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-            .readTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
-            .callTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
+            .callTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request = chain.toRequestBuilder(true).vkHeader(false)
                     .addHeader(

@@ -1,8 +1,8 @@
 package com.github.luben.zstd;
 
+import java.io.InputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 /**
@@ -15,25 +15,32 @@ import java.nio.ByteBuffer;
  */
 
 public class ZstdInputStreamNoFinalizer extends FilterInputStream {
-
-    private static final int srcBuffSize = (int) recommendedDInSize();
-
     // Opaque pointer to Zstd context object
     private final long stream;
-    private final BufferPool bufferPool;
-    private final ByteBuffer srcByteBuffer;
-    private final byte[] src;
+    @SuppressWarnings("FieldCanBeLocal")
     private long dstPos;
     private long srcPos;
     private long srcSize;
     private boolean needRead = true;
+    private final BufferPool bufferPool;
+    private final ByteBuffer srcByteBuffer;
+    private final byte[] src;
+    private static final int srcBuffSize = (int) recommendedDInSize();
+
     private boolean isContinuous;
     private boolean frameFinished = true;
     private boolean isClosed;
 
+    /* JNI methods */
+    public static native long recommendedDInSize();
+    public static native long recommendedDOutSize();
+    private static native long createDStream();
+    private static native int  freeDStream(long stream);
+    private native int  initDStream(long stream);
+    private native int  decompressStream(long stream, byte[] dst, int dst_size, byte[] src, int src_size);
+
     /**
      * create a new decompressing InputStream
-     *
      * @param inStream the stream to wrap
      */
     public ZstdInputStreamNoFinalizer(InputStream inStream) throws IOException {
@@ -42,8 +49,7 @@ public class ZstdInputStreamNoFinalizer extends FilterInputStream {
 
     /**
      * create a new decompressing InputStream
-     *
-     * @param inStream   the stream to wrap
+     * @param inStream the stream to wrap
      * @param bufferPool the pool to fetch and return buffers
      */
     public ZstdInputStreamNoFinalizer(InputStream inStream, BufferPool bufferPool) throws IOException {
@@ -55,27 +61,10 @@ public class ZstdInputStreamNoFinalizer extends FilterInputStream {
         }
         src = Zstd.extractArray(srcByteBuffer);
         // memory barrier
-        synchronized (this) {
+        synchronized(this) {
             stream = createDStream();
             initDStream(stream);
         }
-    }
-
-    /* JNI methods */
-    public static native long recommendedDInSize();
-
-    public static native long recommendedDOutSize();
-
-    private static native long createDStream();
-
-    private static native int freeDStream(long stream);
-
-    private native int initDStream(long stream);
-
-    private native int decompressStream(long stream, byte[] dst, int dst_size, byte[] src, int src_size);
-
-    public synchronized boolean getContinuous() {
-        return isContinuous;
     }
 
     /**
@@ -86,6 +75,10 @@ public class ZstdInputStreamNoFinalizer extends FilterInputStream {
     public synchronized ZstdInputStreamNoFinalizer setContinuous(boolean b) {
         isContinuous = b;
         return this;
+    }
+
+    public synchronized boolean getContinuous() {
+        return isContinuous;
     }
 
     public synchronized ZstdInputStreamNoFinalizer setDict(byte[] dict) throws IOException {
@@ -160,7 +153,7 @@ public class ZstdInputStreamNoFinalizer extends FilterInputStream {
                     if (frameFinished) {
                         return -1;
                     } else if (isContinuous) {
-                        srcSize = (int) (dstPos - offset);
+                        srcSize = (int)(dstPos - offset);
                         if (srcSize > 0) {
                             return (int) srcSize;
                         }
@@ -185,14 +178,14 @@ public class ZstdInputStreamNoFinalizer extends FilterInputStream {
                 // we need to read from the upstream only if we have not consumed
                 // fully the source buffer
                 needRead = srcPos == srcSize;
-                return (int) (dstPos - offset);
+                return (int)(dstPos - offset);
             } else {
                 // size > 0, so more input is required but there is data left in
                 // the decompressor buffers if we have not filled the dst buffer
                 needRead = dstPos < dstSize;
             }
         }
-        return (int) (dstPos - offset);
+        return (int)(dstPos - offset);
     }
 
     public synchronized int read() throws IOException {

@@ -45,22 +45,5 @@
                 tools:ignore="HardcodedText" />
 
         </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_lyrics"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="lyrics:"
-                android:inputType="textMultiLine|text"
-                android:textSize="16sp"
-                tools:ignore="HardcodedText" />
-
-        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 </ScrollView>

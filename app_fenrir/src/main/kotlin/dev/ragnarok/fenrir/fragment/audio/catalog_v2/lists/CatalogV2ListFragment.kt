@@ -41,10 +41,8 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
-import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -58,7 +56,6 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
     private var animLoad: ObjectAnimator? = null
     private var animationDispose = Disposable.disposed()
     private var mAnimationLoaded = false
-    private var mySearchView: MySearchView? = null
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         if (requireArguments().getString(Extra.ARTIST).nonNullNoEmpty()) {
@@ -163,47 +160,6 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
         ) { tab: TabLayout.Tab, position: Int ->
             tab.text = mAdapter?.getTitle(position)
         }.attach()
-        mySearchView = root.findViewById(R.id.searchview)
-        if (isMain()) {
-            viewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    super.onPageSelected(position)
-                    if (mAdapter?.pFragments?.get(position)?.customType == TYPE_CATALOG) {
-                        mySearchView?.visibility = View.VISIBLE
-                    } else {
-                        mySearchView?.visibility = View.GONE
-                    }
-                }
-            })
-        }
-
-        mySearchView?.setRightButtonVisibility(false)
-        mySearchView?.setLeftIcon(R.drawable.magnify)
-        mySearchView?.setOnBackButtonClickListener(object : MySearchView.OnBackButtonClickListener {
-            override fun onBackButtonClick() {
-                if (mySearchView?.text.nonNullNoEmpty() && mySearchView?.text.trimmedNonNullNoEmpty()) {
-                    presenter?.fireSearchRequestSubmitted(
-                        mySearchView?.text.toString()
-                    )
-                }
-            }
-        })
-        if (isMain()) {
-            mySearchView?.setOnQueryTextListener(object : MySearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    presenter?.fireSearchRequestSubmitted(
-                        query
-                    )
-                    return false
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    return false
-                }
-            })
-        } else {
-            mySearchView?.visibility = View.GONE
-        }
         loading = root.findViewById(R.id.loading)
         animLoad = ObjectAnimator.ofFloat(loading, View.ALPHA, 0.0f).setDuration(1000)
         animLoad?.addListener(object : StubAnimatorListener() {
@@ -235,11 +191,6 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
 
     override fun notifyDataSetChanged() {
         mAdapter?.notifyDataSetChanged()
-    }
-
-    override fun search(accountId: Long, q: String) {
-        PlaceFactory.getCatalogV2AudioCatalogPlace(accountId, accountId, null, q, null)
-            .tryOpenWith(requireActivity())
     }
 
     override fun onDestroy() {
@@ -274,10 +225,6 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 loading?.playAnimation()
             }, RxUtils.ignore())
         }
-    }
-
-    override fun onFail() {
-        mySearchView?.visibility = View.GONE
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CatalogV2ListPresenter> {
@@ -324,7 +271,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
             if (pFragments[position].customType == TYPE_CATALOG) {
                 return CatalogV2SectionFragment.newInstance(
                     Settings.get().accounts().current, pFragments[position].id.orEmpty(),
-                    isHideToolbar = true
+                    isHideToolbar = true, supportSearch = isMain()
                 )
             } else when (pFragments[position].customType) {
                 TYPE_LOCAL_AUDIO -> return AudiosLocalFragment.newInstance(

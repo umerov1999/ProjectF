@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.longpoll
 
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiLongpollServer
@@ -88,7 +89,14 @@ internal class UserLongpoll(
         }
         setDisposable(
             networker.longpoll()
-                .getUpdates("https://$server", key, ts ?: return, 25, MODE, V)
+                .getUpdates(
+                    "https://$server",
+                    key,
+                    ts ?: return,
+                    Constants.LONGPOLL_TIMEOUT,
+                    MODE,
+                    V
+                )
                 .fromIOToMain()
                 .subscribe({ updates -> onUpdates(updates) }) { throwable ->
                     onUpdatesGetError(

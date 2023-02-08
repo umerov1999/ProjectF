@@ -27,14 +27,17 @@ import dev.ragnarok.fenrir.media.music.MusicPlaybackController
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.AudioPlaylist
 import dev.ragnarok.fenrir.model.LoadMoreState
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.AppPerms.DoRequestPermissions
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper
+import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
 class CatalogV2SectionFragment :
@@ -50,10 +53,13 @@ class CatalogV2SectionFragment :
     private var mAdapter: CatalogV2SectionAdapter? = null
     private var mLoadMoreFooterHelper: LoadMoreFooterHelper? = null
     private var recyclerView: RecyclerView? = null
+    private var mySearchView: MySearchView? = null
     private var inTabsContainer = false
+    private var supportSearch = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         inTabsContainer = requireArguments().getBoolean(EXTRA_IN_TABS_CONTAINER)
+        supportSearch = requireArguments().getBoolean(EXTRA_SEARCH)
     }
 
     override fun onCreateView(
@@ -61,7 +67,11 @@ class CatalogV2SectionFragment :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_catalog_v2_section, container, false)
+        val root = inflater.inflate(
+            if (supportSearch) R.layout.fragment_catalog_v2_section_with_search else R.layout.fragment_catalog_v2_section,
+            container,
+            false
+        )
         val toolbar: Toolbar = root.findViewById(R.id.toolbar)
         if (!inTabsContainer) {
             toolbar.visibility = View.VISIBLE
@@ -126,7 +136,39 @@ class CatalogV2SectionFragment :
                 } else createCustomToast(requireActivity()).showToast(R.string.audio_not_found)
             } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)
         }
+        if (supportSearch) {
+            mySearchView = root.findViewById(R.id.searchview)
+            mySearchView?.setRightButtonVisibility(false)
+            mySearchView?.setLeftIcon(R.drawable.magnify)
+            mySearchView?.setOnBackButtonClickListener(object :
+                MySearchView.OnBackButtonClickListener {
+                override fun onBackButtonClick() {
+                    if (mySearchView?.text.nonNullNoEmpty() && mySearchView?.text.trimmedNonNullNoEmpty()) {
+                        presenter?.fireSearchRequestSubmitted(
+                            mySearchView?.text.toString()
+                        )
+                    }
+                }
+            })
+            mySearchView?.setOnQueryTextListener(object : MySearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    presenter?.fireSearchRequestSubmitted(
+                        query
+                    )
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return false
+                }
+            })
+        }
         return root
+    }
+
+    override fun search(accountId: Long, q: String) {
+        PlaceFactory.getCatalogV2AudioCatalogPlace(accountId, accountId, null, q, null)
+            .tryOpenWith(requireActivity())
     }
 
     override fun updateLayoutManager(type: String) {
@@ -246,15 +288,18 @@ class CatalogV2SectionFragment :
 
     companion object {
         const val EXTRA_IN_TABS_CONTAINER = "in_tabs_container"
+        const val EXTRA_SEARCH = "search_mode"
         fun newInstance(
             accountId: Long,
             sectionId: String,
-            isHideToolbar: Boolean
+            isHideToolbar: Boolean,
+            supportSearch: Boolean
         ): CatalogV2SectionFragment {
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putString(Extra.SECTION_ID, sectionId)
             args.putBoolean(EXTRA_IN_TABS_CONTAINER, isHideToolbar)
+            args.putBoolean(EXTRA_SEARCH, supportSearch)
             val fragment = CatalogV2SectionFragment()
             fragment.arguments = args
             return fragment
@@ -265,6 +310,7 @@ class CatalogV2SectionFragment :
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putString(Extra.SECTION_ID, sectionId)
             args.putBoolean(EXTRA_IN_TABS_CONTAINER, false)
+            args.putBoolean(EXTRA_SEARCH, false)
             return args
         }
 

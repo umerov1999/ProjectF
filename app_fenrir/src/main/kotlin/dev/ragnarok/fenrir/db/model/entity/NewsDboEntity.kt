@@ -44,6 +44,8 @@ class NewsDboEntity : DboEntity() {
         private set
     var isUserReposted = false
         private set
+    var isDonut = false
+        private set
     var friendsTags: List<Long>? = null
         private set
     var views = 0
@@ -54,6 +56,11 @@ class NewsDboEntity : DboEntity() {
         private set
     var copyright: CopyrightDboEntity? = null
         private set
+
+    fun setDonut(donut: Boolean): NewsDboEntity {
+        this.isDonut = donut
+        return this
+    }
 
     fun setType(type: String?): NewsDboEntity {
         this.type = type

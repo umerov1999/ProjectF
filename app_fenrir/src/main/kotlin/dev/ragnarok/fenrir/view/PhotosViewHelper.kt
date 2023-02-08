@@ -209,7 +209,7 @@ class PhotosViewHelper internal constructor(
                     holder.vgPhoto.fromNet(
                         ((image.attachment as Document).ownerId.toString() + "_" + image.attachment.id.toString()),
                         image.attachment.videoPreview?.src,
-                        Utils.createOkHttp(5, true)
+                        Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
                     )
                 } else if (url.nonNullNoEmpty()) {
                     PicassoInstance.with()

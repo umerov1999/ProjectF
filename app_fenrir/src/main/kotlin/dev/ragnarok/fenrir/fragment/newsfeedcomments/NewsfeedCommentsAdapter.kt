@@ -284,6 +284,7 @@ class NewsfeedCommentsAdapter(
             actionListener?.onPostBodyClick(comment)
         }
         holder.postRoot.setOnClickListener(postOpenClickListener)
+        holder.tvDonut.visibility = if (post.isDonut) View.VISIBLE else View.GONE
         post.copyright?.let { vit ->
             holder.tvCopyright.visibility = View.VISIBLE
             holder.tvCopyright.text = "©" + vit.name
@@ -402,6 +403,7 @@ class NewsfeedCommentsAdapter(
         val topDivider: View = itemView.findViewById(R.id.top_divider)
         val postRoot: View
         val tvCopyright: TextView
+        val tvDonut: TextView
 
         init {
             val postAttachmentRoot = itemView.findViewById<ViewGroup>(R.id.item_post_attachments)
@@ -413,6 +415,8 @@ class NewsfeedCommentsAdapter(
             friendsOnlyIcon = itemView.findViewById(R.id.item_post_friends_only)
             tvCopyright = itemView.findViewById(R.id.item_post_copyright)
             postRoot = itemView.findViewById(R.id.post_root)
+            tvDonut = itemView.findViewById(R.id.item_need_donate)
+
         }
     }
 

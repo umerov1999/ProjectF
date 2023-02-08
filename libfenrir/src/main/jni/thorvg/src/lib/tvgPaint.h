@@ -43,7 +43,7 @@ namespace tvg
         virtual ~StrategyMethod() {}
 
         virtual bool dispose(RenderMethod& renderer) = 0;
-        virtual void* update(RenderMethod& renderer, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag pFlag) = 0;   //Return engine data if it has.
+        virtual void* update(RenderMethod& renderer, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag pFlag, bool clipper) = 0;   //Return engine data if it has.
         virtual bool render(RenderMethod& renderer) = 0;
         virtual bool bounds(float* x, float* y, float* w, float* h) = 0;
         virtual RenderRegion bounds(RenderMethod& renderer) const = 0;
@@ -63,7 +63,6 @@ namespace tvg
         StrategyMethod* smethod = nullptr;
         RenderTransform* rTransform = nullptr;
         Composite* compData = nullptr;
-        Paint* compSource = nullptr;
         uint32_t renderFlag = RenderUpdateFlag::None;
         uint32_t ctxFlag = ContextFlag::Invalid;
         uint32_t id;
@@ -138,7 +137,6 @@ namespace tvg
                 if (!target && method == CompositeMethod::None) return true;
                 compData = static_cast<Composite*>(calloc(1, sizeof(Composite)));
             }
-            target->pImpl->compSource = source;
             compData->target = target;
             compData->source = source;
             compData->method = method;
@@ -149,7 +147,7 @@ namespace tvg
         bool scale(float factor);
         bool translate(float x, float y);
         bool bounds(float* x, float* y, float* w, float* h, bool transformed);
-        void* update(RenderMethod& renderer, const RenderTransform* pTransform, uint32_t opacity, Array<RenderData>& clips, uint32_t pFlag);
+        void* update(RenderMethod& renderer, const RenderTransform* pTransform, uint32_t opacity, Array<RenderData>& clips, uint32_t pFlag, bool clipper = false);
         bool render(RenderMethod& renderer);
         Paint* duplicate();
     };
@@ -178,9 +176,9 @@ namespace tvg
             return inst->dispose(renderer);
         }
 
-        void* update(RenderMethod& renderer, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag renderFlag) override
+        void* update(RenderMethod& renderer, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag renderFlag, bool clipper) override
         {
-            return inst->update(renderer, transform, opacity, clips, renderFlag);
+            return inst->update(renderer, transform, opacity, clips, renderFlag, clipper);
         }
 
         bool render(RenderMethod& renderer) override

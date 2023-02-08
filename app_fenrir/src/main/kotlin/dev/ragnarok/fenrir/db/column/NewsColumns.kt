@@ -1,9 +1,6 @@
 package dev.ragnarok.fenrir.db.column
 
-import android.content.ContentValues
 import android.provider.BaseColumns
-import dev.ragnarok.fenrir.api.model.VKApiNews
-import dev.ragnarok.fenrir.util.Utils
 
 object NewsColumns : BaseColumns {
     // Переменные для определения в какой массив добавлять вложения
@@ -36,6 +33,7 @@ object NewsColumns : BaseColumns {
     const val REPOSTS_COUNT = "reposts_count"
     const val USER_REPOSTED = "user_reposted"
     const val COPYRIGHT_BLOB = "copyright_blob"
+    const val IS_DONUT = "is_donut"
 
     const val TAG_FRIENDS = "friends_tag"
     const val ATTACHMENTS_BLOB = "attachments_blob"
@@ -68,32 +66,5 @@ object NewsColumns : BaseColumns {
     const val FULL_TAG_FRIENDS = "$TABLENAME.$TAG_FRIENDS"
     const val FULL_ATTACHMENTS_BLOB = "$TABLENAME.$ATTACHMENTS_BLOB"
     const val FULL_VIEWS = "$TABLENAME.$VIEWS"
-    fun getCV(p: VKApiNews): ContentValues {
-        val cv = ContentValues()
-        cv.put(TYPE, p.type)
-        cv.put(SOURCE_ID, p.source_id)
-        cv.put(DATE, p.date)
-        cv.put(POST_ID, p.post_id)
-        cv.put(POST_TYPE, p.post_type)
-        cv.put(FINAL_POST, p.final_post)
-        cv.put(COPY_OWNER_ID, p.copy_owner_id)
-        cv.put(COPY_POST_ID, p.copy_post_id)
-        cv.put(COPY_POST_DATE, p.copy_post_date)
-        cv.put(TEXT, p.text)
-        cv.put(CAN_EDIT, p.can_edit)
-        cv.put(CAN_DELETE, p.can_delete)
-        cv.put(COMMENT_COUNT, p.comment_count)
-        cv.put(COMMENT_CAN_POST, p.comment_can_post)
-        cv.put(LIKE_COUNT, p.like_count)
-        cv.put(USER_LIKE, p.user_like)
-        cv.put(CAN_LIKE, p.can_like)
-        cv.put(CAN_PUBLISH, p.can_publish)
-        cv.put(REPOSTS_COUNT, p.reposts_count)
-        cv.put(USER_REPOSTED, p.user_reposted)
-        cv.put(TAG_FRIENDS, p.friends?.let { Utils.join(",", it) })
-        cv.put(VIEWS, p.views)
-
-        //cv.put(HAS_COPY_HISTORY, !Utils.isEmpty(p.copy_history));
-        return cv
-    } //public static final String FULL_HAS_COPY_HISTORY = TABLENAME + "." + HAS_COPY_HISTORY;
+    const val FULL_IS_DONUT = "$TABLENAME.$IS_DONUT"
 }

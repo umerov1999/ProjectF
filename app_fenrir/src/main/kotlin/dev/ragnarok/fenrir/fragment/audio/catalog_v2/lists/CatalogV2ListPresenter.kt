@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
 
 class CatalogV2ListPresenter(
     accountId: Long,
@@ -38,7 +37,6 @@ class CatalogV2ListPresenter(
         ArrayList()
     private val netDisposable = CompositeDisposable()
     private var netLoadingNow = false
-    private var dataDisposable = Disposable.disposed()
 
     fun resolveLoading() {
         view?.resolveLoading(netLoadingNow)
@@ -64,30 +62,8 @@ class CatalogV2ListPresenter(
 
     override fun onDestroyed() {
         netDisposable.dispose()
-        dataDisposable.dispose()
         super.onDestroyed()
     }
-
-    fun fireSearchRequestSubmitted(q: String?) {
-        dataDisposable.dispose()
-        if (q.isNullOrEmpty()) {
-            return
-        }
-        view?.search(accountId, q)
-    }
-
-    /*
-    fun fireSearchRequestChanged(q: String?) {
-        dataDisposable.dispose()
-        if(q.isNullOrEmpty()) {
-            return
-        }
-        dataDisposable = Single.just(Any())
-            .delay(1, TimeUnit.SECONDS)
-            .fromIOToMain()
-            .subscribe({ fireSearchRequestSubmitted(q) }, RxUtils.ignore())
-    }
-     */
 
     private fun request() {
         netLoadingNow = true
@@ -118,7 +94,6 @@ class CatalogV2ListPresenter(
         netLoadingNow = false
         resolveLoading()
         showError(t)
-        view?.onFail()
     }
 
     private fun makeByUid(

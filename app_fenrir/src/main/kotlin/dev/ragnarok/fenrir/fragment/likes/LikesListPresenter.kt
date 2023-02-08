@@ -49,6 +49,7 @@ class LikesListPresenter(
 
     private fun onDataGetError(t: Throwable) {
         showError(getCauseIfRuntime(t))
+        loadingNow = false
         resolveRefreshingView()
     }
 
