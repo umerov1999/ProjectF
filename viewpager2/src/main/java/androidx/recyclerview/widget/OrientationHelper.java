@@ -31,230 +31,20 @@ import android.view.View;
  */
 public abstract class OrientationHelper {
 
-    public static final int HORIZONTAL = RecyclerView.HORIZONTAL;
-    public static final int VERTICAL = RecyclerView.VERTICAL;
     private static final int INVALID_SIZE = Integer.MIN_VALUE;
+
     protected final RecyclerView.LayoutManager mLayoutManager;
-    final Rect mTmpRect = new Rect();
+
+    public static final int HORIZONTAL = RecyclerView.HORIZONTAL;
+
+    public static final int VERTICAL = RecyclerView.VERTICAL;
+
     private int mLastTotalSpace = INVALID_SIZE;
+
+    final Rect mTmpRect = new Rect();
 
     private OrientationHelper(RecyclerView.LayoutManager layoutManager) {
         mLayoutManager = layoutManager;
-    }
-
-    /**
-     * Creates an OrientationHelper for the given LayoutManager and orientation.
-     *
-     * @param layoutManager LayoutManager to attach to
-     * @param orientation   Desired orientation. Should be {@link #HORIZONTAL} or {@link #VERTICAL}
-     * @return A new OrientationHelper
-     */
-    public static OrientationHelper createOrientationHelper(
-            RecyclerView.LayoutManager layoutManager, @RecyclerView.Orientation int orientation) {
-        switch (orientation) {
-            case HORIZONTAL:
-                return createHorizontalHelper(layoutManager);
-            case VERTICAL:
-                return createVerticalHelper(layoutManager);
-        }
-        throw new IllegalArgumentException("invalid orientation");
-    }
-
-    /**
-     * Creates a horizontal OrientationHelper for the given LayoutManager.
-     *
-     * @param layoutManager The LayoutManager to attach to.
-     * @return A new OrientationHelper
-     */
-    public static OrientationHelper createHorizontalHelper(
-            RecyclerView.LayoutManager layoutManager) {
-        return new OrientationHelper(layoutManager) {
-            @Override
-            public int getEndAfterPadding() {
-                return mLayoutManager.getWidth() - mLayoutManager.getPaddingRight();
-            }
-
-            @Override
-            public int getEnd() {
-                return mLayoutManager.getWidth();
-            }
-
-            @Override
-            public void offsetChildren(int amount) {
-                mLayoutManager.offsetChildrenHorizontal(amount);
-            }
-
-            @Override
-            public int getStartAfterPadding() {
-                return mLayoutManager.getPaddingLeft();
-            }
-
-            @Override
-            public int getDecoratedMeasurement(View view) {
-                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
-                        view.getLayoutParams();
-                return mLayoutManager.getDecoratedMeasuredWidth(view) + params.leftMargin
-                        + params.rightMargin;
-            }
-
-            @Override
-            public int getDecoratedMeasurementInOther(View view) {
-                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
-                        view.getLayoutParams();
-                return mLayoutManager.getDecoratedMeasuredHeight(view) + params.topMargin
-                        + params.bottomMargin;
-            }
-
-            @Override
-            public int getDecoratedEnd(View view) {
-                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
-                        view.getLayoutParams();
-                return mLayoutManager.getDecoratedRight(view) + params.rightMargin;
-            }
-
-            @Override
-            public int getDecoratedStart(View view) {
-                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
-                        view.getLayoutParams();
-                return mLayoutManager.getDecoratedLeft(view) - params.leftMargin;
-            }
-
-            @Override
-            public int getTransformedEndWithDecoration(View view) {
-                mLayoutManager.getTransformedBoundingBox(view, true, mTmpRect);
-                return mTmpRect.right;
-            }
-
-            @Override
-            public int getTransformedStartWithDecoration(View view) {
-                mLayoutManager.getTransformedBoundingBox(view, true, mTmpRect);
-                return mTmpRect.left;
-            }
-
-            @Override
-            public int getTotalSpace() {
-                return mLayoutManager.getWidth() - mLayoutManager.getPaddingLeft()
-                        - mLayoutManager.getPaddingRight();
-            }
-
-            @Override
-            public void offsetChild(View view, int offset) {
-                view.offsetLeftAndRight(offset);
-            }
-
-            @Override
-            public int getEndPadding() {
-                return mLayoutManager.getPaddingRight();
-            }
-
-            @Override
-            public int getMode() {
-                return mLayoutManager.getWidthMode();
-            }
-
-            @Override
-            public int getModeInOther() {
-                return mLayoutManager.getHeightMode();
-            }
-        };
-    }
-
-    /**
-     * Creates a vertical OrientationHelper for the given LayoutManager.
-     *
-     * @param layoutManager The LayoutManager to attach to.
-     * @return A new OrientationHelper
-     */
-    public static OrientationHelper createVerticalHelper(RecyclerView.LayoutManager layoutManager) {
-        return new OrientationHelper(layoutManager) {
-            @Override
-            public int getEndAfterPadding() {
-                return mLayoutManager.getHeight() - mLayoutManager.getPaddingBottom();
-            }
-
-            @Override
-            public int getEnd() {
-                return mLayoutManager.getHeight();
-            }
-
-            @Override
-            public void offsetChildren(int amount) {
-                mLayoutManager.offsetChildrenVertical(amount);
-            }
-
-            @Override
-            public int getStartAfterPadding() {
-                return mLayoutManager.getPaddingTop();
-            }
-
-            @Override
-            public int getDecoratedMeasurement(View view) {
-                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
-                        view.getLayoutParams();
-                return mLayoutManager.getDecoratedMeasuredHeight(view) + params.topMargin
-                        + params.bottomMargin;
-            }
-
-            @Override
-            public int getDecoratedMeasurementInOther(View view) {
-                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
-                        view.getLayoutParams();
-                return mLayoutManager.getDecoratedMeasuredWidth(view) + params.leftMargin
-                        + params.rightMargin;
-            }
-
-            @Override
-            public int getDecoratedEnd(View view) {
-                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
-                        view.getLayoutParams();
-                return mLayoutManager.getDecoratedBottom(view) + params.bottomMargin;
-            }
-
-            @Override
-            public int getDecoratedStart(View view) {
-                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
-                        view.getLayoutParams();
-                return mLayoutManager.getDecoratedTop(view) - params.topMargin;
-            }
-
-            @Override
-            public int getTransformedEndWithDecoration(View view) {
-                mLayoutManager.getTransformedBoundingBox(view, true, mTmpRect);
-                return mTmpRect.bottom;
-            }
-
-            @Override
-            public int getTransformedStartWithDecoration(View view) {
-                mLayoutManager.getTransformedBoundingBox(view, true, mTmpRect);
-                return mTmpRect.top;
-            }
-
-            @Override
-            public int getTotalSpace() {
-                return mLayoutManager.getHeight() - mLayoutManager.getPaddingTop()
-                        - mLayoutManager.getPaddingBottom();
-            }
-
-            @Override
-            public void offsetChild(View view, int offset) {
-                view.offsetTopAndBottom(offset);
-            }
-
-            @Override
-            public int getEndPadding() {
-                return mLayoutManager.getPaddingBottom();
-            }
-
-            @Override
-            public int getMode() {
-                return mLayoutManager.getHeightMode();
-            }
-
-            @Override
-            public int getModeInOther() {
-                return mLayoutManager.getWidthMode();
-            }
-        };
     }
 
     /**
@@ -323,6 +113,7 @@ public abstract class OrientationHelper {
      * @param view The view whose transformed end will be returned
      * @return The end of the View after its decor insets and transformation matrix is applied to
      * its position
+     *
      * @see RecyclerView.LayoutManager#getTransformedBoundingBox(View, boolean, Rect)
      */
     public abstract int getTransformedEndWithDecoration(View view);
@@ -338,6 +129,7 @@ public abstract class OrientationHelper {
      * @param view The view whose transformed start will be returned
      * @return The start of the View after its decor insets and transformation matrix is applied to
      * its position
+     *
      * @see RecyclerView.LayoutManager#getTransformedBoundingBox(View, boolean, Rect)
      */
     public abstract int getTransformedStartWithDecoration(View view);
@@ -419,6 +211,7 @@ public abstract class OrientationHelper {
      * Returns the MeasureSpec mode for the current orientation from the LayoutManager.
      *
      * @return The current measure spec mode.
+     *
      * @see View.MeasureSpec
      * @see RecyclerView.LayoutManager#getWidthMode()
      * @see RecyclerView.LayoutManager#getHeightMode()
@@ -429,9 +222,225 @@ public abstract class OrientationHelper {
      * Returns the MeasureSpec mode for the perpendicular orientation from the LayoutManager.
      *
      * @return The current measure spec mode.
+     *
      * @see View.MeasureSpec
      * @see RecyclerView.LayoutManager#getWidthMode()
      * @see RecyclerView.LayoutManager#getHeightMode()
      */
     public abstract int getModeInOther();
+
+    /**
+     * Creates an OrientationHelper for the given LayoutManager and orientation.
+     *
+     * @param layoutManager LayoutManager to attach to
+     * @param orientation   Desired orientation. Should be {@link #HORIZONTAL} or {@link #VERTICAL}
+     * @return A new OrientationHelper
+     */
+    public static OrientationHelper createOrientationHelper(
+            RecyclerView.LayoutManager layoutManager, @RecyclerView.Orientation int orientation) {
+        switch (orientation) {
+            case HORIZONTAL:
+                return createHorizontalHelper(layoutManager);
+            case VERTICAL:
+                return createVerticalHelper(layoutManager);
+        }
+        throw new IllegalArgumentException("invalid orientation");
+    }
+
+    /**
+     * Creates a horizontal OrientationHelper for the given LayoutManager.
+     *
+     * @param layoutManager The LayoutManager to attach to.
+     * @return A new OrientationHelper
+     */
+    public static OrientationHelper createHorizontalHelper(
+            RecyclerView.LayoutManager layoutManager) {
+        return new OrientationHelper(layoutManager) {
+            @Override
+            public int getEndAfterPadding() {
+                return mLayoutManager.getWidth() - mLayoutManager.getPaddingRight();
+            }
+
+            @Override
+            public int getEnd() {
+                return mLayoutManager.getWidth();
+            }
+
+            @Override
+            public void offsetChildren(int amount) {
+                mLayoutManager.offsetChildrenHorizontal(amount);
+            }
+
+            @Override
+            public int getStartAfterPadding() {
+                return mLayoutManager.getPaddingLeft();
+            }
+
+            @Override
+            public int getDecoratedMeasurement(View view) {
+                final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                        view.getLayoutParams();
+                return mLayoutManager.getDecoratedMeasuredWidth(view) + params.leftMargin
+                        + params.rightMargin;
+            }
+
+            @Override
+            public int getDecoratedMeasurementInOther(View view) {
+                final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                        view.getLayoutParams();
+                return mLayoutManager.getDecoratedMeasuredHeight(view) + params.topMargin
+                        + params.bottomMargin;
+            }
+
+            @Override
+            public int getDecoratedEnd(View view) {
+                final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                        view.getLayoutParams();
+                return mLayoutManager.getDecoratedRight(view) + params.rightMargin;
+            }
+
+            @Override
+            public int getDecoratedStart(View view) {
+                final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                        view.getLayoutParams();
+                return mLayoutManager.getDecoratedLeft(view) - params.leftMargin;
+            }
+
+            @Override
+            public int getTransformedEndWithDecoration(View view) {
+                mLayoutManager.getTransformedBoundingBox(view, true, mTmpRect);
+                return mTmpRect.right;
+            }
+
+            @Override
+            public int getTransformedStartWithDecoration(View view) {
+                mLayoutManager.getTransformedBoundingBox(view, true, mTmpRect);
+                return mTmpRect.left;
+            }
+
+            @Override
+            public int getTotalSpace() {
+                return mLayoutManager.getWidth() - mLayoutManager.getPaddingLeft()
+                        - mLayoutManager.getPaddingRight();
+            }
+
+            @Override
+            public void offsetChild(View view, int offset) {
+                view.offsetLeftAndRight(offset);
+            }
+
+            @Override
+            public int getEndPadding() {
+                return mLayoutManager.getPaddingRight();
+            }
+
+            @Override
+            public int getMode() {
+                return mLayoutManager.getWidthMode();
+            }
+
+            @Override
+            public int getModeInOther() {
+                return mLayoutManager.getHeightMode();
+            }
+        };
+    }
+
+    /**
+     * Creates a vertical OrientationHelper for the given LayoutManager.
+     *
+     * @param layoutManager The LayoutManager to attach to.
+     * @return A new OrientationHelper
+     */
+    public static OrientationHelper createVerticalHelper(RecyclerView.LayoutManager layoutManager) {
+        return new OrientationHelper(layoutManager) {
+            @Override
+            public int getEndAfterPadding() {
+                return mLayoutManager.getHeight() - mLayoutManager.getPaddingBottom();
+            }
+
+            @Override
+            public int getEnd() {
+                return mLayoutManager.getHeight();
+            }
+
+            @Override
+            public void offsetChildren(int amount) {
+                mLayoutManager.offsetChildrenVertical(amount);
+            }
+
+            @Override
+            public int getStartAfterPadding() {
+                return mLayoutManager.getPaddingTop();
+            }
+
+            @Override
+            public int getDecoratedMeasurement(View view) {
+                final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                        view.getLayoutParams();
+                return mLayoutManager.getDecoratedMeasuredHeight(view) + params.topMargin
+                        + params.bottomMargin;
+            }
+
+            @Override
+            public int getDecoratedMeasurementInOther(View view) {
+                final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                        view.getLayoutParams();
+                return mLayoutManager.getDecoratedMeasuredWidth(view) + params.leftMargin
+                        + params.rightMargin;
+            }
+
+            @Override
+            public int getDecoratedEnd(View view) {
+                final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                        view.getLayoutParams();
+                return mLayoutManager.getDecoratedBottom(view) + params.bottomMargin;
+            }
+
+            @Override
+            public int getDecoratedStart(View view) {
+                final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+                        view.getLayoutParams();
+                return mLayoutManager.getDecoratedTop(view) - params.topMargin;
+            }
+
+            @Override
+            public int getTransformedEndWithDecoration(View view) {
+                mLayoutManager.getTransformedBoundingBox(view, true, mTmpRect);
+                return mTmpRect.bottom;
+            }
+
+            @Override
+            public int getTransformedStartWithDecoration(View view) {
+                mLayoutManager.getTransformedBoundingBox(view, true, mTmpRect);
+                return mTmpRect.top;
+            }
+
+            @Override
+            public int getTotalSpace() {
+                return mLayoutManager.getHeight() - mLayoutManager.getPaddingTop()
+                        - mLayoutManager.getPaddingBottom();
+            }
+
+            @Override
+            public void offsetChild(View view, int offset) {
+                view.offsetTopAndBottom(offset);
+            }
+
+            @Override
+            public int getEndPadding() {
+                return mLayoutManager.getPaddingBottom();
+            }
+
+            @Override
+            public int getMode() {
+                return mLayoutManager.getHeightMode();
+            }
+
+            @Override
+            public int getModeInOther() {
+                return mLayoutManager.getWidthMode();
+            }
+        };
+    }
 }

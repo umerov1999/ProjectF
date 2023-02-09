@@ -29,7 +29,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 class ViewBoundsCheck {
 
-    static final int GT = 1;
+    static final int GT = 1 << 0;
     static final int EQ = 1 << 1;
     static final int LT = 1 << 2;
 
@@ -108,80 +108,7 @@ class ViewBoundsCheck {
     static final int MASK = GT | EQ | LT;
 
     final Callback mCallback;
-    final BoundFlags mBoundFlags;
-
-    ViewBoundsCheck(Callback callback) {
-        mCallback = callback;
-        mBoundFlags = new BoundFlags();
-    }
-
-    /**
-     * Returns the first view starting from fromIndex to toIndex in views whose bounds lie within
-     * its parent bounds based on the provided preferredBoundFlags. If no match is found based on
-     * the preferred flags, and a nonzero acceptableBoundFlags is specified, the last view whose
-     * bounds lie within its parent view based on the acceptableBoundFlags is returned. If no such
-     * view is found based on either of these two flags, null is returned.
-     *
-     * @param fromIndex            The view position index to start the search from.
-     * @param toIndex              The view position index to end the search at.
-     * @param preferredBoundFlags  The flags indicating the preferred match. Once a match is found
-     *                             based on this flag, that view is returned instantly.
-     * @param acceptableBoundFlags The flags indicating the acceptable match if no preferred match
-     *                             is found. If so, and if acceptableBoundFlags is non-zero, the
-     *                             last matching acceptable view is returned. Otherwise, null is
-     *                             returned.
-     * @return The first view that satisfies acceptableBoundFlags or the last view satisfying
-     * acceptableBoundFlags boundary conditions.
-     */
-    View findOneViewWithinBoundFlags(int fromIndex, int toIndex,
-                                     @ViewBounds int preferredBoundFlags,
-                                     @ViewBounds int acceptableBoundFlags) {
-        int start = mCallback.getParentStart();
-        int end = mCallback.getParentEnd();
-        int next = toIndex > fromIndex ? 1 : -1;
-        View acceptableMatch = null;
-        for (int i = fromIndex; i != toIndex; i += next) {
-            View child = mCallback.getChildAt(i);
-            int childStart = mCallback.getChildStart(child);
-            int childEnd = mCallback.getChildEnd(child);
-            mBoundFlags.setBounds(start, end, childStart, childEnd);
-            if (preferredBoundFlags != 0) {
-                mBoundFlags.resetFlags();
-                mBoundFlags.addFlags(preferredBoundFlags);
-                if (mBoundFlags.boundsMatch()) {
-                    // found a perfect match
-                    return child;
-                }
-            }
-            if (acceptableBoundFlags != 0) {
-                mBoundFlags.resetFlags();
-                mBoundFlags.addFlags(acceptableBoundFlags);
-                if (mBoundFlags.boundsMatch()) {
-                    acceptableMatch = child;
-                }
-            }
-        }
-        return acceptableMatch;
-    }
-
-    /**
-     * Returns whether the specified view lies within the boundary condition of its parent view.
-     *
-     * @param child       The child view to be checked.
-     * @param boundsFlags The flag against which the child view and parent view are matched.
-     * @return True if the view meets the boundsFlag, false otherwise.
-     */
-    boolean isViewWithinBoundFlags(View child, @ViewBounds int boundsFlags) {
-        mBoundFlags.setBounds(mCallback.getParentStart(), mCallback.getParentEnd(),
-                mCallback.getChildStart(child), mCallback.getChildEnd(child));
-        if (boundsFlags != 0) {
-            mBoundFlags.resetFlags();
-            mBoundFlags.addFlags(boundsFlags);
-            return mBoundFlags.boundsMatch();
-        }
-        return false;
-    }
-
+    BoundFlags mBoundFlags;
     /**
      * The set of flags that can be passed for checking the view boundary conditions.
      * CVS in the flag name indicates the child view, and PV indicates the parent view.\
@@ -199,27 +126,15 @@ class ViewBoundsCheck {
             FLAG_CVE_GT_PVE, FLAG_CVE_EQ_PVE, FLAG_CVE_LT_PVE
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ViewBounds {
-    }
+    public @interface ViewBounds {}
 
-    /**
-     * Callback provided by the user of this class in order to retrieve information about child and
-     * parent boundaries.
-     */
-    interface Callback {
-        View getChildAt(int index);
-
-        int getParentStart();
-
-        int getParentEnd();
-
-        int getChildStart(View view);
-
-        int getChildEnd(View view);
+    ViewBoundsCheck(Callback callback) {
+        mCallback = callback;
+        mBoundFlags = new BoundFlags();
     }
 
     static class BoundFlags {
-        int mBoundFlags;
+        int mBoundFlags = 0;
         int mRvStart, mRvEnd, mChildStart, mChildEnd;
 
         void setBounds(int rvStart, int rvEnd, int childStart, int childEnd) {
@@ -267,9 +182,88 @@ class ViewBoundsCheck {
             }
 
             if ((mBoundFlags & (MASK << CVE_PVE_POS)) != 0) {
-                return (mBoundFlags & (compare(mChildEnd, mRvEnd) << CVE_PVE_POS)) != 0;
+                if ((mBoundFlags & (compare(mChildEnd, mRvEnd) << CVE_PVE_POS)) == 0) {
+                    return false;
+                }
             }
             return true;
         }
+    };
+
+    /**
+     * Returns the first view starting from fromIndex to toIndex in views whose bounds lie within
+     * its parent bounds based on the provided preferredBoundFlags. If no match is found based on
+     * the preferred flags, and a nonzero acceptableBoundFlags is specified, the last view whose
+     * bounds lie within its parent view based on the acceptableBoundFlags is returned. If no such
+     * view is found based on either of these two flags, null is returned.
+     * @param fromIndex The view position index to start the search from.
+     * @param toIndex The view position index to end the search at.
+     * @param preferredBoundFlags The flags indicating the preferred match. Once a match is found
+     *                            based on this flag, that view is returned instantly.
+     * @param acceptableBoundFlags The flags indicating the acceptable match if no preferred match
+     *                             is found. If so, and if acceptableBoundFlags is non-zero, the
+     *                             last matching acceptable view is returned. Otherwise, null is
+     *                             returned.
+     * @return The first view that satisfies acceptableBoundFlags or the last view satisfying
+     * acceptableBoundFlags boundary conditions.
+     */
+    View findOneViewWithinBoundFlags(int fromIndex, int toIndex,
+            @ViewBounds int preferredBoundFlags,
+            @ViewBounds int acceptableBoundFlags) {
+        final int start = mCallback.getParentStart();
+        final int end = mCallback.getParentEnd();
+        final int next = toIndex > fromIndex ? 1 : -1;
+        View acceptableMatch = null;
+        for (int i = fromIndex; i != toIndex; i += next) {
+            final View child = mCallback.getChildAt(i);
+            final int childStart = mCallback.getChildStart(child);
+            final int childEnd = mCallback.getChildEnd(child);
+            mBoundFlags.setBounds(start, end, childStart, childEnd);
+            if (preferredBoundFlags != 0) {
+                mBoundFlags.resetFlags();
+                mBoundFlags.addFlags(preferredBoundFlags);
+                if (mBoundFlags.boundsMatch()) {
+                    // found a perfect match
+                    return child;
+                }
+            }
+            if (acceptableBoundFlags != 0) {
+                mBoundFlags.resetFlags();
+                mBoundFlags.addFlags(acceptableBoundFlags);
+                if (mBoundFlags.boundsMatch()) {
+                    acceptableMatch = child;
+                }
+            }
+        }
+        return acceptableMatch;
+    }
+
+    /**
+     * Returns whether the specified view lies within the boundary condition of its parent view.
+     * @param child The child view to be checked.
+     * @param boundsFlags The flag against which the child view and parent view are matched.
+     * @return True if the view meets the boundsFlag, false otherwise.
+     */
+    boolean isViewWithinBoundFlags(View child, @ViewBounds int boundsFlags) {
+        mBoundFlags.setBounds(mCallback.getParentStart(), mCallback.getParentEnd(),
+                mCallback.getChildStart(child), mCallback.getChildEnd(child));
+        if (boundsFlags != 0) {
+            mBoundFlags.resetFlags();
+            mBoundFlags.addFlags(boundsFlags);
+            return mBoundFlags.boundsMatch();
+        }
+        return false;
+    }
+
+    /**
+     * Callback provided by the user of this class in order to retrieve information about child and
+     * parent boundaries.
+     */
+    interface Callback {
+        View getChildAt(int index);
+        int getParentStart();
+        int getParentEnd();
+        int getChildStart(View view);
+        int getChildEnd(View view);
     }
 }

@@ -29,23 +29,7 @@ import androidx.viewpager2.R;
  * public API, which is not desired in this case.
  */
 class ItemTouchUIUtilImpl implements ItemTouchUIUtil {
-    static final ItemTouchUIUtil INSTANCE = new ItemTouchUIUtilImpl();
-
-    private static float findMaxElevation(RecyclerView recyclerView, View itemView) {
-        int childCount = recyclerView.getChildCount();
-        float max = 0;
-        for (int i = 0; i < childCount; i++) {
-            View child = recyclerView.getChildAt(i);
-            if (child == itemView) {
-                continue;
-            }
-            float elevation = ViewCompat.getElevation(child);
-            if (elevation > max) {
-                max = elevation;
-            }
-        }
-        return max;
-    }
+    static final ItemTouchUIUtil INSTANCE =  new ItemTouchUIUtilImpl();
 
     @Override
     public void onDraw(
@@ -73,6 +57,22 @@ class ItemTouchUIUtilImpl implements ItemTouchUIUtil {
         view.setTranslationY(dY);
     }
 
+    private static float findMaxElevation(RecyclerView recyclerView, View itemView) {
+        final int childCount = recyclerView.getChildCount();
+        float max = 0;
+        for (int i = 0; i < childCount; i++) {
+            final View child = recyclerView.getChildAt(i);
+            if (child == itemView) {
+                continue;
+            }
+            final float elevation = ViewCompat.getElevation(child);
+            if (elevation > max) {
+                max = elevation;
+            }
+        }
+        return max;
+    }
+
     @Override
     public void onDrawOver(
             @NonNull Canvas c,
@@ -88,7 +88,7 @@ class ItemTouchUIUtilImpl implements ItemTouchUIUtil {
     @Override
     public void clearView(@NonNull View view) {
         if (Build.VERSION.SDK_INT >= 21) {
-            Object tag = view.getTag(R.id.item_touch_helper_previous_elevation);
+            final Object tag = view.getTag(R.id.item_touch_helper_previous_elevation);
             if (tag instanceof Float) {
                 ViewCompat.setElevation(view, (Float) tag);
             }

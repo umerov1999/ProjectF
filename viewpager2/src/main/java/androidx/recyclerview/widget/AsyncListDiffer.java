@@ -108,43 +108,59 @@ import java.util.concurrent.Executor;
  * }</pre>
  *
  * @param <T> Type of the lists this AsyncListDiffer will receive.
+ *
  * @see DiffUtil
  * @see AdapterListUpdateCallback
  */
 public class AsyncListDiffer<T> {
-    // TODO: use MainThreadExecutor from supportlib once one exists
-    private static final Executor sMainThreadExecutor = new MainThreadExecutor();
+    private final ListUpdateCallback mUpdateCallback;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
     final AsyncDifferConfig<T> mConfig;
-    final Executor mMainThreadExecutor;
-    private final ListUpdateCallback mUpdateCallback;
-    private final List<ListListener<T>> mListeners = new CopyOnWriteArrayList<>();
-    // Max generation of currently scheduled runnable
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-            int mMaxScheduledGeneration;
-    @Nullable
-    private List<T> mList;
+    Executor mMainThreadExecutor;
+
+    private static class MainThreadExecutor implements Executor {
+        final Handler mHandler = new Handler(Looper.getMainLooper());
+        MainThreadExecutor() {}
+        @Override
+        public void execute(@NonNull Runnable command) {
+            mHandler.post(command);
+        }
+    }
+
+    // TODO: use MainThreadExecutor from supportlib once one exists
+    private static final Executor sMainThreadExecutor = new MainThreadExecutor();
+
     /**
-     * Non-null, unmodifiable version of mList.
-     * <p>
-     * Collections.emptyList when mList is null, wrapped by Collections.unmodifiableList otherwise
+     * Listener for when the current List is updated.
+     *
+     * @param <T> Type of items in List
      */
-    @NonNull
-    private List<T> mReadOnlyList = Collections.emptyList();
+    public interface ListListener<T> {
+        /**
+         * Called after the current List has been updated.
+         *
+         * @param previousList The previous list.
+         * @param currentList The new current list.
+         */
+        void onCurrentListChanged(@NonNull List<T> previousList, @NonNull List<T> currentList);
+    }
+
+    private final List<ListListener<T>> mListeners = new CopyOnWriteArrayList<>();
 
     /**
      * Convenience for
      * {@code AsyncListDiffer(new AdapterListUpdateCallback(adapter),
      * new AsyncDifferConfig.Builder().setDiffCallback(diffCallback).build());}
      *
-     * @param adapter      Adapter to dispatch position updates to.
+     * @param adapter Adapter to dispatch position updates to.
      * @param diffCallback ItemCallback that compares items to dispatch appropriate animations when
+     *
      * @see DiffUtil.DiffResult#dispatchUpdatesTo(RecyclerView.Adapter)
      */
     public AsyncListDiffer(@NonNull RecyclerView.Adapter adapter,
-                           @NonNull DiffUtil.ItemCallback<T> diffCallback) {
+            @NonNull DiffUtil.ItemCallback<T> diffCallback) {
         this(new AdapterListUpdateCallback(adapter),
-                new AsyncDifferConfig.Builder<>(diffCallback).build());
+            new AsyncDifferConfig.Builder<>(diffCallback).build());
     }
 
     /**
@@ -152,13 +168,14 @@ public class AsyncListDiffer<T> {
      * updates to.
      *
      * @param listUpdateCallback Callback to dispatch updates to.
-     * @param config             Config to define background work Executor, and DiffUtil.ItemCallback for
-     *                           computing List diffs.
+     * @param config Config to define background work Executor, and DiffUtil.ItemCallback for
+     *               computing List diffs.
+     *
      * @see DiffUtil.DiffResult#dispatchUpdatesTo(RecyclerView.Adapter)
      */
     @SuppressWarnings("WeakerAccess")
     public AsyncListDiffer(@NonNull ListUpdateCallback listUpdateCallback,
-                           @NonNull AsyncDifferConfig<T> config) {
+            @NonNull AsyncDifferConfig<T> config) {
         mUpdateCallback = listUpdateCallback;
         mConfig = config;
         if (config.getMainThreadExecutor() != null) {
@@ -167,6 +184,21 @@ public class AsyncListDiffer<T> {
             mMainThreadExecutor = sMainThreadExecutor;
         }
     }
+
+    @Nullable
+    private List<T> mList;
+
+    /**
+     * Non-null, unmodifiable version of mList.
+     * <p>
+     * Collections.emptyList when mList is null, wrapped by Collections.unmodifiableList otherwise
+     */
+    @NonNull
+    private List<T> mReadOnlyList = Collections.emptyList();
+
+    // Max generation of currently scheduled runnable
+    @SuppressWarnings("WeakerAccess") /* synthetic access */
+    int mMaxScheduledGeneration;
 
     /**
      * Get the current List - any diffing to present this list has already been computed and
@@ -195,7 +227,7 @@ public class AsyncListDiffer<T> {
      * @param newList The new List.
      */
     @SuppressWarnings("WeakerAccess")
-    public void submitList(@Nullable List<T> newList) {
+    public void submitList(@Nullable final List<T> newList) {
         submitList(newList, null);
     }
 
@@ -211,15 +243,15 @@ public class AsyncListDiffer<T> {
      * may not be executed. If List B is submitted immediately after List A, and is
      * committed directly, the callback associated with List A will not be run.
      *
-     * @param newList        The new List.
+     * @param newList The new List.
      * @param commitCallback Optional runnable that is executed when the List is committed, if
      *                       it is committed.
      */
     @SuppressWarnings("WeakerAccess")
-    public void submitList(@Nullable List<T> newList,
-                           @Nullable Runnable commitCallback) {
+    public void submitList(@Nullable final List<T> newList,
+            @Nullable final Runnable commitCallback) {
         // incrementing generation means any currently-running diffs are discarded when they finish
-        int runGeneration = ++mMaxScheduledGeneration;
+        final int runGeneration = ++mMaxScheduledGeneration;
 
         if (newList == mList) {
             // nothing to do (Note - still had to inc generation, since may have ongoing work)
@@ -229,10 +261,11 @@ public class AsyncListDiffer<T> {
             return;
         }
 
-        List<T> previousList = mReadOnlyList;
+        final List<T> previousList = mReadOnlyList;
 
         // fast simple remove all
         if (newList == null) {
+            //noinspection ConstantConditions
             int countRemoved = mList.size();
             mList = null;
             mReadOnlyList = Collections.emptyList();
@@ -252,9 +285,9 @@ public class AsyncListDiffer<T> {
             return;
         }
 
-        List<T> oldList = mList;
+        final List<T> oldList = mList;
         mConfig.getBackgroundThreadExecutor().execute(() -> {
-            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            final DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
                 public int getOldListSize() {
                     return oldList.size();
@@ -322,7 +355,7 @@ public class AsyncListDiffer<T> {
             @NonNull List<T> newList,
             @NonNull DiffUtil.DiffResult diffResult,
             @Nullable Runnable commitCallback) {
-        List<T> previousList = mReadOnlyList;
+        final List<T> previousList = mReadOnlyList;
         mList = newList;
         // notify last, after list is updated
         mReadOnlyList = Collections.unmodifiableList(newList);
@@ -331,7 +364,7 @@ public class AsyncListDiffer<T> {
     }
 
     private void onCurrentListChanged(@NonNull List<T> previousList,
-                                      @Nullable Runnable commitCallback) {
+            @Nullable Runnable commitCallback) {
         // current list is always mReadOnlyList
         for (ListListener<T> listener : mListeners) {
             listener.onCurrentListChanged(previousList, mReadOnlyList);
@@ -345,6 +378,7 @@ public class AsyncListDiffer<T> {
      * Add a ListListener to receive updates when the current List changes.
      *
      * @param listener Listener to receive updates.
+     *
      * @see #getCurrentList()
      * @see #removeListListener(ListListener)
      */
@@ -361,32 +395,5 @@ public class AsyncListDiffer<T> {
      */
     public void removeListListener(@NonNull ListListener<T> listener) {
         mListeners.remove(listener);
-    }
-
-    /**
-     * Listener for when the current List is updated.
-     *
-     * @param <T> Type of items in List
-     */
-    public interface ListListener<T> {
-        /**
-         * Called after the current List has been updated.
-         *
-         * @param previousList The previous list.
-         * @param currentList  The new current list.
-         */
-        void onCurrentListChanged(@NonNull List<T> previousList, @NonNull List<T> currentList);
-    }
-
-    private static class MainThreadExecutor implements Executor {
-        final Handler mHandler = new Handler(Looper.getMainLooper());
-
-        MainThreadExecutor() {
-        }
-
-        @Override
-        public void execute(@NonNull Runnable command) {
-            mHandler.post(command);
-        }
     }
 }

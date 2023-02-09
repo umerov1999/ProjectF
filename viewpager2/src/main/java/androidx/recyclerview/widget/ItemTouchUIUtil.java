@@ -39,33 +39,30 @@ public interface ItemTouchUIUtil {
      * The default implementation for {@link ItemTouchHelper.Callback#onChildDraw(Canvas,
      * RecyclerView, RecyclerView.ViewHolder, float, float, int, boolean)}
      */
-    @SuppressLint("UnknownNullness")
-    // b/240775049: Cannot annotate properly
+    @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     void onDraw(Canvas c, RecyclerView recyclerView, View view,
-                float dX, float dY, int actionState, boolean isCurrentlyActive);
+            float dX, float dY, int actionState, boolean isCurrentlyActive);
 
     /**
      * The default implementation for {@link ItemTouchHelper.Callback#onChildDrawOver(Canvas,
      * RecyclerView, RecyclerView.ViewHolder, float, float, int, boolean)}
      */
-    @SuppressLint("UnknownNullness")
-    // b/240775049: Cannot annotate properly
+    @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     void onDrawOver(Canvas c, RecyclerView recyclerView, View view,
-                    float dX, float dY, int actionState, boolean isCurrentlyActive);
+            float dX, float dY, int actionState, boolean isCurrentlyActive);
 
     /**
      * The default implementation for {@link ItemTouchHelper.Callback#clearView(RecyclerView,
      * RecyclerView.ViewHolder)}
      */
-    @SuppressLint("UnknownNullness")
-    // b/240775049: Cannot annotate properly
+    @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     void clearView(View view);
 
     /**
      * The default implementation for {@link ItemTouchHelper.Callback#onSelectedChanged(
-     *RecyclerView.ViewHolder, int)}
+     * RecyclerView.ViewHolder, int)}
      */
-    @SuppressLint("UnknownNullness")
-    // b/240775049: Cannot annotate properly
+    @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     void onSelected(View view);
 }
+

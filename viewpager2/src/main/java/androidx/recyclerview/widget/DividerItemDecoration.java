@@ -46,24 +46,27 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     public static final int VERTICAL = LinearLayout.VERTICAL;
 
     private static final String TAG = "DividerItem";
-    private static final int[] ATTRS = {android.R.attr.listDivider};
-    private final Rect mBounds = new Rect();
+    private static final int[] ATTRS = new int[]{ android.R.attr.listDivider };
+
     private Drawable mDivider;
+
     /**
      * Current orientation. Either {@link #HORIZONTAL} or {@link #VERTICAL}.
      */
     private int mOrientation;
 
+    private final Rect mBounds = new Rect();
+
     /**
      * Creates a divider {@link RecyclerView.ItemDecoration} that can be used with a
      * {@link LinearLayoutManager}.
      *
-     * @param context     Current context, it will be used to access resources.
+     * @param context Current context, it will be used to access resources.
      * @param orientation Divider orientation. Should be {@link #HORIZONTAL} or {@link #VERTICAL}.
      */
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     public DividerItemDecoration(Context context, int orientation) {
-        @SuppressLint("ResourceType") TypedArray a = context.obtainStyledAttributes(ATTRS);
+        final TypedArray a = context.obtainStyledAttributes(ATTRS);
         mDivider = a.getDrawable(0);
         if (mDivider == null) {
             Log.w(TAG, "@android:attr/listDivider was not set in the theme used for this "
@@ -88,14 +91,6 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     /**
-     * @return the {@link Drawable} for this divider.
-     */
-    @Nullable
-    public Drawable getDrawable() {
-        return mDivider;
-    }
-
-    /**
      * Sets the {@link Drawable} for this divider.
      *
      * @param drawable Drawable that should be used as a divider.
@@ -105,6 +100,14 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
             throw new IllegalArgumentException("Drawable cannot be null.");
         }
         mDivider = drawable;
+    }
+
+    /**
+     * @return the {@link Drawable} for this divider.
+     */
+    @Nullable
+    public Drawable getDrawable() {
+        return mDivider;
     }
 
     @Override
@@ -122,8 +125,8 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private void drawVertical(Canvas canvas, RecyclerView parent) {
         canvas.save();
-        int left;
-        int right;
+        final int left;
+        final int right;
         //noinspection AndroidLintNewApi - NewApi lint fails to handle overrides.
         if (parent.getClipToPadding()) {
             left = parent.getPaddingLeft();
@@ -135,12 +138,12 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
             right = parent.getWidth();
         }
 
-        int childCount = parent.getChildCount();
+        final int childCount = parent.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            View child = parent.getChildAt(i);
+            final View child = parent.getChildAt(i);
             parent.getDecoratedBoundsWithMargins(child, mBounds);
-            int bottom = mBounds.bottom + Math.round(child.getTranslationY());
-            int top = bottom - mDivider.getIntrinsicHeight();
+            final int bottom = mBounds.bottom + Math.round(child.getTranslationY());
+            final int top = bottom - mDivider.getIntrinsicHeight();
             mDivider.setBounds(left, top, right, bottom);
             mDivider.draw(canvas);
         }
@@ -149,8 +152,8 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private void drawHorizontal(Canvas canvas, RecyclerView parent) {
         canvas.save();
-        int top;
-        int bottom;
+        final int top;
+        final int bottom;
         //noinspection AndroidLintNewApi - NewApi lint fails to handle overrides.
         if (parent.getClipToPadding()) {
             top = parent.getPaddingTop();
@@ -162,12 +165,12 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
             bottom = parent.getHeight();
         }
 
-        int childCount = parent.getChildCount();
+        final int childCount = parent.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            View child = parent.getChildAt(i);
+            final View child = parent.getChildAt(i);
             parent.getLayoutManager().getDecoratedBoundsWithMargins(child, mBounds);
-            int right = mBounds.right + Math.round(child.getTranslationX());
-            int left = right - mDivider.getIntrinsicWidth();
+            final int right = mBounds.right + Math.round(child.getTranslationX());
+            final int left = right - mDivider.getIntrinsicWidth();
             mDivider.setBounds(left, top, right, bottom);
             mDivider.draw(canvas);
         }
@@ -177,7 +180,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
-                               RecyclerView.State state) {
+            RecyclerView.State state) {
         if (mDivider == null) {
             outRect.set(0, 0, 0, 0);
             return;

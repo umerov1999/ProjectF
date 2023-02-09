@@ -119,7 +119,7 @@ public class RecyclerViewAccessibilityDelegate extends AccessibilityDelegateComp
      */
     public static class ItemDelegate extends AccessibilityDelegateCompat {
         final RecyclerViewAccessibilityDelegate mRecyclerViewDelegate;
-        private final Map<View, AccessibilityDelegateCompat> mOriginalItemDelegates = new WeakHashMap<>();
+        private Map<View, AccessibilityDelegateCompat> mOriginalItemDelegates = new WeakHashMap<>();
 
         /**
          * Creates an item delegate for the given {@code RecyclerViewAccessibilityDelegate}.
@@ -152,7 +152,7 @@ public class RecyclerViewAccessibilityDelegate extends AccessibilityDelegateComp
         public void onInitializeAccessibilityNodeInfo(
                 @SuppressLint("InvalidNullabilityOverride") @NonNull View host,
                 @SuppressLint("InvalidNullabilityOverride") @NonNull
-                AccessibilityNodeInfoCompat info
+                        AccessibilityNodeInfoCompat info
         ) {
             if (!mRecyclerViewDelegate.shouldIgnore()
                     && mRecyclerViewDelegate.mRecyclerView.getLayoutManager() != null) {
@@ -204,7 +204,7 @@ public class RecyclerViewAccessibilityDelegate extends AccessibilityDelegateComp
 
         @Override
         public void sendAccessibilityEventUnchecked(@NonNull View host,
-                                                    @NonNull AccessibilityEvent event) {
+                @NonNull AccessibilityEvent event) {
             AccessibilityDelegateCompat originalDelegate = mOriginalItemDelegates.get(host);
             if (originalDelegate != null) {
                 originalDelegate.sendAccessibilityEventUnchecked(host, event);
@@ -215,7 +215,7 @@ public class RecyclerViewAccessibilityDelegate extends AccessibilityDelegateComp
 
         @Override
         public boolean dispatchPopulateAccessibilityEvent(@NonNull View host,
-                                                          @NonNull AccessibilityEvent event) {
+                @NonNull AccessibilityEvent event) {
             AccessibilityDelegateCompat originalDelegate = mOriginalItemDelegates.get(host);
             if (originalDelegate != null) {
                 return originalDelegate.dispatchPopulateAccessibilityEvent(host, event);
@@ -226,7 +226,7 @@ public class RecyclerViewAccessibilityDelegate extends AccessibilityDelegateComp
 
         @Override
         public void onPopulateAccessibilityEvent(@NonNull View host,
-                                                 @NonNull AccessibilityEvent event) {
+                @NonNull AccessibilityEvent event) {
             AccessibilityDelegateCompat originalDelegate = mOriginalItemDelegates.get(host);
             if (originalDelegate != null) {
                 originalDelegate.onPopulateAccessibilityEvent(host, event);
@@ -237,7 +237,7 @@ public class RecyclerViewAccessibilityDelegate extends AccessibilityDelegateComp
 
         @Override
         public void onInitializeAccessibilityEvent(@NonNull View host,
-                                                   @NonNull AccessibilityEvent event) {
+                @NonNull AccessibilityEvent event) {
             AccessibilityDelegateCompat originalDelegate = mOriginalItemDelegates.get(host);
             if (originalDelegate != null) {
                 originalDelegate.onInitializeAccessibilityEvent(host, event);
@@ -248,7 +248,7 @@ public class RecyclerViewAccessibilityDelegate extends AccessibilityDelegateComp
 
         @Override
         public boolean onRequestSendAccessibilityEvent(@NonNull ViewGroup host,
-                                                       @NonNull View child, @NonNull AccessibilityEvent event) {
+                @NonNull View child, @NonNull AccessibilityEvent event) {
             AccessibilityDelegateCompat originalDelegate = mOriginalItemDelegates.get(host);
             if (originalDelegate != null) {
                 return originalDelegate.onRequestSendAccessibilityEvent(host, child, event);

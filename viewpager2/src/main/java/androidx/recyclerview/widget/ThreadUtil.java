@@ -20,16 +20,11 @@ import android.annotation.SuppressLint;
 
 interface ThreadUtil<T> {
 
-    MainThreadCallback<T> getMainThreadProxy(MainThreadCallback<T> callback);
-
-    BackgroundCallback<T> getBackgroundProxy(BackgroundCallback<T> callback);
-
     interface MainThreadCallback<T> {
 
         void updateItemCount(int generation, int itemCount);
 
-        @SuppressLint("UnknownNullness")
-            // b/240775049: Cannot annotate properly
+        @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
         void addTile(int generation, TileList.Tile<T> tile);
 
         void removeTile(int generation, int position);
@@ -44,8 +39,11 @@ interface ThreadUtil<T> {
 
         void loadTile(int position, int scrollHint);
 
-        @SuppressLint("UnknownNullness")
-            // b/240775049: Cannot annotate properly
+        @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
         void recycleTile(TileList.Tile<T> tile);
     }
+
+    MainThreadCallback<T> getMainThreadProxy(MainThreadCallback<T> callback);
+
+    BackgroundCallback<T> getBackgroundProxy(BackgroundCallback<T> callback);
 }

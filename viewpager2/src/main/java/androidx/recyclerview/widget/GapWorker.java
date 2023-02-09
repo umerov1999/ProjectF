@@ -30,257 +30,10 @@ import java.util.concurrent.TimeUnit;
 final class GapWorker implements Runnable {
 
     static final ThreadLocal<GapWorker> sGapWorker = new ThreadLocal<>();
-    static final Comparator<Task> sTaskComparator = (lhs, rhs) -> {
-        // first, prioritize non-cleared tasks
-        if ((lhs.view == null) != (rhs.view == null)) {
-            return lhs.view == null ? 1 : -1;
-        }
 
-        // then prioritize immediate
-        if (lhs.immediate != rhs.immediate) {
-            return lhs.immediate ? -1 : 1;
-        }
-
-        // then prioritize _highest_ view velocity
-        int deltaViewVelocity = rhs.viewVelocity - lhs.viewVelocity;
-        if (deltaViewVelocity != 0) return deltaViewVelocity;
-
-        // then prioritize _lowest_ distance to item
-        return lhs.distanceToItem - rhs.distanceToItem;
-    };
-    final ArrayList<RecyclerView> mRecyclerViews = new ArrayList<>();
-    /**
-     * Temporary storage for prefetch Tasks that execute in {@link #prefetch(long)}. Task objects
-     * are pooled in the ArrayList, and never removed to avoid allocations, but always cleared
-     * in between calls.
-     */
-    private final ArrayList<Task> mTasks = new ArrayList<>();
+    ArrayList<RecyclerView> mRecyclerViews = new ArrayList<>();
     long mPostTimeNs;
     long mFrameIntervalNs;
-
-    static boolean isPrefetchPositionAttached(RecyclerView view, int position) {
-        int childCount = view.mChildHelper.getUnfilteredChildCount();
-        for (int i = 0; i < childCount; i++) {
-            View attachedView = view.mChildHelper.getUnfilteredChildAt(i);
-            RecyclerView.ViewHolder holder = RecyclerView.getChildViewHolderInt(attachedView);
-            // Note: can use mPosition here because adapter doesn't have pending updates
-            if (holder.mPosition == position && !holder.isInvalid()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void add(RecyclerView recyclerView) {
-        if (RecyclerView.DEBUG && mRecyclerViews.contains(recyclerView)) {
-            throw new IllegalStateException("RecyclerView already present in worker list!");
-        }
-        mRecyclerViews.add(recyclerView);
-    }
-
-    public void remove(RecyclerView recyclerView) {
-        boolean removeSuccess = mRecyclerViews.remove(recyclerView);
-        if (RecyclerView.DEBUG && !removeSuccess) {
-            throw new IllegalStateException("RecyclerView removal failed!");
-        }
-    }
-
-    /**
-     * Schedule a prefetch immediately after the current traversal.
-     */
-    void postFromTraversal(RecyclerView recyclerView, int prefetchDx, int prefetchDy) {
-        if (recyclerView.isAttachedToWindow()) {
-            if (RecyclerView.DEBUG && !mRecyclerViews.contains(recyclerView)) {
-                throw new IllegalStateException("attempting to post unregistered view!");
-            }
-            if (mPostTimeNs == 0) {
-                mPostTimeNs = recyclerView.getNanoTime();
-                recyclerView.post(this);
-            }
-        }
-
-        recyclerView.mPrefetchRegistry.setPrefetchVector(prefetchDx, prefetchDy);
-    }
-
-    private void buildTaskList() {
-        // Update PrefetchRegistry in each view
-        int viewCount = mRecyclerViews.size();
-        int totalTaskCount = 0;
-        for (int i = 0; i < viewCount; i++) {
-            RecyclerView view = mRecyclerViews.get(i);
-            if (view.getWindowVisibility() == View.VISIBLE) {
-                view.mPrefetchRegistry.collectPrefetchPositionsFromView(view, false);
-                totalTaskCount += view.mPrefetchRegistry.mCount;
-            }
-        }
-
-        // Populate task list from prefetch data...
-        mTasks.ensureCapacity(totalTaskCount);
-        int totalTaskIndex = 0;
-        for (int i = 0; i < viewCount; i++) {
-            RecyclerView view = mRecyclerViews.get(i);
-            if (view.getWindowVisibility() != View.VISIBLE) {
-                // Invisible view, don't bother prefetching
-                continue;
-            }
-
-            LayoutPrefetchRegistryImpl prefetchRegistry = view.mPrefetchRegistry;
-            int viewVelocity = Math.abs(prefetchRegistry.mPrefetchDx)
-                    + Math.abs(prefetchRegistry.mPrefetchDy);
-            for (int j = 0; j < prefetchRegistry.mCount * 2; j += 2) {
-                Task task;
-                if (totalTaskIndex >= mTasks.size()) {
-                    task = new Task();
-                    mTasks.add(task);
-                } else {
-                    task = mTasks.get(totalTaskIndex);
-                }
-                int distanceToItem = prefetchRegistry.mPrefetchArray[j + 1];
-
-                task.immediate = distanceToItem <= viewVelocity;
-                task.viewVelocity = viewVelocity;
-                task.distanceToItem = distanceToItem;
-                task.view = view;
-                task.position = prefetchRegistry.mPrefetchArray[j];
-
-                totalTaskIndex++;
-            }
-        }
-
-        // ... and priority sort
-        Collections.sort(mTasks, sTaskComparator);
-    }
-
-    private RecyclerView.ViewHolder prefetchPositionWithDeadline(RecyclerView view,
-                                                                 int position, long deadlineNs) {
-        if (isPrefetchPositionAttached(view, position)) {
-            // don't attempt to prefetch attached views
-            return null;
-        }
-
-        RecyclerView.Recycler recycler = view.mRecycler;
-        RecyclerView.ViewHolder holder;
-        try {
-            view.onEnterLayoutOrScroll();
-            holder = recycler.tryGetViewHolderForPositionByDeadline(
-                    position, false, deadlineNs);
-
-            if (holder != null) {
-                if (holder.isBound() && !holder.isInvalid()) {
-                    // Only give the view a chance to go into the cache if binding succeeded
-                    // Note that we must use public method, since item may need cleanup
-                    recycler.recycleView(holder.itemView);
-                } else {
-                    // Didn't bind, so we can't cache the view, but it will stay in the pool until
-                    // next prefetch/traversal. If a View fails to bind, it means we didn't have
-                    // enough time prior to the deadline (and won't for other instances of this
-                    // type, during this GapWorker prefetch pass).
-                    recycler.addViewHolderToRecycledViewPool(holder, false);
-                }
-            }
-        } finally {
-            view.onExitLayoutOrScroll(false);
-        }
-        return holder;
-    }
-
-    private void prefetchInnerRecyclerViewWithDeadline(@Nullable RecyclerView innerView,
-                                                       long deadlineNs) {
-        if (innerView == null) {
-            return;
-        }
-
-        if (innerView.mDataSetHasChangedAfterLayout
-                && innerView.mChildHelper.getUnfilteredChildCount() != 0) {
-            // RecyclerView has new data, but old attached views. Clear everything, so that
-            // we can prefetch without partially stale data.
-            innerView.removeAndRecycleViews();
-        }
-
-        // do nested prefetch!
-        LayoutPrefetchRegistryImpl innerPrefetchRegistry = innerView.mPrefetchRegistry;
-        innerPrefetchRegistry.collectPrefetchPositionsFromView(innerView, true);
-
-        if (innerPrefetchRegistry.mCount != 0) {
-            try {
-                Trace.beginSection(RecyclerView.TRACE_NESTED_PREFETCH_TAG);
-                innerView.mState.prepareForNestedPrefetch(innerView.mAdapter);
-                for (int i = 0; i < innerPrefetchRegistry.mCount * 2; i += 2) {
-                    // Note that we ignore immediate flag for inner items because
-                    // we have lower confidence they're needed next frame.
-                    int innerPosition = innerPrefetchRegistry.mPrefetchArray[i];
-                    prefetchPositionWithDeadline(innerView, innerPosition, deadlineNs);
-                }
-            } finally {
-                Trace.endSection();
-            }
-        }
-    }
-
-    private void flushTaskWithDeadline(Task task, long deadlineNs) {
-        long taskDeadlineNs = task.immediate ? RecyclerView.FOREVER_NS : deadlineNs;
-        RecyclerView.ViewHolder holder = prefetchPositionWithDeadline(task.view,
-                task.position, taskDeadlineNs);
-        if (holder != null
-                && holder.mNestedRecyclerView != null
-                && holder.isBound()
-                && !holder.isInvalid()) {
-            prefetchInnerRecyclerViewWithDeadline(holder.mNestedRecyclerView.get(), deadlineNs);
-        }
-    }
-
-    private void flushTasksWithDeadline(long deadlineNs) {
-        for (int i = 0; i < mTasks.size(); i++) {
-            Task task = mTasks.get(i);
-            if (task.view == null) {
-                break; // done with populated tasks
-            }
-            flushTaskWithDeadline(task, deadlineNs);
-            task.clear();
-        }
-    }
-
-    void prefetch(long deadlineNs) {
-        buildTaskList();
-        flushTasksWithDeadline(deadlineNs);
-    }
-
-    @Override
-    public void run() {
-        try {
-            Trace.beginSection(RecyclerView.TRACE_PREFETCH_TAG);
-
-            if (mRecyclerViews.isEmpty()) {
-                // abort - no work to do
-                return;
-            }
-
-            // Query most recent vsync so we can predict next one. Note that drawing time not yet
-            // valid in animation/input callbacks, so query it here to be safe.
-            int size = mRecyclerViews.size();
-            long latestFrameVsyncMs = 0;
-            for (int i = 0; i < size; i++) {
-                RecyclerView view = mRecyclerViews.get(i);
-                if (view.getWindowVisibility() == View.VISIBLE) {
-                    latestFrameVsyncMs = Math.max(view.getDrawingTime(), latestFrameVsyncMs);
-                }
-            }
-
-            if (latestFrameVsyncMs == 0) {
-                // abort - either no views visible, or couldn't get last vsync for estimating next
-                return;
-            }
-
-            long nextFrameNs = TimeUnit.MILLISECONDS.toNanos(latestFrameVsyncMs) + mFrameIntervalNs;
-
-            prefetch(nextFrameNs);
-
-            // TODO: consider rescheduling self, if there's more work to do
-        } finally {
-            mPostTimeNs = 0;
-            Trace.endSection();
-        }
-    }
 
     static class Task {
         public boolean immediate;
@@ -297,6 +50,13 @@ final class GapWorker implements Runnable {
             position = 0;
         }
     }
+
+    /**
+     * Temporary storage for prefetch Tasks that execute in {@link #prefetch(long)}. Task objects
+     * are pooled in the ArrayList, and never removed to avoid allocations, but always cleared
+     * in between calls.
+     */
+    private ArrayList<Task> mTasks = new ArrayList<>();
 
     /**
      * Prefetch information associated with a specific RecyclerView.
@@ -321,7 +81,7 @@ final class GapWorker implements Runnable {
                 Arrays.fill(mPrefetchArray, -1);
             }
 
-            RecyclerView.LayoutManager layout = view.mLayout;
+            final RecyclerView.LayoutManager layout = view.mLayout;
             if (view.mAdapter != null
                     && layout != null
                     && layout.isItemPrefetchEnabled()) {
@@ -358,12 +118,12 @@ final class GapWorker implements Runnable {
             }
 
             // allocate or expand array as needed, doubling when needed
-            int storagePosition = mCount * 2;
+            final int storagePosition = mCount * 2;
             if (mPrefetchArray == null) {
                 mPrefetchArray = new int[4];
                 Arrays.fill(mPrefetchArray, -1);
             } else if (storagePosition >= mPrefetchArray.length) {
-                int[] oldArray = mPrefetchArray;
+                final int[] oldArray = mPrefetchArray;
                 mPrefetchArray = new int[storagePosition * 2];
                 System.arraycopy(oldArray, 0, mPrefetchArray, 0, oldArray.length);
             }
@@ -377,7 +137,7 @@ final class GapWorker implements Runnable {
 
         boolean lastPrefetchIncludedPosition(int position) {
             if (mPrefetchArray != null) {
-                int count = mCount * 2;
+                final int count = mCount * 2;
                 for (int i = 0; i < count; i += 2) {
                     if (mPrefetchArray[i] == position) return true;
                 }
@@ -393,6 +153,252 @@ final class GapWorker implements Runnable {
                 Arrays.fill(mPrefetchArray, -1);
             }
             mCount = 0;
+        }
+    }
+
+    public void add(RecyclerView recyclerView) {
+        if (RecyclerView.DEBUG && mRecyclerViews.contains(recyclerView)) {
+            throw new IllegalStateException("RecyclerView already present in worker list!");
+        }
+        mRecyclerViews.add(recyclerView);
+    }
+
+    public void remove(RecyclerView recyclerView) {
+        boolean removeSuccess = mRecyclerViews.remove(recyclerView);
+        if (RecyclerView.DEBUG && !removeSuccess) {
+            throw new IllegalStateException("RecyclerView removal failed!");
+        }
+    }
+
+    /**
+     * Schedule a prefetch immediately after the current traversal.
+     */
+    void postFromTraversal(RecyclerView recyclerView, int prefetchDx, int prefetchDy) {
+        if (recyclerView.isAttachedToWindow()) {
+            if (RecyclerView.DEBUG && !mRecyclerViews.contains(recyclerView)) {
+                throw new IllegalStateException("attempting to post unregistered view!");
+            }
+            if (mPostTimeNs == 0) {
+                mPostTimeNs = recyclerView.getNanoTime();
+                recyclerView.post(this);
+            }
+        }
+
+        recyclerView.mPrefetchRegistry.setPrefetchVector(prefetchDx, prefetchDy);
+    }
+
+    static Comparator<Task> sTaskComparator = (lhs, rhs) -> {
+        // first, prioritize non-cleared tasks
+        if ((lhs.view == null) != (rhs.view == null)) {
+            return lhs.view == null ? 1 : -1;
+        }
+
+        // then prioritize immediate
+        if (lhs.immediate != rhs.immediate) {
+            return lhs.immediate ? -1 : 1;
+        }
+
+        // then prioritize _highest_ view velocity
+        int deltaViewVelocity = rhs.viewVelocity - lhs.viewVelocity;
+        if (deltaViewVelocity != 0) return deltaViewVelocity;
+
+        // then prioritize _lowest_ distance to item
+        int deltaDistanceToItem = lhs.distanceToItem - rhs.distanceToItem;
+        if (deltaDistanceToItem != 0) return deltaDistanceToItem;
+
+        return 0;
+    };
+
+    private void buildTaskList() {
+        // Update PrefetchRegistry in each view
+        final int viewCount = mRecyclerViews.size();
+        int totalTaskCount = 0;
+        for (int i = 0; i < viewCount; i++) {
+            RecyclerView view = mRecyclerViews.get(i);
+            if (view.getWindowVisibility() == View.VISIBLE) {
+                view.mPrefetchRegistry.collectPrefetchPositionsFromView(view, false);
+                totalTaskCount += view.mPrefetchRegistry.mCount;
+            }
+        }
+
+        // Populate task list from prefetch data...
+        mTasks.ensureCapacity(totalTaskCount);
+        int totalTaskIndex = 0;
+        for (int i = 0; i < viewCount; i++) {
+            RecyclerView view = mRecyclerViews.get(i);
+            if (view.getWindowVisibility() != View.VISIBLE) {
+                // Invisible view, don't bother prefetching
+                continue;
+            }
+
+            LayoutPrefetchRegistryImpl prefetchRegistry = view.mPrefetchRegistry;
+            final int viewVelocity = Math.abs(prefetchRegistry.mPrefetchDx)
+                    + Math.abs(prefetchRegistry.mPrefetchDy);
+            for (int j = 0; j < prefetchRegistry.mCount * 2; j += 2) {
+                final Task task;
+                if (totalTaskIndex >= mTasks.size()) {
+                    task = new Task();
+                    mTasks.add(task);
+                } else {
+                    task = mTasks.get(totalTaskIndex);
+                }
+                final int distanceToItem = prefetchRegistry.mPrefetchArray[j + 1];
+
+                task.immediate = distanceToItem <= viewVelocity;
+                task.viewVelocity = viewVelocity;
+                task.distanceToItem = distanceToItem;
+                task.view = view;
+                task.position = prefetchRegistry.mPrefetchArray[j];
+
+                totalTaskIndex++;
+            }
+        }
+
+        // ... and priority sort
+        Collections.sort(mTasks, sTaskComparator);
+    }
+
+    static boolean isPrefetchPositionAttached(RecyclerView view, int position) {
+        final int childCount = view.mChildHelper.getUnfilteredChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View attachedView = view.mChildHelper.getUnfilteredChildAt(i);
+            RecyclerView.ViewHolder holder = RecyclerView.getChildViewHolderInt(attachedView);
+            // Note: can use mPosition here because adapter doesn't have pending updates
+            if (holder.mPosition == position && !holder.isInvalid()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private RecyclerView.ViewHolder prefetchPositionWithDeadline(RecyclerView view,
+            int position, long deadlineNs) {
+        if (isPrefetchPositionAttached(view, position)) {
+            // don't attempt to prefetch attached views
+            return null;
+        }
+
+        RecyclerView.Recycler recycler = view.mRecycler;
+        RecyclerView.ViewHolder holder;
+        try {
+            view.onEnterLayoutOrScroll();
+            holder = recycler.tryGetViewHolderForPositionByDeadline(
+                    position, false, deadlineNs);
+
+            if (holder != null) {
+                if (holder.isBound() && !holder.isInvalid()) {
+                    // Only give the view a chance to go into the cache if binding succeeded
+                    // Note that we must use public method, since item may need cleanup
+                    recycler.recycleView(holder.itemView);
+                } else {
+                    // Didn't bind, so we can't cache the view, but it will stay in the pool until
+                    // next prefetch/traversal. If a View fails to bind, it means we didn't have
+                    // enough time prior to the deadline (and won't for other instances of this
+                    // type, during this GapWorker prefetch pass).
+                    recycler.addViewHolderToRecycledViewPool(holder, false);
+                }
+            }
+        } finally {
+            view.onExitLayoutOrScroll(false);
+        }
+        return holder;
+    }
+
+    private void prefetchInnerRecyclerViewWithDeadline(@Nullable RecyclerView innerView,
+            long deadlineNs) {
+        if (innerView == null) {
+            return;
+        }
+
+        if (innerView.mDataSetHasChangedAfterLayout
+                && innerView.mChildHelper.getUnfilteredChildCount() != 0) {
+            // RecyclerView has new data, but old attached views. Clear everything, so that
+            // we can prefetch without partially stale data.
+            innerView.removeAndRecycleViews();
+        }
+
+        // do nested prefetch!
+        final LayoutPrefetchRegistryImpl innerPrefetchRegistry = innerView.mPrefetchRegistry;
+        innerPrefetchRegistry.collectPrefetchPositionsFromView(innerView, true);
+
+        if (innerPrefetchRegistry.mCount != 0) {
+            try {
+                Trace.beginSection(RecyclerView.TRACE_NESTED_PREFETCH_TAG);
+                innerView.mState.prepareForNestedPrefetch(innerView.mAdapter);
+                for (int i = 0; i < innerPrefetchRegistry.mCount * 2; i += 2) {
+                    // Note that we ignore immediate flag for inner items because
+                    // we have lower confidence they're needed next frame.
+                    final int innerPosition = innerPrefetchRegistry.mPrefetchArray[i];
+                    prefetchPositionWithDeadline(innerView, innerPosition, deadlineNs);
+                }
+            } finally {
+                Trace.endSection();
+            }
+        }
+    }
+
+    private void flushTaskWithDeadline(Task task, long deadlineNs) {
+        long taskDeadlineNs = task.immediate ? RecyclerView.FOREVER_NS : deadlineNs;
+        RecyclerView.ViewHolder holder = prefetchPositionWithDeadline(task.view,
+                task.position, taskDeadlineNs);
+        if (holder != null
+                && holder.mNestedRecyclerView != null
+                && holder.isBound()
+                && !holder.isInvalid()) {
+            prefetchInnerRecyclerViewWithDeadline(holder.mNestedRecyclerView.get(), deadlineNs);
+        }
+    }
+
+    private void flushTasksWithDeadline(long deadlineNs) {
+        for (int i = 0; i < mTasks.size(); i++) {
+            final Task task = mTasks.get(i);
+            if (task.view == null) {
+                break; // done with populated tasks
+            }
+            flushTaskWithDeadline(task, deadlineNs);
+            task.clear();
+        }
+    }
+
+    void prefetch(long deadlineNs) {
+        buildTaskList();
+        flushTasksWithDeadline(deadlineNs);
+    }
+
+    @Override
+    public void run() {
+        try {
+            Trace.beginSection(RecyclerView.TRACE_PREFETCH_TAG);
+
+            if (mRecyclerViews.isEmpty()) {
+                // abort - no work to do
+                return;
+            }
+
+            // Query most recent vsync so we can predict next one. Note that drawing time not yet
+            // valid in animation/input callbacks, so query it here to be safe.
+            final int size = mRecyclerViews.size();
+            long latestFrameVsyncMs = 0;
+            for (int i = 0; i < size; i++) {
+                RecyclerView view = mRecyclerViews.get(i);
+                if (view.getWindowVisibility() == View.VISIBLE) {
+                    latestFrameVsyncMs = Math.max(view.getDrawingTime(), latestFrameVsyncMs);
+                }
+            }
+
+            if (latestFrameVsyncMs == 0) {
+                // abort - either no views visible, or couldn't get last vsync for estimating next
+                return;
+            }
+
+            long nextFrameNs = TimeUnit.MILLISECONDS.toNanos(latestFrameVsyncMs) + mFrameIntervalNs;
+
+            prefetch(nextFrameNs);
+
+            // TODO: consider rescheduling self, if there's more work to do
+        } finally {
+            mPostTimeNs = 0;
+            Trace.endSection();
         }
     }
 }

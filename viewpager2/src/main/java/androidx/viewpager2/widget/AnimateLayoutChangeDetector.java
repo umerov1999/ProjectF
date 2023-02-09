@@ -31,7 +31,7 @@ import java.util.Arrays;
 /**
  * Class used to detect if there are gaps between pages and if any of the pages contain a running
  * change-transition in case we detected an illegal state in the {@link ScrollEventAdapter}.
- * <p>
+ *
  * This is an approximation of the detection and could potentially lead to misleading advice. If we
  * hit problems with it, remove the detection and replace with a suggestive error message instead,
  * like "Negative page offset encountered. Did you setAnimateParentHierarchy(false) to all your
@@ -45,27 +45,10 @@ final class AnimateLayoutChangeDetector {
         ZERO_MARGIN_LAYOUT_PARAMS.setMargins(0, 0, 0, 0);
     }
 
-    private final LinearLayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
 
     AnimateLayoutChangeDetector(@NonNull LinearLayoutManager llm) {
         mLayoutManager = llm;
-    }
-
-    private static boolean hasRunningChangingLayoutTransition(View view) {
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
-            LayoutTransition layoutTransition = viewGroup.getLayoutTransition();
-            if (layoutTransition != null && layoutTransition.isChangingLayout()) {
-                return true;
-            }
-            int childCount = viewGroup.getChildCount();
-            for (int i = 0; i < childCount; i++) {
-                if (hasRunningChangingLayoutTransition(viewGroup.getChildAt(i))) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     boolean mayHaveInterferingAnimations() {
@@ -117,7 +100,10 @@ final class AnimateLayoutChangeDetector {
 
         // Check that the pages fill the whole screen
         int pageSize = bounds[0][1] - bounds[0][0];
-        return bounds[0][0] <= 0 && bounds[childCount - 1][1] >= pageSize;
+        if (bounds[0][0] > 0 || bounds[childCount - 1][1] < pageSize) {
+            return false;
+        }
+        return true;
     }
 
     private boolean hasRunningChangingLayoutTransition() {
@@ -125,6 +111,23 @@ final class AnimateLayoutChangeDetector {
         for (int i = 0; i < childCount; i++) {
             if (hasRunningChangingLayoutTransition(mLayoutManager.getChildAt(i))) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasRunningChangingLayoutTransition(View view) {
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            LayoutTransition layoutTransition = viewGroup.getLayoutTransition();
+            if (layoutTransition != null && layoutTransition.isChangingLayout()) {
+                return true;
+            }
+            int childCount = viewGroup.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                if (hasRunningChangingLayoutTransition(viewGroup.getChildAt(i))) {
+                    return true;
+                }
             }
         }
         return false;

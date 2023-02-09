@@ -27,14 +27,9 @@ import androidx.viewpager2.widget.ViewPager2;
  * {@link View#onSaveInstanceState()} and {@link View#onRestoreInstanceState(Parcelable)}
  */
 public interface StatefulAdapter {
-    /**
-     * Saves adapter state
-     */
-    @NonNull
-    Parcelable saveState();
+    /** Saves adapter state */
+    @NonNull Parcelable saveState();
 
-    /**
-     * Restores adapter state
-     */
+    /** Restores adapter state */
     void restoreState(@NonNull Parcelable savedState);
 }

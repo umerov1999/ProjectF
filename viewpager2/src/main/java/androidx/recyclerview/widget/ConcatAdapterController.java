@@ -58,7 +58,7 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
      * any adapter that was added later on.
      * Probably does not need to be a weak reference but playing safe here.
      */
-    private final List<WeakReference<RecyclerView>> mAttachedRecyclerViews = new ArrayList<>();
+    private List<WeakReference<RecyclerView>> mAttachedRecyclerViews = new ArrayList<>();
 
     /**
      * Keeps the information about which ViewHolder is bound by which adapter.
@@ -67,15 +67,18 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
     private final IdentityHashMap<ViewHolder, NestedAdapterWrapper>
             mBinderLookup = new IdentityHashMap<>();
 
-    private final List<NestedAdapterWrapper> mWrappers = new ArrayList<>();
+    private List<NestedAdapterWrapper> mWrappers = new ArrayList<>();
+
+    // keep one of these around so that we can return wrapper & position w/o allocation ¯\_(ツ)_/¯
+    private WrapperAndLocalPosition mReusableHolder = new WrapperAndLocalPosition();
+
     @NonNull
     private final ConcatAdapter.Config.StableIdMode mStableIdMode;
+
     /**
      * This is where we keep stable ids, if supported
      */
     private final StableIdStorage mStableIdStorage;
-    // keep one of these around so that we can return wrapper & position w/o allocation ¯\_(ツ)_/¯
-    private WrapperAndLocalPosition mReusableHolder = new WrapperAndLocalPosition();
 
     ConcatAdapterController(
             ConcatAdapter concatAdapter,
@@ -104,7 +107,7 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
 
     @Nullable
     private NestedAdapterWrapper findWrapperFor(Adapter<ViewHolder> adapter) {
-        int index = indexOfWrapper(adapter);
+        final int index = indexOfWrapper(adapter);
         if (index == -1) {
             return null;
         }
@@ -112,7 +115,7 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
     }
 
     private int indexOfWrapper(Adapter<ViewHolder> adapter) {
-        int limit = mWrappers.size();
+        final int limit = mWrappers.size();
         for (int i = 0; i < limit; i++) {
             if (mWrappers.get(i).adapter == adapter) {
                 return i;
@@ -144,7 +147,7 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
         if (hasStableIds()) {
             Preconditions.checkArgument(adapter.hasStableIds(),
                     "All sub adapters must have stable ids when stable id mode "
-                            + "is ISOLATED_STABLE_IDS or SHARED_STABLE_IDS");
+                    + "is ISOLATED_STABLE_IDS or SHARED_STABLE_IDS");
         } else {
             if (adapter.hasStableIds()) {
                 Log.w(ConcatAdapter.TAG, "Stable ids in the adapter will be ignored as the"
@@ -178,7 +181,7 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
     }
 
     boolean removeAdapter(Adapter<ViewHolder> adapter) {
-        int index = indexOfWrapper(adapter);
+        final int index = indexOfWrapper(adapter);
         if (index == -1) {
             return false;
         }
@@ -226,8 +229,8 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
 
     @Override
     public void onItemRangeChanged(@NonNull NestedAdapterWrapper nestedAdapterWrapper,
-                                   int positionStart, int itemCount) {
-        int offset = countItemsBefore(nestedAdapterWrapper);
+            int positionStart, int itemCount) {
+        final int offset = countItemsBefore(nestedAdapterWrapper);
         mConcatAdapter.notifyItemRangeChanged(
                 positionStart + offset,
                 itemCount
@@ -236,8 +239,8 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
 
     @Override
     public void onItemRangeChanged(@NonNull NestedAdapterWrapper nestedAdapterWrapper,
-                                   int positionStart, int itemCount, @Nullable Object payload) {
-        int offset = countItemsBefore(nestedAdapterWrapper);
+            int positionStart, int itemCount, @Nullable Object payload) {
+        final int offset = countItemsBefore(nestedAdapterWrapper);
         mConcatAdapter.notifyItemRangeChanged(
                 positionStart + offset,
                 itemCount,
@@ -247,8 +250,8 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
 
     @Override
     public void onItemRangeInserted(@NonNull NestedAdapterWrapper nestedAdapterWrapper,
-                                    int positionStart, int itemCount) {
-        int offset = countItemsBefore(nestedAdapterWrapper);
+            int positionStart, int itemCount) {
+        final int offset = countItemsBefore(nestedAdapterWrapper);
         mConcatAdapter.notifyItemRangeInserted(
                 positionStart + offset,
                 itemCount
@@ -257,7 +260,7 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
 
     @Override
     public void onItemRangeRemoved(@NonNull NestedAdapterWrapper nestedAdapterWrapper,
-                                   int positionStart, int itemCount) {
+            int positionStart, int itemCount) {
         int offset = countItemsBefore(nestedAdapterWrapper);
         mConcatAdapter.notifyItemRangeRemoved(
                 positionStart + offset,
@@ -267,7 +270,7 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
 
     @Override
     public void onItemRangeMoved(@NonNull NestedAdapterWrapper nestedAdapterWrapper,
-                                 int fromPosition, int toPosition) {
+            int fromPosition, int toPosition) {
         int offset = countItemsBefore(nestedAdapterWrapper);
         mConcatAdapter.notifyItemMoved(
                 fromPosition + offset,
@@ -411,7 +414,7 @@ class ConcatAdapterController implements NestedAdapterWrapper.Callback {
             throw new IllegalStateException("Cannot find wrapper for " + holder
                     + ", seems like it is not bound by this adapter: " + this);
         }
-        boolean result = wrapper.adapter.onFailedToRecycleView(holder);
+        final boolean result = wrapper.adapter.onFailedToRecycleView(holder);
         mBinderLookup.remove(holder);
         return result;
     }

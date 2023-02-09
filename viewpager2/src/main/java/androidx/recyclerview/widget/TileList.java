@@ -40,8 +40,8 @@ class TileList<T> {
 
     public T getItemAt(int pos) {
         if (mLastAccessedTile == null || !mLastAccessedTile.containsPosition(pos)) {
-            int startPosition = pos - (pos % mTileSize);
-            int index = mTiles.indexOfKey(startPosition);
+            final int startPosition = pos - (pos % mTileSize);
+            final int index = mTiles.indexOfKey(startPosition);
             if (index < 0) {
                 return null;
             }
@@ -70,7 +70,7 @@ class TileList<T> {
     }
 
     public Tile<T> addOrReplace(Tile<T> newTile) {
-        int index = mTiles.indexOfKey(newTile.mStartPosition);
+        final int index = mTiles.indexOfKey(newTile.mStartPosition);
         if (index < 0) {
             mTiles.put(newTile.mStartPosition, newTile);
             return null;

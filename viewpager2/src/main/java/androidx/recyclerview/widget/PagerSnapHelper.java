@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
  * horizontal orientation.
  *
  * <p>
- * <p>
+ *
  * PagerSnapHelper can help achieve a similar behavior to
  * {@link androidx.viewpager.widget.ViewPager}. Set both {@link RecyclerView} and the items of the
  * {@link RecyclerView.Adapter} to have
@@ -48,7 +48,7 @@ public class PagerSnapHelper extends SnapHelper {
     @Nullable
     @Override
     public int[] calculateDistanceToFinalSnap(@NonNull RecyclerView.LayoutManager layoutManager,
-                                              @NonNull View targetView) {
+            @NonNull View targetView) {
         int[] out = new int[2];
         if (layoutManager.canScrollHorizontally()) {
             out[0] = distanceToCenter(targetView,
@@ -81,13 +81,13 @@ public class PagerSnapHelper extends SnapHelper {
     @Override
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     public int findTargetSnapPosition(RecyclerView.LayoutManager layoutManager, int velocityX,
-                                      int velocityY) {
-        int itemCount = layoutManager.getItemCount();
+            int velocityY) {
+        final int itemCount = layoutManager.getItemCount();
         if (itemCount == 0) {
             return RecyclerView.NO_POSITION;
         }
 
-        OrientationHelper orientationHelper = getOrientationHelper(layoutManager);
+        final OrientationHelper orientationHelper = getOrientationHelper(layoutManager);
         if (orientationHelper == null) {
             return RecyclerView.NO_POSITION;
         }
@@ -99,13 +99,13 @@ public class PagerSnapHelper extends SnapHelper {
         int distanceAfter = Integer.MAX_VALUE;
 
         // Find the first view before the center, and the first view after the center
-        int childCount = layoutManager.getChildCount();
+        final int childCount = layoutManager.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            View child = layoutManager.getChildAt(i);
+            final View child = layoutManager.getChildAt(i);
             if (child == null) {
                 continue;
             }
-            int distance = distanceToCenter(child, orientationHelper);
+            final int distance = distanceToCenter(child, orientationHelper);
 
             if (distance <= 0 && distance > distanceBefore) {
                 // Child is before the center and closer then the previous best
@@ -120,7 +120,7 @@ public class PagerSnapHelper extends SnapHelper {
         }
 
         // Return the position of the first child from the center, in the direction of the fling
-        boolean forwardDirection = isForwardFling(layoutManager, velocityX, velocityY);
+        final boolean forwardDirection = isForwardFling(layoutManager, velocityX, velocityY);
         if (forwardDirection && closestChildAfterCenter != null) {
             return layoutManager.getPosition(closestChildAfterCenter);
         } else if (!forwardDirection && closestChildBeforeCenter != null) {
@@ -146,7 +146,7 @@ public class PagerSnapHelper extends SnapHelper {
     }
 
     private boolean isForwardFling(RecyclerView.LayoutManager layoutManager, int velocityX,
-                                   int velocityY) {
+            int velocityY) {
         if (layoutManager.canScrollHorizontally()) {
             return velocityX > 0;
         } else {
@@ -155,7 +155,7 @@ public class PagerSnapHelper extends SnapHelper {
     }
 
     private boolean isReverseLayout(RecyclerView.LayoutManager layoutManager) {
-        int itemCount = layoutManager.getItemCount();
+        final int itemCount = layoutManager.getItemCount();
         if ((layoutManager instanceof RecyclerView.SmoothScroller.ScrollVectorProvider)) {
             RecyclerView.SmoothScroller.ScrollVectorProvider vectorProvider =
                     (RecyclerView.SmoothScroller.ScrollVectorProvider) layoutManager;
@@ -177,12 +177,12 @@ public class PagerSnapHelper extends SnapHelper {
         return new LinearSmoothScroller(mRecyclerView.getContext()) {
             @Override
             protected void onTargetFound(@NonNull View targetView,
-                                         @NonNull RecyclerView.State state, @NonNull Action action) {
+                    @NonNull RecyclerView.State state, @NonNull Action action) {
                 int[] snapDistances = calculateDistanceToFinalSnap(mRecyclerView.getLayoutManager(),
                         targetView);
-                int dx = snapDistances[0];
-                int dy = snapDistances[1];
-                int time = calculateTimeForDeceleration(Math.max(Math.abs(dx), Math.abs(dy)));
+                final int dx = snapDistances[0];
+                final int dy = snapDistances[1];
+                final int time = calculateTimeForDeceleration(Math.max(Math.abs(dx), Math.abs(dy)));
                 if (time > 0) {
                     action.update(dx, dy, time, mDecelerateInterpolator);
                 }
@@ -201,9 +201,9 @@ public class PagerSnapHelper extends SnapHelper {
     }
 
     private int distanceToCenter(@NonNull View targetView, OrientationHelper helper) {
-        int childCenter = helper.getDecoratedStart(targetView)
+        final int childCenter = helper.getDecoratedStart(targetView)
                 + (helper.getDecoratedMeasurement(targetView) / 2);
-        int containerCenter = helper.getStartAfterPadding() + helper.getTotalSpace() / 2;
+        final int containerCenter = helper.getStartAfterPadding() + helper.getTotalSpace() / 2;
         return childCenter - containerCenter;
     }
 
@@ -212,23 +212,24 @@ public class PagerSnapHelper extends SnapHelper {
      *
      * @param layoutManager The {@link RecyclerView.LayoutManager} associated with the attached
      *                      {@link RecyclerView}.
-     * @param helper        The relevant {@link OrientationHelper} for the attached {@link RecyclerView}.
+     * @param helper The relevant {@link OrientationHelper} for the attached {@link RecyclerView}.
+     *
      * @return the child view that is currently closest to the center of this parent.
      */
     @Nullable
     private View findCenterView(RecyclerView.LayoutManager layoutManager,
-                                OrientationHelper helper) {
+            OrientationHelper helper) {
         int childCount = layoutManager.getChildCount();
         if (childCount == 0) {
             return null;
         }
 
         View closestChild = null;
-        int center = helper.getStartAfterPadding() + helper.getTotalSpace() / 2;
+        final int center = helper.getStartAfterPadding() + helper.getTotalSpace() / 2;
         int absClosest = Integer.MAX_VALUE;
 
         for (int i = 0; i < childCount; i++) {
-            View child = layoutManager.getChildAt(i);
+            final View child = layoutManager.getChildAt(i);
             int childCenter = helper.getDecoratedStart(child)
                     + (helper.getDecoratedMeasurement(child) / 2);
             int absDistance = Math.abs(childCenter - center);

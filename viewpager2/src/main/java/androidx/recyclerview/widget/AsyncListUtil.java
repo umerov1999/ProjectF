@@ -44,6 +44,7 @@ import androidx.annotation.WorkerThread;
  * <p>
  * This class is designed to work with {@link RecyclerView}, but it does
  * not depend on it and can be used with other list views.
+ *
  */
 public class AsyncListUtil<T> {
     static final String TAG = "AsyncListUtil";
@@ -63,24 +64,31 @@ public class AsyncListUtil<T> {
     final int[] mTmpRange = new int[2];
     final int[] mPrevRange = new int[2];
     final int[] mTmpRangeExtended = new int[2];
-    final SparseIntArray mMissingPositions = new SparseIntArray();
-    boolean mAllowScrollHints;
-    int mItemCount;
 
-    int mDisplayedGeneration;
-    int mRequestedGeneration = mDisplayedGeneration;
+    boolean mAllowScrollHints;
     private int mScrollHint = ViewCallback.HINT_SCROLL_NONE;
+
+    int mItemCount = 0;
+
+    int mDisplayedGeneration = 0;
+    int mRequestedGeneration = mDisplayedGeneration;
+
+    final SparseIntArray mMissingPositions = new SparseIntArray();
+
+    void log(String s, Object... args) {
+        Log.d(TAG, "[MAIN] " + String.format(s, args));
+    }
 
     /**
      * Creates an AsyncListUtil.
      *
-     * @param klass        Class of the data item.
-     * @param tileSize     Number of item per chunk loaded at once.
+     * @param klass Class of the data item.
+     * @param tileSize Number of item per chunk loaded at once.
      * @param dataCallback Data access callback.
      * @param viewCallback Callback for querying visible item range and update notifications.
      */
     public AsyncListUtil(@NonNull Class<T> klass, int tileSize,
-                         @NonNull DataCallback<T> dataCallback, @NonNull ViewCallback viewCallback) {
+            @NonNull DataCallback<T> dataCallback, @NonNull ViewCallback viewCallback) {
         mTClass = klass;
         mTileSize = tileSize;
         mDataCallback = dataCallback;
@@ -89,247 +97,10 @@ public class AsyncListUtil<T> {
         mTileList = new TileList<>(mTileSize);
 
         ThreadUtil<T> threadUtil = new MessageThreadUtil<>();
-        // Will be set to true after a first real scroll.
-        // There will be no scroll event if the size change does not affect the current range.
-        ThreadUtil.MainThreadCallback<T> mMainThreadCallback = new ThreadUtil.MainThreadCallback<T>() {
-            @Override
-            public void updateItemCount(int generation, int itemCount) {
-                if (DEBUG) {
-                    log("updateItemCount: size=%d, gen #%d", itemCount, generation);
-                }
-                if (!isRequestedGeneration(generation)) {
-                    return;
-                }
-                mItemCount = itemCount;
-                mViewCallback.onDataRefresh();
-                mDisplayedGeneration = mRequestedGeneration;
-                recycleAllTiles();
-
-                mAllowScrollHints = false;  // Will be set to true after a first real scroll.
-                // There will be no scroll event if the size change does not affect the current range.
-                updateRange();
-            }
-
-            @Override
-            public void addTile(int generation, @NonNull TileList.Tile<T> tile) {
-                if (!isRequestedGeneration(generation)) {
-                    if (DEBUG) {
-                        log("recycling an older generation tile @%d", tile.mStartPosition);
-                    }
-                    mBackgroundProxy.recycleTile(tile);
-                    return;
-                }
-                TileList.Tile<T> duplicate = mTileList.addOrReplace(tile);
-                if (duplicate != null) {
-                    Log.e(TAG, "duplicate tile @" + duplicate.mStartPosition);
-                    mBackgroundProxy.recycleTile(duplicate);
-                }
-                if (DEBUG) {
-                    log("gen #%d, added tile @%d, total tiles: %d",
-                            generation, tile.mStartPosition, mTileList.size());
-                }
-                int endPosition = tile.mStartPosition + tile.mItemCount;
-                int index = 0;
-                while (index < mMissingPositions.size()) {
-                    int position = mMissingPositions.keyAt(index);
-                    if (tile.mStartPosition <= position && position < endPosition) {
-                        mMissingPositions.removeAt(index);
-                        mViewCallback.onItemLoaded(position);
-                    } else {
-                        index++;
-                    }
-                }
-            }
-
-            @Override
-            public void removeTile(int generation, int position) {
-                if (!isRequestedGeneration(generation)) {
-                    return;
-                }
-                TileList.Tile<T> tile = mTileList.removeAtPos(position);
-                if (tile == null) {
-                    Log.e(TAG, "tile not found @" + position);
-                    return;
-                }
-                if (DEBUG) {
-                    log("recycling tile @%d, total tiles: %d", tile.mStartPosition, mTileList.size());
-                }
-                mBackgroundProxy.recycleTile(tile);
-            }
-
-            private void recycleAllTiles() {
-                if (DEBUG) {
-                    log("recycling all %d tiles", mTileList.size());
-                }
-                for (int i = 0; i < mTileList.size(); i++) {
-                    mBackgroundProxy.recycleTile(mTileList.getAtIndex(i));
-                }
-                mTileList.clear();
-            }
-
-            private boolean isRequestedGeneration(int generation) {
-                return generation == mRequestedGeneration;
-            }
-        };
         mMainThreadProxy = threadUtil.getMainThreadProxy(mMainThreadCallback);
-        // All pending tile requests are removed by ThreadUtil at this point.
-        // Re-request all required tiles in the most optimal order.
-        // Could not flush on either side, bail out.
-        ThreadUtil.BackgroundCallback<T> mBackgroundCallback = new ThreadUtil.BackgroundCallback<T>() {
-
-            final SparseBooleanArray mLoadedTiles = new SparseBooleanArray();
-            private TileList.Tile<T> mRecycledRoot;
-            private int mGeneration;
-            private int mItemCount;
-
-            private int mFirstRequiredTileStart;
-            private int mLastRequiredTileStart;
-
-            @Override
-            public void refresh(int generation) {
-                mGeneration = generation;
-                mLoadedTiles.clear();
-                mItemCount = mDataCallback.refreshData();
-                mMainThreadProxy.updateItemCount(mGeneration, mItemCount);
-            }
-
-            @Override
-            public void updateRange(int rangeStart, int rangeEnd, int extRangeStart, int extRangeEnd,
-                                    int scrollHint) {
-                if (DEBUG) {
-                    log("updateRange: %d..%d extended to %d..%d, scroll hint: %d",
-                            rangeStart, rangeEnd, extRangeStart, extRangeEnd, scrollHint);
-                }
-
-                if (rangeStart > rangeEnd) {
-                    return;
-                }
-
-                int firstVisibleTileStart = getTileStart(rangeStart);
-                int lastVisibleTileStart = getTileStart(rangeEnd);
-
-                mFirstRequiredTileStart = getTileStart(extRangeStart);
-                mLastRequiredTileStart = getTileStart(extRangeEnd);
-                if (DEBUG) {
-                    log("requesting tile range: %d..%d",
-                            mFirstRequiredTileStart, mLastRequiredTileStart);
-                }
-
-                // All pending tile requests are removed by ThreadUtil at this point.
-                // Re-request all required tiles in the most optimal order.
-                if (scrollHint == ViewCallback.HINT_SCROLL_DESC) {
-                    requestTiles(mFirstRequiredTileStart, lastVisibleTileStart, scrollHint, true);
-                    requestTiles(lastVisibleTileStart + mTileSize, mLastRequiredTileStart, scrollHint,
-                            false);
-                } else {
-                    requestTiles(firstVisibleTileStart, mLastRequiredTileStart, scrollHint, false);
-                    requestTiles(mFirstRequiredTileStart, firstVisibleTileStart - mTileSize, scrollHint,
-                            true);
-                }
-            }
-
-            private int getTileStart(int position) {
-                return position - position % mTileSize;
-            }
-
-            private void requestTiles(int firstTileStart, int lastTileStart, int scrollHint,
-                                      boolean backwards) {
-                for (int i = firstTileStart; i <= lastTileStart; i += mTileSize) {
-                    int tileStart = backwards ? (lastTileStart + firstTileStart - i) : i;
-                    if (DEBUG) {
-                        log("requesting tile @%d", tileStart);
-                    }
-                    mBackgroundProxy.loadTile(tileStart, scrollHint);
-                }
-            }
-
-            @Override
-            public void loadTile(int position, int scrollHint) {
-                if (isTileLoaded(position)) {
-                    if (DEBUG) {
-                        log("already loaded tile @%d", position);
-                    }
-                    return;
-                }
-                TileList.Tile<T> tile = acquireTile();
-                tile.mStartPosition = position;
-                tile.mItemCount = Math.min(mTileSize, mItemCount - tile.mStartPosition);
-                mDataCallback.fillData(tile.mItems, tile.mStartPosition, tile.mItemCount);
-                flushTileCache(scrollHint);
-                addTile(tile);
-            }
-
-            @Override
-            public void recycleTile(@NonNull TileList.Tile<T> tile) {
-                if (DEBUG) {
-                    log("recycling tile @%d", tile.mStartPosition);
-                }
-                mDataCallback.recycleData(tile.mItems, tile.mItemCount);
-
-                tile.mNext = mRecycledRoot;
-                mRecycledRoot = tile;
-            }
-
-            private TileList.Tile<T> acquireTile() {
-                if (mRecycledRoot != null) {
-                    TileList.Tile<T> result = mRecycledRoot;
-                    mRecycledRoot = mRecycledRoot.mNext;
-                    return result;
-                }
-                return new TileList.Tile<>(mTClass, mTileSize);
-            }
-
-            private boolean isTileLoaded(int position) {
-                return mLoadedTiles.get(position);
-            }
-
-            private void addTile(TileList.Tile<T> tile) {
-                mLoadedTiles.put(tile.mStartPosition, true);
-                mMainThreadProxy.addTile(mGeneration, tile);
-                if (DEBUG) {
-                    log("loaded tile @%d, total tiles: %d", tile.mStartPosition, mLoadedTiles.size());
-                }
-            }
-
-            private void removeTile(int position) {
-                mLoadedTiles.delete(position);
-                mMainThreadProxy.removeTile(mGeneration, position);
-                if (DEBUG) {
-                    log("flushed tile @%d, total tiles: %s", position, mLoadedTiles.size());
-                }
-            }
-
-            private void flushTileCache(int scrollHint) {
-                int cacheSizeLimit = mDataCallback.getMaxCachedTiles();
-                while (mLoadedTiles.size() >= cacheSizeLimit) {
-                    int firstLoadedTileStart = mLoadedTiles.keyAt(0);
-                    int lastLoadedTileStart = mLoadedTiles.keyAt(mLoadedTiles.size() - 1);
-                    int startMargin = mFirstRequiredTileStart - firstLoadedTileStart;
-                    int endMargin = lastLoadedTileStart - mLastRequiredTileStart;
-                    if (startMargin > 0 && (startMargin >= endMargin ||
-                            (scrollHint == ViewCallback.HINT_SCROLL_ASC))) {
-                        removeTile(firstLoadedTileStart);
-                    } else if (endMargin > 0 && (startMargin < endMargin ||
-                            (scrollHint == ViewCallback.HINT_SCROLL_DESC))) {
-                        removeTile(lastLoadedTileStart);
-                    } else {
-                        // Could not flush on either side, bail out.
-                        return;
-                    }
-                }
-            }
-
-            private void log(String s, Object... args) {
-                Log.d(TAG, "[BKGR] " + String.format(s, args));
-            }
-        };
         mBackgroundProxy = threadUtil.getBackgroundProxy(mBackgroundCallback);
 
         refresh();
-    }
-
-    void log(String s, Object... args) {
-        Log.d(TAG, "[MAIN] " + String.format(s, args));
     }
 
     private boolean isRefreshPending() {
@@ -375,8 +146,9 @@ public class AsyncListUtil<T> {
      * this position.
      *
      * @param position Item position.
+     *
      * @return The data item at the given position or <code>null</code> if it has not been loaded
-     * yet.
+     *         yet.
      */
     @Nullable
     public T getItem(int position) {
@@ -436,6 +208,240 @@ public class AsyncListUtil<T> {
                 mTmpRangeExtended[0], mTmpRangeExtended[1], mScrollHint);
     }
 
+    private final ThreadUtil.MainThreadCallback<T>
+            mMainThreadCallback = new ThreadUtil.MainThreadCallback<T>() {
+        @Override
+        public void updateItemCount(int generation, int itemCount) {
+            if (DEBUG) {
+                log("updateItemCount: size=%d, gen #%d", itemCount, generation);
+            }
+            if (!isRequestedGeneration(generation)) {
+                return;
+            }
+            mItemCount = itemCount;
+            mViewCallback.onDataRefresh();
+            mDisplayedGeneration = mRequestedGeneration;
+            recycleAllTiles();
+
+            mAllowScrollHints = false;  // Will be set to true after a first real scroll.
+            // There will be no scroll event if the size change does not affect the current range.
+            updateRange();
+        }
+
+        @Override
+        public void addTile(int generation, TileList.Tile<T> tile) {
+            if (!isRequestedGeneration(generation)) {
+                if (DEBUG) {
+                    log("recycling an older generation tile @%d", tile.mStartPosition);
+                }
+                mBackgroundProxy.recycleTile(tile);
+                return;
+            }
+            TileList.Tile<T> duplicate = mTileList.addOrReplace(tile);
+            if (duplicate != null) {
+                Log.e(TAG, "duplicate tile @" + duplicate.mStartPosition);
+                mBackgroundProxy.recycleTile(duplicate);
+            }
+            if (DEBUG) {
+                log("gen #%d, added tile @%d, total tiles: %d",
+                        generation, tile.mStartPosition, mTileList.size());
+            }
+            int endPosition = tile.mStartPosition + tile.mItemCount;
+            int index = 0;
+            while (index < mMissingPositions.size()) {
+                final int position = mMissingPositions.keyAt(index);
+                if (tile.mStartPosition <= position && position < endPosition) {
+                    mMissingPositions.removeAt(index);
+                    mViewCallback.onItemLoaded(position);
+                } else {
+                    index++;
+                }
+            }
+        }
+
+        @Override
+        public void removeTile(int generation, int position) {
+            if (!isRequestedGeneration(generation)) {
+                return;
+            }
+            TileList.Tile<T> tile = mTileList.removeAtPos(position);
+            if (tile == null) {
+                Log.e(TAG, "tile not found @" + position);
+                return;
+            }
+            if (DEBUG) {
+                log("recycling tile @%d, total tiles: %d", tile.mStartPosition, mTileList.size());
+            }
+            mBackgroundProxy.recycleTile(tile);
+        }
+
+        private void recycleAllTiles() {
+            if (DEBUG) {
+                log("recycling all %d tiles", mTileList.size());
+            }
+            for (int i = 0; i < mTileList.size(); i++) {
+                mBackgroundProxy.recycleTile(mTileList.getAtIndex(i));
+            }
+            mTileList.clear();
+        }
+
+        private boolean isRequestedGeneration(int generation) {
+            return generation == mRequestedGeneration;
+        }
+    };
+
+    private final ThreadUtil.BackgroundCallback<T>
+            mBackgroundCallback = new ThreadUtil.BackgroundCallback<T>() {
+
+        private TileList.Tile<T> mRecycledRoot;
+
+        final SparseBooleanArray mLoadedTiles = new SparseBooleanArray();
+
+        private int mGeneration;
+        private int mItemCount;
+
+        private int mFirstRequiredTileStart;
+        private int mLastRequiredTileStart;
+
+        @Override
+        public void refresh(int generation) {
+            mGeneration = generation;
+            mLoadedTiles.clear();
+            mItemCount = mDataCallback.refreshData();
+            mMainThreadProxy.updateItemCount(mGeneration, mItemCount);
+        }
+
+        @Override
+        public void updateRange(int rangeStart, int rangeEnd, int extRangeStart, int extRangeEnd,
+                int scrollHint) {
+            if (DEBUG) {
+                log("updateRange: %d..%d extended to %d..%d, scroll hint: %d",
+                        rangeStart, rangeEnd, extRangeStart, extRangeEnd, scrollHint);
+            }
+
+            if (rangeStart > rangeEnd) {
+                return;
+            }
+
+            final int firstVisibleTileStart = getTileStart(rangeStart);
+            final int lastVisibleTileStart = getTileStart(rangeEnd);
+
+            mFirstRequiredTileStart = getTileStart(extRangeStart);
+            mLastRequiredTileStart = getTileStart(extRangeEnd);
+            if (DEBUG) {
+                log("requesting tile range: %d..%d",
+                        mFirstRequiredTileStart, mLastRequiredTileStart);
+            }
+
+            // All pending tile requests are removed by ThreadUtil at this point.
+            // Re-request all required tiles in the most optimal order.
+            if (scrollHint == ViewCallback.HINT_SCROLL_DESC) {
+                requestTiles(mFirstRequiredTileStart, lastVisibleTileStart, scrollHint, true);
+                requestTiles(lastVisibleTileStart + mTileSize, mLastRequiredTileStart, scrollHint,
+                        false);
+            } else {
+                requestTiles(firstVisibleTileStart, mLastRequiredTileStart, scrollHint, false);
+                requestTiles(mFirstRequiredTileStart, firstVisibleTileStart - mTileSize, scrollHint,
+                        true);
+            }
+        }
+
+        private int getTileStart(int position) {
+            return position - position % mTileSize;
+        }
+
+        private void requestTiles(int firstTileStart, int lastTileStart, int scrollHint,
+                                  boolean backwards) {
+            for (int i = firstTileStart; i <= lastTileStart; i += mTileSize) {
+                int tileStart = backwards ? (lastTileStart + firstTileStart - i) : i;
+                if (DEBUG) {
+                    log("requesting tile @%d", tileStart);
+                }
+                mBackgroundProxy.loadTile(tileStart, scrollHint);
+            }
+        }
+
+        @Override
+        public void loadTile(int position, int scrollHint) {
+            if (isTileLoaded(position)) {
+                if (DEBUG) {
+                    log("already loaded tile @%d", position);
+                }
+                return;
+            }
+            TileList.Tile<T> tile = acquireTile();
+            tile.mStartPosition = position;
+            tile.mItemCount = Math.min(mTileSize, mItemCount - tile.mStartPosition);
+            mDataCallback.fillData(tile.mItems, tile.mStartPosition, tile.mItemCount);
+            flushTileCache(scrollHint);
+            addTile(tile);
+        }
+
+        @Override
+        public void recycleTile(TileList.Tile<T> tile) {
+            if (DEBUG) {
+                log("recycling tile @%d", tile.mStartPosition);
+            }
+            mDataCallback.recycleData(tile.mItems, tile.mItemCount);
+
+            tile.mNext = mRecycledRoot;
+            mRecycledRoot = tile;
+        }
+
+        private TileList.Tile<T> acquireTile() {
+            if (mRecycledRoot != null) {
+                TileList.Tile<T> result = mRecycledRoot;
+                mRecycledRoot = mRecycledRoot.mNext;
+                return result;
+            }
+            return new TileList.Tile<>(mTClass, mTileSize);
+        }
+
+        private boolean isTileLoaded(int position) {
+            return mLoadedTiles.get(position);
+        }
+
+        private void addTile(TileList.Tile<T> tile) {
+            mLoadedTiles.put(tile.mStartPosition, true);
+            mMainThreadProxy.addTile(mGeneration, tile);
+            if (DEBUG) {
+                log("loaded tile @%d, total tiles: %d", tile.mStartPosition, mLoadedTiles.size());
+            }
+        }
+
+        private void removeTile(int position) {
+            mLoadedTiles.delete(position);
+            mMainThreadProxy.removeTile(mGeneration, position);
+            if (DEBUG) {
+                log("flushed tile @%d, total tiles: %s", position, mLoadedTiles.size());
+            }
+        }
+
+        private void flushTileCache(int scrollHint) {
+            final int cacheSizeLimit = mDataCallback.getMaxCachedTiles();
+            while (mLoadedTiles.size() >= cacheSizeLimit) {
+                int firstLoadedTileStart = mLoadedTiles.keyAt(0);
+                int lastLoadedTileStart = mLoadedTiles.keyAt(mLoadedTiles.size() - 1);
+                int startMargin = mFirstRequiredTileStart - firstLoadedTileStart;
+                int endMargin = lastLoadedTileStart - mLastRequiredTileStart;
+                if (startMargin > 0 && (startMargin >= endMargin ||
+                        (scrollHint == ViewCallback.HINT_SCROLL_ASC))) {
+                    removeTile(firstLoadedTileStart);
+                } else if (endMargin > 0 && (startMargin < endMargin ||
+                        (scrollHint == ViewCallback.HINT_SCROLL_DESC))){
+                    removeTile(lastLoadedTileStart);
+                } else {
+                    // Could not flush on either side, bail out.
+                    return;
+                }
+            }
+        }
+
+        private void log(String s, Object... args) {
+            Log.d(TAG, "[BKGR] " + String.format(s, args));
+        }
+    };
+
     /**
      * The callback that provides data access for {@link AsyncListUtil}.
      *
@@ -464,9 +470,9 @@ public class AsyncListUtil<T> {
          * It is suggested to re-use these objects if possible in your use case.
          *
          * @param startPosition The start position in the list.
-         * @param itemCount     The data item count.
-         * @param data          The data item array to fill into. Should not be accessed beyond
-         *                      <code>itemCount</code>.
+         * @param itemCount The data item count.
+         * @param data The data item array to fill into. Should not be accessed beyond
+         *             <code>itemCount</code>.
          */
         @WorkerThread
         public abstract void fillData(@NonNull T[] data, int startPosition, int itemCount);
@@ -474,7 +480,8 @@ public class AsyncListUtil<T> {
         /**
          * Recycle the objects created in {@link #fillData} if necessary.
          *
-         * @param data      Array of data items. Should not be accessed beyond <code>itemCount</code>.
+         *
+         * @param data Array of data items. Should not be accessed beyond <code>itemCount</code>.
          * @param itemCount The data item count.
          */
         @WorkerThread
@@ -510,7 +517,7 @@ public class AsyncListUtil<T> {
      *
      * <p>
      * All methods are called on the main thread.
-     */
+          */
     public static abstract class ViewCallback {
 
         /**
@@ -561,14 +568,14 @@ public class AsyncListUtil<T> {
          * However, if <code>scrollHint</code> is {@link #HINT_SCROLL_NONE}, then
          * <code>outRange</code> will be <code>{50, 250}</code>
          *
-         * @param range      Visible item range.
-         * @param outRange   Extended range.
+         * @param range Visible item range.
+         * @param outRange Extended range.
          * @param scrollHint The scroll direction hint.
          */
         @UiThread
         public void extendRangeInto(@NonNull int[] range, @NonNull int[] outRange, int scrollHint) {
-            int fullRange = range[1] - range[0] + 1;
-            int halfRange = fullRange / 2;
+            final int fullRange = range[1] - range[0] + 1;
+            final int halfRange = fullRange / 2;
             outRange[0] = range[0] - (scrollHint == HINT_SCROLL_DESC ? fullRange : halfRange);
             outRange[1] = range[1] + (scrollHint == HINT_SCROLL_ASC ? fullRange : halfRange);
         }
@@ -581,7 +588,6 @@ public class AsyncListUtil<T> {
 
         /**
          * Called when an item at the given position is loaded.
-         *
          * @param position Item position.
          */
         @UiThread

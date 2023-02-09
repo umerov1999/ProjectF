@@ -36,8 +36,8 @@ class OpReorderer {
     }
 
     private void swapMoveOp(List<AdapterHelper.UpdateOp> list, int badMove, int next) {
-        AdapterHelper.UpdateOp moveOp = list.get(badMove);
-        AdapterHelper.UpdateOp nextOp = list.get(next);
+        final AdapterHelper.UpdateOp moveOp = list.get(badMove);
+        final AdapterHelper.UpdateOp nextOp = list.get(next);
         switch (nextOp.cmd) {
             case AdapterHelper.UpdateOp.REMOVE:
                 swapMoveRemove(list, badMove, moveOp, next, nextOp);
@@ -52,11 +52,11 @@ class OpReorderer {
     }
 
     void swapMoveRemove(List<AdapterHelper.UpdateOp> list, int movePos, AdapterHelper.UpdateOp moveOp,
-                        int removePos, AdapterHelper.UpdateOp removeOp) {
+            int removePos, AdapterHelper.UpdateOp removeOp) {
         AdapterHelper.UpdateOp extraRm = null;
         // check if move is nulled out by remove
         boolean revertedMove = false;
-        boolean moveIsBackwards;
+        final boolean moveIsBackwards;
 
         if (moveOp.positionStart < moveOp.itemCount) {
             moveIsBackwards = false;
@@ -92,7 +92,7 @@ class OpReorderer {
         if (moveOp.positionStart <= removeOp.positionStart) {
             removeOp.positionStart++;
         } else if (moveOp.positionStart < removeOp.positionStart + removeOp.itemCount) {
-            int remaining = removeOp.positionStart + removeOp.itemCount
+            final int remaining = removeOp.positionStart + removeOp.itemCount
                     - moveOp.positionStart;
             extraRm = mCallback.obtainUpdateOp(AdapterHelper.UpdateOp.REMOVE, moveOp.positionStart + 1, remaining, null);
             removeOp.itemCount = moveOp.positionStart - removeOp.positionStart;
@@ -151,7 +151,7 @@ class OpReorderer {
     }
 
     private void swapMoveAdd(List<AdapterHelper.UpdateOp> list, int move, AdapterHelper.UpdateOp moveOp, int add,
-                             AdapterHelper.UpdateOp addOp) {
+            AdapterHelper.UpdateOp addOp) {
         int offset = 0;
         // going in reverse, first revert the effect of add
         if (moveOp.itemCount < addOp.positionStart) {
@@ -172,7 +172,7 @@ class OpReorderer {
     }
 
     void swapMoveUpdate(List<AdapterHelper.UpdateOp> list, int move, AdapterHelper.UpdateOp moveOp, int update,
-                        AdapterHelper.UpdateOp updateOp) {
+            AdapterHelper.UpdateOp updateOp) {
         AdapterHelper.UpdateOp extraUp1 = null;
         AdapterHelper.UpdateOp extraUp2 = null;
         // going in reverse, first revert the effect of add
@@ -187,7 +187,7 @@ class OpReorderer {
         if (moveOp.positionStart <= updateOp.positionStart) {
             updateOp.positionStart++;
         } else if (moveOp.positionStart < updateOp.positionStart + updateOp.itemCount) {
-            int remaining = updateOp.positionStart + updateOp.itemCount
+            final int remaining = updateOp.positionStart + updateOp.itemCount
                     - moveOp.positionStart;
             extraUp2 = mCallback.obtainUpdateOp(
                     AdapterHelper.UpdateOp.UPDATE, moveOp.positionStart + 1, remaining,
@@ -212,7 +212,7 @@ class OpReorderer {
     private int getLastMoveOutOfOrder(List<AdapterHelper.UpdateOp> list) {
         boolean foundNonMove = false;
         for (int i = list.size() - 1; i >= 0; i--) {
-            AdapterHelper.UpdateOp op1 = list.get(i);
+            final AdapterHelper.UpdateOp op1 = list.get(i);
             if (op1.cmd == AdapterHelper.UpdateOp.MOVE) {
                 if (foundNonMove) {
                     return i;

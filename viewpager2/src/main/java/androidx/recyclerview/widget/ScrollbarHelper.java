@@ -22,35 +22,32 @@ import android.view.View;
  */
 class ScrollbarHelper {
 
-    private ScrollbarHelper() {
-    }
-
     /**
      * @param startChild View closest to start of the list. (top or left)
      * @param endChild   View closest to end of the list (bottom or right)
      */
     static int computeScrollOffset(RecyclerView.State state, OrientationHelper orientation,
-                                   View startChild, View endChild, RecyclerView.LayoutManager lm,
-                                   boolean smoothScrollbarEnabled, boolean reverseLayout) {
+            View startChild, View endChild, RecyclerView.LayoutManager lm,
+            boolean smoothScrollbarEnabled, boolean reverseLayout) {
         if (lm.getChildCount() == 0 || state.getItemCount() == 0 || startChild == null
                 || endChild == null) {
             return 0;
         }
-        int minPosition = Math.min(lm.getPosition(startChild),
+        final int minPosition = Math.min(lm.getPosition(startChild),
                 lm.getPosition(endChild));
-        int maxPosition = Math.max(lm.getPosition(startChild),
+        final int maxPosition = Math.max(lm.getPosition(startChild),
                 lm.getPosition(endChild));
-        int itemsBefore = reverseLayout
+        final int itemsBefore = reverseLayout
                 ? Math.max(0, state.getItemCount() - maxPosition - 1)
                 : Math.max(0, minPosition);
         if (!smoothScrollbarEnabled) {
             return itemsBefore;
         }
-        int laidOutArea = Math.abs(orientation.getDecoratedEnd(endChild)
+        final int laidOutArea = Math.abs(orientation.getDecoratedEnd(endChild)
                 - orientation.getDecoratedStart(startChild));
-        int itemRange = Math.abs(lm.getPosition(startChild)
+        final int itemRange = Math.abs(lm.getPosition(startChild)
                 - lm.getPosition(endChild)) + 1;
-        float avgSizePerRow = (float) laidOutArea / itemRange;
+        final float avgSizePerRow = (float) laidOutArea / itemRange;
 
         return Math.round(itemsBefore * avgSizePerRow + (orientation.getStartAfterPadding()
                 - orientation.getDecoratedStart(startChild)));
@@ -61,8 +58,8 @@ class ScrollbarHelper {
      * @param endChild   View closest to end of the list (bottom or right)
      */
     static int computeScrollExtent(RecyclerView.State state, OrientationHelper orientation,
-                                   View startChild, View endChild, RecyclerView.LayoutManager lm,
-                                   boolean smoothScrollbarEnabled) {
+            View startChild, View endChild, RecyclerView.LayoutManager lm,
+            boolean smoothScrollbarEnabled) {
         if (lm.getChildCount() == 0 || state.getItemCount() == 0 || startChild == null
                 || endChild == null) {
             return 0;
@@ -70,7 +67,7 @@ class ScrollbarHelper {
         if (!smoothScrollbarEnabled) {
             return Math.abs(lm.getPosition(startChild) - lm.getPosition(endChild)) + 1;
         }
-        int extend = orientation.getDecoratedEnd(endChild)
+        final int extend = orientation.getDecoratedEnd(endChild)
                 - orientation.getDecoratedStart(startChild);
         return Math.min(orientation.getTotalSpace(), extend);
     }
@@ -80,8 +77,8 @@ class ScrollbarHelper {
      * @param endChild   View closest to end of the list (bottom or right)
      */
     static int computeScrollRange(RecyclerView.State state, OrientationHelper orientation,
-                                  View startChild, View endChild, RecyclerView.LayoutManager lm,
-                                  boolean smoothScrollbarEnabled) {
+            View startChild, View endChild, RecyclerView.LayoutManager lm,
+            boolean smoothScrollbarEnabled) {
         if (lm.getChildCount() == 0 || state.getItemCount() == 0 || startChild == null
                 || endChild == null) {
             return 0;
@@ -90,12 +87,15 @@ class ScrollbarHelper {
             return state.getItemCount();
         }
         // smooth scrollbar enabled. try to estimate better.
-        int laidOutArea = orientation.getDecoratedEnd(endChild)
+        final int laidOutArea = orientation.getDecoratedEnd(endChild)
                 - orientation.getDecoratedStart(startChild);
-        int laidOutRange = Math.abs(lm.getPosition(startChild)
+        final int laidOutRange = Math.abs(lm.getPosition(startChild)
                 - lm.getPosition(endChild))
                 + 1;
         // estimate a size for full list.
         return (int) ((float) laidOutArea / laidOutRange * state.getItemCount());
+    }
+
+    private ScrollbarHelper() {
     }
 }

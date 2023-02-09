@@ -42,9 +42,7 @@ public final class CompositePageTransformer implements PageTransformer {
         mTransformers.add(transformer);
     }
 
-    /**
-     * Removes a page transformer from the list.
-     */
+    /** Removes a page transformer from the list. */
     public void removeTransformer(@NonNull PageTransformer transformer) {
         mTransformers.remove(transformer);
     }

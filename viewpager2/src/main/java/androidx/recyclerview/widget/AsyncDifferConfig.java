@@ -50,9 +50,7 @@ public final class AsyncDifferConfig<T> {
         mDiffCallback = diffCallback;
     }
 
-    /**
-     * @hide
-     */
+    /** @hide */
     @SuppressWarnings("WeakerAccess")
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @Nullable
@@ -78,13 +76,10 @@ public final class AsyncDifferConfig<T> {
      * @param <T>
      */
     public static final class Builder<T> {
-        // TODO: remove the below once supportlib has its own appropriate executors
-        private static final Object sExecutorLock = new Object();
-        private static Executor sDiffExecutor;
-        private final DiffUtil.ItemCallback<T> mDiffCallback;
         @Nullable
         private Executor mMainThreadExecutor;
         private Executor mBackgroundThreadExecutor;
+        private final DiffUtil.ItemCallback<T> mDiffCallback;
 
         public Builder(@NonNull DiffUtil.ItemCallback<T> diffCallback) {
             mDiffCallback = diffCallback;
@@ -98,6 +93,7 @@ public final class AsyncDifferConfig<T> {
          *
          * @param executor The executor which can run tasks in the UI thread.
          * @return this
+         *
          * @hide
          */
         @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -144,5 +140,9 @@ public final class AsyncDifferConfig<T> {
                     mBackgroundThreadExecutor,
                     mDiffCallback);
         }
+
+        // TODO: remove the below once supportlib has its own appropriate executors
+        private static final Object sExecutorLock = new Object();
+        private static Executor sDiffExecutor = null;
     }
 }

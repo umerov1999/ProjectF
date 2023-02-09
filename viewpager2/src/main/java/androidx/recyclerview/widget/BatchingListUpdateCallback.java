@@ -43,7 +43,7 @@ public class BatchingListUpdateCallback implements ListUpdateCallback {
     int mLastEventType = TYPE_NONE;
     int mLastEventPosition = -1;
     int mLastEventCount = -1;
-    Object mLastEventPayload;
+    Object mLastEventPayload = null;
 
     public BatchingListUpdateCallback(@NonNull ListUpdateCallback callback) {
         mWrapped = callback;

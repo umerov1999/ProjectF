@@ -77,6 +77,7 @@ public abstract class SimpleItemAnimator extends RecyclerView.ItemAnimator {
      *
      * @return True if change animations are not supported or the ViewHolder is invalid,
      * false otherwise.
+     *
      * @see #setSupportsChangeAnimations(boolean)
      */
     @Override
@@ -86,7 +87,7 @@ public abstract class SimpleItemAnimator extends RecyclerView.ItemAnimator {
 
     @Override
     public boolean animateDisappearance(@NonNull RecyclerView.ViewHolder viewHolder,
-                                        @NonNull ItemHolderInfo preLayoutInfo, @Nullable ItemHolderInfo postLayoutInfo) {
+            @NonNull ItemHolderInfo preLayoutInfo, @Nullable ItemHolderInfo postLayoutInfo) {
         int oldLeft = preLayoutInfo.left;
         int oldTop = preLayoutInfo.top;
         View disappearingItemView = viewHolder.itemView;
@@ -110,7 +111,7 @@ public abstract class SimpleItemAnimator extends RecyclerView.ItemAnimator {
 
     @Override
     public boolean animateAppearance(@NonNull RecyclerView.ViewHolder viewHolder,
-                                     @Nullable ItemHolderInfo preLayoutInfo, @NonNull ItemHolderInfo postLayoutInfo) {
+            @Nullable ItemHolderInfo preLayoutInfo, @NonNull ItemHolderInfo postLayoutInfo) {
         if (preLayoutInfo != null && (preLayoutInfo.left != postLayoutInfo.left
                 || preLayoutInfo.top != postLayoutInfo.top)) {
             // slide items in if before/after locations differ
@@ -129,7 +130,7 @@ public abstract class SimpleItemAnimator extends RecyclerView.ItemAnimator {
 
     @Override
     public boolean animatePersistence(@NonNull RecyclerView.ViewHolder viewHolder,
-                                      @NonNull ItemHolderInfo preLayoutInfo, @NonNull ItemHolderInfo postLayoutInfo) {
+            @NonNull ItemHolderInfo preLayoutInfo, @NonNull ItemHolderInfo postLayoutInfo) {
         if (preLayoutInfo.left != postLayoutInfo.left || preLayoutInfo.top != postLayoutInfo.top) {
             if (DEBUG) {
                 Log.d(TAG, "PERSISTENT: " + viewHolder
@@ -144,14 +145,14 @@ public abstract class SimpleItemAnimator extends RecyclerView.ItemAnimator {
 
     @Override
     public boolean animateChange(@NonNull RecyclerView.ViewHolder oldHolder,
-                                 @NonNull RecyclerView.ViewHolder newHolder, @NonNull ItemHolderInfo preLayoutInfo,
-                                 @NonNull ItemHolderInfo postLayoutInfo) {
+            @NonNull RecyclerView.ViewHolder newHolder, @NonNull ItemHolderInfo preLayoutInfo,
+            @NonNull ItemHolderInfo postLayoutInfo) {
         if (DEBUG) {
             Log.d(TAG, "CHANGED: " + oldHolder + " with view " + oldHolder.itemView);
         }
-        int fromLeft = preLayoutInfo.left;
-        int fromTop = preLayoutInfo.top;
-        int toLeft, toTop;
+        final int fromLeft = preLayoutInfo.left;
+        final int fromTop = preLayoutInfo.top;
+        final int toLeft, toTop;
         if (newHolder.shouldIgnore()) {
             toLeft = preLayoutInfo.left;
             toTop = preLayoutInfo.top;
@@ -234,7 +235,7 @@ public abstract class SimpleItemAnimator extends RecyclerView.ItemAnimator {
      */
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     public abstract boolean animateMove(RecyclerView.ViewHolder holder, int fromX, int fromY,
-                                        int toX, int toY);
+            int toX, int toY);
 
     /**
      * Called when an item is changed in the RecyclerView, as indicated by a call to
@@ -270,7 +271,7 @@ public abstract class SimpleItemAnimator extends RecyclerView.ItemAnimator {
      */
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     public abstract boolean animateChange(RecyclerView.ViewHolder oldHolder,
-                                          RecyclerView.ViewHolder newHolder, int fromLeft, int fromTop, int toLeft, int toTop);
+            RecyclerView.ViewHolder newHolder, int fromLeft, int fromTop, int toLeft, int toTop);
 
     /**
      * Method to be called by subclasses when a remove animation is done.
@@ -475,3 +476,4 @@ public abstract class SimpleItemAnimator extends RecyclerView.ItemAnimator {
     public void onChangeFinished(RecyclerView.ViewHolder item, boolean oldItem) {
     }
 }
+

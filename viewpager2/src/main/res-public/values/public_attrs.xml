@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2016 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2016 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,13 +15,13 @@
 -->
 
 <resources>
-    <public name="layoutManager" type="attr" />
-    <public name="spanCount" format="integer" type="attr" />
-    <public name="reverseLayout" type="attr" />
-    <public name="stackFromEnd" type="attr" />
-    <public name="fastScrollEnabled" format="boolean" type="attr" />
-    <public name="fastScrollVerticalThumbDrawable" format="reference" type="attr" />
-    <public name="fastScrollVerticalTrackDrawable" format="reference" type="attr" />
-    <public name="fastScrollHorizontalThumbDrawable" format="reference" type="attr" />
-    <public name="fastScrollHorizontalTrackDrawable" format="reference" type="attr" />
+    <public type="attr" name="layoutManager"/>
+    <public type="attr" name="spanCount" format="integer"/>
+    <public type="attr" name="reverseLayout"/>
+    <public type="attr" name="stackFromEnd"/>
+    <public type="attr" name="fastScrollEnabled" format="boolean" />
+    <public type="attr" name="fastScrollVerticalThumbDrawable" format="reference" />
+    <public type="attr" name="fastScrollVerticalTrackDrawable" format="reference" />
+    <public type="attr" name="fastScrollHorizontalThumbDrawable" format="reference" />
+    <public type="attr" name="fastScrollHorizontalTrackDrawable" format="reference" />
 </resources>

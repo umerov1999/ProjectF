@@ -36,6 +36,12 @@ import android.view.animation.LinearInterpolator;
  */
 public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
 
+    private static final boolean DEBUG = false;
+
+    private static final float MILLISECONDS_PER_INCH = 25f;
+
+    private static final int TARGET_SEEK_SCROLL_DISTANCE_PX = 10000;
+
     /**
      * Align child view's left or top with parent view's left or top
      *
@@ -44,6 +50,7 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
      * @see #calculateDyToMakeVisible(android.view.View, int)
      */
     public static final int SNAP_TO_START = -1;
+
     /**
      * Align child view's right or bottom with parent view's right or bottom
      *
@@ -52,6 +59,7 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
      * @see #calculateDyToMakeVisible(android.view.View, int)
      */
     public static final int SNAP_TO_END = 1;
+
     /**
      * <p>Decides if the child should be snapped from start or end, depending on where it
      * currently is in relation to its parent.</p>
@@ -63,9 +71,7 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
      * @see #calculateDyToMakeVisible(android.view.View, int)
      */
     public static final int SNAP_TO_ANY = 0;
-    private static final boolean DEBUG = false;
-    private static final float MILLISECONDS_PER_INCH = 25f;
-    private static final int TARGET_SEEK_SCROLL_DISTANCE_PX = 10000;
+
     // Trigger a scroll to a further distance than TARGET_SEEK_SCROLL_DISTANCE_PX so that if target
     // view is not laid out until interim target position is reached, we can detect the case before
     // scrolling slows down and reschedule another interim target scroll
@@ -74,14 +80,17 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
     protected final LinearInterpolator mLinearInterpolator = new LinearInterpolator();
 
     protected final DecelerateInterpolator mDecelerateInterpolator = new DecelerateInterpolator();
-    private final DisplayMetrics mDisplayMetrics;
+
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     protected PointF mTargetVector;
+
+    private final DisplayMetrics mDisplayMetrics;
+    private boolean mHasCalculatedMillisPerPixel = false;
+    private float mMillisPerPixel;
+
     // Temporary variables to keep track of the interim scroll target. These values do not
     // point to a real item position, rather point to an estimated location pixels.
-    protected int mInterimTargetDx, mInterimTargetDy;
-    private boolean mHasCalculatedMillisPerPixel;
-    private float mMillisPerPixel;
+    protected int mInterimTargetDx = 0, mInterimTargetDy = 0;
 
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     public LinearSmoothScroller(Context context) {
@@ -102,10 +111,10 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
     @Override
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     protected void onTargetFound(View targetView, RecyclerView.State state, Action action) {
-        int dx = calculateDxToMakeVisible(targetView, getHorizontalSnapPreference());
-        int dy = calculateDyToMakeVisible(targetView, getVerticalSnapPreference());
-        int distance = (int) Math.sqrt(dx * dx + dy * dy);
-        int time = calculateTimeForDeceleration(distance);
+        final int dx = calculateDxToMakeVisible(targetView, getHorizontalSnapPreference());
+        final int dy = calculateDyToMakeVisible(targetView, getVerticalSnapPreference());
+        final int distance = (int) Math.sqrt(dx * dx + dy * dy);
+        final int time = calculateTimeForDeceleration(distance);
         if (time > 0) {
             action.update(-dx, -dy, time, mDecelerateInterpolator);
         }
@@ -124,6 +133,7 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
             stop();
             return;
         }
+        //noinspection PointlessBooleanExpression
         if (DEBUG && mTargetVector != null
                 && (mTargetVector.x * dx < 0 || mTargetVector.y * dy < 0)) {
             throw new IllegalStateException("Scroll happened in the opposite direction"
@@ -184,7 +194,7 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
         // area under curve (1-(1-x)^2) can be calculated as (1 - x/3) * x * x
         // which gives 0.100028 when x = .3356
         // this is why we divide linear scrolling time with .3356
-        return (int) Math.ceil(calculateTimeForScrolling(dx) / .3356);
+        return  (int) Math.ceil(calculateTimeForScrolling(dx) / .3356);
     }
 
     /**
@@ -240,7 +250,7 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
         // find an interim target position
         PointF scrollVector = computeScrollVectorForPosition(getTargetPosition());
         if (scrollVector == null || (scrollVector.x == 0 && scrollVector.y == 0)) {
-            int target = getTargetPosition();
+            final int target = getTargetPosition();
             action.jumpTo(target);
             stop();
             return;
@@ -250,7 +260,7 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
 
         mInterimTargetDx = (int) (TARGET_SEEK_SCROLL_DISTANCE_PX * scrollVector.x);
         mInterimTargetDy = (int) (TARGET_SEEK_SCROLL_DISTANCE_PX * scrollVector.y);
-        int time = calculateTimeForScrolling(TARGET_SEEK_SCROLL_DISTANCE_PX);
+        final int time = calculateTimeForScrolling(TARGET_SEEK_SCROLL_DISTANCE_PX);
         // To avoid UI hiccups, trigger a smooth scroll to a distance little further than the
         // interim target. Since we track the distance travelled in onSeekTargetStep callback, it
         // won't actually scroll more than what we need.
@@ -260,7 +270,7 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
     }
 
     private int clampApplyScroll(int tmpDt, int dt) {
-        int before = tmpDt;
+        final int before = tmpDt;
         tmpDt -= dt;
         if (before * tmpDt <= 0) { // changed sign, reached 0 or was 0, reset
             return 0;
@@ -280,11 +290,11 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
             case SNAP_TO_END:
                 return boxEnd - viewEnd;
             case SNAP_TO_ANY:
-                int dtStart = boxStart - viewStart;
+                final int dtStart = boxStart - viewStart;
                 if (dtStart > 0) {
                     return dtStart;
                 }
-                int dtEnd = boxEnd - viewEnd;
+                final int dtEnd = boxEnd - viewEnd;
                 if (dtEnd < 0) {
                     return dtEnd;
                 }
@@ -309,16 +319,16 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
      */
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     public int calculateDyToMakeVisible(View view, int snapPreference) {
-        RecyclerView.LayoutManager layoutManager = getLayoutManager();
+        final RecyclerView.LayoutManager layoutManager = getLayoutManager();
         if (layoutManager == null || !layoutManager.canScrollVertically()) {
             return 0;
         }
-        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+        final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
                 view.getLayoutParams();
-        int top = layoutManager.getDecoratedTop(view) - params.topMargin;
-        int bottom = layoutManager.getDecoratedBottom(view) + params.bottomMargin;
-        int start = layoutManager.getPaddingTop();
-        int end = layoutManager.getHeight() - layoutManager.getPaddingBottom();
+        final int top = layoutManager.getDecoratedTop(view) - params.topMargin;
+        final int bottom = layoutManager.getDecoratedBottom(view) + params.bottomMargin;
+        final int start = layoutManager.getPaddingTop();
+        final int end = layoutManager.getHeight() - layoutManager.getPaddingBottom();
         return calculateDtToFit(top, bottom, start, end, snapPreference);
     }
 
@@ -335,16 +345,16 @@ public class LinearSmoothScroller extends RecyclerView.SmoothScroller {
      */
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     public int calculateDxToMakeVisible(View view, int snapPreference) {
-        RecyclerView.LayoutManager layoutManager = getLayoutManager();
+        final RecyclerView.LayoutManager layoutManager = getLayoutManager();
         if (layoutManager == null || !layoutManager.canScrollHorizontally()) {
             return 0;
         }
-        RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
+        final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)
                 view.getLayoutParams();
-        int left = layoutManager.getDecoratedLeft(view) - params.leftMargin;
-        int right = layoutManager.getDecoratedRight(view) + params.rightMargin;
-        int start = layoutManager.getPaddingLeft();
-        int end = layoutManager.getWidth() - layoutManager.getPaddingRight();
+        final int left = layoutManager.getDecoratedLeft(view) - params.leftMargin;
+        final int right = layoutManager.getDecoratedRight(view) + params.rightMargin;
+        final int start = layoutManager.getPaddingLeft();
+        final int end = layoutManager.getWidth() - layoutManager.getPaddingRight();
         return calculateDtToFit(left, right, start, end, snapPreference);
     }
 }

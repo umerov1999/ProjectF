@@ -33,8 +33,7 @@ public final class FragmentViewHolder extends ViewHolder {
         super(container);
     }
 
-    @NonNull
-    static FragmentViewHolder create(@NonNull ViewGroup parent) {
+    @NonNull static FragmentViewHolder create(@NonNull ViewGroup parent) {
         FrameLayout container = new FrameLayout(parent.getContext());
         container.setLayoutParams(
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -44,8 +43,7 @@ public final class FragmentViewHolder extends ViewHolder {
         return new FragmentViewHolder(container);
     }
 
-    @NonNull
-    FrameLayout getContainer() {
+    @NonNull FrameLayout getContainer() {
         return (FrameLayout) itemView;
     }
 }

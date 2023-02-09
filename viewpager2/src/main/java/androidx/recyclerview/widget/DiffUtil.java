@@ -80,11 +80,11 @@ import java.util.List;
  * @see AsyncListDiffer
  */
 public class DiffUtil {
-    private static final Comparator<Diagonal> DIAGONAL_COMPARATOR = (o1, o2) -> o1.x - o2.x;
-
     private DiffUtil() {
         // utility class, no instance.
     }
+
+    private static final Comparator<Diagonal> DIAGONAL_COMPARATOR = (o1, o2) -> o1.x - o2.x;
 
     // Myers' algorithm uses two lists as axis labels. In DiffUtil's implementation, `x` axis is
     // used for old list and `y` axis is used for new list.
@@ -108,43 +108,44 @@ public class DiffUtil {
      * positions), you can disable move detection which takes <code>O(N^2)</code> time where
      * N is the number of added, moved, removed items.
      *
-     * @param cb          The callback that acts as a gateway to the backing list data
+     * @param cb The callback that acts as a gateway to the backing list data
      * @param detectMoves True if DiffUtil should try to detect moved items, false otherwise.
+     *
      * @return A DiffResult that contains the information about the edit sequence to convert the
      * old list into the new list.
      */
     @NonNull
     public static DiffResult calculateDiff(@NonNull Callback cb, boolean detectMoves) {
-        int oldSize = cb.getOldListSize();
-        int newSize = cb.getNewListSize();
+        final int oldSize = cb.getOldListSize();
+        final int newSize = cb.getNewListSize();
 
-        List<Diagonal> diagonals = new ArrayList<>();
+        final List<Diagonal> diagonals = new ArrayList<>();
 
         // instead of a recursive implementation, we keep our own stack to avoid potential stack
         // overflow exceptions
-        List<Range> stack = new ArrayList<>();
+        final List<Range> stack = new ArrayList<>();
 
         stack.add(new Range(0, oldSize, 0, newSize));
 
-        int max = (oldSize + newSize + 1) / 2;
+        final int max = (oldSize + newSize + 1) / 2;
         // allocate forward and backward k-lines. K lines are diagonal lines in the matrix. (see the
         // paper for details)
         // These arrays lines keep the max reachable position for each k-line.
-        CenteredArray forward = new CenteredArray(max * 2 + 1);
-        CenteredArray backward = new CenteredArray(max * 2 + 1);
+        final CenteredArray forward = new CenteredArray(max * 2 + 1);
+        final CenteredArray backward = new CenteredArray(max * 2 + 1);
 
         // We pool the ranges to avoid allocations for each recursive call.
-        List<Range> rangePool = new ArrayList<>();
+        final List<Range> rangePool = new ArrayList<>();
         while (!stack.isEmpty()) {
-            Range range = stack.remove(stack.size() - 1);
-            Snake snake = midPoint(range, cb, forward, backward);
+            final Range range = stack.remove(stack.size() - 1);
+            final Snake snake = midPoint(range, cb, forward, backward);
             if (snake != null) {
                 // if it has a diagonal, save it
                 if (snake.diagonalSize() > 0) {
                     diagonals.add(snake.toDiagonal());
                 }
                 // add new ranges for left and right
-                Range left = rangePool.isEmpty() ? new Range() : rangePool.remove(
+                final Range left = rangePool.isEmpty() ? new Range() : rangePool.remove(
                         rangePool.size() - 1);
                 left.oldListStart = range.oldListStart;
                 left.newListStart = range.newListStart;
@@ -154,7 +155,7 @@ public class DiffUtil {
 
                 // re-use range for right
                 //noinspection UnnecessaryLocalVariable
-                Range right = range;
+                final Range right = range;
                 right.oldListEnd = range.oldListEnd;
                 right.newListEnd = range.newListEnd;
                 right.oldListStart = snake.endX;
@@ -214,8 +215,8 @@ public class DiffUtil {
             // we either come from d-1, k-1 OR d-1. k+1
             // as we move in steps of 2, array always holds both current and previous d values
             // k = x - y and each array value holds the max X, y = x - k
-            int startX;
-            int startY;
+            final int startX;
+            final int startY;
             int x, y;
             if (k == -d || (k != d && forward.get(k + 1) > forward.get(k - 1))) {
                 // picking k + 1, incrementing Y (by simply not incrementing X)
@@ -274,8 +275,8 @@ public class DiffUtil {
             // as we move in steps of 2, array always holds both current and previous d values
             // k = x - y and each array value holds the MIN X, y = x - k
             // when x's are equal, we prioritize deletion over insertion
-            int startX;
-            int startY;
+            final int startX;
+            final int startY;
             int x, y;
 
             if (k == -d || (k != d && backward.get(k + 1) < backward.get(k - 1))) {
@@ -456,7 +457,7 @@ public class DiffUtil {
          *
          * @see Callback#getChangePayload(int, int)
          */
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused"})
         @Nullable
         public Object getChangePayload(@NonNull T oldItem, @NonNull T newItem) {
             return null;
@@ -655,7 +656,7 @@ public class DiffUtil {
          * @param detectMoves     True if this DiffResult will try to detect moved items
          */
         DiffResult(Callback callback, List<Diagonal> diagonals, int[] oldItemStatuses,
-                   int[] newItemStatuses, boolean detectMoves) {
+                int[] newItemStatuses, boolean detectMoves) {
             mDiagonals = diagonals;
             mOldItemStatuses = oldItemStatuses;
             mNewItemStatuses = newItemStatuses;
@@ -667,33 +668,6 @@ public class DiffUtil {
             mDetectMoves = detectMoves;
             addEdgeDiagonals();
             findMatchingItems();
-        }
-
-        @Nullable
-        private static PostponedUpdate getPostponedUpdate(
-                Collection<PostponedUpdate> postponedUpdates,
-                int posInList,
-                boolean removal) {
-            PostponedUpdate postponedUpdate = null;
-            Iterator<PostponedUpdate> itr = postponedUpdates.iterator();
-            while (itr.hasNext()) {
-                PostponedUpdate update = itr.next();
-                if (update.posInOwnerList == posInList && update.removal == removal) {
-                    postponedUpdate = update;
-                    itr.remove();
-                    break;
-                }
-            }
-            while (itr.hasNext()) {
-                // re-offset all others
-                PostponedUpdate update = itr.next();
-                if (removal) {
-                    update.currentPos--;
-                } else {
-                    update.currentPos++;
-                }
-            }
-            return postponedUpdate;
         }
 
         /**
@@ -720,8 +694,8 @@ public class DiffUtil {
                 for (int offset = 0; offset < diagonal.size; offset++) {
                     int posX = diagonal.x + offset;
                     int posY = diagonal.y + offset;
-                    boolean theSame = mCallback.areContentsTheSame(posX, posY);
-                    int changeFlag = theSame ? FLAG_NOT_CHANGED : FLAG_CHANGED;
+                    final boolean theSame = mCallback.areContentsTheSame(posX, posY);
+                    final int changeFlag = theSame ? FLAG_NOT_CHANGED : FLAG_CHANGED;
                     mOldItemStatuses[posX] = (posY << FLAG_OFFSET) | changeFlag;
                     mNewItemStatuses[posY] = (posX << FLAG_OFFSET) | changeFlag;
                 }
@@ -757,9 +731,9 @@ public class DiffUtil {
          */
         private void findMatchingAddition(int posX) {
             int posY = 0;
-            int diagonalsSize = mDiagonals.size();
+            final int diagonalsSize = mDiagonals.size();
             for (int i = 0; i < diagonalsSize; i++) {
-                Diagonal diagonal = mDiagonals.get(i);
+                final Diagonal diagonal = mDiagonals.get(i);
                 while (posY < diagonal.y) {
                     // found some additions, evaluate
                     if (mNewItemStatuses[posY] == 0) { // not evaluated yet
@@ -767,7 +741,7 @@ public class DiffUtil {
                         if (matching) {
                             // yay found it, set values
                             boolean contentsMatching = mCallback.areContentsTheSame(posX, posY);
-                            int changeFlag = contentsMatching ? FLAG_MOVED_NOT_CHANGED
+                            final int changeFlag = contentsMatching ? FLAG_MOVED_NOT_CHANGED
                                     : FLAG_MOVED_CHANGED;
                             // once we process one of these, it will mark the other one as ignored.
                             mOldItemStatuses[posX] = (posY << FLAG_OFFSET) | changeFlag;
@@ -795,7 +769,7 @@ public class DiffUtil {
                 throw new IndexOutOfBoundsException("Index out of bounds - passed position = "
                         + oldListPosition + ", old list size = " + mOldListSize);
             }
-            int status = mOldItemStatuses[oldListPosition];
+            final int status = mOldItemStatuses[oldListPosition];
             if ((status & FLAG_MASK) == 0) {
                 return NO_POSITION;
             } else {
@@ -817,7 +791,7 @@ public class DiffUtil {
                 throw new IndexOutOfBoundsException("Index out of bounds - passed position = "
                         + newListPosition + ", new list size = " + mNewListSize);
             }
-            int status = mNewItemStatuses[newListPosition];
+            final int status = mNewItemStatuses[newListPosition];
             if ((status & FLAG_MASK) == 0) {
                 return NO_POSITION;
             } else {
@@ -857,7 +831,7 @@ public class DiffUtil {
          *                displaying the new list.
          * @see AdapterListUpdateCallback
          */
-        public void dispatchUpdatesTo(@NonNull RecyclerView.Adapter adapter) {
+        public void dispatchUpdatesTo(@NonNull final RecyclerView.Adapter adapter) {
             dispatchUpdatesTo(new AdapterListUpdateCallback(adapter));
         }
 
@@ -871,7 +845,7 @@ public class DiffUtil {
          * @see #dispatchUpdatesTo(RecyclerView.Adapter)
          */
         public void dispatchUpdatesTo(@NonNull ListUpdateCallback updateCallback) {
-            BatchingListUpdateCallback batchingCallback;
+            final BatchingListUpdateCallback batchingCallback;
 
             if (updateCallback instanceof BatchingListUpdateCallback) {
                 batchingCallback = (BatchingListUpdateCallback) updateCallback;
@@ -888,7 +862,7 @@ public class DiffUtil {
             // Later when we find the match of that move, we dispatch the update
             int currentListSize = mOldListSize;
             // list of postponed moves
-            Collection<PostponedUpdate> postponedUpdates = new ArrayDeque<>();
+            final Collection<PostponedUpdate> postponedUpdates = new ArrayDeque<>();
             // posX and posY are exclusive
             int posX = mOldListSize;
             int posY = mNewListSize;
@@ -896,7 +870,7 @@ public class DiffUtil {
             // this just makes offsets easier since changes in the earlier indices has an effect
             // on the later indices.
             for (int diagonalIndex = mDiagonals.size() - 1; diagonalIndex >= 0; diagonalIndex--) {
-                Diagonal diagonal = mDiagonals.get(diagonalIndex);
+                final Diagonal diagonal = mDiagonals.get(diagonalIndex);
                 int endX = diagonal.endX();
                 int endY = diagonal.endY();
                 // dispatch removals and additions until we reach to that diagonal
@@ -987,6 +961,33 @@ public class DiffUtil {
             }
             batchingCallback.dispatchLastEvent();
         }
+
+        @Nullable
+        private static PostponedUpdate getPostponedUpdate(
+                Collection<PostponedUpdate> postponedUpdates,
+                int posInList,
+                boolean removal) {
+            PostponedUpdate postponedUpdate = null;
+            Iterator<PostponedUpdate> itr = postponedUpdates.iterator();
+            while (itr.hasNext()) {
+                PostponedUpdate update = itr.next();
+                if (update.posInOwnerList == posInList && update.removal == removal) {
+                    postponedUpdate = update;
+                    itr.remove();
+                    break;
+                }
+            }
+            while (itr.hasNext()) {
+                // re-offset all others
+                PostponedUpdate update = itr.next();
+                if (removal) {
+                    update.currentPos--;
+                } else {
+                    update.currentPos++;
+                }
+            }
+            return postponedUpdate;
+        }
     }
 
     /**
@@ -1000,15 +1001,17 @@ public class DiffUtil {
         /**
          * position in the list that owns this item
          */
-        final int posInOwnerList;
-        /**
-         * true if this is a removal, false otherwise
-         */
-        final boolean removal;
+        int posInOwnerList;
+
         /**
          * position wrt to the end of the list
          */
         int currentPos;
+
+        /**
+         * true if this is a removal, false otherwise
+         */
+        boolean removal;
 
         PostponedUpdate(int posInOwnerList, int currentPos, boolean removal) {
             this.posInOwnerList = posInOwnerList;

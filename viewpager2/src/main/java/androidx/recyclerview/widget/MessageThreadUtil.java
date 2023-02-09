@@ -20,23 +20,42 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 class MessageThreadUtil<T> implements ThreadUtil<T> {
 
     @Override
-    public MainThreadCallback<T> getMainThreadProxy(MainThreadCallback<T> callback) {
+    public MainThreadCallback<T> getMainThreadProxy(final MainThreadCallback<T> callback) {
         return new MainThreadCallback<T>() {
+            final MessageQueue mQueue = new MessageQueue();
+            final private Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
+
             static final int UPDATE_ITEM_COUNT = 1;
             static final int ADD_TILE = 2;
             static final int REMOVE_TILE = 3;
-            final MessageQueue mQueue = new MessageQueue();
-            final private Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
-            private final Runnable mMainThreadRunnable = () -> {
+
+            @Override
+            public void updateItemCount(int generation, int itemCount) {
+                sendMessage(SyncQueueItem.obtainMessage(UPDATE_ITEM_COUNT, generation, itemCount));
+            }
+
+            @Override
+            public void addTile(int generation, TileList.Tile<T> tile) {
+                sendMessage(SyncQueueItem.obtainMessage(ADD_TILE, generation, tile));
+            }
+
+            @Override
+            public void removeTile(int generation, int position) {
+                sendMessage(SyncQueueItem.obtainMessage(REMOVE_TILE, generation, position));
+            }
+
+            private void sendMessage(SyncQueueItem msg) {
+                mQueue.sendMessage(msg);
+                mMainThreadHandler.post(mMainThreadRunnable);
+            }
+
+            private Runnable mMainThreadRunnable = () -> {
                 SyncQueueItem msg = mQueue.next();
                 while (msg != null) {
                     switch (msg.what) {
@@ -57,41 +76,61 @@ class MessageThreadUtil<T> implements ThreadUtil<T> {
                     msg = mQueue.next();
                 }
             };
-
-            @Override
-            public void updateItemCount(int generation, int itemCount) {
-                sendMessage(SyncQueueItem.obtainMessage(UPDATE_ITEM_COUNT, generation, itemCount));
-            }
-
-            @Override
-            public void addTile(int generation, @NonNull TileList.Tile<T> tile) {
-                sendMessage(SyncQueueItem.obtainMessage(ADD_TILE, generation, tile));
-            }
-
-            @Override
-            public void removeTile(int generation, int position) {
-                sendMessage(SyncQueueItem.obtainMessage(REMOVE_TILE, generation, position));
-            }
-
-            private void sendMessage(SyncQueueItem msg) {
-                mQueue.sendMessage(msg);
-                mMainThreadHandler.post(mMainThreadRunnable);
-            }
         };
     }
 
-    /* AsyncTask */
+    @SuppressWarnings("deprecation") /* AsyncTask */
     @Override
-    public BackgroundCallback<T> getBackgroundProxy(BackgroundCallback<T> callback) {
+    public BackgroundCallback<T> getBackgroundProxy(final BackgroundCallback<T> callback) {
         return new BackgroundCallback<T>() {
+            final MessageQueue mQueue = new MessageQueue();
+            private final Executor mExecutor = android.os.AsyncTask.THREAD_POOL_EXECUTOR;
+            AtomicBoolean mBackgroundRunning = new AtomicBoolean(false);
+
             static final int REFRESH = 1;
             static final int UPDATE_RANGE = 2;
             static final int LOAD_TILE = 3;
             static final int RECYCLE_TILE = 4;
-            final MessageQueue mQueue = new MessageQueue();
-            final AtomicBoolean mBackgroundRunning = new AtomicBoolean(false);
-            private final Executor mExecutor = Executors.newSingleThreadExecutor();
-            private final Runnable mBackgroundRunnable = () -> {
+
+            @Override
+            public void refresh(int generation) {
+                sendMessageAtFrontOfQueue(SyncQueueItem.obtainMessage(REFRESH, generation, null));
+            }
+
+            @Override
+            public void updateRange(int rangeStart, int rangeEnd,
+                                    int extRangeStart, int extRangeEnd, int scrollHint) {
+                sendMessageAtFrontOfQueue(SyncQueueItem.obtainMessage(UPDATE_RANGE,
+                        rangeStart, rangeEnd, extRangeStart, extRangeEnd, scrollHint, null));
+            }
+
+            @Override
+            public void loadTile(int position, int scrollHint) {
+                sendMessage(SyncQueueItem.obtainMessage(LOAD_TILE, position, scrollHint));
+            }
+
+            @Override
+            public void recycleTile(TileList.Tile<T> tile) {
+                sendMessage(SyncQueueItem.obtainMessage(RECYCLE_TILE, 0, tile));
+            }
+
+            private void sendMessage(SyncQueueItem msg) {
+                mQueue.sendMessage(msg);
+                maybeExecuteBackgroundRunnable();
+            }
+
+            private void sendMessageAtFrontOfQueue(SyncQueueItem msg) {
+                mQueue.sendMessageAtFrontOfQueue(msg);
+                maybeExecuteBackgroundRunnable();
+            }
+
+            private void maybeExecuteBackgroundRunnable() {
+                if (mBackgroundRunning.compareAndSet(false, true)) {
+                    mExecutor.execute(mBackgroundRunnable);
+                }
+            }
+
+            private Runnable mBackgroundRunnable = () -> {
                 while (true) {
                     SyncQueueItem msg = mQueue.next();
                     if (msg == null) {
@@ -122,44 +161,6 @@ class MessageThreadUtil<T> implements ThreadUtil<T> {
                 }
                 mBackgroundRunning.set(false);
             };
-
-            @Override
-            public void refresh(int generation) {
-                sendMessageAtFrontOfQueue(SyncQueueItem.obtainMessage(REFRESH, generation, null));
-            }
-
-            @Override
-            public void updateRange(int rangeStart, int rangeEnd,
-                                    int extRangeStart, int extRangeEnd, int scrollHint) {
-                sendMessageAtFrontOfQueue(SyncQueueItem.obtainMessage(UPDATE_RANGE,
-                        rangeStart, rangeEnd, extRangeStart, extRangeEnd, scrollHint, null));
-            }
-
-            @Override
-            public void loadTile(int position, int scrollHint) {
-                sendMessage(SyncQueueItem.obtainMessage(LOAD_TILE, position, scrollHint));
-            }
-
-            @Override
-            public void recycleTile(@NonNull TileList.Tile<T> tile) {
-                sendMessage(SyncQueueItem.obtainMessage(RECYCLE_TILE, 0, tile));
-            }
-
-            private void sendMessage(SyncQueueItem msg) {
-                mQueue.sendMessage(msg);
-                maybeExecuteBackgroundRunnable();
-            }
-
-            private void sendMessageAtFrontOfQueue(SyncQueueItem msg) {
-                mQueue.sendMessageAtFrontOfQueue(msg);
-                maybeExecuteBackgroundRunnable();
-            }
-
-            private void maybeExecuteBackgroundRunnable() {
-                if (mBackgroundRunning.compareAndSet(false, true)) {
-                    mExecutor.execute(mBackgroundRunnable);
-                }
-            }
         };
     }
 
@@ -169,8 +170,9 @@ class MessageThreadUtil<T> implements ThreadUtil<T> {
      */
     static class SyncQueueItem {
 
-        private static final Object sPoolLock = new Object();
         private static SyncQueueItem sPool;
+        private static final Object sPoolLock = new Object();
+        SyncQueueItem next;
         public int what;
         public int arg1;
         public int arg2;
@@ -178,12 +180,23 @@ class MessageThreadUtil<T> implements ThreadUtil<T> {
         public int arg4;
         public int arg5;
         public Object data;
-        SyncQueueItem next;
+
+        void recycle() {
+            next = null;
+            what = arg1 = arg2 = arg3 = arg4 = arg5 = 0;
+            data = null;
+            synchronized (sPoolLock) {
+                if (sPool != null) {
+                    next = sPool;
+                }
+                sPool = this;
+            }
+        }
 
         static SyncQueueItem obtainMessage(int what, int arg1, int arg2, int arg3, int arg4,
                                            int arg5, Object data) {
             synchronized (sPoolLock) {
-                SyncQueueItem item;
+                final SyncQueueItem item;
                 if (sPool == null) {
                     item = new SyncQueueItem();
                 } else {
@@ -209,31 +222,19 @@ class MessageThreadUtil<T> implements ThreadUtil<T> {
         static SyncQueueItem obtainMessage(int what, int arg1, Object data) {
             return obtainMessage(what, arg1, 0, 0, 0, 0, data);
         }
-
-        void recycle() {
-            next = null;
-            what = arg1 = arg2 = arg3 = arg4 = arg5 = 0;
-            data = null;
-            synchronized (sPoolLock) {
-                if (sPool != null) {
-                    next = sPool;
-                }
-                sPool = this;
-            }
-        }
     }
 
     static class MessageQueue {
 
-        private final Object mLock = new Object();
         private SyncQueueItem mRoot;
+        private final Object mLock = new Object();
 
         SyncQueueItem next() {
             synchronized (mLock) {
                 if (mRoot == null) {
                     return null;
                 }
-                SyncQueueItem next = mRoot;
+                final SyncQueueItem next = mRoot;
                 mRoot = mRoot.next;
                 return next;
             }

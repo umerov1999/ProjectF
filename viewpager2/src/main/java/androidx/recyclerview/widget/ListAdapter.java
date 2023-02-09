@@ -83,19 +83,19 @@ import java.util.List;
  *         }
  *     }
  * }</pre>
- * <p>
+ *
  * Advanced users that wish for more control over adapter behavior, or to provide a specific base
  * class should refer to {@link AsyncListDiffer}, which provides custom mapping from diff events
  * to adapter positions.
  *
- * @param <T>  Type of the Lists this Adapter will receive.
+ * @param <T> Type of the Lists this Adapter will receive.
  * @param <VH> A class that extends ViewHolder that will be used by the adapter.
  */
 public abstract class ListAdapter<T, VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> {
     final AsyncListDiffer<T> mDiffer;
     private final AsyncListDiffer.ListListener<T> mListener =
-            this::onCurrentListChanged;
+            ListAdapter.this::onCurrentListChanged;
 
     @SuppressWarnings("unused")
     protected ListAdapter(@NonNull DiffUtil.ItemCallback<T> diffCallback) {
@@ -132,11 +132,11 @@ public abstract class ListAdapter<T, VH extends RecyclerView.ViewHolder>
      * may not be executed. If List B is submitted immediately after List A, and is
      * committed directly, the callback associated with List A will not be run.
      *
-     * @param list           The new list to be displayed.
+     * @param list The new list to be displayed.
      * @param commitCallback Optional runnable that is executed when the List is committed, if
      *                       it is committed.
      */
-    public void submitList(@Nullable List<T> list, @Nullable Runnable commitCallback) {
+    public void submitList(@Nullable List<T> list, @Nullable final Runnable commitCallback) {
         mDiffer.submitList(list, commitCallback);
     }
 
@@ -159,6 +159,7 @@ public abstract class ListAdapter<T, VH extends RecyclerView.ViewHolder>
      * {@link #submitList(List)}.
      *
      * @return The list currently being displayed.
+     *
      * @see #onCurrentListChanged(List, List)
      */
     @NonNull
@@ -173,8 +174,9 @@ public abstract class ListAdapter<T, VH extends RecyclerView.ViewHolder>
      * submitted, the current List is represented as an empty List.
      *
      * @param previousList List that was displayed previously.
-     * @param currentList  new List being displayed, will be empty if {@code null} was passed to
-     *                     {@link #submitList(List)}.
+     * @param currentList new List being displayed, will be empty if {@code null} was passed to
+     *          {@link #submitList(List)}.
+     *
      * @see #getCurrentList()
      */
     public void onCurrentListChanged(@NonNull List<T> previousList, @NonNull List<T> currentList) {

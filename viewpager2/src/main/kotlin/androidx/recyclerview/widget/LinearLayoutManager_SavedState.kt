@@ -9,8 +9,13 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 class LinearLayoutManager_SavedState : Parcelable {
+    @JvmField
     var mAnchorPosition = 0
+
+    @JvmField
     var mAnchorOffset = 0
+
+    @JvmField
     var mAnchorLayoutFromEnd = false
 
     @Suppress("unused")
@@ -45,17 +50,13 @@ class LinearLayoutManager_SavedState : Parcelable {
         dest.writeInt(if (mAnchorLayoutFromEnd) 1 else 0)
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Parcelable.Creator<LinearLayoutManager_SavedState> =
-            object : Parcelable.Creator<LinearLayoutManager_SavedState> {
-                override fun createFromParcel(parcel: Parcel): LinearLayoutManager_SavedState {
-                    return LinearLayoutManager_SavedState(parcel)
-                }
+    companion object CREATOR : Parcelable.Creator<LinearLayoutManager_SavedState> {
+        override fun createFromParcel(parcel: Parcel): LinearLayoutManager_SavedState {
+            return LinearLayoutManager_SavedState(parcel)
+        }
 
-                override fun newArray(size: Int): Array<LinearLayoutManager_SavedState?> {
-                    return arrayOfNulls(size)
-                }
-            }
+        override fun newArray(size: Int): Array<LinearLayoutManager_SavedState?> {
+            return arrayOfNulls(size)
+        }
     }
 }

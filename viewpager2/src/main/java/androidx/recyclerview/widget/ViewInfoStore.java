@@ -57,9 +57,8 @@ class ViewInfoStore {
 
     /**
      * Adds the item information to the prelayout tracking
-     *
      * @param holder The ViewHolder whose information is being saved
-     * @param info   The information to save
+     * @param info The information to save
      */
     void addToPreLayout(RecyclerView.ViewHolder holder, RecyclerView.ItemAnimator.ItemHolderInfo info) {
         InfoRecord record = mLayoutHolderMap.get(holder);
@@ -72,7 +71,7 @@ class ViewInfoStore {
     }
 
     boolean isDisappearing(RecyclerView.ViewHolder holder) {
-        InfoRecord record = mLayoutHolderMap.get(holder);
+        final InfoRecord record = mLayoutHolderMap.get(holder);
         return record != null && ((record.flags & FLAG_DISAPPEARED) != 0);
     }
 
@@ -103,10 +102,10 @@ class ViewInfoStore {
         if (index < 0) {
             return null;
         }
-        InfoRecord record = mLayoutHolderMap.valueAt(index);
+        final InfoRecord record = mLayoutHolderMap.valueAt(index);
         if (record != null && (record.flags & flag) != 0) {
             record.flags &= ~flag;
-            RecyclerView.ItemAnimator.ItemHolderInfo info;
+            final RecyclerView.ItemAnimator.ItemHolderInfo info;
             if (flag == FLAG_PRE) {
                 info = record.preInfo;
             } else if (flag == FLAG_POST) {
@@ -126,8 +125,7 @@ class ViewInfoStore {
 
     /**
      * Adds the given ViewHolder to the oldChangeHolders list
-     *
-     * @param key    The key to identify the ViewHolder.
+     * @param key The key to identify the ViewHolder.
      * @param holder The ViewHolder to store
      */
     void addToOldChangeHolders(long key, RecyclerView.ViewHolder holder) {
@@ -141,7 +139,7 @@ class ViewInfoStore {
      * them.
      *
      * @param holder The ViewHolder to store
-     * @param info   The information to save
+     * @param info The information to save
      */
     void addToAppearedInPreLayoutHolders(RecyclerView.ViewHolder holder, RecyclerView.ItemAnimator.ItemHolderInfo info) {
         InfoRecord record = mLayoutHolderMap.get(holder);
@@ -155,20 +153,20 @@ class ViewInfoStore {
 
     /**
      * Checks whether the given ViewHolder is in preLayout list
-     *
      * @param viewHolder The ViewHolder to query
+     *
      * @return True if the ViewHolder is present in preLayout, false otherwise
      */
     boolean isInPreLayout(RecyclerView.ViewHolder viewHolder) {
-        InfoRecord record = mLayoutHolderMap.get(viewHolder);
+        final InfoRecord record = mLayoutHolderMap.get(viewHolder);
         return record != null && (record.flags & FLAG_PRE) != 0;
     }
 
     /**
      * Queries the oldChangeHolder list for the given key. If they are not tracked, simply returns
      * null.
-     *
      * @param key The key to be used to find the ViewHolder.
+     *
      * @return A ViewHolder if exists or null if it does not exist.
      */
     RecyclerView.ViewHolder getFromOldChangeHolders(long key) {
@@ -177,9 +175,8 @@ class ViewInfoStore {
 
     /**
      * Adds the item information to the post layout list
-     *
      * @param holder The ViewHolder whose information is being saved
-     * @param info   The information to save
+     * @param info The information to save
      */
     void addToPostLayout(RecyclerView.ViewHolder holder, RecyclerView.ItemAnimator.ItemHolderInfo info) {
         InfoRecord record = mLayoutHolderMap.get(holder);
@@ -208,7 +205,6 @@ class ViewInfoStore {
 
     /**
      * Removes a ViewHolder from disappearing list.
-     *
      * @param holder The ViewHolder to be removed from the disappearing list.
      */
     void removeFromDisappearedInLayout(RecyclerView.ViewHolder holder) {
@@ -221,8 +217,8 @@ class ViewInfoStore {
 
     void process(ProcessCallback callback) {
         for (int index = mLayoutHolderMap.size() - 1; index >= 0; index--) {
-            RecyclerView.ViewHolder viewHolder = mLayoutHolderMap.keyAt(index);
-            InfoRecord record = mLayoutHolderMap.removeAt(index);
+            final RecyclerView.ViewHolder viewHolder = mLayoutHolderMap.keyAt(index);
+            final InfoRecord record = mLayoutHolderMap.removeAt(index);
             if ((record.flags & FLAG_APPEAR_AND_DISAPPEAR) == FLAG_APPEAR_AND_DISAPPEAR) {
                 // Appeared then disappeared. Not useful for animations.
                 callback.unused(viewHolder);
@@ -258,7 +254,6 @@ class ViewInfoStore {
 
     /**
      * Removes the ViewHolder from all list
-     *
      * @param holder The ViewHolder which we should stop tracking
      */
     void removeViewHolder(RecyclerView.ViewHolder holder) {
@@ -268,7 +263,7 @@ class ViewInfoStore {
                 break;
             }
         }
-        InfoRecord info = mLayoutHolderMap.remove(holder);
+        final InfoRecord info = mLayoutHolderMap.remove(holder);
         if (info != null) {
             InfoRecord.recycle(info);
         }
@@ -284,14 +279,11 @@ class ViewInfoStore {
 
     interface ProcessCallback {
         void processDisappeared(RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ItemAnimator.ItemHolderInfo preInfo,
-                                @Nullable RecyclerView.ItemAnimator.ItemHolderInfo postInfo);
-
+                @Nullable RecyclerView.ItemAnimator.ItemHolderInfo postInfo);
         void processAppeared(RecyclerView.ViewHolder viewHolder, @Nullable RecyclerView.ItemAnimator.ItemHolderInfo preInfo,
-                             RecyclerView.ItemAnimator.ItemHolderInfo postInfo);
-
+                RecyclerView.ItemAnimator.ItemHolderInfo postInfo);
         void processPersistent(RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ItemAnimator.ItemHolderInfo preInfo,
-                               @NonNull RecyclerView.ItemAnimator.ItemHolderInfo postInfo);
-
+                @NonNull RecyclerView.ItemAnimator.ItemHolderInfo postInfo);
         void unused(RecyclerView.ViewHolder holder);
     }
 
@@ -307,12 +299,12 @@ class ViewInfoStore {
         static final int FLAG_APPEAR_AND_DISAPPEAR = FLAG_APPEAR | FLAG_DISAPPEARED;
         static final int FLAG_PRE_AND_POST = FLAG_PRE | FLAG_POST;
         static final int FLAG_APPEAR_PRE_AND_POST = FLAG_APPEAR | FLAG_PRE | FLAG_POST;
-        static final Pools.Pool<InfoRecord> sPool = new Pools.SimplePool<>(20);
         int flags;
         @Nullable
         RecyclerView.ItemAnimator.ItemHolderInfo preInfo;
         @Nullable
         RecyclerView.ItemAnimator.ItemHolderInfo postInfo;
+        static Pools.Pool<InfoRecord> sPool = new Pools.SimplePool<>(20);
 
         private InfoRecord() {
         }
@@ -331,7 +323,7 @@ class ViewInfoStore {
 
         static void drainCache() {
             //noinspection StatementWithEmptyBody
-            while (sPool.acquire() != null) ;
+            while (sPool.acquire() != null);
         }
     }
 }

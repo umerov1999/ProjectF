@@ -18,8 +18,6 @@ package androidx.recyclerview.widget;
 
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 /**
  * Helper class that keeps temporary state while {LayoutManager} is filling out the empty
  * space.
@@ -66,12 +64,12 @@ class LayoutState {
     /**
      * This is the target pixel closest to the start of the layout that we are trying to fill
      */
-    int mStartLine;
+    int mStartLine = 0;
 
     /**
      * This is the target pixel closest to the end of the layout that we are trying to fill
      */
-    int mEndLine;
+    int mEndLine = 0;
 
     /**
      * If true, layout should stop if a focusable view is added
@@ -97,12 +95,11 @@ class LayoutState {
      * @return The next element that we should render.
      */
     View next(RecyclerView.Recycler recycler) {
-        View view = recycler.getViewForPosition(mCurrentPosition);
+        final View view = recycler.getViewForPosition(mCurrentPosition);
         mCurrentPosition += mItemDirection;
         return view;
     }
 
-    @NonNull
     @Override
     public String toString() {
         return "LayoutState{"

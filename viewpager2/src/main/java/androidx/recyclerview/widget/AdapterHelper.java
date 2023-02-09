@@ -18,7 +18,6 @@ package androidx.recyclerview.widget;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.core.util.Pools;
 
 import java.util.ArrayList;
@@ -52,14 +51,22 @@ final class AdapterHelper implements OpReorderer.Callback {
     private static final boolean DEBUG = false;
 
     private static final String TAG = "AHT";
+
+    private Pools.Pool<UpdateOp> mUpdateOpPool = new Pools.SimplePool<>(UpdateOp.POOL_SIZE);
+
     final ArrayList<UpdateOp> mPendingUpdates = new ArrayList<>();
+
     final ArrayList<UpdateOp> mPostponedList = new ArrayList<>();
+
     final Callback mCallback;
-    final boolean mDisableRecycler;
-    final OpReorderer mOpReorderer;
-    private final Pools.Pool<UpdateOp> mUpdateOpPool = new Pools.SimplePool<>(UpdateOp.POOL_SIZE);
+
     Runnable mOnItemProcessedCallback;
-    private int mExistingUpdateTypes;
+
+    final boolean mDisableRecycler;
+
+    final OpReorderer mOpReorderer;
+
+    private int mExistingUpdateTypes = 0;
 
     AdapterHelper(Callback callback) {
         this(callback, false);
@@ -84,7 +91,7 @@ final class AdapterHelper implements OpReorderer.Callback {
 
     void preProcess() {
         mOpReorderer.reorderOps(mPendingUpdates);
-        int count = mPendingUpdates.size();
+        final int count = mPendingUpdates.size();
         for (int i = 0; i < count; i++) {
             UpdateOp op = mPendingUpdates.get(i);
             switch (op.cmd) {
@@ -109,7 +116,7 @@ final class AdapterHelper implements OpReorderer.Callback {
     }
 
     void consumePostponedUpdates() {
-        int count = mPostponedList.size();
+        final int count = mPostponedList.size();
         for (int i = 0; i < count; i++) {
             mCallback.onDispatchSecondPass(mPostponedList.get(i));
         }
@@ -241,7 +248,7 @@ final class AdapterHelper implements OpReorderer.Callback {
         }
         int tmpCnt = 1;
         int offsetPositionForPartial = op.positionStart;
-        int positionMultiplier;
+        final int positionMultiplier;
         switch (op.cmd) {
             case UpdateOp.UPDATE:
                 positionMultiplier = 1;
@@ -253,7 +260,7 @@ final class AdapterHelper implements OpReorderer.Callback {
                 throw new IllegalArgumentException("op should be remove or update." + op);
         }
         for (int p = 1; p < op.itemCount; p++) {
-            int pos = op.positionStart + (positionMultiplier * p);
+            final int pos = op.positionStart + (positionMultiplier * p);
             int updatedPos = updatePositionWithPostponed(pos, op.cmd);
             if (DEBUG) {
                 Log.d(TAG, "pos:" + pos + ",updatedPos:" + updatedPos);
@@ -320,7 +327,7 @@ final class AdapterHelper implements OpReorderer.Callback {
     }
 
     private int updatePositionWithPostponed(int pos, int cmd) {
-        int count = mPostponedList.size();
+        final int count = mPostponedList.size();
         for (int i = count - 1; i >= 0; i--) {
             UpdateOp postponed = mPostponedList.get(i);
             if (postponed.cmd == UpdateOp.MOVE) {
@@ -401,7 +408,7 @@ final class AdapterHelper implements OpReorderer.Callback {
     }
 
     private boolean canFindInPreLayout(int position) {
-        int count = mPostponedList.size();
+        final int count = mPostponedList.size();
         for (int i = 0; i < count; i++) {
             UpdateOp op = mPostponedList.get(i);
             if (op.cmd == UpdateOp.MOVE) {
@@ -410,7 +417,7 @@ final class AdapterHelper implements OpReorderer.Callback {
                 }
             } else if (op.cmd == UpdateOp.ADD) {
                 // TODO optimize.
-                int end = op.positionStart + op.itemCount;
+                final int end = op.positionStart + op.itemCount;
                 for (int pos = op.positionStart; pos < end; pos++) {
                     if (findPositionOffset(pos, i + 1) == position) {
                         return true;
@@ -548,7 +555,7 @@ final class AdapterHelper implements OpReorderer.Callback {
         // we still consume postponed updates (if there is) in case there was a pre-process call
         // w/o a matching consumePostponedUpdates.
         consumePostponedUpdates();
-        int count = mPendingUpdates.size();
+        final int count = mPendingUpdates.size();
         for (int i = 0; i < count; i++) {
             UpdateOp op = mPendingUpdates.get(i);
             switch (op.cmd) {
@@ -578,7 +585,7 @@ final class AdapterHelper implements OpReorderer.Callback {
     }
 
     public int applyPendingUpdatesToPosition(int position) {
-        int size = mPendingUpdates.size();
+        final int size = mPendingUpdates.size();
         for (int i = 0; i < size; i++) {
             UpdateOp op = mPendingUpdates.get(i);
             switch (op.cmd) {
@@ -589,7 +596,7 @@ final class AdapterHelper implements OpReorderer.Callback {
                     break;
                 case UpdateOp.REMOVE:
                     if (op.positionStart <= position) {
-                        int end = op.positionStart + op.itemCount;
+                        final int end = op.positionStart + op.itemCount;
                         if (end > position) {
                             return RecyclerView.NO_POSITION;
                         }
@@ -615,58 +622,6 @@ final class AdapterHelper implements OpReorderer.Callback {
 
     boolean hasUpdates() {
         return !mPostponedList.isEmpty() && !mPendingUpdates.isEmpty();
-    }
-
-    @Override
-    public UpdateOp obtainUpdateOp(int cmd, int positionStart, int itemCount, Object payload) {
-        UpdateOp op = mUpdateOpPool.acquire();
-        if (op == null) {
-            op = new UpdateOp(cmd, positionStart, itemCount, payload);
-        } else {
-            op.cmd = cmd;
-            op.positionStart = positionStart;
-            op.itemCount = itemCount;
-            op.payload = payload;
-        }
-        return op;
-    }
-
-    @Override
-    public void recycleUpdateOp(UpdateOp op) {
-        if (!mDisableRecycler) {
-            op.payload = null;
-            mUpdateOpPool.release(op);
-        }
-    }
-
-    void recycleUpdateOpsAndClearList(List<UpdateOp> ops) {
-        int count = ops.size();
-        for (int i = 0; i < count; i++) {
-            recycleUpdateOp(ops.get(i));
-        }
-        ops.clear();
-    }
-
-    /**
-     * Contract between AdapterHelper and RecyclerView.
-     */
-    interface Callback {
-
-        RecyclerView.ViewHolder findViewHolder(int position);
-
-        void offsetPositionsForRemovingInvisible(int positionStart, int itemCount);
-
-        void offsetPositionsForRemovingLaidOutOrNewView(int positionStart, int itemCount);
-
-        void markViewHoldersUpdated(int positionStart, int itemCount, Object payloads);
-
-        void onDispatchFirstPass(UpdateOp updateOp);
-
-        void onDispatchSecondPass(UpdateOp updateOp);
-
-        void offsetPositionsForAdd(int positionStart, int itemCount);
-
-        void offsetPositionsForMove(int from, int to);
     }
 
     /**
@@ -714,7 +669,6 @@ final class AdapterHelper implements OpReorderer.Callback {
             return "??";
         }
 
-        @NonNull
         @Override
         public String toString() {
             return Integer.toHexString(System.identityHashCode(this))
@@ -749,8 +703,14 @@ final class AdapterHelper implements OpReorderer.Callback {
                 return false;
             }
             if (payload != null) {
-                return payload.equals(op.payload);
-            } else return op.payload == null;
+                if (!payload.equals(op.payload)) {
+                    return false;
+                }
+            } else if (op.payload != null) {
+                return false;
+            }
+
+            return true;
         }
 
         @Override
@@ -760,5 +720,57 @@ final class AdapterHelper implements OpReorderer.Callback {
             result = 31 * result + itemCount;
             return result;
         }
+    }
+
+    @Override
+    public UpdateOp obtainUpdateOp(int cmd, int positionStart, int itemCount, Object payload) {
+        UpdateOp op = mUpdateOpPool.acquire();
+        if (op == null) {
+            op = new UpdateOp(cmd, positionStart, itemCount, payload);
+        } else {
+            op.cmd = cmd;
+            op.positionStart = positionStart;
+            op.itemCount = itemCount;
+            op.payload = payload;
+        }
+        return op;
+    }
+
+    @Override
+    public void recycleUpdateOp(UpdateOp op) {
+        if (!mDisableRecycler) {
+            op.payload = null;
+            mUpdateOpPool.release(op);
+        }
+    }
+
+    void recycleUpdateOpsAndClearList(List<UpdateOp> ops) {
+        final int count = ops.size();
+        for (int i = 0; i < count; i++) {
+            recycleUpdateOp(ops.get(i));
+        }
+        ops.clear();
+    }
+
+    /**
+     * Contract between AdapterHelper and RecyclerView.
+     */
+    interface Callback {
+
+        RecyclerView.ViewHolder findViewHolder(int position);
+
+        void offsetPositionsForRemovingInvisible(int positionStart, int itemCount);
+
+        void offsetPositionsForRemovingLaidOutOrNewView(int positionStart, int itemCount);
+
+        void markViewHoldersUpdated(int positionStart, int itemCount, Object payloads);
+
+        void onDispatchFirstPass(UpdateOp updateOp);
+
+        void onDispatchSecondPass(UpdateOp updateOp);
+
+        void offsetPositionsForAdd(int positionStart, int itemCount);
+
+        void offsetPositionsForMove(int from, int to);
     }
 }

@@ -51,31 +51,37 @@ public class SortedList<T> {
     private static final int INSERTION = 1;
     private static final int DELETION = 1 << 1;
     private static final int LOOKUP = 1 << 2;
-    private final Class<T> mTClass;
     T[] mData;
+
     /**
      * A reference to the previous set of data that is kept during a mutation operation (addAll or
      * replaceAll).
      */
     private T[] mOldData;
+
     /**
      * The current index into mOldData that has not yet been processed during a mutation operation
      * (addAll or replaceAll).
      */
     private int mOldDataStart;
     private int mOldDataSize;
+
     /**
      * The current index into the new data that has not yet been processed during a mutation
      * operation (addAll or replaceAll).
      */
     private int mNewDataStart;
+
     /**
      * The callback instance that controls the behavior of the SortedList and get notified when
      * changes happen.
      */
     private Callback mCallback;
+
     private BatchedCallback mBatchedCallback;
+
     private int mSize;
+    private final Class<T> mTClass;
 
     /**
      * Creates a new SortedList of type T.
@@ -129,6 +135,7 @@ public class SortedList<T> {
      * {@link #indexOf(Object)} before you update the object.
      *
      * @param item The item to be added into the list.
+     *
      * @return The index of the newly added item.
      * @see Callback#compare(Object, Object)
      * @see Callback#areItemsTheSame(Object, Object)
@@ -148,8 +155,7 @@ public class SortedList<T> {
      * extra memory allocation, in which case you should not continue to reference or modify the
      * array yourself.
      * <p>
-     *
-     * @param items          Array of items to be added into the list.
+     * @param items Array of items to be added into the list.
      * @param mayModifyInput If true, SortedList is allowed to modify and permanently reference the
      *                       input array.
      * @see SortedList#addAll(T[] items)
@@ -170,8 +176,9 @@ public class SortedList<T> {
     /**
      * Adds the given items to the list. Does not modify or retain the input.
      *
-     * @param items Array of items to be added into the list.
      * @see SortedList#addAll(T[] items, boolean mayModifyInput)
+     *
+     * @param items Array of items to be added into the list.
      */
     public void addAll(@NonNull T... items) {
         addAll(items, false);
@@ -180,8 +187,9 @@ public class SortedList<T> {
     /**
      * Adds the given items to the list. Does not modify or retain the input.
      *
-     * @param items Collection of items to be added into the list.
      * @see SortedList#addAll(T[] items, boolean mayModifyInput)
+     *
+     * @param items Collection of items to be added into the list.
      */
     public void addAll(@NonNull Collection<T> items) {
         T[] copy = (T[]) Array.newInstance(mTClass, items.size());
@@ -202,8 +210,7 @@ public class SortedList<T> {
      * and {@link ListUpdateCallback#onRemoved(int, int)} events.  See {@link DiffUtil} if you want
      * your implementation to dispatch move events.
      * <p>
-     *
-     * @param items          Array of items to replace current items.
+     * @param items Array of items to replace current items.
      * @param mayModifyInput If true, SortedList is allowed to modify and permanently reference the
      *                       input array.
      * @see #replaceAll(T[])
@@ -222,8 +229,9 @@ public class SortedList<T> {
      * Replaces the current items with the new items, dispatching {@link ListUpdateCallback} events
      * for each change detected as appropriate.  Does not modify or retain the input.
      *
-     * @param items Array of items to replace current items.
      * @see #replaceAll(T[], boolean)
+     *
+     * @param items Array of items to replace current items.
      */
     public void replaceAll(@NonNull T... items) {
         replaceAll(items, false);
@@ -233,8 +241,9 @@ public class SortedList<T> {
      * Replaces the current items with the new items, dispatching {@link ListUpdateCallback} events
      * for each change detected as appropriate. Does not modify or retain the input.
      *
-     * @param items Array of items to replace current items.
      * @see #replaceAll(T[], boolean)
+     *
+     * @param items Array of items to replace current items.
      */
     public void replaceAll(@NonNull Collection<T> items) {
         T[] copy = (T[]) Array.newInstance(mTClass, items.size());
@@ -246,7 +255,7 @@ public class SortedList<T> {
             return;
         }
 
-        int newSize = sortAndDedup(newItems);
+        final int newSize = sortAndDedup(newItems);
 
         if (mSize == 0) {
             mData = newItems;
@@ -258,7 +267,7 @@ public class SortedList<T> {
     }
 
     private void replaceAllInternal(@NonNull T[] newData) {
-        boolean forceBatchedUpdates = !(mCallback instanceof BatchedCallback);
+        final boolean forceBatchedUpdates = !(mCallback instanceof BatchedCallback);
         if (forceBatchedUpdates) {
             beginBatchedUpdates();
         }
@@ -362,7 +371,7 @@ public class SortedList<T> {
 
             if (compare == 0) {
                 // The range of equal items continues, update it.
-                int sameItemPos = findSameItem(currentItem, items, rangeStart, rangeEnd);
+                final int sameItemPos = findSameItem(currentItem, items, rangeStart, rangeEnd);
                 if (sameItemPos != INVALID_POSITION) {
                     // Replace the duplicate item.
                     items[sameItemPos] = currentItem;
@@ -398,7 +407,7 @@ public class SortedList<T> {
      * This method assumes that newItems are sorted and deduplicated.
      */
     private void merge(T[] newData, int newDataSize) {
-        boolean forceBatchedUpdates = !(mCallback instanceof BatchedCallback);
+        final boolean forceBatchedUpdates = !(mCallback instanceof BatchedCallback);
         if (forceBatchedUpdates) {
             beginBatchedUpdates();
         }
@@ -407,7 +416,7 @@ public class SortedList<T> {
         mOldDataStart = 0;
         mOldDataSize = mSize;
 
-        int mergedCapacity = mSize + newDataSize + CAPACITY_GROWTH;
+        final int mergedCapacity = mSize + newDataSize + CAPACITY_GROWTH;
         mData = (T[]) Array.newInstance(mTClass, mergedCapacity);
         mNewDataStart = 0;
 
@@ -560,6 +569,7 @@ public class SortedList<T> {
      * Removes the provided item from the list and calls {@link Callback#onRemoved(int, int)}.
      *
      * @param item The item to be removed from the list.
+     *
      * @return True if item is removed, false if item cannot be found in the list.
      */
     public boolean remove(T item) {
@@ -571,6 +581,7 @@ public class SortedList<T> {
      * Removes the item at the given index and calls {@link Callback#onRemoved(int, int)}.
      *
      * @param index The index of the item to be removed.
+     *
      * @return The removed item.
      */
     public T removeItemAt(int index) {
@@ -620,12 +631,12 @@ public class SortedList<T> {
      */
     public void updateItemAt(int index, T item) {
         throwIfInMutationOperation();
-        T existing = get(index);
+        final T existing = get(index);
         // assume changed if the same object is given back
         boolean contentsChanged = existing == item || !mCallback.areContentsTheSame(existing, item);
         if (existing != item) {
             // different items, we can use comparison and may avoid lookup
-            int cmp = mCallback.compare(existing, item);
+            final int cmp = mCallback.compare(existing, item);
             if (cmp == 0) {
                 mData[index] = item;
                 if (contentsChanged) {
@@ -675,7 +686,7 @@ public class SortedList<T> {
     public void recalculatePositionOfItemAt(int index) {
         throwIfInMutationOperation();
         // TODO can be improved
-        T item = get(index);
+        final T item = get(index);
         removeItemAtIndex(index, false);
         int newIndex = add(item, false);
         if (index != newIndex) {
@@ -687,6 +698,7 @@ public class SortedList<T> {
      * Returns the item at the given index.
      *
      * @param index The index of the item to retrieve.
+     *
      * @return The item at the given index.
      * @throws java.lang.IndexOutOfBoundsException if provided index is negative or larger than the
      *                                             size of the list.
@@ -710,6 +722,7 @@ public class SortedList<T> {
      * Returns the position of the provided item.
      *
      * @param item The item to query for position.
+     *
      * @return The position of the provided item or {@link #INVALID_POSITION} if item is not in the
      * list.
      */
@@ -730,9 +743,9 @@ public class SortedList<T> {
 
     private int findIndexOf(T item, T[] mData, int left, int right, int reason) {
         while (left < right) {
-            int middle = (left + right) / 2;
+            final int middle = (left + right) / 2;
             T myItem = mData[middle];
-            int cmp = mCallback.compare(myItem, item);
+            final int cmp = mCallback.compare(myItem, item);
             if (cmp < 0) {
                 left = middle + 1;
             } else if (cmp == 0) {
@@ -812,7 +825,7 @@ public class SortedList<T> {
         if (mSize == 0) {
             return;
         }
-        int prevSize = mSize;
+        final int prevSize = mSize;
         Arrays.fill(mData, 0, prevSize, null);
         mSize = 0;
         mCallback.onRemoved(0, prevSize);
@@ -834,6 +847,7 @@ public class SortedList<T> {
          *
          * @param o1 The first object to compare.
          * @param o2 The second object to compare.
+         *
          * @return a negative integer, zero, or a positive integer as the
          * first argument is less than, equal to, or greater than the
          * second.
@@ -870,6 +884,7 @@ public class SortedList<T> {
          *
          * @param oldItem The previous representation of the object.
          * @param newItem The new object that replaces the previous one.
+         *
          * @return True if the contents of the items are the same or false if they are different.
          */
         abstract public boolean areContentsTheSame(T2 oldItem, T2 newItem);
@@ -881,6 +896,7 @@ public class SortedList<T> {
          *
          * @param item1 The first item to check.
          * @param item2 The second item to check.
+         *
          * @return True if the two items represent the same object or false if they are different.
          */
         abstract public boolean areItemsTheSame(T2 item1, T2 item2);
@@ -928,7 +944,6 @@ public class SortedList<T> {
 
         final Callback<T2> mWrappedCallback;
         private final BatchingListUpdateCallback mBatchingListUpdateCallback;
-
         /**
          * Creates a new BatchedCallback that wraps the provided Callback.
          *

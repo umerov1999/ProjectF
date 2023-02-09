@@ -67,7 +67,7 @@ interface StableIdStorage {
      * and always replaces the local id w/ a globally available ID to be consistent.
      */
     class IsolatedStableIdStorage implements StableIdStorage {
-        long mNextStableId;
+        long mNextStableId = 0;
 
         long obtainId() {
             return mNextStableId++;

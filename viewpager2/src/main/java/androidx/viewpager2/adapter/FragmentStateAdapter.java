@@ -22,7 +22,6 @@ import static androidx.lifecycle.Lifecycle.State.STARTED;
 import static androidx.recyclerview.widget.RecyclerView.NO_ID;
 import static androidx.viewpager2.adapter.FragmentStateAdapter.FragmentTransactionCallback.OnPostEventListener;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -63,7 +62,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * re-usable container for a {@link Fragment} in later stages.
  * <li>{@link RecyclerView.Adapter#onBindViewHolder} we ask for a {@link Fragment} for the
  * position. If we already have the fragment, or have previously saved its state, we use those.
- * <li> we attach the {@link Fragment} to a
+ * <li>{@link RecyclerView.Adapter#onAttachedToWindow} we attach the {@link Fragment} to a
  * container.
  * <li>{@link RecyclerView.Adapter#onViewRecycled} we remove, save state, destroy the
  * {@link Fragment}.
@@ -86,20 +85,23 @@ public abstract class FragmentStateAdapter extends
     // Fragment bookkeeping
     @SuppressWarnings("WeakerAccess") // to avoid creation of a synthetic accessor
     final LongSparseArray<Fragment> mFragments = new LongSparseArray<>();
-    @SuppressWarnings("WeakerAccess")
-    final // to avoid creation of a synthetic accessor
-    FragmentEventDispatcher mFragmentEventDispatcher = new FragmentEventDispatcher();
     private final LongSparseArray<Fragment.SavedState> mSavedStates = new LongSparseArray<>();
     private final LongSparseArray<Integer> mItemIdToViewHolder = new LongSparseArray<>();
+
+    private FragmentMaxLifecycleEnforcer mFragmentMaxLifecycleEnforcer;
+
+    @SuppressWarnings("WeakerAccess") // to avoid creation of a synthetic accessor
+            FragmentEventDispatcher mFragmentEventDispatcher = new FragmentEventDispatcher();
+
     // Fragment GC
     @SuppressWarnings("WeakerAccess") // to avoid creation of a synthetic accessor
-            boolean mIsInGracePeriod;
-    private FragmentMaxLifecycleEnforcer mFragmentMaxLifecycleEnforcer;
-    private boolean mHasStaleFragments;
+    boolean mIsInGracePeriod = false;
+    private boolean mHasStaleFragments = false;
 
     /**
      * @param fragmentActivity if the {@link ViewPager2} lives directly in a
-     *                         {@link FragmentActivity} subclass.
+     * {@link FragmentActivity} subclass.
+     *
      * @see FragmentStateAdapter#FragmentStateAdapter(Fragment)
      * @see FragmentStateAdapter#FragmentStateAdapter(FragmentManager, Lifecycle)
      */
@@ -109,6 +111,7 @@ public abstract class FragmentStateAdapter extends
 
     /**
      * @param fragment if the {@link ViewPager2} lives directly in a {@link Fragment} subclass.
+     *
      * @see FragmentStateAdapter#FragmentStateAdapter(FragmentActivity)
      * @see FragmentStateAdapter#FragmentStateAdapter(FragmentManager, Lifecycle)
      */
@@ -118,34 +121,18 @@ public abstract class FragmentStateAdapter extends
 
     /**
      * @param fragmentManager of {@link ViewPager2}'s host
-     * @param lifecycle       of {@link ViewPager2}'s host
+     * @param lifecycle of {@link ViewPager2}'s host
+     *
      * @see FragmentStateAdapter#FragmentStateAdapter(FragmentActivity)
      * @see FragmentStateAdapter#FragmentStateAdapter(Fragment)
      */
     public FragmentStateAdapter(@NonNull FragmentManager fragmentManager,
-                                @NonNull Lifecycle lifecycle) {
+            @NonNull Lifecycle lifecycle) {
         mFragmentManager = fragmentManager;
         mLifecycle = lifecycle;
         super.setHasStableIds(true);
     }
 
-    // Helper function for dealing with save / restore state
-    private static @NonNull
-    String createKey(@NonNull String prefix, long id) {
-        return prefix + id;
-    }
-
-    // Helper function for dealing with save / restore state
-    private static boolean isValidKey(@NonNull String key, @NonNull String prefix) {
-        return key.startsWith(prefix) && key.length() > prefix.length();
-    }
-
-    // Helper function for dealing with save / restore state
-    private static long parseIdFromKey(@NonNull String key, @NonNull String prefix) {
-        return Long.parseLong(key.substring(prefix.length()));
-    }
-
-    @SuppressLint("RestrictedApi")
     @CallSuper
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -171,11 +158,9 @@ public abstract class FragmentStateAdapter extends
      *     will be saved. When the item is close to the viewport again, a new Fragment will be
      *     requested, and a previously saved state will be used to initialize it.
      * </ul>
-     *
      * @see ViewPager2#setOffscreenPageLimit
      */
-    public abstract @NonNull
-    Fragment createFragment(int position);
+    public abstract @NonNull Fragment createFragment(int position);
 
     @NonNull
     @Override
@@ -184,10 +169,10 @@ public abstract class FragmentStateAdapter extends
     }
 
     @Override
-    public final void onBindViewHolder(@NonNull FragmentViewHolder holder, int position) {
-        long itemId = holder.getItemId();
-        int viewHolderId = holder.getContainer().getId();
-        Long boundItemId = itemForViewHolder(viewHolderId); // item currently bound to the VH
+    public final void onBindViewHolder(final @NonNull FragmentViewHolder holder, int position) {
+        final long itemId = holder.getItemId();
+        final int viewHolderId = holder.getContainer().getId();
+        final Long boundItemId = itemForViewHolder(viewHolderId); // item currently bound to the VH
         if (boundItemId != null && boundItemId != itemId) {
             removeFragment(boundItemId);
             mItemIdToViewHolder.remove(boundItemId);
@@ -198,7 +183,7 @@ public abstract class FragmentStateAdapter extends
 
         /** Special case when {@link RecyclerView} decides to keep the {@link container}
          * attached to the window, but not to the view hierarchy (i.e. parent is null) */
-        FrameLayout container = holder.getContainer();
+        final FrameLayout container = holder.getContainer();
         if (ViewCompat.isAttachedToWindow(container)) {
             if (container.getParent() != null) {
                 throw new IllegalStateException("Design assumption violated.");
@@ -206,7 +191,7 @@ public abstract class FragmentStateAdapter extends
             container.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                 @Override
                 public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                           int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
                     if (container.getParent() != null) {
                         container.removeOnLayoutChangeListener(this);
                         placeFragmentInViewHolder(holder);
@@ -218,20 +203,7 @@ public abstract class FragmentStateAdapter extends
         gcFragments();
     }
 
-    public void clearAllFragments() {
-        Set<Long> toRemove = new ArraySet<>();
-        for (int ix = 0; ix < mFragments.size(); ix++) {
-            long itemId = mFragments.keyAt(ix);
-            mItemIdToViewHolder.remove(itemId);
-            toRemove.add(itemId);
-        }
-        for (Long itemId : toRemove) {
-            removeFragment(itemId);
-        }
-    }
-
-    @SuppressWarnings("WeakerAccess")
-        // to avoid creation of a synthetic accessor
+    @SuppressWarnings("WeakerAccess") // to avoid creation of a synthetic accessor
     void gcFragments() {
         if (!mHasStaleFragments || shouldDelayFragmentTransactions()) {
             return;
@@ -316,7 +288,7 @@ public abstract class FragmentStateAdapter extends
     }
 
     @Override
-    public final void onViewAttachedToWindow(@NonNull FragmentViewHolder holder) {
+    public final void onViewAttachedToWindow(@NonNull final FragmentViewHolder holder) {
         placeFragmentInViewHolder(holder);
         gcFragments();
     }
@@ -324,9 +296,8 @@ public abstract class FragmentStateAdapter extends
     /**
      * @param holder that has been bound to a Fragment in the {@link #onBindViewHolder} stage.
      */
-    @SuppressWarnings("WeakerAccess")
-    // to avoid creation of a synthetic accessor
-    void placeFragmentInViewHolder(@NonNull FragmentViewHolder holder) {
+    @SuppressWarnings("WeakerAccess") // to avoid creation of a synthetic accessor
+    void placeFragmentInViewHolder(@NonNull final FragmentViewHolder holder) {
         Fragment fragment = mFragments.get(holder.getItemId());
         if (fragment == null) {
             throw new IllegalStateException("Design assumption violated.");
@@ -399,7 +370,7 @@ public abstract class FragmentStateAdapter extends
             mLifecycle.addObserver(new LifecycleEventObserver() {
                 @Override
                 public void onStateChanged(@NonNull LifecycleOwner source,
-                                           @NonNull Lifecycle.Event event) {
+                        @NonNull Lifecycle.Event event) {
                     if (shouldDelayFragmentTransactions()) {
                         return;
                     }
@@ -412,7 +383,7 @@ public abstract class FragmentStateAdapter extends
         }
     }
 
-    private void scheduleViewAttach(Fragment fragment, @NonNull FrameLayout container) {
+    private void scheduleViewAttach(final Fragment fragment, @NonNull final FrameLayout container) {
         // After a config change, Fragments that were in FragmentManager will be recreated. Since
         // ViewHolder container ids are dynamically generated, we opted to manually handle
         // attaching Fragment views to containers. For consistency, we use the same mechanism for
@@ -423,8 +394,8 @@ public abstract class FragmentStateAdapter extends
                     @SuppressWarnings("ReferenceEquality")
                     @Override
                     public void onFragmentViewCreated(@NonNull FragmentManager fm,
-                                                      @NonNull Fragment f, @NonNull View v,
-                                                      @Nullable Bundle savedInstanceState) {
+                            @NonNull Fragment f, @NonNull View v,
+                            @Nullable Bundle savedInstanceState) {
                         if (f == fragment) {
                             fm.unregisterFragmentLifecycleCallbacks(this);
                             addViewToContainer(v, container);
@@ -433,8 +404,7 @@ public abstract class FragmentStateAdapter extends
                 }, false);
     }
 
-    @SuppressWarnings("WeakerAccess")
-        // to avoid creation of a synthetic accessor
+    @SuppressWarnings("WeakerAccess") // to avoid creation of a synthetic accessor
     void addViewToContainer(@NonNull View v, @NonNull FrameLayout container) {
         if (container.getChildCount() > 1) {
             throw new IllegalStateException("Design assumption violated.");
@@ -457,8 +427,8 @@ public abstract class FragmentStateAdapter extends
 
     @Override
     public final void onViewRecycled(@NonNull FragmentViewHolder holder) {
-        int viewHolderId = holder.getContainer().getId();
-        Long boundItemId = itemForViewHolder(viewHolderId); // item currently bound to the VH
+        final int viewHolderId = holder.getContainer().getId();
+        final Long boundItemId = itemForViewHolder(viewHolderId); // item currently bound to the VH
         if (boundItemId != null) {
             removeFragment(boundItemId);
             mItemIdToViewHolder.remove(boundItemId);
@@ -529,8 +499,7 @@ public abstract class FragmentStateAdapter extends
         }
     }
 
-    @SuppressWarnings("WeakerAccess")
-        // to avoid creation of a synthetic accessor
+    @SuppressWarnings("WeakerAccess") // to avoid creation of a synthetic accessor
     boolean shouldDelayFragmentTransactions() {
         return mFragmentManager.isStateSaved();
     }
@@ -569,8 +538,7 @@ public abstract class FragmentStateAdapter extends
     }
 
     @Override
-    public final @NonNull
-    Parcelable saveState() {
+    public final @NonNull Parcelable saveState() {
         /** TODO(b/122670461): use custom {@link Parcelable} instead of Bundle to save space */
         Bundle savedState = new Bundle(mFragments.size() + mSavedStates.size());
 
@@ -596,8 +564,8 @@ public abstract class FragmentStateAdapter extends
         return savedState;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    @SuppressWarnings("deprecation")
     public final void restoreState(@NonNull Parcelable savedState) {
         if (!mSavedStates.isEmpty() || !mFragments.isEmpty()) {
             throw new IllegalStateException(
@@ -644,8 +612,8 @@ public abstract class FragmentStateAdapter extends
     }
 
     private void scheduleGracePeriodEnd() {
-        Handler handler = new Handler(Looper.getMainLooper());
-        Runnable runnable = () -> {
+        final Handler handler = new Handler(Looper.getMainLooper());
+        final Runnable runnable = () -> {
             mIsInGracePeriod = false;
             gcFragments(); // good opportunity to GC
         };
@@ -653,7 +621,7 @@ public abstract class FragmentStateAdapter extends
         mLifecycle.addObserver(new LifecycleEventObserver() {
             @Override
             public void onStateChanged(@NonNull LifecycleOwner source,
-                                       @NonNull Lifecycle.Event event) {
+                    @NonNull Lifecycle.Event event) {
                 if (event == Lifecycle.Event.ON_DESTROY) {
                     handler.removeCallbacks(runnable);
                     source.getLifecycle().removeObserver(this);
@@ -664,182 +632,19 @@ public abstract class FragmentStateAdapter extends
         handler.postDelayed(runnable, GRACE_WINDOW_TIME_MS);
     }
 
-    /**
-     * Registers a {@link FragmentTransactionCallback} to listen to fragment lifecycle changes
-     * that happen inside the adapter.
-     *
-     * @param callback Callback to register
-     */
-    public void registerFragmentTransactionCallback(@NonNull FragmentTransactionCallback callback) {
-        mFragmentEventDispatcher.registerCallback(callback);
+    // Helper function for dealing with save / restore state
+    private static @NonNull String createKey(@NonNull String prefix, long id) {
+        return prefix + id;
     }
 
-    /**
-     * Unregisters a {@link FragmentTransactionCallback}.
-     *
-     * @param callback Callback to unregister
-     * @see #registerFragmentTransactionCallback
-     */
-    public void unregisterFragmentTransactionCallback(
-            @NonNull FragmentTransactionCallback callback) {
-        mFragmentEventDispatcher.unregisterCallback(callback);
+    // Helper function for dealing with save / restore state
+    private static boolean isValidKey(@NonNull String key, @NonNull String prefix) {
+        return key.startsWith(prefix) && key.length() > prefix.length();
     }
 
-    /**
-     * Simplified {@link RecyclerView.AdapterDataObserver} for clients interested in any data-set
-     * changes regardless of their nature.
-     */
-    private abstract static class DataSetChangeObserver extends RecyclerView.AdapterDataObserver {
-        @Override
-        public abstract void onChanged();
-
-        @Override
-        public final void onItemRangeChanged(int positionStart, int itemCount) {
-            onChanged();
-        }
-
-        @Override
-        public final void onItemRangeChanged(int positionStart, int itemCount,
-                                             @Nullable Object payload) {
-            onChanged();
-        }
-
-        @Override
-        public final void onItemRangeInserted(int positionStart, int itemCount) {
-            onChanged();
-        }
-
-        @Override
-        public final void onItemRangeRemoved(int positionStart, int itemCount) {
-            onChanged();
-        }
-
-        @Override
-        public final void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-            onChanged();
-        }
-    }
-
-    @SuppressWarnings("WeakerAccess") // to avoid creation of a synthetic accessor
-    static class FragmentEventDispatcher {
-        private final List<FragmentTransactionCallback> mCallbacks = new CopyOnWriteArrayList<>();
-
-        public void registerCallback(FragmentTransactionCallback callback) {
-            mCallbacks.add(callback);
-        }
-
-        public void unregisterCallback(FragmentTransactionCallback callback) {
-            mCallbacks.remove(callback);
-        }
-
-        public List<OnPostEventListener> dispatchMaxLifecyclePreUpdated(Fragment fragment,
-                                                                        Lifecycle.State maxState) {
-            List<OnPostEventListener> result = new ArrayList<>();
-            for (FragmentTransactionCallback callback : mCallbacks) {
-                result.add(callback.onFragmentMaxLifecyclePreUpdated(fragment, maxState));
-            }
-            return result;
-        }
-
-        public void dispatchPostEvents(List<OnPostEventListener> entries) {
-            for (OnPostEventListener entry : entries) {
-                entry.onPost();
-            }
-        }
-
-        public List<OnPostEventListener> dispatchPreAdded(Fragment fragment) {
-            List<OnPostEventListener> result = new ArrayList<>();
-            for (FragmentTransactionCallback callback : mCallbacks) {
-                result.add(callback.onFragmentPreAdded(fragment));
-            }
-            return result;
-        }
-
-        public List<OnPostEventListener> dispatchPreSavedInstanceState(Fragment fragment) {
-            List<OnPostEventListener> result = new ArrayList<>();
-            for (FragmentTransactionCallback callback : mCallbacks) {
-                result.add(callback.onFragmentPreSavedInstanceState(fragment));
-            }
-            return result;
-        }
-
-        public List<OnPostEventListener> dispatchPreRemoved(Fragment fragment) {
-            List<OnPostEventListener> result = new ArrayList<>();
-            for (FragmentTransactionCallback callback : mCallbacks) {
-                result.add(callback.onFragmentPreRemoved(fragment));
-            }
-            return result;
-        }
-    }
-
-    /**
-     * Callback interface for listening to fragment lifecycle changes that happen
-     * inside the adapter.
-     */
-    public abstract static class FragmentTransactionCallback {
-        private static final @NonNull
-        OnPostEventListener NO_OP = () -> {
-            // do nothing
-        };
-
-        /**
-         * Called right before the Fragment is added to adapter's FragmentManager.
-         *
-         * @param fragment Fragment changing state
-         * @return Listener called after the operation
-         */
-        @NonNull
-        public OnPostEventListener onFragmentPreAdded(@NonNull Fragment fragment) {
-            return NO_OP;
-        }
-
-        /**
-         * Called right before Fragment's state is being saved through a
-         * {@link FragmentManager#saveFragmentInstanceState} call.
-         *
-         * @param fragment Fragment which state is being saved
-         * @return Listener called after the operation
-         */
-        @NonNull
-        public OnPostEventListener onFragmentPreSavedInstanceState(@NonNull Fragment fragment) {
-            return NO_OP;
-        }
-
-        /**
-         * Called right before the Fragment is removed from adapter's FragmentManager.
-         *
-         * @param fragment Fragment changing state
-         * @return Listener called after the operation
-         */
-        @NonNull
-        public OnPostEventListener onFragmentPreRemoved(@NonNull Fragment fragment) {
-            return NO_OP;
-        }
-
-        /**
-         * Called right before Fragment's maximum state is capped via
-         * {@link FragmentTransaction#setMaxLifecycle}.
-         *
-         * @param fragment          Fragment to have its state capped
-         * @param maxLifecycleState Ceiling state for the fragment
-         * @return Listener called after the operation
-         */
-        @NonNull
-        public OnPostEventListener onFragmentMaxLifecyclePreUpdated(@NonNull Fragment fragment,
-                                                                    @NonNull Lifecycle.State maxLifecycleState) {
-            return NO_OP;
-        }
-
-        /**
-         * Callback returned by {@link #onFragmentPreAdded}, {@link #onFragmentPreRemoved},
-         * {@link #onFragmentMaxLifecyclePreUpdated} called after the operation ends.
-         */
-        public interface OnPostEventListener {
-            /**
-             * Called after the operation is ends.
-             */
-            void onPost();
-        }
+    // Helper function for dealing with save / restore state
+    private static long parseIdFromKey(@NonNull String key, @NonNull String prefix) {
+        return Long.parseLong(key.substring(prefix.length()));
     }
 
     /**
@@ -907,7 +712,7 @@ public abstract class FragmentStateAdapter extends
                 return; // nothing to do
             }
 
-            int currentItem = mViewPager.getCurrentItem();
+            final int currentItem = mViewPager.getCurrentItem();
             if (currentItem >= getItemCount()) {
                 /** current item is yet to be updated; it is guaranteed to change, so we will be
                  * notified via {@link ViewPager2.OnPageChangeCallback#onPageSelected(int)}  */
@@ -961,7 +766,6 @@ public abstract class FragmentStateAdapter extends
                 }
             }
         }
-
         @NonNull
         private ViewPager2 inferViewPager(@NonNull RecyclerView recyclerView) {
             ViewParent parent = recyclerView.getParent();
@@ -970,5 +774,180 @@ public abstract class FragmentStateAdapter extends
             }
             throw new IllegalStateException("Expected ViewPager2 instance. Got: " + parent);
         }
+    }
+
+    /**
+     * Simplified {@link RecyclerView.AdapterDataObserver} for clients interested in any data-set
+     * changes regardless of their nature.
+     */
+    private abstract static class DataSetChangeObserver extends RecyclerView.AdapterDataObserver {
+        @Override
+        public abstract void onChanged();
+
+        @Override
+        public final void onItemRangeChanged(int positionStart, int itemCount) {
+            onChanged();
+        }
+
+        @Override
+        public final void onItemRangeChanged(int positionStart, int itemCount,
+                @Nullable Object payload) {
+            onChanged();
+        }
+
+        @Override
+        public final void onItemRangeInserted(int positionStart, int itemCount) {
+            onChanged();
+        }
+
+        @Override
+        public final void onItemRangeRemoved(int positionStart, int itemCount) {
+            onChanged();
+        }
+
+        @Override
+        public final void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+            onChanged();
+        }
+    }
+
+    @SuppressWarnings("WeakerAccess") // to avoid creation of a synthetic accessor
+    static class FragmentEventDispatcher {
+        private List<FragmentTransactionCallback> mCallbacks = new CopyOnWriteArrayList<>();
+
+        public void registerCallback(FragmentTransactionCallback callback) {
+            mCallbacks.add(callback);
+        }
+
+        public void unregisterCallback(FragmentTransactionCallback callback) {
+            mCallbacks.remove(callback);
+        }
+
+        public List<OnPostEventListener> dispatchMaxLifecyclePreUpdated(Fragment fragment,
+                Lifecycle.State maxState) {
+            List<OnPostEventListener> result = new ArrayList<>();
+            for (FragmentTransactionCallback callback : mCallbacks) {
+                result.add(callback.onFragmentMaxLifecyclePreUpdated(fragment, maxState));
+            }
+            return result;
+        }
+
+        public void dispatchPostEvents(List<OnPostEventListener> entries) {
+            for (OnPostEventListener entry : entries) {
+                entry.onPost();
+            }
+        }
+
+        public List<OnPostEventListener> dispatchPreAdded(Fragment fragment) {
+            List<OnPostEventListener> result = new ArrayList<>();
+            for (FragmentTransactionCallback callback : mCallbacks) {
+                result.add(callback.onFragmentPreAdded(fragment));
+            }
+            return result;
+        }
+
+        public List<OnPostEventListener> dispatchPreSavedInstanceState(Fragment fragment) {
+            List<OnPostEventListener> result = new ArrayList<>();
+            for (FragmentTransactionCallback callback : mCallbacks) {
+                result.add(callback.onFragmentPreSavedInstanceState(fragment));
+            }
+            return result;
+        }
+
+        public List<OnPostEventListener> dispatchPreRemoved(Fragment fragment) {
+            List<OnPostEventListener> result = new ArrayList<>();
+            for (FragmentTransactionCallback callback : mCallbacks) {
+                result.add(callback.onFragmentPreRemoved(fragment));
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Callback interface for listening to fragment lifecycle changes that happen
+     * inside the adapter.
+     */
+    public abstract static class FragmentTransactionCallback {
+        private static final @NonNull OnPostEventListener NO_OP = () -> {
+            // do nothing
+        };
+
+        /**
+         * Called right before the Fragment is added to adapter's FragmentManager.
+         *
+         * @param fragment Fragment changing state
+         * @return Listener called after the operation
+         */
+        @NonNull
+        public OnPostEventListener onFragmentPreAdded(@NonNull Fragment fragment) {
+            return NO_OP;
+        }
+
+        /**
+         * Called right before Fragment's state is being saved through a
+         * {@link FragmentManager#saveFragmentInstanceState} call.
+         *
+         * @param fragment Fragment which state is being saved
+         * @return Listener called after the operation
+         */
+        @NonNull
+        public OnPostEventListener onFragmentPreSavedInstanceState(@NonNull Fragment fragment) {
+            return NO_OP;
+        }
+
+        /**
+         * Called right before the Fragment is removed from adapter's FragmentManager.
+         *
+         * @param fragment Fragment changing state
+         * @return Listener called after the operation
+         */
+        @NonNull
+        public OnPostEventListener onFragmentPreRemoved(@NonNull Fragment fragment) {
+            return NO_OP;
+        }
+
+        /**
+         * Called right before Fragment's maximum state is capped via
+         * {@link FragmentTransaction#setMaxLifecycle}.
+         *
+         * @param fragment Fragment to have its state capped
+         * @param maxLifecycleState Ceiling state for the fragment
+         * @return Listener called after the operation
+         */
+        @NonNull
+        public OnPostEventListener onFragmentMaxLifecyclePreUpdated(@NonNull Fragment fragment,
+                @NonNull Lifecycle.State maxLifecycleState) {
+            return NO_OP;
+        }
+
+        /**
+         * Callback returned by {@link #onFragmentPreAdded}, {@link #onFragmentPreRemoved},
+         * {@link #onFragmentMaxLifecyclePreUpdated} called after the operation ends.
+         */
+        public interface OnPostEventListener {
+            /** Called after the operation is ends. */
+            void onPost();
+        }
+    }
+
+    /**
+     * Registers a {@link FragmentTransactionCallback} to listen to fragment lifecycle changes
+     * that happen inside the adapter.
+     *
+     * @param callback Callback to register
+     */
+    public void registerFragmentTransactionCallback(@NonNull FragmentTransactionCallback callback) {
+        mFragmentEventDispatcher.registerCallback(callback);
+    }
+
+    /**
+     * Unregisters a {@link FragmentTransactionCallback}.
+     *
+     * @param callback Callback to unregister
+     * @see #registerFragmentTransactionCallback
+     */
+    public void unregisterFragmentTransactionCallback(
+            @NonNull FragmentTransactionCallback callback) {
+        mFragmentEventDispatcher.unregisterCallback(callback);
     }
 }

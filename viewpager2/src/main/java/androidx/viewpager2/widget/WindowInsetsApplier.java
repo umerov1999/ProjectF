@@ -78,11 +78,11 @@ public final class WindowInsetsApplier implements OnApplyWindowInsetsListener {
     @NonNull
     @Override
     public WindowInsetsCompat onApplyWindowInsets(@NonNull View v,
-                                                  @NonNull WindowInsetsCompat insets) {
+            @NonNull WindowInsetsCompat insets) {
         ViewPager2 viewPager = (ViewPager2) v;
 
         // First let the ViewPager2 itself try and consume them...
-        WindowInsetsCompat applied = ViewCompat.onApplyWindowInsets(viewPager, insets);
+        final WindowInsetsCompat applied = ViewCompat.onApplyWindowInsets(viewPager, insets);
 
         if (applied.isConsumed()) {
             // If the ViewPager2 consumed all insets, return now
@@ -96,7 +96,7 @@ public final class WindowInsetsApplier implements OnApplyWindowInsetsListener {
         // manually dispatch the applied insets, not allowing children to consume
         // them from each other, making a copy for every invocation
 
-        RecyclerView rv = viewPager.mRecyclerView;
+        final RecyclerView rv = viewPager.mRecyclerView;
         for (int i = 0, count = rv.getChildCount(); i < count; i++) {
             // We don't care about b/168984101 here, as we're not using the return value
             ViewCompat.dispatchApplyWindowInsets(rv.getChildAt(i), new WindowInsetsCompat(applied));

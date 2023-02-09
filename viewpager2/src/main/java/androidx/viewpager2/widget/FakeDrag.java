@@ -41,7 +41,7 @@ final class FakeDrag {
     private long mFakeDragBeginTime;
 
     FakeDrag(ViewPager2 viewPager, ScrollEventAdapter scrollEventAdapter,
-             RecyclerView recyclerView) {
+            RecyclerView recyclerView) {
         mViewPager = viewPager;
         mScrollEventAdapter = scrollEventAdapter;
         mRecyclerView = recyclerView;
@@ -86,11 +86,11 @@ final class FakeDrag {
 
         boolean isHorizontal = mViewPager.getOrientation() == ORIENTATION_HORIZONTAL;
         // Scroll deltas use pixels:
-        int offsetX = isHorizontal ? offsetPx : 0;
-        int offsetY = isHorizontal ? 0 : offsetPx;
+        final int offsetX = isHorizontal ? offsetPx : 0;
+        final int offsetY = isHorizontal ? 0 : offsetPx;
         // Motion events get the raw float distance:
-        float x = isHorizontal ? mRequestedDragDistance : 0;
-        float y = isHorizontal ? 0 : mRequestedDragDistance;
+        final float x = isHorizontal ? mRequestedDragDistance : 0;
+        final float y = isHorizontal ? 0 : mRequestedDragDistance;
 
         mRecyclerView.scrollBy(offsetX, offsetY);
         addFakeMotionEvent(time, MotionEvent.ACTION_MOVE, x, y);
@@ -108,7 +108,7 @@ final class FakeDrag {
 
         // Compute the velocity of the fake drag
         final int pixelsPerSecond = 1000;
-        VelocityTracker velocityTracker = mVelocityTracker;
+        final VelocityTracker velocityTracker = mVelocityTracker;
         velocityTracker.computeCurrentVelocity(pixelsPerSecond, mMaximumVelocity);
         int xVelocity = (int) velocityTracker.getXVelocity();
         int yVelocity = (int) velocityTracker.getYVelocity();
@@ -123,7 +123,7 @@ final class FakeDrag {
     private void beginFakeVelocityTracker() {
         if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();
-            ViewConfiguration configuration = ViewConfiguration.get(mViewPager.getContext());
+            final ViewConfiguration configuration = ViewConfiguration.get(mViewPager.getContext());
             mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
         } else {
             mVelocityTracker.clear();
@@ -131,7 +131,7 @@ final class FakeDrag {
     }
 
     private void addFakeMotionEvent(long time, int action, float x, float y) {
-        MotionEvent ev = MotionEvent.obtain(mFakeDragBeginTime, time, action, x, y, 0);
+        final MotionEvent ev = MotionEvent.obtain(mFakeDragBeginTime, time, action, x, y, 0);
         mVelocityTracker.addMovement(ev);
         ev.recycle();
     }

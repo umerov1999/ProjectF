@@ -10,16 +10,34 @@ import java.util.*
  */
 @Serializable
 class StaggeredGridLayoutManager_SavedState : Parcelable {
+    @JvmField
     var mAnchorPosition = 0
-    var mVisibleAnchorPosition // Replacement for span info when spans are invalidated
-            = 0
+
+    @JvmField
+    var mVisibleAnchorPosition = 0
+
+    @JvmField
     var mSpanOffsetsSize = 0
+
+    @JvmField
     var mSpanOffsets: IntArray? = null
+
+    @JvmField
     var mSpanLookupSize = 0
+
+    @JvmField
     var mSpanLookup: IntArray? = null
-    var mFullSpanItems: ArrayList<FullSpanItem>? = null
+
+    @JvmField
+    var mFullSpanItems: List<FullSpanItem>? = null
+
+    @JvmField
     var mReverseLayout = false
+
+    @JvmField
     var mAnchorLayoutFromEnd = false
+
+    @JvmField
     var mLastLayoutRTL = false
 
     constructor()
@@ -113,13 +131,19 @@ class StaggeredGridLayoutManager_SavedState : Parcelable {
  */
 @Serializable
 class FullSpanItem : Parcelable {
+    @JvmField
     var mPosition = 0
+
+    @JvmField
     var mGapDir = 0
+
+    @JvmField
     var mGapPerSpan: IntArray? = null
 
     // A full span may be laid out in primary direction but may have gaps due to
     // invalidation of views after it. This is recorded during a reverse scroll and if
     // view is still on the screen after scroll stops, we have to recalculate layout
+    @JvmField
     var mHasUnwantedGapAfter = false
 
     constructor(parcel: Parcel) {
@@ -165,17 +189,13 @@ class FullSpanItem : Parcelable {
                 + '}')
     }
 
-    companion object {
-        @JvmField
-        val CREATOR: Parcelable.Creator<FullSpanItem> =
-            object : Parcelable.Creator<FullSpanItem> {
-                override fun createFromParcel(parcel: Parcel): FullSpanItem {
-                    return FullSpanItem(parcel)
-                }
+    companion object CREATOR : Parcelable.Creator<FullSpanItem> {
+        override fun createFromParcel(parcel: Parcel): FullSpanItem {
+            return FullSpanItem(parcel)
+        }
 
-                override fun newArray(size: Int): Array<FullSpanItem?> {
-                    return arrayOfNulls(size)
-                }
-            }
+        override fun newArray(size: Int): Array<FullSpanItem?> {
+            return arrayOfNulls(size)
+        }
     }
 }

@@ -20,8 +20,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +54,7 @@ class ChildHelper {
     /**
      * Marks a child view as hidden
      *
-     * @param child View to hide.
+     * @param child  View to hide.
      */
     private void hideViewInternal(View child) {
         mHiddenViews.add(child);
@@ -66,7 +64,7 @@ class ChildHelper {
     /**
      * Unmarks a child view as hidden.
      *
-     * @param child View to hide.
+     * @param child  View to hide.
      */
     private boolean unhideViewInternal(View child) {
         if (mHiddenViews.remove(child)) {
@@ -96,7 +94,7 @@ class ChildHelper {
      * @param hidden If set to true, this item will be invisible from regular methods.
      */
     void addView(View child, int index, boolean hidden) {
-        int offset;
+        final int offset;
         if (index < 0) {
             offset = mCallback.getChildCount();
         } else {
@@ -116,11 +114,11 @@ class ChildHelper {
         if (index < 0) {
             return -1; //anything below 0 won't work as diff will be undefined.
         }
-        int limit = mCallback.getChildCount();
+        final int limit = mCallback.getChildCount();
         int offset = index;
         while (offset < limit) {
-            int removedBefore = mBucket.countOnesBefore(offset);
-            int diff = index - (offset - removedBefore);
+            final int removedBefore = mBucket.countOnesBefore(offset);
+            final int diff = index - (offset - removedBefore);
             if (diff == 0) {
                 while (mBucket.get(offset)) { // ensure this offset is not hidden
                     offset++;
@@ -159,8 +157,8 @@ class ChildHelper {
      *              ChildHelper offsets this index to actual ViewGroup index.
      */
     void removeViewAt(int index) {
-        int offset = getOffset(index);
-        View view = mCallback.getChildAt(offset);
+        final int offset = getOffset(index);
+        final View view = mCallback.getChildAt(offset);
         if (view == null) {
             return;
         }
@@ -179,7 +177,7 @@ class ChildHelper {
      * @param index Index of the child to return in regular perspective.
      */
     View getChildAt(int index) {
-        int offset = getOffset(index);
+        final int offset = getOffset(index);
         return mCallback.getChildAt(offset);
     }
 
@@ -202,12 +200,12 @@ class ChildHelper {
      * This can be used to find a disappearing view by position.
      *
      * @param position The adapter position of the item.
-     * @return A hidden view with a valid ViewHolder that matches the position.
+     * @return         A hidden view with a valid ViewHolder that matches the position.
      */
     View findHiddenNonRemovedView(int position) {
-        int count = mHiddenViews.size();
+        final int count = mHiddenViews.size();
         for (int i = 0; i < count; i++) {
-            View view = mHiddenViews.get(i);
+            final View view = mHiddenViews.get(i);
             RecyclerView.ViewHolder holder = mCallback.getChildViewHolder(view);
             if (holder.getLayoutPosition() == position
                     && !holder.isInvalid()
@@ -227,8 +225,8 @@ class ChildHelper {
      * @param hidden       If set to true, this item will be invisible to the regular methods.
      */
     void attachViewToParent(View child, int index, ViewGroup.LayoutParams layoutParams,
-                            boolean hidden) {
-        int offset;
+            boolean hidden) {
+        final int offset;
         if (index < 0) {
             offset = mCallback.getChildCount();
         } else {
@@ -281,7 +279,7 @@ class ChildHelper {
      * @param index Index of the child to return in regular perspective.
      */
     void detachViewFromParent(int index) {
-        int offset = getOffset(index);
+        final int offset = getOffset(index);
         mBucket.remove(offset);
         mCallback.detachViewFromParent(offset);
         if (DEBUG) {
@@ -296,7 +294,7 @@ class ChildHelper {
      * @return The regular perspective index of the child or -1 if it does not exists.
      */
     int indexOfChild(View child) {
-        int index = mCallback.indexOfChild(child);
+        final int index = mCallback.indexOfChild(child);
         if (index == -1) {
             return -1;
         }
@@ -327,7 +325,7 @@ class ChildHelper {
      * @param view The view to hide.
      */
     void hide(View view) {
-        int offset = mCallback.indexOfChild(view);
+        final int offset = mCallback.indexOfChild(view);
         if (offset < 0) {
             throw new IllegalArgumentException("view is not a child, cannot hide " + view);
         }
@@ -349,7 +347,7 @@ class ChildHelper {
      * @param view The hidden View to unhide
      */
     void unhide(View view) {
-        int offset = mCallback.indexOfChild(view);
+        final int offset = mCallback.indexOfChild(view);
         if (offset < 0) {
             throw new IllegalArgumentException("view is not a child, cannot hide " + view);
         }
@@ -360,10 +358,9 @@ class ChildHelper {
         unhideViewInternal(view);
     }
 
-    @NonNull
     @Override
     public String toString() {
-        return mBucket + ", hidden list:" + mHiddenViews.size();
+        return mBucket.toString() + ", hidden list:" + mHiddenViews.size();
     }
 
     /**
@@ -373,7 +370,7 @@ class ChildHelper {
      * @return True if the View is found and it is hidden. False otherwise.
      */
     boolean removeViewIfHidden(View view) {
-        int index = mCallback.indexOfChild(view);
+        final int index = mCallback.indexOfChild(view);
         if (index == -1) {
             if (unhideViewInternal(view) && DEBUG) {
                 throw new IllegalStateException("view is in hidden list but not in view group");
@@ -392,31 +389,6 @@ class ChildHelper {
         return false;
     }
 
-    interface Callback {
-
-        int getChildCount();
-
-        void addView(View child, int index);
-
-        int indexOfChild(View view);
-
-        void removeViewAt(int index);
-
-        View getChildAt(int offset);
-
-        void removeAllViews();
-
-        RecyclerView.ViewHolder getChildViewHolder(View view);
-
-        void attachViewToParent(View child, int index, ViewGroup.LayoutParams layoutParams);
-
-        void detachViewFromParent(int offset);
-
-        void onEnteredHiddenState(View child);
-
-        void onLeftHiddenState(View child);
-    }
-
     /**
      * Bitset implementation that provides methods to offset indices.
      */
@@ -426,7 +398,7 @@ class ChildHelper {
 
         static final long LAST_BIT = 1L << (Long.SIZE - 1);
 
-        long mData;
+        long mData = 0;
 
         Bucket mNext;
 
@@ -477,10 +449,10 @@ class ChildHelper {
                 ensureNext();
                 mNext.insert(index - BITS_PER_WORD, value);
             } else {
-                boolean lastBit = (mData & LAST_BIT) != 0;
+                final boolean lastBit = (mData & LAST_BIT) != 0;
                 long mask = (1L << index) - 1;
-                long before = mData & mask;
-                long after = (mData & ~mask) << 1;
+                final long before = mData & mask;
+                final long after = (mData & ~mask) << 1;
                 mData = before | after;
                 if (value) {
                     set(index);
@@ -500,12 +472,12 @@ class ChildHelper {
                 return mNext.remove(index - BITS_PER_WORD);
             } else {
                 long mask = (1L << index);
-                boolean value = (mData & mask) != 0;
+                final boolean value = (mData & mask) != 0;
                 mData &= ~mask;
                 mask = mask - 1;
-                long before = mData & mask;
+                final long before = mData & mask;
                 // cannot use >> because it adds one.
-                long after = Long.rotateRight(mData & ~mask, 1);
+                final long after = Long.rotateRight(mData & ~mask, 1);
                 mData = before | after;
                 if (mNext != null) {
                     if (mNext.get(0)) {
@@ -531,11 +503,35 @@ class ChildHelper {
             }
         }
 
-        @NonNull
         @Override
         public String toString() {
             return mNext == null ? Long.toBinaryString(mData)
-                    : mNext + "xx" + Long.toBinaryString(mData);
+                    : mNext.toString() + "xx" + Long.toBinaryString(mData);
         }
+    }
+
+    interface Callback {
+
+        int getChildCount();
+
+        void addView(View child, int index);
+
+        int indexOfChild(View view);
+
+        void removeViewAt(int index);
+
+        View getChildAt(int offset);
+
+        void removeAllViews();
+
+        RecyclerView.ViewHolder getChildViewHolder(View view);
+
+        void attachViewToParent(View child, int index, ViewGroup.LayoutParams layoutParams);
+
+        void detachViewFromParent(int offset);
+
+        void onEnteredHiddenState(View child);
+
+        void onLeftHiddenState(View child);
     }
 }

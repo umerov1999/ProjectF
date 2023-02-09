@@ -30,13 +30,13 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
  * Wrapper for each adapter in {@link ConcatAdapter}.
  */
 class NestedAdapterWrapper {
-    public final Adapter<ViewHolder> adapter;
-    @SuppressWarnings("WeakerAccess")
-    final Callback mCallback;
     @NonNull
     private final ViewTypeStorage.ViewTypeLookup mViewTypeLookup;
     @NonNull
     private final StableIdStorage.StableIdLookup mStableIdLookup;
+    public final Adapter<ViewHolder> adapter;
+    @SuppressWarnings("WeakerAccess")
+    final Callback mCallback;
     // we cache this value so that we can know the previous size when change happens
     // this is also important as getting real size while an adapter is dispatching possibly a
     // a chain of events might create inconsistencies (as it happens in DiffUtil).
@@ -44,7 +44,7 @@ class NestedAdapterWrapper {
     @SuppressWarnings("WeakerAccess")
     int mCachedItemCount;
 
-    private final RecyclerView.AdapterDataObserver mAdapterObserver =
+    private RecyclerView.AdapterDataObserver mAdapterObserver =
             new RecyclerView.AdapterDataObserver() {
                 @Override
                 public void onChanged() {
@@ -64,7 +64,7 @@ class NestedAdapterWrapper {
 
                 @Override
                 public void onItemRangeChanged(int positionStart, int itemCount,
-                                               @Nullable Object payload) {
+                        @Nullable Object payload) {
                     mCallback.onItemRangeChanged(
                             NestedAdapterWrapper.this,
                             positionStart,
@@ -121,9 +121,9 @@ class NestedAdapterWrapper {
 
     NestedAdapterWrapper(
             Adapter<ViewHolder> adapter,
-            Callback callback,
+            final Callback callback,
             ViewTypeStorage viewTypeStorage,
-            @NonNull StableIdStorage.StableIdLookup stableIdLookup) {
+            StableIdStorage.StableIdLookup stableIdLookup) {
         this.adapter = adapter;
         mCallback = callback;
         mViewTypeLookup = viewTypeStorage.createViewTypeWrapper(this);
