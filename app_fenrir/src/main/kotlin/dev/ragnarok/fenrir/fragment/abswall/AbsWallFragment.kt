@@ -39,6 +39,7 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.*
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.thorvg.ThorVGRender
+import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceFactory.getAudiosPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getNarrativesPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerArticles
@@ -190,12 +191,23 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
             LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
         mStoryAdapter = HorizontalStoryAdapter(mutableListOf())
         mStoryAdapter?.setListener(object : HorizontalStoryAdapter.Listener {
-            override fun onOptionClick(item: Story, pos: Int) {
+            override fun onStoryClick(item: Story, pos: Int) {
                 openHistoryVideo(
                     Settings.get().accounts().current, ArrayList(
                         presenter?.stories ?: emptyList()
                     ), pos
                 )
+            }
+
+            override fun onStoryLongClick(item: Story, pos: Int): Boolean {
+                PlaceFactory.getLikesCopiesPlace(
+                    Settings.get().accounts().current,
+                    "stories_view",
+                    item.ownerId,
+                    item.id,
+                    null
+                ).tryOpenWith(requireActivity())
+                return true
             }
         })
         headerStoryRecyclerView.adapter = mStoryAdapter

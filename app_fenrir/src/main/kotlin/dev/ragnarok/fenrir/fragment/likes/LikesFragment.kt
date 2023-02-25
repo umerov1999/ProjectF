@@ -14,7 +14,11 @@ class LikesFragment : AbsOwnersListFragment<LikesListPresenter, ISimpleOwnersVie
         super.onResume()
         val actionBar = supportToolbarFor(this)
         if (actionBar != null) {
-            actionBar.setTitle(if ("likes" == requireArguments().getString(Extra.FILTER)) R.string.like else R.string.shared)
+            if (requireArguments().getString(Extra.TYPE) == "stories_view") {
+                actionBar.setTitle(R.string.views)
+            } else {
+                actionBar.setTitle(if ("likes" == requireArguments().getString(Extra.FILTER)) R.string.like else R.string.shared)
+            }
             actionBar.subtitle = null
         }
         ActivityFeatures.Builder()
@@ -33,7 +37,7 @@ class LikesFragment : AbsOwnersListFragment<LikesListPresenter, ISimpleOwnersVie
                     requireArguments().getString(Extra.TYPE)!!,
                     requireArguments().getLong(Extra.OWNER_ID),
                     requireArguments().getInt(Extra.ITEM_ID),
-                    requireArguments().getString(Extra.FILTER)!!,
+                    requireArguments().getString(Extra.FILTER),
                     saveInstanceState
                 )
             }
@@ -51,7 +55,7 @@ class LikesFragment : AbsOwnersListFragment<LikesListPresenter, ISimpleOwnersVie
     companion object {
         fun buildArgs(
             accountId: Long,
-            type: String?,
+            type: String,
             ownerId: Long,
             itemId: Int,
             filter: String?

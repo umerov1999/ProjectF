@@ -15,6 +15,7 @@ import dev.ragnarok.fenrir.model.Captcha
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import java.util.concurrent.TimeUnit
 
 class DirectAuthPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<IDirectAuthView>(savedInstanceState) {
@@ -61,7 +62,8 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                 code,
                 captchaSid,
                 captchaCode,
-                forceSms
+                forceSms,
+                Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID
             )
             .fromIOToMain()
             .subscribe({ response -> onLoginResponse(response) }) { t ->
@@ -110,15 +112,17 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                         }
                     }
                 }
-                if (!sid.isNullOrEmpty()) {
+                if (!sid.isNullOrEmpty() && requireSmsCode) {
                     appendDisposable(networker.vkAuth()
                         .validatePhone(
                             Constants.API_ID,
                             Constants.API_ID,
                             Constants.SECRET,
                             sid,
-                            Constants.AUTH_VERSION
+                            Constants.AUTH_VERSION,
+                            true
                         )
+                        .delay(1, TimeUnit.SECONDS)
                         .fromIOToMain()
                         .subscribe({ }) {
                             showError(getCauseIfRuntime(t))

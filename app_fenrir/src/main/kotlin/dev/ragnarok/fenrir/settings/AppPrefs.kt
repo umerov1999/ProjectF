@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import dev.ragnarok.fenrir.util.Utils
 
 object AppPrefs {
+    var revanced: Pair<String, String>? = null
+
     fun isCoubInstalled(context: Context): Boolean {
         return isPackageIntalled(context, "com.coub.android")
     }
@@ -17,8 +19,21 @@ object AppPrefs {
         return isPackageIntalled(context, "com.google.android.youtube")
     }
 
-    fun isVancedYoutubeInstalled(context: Context): Boolean {
-        return isPackageIntalled(context, "app.revanced.android.youtube")
+    fun isReVancedYoutubeInstalled(context: Context): Boolean {
+        if (isPackageIntalled(context, "app.revanced.android.youtube")) {
+            revanced = Pair(
+                "app.revanced.android.youtube",
+                "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
+            )
+            return true
+        } else if (isPackageIntalled(context, "app.rvx.android.youtube")) {
+            revanced = Pair(
+                "app.rvx.android.youtube",
+                "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
+            )
+            return true
+        }
+        return false
     }
 
     @Suppress("deprecation")

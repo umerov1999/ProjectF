@@ -144,22 +144,6 @@
         <item>2</item>
     </string-array>
 
-    <string-array name="array_font_size_names">
-        <item>Default</item>
-        <item>Small</item>
-        <item>Average</item>
-        <item>Large</item>
-        <item>Huge</item>
-    </string-array>
-
-    <string-array name="array_font_size_items" translatable="false">
-        <item>0</item>
-        <item>-1</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
     <string-array name="array_news_start_updates_names">
         <item>Disable</item>
         <item>Update</item>
@@ -1438,7 +1422,7 @@
     <string name="bitrate">Bitrate: %1$d kbs, Size: %2$s</string>
     <string name="error_timeout_message">Request timed out</string>
     <string name="error_unknown_host">No network connection</string>
-    <string name="login_sms_code_hint">SMS-code</string>
+    <string name="login_sms_code_hint">Code from SMS</string>
     <string name="login_captcha_hint" translatable="false">Captcha</string>
     <string name="button_proxy">Proxy</string>
     <string name="button_settings">Settings</string>
@@ -1964,5 +1948,7 @@
     <string name="wall_photos">Photos on Wall</string>
     <string name="block_or_delete">Block a subscriber? Mode save per session</string>
     <string name="exchange_token">Exchange Token</string>
-    <string name="visible_only_dons">Visible only to dons!</string>
+    <string name="available_only_dons">Only available to dons!</string>
+    <string name="font_only_for_chats">Font only for chats</string>
+    <string name="views">Views</string>
 </resources>

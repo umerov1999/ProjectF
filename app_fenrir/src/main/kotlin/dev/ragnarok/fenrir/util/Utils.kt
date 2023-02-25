@@ -915,17 +915,11 @@ object Utils {
     }
 
     fun setTint(view: ImageView?, @ColorInt color: Int) {
-        if (view == null) {
-            return
-        }
-        view.imageTintList = ColorStateList.valueOf(color)
+        view?.imageTintList = ColorStateList.valueOf(color)
     }
 
     fun setBackgroundTint(view: View?, @ColorInt color: Int) {
-        if (view == null) {
-            return
-        }
-        view.backgroundTintList = ColorStateList.valueOf(color)
+        view?.backgroundTintList = ColorStateList.valueOf(color)
     }
 
     @Suppress("DEPRECATION")
@@ -1440,7 +1434,7 @@ object Utils {
         }
     }
 
-    fun updateActivityContext(base: Context): Context {
+    fun updateActivityContext(base: Context, isChatActivity: Boolean = false): Context {
         if (getSystemLocale(base.resources.configuration) != null && getSystemLocale(base.resources.configuration)?.language.nonNullNoEmpty()) {
             Constants.DEVICE_COUNTRY_CODE =
                 getSystemLocale(base.resources.configuration)?.language?.lowercase(Locale.getDefault())
@@ -1453,7 +1447,7 @@ object Utils {
         val locale = getLocaleSettings(lang)
         updateDateLang(locale)
         updateDateLang()
-        return if (size == 0) {
+        return if (size == 0 || Settings.get().main().fontOnlyForChats && !isChatActivity) {
             if (lang == Lang.DEFAULT) {
                 base
             } else {
@@ -1465,7 +1459,7 @@ object Utils {
         } else {
             val res = base.resources
             val config = Configuration(res.configuration)
-            config.fontScale = res.configuration.fontScale + 0.15f * size
+            config.fontScale = res.configuration.fontScale + 0.05f * size
             if (lang != Lang.DEFAULT) {
                 setSystemLocaleLegacy(config, getLocaleSettings(lang))
             }

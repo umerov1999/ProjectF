@@ -47,14 +47,16 @@ class SeekBarPreference(key: String) : Preference(key) {
     var value: Int
         get() = valueInternal
         set(v) {
-            if (v != valueInternal && seekListener?.onSeek(this, null, v) != false) {
+            if (v != valueInternal && seekBeforeListener?.onSeekBefore(this, v) != false) {
                 valueInternal = v
                 commitInt(value)
                 requestRebind()
+                seekAfterListener?.onSeekAfter(this, v)
             }
         }
 
-    var seekListener: OnSeekListener? = null
+    var seekBeforeListener: OnSeekBeforeListener? = null
+    var seekAfterListener: OnSeekAfterListener? = null
     var formatter: (Int) -> String = Int::toString
 
     fun copySeek(o: SeekBarPreference): SeekBarPreference {
@@ -63,7 +65,8 @@ class SeekBarPreference(key: String) : Preference(key) {
         default = o.default
         step = o.step
         showTickMarks = o.showTickMarks
-        seekListener = o.seekListener
+        seekBeforeListener = o.seekBeforeListener
+        seekAfterListener = o.seekAfterListener
         formatter = o.formatter
         return this
     }
@@ -112,10 +115,11 @@ class SeekBarPreference(key: String) : Preference(key) {
                 if (done) {
                     // Commit the last selected value
                     commitInt(valueInternal)
+                    seekAfterListener?.onSeekAfter(this@SeekBarPreference, v)
                 } else {
                     val next = calcValue(v)
                     // Check if listener allows the value change
-                    if (seekListener?.onSeek(this@SeekBarPreference, holder, next) != false) {
+                    if (seekBeforeListener?.onSeekBefore(this@SeekBarPreference, next) != false) {
                         // Update internal value
                         valueInternal = next
                     } else {
@@ -136,20 +140,24 @@ class SeekBarPreference(key: String) : Preference(key) {
     private fun calcRaw(value: Int) = (value - min) / step
     private fun calcValue(raw: Int) = min + raw * step
 
-    fun interface OnSeekListener {
+    fun interface OnSeekAfterListener {
+        fun onSeekAfter(
+            preference: SeekBarPreference,
+            value: Int
+        )
+    }
+
+    fun interface OnSeekBeforeListener {
         /**
          * Notified when the [value][SeekBarPreference.value] of the connected [SeekBarPreference] changes.
          * This is called *before* the change gets persisted, which can be prevented by returning false.
-         *
-         * @param holder the [ViewHolder][PreferencesAdapter.ViewHolder] with the views of the Preference instance,
          * or null if the change didn't occur as part of a click event
          * @param value the new state
          *
          * @return true to commit the new slider value to [SharedPreferences][android.content.SharedPreferences]
          */
-        fun onSeek(
+        fun onSeekBefore(
             preference: SeekBarPreference,
-            holder: PreferencesAdapter.ViewHolder?,
             value: Int
         ): Boolean
     }

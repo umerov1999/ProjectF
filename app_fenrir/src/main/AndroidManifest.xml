@@ -8,6 +8,7 @@
         <package android:name="org.schabi.newpipe" />
         <package android:name="com.google.android.youtube" />
         <package android:name="app.revanced.android.youtube" />
+        <package android:name="app.rvx.android.youtube" />
     </queries>
 
     <uses-feature

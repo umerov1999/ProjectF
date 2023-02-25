@@ -155,7 +155,7 @@ abstract class PlaceSupportPresenter<V>(accountId: Long, savedInstanceState: Bun
         }
     }
 
-    fun fireCopiesLikesClick(type: String?, ownerId: Long, itemId: Int, filter: String?) {
+    fun fireCopiesLikesClick(type: String, ownerId: Long, itemId: Int, filter: String?) {
         if (ILikesInteractor.FILTER_LIKES == filter) {
             view?.goToLikes(accountId, type, ownerId, itemId)
         } else if (ILikesInteractor.FILTER_COPIES == filter) {

@@ -162,8 +162,8 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                 override fun onClick(widget: View) {
                     if (URL_YOUTUBE_PATTERN.matcher(url).find()) {
                         val menus = ModalBottomSheetDialogFragment.Builder()
-                        val hasVanced = AppPrefs.isVancedYoutubeInstalled(context)
-                        if (hasVanced) {
+                        val hasReVanced = AppPrefs.isReVancedYoutubeInstalled(context)
+                        if (hasReVanced) {
                             menus.add(
                                 OptionRequest(
                                     1,
@@ -181,7 +181,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                                 true
                             )
                         )
-                        if (!hasVanced && AppPrefs.isYoutubeInstalled(context)) {
+                        if (!hasReVanced && AppPrefs.isYoutubeInstalled(context)) {
                             menus.add(
                                 OptionRequest(
                                     3,
@@ -216,8 +216,8 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                                             intent.data = Uri.parse(url)
                                             intent.action = Intent.ACTION_VIEW
                                             intent.component = ComponentName(
-                                                "app.revanced.android.youtube",
-                                                "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
+                                                AppPrefs.revanced?.first.orEmpty(),
+                                                AppPrefs.revanced?.second.orEmpty()
                                             )
                                             context.startActivity(intent)
                                         }

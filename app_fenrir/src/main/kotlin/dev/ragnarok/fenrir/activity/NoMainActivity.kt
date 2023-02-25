@@ -24,6 +24,11 @@ abstract class NoMainActivity : AppCompatActivity() {
         FragmentManager.OnBackStackChangedListener { resolveToolbarNavigationIcon() }
     private var isZoomPhoto = false
 
+    private val isChatActivity: Boolean
+        get() {
+            return this is ChatActivity || this is LocalJsonToChatActivity || this is ChatActivityBubbles
+        }
+
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
@@ -58,7 +63,7 @@ abstract class NoMainActivity : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(Utils.updateActivityContext(newBase))
+        super.attachBaseContext(Utils.updateActivityContext(newBase, isChatActivity))
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {

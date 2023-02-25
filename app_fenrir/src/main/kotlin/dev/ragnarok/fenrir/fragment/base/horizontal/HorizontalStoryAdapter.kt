@@ -61,7 +61,13 @@ class HorizontalStoryAdapter(data: MutableList<Story>) :
                 Constants.PICASSO_TAG
             )
         }
-        viewHolder.itemView.setOnClickListener { listener?.onOptionClick(item, position) }
+        viewHolder.itemView.setOnClickListener { listener?.onStoryClick(item, position) }
+        viewHolder.itemView.setOnLongClickListener {
+            listener?.onStoryLongClick(
+                item,
+                position
+            ) == true
+        }
     }
 
     override fun viewHolder(view: View, type: Int): Holder {
@@ -77,7 +83,8 @@ class HorizontalStoryAdapter(data: MutableList<Story>) :
     }
 
     interface Listener {
-        fun onOptionClick(item: Story, pos: Int)
+        fun onStoryClick(item: Story, pos: Int)
+        fun onStoryLongClick(item: Story, pos: Int): Boolean
     }
 
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {

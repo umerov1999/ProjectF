@@ -59,6 +59,6 @@ public class FirebaseInstallationsRegistrar implements ComponentRegistrar {
                                                         c.get(Qualified.qualified(Blocking.class, Executor.class)))))
                         .build(),
                 HeartBeatConsumerComponent.create(),
-                LibraryVersionComponent.create(LIBRARY_NAME, BuildConfig.VERSION_NAME));
+                LibraryVersionComponent.create(LIBRARY_NAME, BuildConfig.VERSION_NAME_INSTALLATION));
     }
 }

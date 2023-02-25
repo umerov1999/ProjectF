@@ -32,14 +32,6 @@
         <item>Material 1</item>
     </string-array>
 
-    <string-array name="array_font_size_names">
-        <item>По умолчанию</item>
-        <item>Маленький</item>
-        <item>Средний</item>
-        <item>Большой</item>
-        <item>Огромный</item>
-    </string-array>
-
     <string-array name="array_lifecycle_names">
         <item>1 мин.</item>
         <item>2 мин.</item>

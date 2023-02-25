@@ -324,7 +324,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
             .tryOpenWith(requireActivity())
     }
 
-    override fun goToLikes(accountId: Long, type: String?, ownerId: Long, id: Int) {
+    override fun goToLikes(accountId: Long, type: String, ownerId: Long, id: Int) {
         PlaceFactory.getLikesCopiesPlace(
             accountId,
             type,
@@ -335,7 +335,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
             .tryOpenWith(requireActivity())
     }
 
-    override fun goToReposts(accountId: Long, type: String?, ownerId: Long, id: Int) {
+    override fun goToReposts(accountId: Long, type: String, ownerId: Long, id: Int) {
         PlaceFactory.getLikesCopiesPlace(
             accountId,
             type,

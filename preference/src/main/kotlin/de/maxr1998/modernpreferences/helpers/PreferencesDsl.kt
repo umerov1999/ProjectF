@@ -352,3 +352,17 @@ inline fun ColorPickPreference.onColorBeforeChange(crossinline callback: (Int) -
             callback(selection)
         }
 }
+
+inline fun SeekBarPreference.onSeek(crossinline callback: (Int) -> Unit) {
+    seekAfterListener =
+        SeekBarPreference.OnSeekAfterListener { _, selection ->
+            callback(selection)
+        }
+}
+
+inline fun SeekBarPreference.onSeekBefore(crossinline callback: (Int) -> Boolean) {
+    seekBeforeListener =
+        SeekBarPreference.OnSeekBeforeListener { _, selection ->
+            callback(selection)
+        }
+}

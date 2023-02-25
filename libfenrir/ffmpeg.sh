@@ -1,9 +1,9 @@
 #!/bin/bash
 SCRIPT_DIR=${PWD}
 cd ~/
-git clone git://source.ffmpeg.org/ffmpeg
+git clone https://git.videolan.org/git/ffmpeg.git
 cd ffmpeg
-git checkout release/5.1
+git checkout release/6.0
 rm -r -f ".git"
 
 ENABLED_DECODERS=(gif mpeg4 h264 hevc mp3 aac ac3 eac3 flac vorbis alac)

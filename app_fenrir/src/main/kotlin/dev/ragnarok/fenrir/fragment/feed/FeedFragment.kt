@@ -298,7 +298,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         return true
     }
 
-    override fun goToLikes(accountId: Long, type: String?, ownerId: Long, id: Int) {
+    override fun goToLikes(accountId: Long, type: String, ownerId: Long, id: Int) {
         getLikesCopiesPlace(
             accountId,
             type,
@@ -308,7 +308,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         ).tryOpenWith(requireActivity())
     }
 
-    override fun goToReposts(accountId: Long, type: String?, ownerId: Long, id: Int) {
+    override fun goToReposts(accountId: Long, type: String, ownerId: Long, id: Int) {
         getLikesCopiesPlace(
             accountId,
             type,

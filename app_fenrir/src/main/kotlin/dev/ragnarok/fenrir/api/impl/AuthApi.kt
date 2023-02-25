@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.api.impl
 
+import dev.ragnarok.fenrir.Constants.DEVICE_COUNTRY_CODE
 import dev.ragnarok.fenrir.Includes.provideApplicationContext
 import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.AuthException
@@ -19,9 +20,19 @@ import io.reactivex.rxjava3.functions.Function
 
 class AuthApi(private val service: IDirectLoginSeviceProvider) : IAuthApi {
     override fun directLogin(
-        grantType: String?, clientId: Int, clientSecret: String?,
-        username: String?, pass: String?, v: String?, twoFaSupported: Boolean,
-        scope: String?, code: String?, captchaSid: String?, captchaKey: String?, forceSms: Boolean
+        grantType: String?,
+        clientId: Int,
+        clientSecret: String?,
+        username: String?,
+        pass: String?,
+        v: String?,
+        twoFaSupported: Boolean,
+        scope: String?,
+        code: String?,
+        captchaSid: String?,
+        captchaKey: String?,
+        forceSms: Boolean,
+        libverify_support: Boolean
     ): Single<LoginResponse> {
         return service.provideAuthService()
             .flatMap { service ->
@@ -38,11 +49,12 @@ class AuthApi(private val service: IDirectLoginSeviceProvider) : IAuthApi {
                         code,
                         captchaSid,
                         captchaKey,
-                        if (forceSms) 1 else 0,
+                        if (forceSms) 1 else null,
                         getDeviceId(
                             provideApplicationContext()
                         ),
-                        1
+                        if (libverify_support) 1 else null,
+                        DEVICE_COUNTRY_CODE
                     )
                     .flatMap { response ->
                         when {
@@ -86,12 +98,17 @@ class AuthApi(private val service: IDirectLoginSeviceProvider) : IAuthApi {
         clientId: Int,
         clientSecret: String?,
         sid: String?,
-        v: String?
+        v: String?,
+        libverify_support: Boolean
     ): Single<VKApiValidationResponse> {
         return service.provideAuthService()
             .flatMap { service ->
                 service
-                    .validatePhone(apiId, clientId, clientSecret, sid, v)
+                    .validatePhone(
+                        apiId, clientId, clientSecret, sid, v, getDeviceId(
+                            provideApplicationContext()
+                        ), if (libverify_support) 1 else null, DEVICE_COUNTRY_CODE
+                    )
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -119,7 +136,8 @@ class AuthApi(private val service: IDirectLoginSeviceProvider) : IAuthApi {
                         deviceId,
                         sakVersion,
                         gaid,
-                        v
+                        v,
+                        DEVICE_COUNTRY_CODE
                     )
                     .flatMap {
                         if (it.error != null) {

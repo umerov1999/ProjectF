@@ -33,7 +33,8 @@ static inline void print_ffmpeg_error(int error) {
 }
 */
 
-struct VideoInfo {
+class VideoInfo {
+public:
     ~VideoInfo() {
         if (video_dec_ctx) {
             avcodec_close(video_dec_ctx);

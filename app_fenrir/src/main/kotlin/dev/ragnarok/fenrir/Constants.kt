@@ -5,6 +5,7 @@ import java.util.*
 
 object Constants {
     const val API_VERSION = "5.131"
+    const val AUTH_VERSION = "5.131"
     const val DATABASE_FENRIR_VERSION = 27
     const val DATABASE_TEMPORARY_VERSION = 5
     const val EXPORT_SETTINGS_FORMAT = 1
@@ -13,7 +14,6 @@ object Constants {
     @AccountType
     val DEFAULT_ACCOUNT_TYPE: Int = AccountType.toAccountType(BuildConfig.DEFAULT_ACCOUNT_TYPE)
 
-    val AUTH_VERSION = if (DEFAULT_ACCOUNT_TYPE == AccountType.KATE) API_VERSION else "5.122"
     const val FILE_PROVIDER_AUTHORITY: String = BuildConfig.APPLICATION_ID + ".file_provider"
     const val VK_ANDROID_APP_VERSION_NAME = "8.15"
     const val VK_ANDROID_APP_VERSION_CODE = "15271"

@@ -16,7 +16,7 @@ package com.google.firebase.installations.remote;
 
 import static android.content.ContentValues.TAG;
 import static com.google.android.gms.common.internal.Preconditions.checkArgument;
-import static com.google.firebase.installations.BuildConfig.VERSION_NAME;
+import static com.google.firebase.installations.BuildConfig.VERSION_NAME_INSTALLATION;
 
 import android.net.TrafficStats;
 import android.text.TextUtils;
@@ -155,7 +155,7 @@ public class FirebaseInstallationServiceClient {
             firebaseInstallationData.put("fid", fid);
             firebaseInstallationData.put("appId", appId);
             firebaseInstallationData.put("authVersion", FIREBASE_INSTALLATION_AUTH_VERSION);
-            firebaseInstallationData.put("sdkVersion", SDK_VERSION_PREFIX + VERSION_NAME);
+            firebaseInstallationData.put("sdkVersion", SDK_VERSION_PREFIX + VERSION_NAME_INSTALLATION);
             return firebaseInstallationData;
         } catch (JSONException e) {
             throw new IllegalStateException(e);
@@ -173,7 +173,7 @@ public class FirebaseInstallationServiceClient {
     private static JSONObject buildGenerateAuthTokenRequestBody() {
         try {
             JSONObject sdkVersionData = new JSONObject();
-            sdkVersionData.put("sdkVersion", SDK_VERSION_PREFIX + VERSION_NAME);
+            sdkVersionData.put("sdkVersion", SDK_VERSION_PREFIX + VERSION_NAME_INSTALLATION);
 
             JSONObject firebaseInstallationData = new JSONObject();
             firebaseInstallationData.put("installation", sdkVersionData);

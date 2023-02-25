@@ -63,7 +63,11 @@ class FeedbackVKOfficialAdapter(
         if (IconRes == null && Page.iconURL == null) {
             if (isSmall) {
                 holder.small.visibility = View.VISIBLE
-                holder.small.setImageResource(R.drawable.client_round)
+                holder.small.setImageResource(
+                    if (Settings.get()
+                            .other().isRunes_show
+                    ) R.drawable.client_round else R.drawable.client_round_vk
+                )
                 Utils.setColorFilter(
                     holder.small, CurrentTheme.getColorPrimary(
                         context
@@ -71,7 +75,11 @@ class FeedbackVKOfficialAdapter(
                 )
             } else {
                 holder.small.visibility = View.INVISIBLE
-                holder.avatar.setImageResource(R.drawable.client_round)
+                holder.avatar.setImageResource(
+                    if (Settings.get()
+                            .other().isRunes_show
+                    ) R.drawable.client_round else R.drawable.client_round_vk
+                )
                 Utils.setColorFilter(
                     holder.avatar, CurrentTheme.getColorPrimary(
                         context

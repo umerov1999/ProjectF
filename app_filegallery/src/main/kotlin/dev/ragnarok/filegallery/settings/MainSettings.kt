@@ -21,11 +21,7 @@ internal class MainSettings(context: Context) : IMainSettings {
     private val localServerPublisher: PublishSubject<LocalServerSettings> = PublishSubject.create()
 
     override fun getFontSize(): Int {
-        return try {
-            getPreferences(app).getString("font_size", "0")!!.trim().toInt()
-        } catch (e: Exception) {
-            0
-        }
+        return getPreferences(app).getInt("font_size_int", 0)
     }
 
     override val isValidate_tls: Boolean

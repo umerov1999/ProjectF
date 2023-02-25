@@ -251,25 +251,28 @@ internal abstract class AbstractJsonLexer {
 
     /**
      * Tries to consume `null` token from input.
-     * Returns `true` if the next 4 chars in input are not `null`,
-     * `false` otherwise and consumes it.
+     * Returns `false` if the next 4 chars in input are not `null`,
+     * `true` otherwise and consumes it if [doConsume] is `true`.
      */
-    fun tryConsumeNotNull(): Boolean {
+    fun tryConsumeNull(doConsume: Boolean = true): Boolean {
         var current = skipWhitespaces()
         current = prefetchOrEof(current)
         // Cannot consume null due to EOF, maybe something else
         val len = source.length - current
-        if (len < 4 || current == -1) return true
+        if (len < 4 || current == -1) return false
         for (i in 0..3) {
-            if (NULL[i] != source[current + i]) return true
+            if (NULL[i] != source[current + i]) return false
         }
         /*
          * If we're in lenient mode, this might be the string with 'null' prefix,
          * distinguish it from 'null'
          */
-        if (len > 4 && charToTokenClass(source[current + 4]) == TC_OTHER) return true
-        currentPosition = current + 4
-        return false
+        if (len > 4 && charToTokenClass(source[current + 4]) == TC_OTHER) return false
+
+        if (doConsume) {
+            currentPosition = current + 4
+        }
+        return true
     }
 
     open fun skipWhitespaces(): Int {
@@ -313,6 +316,66 @@ internal abstract class AbstractJsonLexer {
      * is no need to lookup peeked string.
      */
     abstract fun consumeKeyString(): String
+
+    private fun insideString(isLenient: Boolean, char: Char): Boolean = if (isLenient) {
+        charToTokenClass(char) == TC_OTHER
+    } else {
+        char != STRING
+    }
+
+    open fun consumeStringChunked(
+        isLenient: Boolean,
+        consumeChunk: (stringChunk: String) -> Unit
+    ) { // open to allow simpler implementations (i.e. StringJsonLexer)
+        val nextToken = peekNextToken()
+        if (isLenient && nextToken != TC_OTHER) return // noting to consume
+
+        if (!isLenient) {
+            consumeNextToken(STRING)
+        }
+        var currentPosition = this.currentPosition
+        var lastPosition = currentPosition
+        var char = source[currentPosition] // Avoid two range checks visible in the profiler
+        var usedAppend = false
+        while (insideString(isLenient, char)) {
+            if (!isLenient && char == STRING_ESC) { // handle escaping only in non-lenient mode
+                usedAppend = true
+                currentPosition = prefetchOrEof(appendEscape(lastPosition, currentPosition))
+                lastPosition = currentPosition
+            } else {
+                currentPosition++
+            }
+            if (currentPosition >= source.length) {
+                // end of chunk
+                writeRange(lastPosition, currentPosition, usedAppend, consumeChunk)
+                usedAppend = false
+                currentPosition = prefetchOrEof(currentPosition)
+                if (currentPosition == -1)
+                    fail("EOF", currentPosition)
+                lastPosition = currentPosition
+            }
+            char = source[currentPosition]
+        }
+        writeRange(lastPosition, currentPosition, usedAppend, consumeChunk)
+        this.currentPosition = currentPosition
+        if (!isLenient) {
+            consumeNextToken(STRING)
+        }
+    }
+
+    private fun writeRange(
+        fromIndex: Int,
+        toIndex: Int,
+        currentChunkHasEscape: Boolean,
+        consumeChunk: (stringChunk: String) -> Unit
+    ) {
+        if (currentChunkHasEscape) {
+            consumeChunk(decodedString(fromIndex, toIndex))
+        } else {
+            consumeChunk(substring(fromIndex, toIndex))
+        }
+    }
+
 
     fun consumeString(): String {
         if (peekedString != null) {

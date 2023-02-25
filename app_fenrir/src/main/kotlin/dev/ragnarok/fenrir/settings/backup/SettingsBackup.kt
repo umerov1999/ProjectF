@@ -40,7 +40,8 @@ class SettingsBackup {
         var player_cover_transform: String? = null
         var pref_display_photo_size: Int? = null
         var photo_rounded_view: String? = null
-        var font_size: String? = null
+        var font_size_int: Int? = null
+        var font_only_for_chats: Boolean? = null
         var is_open_url_internal: String? = null
         var webview_night_mode: Boolean? = null
         var load_history_notif: Boolean? = null

@@ -41,7 +41,7 @@ android {
     defaultConfig {
         minSdk = appMinSDK
         targetSdk = appTargetSDK
-        buildConfigField("String", "VERSION_NAME", asStringVar("17.0.2"))
+        buildConfigField("String", "VERSION_NAME_INSTALLATION", asStringVar("17.0.2"))
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

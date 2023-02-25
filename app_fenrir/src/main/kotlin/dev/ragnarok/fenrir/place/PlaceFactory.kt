@@ -717,7 +717,7 @@ object PlaceFactory {
 
     fun getLikesCopiesPlace(
         accountId: Long,
-        type: String?,
+        type: String,
         ownerId: Long,
         itemId: Int,
         filter: String?

@@ -22,25 +22,28 @@ class IAuthService : IServiceRest() {
         captchaKey: String?,
         forceSms: Int?,
         device_id: String?,
-        libverify_support: Int?
+        libverify_support: Int?,
+        lang: String?
     ): Single<LoginResponse> {
         return rest.request(
             "token",
             form(
-                "grant_type" to grantType,
-                "client_id" to clientId,
-                "client_secret" to clientSecret,
-                "username" to username,
+                "libverify_support" to libverify_support,
                 "password" to password,
-                "v" to v,
-                "2fa_supported" to twoFaSupported,
-                "scope" to scope,
                 "code" to smscode,
+                "grant_type" to grantType,
+                "2fa_supported" to twoFaSupported,
+                "v" to v,
+                "scope" to scope,
+                "client_secret" to clientSecret,
+                "client_id" to clientId,
+                "username" to username,
                 "captcha_sid" to captchaSid,
                 "captcha_key" to captchaKey,
                 "force_sms" to forceSms,
                 "device_id" to device_id,
-                "libverify_support" to libverify_support
+                "lang" to lang,
+                "https" to 1
             ), LoginResponse.serializer(), false
         )
     }
@@ -57,7 +60,8 @@ class IAuthService : IServiceRest() {
         deviceId: String?,
         sakVersion: String?,
         gaid: String?,
-        v: String?
+        v: String?,
+        lang: String?
     ): Single<VKUrlResponse> {
         return rest.requestAndGetURLFromRedirects(
             "auth_by_exchange_token",
@@ -70,7 +74,9 @@ class IAuthService : IServiceRest() {
                 "device_id" to deviceId,
                 "sak_version" to sakVersion,
                 "gaid" to gaid,
-                "v" to v
+                "v" to v,
+                "lang" to lang,
+                "https" to 1
             )
         )
     }
@@ -80,16 +86,23 @@ class IAuthService : IServiceRest() {
         clientId: Int,
         clientSecret: String?,
         sid: String?,
-        v: String?
+        v: String?,
+        device_id: String?,
+        libverify_support: Int?,
+        lang: String?
     ): Single<BaseResponse<VKApiValidationResponse>> {
         return rest.request(
             "auth.validatePhone",
             form(
+                "libverify_support" to libverify_support,
                 "api_id" to apiId,
                 "client_id" to clientId,
                 "client_secret" to clientSecret,
                 "sid" to sid,
-                "v" to v
+                "v" to v,
+                "device_id" to device_id,
+                "lang" to lang,
+                "https" to 1
             ),
             base(VKApiValidationResponse.serializer())
         )

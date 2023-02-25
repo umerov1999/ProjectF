@@ -162,6 +162,7 @@ dependencies {
     implementation("androidx.collection:collection-ktx:$collectionVersion")
     implementation("androidx.savedstate:savedstate-ktx:$savedStateVersion")
     implementation("androidx.cardview:cardview:$cardviewVersion")
+    implementation("androidx.concurrent:concurrent-futures:$concurentVersion")
     //implementation("androidx.camera:camera-core:$cameraVersion")
     //implementation("androidx.camera:camera-lifecycle:$cameraVersion")
     //implementation("androidx.camera:camera-view:$cameraVersion")

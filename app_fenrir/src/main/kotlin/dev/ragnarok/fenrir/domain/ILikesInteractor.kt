@@ -14,6 +14,14 @@ interface ILikesInteractor {
         offset: Int
     ): Single<List<Owner>>
 
+    fun getStoriesViewers(
+        accountId: Long,
+        ownerId: Long,
+        storyId: Int,
+        count: Int,
+        offset: Int
+    ): Single<List<Owner>>
+
     companion object {
         const val FILTER_LIKES = "likes"
         const val FILTER_COPIES = "copies"

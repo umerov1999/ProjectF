@@ -17,6 +17,7 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractDecoder
+import kotlinx.serialization.encoding.ChunkedDecoder
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.CompositeDecoder.Companion.DECODE_DONE
 import kotlinx.serialization.encoding.CompositeDecoder.Companion.UNKNOWN_NAME
@@ -34,7 +35,7 @@ internal open class StreamingJsonDecoder(
     @JvmField internal val lexer: AbstractJsonLexer,
     descriptor: SerialDescriptor,
     private var discriminatorHolder: DiscriminatorHolder?
-) : JsonDecoder, AbstractDecoder() {
+) : JsonDecoder, ChunkedDecoder, AbstractDecoder() {
 
     // A mutable reference to the discriminator that have to be skipped when in optimistic phase
     // of polymorphic serialization, see `decodeSerializableValue`
@@ -93,7 +94,6 @@ internal open class StreamingJsonDecoder(
             }
 
             discriminatorHolder = DiscriminatorHolder(discriminator)
-
             @Suppress("UNCHECKED_CAST")
             return actualSerializer.deserialize(this) as T
 
@@ -149,7 +149,7 @@ internal open class StreamingJsonDecoder(
     }
 
     override fun decodeNotNullMark(): Boolean {
-        return !(elementMarker?.isUnmarkedNull ?: false) && lexer.tryConsumeNotNull()
+        return !(elementMarker?.isUnmarkedNull ?: false) && !lexer.tryConsumeNull()
     }
 
     override fun decodeNull(): Nothing? {
@@ -225,7 +225,7 @@ internal open class StreamingJsonDecoder(
     private fun coerceInputValue(descriptor: SerialDescriptor, index: Int): Boolean =
         json.tryCoerceValue(
             descriptor.getElementDescriptor(index),
-            { !lexer.tryConsumeNotNull() },
+            { lexer.tryConsumeNull(it) },
             { lexer.peekString(configuration.isLenient) },
             { lexer.consumeString() /* skip unknown enum string*/ }
         )
@@ -360,6 +360,10 @@ internal open class StreamingJsonDecoder(
         } else {
             lexer.consumeString()
         }
+    }
+
+    override fun decodeStringChunked(consumeChunk: (chunk: String) -> Unit) {
+        lexer.consumeStringChunked(configuration.isLenient, consumeChunk)
     }
 
     override fun decodeInline(descriptor: SerialDescriptor): Decoder =

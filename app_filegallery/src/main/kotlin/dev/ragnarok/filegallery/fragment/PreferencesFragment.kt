@@ -371,17 +371,24 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
             }
 
-            singleChoice(
-                "font_size",
-                selItems(R.array.array_font_size_names, R.array.array_font_size_items),
-                parentFragmentManager
-            ) {
-                initialSelection = "0"
+            seekBar("font_size_int") {
+                min = -3
+                max = 9
+                default = 0
+                step = 1
+                showTickMarks = true
                 titleRes = R.string.font_size
-                onSelectionChange {
-                    requireActivity().recreate()
+                onSeek {
+                    sleepDataDisposable.dispose()
+                    sleepDataDisposable = Single.just(Any())
+                        .delay(1, TimeUnit.SECONDS)
+                        .fromIOToMain()
+                        .subscribe({
+                            requireActivity().recreate()
+                        }, { RxUtils.dummy() })
                 }
             }
+
             switch("use_internal_downloader") {
                 defaultValue = true
                 summaryRes = R.string.use_internal_downloader_summary

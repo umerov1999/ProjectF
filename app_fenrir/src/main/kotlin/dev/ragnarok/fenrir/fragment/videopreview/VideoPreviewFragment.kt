@@ -458,8 +458,8 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         val external = video.externalLink
         if (external.nonNullNoEmpty()) {
             if (external.contains("youtube")) {
-                val hasVanced = AppPrefs.isVancedYoutubeInstalled(requireActivity())
-                if (hasVanced) {
+                val hasReVanced = AppPrefs.isReVancedYoutubeInstalled(requireActivity())
+                if (hasReVanced) {
                     items.add(
                         Item(Menu.YOUTUBE_VANCED, Text(R.string.title_play_in_youtube_vanced))
                             .setIcon(R.drawable.ic_play_youtube)
@@ -471,7 +471,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                         .setIcon(R.drawable.ic_new_pipe)
                         .setSection(SECTION_PLAY)
                 )
-                if (!hasVanced && AppPrefs.isYoutubeInstalled(requireActivity())) {
+                if (!hasReVanced && AppPrefs.isYoutubeInstalled(requireActivity())) {
                     items.add(
                         Item(Menu.YOUTUBE, Text(R.string.title_play_in_youtube))
                             .setIcon(R.drawable.ic_play_youtube)
@@ -585,8 +585,8 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         } else if (video.externalLink.nonNullNoEmpty<CharSequence>()) {
             if (video.externalLink?.contains("youtube") == true) {
                 when {
-                    AppPrefs.isVancedYoutubeInstalled(requireActivity()) -> {
-                        playWithYoutubeVanced(video)
+                    AppPrefs.isReVancedYoutubeInstalled(requireActivity()) -> {
+                        playWithYoutubeReVanced(video)
                     }
 
                     AppPrefs.isNewPipeInstalled(requireActivity()) -> {
@@ -660,7 +660,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             }
 
             Menu.YOUTUBE -> playWithYoutube(video)
-            Menu.YOUTUBE_VANCED -> playWithYoutubeVanced(video)
+            Menu.YOUTUBE_VANCED -> playWithYoutubeReVanced(video)
             Menu.COUB -> playWithCoub(video)
             Menu.PLAY_ANOTHER_SOFT -> video.externalLink?.let { playWithExternalSoftware(it) }
             Menu.PLAY_BROWSER -> video.player?.let { playWithExternalSoftware(it) }
@@ -812,14 +812,14 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         startActivity(intent)
     }
 
-    private fun playWithYoutubeVanced(video: Video) {
+    private fun playWithYoutubeReVanced(video: Video) {
         val outerLink = video.externalLink
         val intent = Intent()
         intent.data = Uri.parse(outerLink)
         intent.action = Intent.ACTION_VIEW
         intent.component = ComponentName(
-            "app.revanced.android.youtube",
-            "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
+            AppPrefs.revanced?.first.orEmpty(),
+            AppPrefs.revanced?.second.orEmpty()
         )
         startActivity(intent)
     }

@@ -223,6 +223,7 @@ interface ISettings {
         val isSnow_mode: Boolean
         val photoRoundMode: Int
         val fontSize: Int
+        val fontOnlyForChats: Boolean
         val isLoad_history_notif: Boolean
         val isDont_write: Boolean
         val isOver_ten_attach: Boolean

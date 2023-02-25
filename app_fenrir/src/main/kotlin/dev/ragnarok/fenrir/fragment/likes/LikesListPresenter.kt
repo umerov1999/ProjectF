@@ -16,7 +16,7 @@ class LikesListPresenter(
     private val type: String,
     private val ownerId: Long,
     private val itemId: Int,
-    private val filter: String,
+    private val filter: String?,
     savedInstanceState: Bundle?
 ) : SimpleOwnersPresenter<ISimpleOwnersView>(accountId, savedInstanceState) {
     private val likesInteractor: ILikesInteractor = InteractorFactory.createLikesInteractor()
@@ -29,22 +29,39 @@ class LikesListPresenter(
         loadingNow = true
         //this.loadingOffset = offset;
         resolveRefreshingView()
-        netDisposable.add(likesInteractor.getLikes(
-            accountId,
-            type,
-            ownerId,
-            itemId,
-            filter,
-            50,
-            offset
-        )
-            .fromIOToMain()
-            .subscribe({ owners ->
-                onDataReceived(
-                    offset,
-                    owners
-                )
-            }) { t -> onDataGetError(t) })
+        if (type == "stories_view") {
+            netDisposable.add(likesInteractor.getStoriesViewers(
+                accountId,
+                ownerId,
+                itemId,
+                50,
+                offset
+            )
+                .fromIOToMain()
+                .subscribe({ owners ->
+                    onDataReceived(
+                        offset,
+                        owners
+                    )
+                }) { t -> onDataGetError(t) })
+        } else {
+            netDisposable.add(likesInteractor.getLikes(
+                accountId,
+                type,
+                ownerId,
+                itemId,
+                filter,
+                50,
+                offset
+            )
+                .fromIOToMain()
+                .subscribe({ owners ->
+                    onDataReceived(
+                        offset,
+                        owners
+                    )
+                }) { t -> onDataGetError(t) })
+        }
     }
 
     private fun onDataGetError(t: Throwable) {

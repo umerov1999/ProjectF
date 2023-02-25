@@ -73,6 +73,11 @@ public class MaskableFrameLayout extends FrameLayout implements Maskable {
     onMaskChanged();
   }
 
+  /**
+   * Sets the percentage by which this {@link View} masks by along the x axis.
+   *
+   * @param percentage 0 when this view is fully unmasked. 1 when this view is fully masked.
+   */
   @Override
   public void setMaskXPercentage(float percentage) {
     percentage = MathUtils.clamp(percentage, 0F, 1F);
@@ -82,14 +87,20 @@ public class MaskableFrameLayout extends FrameLayout implements Maskable {
     }
   }
 
+  /**
+   * Gets the percentage by which this {@link View} is masked by along the x axis.
+   *
+   * @return a float between 0 and 1 where 0 is fully unmasked and 1 is fully masked.
+   */
   @Override
   public float getMaskXPercentage() {
     return maskXPercentage;
   }
 
+  /** Gets a {@link RectF} that this {@link View} is masked itself by. */
   @NonNull
   @Override
-  public RectF getMaskRect() {
+  public RectF getMaskRectF() {
     return maskRect;
   }
 
@@ -167,7 +178,7 @@ public class MaskableFrameLayout extends FrameLayout implements Maskable {
           new ViewOutlineProvider() {
             @Override
             public void getOutline(View view, Outline outline) {
-              RectF maskRect = ((MaskableFrameLayout) view).getMaskRect();
+              RectF maskRect = ((MaskableFrameLayout) view).getMaskRectF();
               float cornerSize = ((MaskableFrameLayout) view).getCornerRadiusFromShapeAppearance();
               if (!maskRect.isEmpty()) {
                 outline.setRoundRect(

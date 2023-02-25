@@ -47,14 +47,6 @@
         <item>Не скругляць</item>
     </string-array>
 
-    <string-array name="array_font_size_names">
-        <item>Па змаўчанні</item>
-        <item>Маленькі</item>
-        <item>Сярэдні</item>
-        <item>Вялікі</item>
-        <item>Вялізны</item>
-    </string-array>
-
     <string-array name="array_news_start_updates_names">
         <item>Адключыць</item>
         <item>Абнаўляць</item>
@@ -1203,7 +1195,7 @@
     <string name="bitrate">Бітрэйт: %1$d kbs, Памер: %2$s</string>
     <string name="error_timeout_message">Перавышаны час чакання запыту</string>
     <string name="error_unknown_host">Няма падключэння да сеткі</string>
-    <string name="login_sms_code_hint">SMS-код</string>
+    <string name="login_sms_code_hint">Код из SMS</string>
     <string name="button_proxy">Проксі</string>
     <string name="button_settings">Налады</string>
     <string name="login_password_hint">Пароль</string>
@@ -1717,5 +1709,7 @@
     <string name="wall_photos">Фатаграфіі на сцяне</string>
     <string name="block_or_delete">Заблакаваць падпісчыка? Рэжым захавацца на сесію</string>
     <string name="exchange_token">Токен абмену</string>
-    <string name="visible_only_dons">Відаць толькі донам!</string>
+    <string name="available_only_dons">Даступна толькі донам!</string>
+    <string name="font_only_for_chats">Шрыфт толькі чатам</string>
+    <string name="views">Прагляды</string>
 </resources>

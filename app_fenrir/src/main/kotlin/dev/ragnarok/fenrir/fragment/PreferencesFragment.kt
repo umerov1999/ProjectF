@@ -643,14 +643,28 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.webview_night_mode
             }
 
-            singleChoice(
-                "font_size",
-                selItems(R.array.array_font_size_names, R.array.array_font_size_items),
-                parentFragmentManager
-            ) {
-                initialSelection = "0"
+            seekBar("font_size_int") {
+                min = -3
+                max = 9
+                default = 0
+                step = 1
+                showTickMarks = true
                 titleRes = R.string.font_size
-                onSelectionChange {
+                onSeek {
+                    sleepDataDisposable.dispose()
+                    sleepDataDisposable = Single.just(Any())
+                        .delay(1, TimeUnit.SECONDS)
+                        .fromIOToMain()
+                        .subscribe({
+                            requireActivity().recreate()
+                        }, { RxUtils.dummy() })
+                }
+            }
+
+            switch("font_only_for_chats") {
+                defaultValue = false
+                titleRes = R.string.font_only_for_chats
+                onCheckedChange {
                     requireActivity().recreate()
                 }
             }

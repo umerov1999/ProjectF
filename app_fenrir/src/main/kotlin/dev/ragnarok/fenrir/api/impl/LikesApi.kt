@@ -1,10 +1,12 @@
 package dev.ragnarok.fenrir.api.impl
 
 import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.ILikesApi
 import dev.ragnarok.fenrir.api.model.response.LikesListResponse
+import dev.ragnarok.fenrir.api.model.response.ViewersListResponse
 import dev.ragnarok.fenrir.api.services.ILikesService
 import io.reactivex.rxjava3.core.Single
 
@@ -21,6 +23,21 @@ internal class LikesApi(accountId: Long, provider: IServiceProvider) :
                     .getList(
                         type, ownerId, itemId, pageUrl, filter, integerFromBoolean(friendsOnly),
                         1, offset, count, integerFromBoolean(skipOwn), fields
+                    )
+                    .map(extractResponseWithErrorHandling())
+            }
+    }
+
+    override fun getStoriesViewers(
+        ownerId: Long?,
+        storyId: Int?,
+        offset: Int?, count: Int?
+    ): Single<ViewersListResponse> {
+        return provideService(ILikesService(), TokenType.USER, TokenType.SERVICE)
+            .flatMap { service ->
+                service
+                    .getStoriesViewers(
+                        ownerId, storyId, offset, count, 1, Fields.FIELDS_BASE_USER
                     )
                     .map(extractResponseWithErrorHandling())
             }

@@ -30,7 +30,7 @@ class LikesListAdapter : AbsAdapter<LikesListResponse>("LikesListResponse") {
                 val itemRoot = itemsArray?.get(i)?.asJsonObject
                 val type = optString(itemRoot, "type")
                 var owner: VKApiOwner? = null
-                if ("profile" == type) {
+                if ("profile" == type || "user" == type) {
                     owner = itemRoot?.let {
                         kJson.decodeFromJsonElement(VKApiUser.serializer(), it)
                     }

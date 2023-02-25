@@ -32,14 +32,6 @@
         <item>Material 1</item>
     </string-array>
 
-    <string-array name="array_font_size_names">
-        <item>Па змаўчанні</item>
-        <item>Маленькі</item>
-        <item>Сярэдні</item>
-        <item>Вялікі</item>
-        <item>Вялізны</item>
-    </string-array>
-
     <string-array name="array_lifecycle_names">
         <item>1 хвіл.</item>
         <item>2 хвіл.</item>

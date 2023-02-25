@@ -7,9 +7,19 @@ import io.reactivex.rxjava3.core.Single
 
 interface IAuthApi {
     fun directLogin(
-        grantType: String?, clientId: Int, clientSecret: String?,
-        username: String?, pass: String?, v: String?, twoFaSupported: Boolean,
-        scope: String?, code: String?, captchaSid: String?, captchaKey: String?, forceSms: Boolean
+        grantType: String?,
+        clientId: Int,
+        clientSecret: String?,
+        username: String?,
+        pass: String?,
+        v: String?,
+        twoFaSupported: Boolean,
+        scope: String?,
+        code: String?,
+        captchaSid: String?,
+        captchaKey: String?,
+        forceSms: Boolean,
+        libverify_support: Boolean
     ): Single<LoginResponse>
 
     fun validatePhone(
@@ -17,7 +27,8 @@ interface IAuthApi {
         clientId: Int,
         clientSecret: String?,
         sid: String?,
-        v: String?
+        v: String?,
+        libverify_support: Boolean
     ): Single<VKApiValidationResponse>
 
     fun authByExchangeToken(

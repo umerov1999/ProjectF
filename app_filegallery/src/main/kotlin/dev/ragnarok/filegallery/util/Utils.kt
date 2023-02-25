@@ -183,10 +183,7 @@ object Utils {
     }
 
     fun setBackgroundTint(view: View?, @ColorInt color: Int) {
-        if (view == null) {
-            return
-        }
-        view.backgroundTintList = ColorStateList.valueOf(color)
+        view?.backgroundTintList = ColorStateList.valueOf(color)
     }
 
     fun setColorFilter(view: ImageView?, @ColorInt color: Int) {
@@ -412,7 +409,7 @@ object Utils {
         } else {
             val res = base.resources
             val config = Configuration(res.configuration)
-            config.fontScale = res.configuration.fontScale + 0.15f * size
+            config.fontScale = res.configuration.fontScale + 0.05f * size
             if (lang != Lang.DEFAULT) {
                 setSystemLocaleLegacy(config, getLocaleSettings(lang))
             }

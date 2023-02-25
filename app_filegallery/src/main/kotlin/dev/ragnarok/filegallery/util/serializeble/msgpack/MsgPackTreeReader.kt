@@ -32,7 +32,7 @@ internal class MsgPackTreeReader(
                 .joinToNumber()
 
             type == MsgPackType.Array.ARRAY32 -> {
-                if (basicMsgPackDecoder.configuration.preventOverflows) {
+                if (basicMsgPackDecoder.getConfiguration().preventOverflows) {
                     val number = basicMsgPackDecoder.dataBuffer.takeNext(4).joinToNumber<Long>()
                     if (number !in Int.MIN_VALUE..Int.MAX_VALUE) {
                         throw MsgPackSerializationException.overflowError(basicMsgPackDecoder.dataBuffer)
@@ -64,7 +64,7 @@ internal class MsgPackTreeReader(
                 .joinToNumber()
 
             type == MsgPackType.Map.MAP32 -> {
-                if (basicMsgPackDecoder.configuration.preventOverflows) {
+                if (basicMsgPackDecoder.getConfiguration().preventOverflows) {
                     val number = basicMsgPackDecoder.dataBuffer.takeNext(4).joinToNumber<Long>()
                     if (number !in Int.MIN_VALUE..Int.MAX_VALUE) {
                         throw MsgPackSerializationException.overflowError(basicMsgPackDecoder.dataBuffer)

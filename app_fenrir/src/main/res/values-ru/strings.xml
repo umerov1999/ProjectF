@@ -47,14 +47,6 @@
         <item>Не скруглять</item>
     </string-array>
 
-    <string-array name="array_font_size_names">
-        <item>По умолчанию</item>
-        <item>Маленький</item>
-        <item>Средний</item>
-        <item>Большой</item>
-        <item>Огромный</item>
-    </string-array>
-
     <string-array name="array_news_start_updates_names">
         <item>Отключить</item>
         <item>Обновлять</item>
@@ -384,7 +376,7 @@
     <string name="api_error_114">Недопустимый идентификатор альбома</string>
     <string name="api_error_118">Недопустимый сервер</string>
     <string name="api_error_121">Неверный хэш</string>
-    <string name="api_error_150">Неверный timestamp</string>
+    <string name="api_error_150">Неверная отметка времени</string>
     <string name="api_error_174">Невозможно добавить в друзья самого себя</string>
     <string name="api_error_175">Невозможно добавить в друзья пользователя, который занес Вас в свой черный список</string>
     <string name="api_error_176">Невозможно добавить в друзья пользователя, который занесен в Ваш черный список</string>
@@ -1205,7 +1197,7 @@
     <string name="bitrate">Битрейт: %1$d kbs, Размер: %2$s</string>
     <string name="error_timeout_message">Превышено время ожидание запроса</string>
     <string name="error_unknown_host">Нет подключения к сети</string>
-    <string name="login_sms_code_hint">SMS-код</string>
+    <string name="login_sms_code_hint">Код из SMS</string>
     <string name="button_proxy">Прокси</string>
     <string name="button_settings">Настройки</string>
     <string name="login_password_hint">Пароль</string>
@@ -1719,5 +1711,7 @@
     <string name="wall_photos">Фотографии на стене</string>
     <string name="block_or_delete">Заблокировать подписчика? Режим сохраниться на сессию</string>
     <string name="exchange_token">Токен обмена</string>
-    <string name="visible_only_dons">Видно только донам!</string>
+    <string name="available_only_dons">Доступно только донам!</string>
+    <string name="font_only_for_chats">Шрифт только чатам</string>
+    <string name="views">Просмотры</string>
 </resources>

@@ -606,7 +606,11 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             mToolbar?.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
         } else {
             if (!isFragmentWithoutNavigation) {
-                mToolbar?.setNavigationIcon(R.drawable.client_round)
+                mToolbar?.setNavigationIcon(
+                    if (Settings.get()
+                            .other().isRunes_show
+                    ) R.drawable.client_round else R.drawable.client_round_vk
+                )
                 mToolbar?.setNavigationOnClickListener {
                     val menus = ModalBottomSheetDialogFragment.Builder()
                     menus.add(

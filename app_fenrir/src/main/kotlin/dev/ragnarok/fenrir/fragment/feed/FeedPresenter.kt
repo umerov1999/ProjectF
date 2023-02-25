@@ -398,7 +398,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     fun fireNewsShareLongClick(news: News) {
         view?.goToReposts(
             accountId,
-            news.type,
+            news.type.orEmpty(),
             news.sourceId,
             news.postId
         )
@@ -407,7 +407,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     fun fireNewsLikeLongClick(news: News) {
         view?.goToLikes(
             accountId,
-            news.type,
+            news.type.orEmpty(),
             news.sourceId,
             news.postId
         )

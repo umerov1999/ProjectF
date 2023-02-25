@@ -23,7 +23,7 @@ class SettingsBackup {
         var theme_overlay: String? = null
         var language_ui: String? = null
         var delete_disabled: Boolean? = null
-        var font_size: String? = null
+        var font_size_int: Int? = null
         var local_media_server: String? = null
         var use_internal_downloader: Boolean? = null
         var video_controller_to_decor: Boolean? = null

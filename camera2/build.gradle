@@ -28,7 +28,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlin_version")
     compileOnly("org.jetbrains.kotlin:kotlin-annotations-jvm:$kotlin_version")
     compileOnly("org.checkerframework:checker-compat-qual:2.5.5")
-    compileOnly("org.checkerframework:checker-qual-android:3.27.0")
+    compileOnly("org.checkerframework:checker-qual-android:3.31.0")
     compileOnly("com.google.auto.value:auto-value-annotations:$autoValueVersion")
     implementation("androidx.annotation:annotation:$annotationVersion")
     implementation("androidx.appcompat:appcompat:$appcompatVersion")
@@ -40,6 +40,6 @@ dependencies {
     implementation("com.google.errorprone:error_prone_annotations:${errorproneVersion}")
     implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
     implementation("com.google.guava:guava:$guavaVersion")
-    implementation("androidx.concurrent:concurrent-futures:1.1.0")
+    implementation("androidx.concurrent:concurrent-futures:$concurentVersion")
     annotationProcessor("com.google.auto.value:auto-value:$autoValueVersion")
 }
