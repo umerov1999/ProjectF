@@ -8,7 +8,6 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.safeCountOfMultiple
-import java.util.Collections
 import java.util.regex.Pattern
 import kotlin.math.abs
 
@@ -44,7 +43,7 @@ object OwnerLinkSpanFactory {
             if (othersLinks.nonNullNoEmpty()) {
                 all.addAll(othersLinks)
             }
-            Collections.sort(all, LINK_COMPARATOR)
+            all.sortWith(LINK_COMPARATOR)
             return all
         }
         return null
@@ -74,7 +73,7 @@ object OwnerLinkSpanFactory {
             if (othersLinks.nonNullNoEmpty()) {
                 all.addAll(othersLinks)
             }
-            Collections.sort(all, LINK_COMPARATOR)
+            all.sortWith(LINK_COMPARATOR)
             val result = Spannable.Factory.getInstance().newSpannable(replace(input, all))
             for (link in all) {
                 //TODO Нужно ли удалять spannable перед установкой новых

@@ -25,7 +25,6 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
-import java.util.Collections
 
 internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersStorage {
     override fun storeStickerSets(accountId: Long, sets: List<StickerSetEntity>): Completable {
@@ -126,7 +125,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                 }
                 stickers.add(mapStickerSet(cursor))
             }
-            Collections.sort(stickers, COMPARATOR_STICKER_SET)
+            stickers.sortWith(COMPARATOR_STICKER_SET)
             cursor.close()
             e.onSuccess(stickers)
             log("StickersStorage.get", start, "count: " + stickers.size)

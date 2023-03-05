@@ -23,7 +23,7 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import java.io.File
 import java.io.FilenameFilter
-import java.util.*
+import java.util.Locale
 
 class FileManagerPresenter(
     private var path: File,
@@ -285,8 +285,8 @@ class FileManagerPresenter(
             for (i in fileListTmp) {
                 if (i.type == FileType.folder) dirsList.add(i) else flsList.add(i)
             }
-            Collections.sort(dirsList, ItemModificationComparator())
-            Collections.sort(flsList, ItemModificationComparator())
+            dirsList.sortWith(ItemModificationComparator())
+            flsList.sortWith(ItemModificationComparator())
             fileListTmp.clear()
             fileListTmp.addAll(dirsList)
             fileListTmp.addAll(flsList)
@@ -366,8 +366,8 @@ class FileManagerPresenter(
                     for (i in fileListTmp) {
                         if (i.type == FileType.folder) dirsList.add(i) else flsList.add(i)
                     }
-                    Collections.sort(dirsList, ItemModificationComparator())
-                    Collections.sort(flsList, ItemModificationComparator())
+                    dirsList.sortWith(ItemModificationComparator())
+                    flsList.sortWith(ItemModificationComparator())
                     fileListTmp.clear()
                     fileListTmp.addAll(dirsList)
                     fileListTmp.addAll(flsList)

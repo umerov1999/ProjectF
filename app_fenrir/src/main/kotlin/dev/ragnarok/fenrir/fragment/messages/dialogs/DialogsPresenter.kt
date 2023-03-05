@@ -41,7 +41,6 @@ import dev.ragnarok.fenrir.util.Utils.needReloadStickers
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import java.util.*
 
 class DialogsPresenter(
     accountId: Long,
@@ -339,7 +338,7 @@ class DialogsPresenter(
             dialog.setTitle(it)
         }
         if (index != -1) {
-            Collections.sort(dialogs, COMPARATOR)
+            dialogs.sortWith(COMPARATOR)
             safeNotifyDataSetChanged()
         } else {
             if (Peer.isGroup(peerId) || Peer.isUser(peerId)) {
@@ -353,7 +352,7 @@ class DialogsPresenter(
                                     .fromIOToMain()
                                     .subscribe({
                                         dialogs.add(dialog)
-                                        Collections.sort(dialogs, COMPARATOR)
+                                        dialogs.sortWith(COMPARATOR)
                                         safeNotifyDataSetChanged()
                                     }, ignore())
                             )
@@ -361,7 +360,7 @@ class DialogsPresenter(
                 )
             } else {
                 dialogs.add(dialog)
-                Collections.sort(dialogs, COMPARATOR)
+                dialogs.sortWith(COMPARATOR)
                 safeNotifyDataSetChanged()
             }
         }

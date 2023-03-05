@@ -355,6 +355,22 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
         return File(path).length()
     }
 
+    private class ItemModificationComparator : Comparator<TagDir> {
+        override fun compare(lhs: TagDir, rhs: TagDir): Int {
+            return when {
+                lhs.type == FileType.folder && rhs.type != FileType.folder -> {
+                    -1
+                }
+
+                lhs.type != FileType.folder && rhs.type == FileType.folder -> {
+                    1
+                }
+
+                else -> rhs.id.compareTo(lhs.id)
+            }
+        }
+    }
+
     override fun getTagDirs(ownerId: Int): Single<List<TagDir>> {
         return Single.fromCallable {
             val where = TagDirsColumns.OWNER_ID + " = ?"
@@ -382,6 +398,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                     )
                 }
             }
+            data.sortWith(ItemModificationComparator())
             data
         }
     }

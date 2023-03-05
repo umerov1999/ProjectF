@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.util.CoverSafeResize
 import dev.ragnarok.fenrir.util.Utils
 import okio.source
 import java.io.*
-import java.util.*
 
 class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
     companion object {
@@ -267,9 +266,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
 
         val fList = direct.listFiles(filter)
         val dst = if (fList != null && fList.isNotEmpty()) {
-            val tmp = fList.toList()
-            Collections.sort(tmp, ItemModificationComparator())
-            tmp[0]
+            fList.sortedWith(ItemModificationComparator())[0]
         } else {
             null
         }

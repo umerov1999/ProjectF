@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.util.Objects.safeEquals
 import io.reactivex.rxjava3.core.Single
 import java.io.File
 import java.io.FilenameFilter
-import java.util.*
+import java.util.Locale
 
 class FileManagerSelectPresenter(
     private var path: File,
@@ -202,8 +202,8 @@ class FileManagerSelectPresenter(
                     for (i in fileListTmp) {
                         if (i.isDir) dirsList.add(i) else flsList.add(i)
                     }
-                    Collections.sort(dirsList, ItemModificationComparator())
-                    Collections.sort(flsList, ItemModificationComparator())
+                    dirsList.sortWith(ItemModificationComparator())
+                    flsList.sortWith(ItemModificationComparator())
                     fileListTmp.clear()
                     fileListTmp.addAll(dirsList)
                     fileListTmp.addAll(flsList)

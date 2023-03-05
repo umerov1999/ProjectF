@@ -48,7 +48,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.lang.Boolean.compare
-import java.util.*
 import kotlin.math.abs
 
 abstract class AbsWallPresenter<V : IWallView> internal constructor(
@@ -547,7 +546,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
                 post.setPinned(it.isPinned)
             }
             if (pinStateChanged) {
-                Collections.sort(wall, COMPARATOR)
+                wall.sortWith(COMPARATOR)
                 safeNotifyWallDataSetChanged()
             } else {
                 view?.notifyWallItemChanged(index)
