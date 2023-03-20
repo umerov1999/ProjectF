@@ -13,6 +13,7 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.gifpager.GifPagerActivity
 import dev.ragnarok.fenrir.activity.photopager.PhotoPagerActivity.Companion.newInstance
+import dev.ragnarok.fenrir.activity.shortvideopager.ShortVideoPagerActivity
 import dev.ragnarok.fenrir.activity.storypager.StoryPagerActivity
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment.Companion.newInstance
@@ -98,6 +99,11 @@ class LocalJsonToChatActivity : NoMainActivity(), PlaceProvider, AppStyleable {
             Place.STORY_PLAYER -> place.launchActivityForResult(
                 this,
                 StoryPagerActivity.newInstance(this, args)
+            )
+
+            Place.SHORT_VIDEOS -> place.launchActivityForResult(
+                this,
+                ShortVideoPagerActivity.newInstance(this, args)
             )
 
             Place.SINGLE_PHOTO -> place.launchActivityForResult(

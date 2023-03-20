@@ -25,11 +25,11 @@ class EditedMessage(val message: Message) {
         get() {
             if (body.isNullOrBlank()) {
                 for (entry in attachments) {
-                    if (entry.attachment is Upload) continue
-
+                    if (entry.attachment is Upload) {
+                        continue
+                    }
                     return true
                 }
-
                 return false
             } else {
                 return true

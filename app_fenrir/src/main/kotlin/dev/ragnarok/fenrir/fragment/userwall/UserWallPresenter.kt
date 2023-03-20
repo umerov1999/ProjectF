@@ -3,12 +3,10 @@ package dev.ragnarok.fenrir.fragment.userwall
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
-import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.StringRes
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.*
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
 import dev.ragnarok.fenrir.api.ProxyUtil
@@ -25,15 +23,12 @@ import dev.ragnarok.fenrir.model.criteria.WallCriteria
 import dev.ragnarok.fenrir.place.PlaceFactory.getMentionsPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.*
-import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.ShortcutUtils.createWallShortcutRx
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.core.Single
 import okhttp3.*
-import java.io.File
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -49,140 +44,20 @@ class UserWallPresenter(
 ) : AbsWallPresenter<IUserWallView>(accountId, ownerId, savedInstanceState) {
     private val filters: MutableList<PostFilter>
     private val ownersRepository: IOwnersRepository = owners
+    private val storiesInteractor: IStoriesShortVideosInteractor =
+        InteractorFactory.createStoriesInteractor()
     private val relationshipInteractor: IRelationshipInteractor =
         InteractorFactory.createRelationshipInteractor()
     private val accountInteractor: IAccountsInteractor = InteractorFactory.createAccountInteractor()
     private val photosInteractor: IPhotosInteractor = InteractorFactory.createPhotosInteractor()
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
     private val wallsRepository: IWallsRepository = walls
-    private val uploadManager: IUploadManager = Includes.uploadManager
     var user: User
         private set
     private var details: UserDetails
     private var loadingAvatarPhotosNow = false
     override fun onRefresh() {
         requestActualFullInfo()
-    }
-
-    fun firePhotosSelected(localPhotos: ArrayList<LocalPhoto>?, file: String?, video: LocalVideo?) {
-        when {
-            file.nonNullNoEmpty() -> doUploadFile(file)
-            localPhotos.nonNullNoEmpty() -> {
-                doUploadPhotos(localPhotos)
-            }
-
-            video != null -> {
-                doUploadVideo(video.getData().toString())
-            }
-        }
-    }
-
-    private fun doUploadFile(file: String) {
-        for (i in Settings.get().other().photoExt()) {
-            if (file.endsWith(i, true)) {
-                Uri.fromFile(
-                    File(
-                        file
-                    )
-                )
-                return
-            }
-        }
-        for (i in Settings.get().other().videoExt()) {
-            if (file.endsWith(i, true)) {
-                doUploadFile(
-                    file,
-                    0,
-                    true
-                )
-                return
-            }
-        }
-        MaterialAlertDialogBuilder(context)
-            .setTitle(R.string.select)
-            .setNegativeButton(R.string.video) { _: DialogInterface?, _: Int ->
-                doUploadFile(
-                    file,
-                    0,
-                    true
-                )
-            }
-            .setPositiveButton(R.string.photo) { _: DialogInterface?, _: Int ->
-                view?.doEditPhoto(
-                    Uri.fromFile(
-                        File(
-                            file
-                        )
-                    )
-                )
-            }
-            .create().show()
-    }
-
-    fun doUploadFile(file: String, size: Int, isVideo: Boolean) {
-        val intents: List<UploadIntent> = if (isVideo) {
-            UploadUtils.createIntents(
-                accountId,
-                UploadDestination.forStory(MessageMethod.VIDEO),
-                file,
-                size,
-                true
-            )
-        } else {
-            UploadUtils.createIntents(
-                accountId,
-                UploadDestination.forStory(MessageMethod.PHOTO),
-                file,
-                size,
-                true
-            )
-        }
-        uploadManager.enqueue(intents)
-    }
-
-    private fun doUploadVideo(file: String) {
-        val intents = UploadUtils.createVideoIntents(
-            accountId,
-            UploadDestination.forStory(MessageMethod.VIDEO),
-            file,
-            true
-        )
-        uploadManager.enqueue(intents)
-    }
-
-    private fun doUploadPhotos(photos: List<LocalPhoto>) {
-        if (photos.size == 1) {
-            var to_up = photos[0].getFullImageUri() ?: return
-            if (to_up.path?.let { File(it).isFile } == true) {
-                to_up = Uri.fromFile(to_up.path?.let { File(it) })
-            }
-            view?.doEditPhoto(to_up)
-            return
-        }
-        val intents = UploadUtils.createIntents(
-            accountId,
-            UploadDestination.forStory(MessageMethod.PHOTO),
-            photos,
-            Upload.IMAGE_SIZE_FULL,
-            true
-        )
-        uploadManager.enqueue(intents)
-    }
-
-    private fun onUploadFinished(pair: Pair<Upload, UploadResult<*>>) {
-        val destination = pair.first.destination
-        if (destination.method == Method.PHOTO_TO_PROFILE && destination.ownerId == ownerId) {
-            requestActualFullInfo()
-            val post = pair.second.result as Post
-            resumedView?.showAvatarUploadedMessage(
-                accountId,
-                post
-            )
-        } else if (destination.method == Method.STORY && Settings.get()
-                .accounts().current == ownerId
-        ) {
-            fireRefresh()
-        }
     }
 
     private fun resolveCoverImage() {
@@ -214,7 +89,8 @@ class UserWallPresenter(
             details.getProductsCount(),
             details.getGiftCount(),
             details.getProductServicesCount(),
-            details.getNarrativesCount()
+            details.getNarrativesCount(),
+            details.getClipsCount()
         )
     }
 
@@ -853,14 +729,6 @@ class UserWallPresenter(
         )
     }
 
-    fun fireNewAvatarPhotoSelected(file: String?) {
-        val intent = UploadIntent(accountId, UploadDestination.forProfilePhoto(ownerId))
-            .setAutoCommit(true)
-            .setFileUri(Uri.parse(file))
-            .setSize(Upload.IMAGE_SIZE_FULL)
-        uploadManager.enqueue(listOf(intent))
-    }
-
     override fun fireAddToShortcutClick() {
         appendDisposable(
             createWallShortcutRx(
@@ -881,7 +749,7 @@ class UserWallPresenter(
     }
 
     override fun searchStory(ByName: Boolean) {
-        appendDisposable(ownersRepository.searchStory(
+        appendDisposable(storiesInteractor.searchStory(
             accountId,
             if (ByName) user.fullName else null,
             if (ByName) null else ownerId
@@ -910,13 +778,5 @@ class UserWallPresenter(
         syncFiltersWithSelectedMode()
         syncFilterCountersWithDetails()
         refreshUserDetails()
-        appendDisposable(
-            uploadManager.observeResults()
-                .observeOn(provideMainThreadScheduler())
-                .subscribe(
-                    { pair: Pair<Upload, UploadResult<*>> -> onUploadFinished(pair) },
-                    ignore()
-                )
-        )
     }
 }

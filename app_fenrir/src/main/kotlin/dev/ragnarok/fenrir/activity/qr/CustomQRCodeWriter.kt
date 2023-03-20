@@ -10,7 +10,7 @@ import com.google.zxing.WriterException
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.ByteMatrix
 import com.google.zxing.qrcode.encoder.Encoder
-import java.util.*
+import java.util.Arrays
 import kotlin.math.roundToInt
 
 class CustomQRCodeWriter {

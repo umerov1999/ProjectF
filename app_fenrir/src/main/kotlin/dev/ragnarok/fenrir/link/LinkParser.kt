@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.link
 import android.content.Context
 import android.text.SpannableStringBuilder
 import android.util.Patterns
-import java.util.*
 import java.util.regex.Pattern
 
 object LinkParser {
@@ -41,7 +40,7 @@ object LinkParser {
                 matcher.start() - i2 + (matcher.group(14)?.length ?: 0),
                 0
             )
-            i2 += matcher.group().length - Objects.requireNonNull(matcher.group(14)).length
+            i2 += matcher.group().length - (matcher.group(14)?.length ?: 0)
             spannableStringBuilder3 = replace
         }
         r12 = spannableStringBuilder3

@@ -13,6 +13,7 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.gifpager.GifPagerActivity
 import dev.ragnarok.fenrir.activity.photopager.PhotoPagerActivity.Companion.newInstance
+import dev.ragnarok.fenrir.activity.shortvideopager.ShortVideoPagerActivity
 import dev.ragnarok.fenrir.activity.slidr.Slidr.attach
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
@@ -113,6 +114,11 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
             Place.STORY_PLAYER -> place.launchActivityForResult(
                 this,
                 StoryPagerActivity.newInstance(this, args)
+            )
+
+            Place.SHORT_VIDEOS -> place.launchActivityForResult(
+                this,
+                ShortVideoPagerActivity.newInstance(this, args)
             )
 
             Place.SINGLE_PHOTO -> place.launchActivityForResult(

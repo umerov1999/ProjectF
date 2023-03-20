@@ -20,7 +20,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.*
+import java.util.Locale
 
 class FriendsByPhonesPresenter(accountId: Long, context: Context, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFriendsByPhonesView>(accountId, savedInstanceState) {

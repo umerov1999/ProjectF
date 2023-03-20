@@ -35,6 +35,10 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         val webview = findViewById<WebView>(R.id.vkontakteview)
         webview.settings.javaScriptEnabled = true
+        webview.settings.domStorageEnabled = true
+        webview.settings.blockNetworkLoads = false
+        webview.settings.blockNetworkImage = false
+        webview.settings.databaseEnabled = true
         webview.clearCache(true)
         webview.settings.userAgentString = getUserAgentByType(Constants.DEFAULT_ACCOUNT_TYPE)
 

@@ -23,7 +23,7 @@ import io.reactivex.rxjava3.exceptions.Exceptions
 import io.reactivex.rxjava3.functions.Function
 import kotlinx.serialization.KSerializer
 import okhttp3.*
-import java.util.*
+import kotlin.random.Random
 
 internal open class AbsApi(val accountId: Long, private val restProvider: IServiceProvider) {
     fun <T : IServiceRest> provideService(serviceClass: T, vararg tokenTypes: Int): Single<T> {
@@ -259,7 +259,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
     }
 
     companion object {
-        val RANDOM = Random()
+        val RANDOM = Random(System.nanoTime())
         inline fun <reified T> join(
             tokens: Iterable<T>?,
             delimiter: String?,

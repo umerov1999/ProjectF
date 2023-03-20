@@ -37,6 +37,8 @@ class UserDetailsEntity {
         private set
     var narrativesCount = 0
         private set
+    var clipsCount = 0
+        private set
     var videosCount = 0
         private set
     var allWallCount = 0
@@ -132,6 +134,11 @@ class UserDetailsEntity {
 
     fun setNarrativesCount(narrativesCount: Int): UserDetailsEntity {
         this.narrativesCount = narrativesCount
+        return this
+    }
+
+    fun setClipsCount(clipsCount: Int): UserDetailsEntity {
+        this.clipsCount = clipsCount
         return this
     }
 

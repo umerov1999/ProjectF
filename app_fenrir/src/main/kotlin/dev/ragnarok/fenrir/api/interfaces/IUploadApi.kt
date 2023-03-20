@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.api.interfaces
 
 import dev.ragnarok.fenrir.api.PercentagePublisher
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.CustomResponse
 import dev.ragnarok.fenrir.api.model.upload.UploadAudioDto
 import dev.ragnarok.fenrir.api.model.upload.UploadChatPhotoDto
 import dev.ragnarok.fenrir.api.model.upload.UploadDocDto
@@ -42,7 +43,7 @@ interface IUploadApi {
         inputStream: InputStream,
         listener: PercentagePublisher?,
         isVideo: Boolean
-    ): Single<BaseResponse<UploadStoryDto>>
+    ): Single<CustomResponse<UploadStoryDto>>
 
     fun uploadVideoRx(
         server: String,

@@ -18,6 +18,7 @@ interface IAccountApis {
     fun audio(): IAudioApi
     fun status(): IStatusApi
     fun likes(): ILikesApi
+    fun stories(): IStoriesShortVideosApi
     fun pages(): IPagesApi
     fun store(): IStoreApi
     fun fave(): IFaveApi

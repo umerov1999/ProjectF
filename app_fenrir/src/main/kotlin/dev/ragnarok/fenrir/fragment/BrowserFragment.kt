@@ -113,6 +113,10 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
         }
         mWebView?.settings?.userAgentString = UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
         mWebView?.settings?.javaScriptEnabled = true // из-за этого не срабатывал метод
+        mWebView?.settings?.domStorageEnabled = true
+        mWebView?.settings?.blockNetworkLoads = false
+        mWebView?.settings?.blockNetworkImage = false
+        mWebView?.settings?.databaseEnabled = true
         // shouldOverrideUrlLoading в WebClient
         when {
             savedInstanceState != null -> {

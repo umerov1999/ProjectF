@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
 }
 
-//1.9.0-alpha02
+//1.9.0-beta01
 
 def srcDirs = [
         'com/google/android/material/animation',

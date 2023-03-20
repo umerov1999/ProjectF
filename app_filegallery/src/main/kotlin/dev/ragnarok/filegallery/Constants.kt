@@ -3,7 +3,7 @@ package dev.ragnarok.filegallery
 import android.os.Build
 import dev.ragnarok.filegallery.BuildConfig.*
 import dev.ragnarok.filegallery.util.Utils
-import java.util.*
+import java.util.Locale
 
 object Constants {
     const val PICASSO_TAG = "picasso_tag"

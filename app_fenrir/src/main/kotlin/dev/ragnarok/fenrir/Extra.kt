@@ -65,6 +65,7 @@ object Extra {
     const val OWNER = "owner"
     const val OWNERS = "owners"
     const val OWNER_ID = "owner_id"
+    const val NO_OWNER_ID = "no_owner_id"
     const val PASSWORD = "password"
     const val PATH = "path"
     const val PEER = "peer"

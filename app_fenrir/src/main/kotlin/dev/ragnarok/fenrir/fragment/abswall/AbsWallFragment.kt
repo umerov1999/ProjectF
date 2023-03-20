@@ -2,12 +2,18 @@ package dev.ragnarok.fenrir.fragment.abswall
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
@@ -16,12 +22,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.activity.ActivityFeatures
+import dev.ragnarok.fenrir.activity.DualTabPhotoActivity
+import dev.ragnarok.fenrir.api.impl.AbsApi
+import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.fragment.abswall.WallAdapter.NonPublishedPostActionListener
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalStoryAdapter
+import dev.ragnarok.fenrir.fragment.docs.DocsUploadAdapter
 import dev.ragnarok.fenrir.fragment.groupwall.GroupWallFragment
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.WallSearchCriteria
@@ -37,6 +48,11 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialog
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.selection.FileManagerSelectableSource
+import dev.ragnarok.fenrir.model.selection.LocalGallerySelectableSource
+import dev.ragnarok.fenrir.model.selection.LocalPhotosSelectableSource
+import dev.ragnarok.fenrir.model.selection.LocalVideosSelectableSource
+import dev.ragnarok.fenrir.model.selection.Sources
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.thorvg.ThorVGRender
 import dev.ragnarok.fenrir.place.PlaceFactory
@@ -44,6 +60,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getAudiosPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getNarrativesPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerArticles
 import dev.ragnarok.fenrir.place.PlaceFactory.getPhotoAlbumGalleryPlace
+import dev.ragnarok.fenrir.place.PlaceFactory.getShortVideoPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleTabSearchPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVKPhotoAlbumsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideosPlace
@@ -51,6 +68,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getWallAttachmentsPlace
 import dev.ragnarok.fenrir.place.PlaceUtil.goToPostCreation
 import dev.ragnarok.fenrir.place.PlaceUtil.goToPostEditor
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.*
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils.getCounterWithK
@@ -64,15 +82,21 @@ import dev.ragnarok.fenrir.view.LoadMoreFooterHelper
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper.Companion.createFrom
 import dev.ragnarok.fenrir.view.UpEditFab
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import me.minetsh.imaging.IMGEditActivity
+import java.io.File
 
 abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
     PlaceSupportMvpFragment<P, V>(), IWallView, WallAdapter.ClickListener,
-    NonPublishedPostActionListener, MenuProvider, BackPressCallback {
+    NonPublishedPostActionListener, MenuProvider, BackPressCallback,
+    DocsUploadAdapter.ActionListener {
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mWallAdapter: WallAdapter? = null
     private var mLoadMoreFooterHelper: LoadMoreFooterHelper? = null
     private var mStoryAdapter: HorizontalStoryAdapter? = null
     private var fabCreate: UpEditFab? = null
+
+    private var mUploadAdapter: DocsUploadAdapter? = null
+    private var mUploadRoot: View? = null
     protected fun setupPaganContent(Runes: View?, paganSymbol: RLottieImageView?) {
         Runes?.visibility = if (Settings.get()
                 .other().isRunes_show
@@ -133,6 +157,75 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         return true
     }
 
+    private val openRequestStory =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.data != null && result.resultCode == Activity.RESULT_OK) {
+                val localPhotos: ArrayList<LocalPhoto>? =
+                    result.data?.getParcelableArrayListExtraCompat(Extra.PHOTOS)
+                val file = result.data?.getStringExtra(Extra.PATH)
+                val video: LocalVideo? = result.data?.getParcelableExtraCompat(Extra.VIDEO)
+                lazyPresenter {
+                    fireStorySelected(requireActivity(), localPhotos, file, video)
+                }
+            }
+        }
+
+    private val openRequestResizeStoryPhoto =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                lazyPresenter {
+                    doUploadStoryFile(
+                        (result.data
+                            ?: return@lazyPresenter).getStringExtra(IMGEditActivity.EXTRA_IMAGE_SAVE_PATH)
+                            ?: return@lazyPresenter,
+                        Upload.IMAGE_SIZE_FULL,
+                        false
+                    )
+                }
+            }
+        }
+
+    override fun doEditStoryPhoto(uri: Uri) {
+        try {
+            openRequestResizeStoryPhoto.launch(
+                Intent(requireContext(), IMGEditActivity::class.java)
+                    .putExtra(IMGEditActivity.EXTRA_IMAGE_URI, uri)
+                    .putExtra(
+                        IMGEditActivity.EXTRA_IMAGE_SAVE_PATH,
+                        File(requireActivity().externalCacheDir.toString() + File.separator + "scale.jpg").absolutePath
+                    )
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun showAvatarUploadedMessage(accountId: Long, post: Post) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.success)
+            .setMessage(R.string.avatar_was_changed_successfully)
+            .setPositiveButton(R.string.button_show) { _: DialogInterface?, _: Int ->
+                PlaceFactory.getPostPreviewPlace(
+                    accountId,
+                    post.vkid,
+                    post.ownerId,
+                    post
+                ).tryOpenWith(requireActivity())
+            }
+            .setNegativeButton(R.string.button_ok, null)
+            .show()
+    }
+
+    fun requestUploadStory() {
+        val sources = Sources()
+            .with(LocalPhotosSelectableSource())
+            .with(LocalGallerySelectableSource())
+            .with(LocalVideosSelectableSource())
+            .with(FileManagerSelectableSource())
+        val intent = DualTabPhotoActivity.createIntent(requireActivity(), 1, sources)
+        openRequestStory.launch(intent)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
@@ -142,6 +235,10 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         getNarrativesPlace(accountId, ownerId).tryOpenWith(requireActivity())
     }
 
+    override fun goClips(accountId: Long, ownerId: Long) {
+        getShortVideoPlace(accountId, ownerId).tryOpenWith(requireActivity())
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -149,6 +246,14 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
     ): View? {
         val root = inflater.inflate(R.layout.fragment_wall, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
+
+        val uploadRecyclerView: RecyclerView = root.findViewById(R.id.uploads_recycler_view)
+        uploadRecyclerView.layoutManager =
+            LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
+        mUploadAdapter = DocsUploadAdapter(emptyList(), this)
+        uploadRecyclerView.adapter = mUploadAdapter
+        mUploadRoot = root.findViewById(R.id.uploads_root)
+
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener {
             presenter?.fireRefresh()
@@ -200,13 +305,46 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
             }
 
             override fun onStoryLongClick(item: Story, pos: Int): Boolean {
-                PlaceFactory.getLikesCopiesPlace(
-                    Settings.get().accounts().current,
-                    "stories_view",
-                    item.ownerId,
-                    item.id,
-                    null
-                ).tryOpenWith(requireActivity())
+                val isMy = item.ownerId == Settings.get().accounts().current
+                val items: Array<String> = if (isMy) {
+                    arrayOf(
+                        getString(R.string.delete),
+                        getString(R.string.views)
+                    )
+                } else {
+                    arrayOf(getString(R.string.answer), getString(R.string.views))
+                }
+                MaterialAlertDialogBuilder(requireActivity()).setItems(items) { _: DialogInterface?, i: Int ->
+                    when (i) {
+                        0 -> {
+                            if (!isMy) {
+                                presenter?.updateToStory(AbsApi.join(
+                                    listOf(AccessIdPair(item.id, item.ownerId, item.accessKey)),
+                                    ","
+                                ) { AccessIdPair.format(it) })
+                                requestUploadStory()
+                            } else {
+                                MaterialAlertDialogBuilder(
+                                    requireActivity()
+                                ).setMessage(R.string.do_delete)
+                                    .setTitle(R.string.confirmation)
+                                    .setCancelable(true)
+                                    .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                                        presenter?.fireRemoveStoryClick(item.ownerId, item.id)
+                                    }.setNegativeButton(R.string.button_cancel, null)
+                                    .show()
+                            }
+                        }
+
+                        1 -> {
+                            PlaceFactory.getStoriesViewPlace(
+                                Settings.get().accounts().current,
+                                item.ownerId,
+                                item.id
+                            ).tryOpenWith(requireActivity())
+                        }
+                    }
+                }.setCancelable(true).show()
                 return true
             }
         })
@@ -571,6 +709,36 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
 
     override fun onButtonRemoveClick(post: Post) {
         presenter?.fireButtonRemoveClick(post)
+    }
+
+    override fun onRemoveClick(upload: Upload) {
+        presenter?.fireRemoveClick(
+            upload
+        )
+    }
+
+    override fun setUploadDataVisible(visible: Boolean) {
+        mUploadRoot?.visibility = if (visible) View.VISIBLE else View.GONE
+    }
+
+    override fun displayUploads(data: List<Upload>) {
+        mUploadAdapter?.setData(data)
+    }
+
+    override fun notifyUploadItemsAdded(position: Int, count: Int) {
+        mUploadAdapter?.notifyItemRangeInserted(position, count)
+    }
+
+    override fun notifyUploadItemChanged(position: Int) {
+        mUploadAdapter?.notifyItemChanged(position)
+    }
+
+    override fun notifyUploadItemRemoved(position: Int) {
+        mUploadAdapter?.notifyItemRemoved(position)
+    }
+
+    override fun notifyUploadProgressChanged(position: Int, progress: Int, smoothly: Boolean) {
+        mUploadAdapter?.changeUploadProgress(position, progress, smoothly)
     }
 
     protected class OptionView : IWallView.IOptionView {

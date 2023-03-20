@@ -50,7 +50,6 @@ import dev.ragnarok.fenrir.util.serializeble.json.*
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import okhttp3.*
-import java.util.*
 
 class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IAccountsView,
     View.OnClickListener, AccountAdapter.Callback,
@@ -250,7 +249,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
             }
         }).attachToRecyclerView(mRecyclerView)
         root.findViewById<View>(R.id.fab).setOnClickListener(this)
-        mAdapter = AccountAdapter(requireActivity(), Collections.emptyList(), this)
+        mAdapter = AccountAdapter(requireActivity(), emptyList(), this)
         mRecyclerView?.adapter = mAdapter
         return root
     }

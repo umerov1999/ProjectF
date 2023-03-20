@@ -29,6 +29,7 @@ class UserDetails : Parcelable {
     private var giftCount = 0
     private var productServicesCount = 0
     private var narrativesCount = 0
+    private var clipsCount = 0
     private var city: City? = null
     private var country: Country? = null
     private var hometown: String? = null
@@ -88,6 +89,7 @@ class UserDetails : Parcelable {
         giftCount = parcel.readInt()
         productServicesCount = parcel.readInt()
         narrativesCount = parcel.readInt()
+        clipsCount = parcel.readInt()
         city = parcel.readTypedObjectCompat(City.CREATOR)
         country = parcel.readTypedObjectCompat(Country.CREATOR)
         hometown = parcel.readString()
@@ -127,17 +129,26 @@ class UserDetails : Parcelable {
         return this
     }
 
+    fun getProductServicesCount(): Int {
+        return productServicesCount
+    }
+
     fun setNarrativesCount(narrativesCount: Int): UserDetails {
         this.narrativesCount = narrativesCount
         return this
     }
 
-    fun getProductServicesCount(): Int {
-        return productServicesCount
-    }
-
     fun getNarrativesCount(): Int {
         return narrativesCount
+    }
+
+    fun setClipsCount(clipsCount: Int): UserDetails {
+        this.clipsCount = clipsCount
+        return this
+    }
+
+    fun getClipsCount(): Int {
+        return clipsCount
     }
 
     fun getInterests(): String? {
@@ -794,6 +805,7 @@ class UserDetails : Parcelable {
         parcel.writeInt(giftCount)
         parcel.writeInt(productServicesCount)
         parcel.writeInt(narrativesCount)
+        parcel.writeInt(clipsCount)
         parcel.writeTypedObjectCompat(city, flags)
         parcel.writeTypedObjectCompat(country, flags)
         parcel.writeString(hometown)

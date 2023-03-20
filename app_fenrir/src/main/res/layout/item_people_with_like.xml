@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:minHeight="64dp">
+
+    <FrameLayout
+        android:id="@+id/avatar_root"
+        android:layout_width="@dimen/avatar_size_usual"
+        android:layout_height="@dimen/avatar_size_usual"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp">
+
+        <ImageView
+            android:id="@+id/item_people_avatar"
+            android:layout_width="@dimen/avatar_size_usual"
+            android:layout_height="@dimen/avatar_size_usual"
+            android:contentDescription="@null" />
+
+        <ImageView
+            android:id="@+id/item_verified"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="top|start"
+            android:background="@drawable/sel_button_round_5_white"
+            android:backgroundTint="#009900"
+            android:backgroundTintMode="add"
+            android:contentDescription="@null"
+            android:padding="3dp"
+            android:src="@drawable/verified"
+            android:visibility="gone"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/item_blacklisted"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="top|end"
+            android:contentDescription="@null"
+            android:src="@drawable/audio_died"
+            android:visibility="gone"
+            app:tint="#AAFF0000" />
+
+        <dev.ragnarok.fenrir.view.OnlineView
+            android:id="@+id/item_people_online"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="bottom|end"
+            android:padding="3dp"
+            app:circle_color="?icon_color_active"
+            app:stroke_color="?android:colorBackground" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/item_people_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:layout_toStartOf="@id/item_people_liked"
+        android:layout_toEndOf="@id/avatar_root"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+        tools:text="Name" />
+
+    <TextView
+        android:id="@+id/item_people_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_people_name"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_toStartOf="@id/item_people_liked"
+        android:layout_toEndOf="@id/avatar_root"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        tools:text="Time" />
+
+    <ImageView
+        android:id="@+id/item_people_liked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@null"
+        android:src="@drawable/heart_filled"
+        app:tint="?colorPrimary" />
+
+</RelativeLayout>

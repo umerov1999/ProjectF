@@ -13,12 +13,14 @@ import android.widget.Spinner
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textfield.TextInputEditText
+import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiPost
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
 import dev.ragnarok.fenrir.db.model.PostUpdate
 import dev.ragnarok.fenrir.domain.IOwnersRepository
+import dev.ragnarok.fenrir.domain.IStoriesShortVideosInteractor
 import dev.ragnarok.fenrir.domain.IWallsRepository
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository
@@ -30,6 +32,16 @@ import dev.ragnarok.fenrir.model.criteria.WallCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.upload.IUploadManager
+import dev.ragnarok.fenrir.upload.MessageMethod
+import dev.ragnarok.fenrir.upload.Method
+import dev.ragnarok.fenrir.upload.Upload
+import dev.ragnarok.fenrir.upload.UploadDestination
+import dev.ragnarok.fenrir.upload.UploadIntent
+import dev.ragnarok.fenrir.upload.UploadResult
+import dev.ragnarok.fenrir.upload.UploadUtils
+import dev.ragnarok.fenrir.util.Pair
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.checkEditInfo
 import dev.ragnarok.fenrir.util.Utils.findIndexByPredicate
 import dev.ragnarok.fenrir.util.Utils.findInfoByPredicate
@@ -59,6 +71,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
 
     val stories: MutableList<Story>
     private val ownersRepository: IOwnersRepository
+    private val storiesInteractor: IStoriesShortVideosInteractor
     private val walls: IWallsRepository
     private val cacheCompositeDisposable = CompositeDisposable()
     private val netCompositeDisposable = CompositeDisposable()
@@ -69,10 +82,43 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     private var nowRequestOffset = 0
     private var nextOffset = 0
     private var actualDataReady = false
-
+    private val uploadManager: IUploadManager = Includes.uploadManager
     private var skipWallOffset = 0
+    private var toStory: String? = null
+    private val uploadsData: MutableList<Upload> = ArrayList(0)
     open fun searchStory(ByName: Boolean) {
         throw IllegalArgumentException("Unknown story search")
+    }
+
+    private fun firePrepared() {
+        appendDisposable(uploadManager[accountId, listOf(Method.STORY, Method.PHOTO_TO_PROFILE)]
+            .fromIOToMain()
+            .subscribe { data -> onUploadsDataReceived(data) })
+        appendDisposable(uploadManager.observeAdding()
+            .observeOn(provideMainThreadScheduler())
+            .subscribe { added -> onUploadsAdded(added) })
+        appendDisposable(uploadManager.observeDeleting(true)
+            .observeOn(provideMainThreadScheduler())
+            .subscribe { ids -> onUploadDeleted(ids) })
+        appendDisposable(uploadManager.observeResults()
+            .filter {
+                listOf(
+                    Method.STORY,
+                    Method.PHOTO_TO_PROFILE
+                ).contains(it.first.destination.method)
+            }
+            .observeOn(provideMainThreadScheduler())
+            .subscribe { pair -> onUploadFinished(pair) })
+        appendDisposable(uploadManager.observeStatus()
+            .observeOn(provideMainThreadScheduler())
+            .subscribe { upload -> onUploadStatusUpdate(upload) })
+        appendDisposable(uploadManager.observeProgress()
+            .observeOn(provideMainThreadScheduler())
+            .subscribe { updates -> onProgressUpdates(updates) })
+    }
+
+    fun updateToStory(toStory: String?) {
+        this.toStory = toStory
     }
 
     fun fireRequestSkipOffset() {
@@ -81,6 +127,10 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
 
     fun fireNarrativesClick() {
         view?.goNarratives(accountId, ownerId)
+    }
+
+    fun fireClipsClick() {
+        view?.goClips(accountId, ownerId)
     }
 
     private fun onPostInvalid(postVkid: Int) {
@@ -133,6 +183,9 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         viewHost.displayWallData(wall)
         viewHost.updateStory(stories)
         resolveLoadMoreFooterView()
+
+        viewHost.displayUploads(uploadsData)
+        resolveUploadDataVisibility()
     }
 
     internal fun onExecuteComplete() {
@@ -160,10 +213,22 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
             .subscribe({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
+    fun fireRemoveStoryClick(storyOwnerId: Long, id: Int) {
+        appendDisposable(
+            storiesInteractor
+                .stories_delete(accountId, storyOwnerId, id)
+                .fromIOToMain()
+                .subscribe({ fireRefresh() }) { t -> onExecuteError(t) })
+    }
+
     private fun loadWallCachedData() {
         cacheCompositeDisposable.add(walls.getCachedWall(accountId, ownerId, wallFilter)
             .fromIOToMain()
-            .subscribe({ posts -> onCachedDataReceived(posts) }) { obj -> obj.printStackTrace() })
+            .subscribe({ posts -> onCachedDataReceived(posts) }) { obj ->
+                obj.printStackTrace()
+                actualDataReady = false
+                requestWall(0)
+            })
     }
 
     private fun onCachedDataReceived(posts: List<Post>) {
@@ -171,6 +236,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         wall.addAll(posts)
         actualDataReady = false
         view?.notifyWallDataSetChanged()
+        requestWall(0)
     }
 
     public override fun onGuiResumed() {
@@ -406,7 +472,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         cacheCompositeDisposable.clear()
         requestWall(0)
         if (!Settings.get().other().isDisable_history) {
-            appendDisposable(ownersRepository.getStory(
+            appendDisposable(storiesInteractor.getStory(
                 accountId,
                 if (accountId == ownerId) null else ownerId
             )
@@ -629,16 +695,216 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         }
     }
 
+    private fun doUploadStoryFile(context: Context, file: String) {
+        for (i in Settings.get().other().photoExt()) {
+            if (file.endsWith(i, true)) {
+                Uri.fromFile(
+                    File(
+                        file
+                    )
+                )
+                return
+            }
+        }
+        for (i in Settings.get().other().videoExt()) {
+            if (file.endsWith(i, true)) {
+                doUploadStoryFile(
+                    file,
+                    0,
+                    true
+                )
+                return
+            }
+        }
+        MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.select)
+            .setNegativeButton(R.string.video) { _: DialogInterface?, _: Int ->
+                doUploadStoryFile(
+                    file,
+                    0,
+                    true
+                )
+            }
+            .setPositiveButton(R.string.photo) { _: DialogInterface?, _: Int ->
+                view?.doEditStoryPhoto(
+                    Uri.fromFile(
+                        File(
+                            file
+                        )
+                    )
+                )
+            }
+            .create().show()
+    }
+
+    fun doUploadStoryFile(file: String, size: Int, isVideo: Boolean) {
+        val intents: List<UploadIntent> = if (isVideo) {
+            UploadUtils.createIntents(
+                accountId,
+                UploadDestination.forStory(MessageMethod.VIDEO, toStory),
+                file,
+                size,
+                true
+            )
+        } else {
+            UploadUtils.createIntents(
+                accountId,
+                UploadDestination.forStory(MessageMethod.PHOTO, toStory),
+                file,
+                size,
+                true
+            )
+        }
+        toStory = null
+        uploadManager.enqueue(intents)
+    }
+
+    fun fireRemoveClick(upload: Upload) {
+        uploadManager.cancel(upload.getObjectId())
+    }
+
+    private fun doUploadStoryVideo(file: String) {
+        val intents = UploadUtils.createVideoIntents(
+            accountId,
+            UploadDestination.forStory(MessageMethod.VIDEO, toStory),
+            file,
+            true
+        )
+        toStory = null
+        uploadManager.enqueue(intents)
+    }
+
+    private fun doUploadStoryPhotos(photos: List<LocalPhoto>) {
+        if (photos.size == 1) {
+            var to_up = photos[0].getFullImageUri() ?: return
+            if (to_up.path?.let { File(it).isFile } == true) {
+                to_up = Uri.fromFile(to_up.path?.let { File(it) })
+            }
+            view?.doEditStoryPhoto(to_up)
+            return
+        }
+        val intents = UploadUtils.createIntents(
+            accountId,
+            UploadDestination.forStory(MessageMethod.PHOTO, toStory),
+            photos,
+            Upload.IMAGE_SIZE_FULL,
+            true
+        )
+        toStory = null
+        uploadManager.enqueue(intents)
+    }
+
+    fun fireStorySelected(
+        context: Context,
+        localPhotos: ArrayList<LocalPhoto>?,
+        file: String?,
+        video: LocalVideo?
+    ) {
+        when {
+            file.nonNullNoEmpty() -> doUploadStoryFile(context, file)
+            localPhotos.nonNullNoEmpty() -> {
+                doUploadStoryPhotos(localPhotos)
+            }
+
+            video != null -> {
+                doUploadStoryVideo(video.getData().toString())
+            }
+        }
+    }
+
+    fun fireNewAvatarPhotoSelected(file: String?) {
+        val intent = UploadIntent(accountId, UploadDestination.forProfilePhoto(ownerId))
+            .setAutoCommit(true)
+            .setFileUri(Uri.parse(file))
+            .setSize(Upload.IMAGE_SIZE_FULL)
+        uploadManager.enqueue(listOf(intent))
+    }
+
+    private fun onUploadFinished(pair: Pair<Upload, UploadResult<*>>) {
+        val destination = pair.first.destination
+        if (destination.method == Method.PHOTO_TO_PROFILE && destination.ownerId == ownerId) {
+            onRefresh()
+            val post = pair.second.result as Post
+            resumedView?.showAvatarUploadedMessage(
+                accountId,
+                post
+            )
+        } else if (destination.method == Method.STORY && Settings.get()
+                .accounts().current == ownerId
+        ) {
+            fireRefresh()
+        }
+    }
+
+    private fun resolveUploadDataVisibility() {
+        view?.setUploadDataVisible(uploadsData.isNotEmpty())
+    }
+
+    private fun onUploadsDataReceived(data: List<Upload>) {
+        uploadsData.clear()
+        uploadsData.addAll(data)
+        resolveUploadDataVisibility()
+    }
+
+    private fun onProgressUpdates(updates: List<IUploadManager.IProgressUpdate>) {
+        for (update in updates) {
+            val index = Utils.findIndexById(uploadsData, update.id)
+            if (index != -1) {
+                view?.notifyUploadProgressChanged(
+                    index,
+                    update.progress,
+                    true
+                )
+            }
+        }
+    }
+
+    private fun onUploadStatusUpdate(upload: Upload) {
+        val index = Utils.findIndexById(uploadsData, upload.getObjectId())
+        if (index != -1) {
+            view?.notifyUploadItemChanged(
+                index
+            )
+        }
+    }
+
+    private fun onUploadsAdded(added: List<Upload>) {
+        for (u in added) {
+            if (listOf(Method.STORY, Method.PHOTO_TO_PROFILE).contains(u.destination.method)) {
+                val index = uploadsData.size
+                uploadsData.add(u)
+                view?.notifyUploadItemsAdded(
+                    index,
+                    1
+                )
+            }
+        }
+        resolveUploadDataVisibility()
+    }
+
+    private fun onUploadDeleted(ids: IntArray) {
+        for (id in ids) {
+            val index = Utils.findIndexById(uploadsData, id)
+            if (index != -1) {
+                uploadsData.removeAt(index)
+                view?.notifyUploadItemRemoved(
+                    index
+                )
+            }
+        }
+        resolveUploadDataVisibility()
+    }
+
     init {
         wall = ArrayList()
         stories = ArrayList()
         wallFilter = WallCriteria.MODE_ALL
         walls = Repository.walls
         ownersRepository = owners
+        storiesInteractor = InteractorFactory.createStoriesInteractor()
         loadWallCachedData()
-        requestWall(0)
         if (!Settings.get().other().isDisable_history) {
-            appendDisposable(ownersRepository.getStory(
+            appendDisposable(storiesInteractor.getStory(
                 accountId,
                 if (accountId == ownerId) null else ownerId
             )
@@ -666,5 +932,6 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
             .filter { it.ownerId == ownerId }
             .observeOn(provideMainThreadScheduler())
             .subscribe { onPostInvalid(it.id) })
+        firePrepared()
     }
 }

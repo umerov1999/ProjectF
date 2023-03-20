@@ -169,7 +169,7 @@ class CommentCreatePresenter(
         appendDisposable(uploadManager.observeAdding()
             .observeOn(provideMainThreadScheduler())
             .subscribe { it -> onUploadQueueUpdates(it) { destination.compareTo(it.destination) } })
-        appendDisposable(uploadManager.obseveStatus()
+        appendDisposable(uploadManager.observeStatus()
             .observeOn(provideMainThreadScheduler())
             .subscribe {
                 onUploadStatusUpdate(

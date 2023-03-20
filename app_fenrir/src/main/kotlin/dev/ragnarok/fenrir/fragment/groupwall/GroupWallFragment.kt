@@ -514,7 +514,8 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         products: Int,
         chats: Int,
         products_services: Int,
-        narratives: Int
+        narratives: Int,
+        clips: Int
     ) {
         if (mHeaderHolder == null) return
         setupCounter(mHeaderHolder?.bTopics, topics)
@@ -527,6 +528,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         setupCounter(mHeaderHolder?.bProducts, products)
         setupCounter(mHeaderHolder?.bProductServices, products_services)
         setupCounter(mHeaderHolder?.bNarratives, narratives)
+        setupCounter(mHeaderHolder?.bClips, clips)
         setupCounterFlow(mHeaderHolder?.bChats, mHeaderHolder?.bChatsContainer, chats)
     }
 
@@ -581,6 +583,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         val bProducts: TextView = root.findViewById(R.id.header_group_bproducts)
         val bProductServices: TextView = root.findViewById(R.id.header_group_bservices_products)
         val bNarratives: TextView = root.findViewById(R.id.header_group_bnarratives)
+        val bClips: TextView = root.findViewById(R.id.header_group_bclips)
         val bMembers: TextView = root.findViewById(R.id.header_group_bmembers)
         val bDocuments: TextView = root.findViewById(R.id.header_group_bdocuments)
         val bPhotos: TextView = root.findViewById(R.id.header_group_bphotos)
@@ -692,6 +695,12 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
                 .setOnClickListener {
                     presenter?.fireNarrativesClick()
                 }
+            root.findViewById<View>(R.id.header_group_clips_container).let {
+                it.setOnClickListener {
+                    presenter?.fireClipsClick()
+                }
+                it.visibility = if (Utils.isOfficialVKCurrent) View.VISIBLE else View.GONE
+            }
             bChatsContainer.setOnClickListener {
                 presenter?.fireGroupChatsClick()
             }

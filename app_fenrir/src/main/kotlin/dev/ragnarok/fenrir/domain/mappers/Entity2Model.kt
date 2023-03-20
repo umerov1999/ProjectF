@@ -98,6 +98,7 @@ object Entity2Model {
             .setProductsCount(dbo.productsCount)
             .setProductServicesCount(dbo.productServicesCount)
             .setNarrativesCount(dbo.narrativesCount)
+            .setClipsCount(dbo.clipsCount)
             .setArticlesCount(dbo.articlesCount)
             .setChatsCount(dbo.chatsCount)
         dbo.menu?.nonNullNoEmpty {
@@ -192,6 +193,7 @@ object Entity2Model {
             .setProductsCount(dbo.productsCount)
             .setProductServicesCount(dbo.productServicesCount)
             .setNarrativesCount(dbo.narrativesCount)
+            .setClipsCount(dbo.clipsCount)
             .setGiftCount(dbo.giftCount)
             .setAllWallCount(dbo.allWallCount)
             .setOwnWallCount(dbo.ownWallCount)

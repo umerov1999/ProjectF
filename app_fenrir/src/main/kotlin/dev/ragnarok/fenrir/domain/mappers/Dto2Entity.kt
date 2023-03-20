@@ -452,6 +452,7 @@ object Dto2Entity {
                 .setProductsCount(it.market)
                 .setProductServicesCount(it.market_services)
                 .setNarrativesCount(it.narratives)
+                .setClipsCount(it.clips)
                 .setArticlesCount(it.articles).setChatsCount(it.chats)
         }
         details.setCover(dto.cover.requireNonNull({
@@ -512,6 +513,7 @@ object Dto2Entity {
                 .setProductsCount(counters.market)
                 .setProductServicesCount(counters.market_services)
                 .setNarrativesCount(counters.narratives)
+                .setClipsCount(counters.clips)
                 .setGiftCount(counters.gifts)
                 .setAllWallCount(counters.all_wall)
                 .setOwnWallCount(counters.owner_wall).setPostponedWallCount(counters.postponed_wall)

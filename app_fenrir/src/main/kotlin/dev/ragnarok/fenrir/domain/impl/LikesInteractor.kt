@@ -41,29 +41,4 @@ class LikesInteractor(private val networker: INetworker) : ILikesInteractor {
                 owners
             }
     }
-
-    override fun getStoriesViewers(
-        accountId: Long,
-        ownerId: Long,
-        storyId: Int,
-        count: Int,
-        offset: Int
-    ): Single<List<Owner>> {
-        return networker.vkDefault(accountId)
-            .likes()
-            .getStoriesViewers(
-                ownerId,
-                storyId,
-                offset,
-                count
-            )
-            .map { response ->
-                val dtos = listEmptyIfNull(response.owners)
-                val owners: MutableList<Owner> = ArrayList(dtos.size)
-                for (dto in dtos) {
-                    transformOwner(dto)?.let { owners.add(it) }
-                }
-                owners
-            }
-    }
 }

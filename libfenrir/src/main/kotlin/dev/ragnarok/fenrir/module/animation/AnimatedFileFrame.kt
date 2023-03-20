@@ -28,7 +28,7 @@ object AnimatedFileFrame {
         if (nPtr == 0L) {
             return null
         }
-        var ret = Bitmap.createBitmap(metaData[0], metaData[1], Bitmap.Config.ARGB_8888)
+        val ret = Bitmap.createBitmap(metaData[0], metaData[1], Bitmap.Config.ARGB_8888)
         if (getFrameAtTime(
                 nPtr,
                 (metaData[4] / 2).toLong(),
@@ -38,7 +38,8 @@ object AnimatedFileFrame {
             ) == 0
         ) {
             ret.recycle()
-            ret = null
+            destroyDecoder(nPtr)
+            return null
         }
         destroyDecoder(nPtr)
         return ret

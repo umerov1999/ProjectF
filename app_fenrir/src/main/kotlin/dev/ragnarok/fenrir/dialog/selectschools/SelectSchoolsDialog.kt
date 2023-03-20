@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.database.School
-import java.util.Collections
 
 class SelectSchoolsDialog : AccountDependencyDialogFragment(), SchoolsAdapter.Listener {
     private val mHandler = Handler(Looper.getMainLooper())
@@ -55,7 +54,7 @@ class SelectSchoolsDialog : AccountDependencyDialogFragment(), SchoolsAdapter.Li
             mData = ArrayList()
             firstRun = true
         }
-        mAdapter = SchoolsAdapter(requireActivity(), mData ?: Collections.emptyList())
+        mAdapter = SchoolsAdapter(requireActivity(), mData ?: emptyList())
         mAdapter?.setListener(this)
         mRecyclerView.adapter = mAdapter
         if (firstRun) {

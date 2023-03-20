@@ -74,7 +74,7 @@ object Includes {
     }
 
     val validationProvider: IValidateProvider by lazy {
-        ValidateProvider(provideApplicationContext(), provideMainThreadScheduler())
+        ValidateProvider(provideApplicationContext())
     }
 
 

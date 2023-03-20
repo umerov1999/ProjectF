@@ -18,7 +18,7 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.view.media.MaterialPlayPauseFab
 import dev.ragnarok.filegallery.view.media.MediaActionDrawable
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.Locale
 
 class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     private val mContext: Context

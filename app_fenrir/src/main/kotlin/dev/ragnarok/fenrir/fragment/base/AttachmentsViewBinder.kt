@@ -42,7 +42,6 @@ import dev.ragnarok.fenrir.view.WaveFormView
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import java.lang.ref.WeakReference
-import java.util.*
 import kotlin.math.abs
 
 class AttachmentsViewBinder(
@@ -1007,7 +1006,7 @@ class AttachmentsViewBinder(
         }
     }
 
-    interface VoiceActionListener : EventListener {
+    interface VoiceActionListener {
         fun onVoiceHolderBinded(voiceMessageId: Int, voiceHolderId: Int)
         fun onVoicePlayButtonClick(
             voiceHolderId: Int,

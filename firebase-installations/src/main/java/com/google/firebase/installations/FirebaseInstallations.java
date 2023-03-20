@@ -359,7 +359,7 @@ public class FirebaseInstallations implements FirebaseInstallationsApi {
      * @param forceRefresh true if this is for a getAuthToken call and if the caller wants to fetch a
      *                     new auth token from the server even if an unexpired auth token exists on the client.
      */
-    private final void doRegistrationOrRefresh(boolean forceRefresh) {
+    private void doRegistrationOrRefresh(boolean forceRefresh) {
 
         PersistedInstallationEntry prefs = getPrefsWithGeneratedIdMultiProcessSafe();
 

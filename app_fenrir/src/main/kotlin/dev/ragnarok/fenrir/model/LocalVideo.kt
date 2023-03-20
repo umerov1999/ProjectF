@@ -37,14 +37,14 @@ class LocalVideo : Parcelable, Comparable<LocalVideo>, ISelectable {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeLong(id)
         if (data == null) {
-            dest.writeString(null)
+            dest.writeString("null")
         } else {
             dest.writeString(data.toString())
         }
         dest.putBoolean(selected)
         dest.writeInt(index)
         dest.writeLong(size)
-        dest.writeLong(duration.toLong())
+        dest.writeInt(duration)
         dest.writeString(title)
     }
 

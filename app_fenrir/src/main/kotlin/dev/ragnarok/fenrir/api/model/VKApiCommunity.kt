@@ -278,6 +278,7 @@ class VKApiCommunity
         var market = NO_COUNTER
         var market_services = NO_COUNTER
         var narratives = NO_COUNTER
+        var clips = NO_COUNTER
         var chats = NO_COUNTER
         var all_wall = NO_COUNTER
         var owner_wall = NO_COUNTER

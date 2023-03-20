@@ -4,10 +4,8 @@ import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
-import dev.ragnarok.fenrir.api.model.VKApiStory
 import dev.ragnarok.fenrir.api.model.longpoll.UserIsOfflineUpdate
 import dev.ragnarok.fenrir.api.model.longpoll.UserIsOnlineUpdate
-import dev.ragnarok.fenrir.api.model.response.StoryBlockResponce
 import dev.ragnarok.fenrir.db.interfaces.IOwnersStorage
 import dev.ragnarok.fenrir.db.model.UserPatch
 import dev.ragnarok.fenrir.db.model.entity.CommunityEntity
@@ -20,21 +18,17 @@ import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapCommunityDetails
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapUser
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapUserDetails
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapUsers
-import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformCommunities
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformGifts
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformGroupChats
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformMarket
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformMarketAlbums
-import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformOwners
-import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformStory
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformUsers
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildCommunitiesFromDbos
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildCommunityDetailsFromDbo
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildUserDetailsFromDbo
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildUsersFromDbo
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.map
-import dev.ragnarok.fenrir.domain.mappers.MapUtil.mapAll
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.fragment.search.criteria.PeopleSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.options.SpinnerOption
@@ -45,10 +39,8 @@ import dev.ragnarok.fenrir.model.GroupChats
 import dev.ragnarok.fenrir.model.IOwnersBundle
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.MarketAlbum
-import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.SparseArrayOwnersBundle
-import dev.ragnarok.fenrir.model.Story
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.UserDetails
 import dev.ragnarok.fenrir.model.UserUpdate
@@ -64,7 +56,6 @@ import dev.ragnarok.fenrir.util.Unixtime.now
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import dev.ragnarok.fenrir.util.VKOwnIds
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
@@ -170,138 +161,6 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         return networker.vkDefault(accountId)
             .users()
             .checkAndAddFriend(userId)
-    }
-
-    private fun parseParentStory(story: List<VKApiStory>, dtos: MutableList<VKApiStory>) {
-        for (i in story) {
-            i.parent_story.requireNonNull {
-                dtos.add(it)
-            }
-        }
-    }
-
-    private fun parseStoryBlock(resp: StoryBlockResponce, dtos: MutableList<VKApiStory>) {
-        resp.stories.nonNullNoEmpty {
-            parseParentStory(it, dtos)
-            dtos.addAll(it)
-        }
-        resp.grouped.nonNullNoEmpty {
-            for (i in it) {
-                parseStoryBlock(i, dtos)
-            }
-        }
-    }
-
-    override fun getNarratives(
-        accountId: Long,
-        owner_id: Long,
-        offset: Int?,
-        count: Int?
-    ): Single<List<Narratives>> {
-        return networker.vkDefault(accountId)
-            .users()
-            .getNarratives(owner_id, offset, count)
-            .flatMap { story ->
-                val dtos = listEmptyIfNull(story.items)
-                Single.just(mapAll(dtos) { transform(it) })
-            }
-    }
-
-    override fun getStoryById(accountId: Long, stories: List<AccessIdPair>): Single<List<Story>> {
-        return networker.vkDefault(accountId)
-            .users()
-            .getStoryById(stories, 1, Fields.FIELDS_BASE_OWNER)
-            .flatMap { story ->
-                val dtos = listEmptyIfNull(story.items)
-                val owners = transformOwners(story.profiles, story.groups)
-                val ownIds = VKOwnIds()
-                for (news in dtos) {
-                    ownIds.appendStory(news)
-                }
-                findBaseOwnersDataAsBundle(
-                    accountId,
-                    ownIds.all,
-                    IOwnersRepository.MODE_ANY,
-                    owners
-                )
-                    .map<List<Story>> { owners1: IOwnersBundle ->
-                        val storiesDto: MutableList<Story> = ArrayList(dtos.size)
-                        for (dto in dtos) {
-                            storiesDto.add(transformStory(dto, owners1))
-                        }
-                        storiesDto
-                    }
-            }
-    }
-
-    override fun getStory(accountId: Long, owner_id: Long?): Single<List<Story>> {
-        return networker.vkDefault(accountId)
-            .users()
-            .getStory(owner_id, 1, Fields.FIELDS_BASE_OWNER)
-            .flatMap { story ->
-                val dtos_multy = listEmptyIfNull(story.items)
-                val dtos: MutableList<VKApiStory> = ArrayList()
-                for (itst in dtos_multy) {
-                    parseStoryBlock(itst, dtos)
-                }
-                val owners = transformOwners(story.profiles, story.groups)
-                val ownIds = VKOwnIds()
-                for (news in dtos) {
-                    ownIds.appendStory(news)
-                }
-                findBaseOwnersDataAsBundle(
-                    accountId,
-                    ownIds.all,
-                    IOwnersRepository.MODE_ANY,
-                    owners
-                )
-                    .map<List<Story>> { owners1: IOwnersBundle ->
-                        val blockAds = Settings.get().other().isAd_block_story_news
-                        val stories: MutableList<Story> = ArrayList()
-                        for (dto in dtos) {
-                            if (dto.is_ads && blockAds) {
-                                continue
-                            }
-                            stories.add(transformStory(dto, owners1))
-                        }
-                        stories
-                    }
-            }
-    }
-
-    override fun searchStory(
-        accountId: Long,
-        q: String?,
-        mentioned_id: Long?
-    ): Single<List<Story>> {
-        return networker.vkDefault(accountId)
-            .users()
-            .searchStory(q, mentioned_id, 1000, 1, Fields.FIELDS_BASE_OWNER)
-            .flatMap { story ->
-                val dtos_multy = listEmptyIfNull(story.items)
-                val dtos: MutableList<VKApiStory> = ArrayList()
-                for (itst in dtos_multy) {
-                    parseStoryBlock(itst, dtos)
-                }
-                val owners = transformOwners(story.profiles, story.groups)
-                val ownIds = VKOwnIds()
-                for (news in dtos) {
-                    ownIds.appendStory(news)
-                }
-                findBaseOwnersDataAsBundle(
-                    accountId,
-                    ownIds.all,
-                    IOwnersRepository.MODE_ANY,
-                    owners
-                )
-                    .map<List<Story>> { owners1: IOwnersBundle ->
-                        val stories: MutableList<Story> = ArrayList(dtos.size)
-                        for (dto in dtos) {
-                            stories.add(transformStory(dto, owners1))
-                        }
-                        stories
-                    }
-            }
     }
 
     override fun getFullUserInfo(

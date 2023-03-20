@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
-import java.util.EventListener
 
 class TopicsAdapter(
     context: Context,
@@ -88,7 +87,7 @@ class TopicsAdapter(
         return R.layout.item_topic
     }
 
-    interface ActionListener : EventListener {
+    interface ActionListener {
         fun onTopicClick(topic: Topic)
     }
 

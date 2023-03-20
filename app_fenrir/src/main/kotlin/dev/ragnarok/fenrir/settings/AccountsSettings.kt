@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.processors.PublishProcessor
-import java.util.*
+import java.util.Collections
 
 internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(context: Context) :
     IAccountsSettings {

@@ -61,7 +61,7 @@ import dev.ragnarok.fenrir.view.pager.WeakPicassoLoadCallback
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>(),
@@ -81,7 +81,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
 
     @LayoutRes
     override fun getNoMainContentView(): Int {
-        return R.layout.fragment_story_pager
+        return R.layout.activity_story_pager
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

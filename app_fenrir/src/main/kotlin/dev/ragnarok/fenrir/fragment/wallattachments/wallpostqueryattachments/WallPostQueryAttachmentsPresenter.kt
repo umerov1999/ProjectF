@@ -15,7 +15,7 @@ import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import java.util.*
+import java.util.Locale
 
 class WallPostQueryAttachmentsPresenter(
     accountId: Long,

@@ -652,6 +652,7 @@
     <string name="counter_markets">товары</string>
     <string name="counter_markets_services">услуги</string>
     <string name="counter_narratives">сюжеты</string>
+    <string name="counter_clips">клипы</string>
 
     <string name="topic_comments_counter">последнее обновление: %1$s | %2$d комментариев</string>
     <string name="group_chats_counter">последнее сообщение: %1$s | %2$d участников</string>
@@ -1714,4 +1715,7 @@
     <string name="available_only_dons">Доступно только донам!</string>
     <string name="font_only_for_chats">Шрифт только чатам</string>
     <string name="views">Просмотры</string>
+    <string name="answer">Ответить</string>
+    <string name="clips">Клипы</string>
+    <string name="stories">Истории</string>
 </resources>

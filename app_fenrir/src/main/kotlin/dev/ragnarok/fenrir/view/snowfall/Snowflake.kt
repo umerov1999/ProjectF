@@ -22,6 +22,8 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Paint.Style
 import java.lang.Math.toRadians
+import kotlin.math.cos
+import kotlin.math.sin
 
 internal class Snowflake(val params: Params) {
     private var size: Int = 0
@@ -58,8 +60,8 @@ internal class Snowflake(val params: Params) {
             ((size - params.sizeMinInPx).toFloat() / (params.sizeMaxInPx - params.sizeMinInPx) *
                     (params.speedMax - params.speedMin) + params.speedMin)
         val angle = toRadians(randomizer.randomDouble(params.angleMax) * randomizer.randomSignum())
-        speedX = speed * kotlin.math.sin(angle)
-        speedY = speed * kotlin.math.cos(angle)
+        speedX = speed * sin(angle)
+        speedY = speed * cos(angle)
 
         alpha = randomizer.randomInt(params.alphaMin, params.alphaMax)
         paint.alpha = alpha

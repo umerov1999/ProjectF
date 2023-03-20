@@ -32,7 +32,8 @@ import dev.ragnarok.filegallery.util.AppPerms
 import dev.ragnarok.filegallery.util.AppPerms.requestPermissionsResultAbs
 import dev.ragnarok.filegallery.util.Utils
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.EnumMap
+import java.util.EnumSet
 
 class CameraScanActivity : NoMainActivity() {
     private lateinit var textureView: PreviewView

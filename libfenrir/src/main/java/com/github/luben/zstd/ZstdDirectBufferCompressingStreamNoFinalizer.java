@@ -30,9 +30,9 @@ public class ZstdDirectBufferCompressingStreamNoFinalizer implements Closeable, 
 
     public static int recommendedOutputBufferSize() { return (int)recommendedCOutSize(); }
 
-    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
+    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "unused"})
     private int consumed;
-    @SuppressWarnings("FieldMayBeFinal")
+    @SuppressWarnings({"FieldMayBeFinal", "unused"})
     private int produced;
     private boolean closed;
     private boolean initialized;

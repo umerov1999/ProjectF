@@ -9,6 +9,7 @@ import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.domain.ICommunitiesInteractor
 import dev.ragnarok.fenrir.domain.IFaveInteractor
 import dev.ragnarok.fenrir.domain.IOwnersRepository
+import dev.ragnarok.fenrir.domain.IStoriesShortVideosInteractor
 import dev.ragnarok.fenrir.domain.IWallsRepository
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
@@ -46,6 +47,7 @@ class GroupWallPresenter(
     private val faveInteractor: IFaveInteractor
     private val ownersRepository: IOwnersRepository
     private val communitiesInteractor: ICommunitiesInteractor
+    private val storiesInteractor: IStoriesShortVideosInteractor
     private val wallsRepository: IWallsRepository
     private val filters: MutableList<PostFilter>
     private val menus: MutableList<CommunityDetails.Menu>
@@ -72,7 +74,8 @@ class GroupWallPresenter(
             details.getProductsCount(),
             details.getChatsCount(),
             details.getProductServicesCount(),
-            details.getNarrativesCount()
+            details.getNarrativesCount(),
+            details.getClipsCount()
         )
     }
 
@@ -570,7 +573,7 @@ class GroupWallPresenter(
     }
 
     override fun searchStory(ByName: Boolean) {
-        appendDisposable(ownersRepository.searchStory(
+        appendDisposable(storiesInteractor.searchStory(
             accountId,
             if (ByName) community.fullName else null,
             if (ByName) null else ownerId
@@ -595,6 +598,7 @@ class GroupWallPresenter(
         community = pCommunity ?: Community(abs(ownerId))
         details = CommunityDetails()
         ownersRepository = owners
+        storiesInteractor = InteractorFactory.createStoriesInteractor()
         faveInteractor = InteractorFactory.createFaveInteractor()
         communitiesInteractor = InteractorFactory.createCommunitiesInteractor()
         settings = Includes.settings.accounts()

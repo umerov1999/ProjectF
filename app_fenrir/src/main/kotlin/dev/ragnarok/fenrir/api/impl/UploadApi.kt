@@ -4,6 +4,7 @@ import dev.ragnarok.fenrir.api.IUploadRestProvider
 import dev.ragnarok.fenrir.api.PercentagePublisher
 import dev.ragnarok.fenrir.api.interfaces.IUploadApi
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.CustomResponse
 import dev.ragnarok.fenrir.api.model.upload.UploadAudioDto
 import dev.ragnarok.fenrir.api.model.upload.UploadChatPhotoDto
 import dev.ragnarok.fenrir.api.model.upload.UploadDocDto
@@ -78,7 +79,7 @@ class UploadApi internal constructor(private val provider: IUploadRestProvider) 
         inputStream: InputStream,
         listener: PercentagePublisher?,
         isVideo: Boolean
-    ): Single<BaseResponse<UploadStoryDto>> {
+    ): Single<CustomResponse<UploadStoryDto>> {
         val body = ProgressRequestBody(
             inputStream, wrapPercentageListener(listener),
             "*/*".toMediaTypeOrNull()

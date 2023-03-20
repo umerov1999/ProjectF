@@ -30,7 +30,6 @@ import com.yalantis.ucrop.UCrop
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
-import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.PhotosActivity
 import dev.ragnarok.fenrir.fragment.abswall.AbsWallFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
@@ -46,13 +45,11 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getFriendsFollowersPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getGiftsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getMarketPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getMentionsPlace
-import dev.ragnarok.fenrir.place.PlaceFactory.getPostPreviewPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleURLPhotoPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getUserDetailsPlace
 import dev.ragnarok.fenrir.settings.AvatarStyle
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.InputTextDialog
 import dev.ragnarok.fenrir.util.UserInfoResolveUtil
 import dev.ragnarok.fenrir.util.Utils
@@ -64,7 +61,6 @@ import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
 import dev.ragnarok.fenrir.view.OnlineView
 import dev.ragnarok.fenrir.view.ProfileCoverDrawable
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
-import me.minetsh.imaging.IMGEditActivity
 import java.io.File
 
 class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IUserWallView {
@@ -98,32 +94,6 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                         )
                             .withAspectRatio(1f, 1f)
                             .getIntent(requireActivity())
-                    )
-                }
-            }
-        }
-    private val openRequestPhoto =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.data != null && result.resultCode == Activity.RESULT_OK) {
-                val localPhotos: ArrayList<LocalPhoto>? =
-                    result.data?.getParcelableArrayListExtraCompat(Extra.PHOTOS)
-                val file = result.data?.getStringExtra(Extra.PATH)
-                val video: LocalVideo? = result.data?.getParcelableExtraCompat(Extra.VIDEO)
-                lazyPresenter {
-                    firePhotosSelected(localPhotos, file, video)
-                }
-            }
-        }
-    private val openRequestResizePhoto =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                lazyPresenter {
-                    doUploadFile(
-                        (result.data
-                            ?: return@lazyPresenter).getStringExtra(IMGEditActivity.EXTRA_IMAGE_SAVE_PATH)
-                            ?: return@lazyPresenter,
-                        Upload.IMAGE_SIZE_FULL,
-                        false
                     )
                 }
             }
@@ -365,36 +335,6 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
 
         SelectionUtils.addSelectionProfileSupport(getContext(), mHeaderHolder.avatarRoot, user);
     }*/
-    override fun showAvatarUploadedMessage(accountId: Long, post: Post) {
-        MaterialAlertDialogBuilder(requireActivity())
-            .setTitle(R.string.success)
-            .setMessage(R.string.avatar_was_changed_successfully)
-            .setPositiveButton(R.string.button_show) { _: DialogInterface?, _: Int ->
-                getPostPreviewPlace(
-                    accountId,
-                    post.vkid,
-                    post.ownerId,
-                    post
-                ).tryOpenWith(requireActivity())
-            }
-            .setNegativeButton(R.string.button_ok, null)
-            .show()
-    }
-
-    override fun doEditPhoto(uri: Uri) {
-        try {
-            openRequestResizePhoto.launch(
-                Intent(requireContext(), IMGEditActivity::class.java)
-                    .putExtra(IMGEditActivity.EXTRA_IMAGE_URI, uri)
-                    .putExtra(
-                        IMGEditActivity.EXTRA_IMAGE_SAVE_PATH,
-                        File(requireActivity().externalCacheDir.toString() + File.separator + "scale.jpg").absolutePath
-                    )
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 
     override fun showRegistrationDate(date: String) {
         MaterialAlertDialogBuilder(requireActivity())
@@ -417,7 +357,8 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         products: Int,
         gifts: Int,
         products_services: Int,
-        narratives: Int
+        narratives: Int,
+        clips: Int
     ) {
         if (mHeaderHolder != null) {
             if (Settings.get().other().isShow_mutual_count) {
@@ -432,6 +373,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
             setupCounter(mHeaderHolder?.bArticles, articles)
             setupCounter(mHeaderHolder?.bGifts, gifts)
             setupCounter(mHeaderHolder?.bNarratives, narratives)
+            setupCounter(mHeaderHolder?.bClips, clips)
         }
     }
 
@@ -602,13 +544,8 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                 }
 
                 3 -> {
-                    val sources = Sources()
-                        .with(LocalPhotosSelectableSource())
-                        .with(LocalGallerySelectableSource())
-                        .with(LocalVideosSelectableSource())
-                        .with(FileManagerSelectableSource())
-                    val intent = createIntent(requireActivity(), 1, sources)
-                    openRequestPhoto.launch(intent)
+                    presenter?.updateToStory(null)
+                    requestUploadStory()
                 }
             }
         }.setCancelable(true).show()
@@ -722,6 +659,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         val bAudios: TextView = root.findViewById(R.id.fragment_user_profile_baudios)
         val bArticles: TextView = root.findViewById(R.id.fragment_user_profile_barticles)
         val bNarratives: TextView = root.findViewById(R.id.fragment_user_profile_bnarratives)
+        val bClips: TextView = root.findViewById(R.id.fragment_user_profile_bclips)
         val bGifts: TextView = root.findViewById(R.id.fragment_user_profile_bgifts)
         val fabMessage: FloatingActionButton =
             root.findViewById(R.id.header_user_profile_fab_message)
@@ -795,6 +733,12 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                 .setOnClickListener {
                     presenter?.fireNarrativesClick()
                 }
+            root.findViewById<View>(R.id.header_user_profile_clips_container).let {
+                it.setOnClickListener {
+                    presenter?.fireClipsClick()
+                }
+                it.visibility = if (Utils.isOfficialVKCurrent) View.VISIBLE else View.GONE
+            }
         }
     }
 }

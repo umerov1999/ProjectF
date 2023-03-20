@@ -18,7 +18,6 @@ class LinearLayoutManager_SavedState : Parcelable {
     @JvmField
     var mAnchorLayoutFromEnd = false
 
-    @Suppress("unused")
     constructor()
     internal constructor(parcel: Parcel) {
         mAnchorPosition = parcel.readInt()

@@ -402,6 +402,14 @@
             android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <activity
+            android:name="dev.ragnarok.fenrir.activity.shortvideopager.ShortVideoPagerActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="true"
+            android:label="@string/clips"
+            android:theme="@style/App.DayNight.Swipes"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <activity
             android:name="dev.ragnarok.fenrir.activity.SinglePhotoActivity"
             android:configChanges="keyboardHidden|orientation"
             android:exported="true"

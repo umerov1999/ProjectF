@@ -46,7 +46,7 @@ import dev.ragnarok.fenrir.view.WeakRunnable
 import dev.ragnarok.fenrir.view.YoutubeButton
 import me.minetsh.imaging.IMGEditActivity
 import java.io.File
-import java.util.*
+import java.util.Locale
 
 abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V : IBaseAttachmentsEditView> :
     BaseMvpFragment<P, V>(), IBaseAttachmentsEditView, AttchmentsEditorAdapter.Callback,

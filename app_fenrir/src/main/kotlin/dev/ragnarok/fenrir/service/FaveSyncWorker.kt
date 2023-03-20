@@ -31,7 +31,6 @@ import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs
 

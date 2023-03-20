@@ -22,6 +22,20 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <LinearLayout
+        android:id="@+id/uploads_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/uploads_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="96dp"
+            android:scrollbars="horizontal" />
+
+    </LinearLayout>
 
     <!--app:layout_anchor="@android:id/list"-->
     <!--app:layout_anchorGravity="bottom|right|end"-->

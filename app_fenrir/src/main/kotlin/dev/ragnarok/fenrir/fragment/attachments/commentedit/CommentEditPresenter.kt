@@ -207,7 +207,7 @@ class CommentEditPresenter(
                     it
                 )
             })
-        appendDisposable(uploadManager.obseveStatus()
+        appendDisposable(uploadManager.observeStatus()
             .observeOn(provideMainThreadScheduler())
             .subscribe {
                 onUploadStatusUpdate(

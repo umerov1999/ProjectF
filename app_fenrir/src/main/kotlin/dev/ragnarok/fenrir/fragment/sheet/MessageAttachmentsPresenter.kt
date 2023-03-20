@@ -590,7 +590,7 @@ class MessageAttachmentsPresenter(
         appendDisposable(uploadManager.observeDeleting(true)
             .observeOn(provideMainThreadScheduler())
             .subscribe { onUploadsRemoved(it) })
-        appendDisposable(uploadManager.obseveStatus()
+        appendDisposable(uploadManager.observeStatus()
             .observeOn(provideMainThreadScheduler())
             .subscribe { onUploadStatusChanges(it) })
         appendDisposable(uploadManager.observeProgress()

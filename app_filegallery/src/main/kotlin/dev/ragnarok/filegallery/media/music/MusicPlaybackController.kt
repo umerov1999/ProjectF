@@ -1,7 +1,13 @@
 package dev.ragnarok.filegallery.media.music
 
 import android.app.Activity
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.os.IBinder
 import android.os.RemoteException
 import dev.ragnarok.filegallery.R
@@ -11,7 +17,7 @@ import dev.ragnarok.filegallery.util.Logger
 import dev.ragnarok.filegallery.util.existfile.AbsFileExist
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.PublishSubject
-import java.util.*
+import java.util.WeakHashMap
 
 object MusicPlaybackController {
     val Audios: MutableMap<Int, ArrayList<Audio>> = LinkedHashMap()

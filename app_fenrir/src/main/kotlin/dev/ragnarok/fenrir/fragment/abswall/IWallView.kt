@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.fragment.abswall
 
+import android.net.Uri
 import dev.ragnarok.fenrir.fragment.base.IAttachmentsPlacesView
 import dev.ragnarok.fenrir.fragment.base.core.IErrorView
 import dev.ragnarok.fenrir.fragment.base.core.IMvpView
@@ -11,6 +12,7 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.upload.Upload
 
 interface IWallView : IAttachmentsPlacesView, IMvpView, ISnackbarView,
     IErrorView, IToastView {
@@ -37,9 +39,11 @@ interface IWallView : IAttachmentsPlacesView, IMvpView, ISnackbarView,
 
     fun goToWallSearch(accountId: Long, ownerId: Long)
     fun openPostEditor(accountId: Long, post: Post)
+    fun showAvatarUploadedMessage(accountId: Long, post: Post)
     fun notifyWallItemRemoved(index: Int)
     fun goToConversationAttachments(accountId: Long, ownerId: Long)
     fun goNarratives(accountId: Long, ownerId: Long)
+    fun goClips(accountId: Long, ownerId: Long)
     interface IOptionView {
         fun typeOwnerId(id: Long)
         fun setIsMy(my: Boolean)
@@ -48,5 +52,14 @@ interface IWallView : IAttachmentsPlacesView, IMvpView, ISnackbarView,
         fun setIsSubscribed(subscribed: Boolean)
     }
 
+    fun doEditStoryPhoto(uri: Uri)
+
     fun onRequestSkipOffset(accountId: Long, ownerId: Long, wallFilter: Int, currentPos: Int)
+
+    fun notifyUploadItemsAdded(position: Int, count: Int)
+    fun notifyUploadItemRemoved(position: Int)
+    fun notifyUploadItemChanged(position: Int)
+    fun notifyUploadProgressChanged(position: Int, progress: Int, smoothly: Boolean)
+    fun setUploadDataVisible(visible: Boolean)
+    fun displayUploads(data: List<Upload>)
 }

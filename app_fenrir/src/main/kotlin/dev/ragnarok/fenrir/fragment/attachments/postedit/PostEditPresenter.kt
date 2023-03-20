@@ -437,7 +437,7 @@ class PostEditPresenter(
         appendDisposable(uploadManager.observeProgress()
             .observeOn(provideMainThreadScheduler())
             .subscribe { onUploadProgressUpdate(it) })
-        appendDisposable(uploadManager.obseveStatus()
+        appendDisposable(uploadManager.observeStatus()
             .observeOn(provideMainThreadScheduler())
             .subscribe {
                 onUploadStatusUpdate(

@@ -29,7 +29,7 @@ import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
 import dev.ragnarok.fenrir.view.OnlineView
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 class DialogsAdapter(private val mContext: Context, private var mDialogs: List<Dialog>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -402,7 +402,7 @@ class DialogsAdapter(private val mContext: Context, private var mDialogs: List<D
         return mDialogs.size
     }
 
-    interface ClickListener : EventListener {
+    interface ClickListener {
         fun onDialogClick(dialog: Dialog)
         fun onDialogLongClick(dialog: Dialog): Boolean
         fun onAvatarClick(dialog: Dialog)

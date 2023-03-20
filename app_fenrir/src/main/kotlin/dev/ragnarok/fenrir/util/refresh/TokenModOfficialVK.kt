@@ -17,9 +17,9 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.security.*
 import java.security.interfaces.RSAPrivateKey
-import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.experimental.and
+import kotlin.random.Random
 
 object TokenModOfficialVK {
     private const val rid = 1
@@ -35,7 +35,7 @@ object TokenModOfficialVK {
         val valueOf = timestamp.toString()
         val byteArrayOutputStream = ByteArrayOutputStream()
         val bArr = ByteArray(24)
-        Random().nextBytes(bArr)
+        Random(System.nanoTime()).nextBytes(bArr)
         return try {
             byteArrayOutputStream.write(bArr)
             byteArrayOutputStream.write(valueOf.toByteArray())
@@ -86,7 +86,7 @@ object TokenModOfficialVK {
                 "4031819488942003867:1675892049294949499",
                 "3665846370517392830:3012248377502379040"
             )
-            val str3 = "AidLogin " + strArr[Random().nextInt(strArr.size - 1)]
+            val str3 = "AidLogin " + strArr[Random(System.nanoTime()).nextInt(strArr.size - 1)]
             var sb3 = receipt(str3, false)
             if (sb3.contains("REGISTRATION_ERROR")) {
                 println("Token register fail")

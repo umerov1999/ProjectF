@@ -4,16 +4,10 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IUsersApi
-import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiGift
-import dev.ragnarok.fenrir.api.model.VKApiNarratives
-import dev.ragnarok.fenrir.api.model.VKApiStory
 import dev.ragnarok.fenrir.api.model.VKApiUser
-import dev.ragnarok.fenrir.api.model.response.StoryGetResponse
-import dev.ragnarok.fenrir.api.model.response.StoryResponse
 import dev.ragnarok.fenrir.api.model.response.UserWallInfoResponse
-import dev.ragnarok.fenrir.api.model.server.VKApiStoryUploadServer
 import dev.ragnarok.fenrir.api.services.IUsersService
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.requireNonNull
@@ -189,57 +183,10 @@ internal class UsersApi(accountId: Long, provider: IServiceProvider) :
             }
     }
 
-    override fun getStory(owner_id: Long?, extended: Int?, fields: String?): Single<StoryResponse> {
-        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getStory(owner_id, extended, fields)
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
-    override fun getNarratives(
-        owner_id: Long,
-        offset: Int?,
-        count: Int?
-    ): Single<Items<VKApiNarratives>> {
-        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getNarratives(owner_id, offset, count)
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
-    override fun getStoryById(
-        stories: List<AccessIdPair>,
-        extended: Int?,
-        fields: String?
-    ): Single<StoryGetResponse> {
-        val storyString = join(stories, ",") { AccessIdPair.format(it) }
-        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getStoryById(storyString, extended, fields)
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
     override fun getGifts(user_id: Long?, count: Int?, offset: Int?): Single<Items<VKApiGift>> {
         return provideService(IUsersService(), TokenType.USER)
             .flatMap { service ->
                 service.getGifts(user_id, count, offset)
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
-    override fun searchStory(
-        q: String?,
-        mentioned_id: Long?,
-        count: Int?,
-        extended: Int?,
-        fields: String?
-    ): Single<StoryResponse> {
-        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.searchStory(q, mentioned_id, count, extended, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -265,30 +212,6 @@ internal class UsersApi(accountId: Long, provider: IServiceProvider) :
         )
             .flatMap { service ->
                 service[join(ids, ","), fields, nameCase]
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
-    override fun stories_getPhotoUploadServer(): Single<VKApiStoryUploadServer> {
-        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.stories_getPhotoUploadServer(1)
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
-    override fun stories_getVideoUploadServer(): Single<VKApiStoryUploadServer> {
-        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.stories_getVideoUploadServer(1)
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
-    override fun stories_save(upload_results: String?): Single<Items<VKApiStory>> {
-        return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.stories_save(upload_results)
                     .map(extractResponseWithErrorHandling())
             }
     }

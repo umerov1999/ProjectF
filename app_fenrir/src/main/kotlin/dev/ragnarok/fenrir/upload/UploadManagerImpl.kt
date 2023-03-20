@@ -39,7 +39,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.processors.PublishProcessor
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.Collections
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
@@ -72,6 +72,20 @@ class UploadManagerImpl(
     private var needCreateChannel = true
     override fun get(accountId: Long, destination: UploadDestination): Single<List<Upload>> {
         return Single.fromCallable { getByDestination(accountId, destination) }
+    }
+
+    override fun get(accountId: Long, @Method filters: List<Int>): Single<List<Upload>> {
+        return Single.fromCallable {
+            synchronized(this) {
+                val data: MutableList<Upload> = ArrayList()
+                for (upload in queue) {
+                    if (accountId == upload.accountId && filters.contains(upload.destination.method)) {
+                        data.add(upload)
+                    }
+                }
+                return@fromCallable data
+            }
+        }
     }
 
     private fun getByDestination(accountId: Long, destination: UploadDestination): List<Upload> {
@@ -312,7 +326,7 @@ class UploadManagerImpl(
         return addingProcessor.onBackpressureBuffer()
     }
 
-    override fun obseveStatus(): Flowable<Upload> {
+    override fun observeStatus(): Flowable<Upload> {
         return statusProcessor.onBackpressureBuffer()
     }
 

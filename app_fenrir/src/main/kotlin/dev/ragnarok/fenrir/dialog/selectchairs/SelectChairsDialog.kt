@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.database.Chair
-import java.util.Collections
 
 class SelectChairsDialog : AccountDependencyDialogFragment(), ChairsAdapter.Listener {
     private var chairId = 0
@@ -38,7 +37,7 @@ class SelectChairsDialog : AccountDependencyDialogFragment(), ChairsAdapter.List
             mData = ArrayList()
             firstRun = true
         }
-        mAdapter = ChairsAdapter(requireActivity(), mData ?: Collections.emptyList())
+        mAdapter = ChairsAdapter(requireActivity(), mData ?: emptyList())
         mAdapter?.setListener(this)
         mRecyclerView.adapter = mAdapter
         if (firstRun) {

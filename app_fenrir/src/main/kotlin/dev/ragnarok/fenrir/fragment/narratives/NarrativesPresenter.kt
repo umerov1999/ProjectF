@@ -2,8 +2,8 @@ package dev.ragnarok.fenrir.fragment.narratives
 
 import android.content.Context
 import android.os.Bundle
-import dev.ragnarok.fenrir.domain.IOwnersRepository
-import dev.ragnarok.fenrir.domain.Repository.owners
+import dev.ragnarok.fenrir.domain.IStoriesShortVideosInteractor
+import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Narratives
@@ -16,7 +16,8 @@ class NarrativesPresenter(
     private val context: Context,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<INarrativesView>(accountId, savedInstanceState) {
-    private val ownerInteractor: IOwnersRepository = owners
+    private val storiesInteractor: IStoriesShortVideosInteractor =
+        InteractorFactory.createStoriesInteractor()
     private val mNarratives: ArrayList<Narratives> = ArrayList()
     private val netDisposable = CompositeDisposable()
     private var mEndOfContent = false
@@ -35,7 +36,7 @@ class NarrativesPresenter(
     private fun request(offset: Int) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(ownerInteractor.getNarratives(
+        netDisposable.add(storiesInteractor.getNarratives(
             accountId,
             owner_id,
             null,
@@ -103,7 +104,7 @@ class NarrativesPresenter(
         resolveRefreshingView()
 
         appendDisposable(
-            ownerInteractor.getStoryById(accountId, narrative.getStoriesIds())
+            storiesInteractor.getStoryById(accountId, narrative.getStoriesIds())
                 .fromIOToMain()
                 .subscribe({
                     netLoadingNow = false

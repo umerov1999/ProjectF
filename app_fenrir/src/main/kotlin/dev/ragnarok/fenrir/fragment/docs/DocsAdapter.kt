@@ -13,7 +13,6 @@ import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.util.AppTextUtils
-import java.util.EventListener
 import java.util.Locale
 
 class DocsAdapter(data: MutableList<Document>) :
@@ -61,7 +60,7 @@ class DocsAdapter(data: MutableList<Document>) :
         return R.layout.item_document_big
     }
 
-    interface ActionListener : EventListener {
+    interface ActionListener {
         fun onDocClick(index: Int, doc: Document)
         fun onDocLongClick(index: Int, doc: Document): Boolean
     }

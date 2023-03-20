@@ -9,7 +9,7 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.subjects.PublishSubject
-import java.util.*
+import java.util.Collections
 
 class CaptchaProvider(private val app: Context, private val uiScheduler: Scheduler) :
     ICaptchaProvider {

@@ -40,6 +40,9 @@ import dev.ragnarok.fenrir.activity.qr.CustomQRCodeWriter
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
 import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
 import dev.ragnarok.fenrir.api.ProxyUtil.applyProxyConfig
+import dev.ragnarok.fenrir.api.model.VKApiCommunity
+import dev.ragnarok.fenrir.api.model.VKApiOwner
+import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.interfaces.Identificable
 import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
 import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
@@ -63,13 +66,14 @@ import io.reactivex.rxjava3.disposables.Disposable
 import okhttp3.*
 import java.io.Closeable
 import java.io.IOException
-import java.util.*
+import java.util.Calendar
+import java.util.LinkedList
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
-
 
 object Utils {
     private val reload_news: MutableList<Long> = LinkedList()
@@ -707,6 +711,30 @@ object Utils {
             }
         }
         return -1
+    }
+
+    fun ownerOfApiOwner(
+        users: List<VKApiUser>?,
+        groups: List<VKApiCommunity>?,
+        id: Long
+    ): VKApiOwner? {
+        if (users.isNullOrEmpty() && id >= 0 || groups.isNullOrEmpty() && id < 0) {
+            return null
+        }
+        if (id < 0) {
+            for (i in groups.orEmpty()) {
+                if (i.id == abs(id)) {
+                    return i
+                }
+            }
+        } else {
+            for (i in users.orEmpty()) {
+                if (i.id == id) {
+                    return i
+                }
+            }
+        }
+        return null
     }
 
     fun firstNonEmptyString(vararg array: String?): String? {

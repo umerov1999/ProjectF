@@ -26,7 +26,6 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getSimpleGalleryPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import java.lang.reflect.Field
-import java.util.Collections
 
 class FeedbackLinkDialog : DialogFragment(), FeedbackLinkAdapter.ActionListener {
     private var mFeedback: Feedback? = null
@@ -37,7 +36,7 @@ class FeedbackLinkDialog : DialogFragment(), FeedbackLinkAdapter.ActionListener 
     }
 
     private fun getAllModels(notification: Feedback?): List<Any> {
-        notification ?: return Collections.emptyList()
+        notification ?: return emptyList()
         val models: MutableList<Any> = ArrayList()
         val fields: MutableList<Field> = ArrayList()
         fillClassFields(fields, notification.javaClass)

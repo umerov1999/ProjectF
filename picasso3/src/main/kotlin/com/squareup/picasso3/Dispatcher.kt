@@ -46,7 +46,7 @@ import com.squareup.picasso3.Utils.flushStackLocalLeaks
 import com.squareup.picasso3.Utils.getLogIdsForHunter
 import com.squareup.picasso3.Utils.hasPermission
 import com.squareup.picasso3.Utils.log
-import java.util.*
+import java.util.WeakHashMap
 import java.util.concurrent.ExecutorService
 
 internal class Dispatcher internal constructor(

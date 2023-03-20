@@ -14,7 +14,8 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 object CrashUtils {
     private const val TAG = "CrashUtils"

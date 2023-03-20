@@ -40,7 +40,9 @@ import dev.ragnarok.fenrir.util.Utils.hasMarshmallow
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.DateTimePicker
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import java.util.*
+import java.util.Calendar
+import java.util.Timer
+import java.util.TimerTask
 
 class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
     private val mCompositeDisposable = CompositeDisposable()
@@ -80,7 +82,7 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
         val manager: RecyclerView.LayoutManager =
             LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, false)
         mRecyclerView.layoutManager = manager
-        mAdapter = SearchOptionsAdapter(mData ?: Collections.emptyList())
+        mAdapter = SearchOptionsAdapter(mData ?: mutableListOf())
         mAdapter?.setOptionClickListener(this)
         mRecyclerView.adapter = mAdapter
         resolveEmptyTextVisibility()

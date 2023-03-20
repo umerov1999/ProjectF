@@ -10,7 +10,7 @@ public enum EndDirective {
     END(2);
 
     private final int value;
-    private EndDirective(int value) {
+    EndDirective(int value) {
         this.value = value;
     }
 

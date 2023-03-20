@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleTransformer
 import io.reactivex.rxjava3.subjects.PublishSubject
-import java.util.*
+import java.util.LinkedList
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {

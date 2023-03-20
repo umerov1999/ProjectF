@@ -26,6 +26,7 @@ class CommunityDetails : Parcelable {
     private var chatsCount = 0
     private var productServicesCount = 0
     private var narrativesCount = 0
+    private var clipsCount = 0
     private var status: String? = null
     private var statusAudio: Audio? = null
     private var cover: Cover? = null
@@ -52,6 +53,7 @@ class CommunityDetails : Parcelable {
         chatsCount = parcel.readInt()
         productServicesCount = parcel.readInt()
         narrativesCount = parcel.readInt()
+        clipsCount = parcel.readInt()
         status = parcel.readString()
         statusAudio = parcel.readTypedObjectCompat(Audio.CREATOR)
         cover = parcel.readTypedObjectCompat(Cover.CREATOR)
@@ -64,9 +66,17 @@ class CommunityDetails : Parcelable {
         return this
     }
 
-    fun setMenu(menu: List<Menu>?): CommunityDetails {
-        this.menu = menu
+    fun getProductServicesCount(): Int {
+        return productServicesCount
+    }
+
+    fun setClipsCount(clipsCount: Int): CommunityDetails {
+        this.clipsCount = clipsCount
         return this
+    }
+
+    fun getClipsCount(): Int {
+        return clipsCount
     }
 
     fun setNarrativesCount(narrativesCount: Int): CommunityDetails {
@@ -74,16 +84,13 @@ class CommunityDetails : Parcelable {
         return this
     }
 
-    fun getProductServicesCount(): Int {
-        return productServicesCount
-    }
-
     fun getNarrativesCount(): Int {
         return narrativesCount
     }
 
-    fun getCover(): Cover? {
-        return cover
+    fun setMenu(menu: List<Menu>?): CommunityDetails {
+        this.menu = menu
+        return this
     }
 
     fun getMenu(): List<Menu>? {
@@ -93,6 +100,10 @@ class CommunityDetails : Parcelable {
     fun setCover(cover: Cover?): CommunityDetails {
         this.cover = cover
         return this
+    }
+
+    fun getCover(): Cover? {
+        return cover
     }
 
     fun getChatsCount(): Int {
@@ -411,6 +422,7 @@ class CommunityDetails : Parcelable {
         parcel.writeInt(chatsCount)
         parcel.writeInt(productServicesCount)
         parcel.writeInt(narrativesCount)
+        parcel.writeInt(clipsCount)
         parcel.writeString(status)
         parcel.writeTypedObjectCompat(statusAudio, flags)
         parcel.writeTypedObjectCompat(cover, flags)

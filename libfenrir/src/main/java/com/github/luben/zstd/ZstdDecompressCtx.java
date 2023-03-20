@@ -6,18 +6,19 @@ import java.util.Arrays;
 public class ZstdDecompressCtx extends AutoCloseBase {
 
     private long nativePtr;
+    @SuppressWarnings("unused")
     private ZstdDictDecompress decompression_dict;
 
-    private native void init();
+    private static native long init();
 
-    private native void free();
+    private static native void free(long nativePtr);
 
     /**
      * Create a context for faster compress operations
      * One such context is required for each thread - put this in a ThreadLocal.
      */
     public ZstdDecompressCtx() {
-        init();
+        nativePtr = init();
         if (0 == nativePtr) {
             throw new IllegalStateException("ZSTD_createDeCompressCtx failed");
         }
@@ -26,7 +27,7 @@ public class ZstdDecompressCtx extends AutoCloseBase {
 
     void doClose() {
         if (nativePtr != 0) {
-            free();
+            free(nativePtr);
             nativePtr = 0;
         }
     }
@@ -36,9 +37,7 @@ public class ZstdDecompressCtx extends AutoCloseBase {
      * @param magiclessFlag A 32-bits checksum of content is written at end of frame, default: false
      */
     public ZstdDecompressCtx setMagicless(boolean magiclessFlag) {
-        if (nativePtr == 0) {
-            throw new IllegalStateException("Compression context is closed");
-        }
+        ensureOpen();
         acquireSharedLock();
         Zstd.setDecompressionMagicless(nativePtr, magiclessFlag);
         releaseSharedLock();
@@ -51,13 +50,11 @@ public class ZstdDecompressCtx extends AutoCloseBase {
      * @param dict the dictionary or `null` to remove loaded dictionary
      */
     public ZstdDecompressCtx loadDict(ZstdDictDecompress dict) {
-        if (nativePtr == 0) {
-            throw new IllegalStateException("Decompression context is closed");
-        }
+        ensureOpen();
         acquireSharedLock();
         dict.acquireSharedLock();
         try {
-            long result = loadDDictFast0(dict);
+            long result = loadDDictFast0(nativePtr, dict);
             if (Zstd.isError(result)) {
                 throw new ZstdException(result);
             }
@@ -69,7 +66,7 @@ public class ZstdDecompressCtx extends AutoCloseBase {
         }
         return this;
     }
-    private native long loadDDictFast0(ZstdDictDecompress dict);
+    private static native long loadDDictFast0(long nativePtr, ZstdDictDecompress dict);
 
     /**
      * Load decompression dictionary.
@@ -77,12 +74,10 @@ public class ZstdDecompressCtx extends AutoCloseBase {
      * @param dict the dictionary or `null` to remove loaded dictionary
      */
     public ZstdDecompressCtx loadDict(byte[] dict) {
-        if (nativePtr == 0) {
-            throw new IllegalStateException("Compression context is closed");
-        }
+        ensureOpen();
         acquireSharedLock();
         try {
-            long result = loadDDict0(dict);
+            long result = loadDDict0(nativePtr, dict);
             if (Zstd.isError(result)) {
                 throw new ZstdException(result);
             }
@@ -92,7 +87,7 @@ public class ZstdDecompressCtx extends AutoCloseBase {
         }
         return this;
     }
-    private native long loadDDict0(byte[] dict);
+    private static native long loadDDict0(long nativePtr, byte[] dict);
 
     /**
      * Clear all state and parameters from the decompression context. This leaves the object in a
@@ -100,9 +95,9 @@ public class ZstdDecompressCtx extends AutoCloseBase {
      */
     public void reset() {
         ensureOpen();
-        reset0();
+        reset0(nativePtr);
     }
-    private native void reset0();
+    private static native void reset0(long nativePtr);
 
     private void ensureOpen() {
         if (nativePtr == 0) {
@@ -120,7 +115,7 @@ public class ZstdDecompressCtx extends AutoCloseBase {
      */
     public boolean decompressDirectByteBufferStream(ByteBuffer dst, ByteBuffer src) {
         ensureOpen();
-        long result = decompressDirectByteBufferStream0(dst, dst.position(), dst.limit(), src, src.position(), src.limit());
+        long result = decompressDirectByteBufferStream0(nativePtr, dst, dst.position(), dst.limit(), src, src.position(), src.limit());
         if ((result & 0x80000000L) != 0) {
             long code = result & 0xFF;
             throw new ZstdException(code, Zstd.getErrorName(code));
@@ -137,7 +132,7 @@ public class ZstdDecompressCtx extends AutoCloseBase {
      * bit is set if an error occurred. If an error occurred, the lowest 31 bits encode a zstd error
      * code. Otherwise, the lowest 31 bits are the new position of the source buffer.
      */
-    private native long decompressDirectByteBufferStream0(ByteBuffer dst, int dstOffset, int dstSize, ByteBuffer src, int srcOffset, int srcSize);
+    private static native long decompressDirectByteBufferStream0(long nativePtr, ByteBuffer dst, int dstOffset, int dstSize, ByteBuffer src, int srcOffset, int srcSize);
 
     /**
      * Decompresses buffer 'srcBuff' into buffer 'dstBuff' using this ZstdDecompressCtx.
@@ -155,9 +150,7 @@ public class ZstdDecompressCtx extends AutoCloseBase {
      * @return the number of bytes decompressed into destination buffer (originalSize)
      */
     public int decompressDirectByteBuffer(ByteBuffer dstBuff, int dstOffset, int dstSize, ByteBuffer srcBuff, int srcOffset, int srcSize) {
-        if (nativePtr == 0) {
-            throw new IllegalStateException("Decompression context is closed");
-        }
+        ensureOpen();
         if (!srcBuff.isDirect()) {
             throw new IllegalArgumentException("srcBuff must be a direct buffer");
         }
@@ -168,7 +161,7 @@ public class ZstdDecompressCtx extends AutoCloseBase {
         acquireSharedLock();
 
         try {
-            long size = decompressDirectByteBuffer0(dstBuff, dstOffset, dstSize, srcBuff, srcOffset, srcSize);
+            long size = decompressDirectByteBuffer0(nativePtr, dstBuff, dstOffset, dstSize, srcBuff, srcOffset, srcSize);
             if (Zstd.isError(size)) {
                 throw new ZstdException(size);
             }
@@ -181,7 +174,7 @@ public class ZstdDecompressCtx extends AutoCloseBase {
         }
     }
 
-    private native long decompressDirectByteBuffer0(ByteBuffer dst, int dstOffset, int dstSize, ByteBuffer src, int srcOffset, int srcSize);
+    private static native long decompressDirectByteBuffer0(long nativePtr, ByteBuffer dst, int dstOffset, int dstSize, ByteBuffer src, int srcOffset, int srcSize);
 
     /**
      * Decompresses byte array 'srcBuff' into byte array 'dstBuff' using this ZstdDecompressCtx.
@@ -197,14 +190,11 @@ public class ZstdDecompressCtx extends AutoCloseBase {
      * @return the number of bytes decompressed into destination buffer (originalSize)
      */
     public int decompressByteArray(byte[] dstBuff, int dstOffset, int dstSize, byte[] srcBuff, int srcOffset, int srcSize) {
-        if (nativePtr == 0) {
-            throw new IllegalStateException("Decompression context is closed");
-        }
-
+        ensureOpen();
         acquireSharedLock();
 
         try {
-            long size = decompressByteArray0(dstBuff, dstOffset, dstSize, srcBuff, srcOffset, srcSize);
+            long size = decompressByteArray0(nativePtr, dstBuff, dstOffset, dstSize, srcBuff, srcOffset, srcSize);
             if (Zstd.isError(size)) {
                 throw new ZstdException(size);
             }
@@ -217,7 +207,7 @@ public class ZstdDecompressCtx extends AutoCloseBase {
         }
     }
 
-    private native long decompressByteArray0(byte[] dst, int dstOffset, int dstSize, byte[] src, int srcOffset, int srcSize);
+    private static native long decompressByteArray0(long nativePtr, byte[] dst, int dstOffset, int dstSize, byte[] src, int srcOffset, int srcSize);
 
     /* Covenience methods */
 
@@ -276,6 +266,9 @@ public class ZstdDecompressCtx extends AutoCloseBase {
     * @return byte array with the decompressed data
     */
     public byte[] decompress(byte[] src, int originalSize) throws ZstdException {
+        if (originalSize < 0) {
+            throw new ZstdException(Zstd.errGeneric(), "Original size should not be negative");
+        }
         byte[] dst = new byte[originalSize];
         int size = decompress(dst, src);
         if (size != originalSize) {

@@ -7,8 +7,8 @@ import dev.ragnarok.filegallery.readTypedObjectCompat
 import dev.ragnarok.filegallery.util.ParcelUtils.readObjectLong
 import dev.ragnarok.filegallery.util.ParcelUtils.writeObjectLong
 import dev.ragnarok.filegallery.writeTypedObjectCompat
-import java.util.Random
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.random.Random
 
 open class Upload : Parcelable {
 
@@ -151,6 +151,6 @@ open class Upload : Parcelable {
                 return arrayOfNulls(size)
             }
         }
-        val IDGEN = AtomicInteger(Random().nextInt(5000))
+        val IDGEN = AtomicInteger(Random(System.nanoTime()).nextInt(5000))
     }
 }

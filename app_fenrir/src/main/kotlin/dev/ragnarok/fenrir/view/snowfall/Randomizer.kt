@@ -16,10 +16,34 @@
 
 package dev.ragnarok.fenrir.view.snowfall
 
-import java.util.Random
+import kotlin.math.abs
+import kotlin.random.Random
 
 internal class Randomizer {
-    private val random by lazy { Random() }
+    private val random by lazy { Random(System.nanoTime()) }
+
+    private var nextNextGaussian = 0.0
+    private var haveNextNextGaussian = false
+    private fun nextGaussian(): Double {
+        // See Knuth, ACP, Section 3.4.1 Algorithm C.
+        return if (haveNextNextGaussian) {
+            haveNextNextGaussian = false
+            nextNextGaussian
+        } else {
+            var v1: Double
+            var v2: Double
+            var s: Double
+            do {
+                v1 = 2 * random.nextDouble() - 1 // between -1 and 1
+                v2 = 2 * random.nextDouble() - 1 // between -1 and 1
+                s = v1 * v1 + v2 * v2
+            } while (s >= 1 || s == 0.0)
+            val multiplier = StrictMath.sqrt(-2 * StrictMath.log(s) / s)
+            nextNextGaussian = v2 * multiplier
+            haveNextNextGaussian = true
+            v1 * multiplier
+        }
+    }
 
     fun randomDouble(max: Int): Double {
         return random.nextDouble() * (max + 1)
@@ -31,14 +55,14 @@ internal class Randomizer {
 
     fun randomInt(max: Int, gaussian: Boolean = false): Int {
         return if (gaussian) {
-            (kotlin.math.abs(randomGaussian()) * (max + 1)).toInt()
+            (abs(randomGaussian()) * (max + 1)).toInt()
         } else {
             random.nextInt(max + 1)
         }
     }
 
     private fun randomGaussian(): Double {
-        val gaussian = random.nextGaussian() / 3 // more 99% of instances in range (-1, 1)
+        val gaussian = nextGaussian() / 3 // more 99% of instances in range (-1, 1)
         return if (gaussian > -1 && gaussian < 1) gaussian else randomGaussian()
     }
 

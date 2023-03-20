@@ -9,6 +9,7 @@ import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.IUploadable
 import dev.ragnarok.fenrir.upload.MessageMethod
@@ -34,9 +35,9 @@ class StoryUploadable(private val context: Context, private val networker: INetw
         val serverSingle: Single<UploadServer> = if (initialServer == null) {
             if (upload.destination.messageMethod == MessageMethod.VIDEO) networker.vkDefault(
                 accountId
-            ).users().stories_getVideoUploadServer()
-                .map { it } else networker.vkDefault(accountId).users()
-                .stories_getPhotoUploadServer().map { it }
+            ).stories().stories_getVideoUploadServer(null, upload.destination.ref)
+                .map { it } else networker.vkDefault(accountId).stories()
+                .stories_getPhotoUploadServer(null, upload.destination.ref).map { it }
         } else {
             Single.just(initialServer)
         }
@@ -68,9 +69,12 @@ class StoryUploadable(private val context: Context, private val networker: INetw
                     )
                     .doFinally(safelyCloseAction(inputStream))
                     .flatMap { dto ->
+                        if (dto.error.nonNullNoEmpty()) {
+                            throw Exception(dto.error)
+                        }
                         networker
                             .vkDefault(accountId)
-                            .users()
+                            .stories()
                             .stories_save(dto.response?.upload_result)
                             .map {
                                 listEmptyIfNull(it.items)

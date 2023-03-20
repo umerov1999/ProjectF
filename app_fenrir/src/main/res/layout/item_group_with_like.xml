@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:paddingTop="8dp">
+
+    <FrameLayout
+        android:id="@+id/avatar_root"
+        android:layout_width="@dimen/avatar_size_usual"
+        android:layout_height="@dimen/avatar_size_usual"
+        android:layout_marginStart="16dp">
+
+        <ImageView
+            android:id="@+id/item_group_avatar"
+            android:layout_width="@dimen/avatar_size_usual"
+            android:layout_height="@dimen/avatar_size_usual"
+            android:contentDescription="@null"
+            tools:src="@drawable/ic_feedback_invite_group" />
+
+        <ImageView
+            android:id="@+id/item_verified"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="top|end"
+            android:background="@drawable/sel_button_round_5_white"
+            android:backgroundTint="#009900"
+            android:backgroundTintMode="add"
+            android:contentDescription="@null"
+            android:padding="3dp"
+            android:src="@drawable/verified"
+            android:visibility="gone"
+            app:tint="@color/white" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_group_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollbars="none"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            tools:text="Fenrir for VK" />
+
+        <TextView
+            android:id="@+id/item_group_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollbars="none"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:textSize="@dimen/font_size_subtitle"
+            tools:text="Сообщество" />
+
+        <TextView
+            android:id="@+id/item_group_members"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollbars="none"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textSize="@dimen/font_size_subtitle"
+            tools:text="31 подписок" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/item_group_liked"
+        android:layout_width="@dimen/online_dot_size"
+        android:layout_height="@dimen/online_dot_size"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@null"
+        android:src="@drawable/heart_filled"
+        app:tint="?colorPrimary" />
+
+</LinearLayout>

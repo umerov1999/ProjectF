@@ -217,8 +217,6 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
 
   private static final int VIEW_INDEX_BOTTOM_SHEET = 0;
 
-  private static final int INVALID_POSITION = -1;
-
   @VisibleForTesting
   static final int VIEW_INDEX_ACCESSIBILITY_DELEGATE_VIEW = 1;
 
@@ -323,7 +321,7 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
 
   int activePointerId;
 
-  private int initialY = INVALID_POSITION;
+  private int initialY;
 
   boolean touchingScrollingChild;
 
@@ -657,7 +655,6 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
         && state != STATE_DRAGGING
         && !parent.isPointInChildBounds(scroll, (int) event.getX(), (int) event.getY())
         && viewDragHelper != null
-        && initialY != INVALID_POSITION
         && Math.abs(initialY - event.getY()) > viewDragHelper.getTouchSlop();
   }
 
@@ -1465,7 +1462,6 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
 
   private void reset() {
     activePointerId = ViewDragHelper.INVALID_POINTER;
-    initialY = INVALID_POSITION;
     if (velocityTracker != null) {
       velocityTracker.recycle();
       velocityTracker = null;

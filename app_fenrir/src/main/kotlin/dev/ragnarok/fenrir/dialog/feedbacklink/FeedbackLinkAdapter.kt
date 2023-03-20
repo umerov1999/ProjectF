@@ -21,7 +21,6 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
-import java.util.EventListener
 
 class FeedbackLinkAdapter(
     private val mContext: Context,
@@ -107,7 +106,7 @@ class FeedbackLinkAdapter(
         return mData.size
     }
 
-    interface ActionListener : EventListener {
+    interface ActionListener {
         fun onPostClick(post: Post)
         fun onCommentClick(comment: Comment)
         fun onTopicClick(topic: Topic)

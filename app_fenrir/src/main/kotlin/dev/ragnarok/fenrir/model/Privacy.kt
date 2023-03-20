@@ -5,7 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.util.Utils.join
-import java.util.*
+import java.util.Collections
 
 class Privacy : Parcelable, Cloneable {
     var type: String

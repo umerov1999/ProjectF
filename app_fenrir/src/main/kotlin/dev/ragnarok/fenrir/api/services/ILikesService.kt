@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.api.services
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.LikeResponse
 import dev.ragnarok.fenrir.api.model.response.LikesListResponse
-import dev.ragnarok.fenrir.api.model.response.ViewersListResponse
 import dev.ragnarok.fenrir.api.model.response.isLikeResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
@@ -37,26 +36,6 @@ class ILikesService : IServiceRest() {
                 "skip_own" to skipOwn,
                 "fields" to fields
             ), base(LikesListResponse.serializer())
-        )
-    }
-
-    fun getStoriesViewers(
-        ownerId: Long?,
-        storyId: Int?,
-        offset: Int?,
-        count: Int?,
-        extended: Int?,
-        fields: String?
-    ): Single<BaseResponse<ViewersListResponse>> {
-        return rest.request(
-            "stories.getViewers", form(
-                "owner_id" to ownerId,
-                "story_id" to storyId,
-                "offset" to offset,
-                "count" to count,
-                "extended" to extended,
-                "fields" to fields
-            ), base(ViewersListResponse.serializer())
         )
     }
 

@@ -23,6 +23,7 @@ import dev.ragnarok.fenrir.domain.impl.PhotosInteractor
 import dev.ragnarok.fenrir.domain.impl.PollInteractor
 import dev.ragnarok.fenrir.domain.impl.RelationshipInteractor
 import dev.ragnarok.fenrir.domain.impl.StickersInteractor
+import dev.ragnarok.fenrir.domain.impl.StoriesShortVideosInteractor
 import dev.ragnarok.fenrir.domain.impl.UtilsInteractor
 import dev.ragnarok.fenrir.domain.impl.VideosInteractor
 import dev.ragnarok.fenrir.settings.Settings
@@ -88,7 +89,6 @@ object InteractorFactory {
         return VideosInteractor(networkInterfaces, stores)
     }
 
-
     fun createAccountInteractor(): IAccountsInteractor {
         return AccountsInteractor(
             networkInterfaces,
@@ -112,5 +112,9 @@ object InteractorFactory {
 
     fun createAudioInteractor(): IAudioInteractor {
         return AudioInteractor(networkInterfaces)
+    }
+
+    fun createStoriesInteractor(): IStoriesShortVideosInteractor {
+        return StoriesShortVideosInteractor(networkInterfaces, owners)
     }
 }

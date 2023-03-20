@@ -20,7 +20,7 @@ class ViewersListAdapter : AbsAdapter<ViewersListResponse>("ViewersListAdapter")
         response.count = optInt(root, "count")
         if (hasArray(root, "items")) {
             val itemsArray = root.getAsJsonArray("items")
-            response.owners = ArrayList(itemsArray?.size.orZero())
+            response.ownersWithLikes = ArrayList(itemsArray?.size.orZero())
             for (i in 0 until itemsArray?.size.orZero()) {
                 if (!checkObject(itemsArray?.get(i))) {
                     continue
@@ -29,12 +29,13 @@ class ViewersListAdapter : AbsAdapter<ViewersListResponse>("ViewersListAdapter")
                 if (!hasObject(itemRoot, "user")) {
                     continue
                 }
+                val isLiked = optBoolean(itemRoot, "is_liked")
                 val userRoot = itemRoot["user"]
                 val owner = userRoot?.let {
                     kJson.decodeFromJsonElement(VKApiUser.serializer(), it)
                 }
                 owner.requireNonNull {
-                    response.owners?.add(it)
+                    response.ownersWithLikes?.add(Pair(it, isLiked))
                 }
             }
         }

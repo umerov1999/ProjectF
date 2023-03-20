@@ -37,7 +37,6 @@ import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
 import java.io.File
-import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 class FileManagerSelectFragment :
@@ -140,7 +139,7 @@ class FileManagerSelectFragment :
         mHeader?.visibility =
             if (arguments?.getBoolean(Extra.HIDE_TITLE, false) == true) View.GONE else View.VISIBLE
 
-        mAdapter = FileManagerSelectAdapter(Collections.emptyList())
+        mAdapter = FileManagerSelectAdapter(emptyList())
         mAdapter?.setClickListener(this)
         mRecyclerView?.adapter = mAdapter
 

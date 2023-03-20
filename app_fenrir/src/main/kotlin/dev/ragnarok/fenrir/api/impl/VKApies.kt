@@ -38,6 +38,7 @@ internal class VKApies private constructor(
     private val faveApi: IFaveApi
     private val pollsApi: IPollsApi
     private val utilsApi: IUtilsApi
+    private val storiesApi: IStoriesShortVideosApi
     private val otherApi: IOtherApi
     override fun messages(): IMessagesApi {
         return messagesApi
@@ -105,6 +106,10 @@ internal class VKApies private constructor(
 
     override fun likes(): ILikesApi {
         return likesApi
+    }
+
+    override fun stories(): IStoriesShortVideosApi {
+        return storiesApi
     }
 
     override fun pages(): IPagesApi {
@@ -231,6 +236,7 @@ internal class VKApies private constructor(
         utilsApi = UtilsApi(accountId, restProvider)
         videoApi = VideoApi(accountId, restProvider)
         wallApi = WallApi(accountId, restProvider)
+        storiesApi = StoriesShortVideosApi(accountId, restProvider)
         otherApi = OtherApi(accountId, provider)
     }
 }

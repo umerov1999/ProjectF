@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.view.CircleRoadProgress
-import java.util.*
 
 class AttachmentsBottomSheetAdapter(
     private val data: List<AttachmentEntry>,
@@ -408,7 +407,7 @@ class AttachmentsBottomSheetAdapter(
         return nextHolderId
     }
 
-    interface ActionListener : EventListener {
+    interface ActionListener {
         fun onAddPhotoButtonClick()
         fun onButtonRemoveClick(entry: AttachmentEntry)
         fun onButtonRetryClick(entry: AttachmentEntry)

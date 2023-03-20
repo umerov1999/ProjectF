@@ -3,7 +3,7 @@ package androidx.recyclerview.widget
 import android.os.Parcel
 import android.os.Parcelable
 import kotlinx.serialization.Serializable
-import java.util.*
+import java.util.Arrays
 
 /**
  * @hide
@@ -157,7 +157,6 @@ class FullSpanItem : Parcelable {
         }
     }
 
-    @Suppress("unused")
     constructor()
 
     fun getGapForSpan(spanIndex: Int): Int {

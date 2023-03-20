@@ -12,9 +12,7 @@ import dev.ragnarok.fenrir.model.GroupChats
 import dev.ragnarok.fenrir.model.IOwnersBundle
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.MarketAlbum
-import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.model.Owner
-import dev.ragnarok.fenrir.model.Story
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.UserDetails
 import dev.ragnarok.fenrir.model.UserUpdate
@@ -78,8 +76,6 @@ interface IOwnersRepository {
         moderator: Boolean
     ): Single<List<Owner>>
 
-    fun getStoryById(accountId: Long, stories: List<AccessIdPair>): Single<List<Story>>
-
     fun searchPeoples(
         accountId: Long,
         criteria: PeopleSearchCriteria,
@@ -98,15 +94,7 @@ interface IOwnersRepository {
     fun observeUpdates(): Flowable<List<UserUpdate>>
     fun report(accountId: Long, userId: Long, type: String?, comment: String?): Single<Int>
     fun checkAndAddFriend(accountId: Long, userId: Long): Single<Int>
-    fun getStory(accountId: Long, owner_id: Long?): Single<List<Story>>
-    fun getNarratives(
-        accountId: Long,
-        owner_id: Long,
-        offset: Int?,
-        count: Int?
-    ): Single<List<Narratives>>
 
-    fun searchStory(accountId: Long, q: String?, mentioned_id: Long?): Single<List<Story>>
     fun getGroupChats(
         accountId: Long,
         groupId: Long,

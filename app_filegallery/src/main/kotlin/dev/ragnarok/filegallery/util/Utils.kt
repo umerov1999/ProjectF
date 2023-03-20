@@ -33,7 +33,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import java.io.Closeable
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.ceil

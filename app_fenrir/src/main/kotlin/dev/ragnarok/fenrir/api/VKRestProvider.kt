@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.settings.IProxySettings
 import dev.ragnarok.fenrir.settings.Settings
 import io.reactivex.rxjava3.core.Single
 import okhttp3.OkHttpClient
-import java.util.*
+import java.util.Collections
 
 @SuppressLint("CheckResult")
 class VKRestProvider(

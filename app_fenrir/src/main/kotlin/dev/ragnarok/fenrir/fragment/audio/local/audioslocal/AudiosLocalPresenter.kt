@@ -67,7 +67,7 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
             }
             .observeOn(provideMainThreadScheduler())
             .subscribe { pair -> onUploadResults(pair) })
-        appendDisposable(uploadManager.obseveStatus()
+        appendDisposable(uploadManager.observeStatus()
             .observeOn(provideMainThreadScheduler())
             .subscribe { upload -> onUploadStatusUpdate(upload) })
         appendDisposable(uploadManager.observeProgress()

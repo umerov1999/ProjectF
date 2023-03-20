@@ -18,6 +18,7 @@ android {
         exclude("META-INF/LICENSE")
         exclude("META-INF/NOTICE")
         exclude("META-INF/*.version")
+        exclude("META-INF/versions/**")
     }
 
     dependenciesInfo {

@@ -37,7 +37,8 @@ interface IGroupWallView : IWallView {
         products: Int,
         chats: Int,
         products_services: Int,
-        narratives: Int
+        narratives: Int,
+        clips: Int
     )
 
     fun invalidateOptionsMenu()

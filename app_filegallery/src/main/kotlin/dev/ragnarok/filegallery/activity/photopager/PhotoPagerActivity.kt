@@ -53,7 +53,6 @@ import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
 import dev.ragnarok.filegallery.view.pager.WeakPicassoLoadCallback
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -277,7 +276,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     override fun displayPhotos(photos: List<Photo>, initialIndex: Int) {
         if (bShowPhotosLine) {
             if (photos.size <= 1) {
-                mAdapterRecycler.setData(Collections.emptyList())
+                mAdapterRecycler.setData(emptyList())
                 mAdapterRecycler.notifyDataSetChanged()
             } else {
                 mAdapterRecycler.setData(photos)

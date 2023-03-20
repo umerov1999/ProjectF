@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 @Serializable(with = ViewersListAdapter::class)
 class ViewersListResponse {
     var count = 0
-    var owners: ArrayList<VKApiOwner>? = null
+    var ownersWithLikes: ArrayList<Pair<VKApiOwner, Boolean>>? = null
 }

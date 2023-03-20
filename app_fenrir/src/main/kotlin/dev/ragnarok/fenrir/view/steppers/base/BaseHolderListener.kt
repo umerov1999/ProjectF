@@ -1,8 +1,6 @@
 package dev.ragnarok.fenrir.view.steppers.base
 
-import java.util.EventListener
-
-interface BaseHolderListener : EventListener {
+interface BaseHolderListener {
     fun onNextButtonClick(step: Int)
     fun onCancelButtonClick(step: Int)
 }

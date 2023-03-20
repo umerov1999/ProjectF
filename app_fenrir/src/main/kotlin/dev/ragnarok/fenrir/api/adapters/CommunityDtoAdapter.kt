@@ -5,7 +5,7 @@ import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import java.util.*
+import java.util.Locale
 import kotlin.math.abs
 
 class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {

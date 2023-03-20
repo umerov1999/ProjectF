@@ -64,7 +64,6 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
 import java.io.File
 import java.util.Calendar
-import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerView>(),
@@ -211,7 +210,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
             }
         }
         ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
-        mAdapter = FileManagerAdapter(requireActivity(), Collections.emptyList())
+        mAdapter = FileManagerAdapter(requireActivity(), emptyList())
         mAdapter?.setClickListener(this)
         mRecyclerView?.adapter = mAdapter
 

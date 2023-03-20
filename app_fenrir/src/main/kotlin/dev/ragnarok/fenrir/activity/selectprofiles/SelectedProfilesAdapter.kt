@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
-import java.util.EventListener
 
 class SelectedProfilesAdapter(private val mContext: Context, private val mData: List<Owner>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -99,7 +98,7 @@ class SelectedProfilesAdapter(private val mContext: Context, private val mData: 
         notifyItemChanged(0)
     }
 
-    interface ActionListener : EventListener {
+    interface ActionListener {
         fun onClick(adapterPosition: Int, owner: Owner)
         fun onCheckClick()
     }

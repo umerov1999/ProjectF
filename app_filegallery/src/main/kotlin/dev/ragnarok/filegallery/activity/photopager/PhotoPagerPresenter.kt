@@ -31,7 +31,9 @@ import dev.ragnarok.filegallery.util.AssertUtils
 import dev.ragnarok.filegallery.util.DownloadWorkUtils.doDownloadPhoto
 import dev.ragnarok.filegallery.util.Utils
 import java.io.File
-import java.util.*
+import java.util.Calendar
+import java.util.EnumMap
+import java.util.EnumSet
 
 open class PhotoPagerPresenter internal constructor(
     initialData: ArrayList<Photo>,

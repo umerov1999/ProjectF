@@ -85,6 +85,10 @@ class ValidateActivity : AppCompatActivity() {
         )
         val webview = findViewById<WebView>(R.id.vkontakteview)
         webview.settings.javaScriptEnabled = true
+        webview.settings.domStorageEnabled = true
+        webview.settings.blockNetworkLoads = false
+        webview.settings.blockNetworkImage = false
+        webview.settings.databaseEnabled = true
         webview.clearCache(true)
         webview.settings.userAgentString = UserAgentTool.getAccountUserAgent(accountId)
 

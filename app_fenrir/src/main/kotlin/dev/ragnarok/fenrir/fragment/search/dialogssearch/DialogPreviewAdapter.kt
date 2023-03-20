@@ -17,7 +17,6 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
-import java.util.EventListener
 
 class DialogPreviewAdapter(
     private var mData: List<Conversation>,
@@ -77,7 +76,7 @@ class DialogPreviewAdapter(
         notifyDataSetChanged()
     }
 
-    interface ActionListener : EventListener {
+    interface ActionListener {
         fun onEntryClick(o: Conversation)
     }
 

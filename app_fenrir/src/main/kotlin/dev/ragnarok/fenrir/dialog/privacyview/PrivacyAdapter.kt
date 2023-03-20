@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.model.Privacy
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.util.Utils
-import java.util.EventListener
 
 class PrivacyAdapter(private val mContext: Context, private val mPrivacy: Privacy) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -213,7 +212,7 @@ class PrivacyAdapter(private val mContext: Context, private val mPrivacy: Privac
         mActionListener = actionListener
     }
 
-    interface ActionListener : EventListener {
+    interface ActionListener {
         fun onTypeClick()
         fun onAllowedUserRemove(user: User)
         fun onAllowedFriendsListRemove(friendList: FriendList)

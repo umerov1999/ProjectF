@@ -11,7 +11,7 @@ internal class PlaceHolderView(context: Context?) : View(context) {
         this.view = view
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         if (view != null && isEnabled) {
             (view ?: return).draw(canvas)
             return

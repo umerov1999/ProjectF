@@ -42,11 +42,11 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
 import java.security.spec.InvalidKeySpecException
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
+import kotlin.random.Random
 
 class KeyExchangeService : Service() {
     private val mUtilsInteractor: IUtilsInteractor = InteractorFactory.createUtilsInteractor()
@@ -809,7 +809,7 @@ class KeyExchangeService : Service() {
                         .vkDefault(accountId)
                         .messages()
                         .send(
-                            Random().nextInt().toLong(),
+                            Random(System.nanoTime()).nextLong(),
                             peerId,
                             null,
                             message.toString(),

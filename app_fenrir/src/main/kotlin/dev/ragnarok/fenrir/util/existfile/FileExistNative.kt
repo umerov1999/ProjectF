@@ -15,7 +15,7 @@ import io.reactivex.rxjava3.core.CompletableEmitter
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 import kotlin.math.abs
 
 class FileExistNative : AbsFileExist {

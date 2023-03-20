@@ -78,7 +78,6 @@ import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import me.minetsh.imaging.IMGEditActivity
 import java.io.File
 import java.lang.ref.WeakReference
-import java.util.*
 
 class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatView,
     InputViewController.OnInputActionCallback,
@@ -237,7 +236,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         }
 
         stickersKeywordsView = root.findViewById(R.id.stickers)
-        stickersAdapter = StickersKeyWordsAdapter(requireActivity(), Collections.emptyList())
+        stickersAdapter = StickersKeyWordsAdapter(requireActivity(), emptyList())
         stickersAdapter?.setStickerClickedListener(object :
             EmojiconsPopup.OnStickerClickedListener {
             override fun onStickerClick(sticker: Sticker) {
@@ -1092,10 +1091,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             if (result.data != null && result.resultCode == RESULT_OK) {
                 val vkphotos: List<Photo> =
                     result.data?.getParcelableArrayListExtraCompat(Extra.ATTACHMENTS)
-                        ?: Collections.emptyList()
+                        ?: emptyList()
                 val localPhotos: List<LocalPhoto> =
                     result.data?.getParcelableArrayListExtraCompat(Extra.PHOTOS)
-                        ?: Collections.emptyList()
+                        ?: emptyList()
 
                 val vid: LocalVideo? = result.data?.getParcelableExtraCompat(Extra.VIDEO)
 
@@ -1130,7 +1129,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             if (result.data != null && result.resultCode == RESULT_OK) {
                 val attachments: List<AbsModel> =
                     result.data?.getParcelableArrayListExtraCompat(Extra.ATTACHMENTS)
-                        ?: Collections.emptyList()
+                        ?: emptyList()
                 presenter?.fireEditAttachmentsSelected(attachments)
             }
         }

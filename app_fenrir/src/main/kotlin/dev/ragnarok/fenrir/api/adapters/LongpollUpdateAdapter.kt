@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.serializeble.json.*
-import java.util.*
+import java.util.Collections
 
 class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?") {
     @Throws(Exception::class)

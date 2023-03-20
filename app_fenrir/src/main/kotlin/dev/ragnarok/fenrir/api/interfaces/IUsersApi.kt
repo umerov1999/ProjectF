@@ -1,15 +1,9 @@
 package dev.ragnarok.fenrir.api.interfaces
 
 import androidx.annotation.CheckResult
-import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiGift
-import dev.ragnarok.fenrir.api.model.VKApiNarratives
-import dev.ragnarok.fenrir.api.model.VKApiStory
 import dev.ragnarok.fenrir.api.model.VKApiUser
-import dev.ragnarok.fenrir.api.model.response.StoryGetResponse
-import dev.ragnarok.fenrir.api.model.response.StoryResponse
-import dev.ragnarok.fenrir.api.model.server.VKApiStoryUploadServer
 import io.reactivex.rxjava3.core.Single
 
 interface IUsersApi {
@@ -52,41 +46,10 @@ interface IUsersApi {
     ): Single<List<VKApiUser>>
 
     @CheckResult
-    fun stories_getPhotoUploadServer(): Single<VKApiStoryUploadServer>
-
-    @CheckResult
-    fun stories_getVideoUploadServer(): Single<VKApiStoryUploadServer>
-
-    @CheckResult
-    fun stories_save(upload_results: String?): Single<Items<VKApiStory>>
-
-    @CheckResult
-    fun getStory(owner_id: Long?, extended: Int?, fields: String?): Single<StoryResponse>
-
-    @CheckResult
-    fun getNarratives(owner_id: Long, offset: Int?, count: Int?): Single<Items<VKApiNarratives>>
-
-    @CheckResult
-    fun getStoryById(
-        stories: List<AccessIdPair>,
-        extended: Int?,
-        fields: String?
-    ): Single<StoryGetResponse>
-
-    @CheckResult
     fun checkAndAddFriend(userId: Long?): Single<Int>
 
     @CheckResult
     fun getGifts(user_id: Long?, count: Int?, offset: Int?): Single<Items<VKApiGift>>
-
-    @CheckResult
-    fun searchStory(
-        q: String?,
-        mentioned_id: Long?,
-        count: Int?,
-        extended: Int?,
-        fields: String?
-    ): Single<StoryResponse>
 
     @CheckResult
     fun report(userId: Long?, type: String?, comment: String?): Single<Int>

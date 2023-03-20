@@ -845,6 +845,7 @@
     <string name="counter_markets">products</string>
     <string name="counter_markets_services">services</string>
     <string name="counter_narratives">narratives</string>
+    <string name="counter_clips">clips</string>
 
     <string name="topic_comments_counter">last update: %1$s | %2$d comments</string>
     <string name="group_chats_counter">last message: %1$s | %2$d members</string>
@@ -1951,4 +1952,7 @@
     <string name="available_only_dons">Only available to dons!</string>
     <string name="font_only_for_chats">Font only for chats</string>
     <string name="views">Views</string>
+    <string name="answer">Answer</string>
+    <string name="clips">Clips</string>
+    <string name="stories">Stories</string>
 </resources>

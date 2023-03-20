@@ -53,6 +53,7 @@ class CustomSeekBar @JvmOverloads constructor(
 
     private var layoutWidth: Int = 0
     private var layoutHeight: Int = 0
+    private var pendingPosition: Long = -1
 
     fun setCustomSeekBarListener(seekBarListener: CustomSeekBarListener?) {
         delegate = seekBarListener
@@ -144,7 +145,7 @@ class CustomSeekBar @JvmOverloads constructor(
 
     var position: Long
         get() = if (duration == -1L) -1L else (duration * thumbX.toDouble() / (layoutWidth - thumbWidth).toDouble()).toLong()
-        set(position) {
+        set(value) {
             if (duration <= 0) {
                 thumbX = 0
                 if (!isDragging) {
@@ -152,7 +153,8 @@ class CustomSeekBar @JvmOverloads constructor(
                 }
                 return
             }
-            thumbX = ceil(((layoutWidth - thumbWidth) * (position.toDouble() / duration))).toInt()
+            pendingPosition = value
+            thumbX = ceil(((layoutWidth - thumbWidth) * (value.toDouble() / duration))).toInt()
             if (thumbX < 0) {
                 thumbX = 0
             } else if (thumbX > layoutWidth - thumbWidth) {
@@ -174,6 +176,16 @@ class CustomSeekBar @JvmOverloads constructor(
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
+        if (pendingPosition >= 0 && thumbX <= 0 && layoutWidth > 0) {
+            thumbX =
+                ceil(((layoutWidth - thumbWidth) * (pendingPosition.toDouble() / duration))).toInt()
+            if (thumbX < 0) {
+                thumbX = 0
+            } else if (thumbX > layoutWidth - thumbWidth) {
+                thumbX = layoutWidth - thumbWidth
+            }
+            pendingPosition = -1
+        }
         rect[(thumbWidth / 2).toFloat(), (layoutHeight / 2 - lineHeight / 2), (layoutWidth - thumbWidth / 2).toFloat()] =
             (layoutHeight / 2 + lineHeight / 2)
         paint.color = lineColor
@@ -308,8 +320,10 @@ class CustomSeekBar @JvmOverloads constructor(
                 Color.blue(cacheColor)
             )
         }
-        setDuration(20)
-        setBufferedPosition(18)
-        position = 10
+        if (isInEditMode) {
+            setDuration(20)
+            setBufferedPosition(18)
+            position = 8
+        }
     }
 }

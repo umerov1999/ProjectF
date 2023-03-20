@@ -7,6 +7,7 @@ import dev.ragnarok.fenrir.api.model.catalog_v2_audio.VKApiCatalogV2ArtistItem
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.AbsModelType
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.putBoolean
 import kotlin.math.abs
 
@@ -40,7 +41,7 @@ class CatalogV2ArtistItem : AbsModel {
                 imgUrl = i.url
             }
         }
-        imgUrl ?: run {
+        if (imgUrl.isNullOrEmpty() && photo.nonNullNoEmpty()) {
             imgUrl = photo?.last()?.url
         }
         return imgUrl

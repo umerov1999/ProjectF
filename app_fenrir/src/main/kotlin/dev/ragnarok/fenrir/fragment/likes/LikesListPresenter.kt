@@ -29,39 +29,22 @@ class LikesListPresenter(
         loadingNow = true
         //this.loadingOffset = offset;
         resolveRefreshingView()
-        if (type == "stories_view") {
-            netDisposable.add(likesInteractor.getStoriesViewers(
-                accountId,
-                ownerId,
-                itemId,
-                50,
-                offset
-            )
-                .fromIOToMain()
-                .subscribe({ owners ->
-                    onDataReceived(
-                        offset,
-                        owners
-                    )
-                }) { t -> onDataGetError(t) })
-        } else {
-            netDisposable.add(likesInteractor.getLikes(
-                accountId,
-                type,
-                ownerId,
-                itemId,
-                filter,
-                50,
-                offset
-            )
-                .fromIOToMain()
-                .subscribe({ owners ->
-                    onDataReceived(
-                        offset,
-                        owners
-                    )
-                }) { t -> onDataGetError(t) })
-        }
+        netDisposable.add(likesInteractor.getLikes(
+            accountId,
+            type,
+            ownerId,
+            itemId,
+            filter,
+            50,
+            offset
+        )
+            .fromIOToMain()
+            .subscribe({ owners ->
+                onDataReceived(
+                    offset,
+                    owners
+                )
+            }) { t -> onDataGetError(t) })
     }
 
     private fun onDataGetError(t: Throwable) {

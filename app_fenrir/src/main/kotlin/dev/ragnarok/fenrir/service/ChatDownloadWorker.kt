@@ -44,7 +44,7 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import kotlin.math.abs
 
 class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :

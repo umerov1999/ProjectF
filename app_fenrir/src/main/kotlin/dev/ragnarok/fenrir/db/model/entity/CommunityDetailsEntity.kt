@@ -40,6 +40,8 @@ class CommunityDetailsEntity {
         private set
     var narrativesCount = 0
         private set
+    var clipsCount = 0
+        private set
     var chatsCount = 0
         private set
     var status: String? = null
@@ -60,6 +62,11 @@ class CommunityDetailsEntity {
 
     fun setNarrativesCount(narrativesCount: Int): CommunityDetailsEntity {
         this.narrativesCount = narrativesCount
+        return this
+    }
+
+    fun setClipsCount(clipsCount: Int): CommunityDetailsEntity {
+        this.clipsCount = clipsCount
         return this
     }
 

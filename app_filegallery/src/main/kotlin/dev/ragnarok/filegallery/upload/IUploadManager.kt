@@ -13,7 +13,7 @@ interface IUploadManager {
     fun getCurrent(): Optional<Upload>
     fun observeDeleting(includeCompleted: Boolean): Flowable<IntArray>
     fun observeAdding(): Flowable<List<Upload>>
-    fun obseveStatus(): Flowable<Upload>
+    fun observeStatus(): Flowable<Upload>
     fun observeResults(): Flowable<Pair<Upload, UploadResult<*>>>
     fun observeProgress(): Flowable<List<IProgressUpdate>>
     interface IProgressUpdate {

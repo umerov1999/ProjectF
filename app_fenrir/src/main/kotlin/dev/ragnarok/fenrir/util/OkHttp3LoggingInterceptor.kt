@@ -14,7 +14,7 @@ import okio.Buffer
 import okio.GzipSource
 import okio.source
 import java.io.IOException
-import java.util.*
+import java.util.TreeSet
 import java.util.concurrent.TimeUnit
 
 class OkHttp3LoggingInterceptor @JvmOverloads constructor(

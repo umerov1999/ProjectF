@@ -24,7 +24,6 @@ import dev.ragnarok.fenrir.model.feedback.ReplyCommentFeedback
 import dev.ragnarok.fenrir.model.feedback.UsersFeedback
 import dev.ragnarok.fenrir.view.OnlineView
 import java.util.Calendar
-import java.util.EventListener
 
 class FeedbackAdapter(
     context: Activity,
@@ -281,7 +280,7 @@ class FeedbackAdapter(
         }
     }
 
-    interface ClickListener : EventListener {
+    interface ClickListener {
         fun onNotificationClick(notification: Feedback)
     }
 

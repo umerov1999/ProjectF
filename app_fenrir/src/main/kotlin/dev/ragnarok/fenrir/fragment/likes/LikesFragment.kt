@@ -14,11 +14,7 @@ class LikesFragment : AbsOwnersListFragment<LikesListPresenter, ISimpleOwnersVie
         super.onResume()
         val actionBar = supportToolbarFor(this)
         if (actionBar != null) {
-            if (requireArguments().getString(Extra.TYPE) == "stories_view") {
-                actionBar.setTitle(R.string.views)
-            } else {
-                actionBar.setTitle(if ("likes" == requireArguments().getString(Extra.FILTER)) R.string.like else R.string.shared)
-            }
+            actionBar.setTitle(if ("likes" == requireArguments().getString(Extra.FILTER)) R.string.like else R.string.shared)
             actionBar.subtitle = null
         }
         ActivityFeatures.Builder()

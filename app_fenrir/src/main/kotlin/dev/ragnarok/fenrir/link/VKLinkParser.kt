@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.empty
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import java.net.URLDecoder
-import java.util.*
+import java.util.LinkedList
 import java.util.regex.Pattern
 import kotlin.math.abs
 

@@ -8,6 +8,7 @@ import dev.ragnarok.fenrir.activity.gifpager.GifPagerActivity
 import dev.ragnarok.fenrir.activity.photopager.PhotoPagerActivity.Companion.buildArgsForAlbum
 import dev.ragnarok.fenrir.activity.photopager.PhotoPagerActivity.Companion.buildArgsForFave
 import dev.ragnarok.fenrir.activity.photopager.PhotoPagerActivity.Companion.buildArgsForSimpleGallery
+import dev.ragnarok.fenrir.activity.shortvideopager.ShortVideoPagerActivity
 import dev.ragnarok.fenrir.activity.storypager.StoryPagerActivity
 import dev.ragnarok.fenrir.dialog.ResolveDomainDialog
 import dev.ragnarok.fenrir.fragment.BrowserFragment
@@ -36,6 +37,7 @@ import dev.ragnarok.fenrir.fragment.friends.friendsbyphones.FriendsByPhonesFragm
 import dev.ragnarok.fenrir.fragment.friends.friendstabs.FriendsTabsFragment
 import dev.ragnarok.fenrir.fragment.groupchats.GroupChatsFragment
 import dev.ragnarok.fenrir.fragment.likes.LikesFragment
+import dev.ragnarok.fenrir.fragment.likes.storiesview.StoriesViewFragment
 import dev.ragnarok.fenrir.fragment.marketview.MarketViewFragment
 import dev.ragnarok.fenrir.fragment.messages.chatmembers.ChatMembersFragment
 import dev.ragnarok.fenrir.fragment.messages.fwds.FwdsFragment
@@ -691,6 +693,11 @@ object PlaceFactory {
             .setArguments(StoryPagerActivity.buildArgs(accountId, stories, index))
     }
 
+    fun getShortVideoPlace(accountId: Long, ownerId: Long?): Place {
+        return Place(Place.SHORT_VIDEOS)
+            .setArguments(ShortVideoPagerActivity.buildArgs(accountId, ownerId))
+    }
+
     fun getVideoPreviewPlace(
         accountId: Long,
         ownerId: Long,
@@ -724,6 +731,15 @@ object PlaceFactory {
     ): Place {
         return Place(Place.LIKES_AND_COPIES)
             .setArguments(LikesFragment.buildArgs(accountId, type, ownerId, itemId, filter))
+    }
+
+    fun getStoriesViewPlace(
+        accountId: Long,
+        ownerId: Long,
+        storyId: Int
+    ): Place {
+        return Place(Place.STORIES_VIEWS)
+            .setArguments(StoriesViewFragment.buildArgs(accountId, ownerId, storyId))
     }
 
     fun getCommunitiesPlace(accountId: Long, userId: Long): Place {

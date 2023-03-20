@@ -20,7 +20,6 @@ import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
@@ -62,10 +61,8 @@ public class DynamicColorsOptions {
     this.themeOverlay = builder.themeOverlay;
     this.precondition = builder.precondition;
     this.onAppliedCallback = builder.onAppliedCallback;
-    if (builder.contentBasedSourceColor != null) {
-      this.contentBasedSeedColor = builder.contentBasedSourceColor;
-    } else if (builder.contentBasedSourceBitmap != null) {
-      this.contentBasedSeedColor = extractSeedColorFromImage(builder.contentBasedSourceBitmap);
+    if (builder.contentBasedSource != null) {
+      this.contentBasedSeedColor = extractSeedColorFromImage(builder.contentBasedSource);
     }
   }
 
@@ -99,8 +96,7 @@ public class DynamicColorsOptions {
     @StyleRes private int themeOverlay;
     @NonNull private Precondition precondition = ALWAYS_ALLOW;
     @NonNull private OnAppliedCallback onAppliedCallback = NO_OP_CALLBACK;
-    @Nullable private Bitmap contentBasedSourceBitmap;
-    @Nullable private Integer contentBasedSourceColor;
+    @Nullable private Bitmap contentBasedSource;
 
     /** Sets the resource ID of the theme overlay that provides dynamic color definition. */
     @NonNull
@@ -128,8 +124,7 @@ public class DynamicColorsOptions {
 
     /**
      * Sets the content based source image to extract the seed color from to generate Material color
-     * palette. Calling this method will clear any source color previously set with
-     * #setContentBasedSource(int).
+     * palette.
      *
      * @hide
      */
@@ -137,23 +132,7 @@ public class DynamicColorsOptions {
     @NonNull
     @CanIgnoreReturnValue
     public Builder setContentBasedSource(@NonNull Bitmap contentBasedSource) {
-      this.contentBasedSourceBitmap = contentBasedSource;
-      this.contentBasedSourceColor = null;
-      return this;
-    }
-
-    /**
-     * Sets the content based source color to generate Material color palette. Calling this method
-     * will clear any source bitmap previously set with #setContentBasedSource(Bitmap).
-     *
-     * @hide
-     */
-    @RestrictTo(LIBRARY_GROUP)
-    @NonNull
-    @CanIgnoreReturnValue
-    public Builder setContentBasedSource(@ColorInt int contentBasedSource) {
-      this.contentBasedSourceBitmap = null;
-      this.contentBasedSourceColor = contentBasedSource;
+      this.contentBasedSource = contentBasedSource;
       return this;
     }
 

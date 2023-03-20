@@ -21,7 +21,7 @@ import dev.ragnarok.fenrir.util.Utils
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import java.io.File
-import java.util.*
+import java.util.Collections
 
 internal class OtherSettings(context: Context) : IOtherSettings {
     private val app: Context = context.applicationContext

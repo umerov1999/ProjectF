@@ -24,7 +24,6 @@ import dev.ragnarok.fenrir.view.mozaik.MozaikLayout
 import dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.addZoomableView
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.removeZoomableView
-import java.util.*
 
 class PhotosViewHelper internal constructor(
     private val context: Context,
@@ -102,7 +101,7 @@ class PhotosViewHelper internal constructor(
         var images = photos
         if (container is MozaikLayout) {
             if (photos.size > 10) {
-                images = ArrayList<PostImage>(10)
+                images = ArrayList(10)
                 for (s in 0..9) images.add(photos[s])
             }
         }

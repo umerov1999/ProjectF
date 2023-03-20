@@ -40,6 +40,7 @@ import dev.ragnarok.fenrir.activity.EnterPinActivity.Companion.getClass
 import dev.ragnarok.fenrir.activity.gifpager.GifPagerActivity
 import dev.ragnarok.fenrir.activity.photopager.PhotoPagerActivity.Companion.newInstance
 import dev.ragnarok.fenrir.activity.qr.CameraScanActivity
+import dev.ragnarok.fenrir.activity.shortvideopager.ShortVideoPagerActivity
 import dev.ragnarok.fenrir.activity.storypager.StoryPagerActivity
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.dialog.ResolveDomainDialog
@@ -86,6 +87,7 @@ import dev.ragnarok.fenrir.fragment.friends.friendstabs.FriendsTabsFragment
 import dev.ragnarok.fenrir.fragment.gifts.GiftsFragment
 import dev.ragnarok.fenrir.fragment.groupchats.GroupChatsFragment
 import dev.ragnarok.fenrir.fragment.likes.LikesFragment
+import dev.ragnarok.fenrir.fragment.likes.storiesview.StoriesViewFragment
 import dev.ragnarok.fenrir.fragment.localserver.filemanagerremote.FileManagerRemoteFragment
 import dev.ragnarok.fenrir.fragment.localserver.photoslocalserver.PhotosLocalServerFragment
 import dev.ragnarok.fenrir.fragment.logs.LogsFragment
@@ -615,7 +617,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     val menus = ModalBottomSheetDialogFragment.Builder()
                     menus.add(
                         OptionRequest(
-                            R.id.button_ok,
+                            0,
                             getString(R.string.set_offline),
                             R.drawable.offline,
                             true
@@ -623,7 +625,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     )
                     menus.add(
                         OptionRequest(
-                            R.id.button_cancel,
+                            1,
                             getString(R.string.open_clipboard_url),
                             R.drawable.web,
                             false
@@ -631,7 +633,25 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     )
                     menus.add(
                         OptionRequest(
-                            R.id.action_preferences,
+                            2,
+                            getString(R.string.stories),
+                            R.drawable.story_outline,
+                            true
+                        )
+                    )
+                    if (Utils.isOfficialVKCurrent) {
+                        menus.add(
+                            OptionRequest(
+                                3,
+                                getString(R.string.clips),
+                                R.drawable.clip_outline,
+                                true
+                            )
+                        )
+                    }
+                    menus.add(
+                        OptionRequest(
+                            4,
                             getString(R.string.settings),
                             R.drawable.preferences,
                             true
@@ -639,7 +659,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     )
                     menus.add(
                         OptionRequest(
-                            R.id.button_camera,
+                            5,
                             getString(R.string.scan_qr),
                             R.drawable.qr_code,
                             false
@@ -650,8 +670,8 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                         "left_options",
                         object : ModalBottomSheetDialogFragment.Listener {
                             override fun onModalOptionSelected(option: Option) {
-                                when {
-                                    option.id == R.id.button_ok -> {
+                                when (option.id) {
+                                    0 -> {
                                         mCompositeDisposable.add(InteractorFactory.createAccountInteractor()
                                             .setOffline(
                                                 Settings.get().accounts().current
@@ -664,7 +684,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                                             })
                                     }
 
-                                    option.id == R.id.button_cancel -> {
+                                    1 -> {
                                         val clipBoard =
                                             getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
                                         if (clipBoard != null && clipBoard.primaryClip != null && (clipBoard.primaryClip?.itemCount
@@ -682,12 +702,42 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                                         }
                                     }
 
-                                    option.id == R.id.action_preferences -> {
+                                    2 -> {
+                                        mCompositeDisposable.add(InteractorFactory.createStoriesInteractor()
+                                            .getStory(
+                                                Settings.get().accounts().current,
+                                                null
+                                            )
+                                            .fromIOToMain()
+                                            .subscribe({
+                                                if (it.isEmpty()) {
+                                                    createCustomToast(this@MainActivity).showToastError(
+                                                        R.string.list_is_empty
+                                                    )
+                                                }
+                                                PlaceFactory.getHistoryVideoPreviewPlace(
+                                                    mAccountId,
+                                                    ArrayList(it),
+                                                    0
+                                                ).tryOpenWith(this@MainActivity)
+                                            }) {
+                                                createCustomToast(this@MainActivity).showToastThrowable(
+                                                    it
+                                                )
+                                            })
+                                    }
+
+                                    3 -> {
+                                        PlaceFactory.getShortVideoPlace(mAccountId, null)
+                                            .tryOpenWith(this@MainActivity)
+                                    }
+
+                                    4 -> {
                                         PlaceFactory.getPreferencesPlace(mAccountId)
                                             .tryOpenWith(this@MainActivity)
                                     }
 
-                                    option.id == R.id.button_camera && FenrirNative.isNativeLoaded -> {
+                                    5 -> {
                                         val intent =
                                             Intent(
                                                 this@MainActivity,
@@ -1284,6 +1334,11 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 StoryPagerActivity.newInstance(this, args)
             )
 
+            Place.SHORT_VIDEOS -> place.launchActivityForResult(
+                this,
+                ShortVideoPagerActivity.newInstance(this, args)
+            )
+
             Place.FRIENDS_AND_FOLLOWERS -> attachToFront(FriendsTabsFragment.newInstance(args))
             Place.EXTERNAL_LINK -> attachToFront(BrowserFragment.newInstance(args))
             Place.DOC_PREVIEW -> {
@@ -1480,6 +1535,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
             Place.NOTIFICATION_SETTINGS -> attachToFront(NotificationPreferencesFragment())
             Place.LIKES_AND_COPIES -> attachToFront(LikesFragment.newInstance(args))
+            Place.STORIES_VIEWS -> attachToFront(StoriesViewFragment.newInstance(args))
             Place.CREATE_PHOTO_ALBUM, Place.EDIT_PHOTO_ALBUM -> {
                 val createPhotoAlbumFragment = CreatePhotoAlbumFragment.newInstance(args)
                 attachToFront(createPhotoAlbumFragment)

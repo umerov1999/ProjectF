@@ -46,7 +46,6 @@ import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.*
 import dev.ragnarok.fenrir.util.*
-import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.PersistentLogger.logThrowable
 import dev.ragnarok.fenrir.util.Utils.addElementToList
 import dev.ragnarok.fenrir.util.Utils.countOfSelection
@@ -67,7 +66,6 @@ import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.functions.Predicate
 import java.io.*
 import java.lang.ref.WeakReference
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 class ChatPresenter(
@@ -239,7 +237,7 @@ class ChatPresenter(
         )
 
         appendDisposable(
-            uploadManager.obseveStatus()
+            uploadManager.observeStatus()
                 .toMainThread()
                 .subscribe({ onUploadStatusChange(it) }, ignore())
         )
@@ -332,7 +330,7 @@ class ChatPresenter(
 
             }
         }
-        fireForwardToHereClick(ArrayList(Collections.singleton(data[position])))
+        fireForwardToHereClick(arrayListOf(data[position]))
     }
 
     fun fireTranscript(voiceMessageId: String, messageId: Int) {
@@ -445,8 +443,9 @@ class ChatPresenter(
 
         if (!refresh) {
             loadAllCachedData()
+        } else {
+            requestAtStart()
         }
-        requestAtStart()
     }
 
     private fun onUploadProgressUpdate(data: List<IUploadManager.IProgressUpdate>) {
@@ -631,12 +630,13 @@ class ChatPresenter(
             .fromIOToMain()
             .subscribe(
                 { onCachedDataReceived(it) },
-                { onCachedDataReceived(Collections.emptyList()) })
+                { onCachedDataReceived(emptyList()) })
     }
 
     private fun onCachedDataReceived(data: List<Message>) {
         setCacheLoadingNow(false)
         onAllDataLoaded(data, appendToList = false, isCache = true)
+        requestAtStart()
     }
 
     private fun onNetDataReceived(messages: List<Message>, startMessageId: Int?) {
@@ -838,7 +838,7 @@ class ChatPresenter(
         }
         stickersWordsDisplayDisposable.dispose()
         if (s.isNullOrEmpty()) {
-            view?.updateStickers(Collections.emptyList())
+            view?.updateStickers(emptyList())
             return
         }
         stickersWordsDisplayDisposable =
@@ -1853,7 +1853,7 @@ class ChatPresenter(
         appendDisposable(
             messagesRepository.edit(
                 messagesOwnerId, message, "Ragnarök",
-                Collections.emptyList(), false
+                emptyList(), false
             )
                 .fromIOToMain()
                 .subscribe({
@@ -2524,7 +2524,7 @@ class ChatPresenter(
                 pFileUri = Uri.parse(video.getData().toString())
             }
 
-            uploadManager.enqueue(Collections.singletonList(intents))
+            uploadManager.enqueue(listOf(intents))
         }
     }
 

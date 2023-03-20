@@ -490,7 +490,7 @@ class VideosListPresenter(
             }
             .observeOn(provideMainThreadScheduler())
             .subscribe { onUploadResults(it) })
-        appendDisposable(uploadManager.obseveStatus()
+        appendDisposable(uploadManager.observeStatus()
             .observeOn(provideMainThreadScheduler())
             .subscribe { onUploadStatusUpdate(it) })
         appendDisposable(uploadManager.observeProgress()

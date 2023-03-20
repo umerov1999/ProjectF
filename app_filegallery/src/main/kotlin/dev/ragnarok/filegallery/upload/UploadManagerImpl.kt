@@ -291,7 +291,7 @@ class UploadManagerImpl(
         return addingProcessor.onBackpressureBuffer()
     }
 
-    override fun obseveStatus(): Flowable<Upload> {
+    override fun observeStatus(): Flowable<Upload> {
         return statusProcessor.onBackpressureBuffer()
     }
 

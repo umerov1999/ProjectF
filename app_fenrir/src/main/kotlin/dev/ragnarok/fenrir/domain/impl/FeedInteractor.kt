@@ -28,7 +28,7 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.VKOwnIds
 import io.reactivex.rxjava3.core.Single
-import java.util.*
+import java.util.Locale
 
 class FeedInteractor(
     private val networker: INetworker,

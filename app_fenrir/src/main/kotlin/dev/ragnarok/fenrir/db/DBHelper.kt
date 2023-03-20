@@ -86,7 +86,6 @@ class DBHelper private constructor(context: Context, aid: Long) :
     override fun onCreate(db: SQLiteDatabase) {
         createUsersTable(db)
         createMessagesTable(db)
-        createZeroMessageProtectionTriggers(db)
         createAttachmentsTable(db)
         createDialogTable(db)
         createPeersTable(db)
@@ -118,16 +117,22 @@ class DBHelper private constructor(context: Context, aid: Long) :
         createCountriesTable(db)
         createFeedListsTable(db)
         createFriendListsTable(db)
-        //createDeleteWallCopyHistoryTrigger(db)
         createKeysTableIfNotExist(db)
+
+        createZeroMessageProtectionTriggers(db)
+        //createAttachmentsTriggers(db)
     }
 
     private fun dropAllTables(db: SQLiteDatabase) {
         db.beginTransaction()
 
         // сначала удаляем триггеры, потому что они зависят от таблиц
-        //db.execSQL("DROP TRIGGER IF EXISTS t_delete_wall_copy_history");
-        //db.execSQL("DROP TRIGGER IF EXISTS t_delete_feed_copy_history");
+        //db.execSQL("DROP TRIGGER IF EXISTS t_delete_attachments_wall")
+        //db.execSQL("DROP TRIGGER IF EXISTS t_delete_attachments_messages")
+        //db.execSQL("DROP TRIGGER IF EXISTS t_delete_attachments_comments")
+        db.execSQL("DROP TRIGGER IF EXISTS zero_msg_upd")
+        db.execSQL("DROP TRIGGER IF EXISTS zero_msg_del")
+
         db.execSQL("DROP TABLE IF EXISTS " + MessagesAttachmentsColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + CommentsAttachmentsColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + CommentsColumns.TABLENAME)
@@ -136,10 +141,6 @@ class DBHelper private constructor(context: Context, aid: Long) :
         db.execSQL("DROP TABLE IF EXISTS " + DocColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + GroupColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + GroupsDetColumns.TABLENAME)
-
-        //messages
-        db.execSQL("DROP TRIGGER IF EXISTS zero_msg_upd")
-        db.execSQL("DROP TRIGGER IF EXISTS zero_msg_del")
         db.execSQL("DROP TABLE IF EXISTS " + MessageColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + NewsColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + PhotoAlbumsColumns.TABLENAME)
@@ -632,16 +633,36 @@ class DBHelper private constructor(context: Context, aid: Long) :
         db.execSQL(sql)
     }
 
-    /* Триггер, который удаляет историю репостов при удалении самого поста */ /*private void createDeleteWallCopyHistoryTrigger(SQLiteDatabase db) {
-        String sql = "CREATE TRIGGER [t_delete_wall_copy_history] AFTER DELETE ON [" + PostsColumns.TABLENAME + "] " +
-                " WHEN [old].[" + PostsColumns.HAS_COPY_HISTORY + "] = 1 " +
-                " BEGIN " +
-                " DELETE FROM [" + PostsColumns.TABLENAME + "] " +
-                " WHERE [" + PostsColumns.COPY_HISTORY_OF + "] = [old].[" + PostsColumns._ID + "] " +
-                " AND [" + PostsColumns.COPY_PARENT_TYPE + "] = " + PostsColumns.COPY_PARENT_TYPE_WALL + ";" +
-                " END;";
-        db.execSQL(sql);
-    }*/
+    /*
+    private fun createAttachmentsTriggers(db: SQLiteDatabase) {
+        var sql =
+            "CREATE TRIGGER [t_delete_attachments_wall] AFTER DELETE ON [" + PostsColumns.TABLENAME + "] " +
+                    " WHEN [old].[" + PostsColumns.ATTACHMENTS_COUNT + "] > 0 " +
+                    " BEGIN " +
+                    " DELETE FROM [" + WallAttachmentsColumns.TABLENAME + "] " +
+                    " WHERE [" + WallAttachmentsColumns.P_ID + "] = [old].[" + PostsColumns.POST_ID + "] ;" +
+                    " END;"
+        db.execSQL(sql)
+
+        sql =
+            "CREATE TRIGGER [t_delete_attachments_messages] AFTER DELETE ON [" + MessageColumns.TABLENAME + "] " +
+                    " WHEN [old].[" + MessageColumns.HAS_ATTACHMENTS + "] > 0 " +
+                    " BEGIN " +
+                    " DELETE FROM [" + MessagesAttachmentsColumns.TABLENAME + "] " +
+                    " WHERE [" + MessagesAttachmentsColumns.M_ID + "] = [old].[" + MessageColumns._ID + "] ;" +
+                    " END;"
+        db.execSQL(sql)
+
+        sql =
+            "CREATE TRIGGER [t_delete_attachments_comments] AFTER DELETE ON [" + CommentsColumns.TABLENAME + "] " +
+                    " WHEN [old].[" + CommentsColumns.ATTACHMENTS_COUNT + "] > 0 " +
+                    " BEGIN " +
+                    " DELETE FROM [" + CommentsAttachmentsColumns.TABLENAME + "] " +
+                    " WHERE [" + CommentsAttachmentsColumns.C_ID + "] = [old].[" + CommentsColumns.COMMENT_ID + "] ;" +
+                    " END;"
+        db.execSQL(sql)
+    }
+     */
 
     private fun createNewsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + NewsColumns.TABLENAME + "] (\n" +

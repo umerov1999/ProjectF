@@ -9,25 +9,23 @@ import java.io.File
 import java.io.IOException
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import kotlin.random.Random
 
 object FileUtil {
-    private val Random = Random()
+    private val random = Random(System.nanoTime())
     private var PHOTO_DATE_FORMAT: DateFormat =
         SimpleDateFormat("yyyyMMdd_HHmmss", Utils.appLocale)
-
 
     fun updateDateLang() {
         PHOTO_DATE_FORMAT = SimpleDateFormat("yyyyMMdd_HHmmss", Utils.appLocale)
     }
-
 
     fun getExportedUriForFile(context: Context, file: File): Uri {
         return FileProvider.getUriForFile(context, Constants.FILE_PROVIDER_AUTHORITY, file)
     }
 
     @Suppress("DEPRECATION")
-
     @Throws(IOException::class)
     fun createImageFile(): File {
         val timeStamp = PHOTO_DATE_FORMAT.format(Date())
@@ -39,8 +37,7 @@ object FileUtil {
         var targetFile: File? = null
         var noExist = false
         while (!noExist) {
-            val randomInt = Random.nextInt(1000000)
-            val fileName = "Captured_" + timeStamp + "_" + randomInt + ".jpg"
+            val fileName = "Captured_" + timeStamp + "_" + random.nextInt(1000000) + ".jpg"
             val file = File(directory, fileName)
             if (!file.exists()) {
                 targetFile = file

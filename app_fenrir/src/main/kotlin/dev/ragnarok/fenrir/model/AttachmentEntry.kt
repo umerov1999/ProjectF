@@ -6,8 +6,8 @@ import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
-import java.util.Random
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.random.Random
 
 class AttachmentEntry : Parcelable {
     val id: Int
@@ -66,7 +66,7 @@ class AttachmentEntry : Parcelable {
     }
 
     companion object {
-        private val ID_GEN = AtomicInteger(Random().nextInt(5000))
+        private val ID_GEN = AtomicInteger(Random(System.nanoTime()).nextInt(5000))
 
         @JvmField
         val CREATOR: Parcelable.Creator<AttachmentEntry> =

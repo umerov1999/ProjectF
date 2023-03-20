@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.api.services
 
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.CustomResponse
 import dev.ragnarok.fenrir.api.model.upload.UploadAudioDto
 import dev.ragnarok.fenrir.api.model.upload.UploadChatPhotoDto
 import dev.ragnarok.fenrir.api.model.upload.UploadDocDto
@@ -33,8 +34,12 @@ class IUploadService : IServiceRest() {
     fun uploadStoryRx(
         server: String,
         file: MultipartBody.Part
-    ): Single<BaseResponse<UploadStoryDto>> {
-        return rest.doMultipartFormFullUrl(server, file, base(UploadStoryDto.serializer()))
+    ): Single<CustomResponse<UploadStoryDto>> {
+        return rest.doMultipartFormFullUrl(
+            server,
+            file,
+            CustomResponse.serializer(UploadStoryDto.serializer())
+        )
     }
 
     fun uploadVideoRx(server: String, file: MultipartBody.Part): Single<UploadVideoDto> {

@@ -475,6 +475,7 @@ class VKApiUser
         var market = NO_COUNTER
         var market_services = NO_COUNTER
         var narratives = NO_COUNTER
+        var clips = NO_COUNTER
         var gifts = NO_COUNTER
 
         companion object {

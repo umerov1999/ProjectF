@@ -1058,7 +1058,9 @@ class CommentsPresenter(
         cacheLoadingDisposable.add(
             interactor.getAllCachedData(accountId, commented)
                 .fromIOToMain()
-                .subscribe({ onCachedDataReceived(it) }, ignore())
+                .subscribe({ onCachedDataReceived(it) }, {
+                    requestInitialData()
+                })
         )
     }
 
@@ -1099,6 +1101,7 @@ class CommentsPresenter(
         if (!directionDesc) {
             view?.scrollToPosition(data.size - 1)
         }
+        requestInitialData()
     }
 
     @SuppressLint("CheckResult")
@@ -1167,10 +1170,6 @@ class CommentsPresenter(
         directionDesc = Settings.get().other().isCommentsDesc
         this.CommentThread = CommentThread
         data = ArrayList()
-        if (focusToComment == null && CommentThread == null) {
-            // если надо сфокусироваться на каком-то комментарии - не грузим из кэша
-            loadCachedData()
-        }
         val attachmentsRepository = attachmentsRepository
         appendDisposable(attachmentsRepository
             .observeAdding()
@@ -1189,7 +1188,12 @@ class CommentsPresenter(
             .observeOn(provideMainThreadScheduler())
             .subscribe({ update -> onCommentMinorUpdate(update) }) { it.printStackTrace() })
         restoreDraftCommentSync()
-        requestInitialData()
         loadAuthorData()
+        if (focusToComment == null && CommentThread == null) {
+            // если надо сфокусироваться на каком-то комментарии - не грузим из кэша
+            loadCachedData()
+        } else {
+            requestInitialData()
+        }
     }
 }

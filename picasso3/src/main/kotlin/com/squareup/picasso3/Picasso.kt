@@ -49,7 +49,7 @@ import okhttp3.Cache
 import okhttp3.OkHttpClient
 import java.io.File
 import java.io.IOException
-import java.util.*
+import java.util.WeakHashMap
 import java.util.concurrent.ExecutorService
 
 /**

@@ -7,11 +7,10 @@ import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.activity.ValidateActivity
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.subjects.PublishSubject
-import java.util.*
+import java.util.Collections
 
-class ValidateProvider(private val app: Context, private val uiScheduler: Scheduler) :
+class ValidateProvider(private val app: Context) :
     IValidateProvider {
     private val entryMap: MutableMap<String, Entry> = Collections.synchronizedMap(HashMap())
     private val cancelingNotifier: PublishSubject<String> = PublishSubject.create()

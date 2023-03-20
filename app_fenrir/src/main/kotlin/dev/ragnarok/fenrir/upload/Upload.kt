@@ -12,8 +12,8 @@ import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.util.ParcelUtils.readObjectLong
 import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectLong
 import dev.ragnarok.fenrir.writeTypedObjectCompat
-import java.util.Random
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.random.Random
 
 open class Upload : AbsModel, Identificable {
     val accountId: Long
@@ -180,6 +180,6 @@ open class Upload : AbsModel, Identificable {
                 return arrayOfNulls(size)
             }
         }
-        val IDGEN = AtomicInteger(Random().nextInt(5000))
+        val IDGEN = AtomicInteger(Random(System.nanoTime()).nextInt(5000))
     }
 }

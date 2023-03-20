@@ -16,9 +16,9 @@ import okhttp3.Request
 import java.io.IOException
 import java.security.*
 import java.security.interfaces.RSAPrivateKey
-import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.experimental.and
+import kotlin.random.Random
 
 object TokenModKate {
     private const val rid = 1
@@ -69,7 +69,7 @@ object TokenModKate {
                 "4031819488942003867:1675892049294949499",
                 "3665846370517392830:3012248377502379040"
             )
-            val str3 = "AidLogin " + strArr[Random().nextInt(strArr.size - 1)]
+            val str3 = "AidLogin " + strArr[Random(System.nanoTime()).nextInt(strArr.size - 1)]
             val sb3 = receipt(str3)
             if (sb3.contains("REGISTRATION_ERROR")) {
                 println("Token register fail")

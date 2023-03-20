@@ -11,7 +11,6 @@ import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
-import java.util.EventListener
 
 class DocsAsImagesAdapter(data: MutableList<Document>) :
     RecyclerBindableAdapter<Document, DocsAsImagesAdapter.DocViewHolder>(data) {
@@ -54,7 +53,7 @@ class DocsAsImagesAdapter(data: MutableList<Document>) :
         return R.layout.item_doc_as_image
     }
 
-    interface ActionListener : EventListener {
+    interface ActionListener {
         fun onDocClick(index: Int, doc: Document)
         fun onDocLongClick(index: Int, doc: Document): Boolean
     }

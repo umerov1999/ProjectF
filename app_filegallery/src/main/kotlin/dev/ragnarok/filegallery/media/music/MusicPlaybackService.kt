@@ -228,7 +228,7 @@ class MusicPlaybackService : Service() {
         audioEffectsIntent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId)
         audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
         sendBroadcast(audioEffectsIntent)
-        mAlarmManager?.cancel(mShutdownIntent)
+        mShutdownIntent?.let { mAlarmManager?.cancel(it) }
         mPlayer?.release()
         mMediaSession?.release()
         mNotificationHelper?.killNotification()
@@ -340,10 +340,12 @@ class MusicPlaybackService : Service() {
 
     private fun scheduleDelayedShutdown() {
         if (Constants.IS_DEBUG) Log.v(TAG, "Scheduling shutdown in $IDLE_DELAY ms")
-        mAlarmManager?.set(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + IDLE_DELAY,
-            mShutdownIntent
-        )
+        mShutdownIntent?.let {
+            mAlarmManager?.set(
+                AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + IDLE_DELAY,
+                it
+            )
+        }
         mShutdownScheduled = true
     }
 
@@ -353,7 +355,7 @@ class MusicPlaybackService : Service() {
             "Cancelling delayed shutdown, scheduled = $mShutdownScheduled"
         )
         if (mShutdownScheduled) {
-            mAlarmManager?.cancel(mShutdownIntent)
+            mShutdownIntent?.let { mAlarmManager?.cancel(it) }
             mShutdownScheduled = false
         }
     }

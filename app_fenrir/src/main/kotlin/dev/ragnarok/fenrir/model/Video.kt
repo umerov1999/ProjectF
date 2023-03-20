@@ -85,6 +85,8 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         private set
     var msgPeerId = 0L
         private set
+    var optionalOwner: Owner? = null
+        private set
 
     constructor()
     internal constructor(parcel: Parcel) {
@@ -126,6 +128,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         isFavorite = parcel.getBoolean()
         msgId = parcel.readInt()
         msgPeerId = parcel.readLong()
+        optionalOwner = ParcelableOwnerWrapper.readOwner(parcel)
     }
 
     internal constructor(parcel: ParcelNative) {
@@ -167,6 +170,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         isFavorite = parcel.readBoolean()
         msgId = parcel.readInt()
         msgPeerId = parcel.readLong()
+        optionalOwner = ParcelableOwnerWrapper.readOwner(parcel)
     }
 
     @AbsModelType
@@ -223,6 +227,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         parcel.putBoolean(isFavorite)
         parcel.writeInt(msgId)
         parcel.writeLong(msgPeerId)
+        ParcelableOwnerWrapper.writeOwner(parcel, flags, optionalOwner)
     }
 
     override fun writeToParcelNative(dest: ParcelNative) {
@@ -264,6 +269,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         dest.writeBoolean(isFavorite)
         dest.writeInt(msgId)
         dest.writeLong(msgPeerId)
+        ParcelableOwnerWrapper.writeOwner(dest, optionalOwner)
     }
 
     fun setCanAdd(canAdd: Boolean): Video {
@@ -447,6 +453,11 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
 
     fun setMsgPeerId(msgPeerId: Long): Video {
         this.msgPeerId = msgPeerId
+        return this
+    }
+
+    fun setOptionalOwner(optionalOwner: Owner?): Video {
+        this.optionalOwner = optionalOwner
         return this
     }
 

@@ -50,7 +50,6 @@ import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
-import java.util.Collections
 import java.util.concurrent.TimeUnit
 
 class FileManagerRemoteFragment :
@@ -154,7 +153,7 @@ class FileManagerRemoteFragment :
         }
         ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
 
-        mAdapter = FileManagerRemoteAdapter(requireActivity(), Collections.emptyList())
+        mAdapter = FileManagerRemoteAdapter(requireActivity(), emptyList())
         mAdapter?.setClickListener(this)
         mRecyclerView?.adapter = mAdapter
 
