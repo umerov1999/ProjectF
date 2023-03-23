@@ -41,7 +41,7 @@ class VKApiVideo : VKApiAttachment, Commentable, Likeable, Copyable, IIdComparab
     /**
      * Duration of the video in seconds.
      */
-    var duration = 0
+    var duration = 0L
 
     /**
      * String with video+vid key.

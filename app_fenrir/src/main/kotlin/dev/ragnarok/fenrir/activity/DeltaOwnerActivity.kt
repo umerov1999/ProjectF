@@ -187,7 +187,6 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
             )
 
         val viewPager: ViewPager2 = findViewById(R.id.delta_pager)
-        viewPager.offscreenPageLimit = 1
         viewPager.setPageTransformer(
             Utils.createPageTransform(
                 Settings.get().main().viewpager_page_transform

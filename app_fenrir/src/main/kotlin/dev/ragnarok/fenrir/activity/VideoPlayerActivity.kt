@@ -54,7 +54,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
     VideoControllerView.MediaPlayerControl, IVideoPlayer.IVideoSizeChangeListener, AppStyleable {
     private val mCompositeDisposable = CompositeDisposable()
     private var mDecorView: View? = null
-    private var mSpeed: ImageView? = null
+    private var mPlaySpeed: ImageView? = null
     private var mControllerView: VideoControllerView? = null
     private var mSurfaceView: ExpandableSurfaceView? = null
     private var mPlayer: IVideoPlayer? = null
@@ -251,17 +251,17 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         if (seekSave > 0) {
             mPlayer?.seekTo(seekSave)
         }
-        mSpeed = findViewById(R.id.toolbar_play_speed)
+        mPlaySpeed = findViewById(R.id.toolbar_play_speed)
         Utils.setTint(
-            mSpeed,
+            mPlaySpeed,
             if (mPlayer?.isPlaybackSpeed == true) CurrentTheme.getColorPrimary(this) else Color.parseColor(
                 "#ffffff"
             )
         )
-        mSpeed?.setOnClickListener {
+        mPlaySpeed?.setOnClickListener {
             mPlayer?.togglePlaybackSpeed()
             Utils.setTint(
-                mSpeed,
+                mPlaySpeed,
                 if (mPlayer?.isPlaybackSpeed == true) CurrentTheme.getColorPrimary(this) else Color.parseColor(
                     "#ffffff"
                 )

@@ -73,7 +73,7 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
             .setTitle(cursor.getString(VideoColumns.TITLE))
             .setDescription(cursor.getString(VideoColumns.DESCRIPTION))
             .setLink(cursor.getString(VideoColumns.LINK))
-            .setDuration(cursor.getInt(VideoColumns.DURATION))
+            .setDuration(cursor.getLong(VideoColumns.DURATION))
             .setDate(cursor.getLong(VideoColumns.DATE))
             .setAddingDate(cursor.getLong(VideoColumns.ADDING_DATE))
             .setViews(cursor.getInt(VideoColumns.VIEWS))

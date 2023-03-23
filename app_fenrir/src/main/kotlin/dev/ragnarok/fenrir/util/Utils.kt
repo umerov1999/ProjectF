@@ -1520,7 +1520,7 @@ object Utils {
 
     fun createPageTransform(@Transformers_Types type: Int): ViewPager2.PageTransformer? {
         when (type) {
-            Transformers_Types.SLIDER_TRANSFORMER -> return SliderTransformer(1)
+            Transformers_Types.SLIDER_TRANSFORMER -> return SliderTransformer(ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT)
             Transformers_Types.CLOCK_SPIN_TRANSFORMER -> return ClockSpinTransformer()
             Transformers_Types.BACKGROUND_TO_FOREGROUND_TRANSFORMER -> return BackgroundToForegroundTransformer()
             Transformers_Types.CUBE_IN_DEPTH_TRANSFORMER -> return CubeInDepthTransformer()

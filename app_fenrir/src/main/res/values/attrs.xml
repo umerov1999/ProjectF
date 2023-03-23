@@ -218,5 +218,6 @@
         <attr name="pressedCircleColor" format="color" />
         <attr name="applyAlpha" format="boolean" />
         <attr name="lineHeight" format="dimension" />
+        <attr name="noCircle" format="boolean" />
     </declare-styleable>
 </resources>

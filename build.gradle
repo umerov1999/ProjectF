@@ -56,14 +56,14 @@ buildscript {
     ext.autoValueVersion = "1.10.1"
 
     //common libraries
-    ext.kotlin_version = "1.8.20-RC"
+    ext.kotlin_version = "1.8.20-RC2"
     ext.kotlin_coroutines = "1.7.0-Beta"
     ext.kotlin_serializer = "1.5.0"
     ext.okhttpLibraryVersion = "5.0.0-alpha.11"
     ext.okioVersion = "3.3.0"
     ext.rxJavaVersion = "3.1.6"
     ext.guavaVersion = "31.1-android"
-    ext.exoLibraryVersion = "2.18.4"
+    ext.exoLibraryVersion = "2.18.5"
     ext.errorproneVersion = "2.15.0"
     ext.checkerCompatQualVersion = "2.5.5"
     ext.checkerQualAndroidVersion = "3.32.0"

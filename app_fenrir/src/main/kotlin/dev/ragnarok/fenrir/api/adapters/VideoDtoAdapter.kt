@@ -22,7 +22,7 @@ class VideoDtoAdapter : AbsAdapter<VKApiVideo>("VKApiVideo") {
         dto.owner_id = optLong(root, "owner_id")
         dto.title = optString(root, "title")
         dto.description = optString(root, "description")
-        dto.duration = optInt(root, "duration")
+        dto.duration = optLong(root, "duration")
         dto.link = optString(root, "link")
         dto.date = optLong(root, "date")
         dto.adding_date = optLong(root, "adding_date")

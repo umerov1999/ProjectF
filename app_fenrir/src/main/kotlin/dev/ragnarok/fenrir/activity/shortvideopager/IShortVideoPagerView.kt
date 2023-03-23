@@ -14,7 +14,7 @@ interface IShortVideoPagerView : IMvpView, IErrorView, IToastView {
     fun setPreparingProgressVisible(position: Int, preparing: Boolean)
     fun attachDisplayToPlayer(adapterPosition: Int, storyPlayer: IStoryPlayer?)
     fun setToolbarTitle(@StringRes titleRes: Int, vararg params: Any?)
-    fun setToolbarSubtitle(shortVideo: Video, account_id: Long)
+    fun setToolbarSubtitle(shortVideo: Video, account_id: Long, isPlaySpeed: Boolean)
     fun onShare(shortVideo: Video, account_id: Long)
     fun configHolder(adapterPosition: Int, progress: Boolean, aspectRatioW: Int, aspectRatioH: Int)
     fun onNext()

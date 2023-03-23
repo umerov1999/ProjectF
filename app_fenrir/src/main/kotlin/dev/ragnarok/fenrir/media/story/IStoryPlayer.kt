@@ -4,6 +4,7 @@ import android.view.SurfaceHolder
 import dev.ragnarok.fenrir.model.VideoSize
 
 interface IStoryPlayer {
+    fun updateSource(url: String?)
     val videoSize: VideoSize?
     fun play()
     fun pause()
@@ -14,6 +15,8 @@ interface IStoryPlayer {
     fun removeVideoSizeChangeListener(listener: IVideoSizeChangeListener)
     fun removeStatusChangeListener(listener: IStatusChangeListener)
     var playerStatus: Int
+    val isPlaybackSpeed: Boolean
+    fun setPlaybackSpeed(isSpeed: Boolean)
 
     interface IStatus {
         companion object {

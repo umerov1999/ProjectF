@@ -59,7 +59,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         private set
     var isRepeat = false
         private set
-    var duration = 0
+    var duration = 0L
         private set
     var privacyView: SimplePrivacy? = null
         private set
@@ -119,7 +119,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         live = parcel.readString()
         platform = parcel.readString()
         isRepeat = parcel.getBoolean()
-        duration = parcel.readInt()
+        duration = parcel.readLong()
         privacyView = parcel.readTypedObjectCompat(SimplePrivacy.CREATOR)
         privacyComment = parcel.readTypedObjectCompat(SimplePrivacy.CREATOR)
         isCanEdit = parcel.getBoolean()
@@ -161,7 +161,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         live = parcel.readString()
         platform = parcel.readString()
         isRepeat = parcel.readBoolean()
-        duration = parcel.readInt()
+        duration = parcel.readLong()
         privacyView = parcel.readParcelable(SimplePrivacy.NativeCreator)
         privacyComment = parcel.readParcelable(SimplePrivacy.NativeCreator)
         isCanEdit = parcel.readBoolean()
@@ -218,7 +218,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         parcel.writeString(live)
         parcel.writeString(platform)
         parcel.putBoolean(isRepeat)
-        parcel.writeInt(duration)
+        parcel.writeLong(duration)
         parcel.writeTypedObjectCompat(privacyView, flags)
         parcel.writeTypedObjectCompat(privacyComment, flags)
         parcel.putBoolean(isCanEdit)
@@ -260,7 +260,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         dest.writeString(live)
         dest.writeString(platform)
         dest.writeBoolean(isRepeat)
-        dest.writeInt(duration)
+        dest.writeLong(duration)
         dest.writeParcelable(privacyView)
         dest.writeParcelable(privacyComment)
         dest.writeBoolean(isCanEdit)
@@ -441,7 +441,7 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun setDuration(duration: Int): Video {
+    fun setDuration(duration: Long): Video {
         this.duration = duration
         return this
     }

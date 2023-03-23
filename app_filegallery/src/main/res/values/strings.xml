@@ -245,7 +245,6 @@
     <string name="durationformatshort" translatable="false"><xliff:g id="format">%2$d:%3$02d</xliff:g></string>
     <!-- Do not translate. Duration format for duration >= 1 hour -->
     <string name="durationformatlong" translatable="false"><xliff:g id="format">%1$d:%2$02d:%3$02d</xliff:g></string>
-    <string name="equalizer_closed">Equalizer closed</string>
     <string name="no_system_equalizer">No system equalizer</string>
     <string name="equalizer">Equalizer</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>

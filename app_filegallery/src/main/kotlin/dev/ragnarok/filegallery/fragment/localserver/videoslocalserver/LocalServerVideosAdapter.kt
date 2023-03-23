@@ -47,7 +47,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
         val video = data[position]
         holder.title.text = video.title
         holder.description.text = video.description
-        holder.videoLenght.text = Utils.BytesToSize(video.duration.toLong())
+        holder.videoLenght.text = Utils.BytesToSize(video.duration)
         val photoUrl = video.image
         if (photoUrl.nonNullNoEmpty()) {
             with()

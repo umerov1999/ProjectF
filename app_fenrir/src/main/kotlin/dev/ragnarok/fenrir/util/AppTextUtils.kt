@@ -168,6 +168,19 @@ object AppTextUtils {
         }
     }
 
+    fun getDurationString(seconds: Long): String {
+        var pSeconds = seconds
+        val hours = pSeconds / 3600
+        val minutes = pSeconds % 3600 / 60
+        pSeconds %= 60
+        return if (hours == 0L) {
+            twoDigitString(minutes) + ":" + twoDigitString(pSeconds)
+        } else {
+            twoDigitString(hours) + ":" + twoDigitString(minutes) + ":" + twoDigitString(
+                pSeconds
+            )
+        }
+    }
 
     fun getDurationStringMS(ms: Int): String {
         return getDurationString(ms / 1000)
@@ -182,6 +195,14 @@ object AppTextUtils {
         } else number.toString()
     }
 
+    private fun twoDigitString(number: Long): String {
+        if (number == 0L) {
+            return TWO_ZERO
+        }
+        return if (number / 10 == 0L) {
+            ZERO + number
+        } else number.toString()
+    }
 
     fun getCounterWithK(counter: Int): String {
         val num = counter / 1000

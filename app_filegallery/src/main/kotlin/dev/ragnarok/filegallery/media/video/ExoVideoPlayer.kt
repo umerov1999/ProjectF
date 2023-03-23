@@ -35,6 +35,7 @@ class ExoVideoPlayer(
         context: Context,
         url: String?
     ) {
+        player?.stop()
         source = createMediaSource(
             context,
             url

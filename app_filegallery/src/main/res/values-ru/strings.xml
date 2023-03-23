@@ -136,7 +136,6 @@
     <string name="previous">предыдущий</string>
     <string name="next">следующий</string>
     <string name="play">Воспроизвести</string>
-    <string name="equalizer_closed">Эквалайзер закрыт</string>
     <string name="no_system_equalizer">Нет системного эквалайзера</string>
     <string name="equalizer">Эквалайзер</string>
     <string name="copied_to_clipboard">Скопировано в буфер обмена</string>

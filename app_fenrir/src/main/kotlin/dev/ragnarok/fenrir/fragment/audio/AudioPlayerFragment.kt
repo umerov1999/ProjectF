@@ -116,10 +116,11 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
 
     private val requestEqualizer = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) {
-        CustomSnackbars.createCustomSnackbars(view, mPlayPauseButton)
-            ?.setDurationSnack(Snackbar.LENGTH_LONG)?.themedSnack(R.string.equalizer_closed)?.show()
-    }
+    ) {}
+
+    private val requestShare = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {}
 
     /**
      * Used to scan backwards through the track
@@ -373,7 +374,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 Settings.get().main().player_cover_transform
             )
         )
-        ivCoverPager?.offscreenPageLimit = 1
         ivCoverPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -862,7 +862,13 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
             createCustomToast(requireActivity()).showToastError(R.string.not_supported)
             return
         }
-        SendAttachmentsActivity.startForSendAttachments(requireActivity(), mAccountId, current)
+        requestShare.launch(
+            SendAttachmentsActivity.startForSendAttachmentsIntent(
+                requireActivity(),
+                mAccountId,
+                current
+            )
+        )
     }
 
     private fun resolveAddButton() {

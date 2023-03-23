@@ -55,7 +55,6 @@ class DualTabPhotosFragment : BaseFragment(), BackPressCallback {
         val viewPager: ViewPager2 = root.findViewById(R.id.view_pager)
         mPagerAdapter = Adapter(this, mSources)
         viewPager.adapter = mPagerAdapter
-        viewPager.offscreenPageLimit = 1
         viewPager.setPageTransformer(
             createPageTransform(
                 Settings.get().main().viewpager_page_transform

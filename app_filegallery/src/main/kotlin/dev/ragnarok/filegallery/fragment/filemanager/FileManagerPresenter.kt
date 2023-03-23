@@ -569,7 +569,7 @@ class FileManagerPresenter(
             v.setDate(item.modification)
             v.setTitle(item.file_name)
             v.setLink("file://" + item.file_path)
-            v.setDuration(item.size.toInt())
+            v.setDuration(item.size)
             v.setDescription(item.parent_path)
             view?.displayVideo(v)
         } else if (item.type == FileType.audio) {

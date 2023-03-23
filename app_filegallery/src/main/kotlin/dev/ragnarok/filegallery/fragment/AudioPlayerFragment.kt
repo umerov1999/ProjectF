@@ -98,10 +98,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
 
     private val requestEqualizer = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) {
-        CustomSnackbars.createCustomSnackbars(view, mPlayPauseButton)
-            ?.setDurationSnack(Snackbar.LENGTH_LONG)?.themedSnack(R.string.equalizer_closed)?.show()
-    }
+    ) {}
 
     /**
      * Used to scan backwards through the track
@@ -252,7 +249,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 Settings.get().main().getPlayer_cover_transform()
             )
         )
-        ivCoverPager?.offscreenPageLimit = 1
         ivCoverPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)

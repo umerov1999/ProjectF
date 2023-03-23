@@ -1553,7 +1553,6 @@
     <string name="local_media_server">Локальный медиа сервер</string>
     <string name="on_server">На сервере</string>
     <string name="no_system_equalizer">Нет системного эквалайзера</string>
-    <string name="equalizer_closed">Эквалайзер закрыт</string>
     <string name="show_hidden_accounts">Показывать скрытые аккаунты</string>
     <string name="set_device">Задать устройство</string>
     <string name="not_read">Непрочитанные</string>

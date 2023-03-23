@@ -42,6 +42,7 @@ class CustomSeekBar @JvmOverloads constructor(
     private var circleColor: Int
     private var progressColor: Int
     private var pressedCircleColor: Int
+    private var noCircle: Boolean
     private val rect = RectF()
     private var lineHeight: Float
     private var bufferedProgress = 0f
@@ -176,6 +177,9 @@ class CustomSeekBar @JvmOverloads constructor(
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
+        val halfLayoutHeight = layoutHeight / 2
+        val halfLineHeight = lineHeight / 2
+        val halfThumbWidth = thumbWidth / 2
         if (pendingPosition >= 0 && thumbX <= 0 && layoutWidth > 0) {
             thumbX =
                 ceil(((layoutWidth - thumbWidth) * (pendingPosition.toDouble() / duration))).toInt()
@@ -186,25 +190,25 @@ class CustomSeekBar @JvmOverloads constructor(
             }
             pendingPosition = -1
         }
-        rect[(thumbWidth / 2).toFloat(), (layoutHeight / 2 - lineHeight / 2), (layoutWidth - thumbWidth / 2).toFloat()] =
-            (layoutHeight / 2 + lineHeight / 2)
+        rect[halfThumbWidth.toFloat(), (halfLayoutHeight - halfLineHeight), (layoutWidth - halfThumbWidth).toFloat()] =
+            (halfLayoutHeight + halfLineHeight)
         paint.color = lineColor
-        canvas.drawRoundRect(rect, (thumbWidth / 2).toFloat(), (thumbWidth / 2).toFloat(), paint)
+        canvas.drawRoundRect(rect, halfThumbWidth.toFloat(), halfThumbWidth.toFloat(), paint)
         if (bufferedProgress > 0 && duration > 0) {
             paint.color = cacheColor
-            rect[(thumbWidth / 2).toFloat(), (layoutHeight / 2 - lineHeight / 2), thumbWidth / 2 + bufferedProgress * (layoutWidth - thumbWidth)] =
-                (layoutHeight / 2 + lineHeight / 2)
+            rect[halfThumbWidth.toFloat(), (halfLayoutHeight - halfLineHeight), halfThumbWidth + bufferedProgress * (layoutWidth - thumbWidth)] =
+                (halfLayoutHeight + halfLineHeight)
             canvas.drawRoundRect(
                 rect,
-                (thumbWidth / 2).toFloat(),
-                (thumbWidth / 2).toFloat(),
+                halfThumbWidth.toFloat(),
+                halfThumbWidth.toFloat(),
                 paint
             )
         }
-        rect[(thumbWidth / 2).toFloat(), (layoutHeight / 2 - lineHeight / 2), (thumbWidth / 2 + if (isDragging) draggingThumbX else thumbX).toFloat()] =
-            (layoutHeight / 2 + lineHeight / 2)
+        rect[halfThumbWidth.toFloat(), (halfLayoutHeight - halfLineHeight), (halfThumbWidth + if (isDragging) draggingThumbX else thumbX).toFloat()] =
+            (halfLayoutHeight + halfLineHeight)
         paint.color = progressColor
-        canvas.drawRoundRect(rect, (thumbWidth / 2).toFloat(), (thumbWidth / 2).toFloat(), paint)
+        canvas.drawRoundRect(rect, halfThumbWidth.toFloat(), halfThumbWidth.toFloat(), paint)
 
         if (duration <= 0) {
             return
@@ -242,24 +246,33 @@ class CustomSeekBar @JvmOverloads constructor(
                 Color.blue(tmpColor)
             )
             canvas.drawCircle(
-                ((if (isDragging) draggingThumbX else thumbX) + thumbWidth / 2).toFloat(),
-                (layoutHeight / 2).toFloat(),
+                ((if (isDragging) draggingThumbX else thumbX) + halfThumbWidth).toFloat(),
+                halfLayoutHeight.toFloat(),
                 currentRadius + Utils.dp(4f),
                 paint
             )
-
             invalidate()
         } else {
             paint.color = if (isDragging) pressedCircleColor else circleColor
         }
 
-        canvas.drawCircle(
-            ((if (isDragging) draggingThumbX else thumbX) + thumbWidth / 2).toFloat(),
-            (layoutHeight / 2).toFloat(),
-            currentRadius,
-            paint
-        )
+        if (!noCircle) {
+            canvas.drawCircle(
+                ((if (isDragging) draggingThumbX else thumbX) + halfThumbWidth).toFloat(),
+                halfLayoutHeight.toFloat(),
+                currentRadius,
+                paint
+            )
+        }
         if (isDragging) {
+            if (noCircle) {
+                canvas.drawCircle(
+                    (draggingThumbX + halfThumbWidth).toFloat(),
+                    halfLayoutHeight.toFloat(),
+                    currentRadius,
+                    paint
+                )
+            }
             paint.color = Color.argb(
                 140,
                 Color.red(pressedCircleColor),
@@ -267,8 +280,8 @@ class CustomSeekBar @JvmOverloads constructor(
                 Color.blue(pressedCircleColor)
             )
             canvas.drawCircle(
-                ((if (isDragging) draggingThumbX else thumbX) + thumbWidth / 2).toFloat(),
-                (layoutHeight / 2).toFloat(),
+                (draggingThumbX + halfThumbWidth).toFloat(),
+                halfLayoutHeight.toFloat(),
                 currentRadius + Utils.dp(4f),
                 paint
             )
@@ -303,6 +316,7 @@ class CustomSeekBar @JvmOverloads constructor(
             a.getColor(R.styleable.CustomSeekBar_pressedCircleColor, getColorSecondary(context))
         lineHeight = a.getDimension(R.styleable.CustomSeekBar_lineHeight, Utils.dpf2(2f))
         val isAlpha = a.getBoolean(R.styleable.CustomSeekBar_applyAlpha, false)
+        noCircle = a.getBoolean(R.styleable.CustomSeekBar_noCircle, false)
         a.recycle()
 
         if (isAlpha) {

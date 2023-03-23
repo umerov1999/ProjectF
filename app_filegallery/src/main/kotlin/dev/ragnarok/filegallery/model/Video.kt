@@ -26,7 +26,7 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
         private set
     var isRepeat = false
         private set
-    var duration = 0
+    var duration = 0L
         private set
 
     constructor()
@@ -39,7 +39,7 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
         date = parcel.readLong()
         image = parcel.readString()
         isRepeat = parcel.getBoolean()
-        duration = parcel.readInt()
+        duration = parcel.readLong()
     }
 
     internal constructor(parcel: ParcelNative) {
@@ -51,7 +51,7 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
         date = parcel.readLong()
         image = parcel.readString()
         isRepeat = parcel.readBoolean()
-        duration = parcel.readInt()
+        duration = parcel.readLong()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -63,7 +63,7 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
         dest.writeLong(date)
         dest.writeString(image)
         dest.putBoolean(isRepeat)
-        dest.writeInt(duration)
+        dest.writeLong(duration)
     }
 
     override fun writeToParcelNative(dest: ParcelNative) {
@@ -75,7 +75,7 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
         dest.writeLong(date)
         dest.writeString(image)
         dest.writeBoolean(isRepeat)
-        dest.writeInt(duration)
+        dest.writeLong(duration)
     }
 
     override fun describeContents(): Int {
@@ -122,7 +122,7 @@ class Video : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun setDuration(duration: Int): Video {
+    fun setDuration(duration: Long): Video {
         this.duration = duration
         return this
     }

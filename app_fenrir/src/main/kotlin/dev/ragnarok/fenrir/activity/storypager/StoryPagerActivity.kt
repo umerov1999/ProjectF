@@ -48,6 +48,7 @@ import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
+import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
@@ -59,6 +60,7 @@ import dev.ragnarok.fenrir.view.TouchImageView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import dev.ragnarok.fenrir.view.pager.WeakPicassoLoadCallback
 import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.ref.WeakReference
 import java.util.Calendar
@@ -70,14 +72,17 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
     private var mViewPager: ViewPager2? = null
     private var mToolbar: Toolbar? = null
     private var mAvatar: ImageView? = null
-    private var mExp: TextView? = null
+    private var mExpires: TextView? = null
+    private var mDuration: TextView? = null
     private var transformation: Transformation? = null
     private var mDownload: CircleCounterButton? = null
     private var mShare: CircleCounterButton? = null
     private var mLink: CircleCounterButton? = null
     private var mFullscreen = false
     private var hasExternalUrl = false
+    private var mPlaySpeed: ImageView? = null
     private var helpDisposable = Disposable.disposed()
+    private var playDispose = Disposable.disposed()
 
     @LayoutRes
     override fun getNoMainContentView(): Int {
@@ -93,13 +98,23 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         setSupportActionBar(mToolbar)
         mAvatar = findViewById(R.id.toolbar_avatar)
         mViewPager = findViewById(R.id.view_pager)
-        mViewPager?.offscreenPageLimit = 1
         mViewPager?.setPageTransformer(
             Utils.createPageTransform(
                 Settings.get().main().viewpager_page_transform
             )
         )
-        mExp = findViewById(R.id.item_story_expires)
+        mExpires = findViewById(R.id.item_story_expires)
+        mDuration = findViewById(R.id.item_story_duration)
+        mPlaySpeed = findViewById(R.id.toolbar_play_speed)
+        mPlaySpeed?.setOnClickListener {
+            val stateSpeed = presenter?.togglePlaybackSpeed() ?: false
+            Utils.setTint(
+                mPlaySpeed,
+                if (stateSpeed) CurrentTheme.getColorPrimary(this) else Color.parseColor(
+                    "#ffffff"
+                )
+            )
+        }
         val mHelper = findViewById<RLottieImageView?>(R.id.swipe_helper)
         if (HelperSimple.needHelp(HelperSimple.STORY_HELPER, 2)) {
             mHelper?.visibility = View.VISIBLE
@@ -122,7 +137,11 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         mViewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                presenter?.firePageSelected(position)
+                playDispose.dispose()
+                playDispose = Observable.just(Object())
+                    .delay(400, TimeUnit.MILLISECONDS)
+                    .toMainThread()
+                    .subscribe { presenter?.firePageSelected(position) }
             }
         })
         mDownload = findViewById(R.id.button_download)
@@ -327,7 +346,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         supportActionBar?.title = getString(titleRes, *params)
     }
 
-    override fun setToolbarSubtitle(story: Story, account_id: Long) {
+    override fun setToolbarSubtitle(story: Story, account_id: Long, isPlaySpeed: Boolean) {
         supportActionBar?.subtitle = story.owner?.fullName
         mAvatar?.setOnClickListener {
             story.owner?.let { it1 ->
@@ -343,10 +362,10 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 Constants.PICASSO_TAG
             )
         }
-        if (story.expires <= 0) mExp?.visibility = View.GONE else {
-            mExp?.visibility = View.VISIBLE
+        if (story.expires <= 0) mExpires?.visibility = View.GONE else {
+            mExpires?.visibility = View.VISIBLE
             val exp = (story.expires - Calendar.getInstance().time.time / 1000) / 3600
-            mExp?.text = getString(
+            mExpires?.text = getString(
                 R.string.expires,
                 exp.toString(),
                 getString(
@@ -357,6 +376,20 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 )
             )
         }
+        if (story.isStoryIsVideo()) {
+            mDuration?.visibility = View.VISIBLE
+            mDuration?.text = story.video?.duration?.let { AppTextUtils.getDurationString(it) }
+            mPlaySpeed?.visibility = View.VISIBLE
+        } else {
+            mDuration?.visibility = View.GONE
+            mPlaySpeed?.visibility = View.GONE
+        }
+        Utils.setTint(
+            mPlaySpeed,
+            if (isPlaySpeed) CurrentTheme.getColorPrimary(this) else Color.parseColor(
+                "#ffffff"
+            )
+        )
         if (story.target_url.isNullOrEmpty()) {
             mLink?.visibility = View.GONE
             hasExternalUrl = false
@@ -392,6 +425,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
     override fun onDestroy() {
         super.onDestroy()
         helpDisposable.dispose()
+        playDispose.dispose()
     }
 
     override fun onNext() {

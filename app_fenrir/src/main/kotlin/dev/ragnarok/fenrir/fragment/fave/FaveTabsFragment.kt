@@ -50,7 +50,6 @@ class FaveTabsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val viewPager: ViewPager2 = view.findViewById(R.id.viewpager)
-        viewPager.offscreenPageLimit = 1
         viewPager.setPageTransformer(
             createPageTransform(
                 Settings.get().main().viewpager_page_transform

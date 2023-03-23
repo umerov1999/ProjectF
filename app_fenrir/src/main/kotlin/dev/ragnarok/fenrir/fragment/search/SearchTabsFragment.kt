@@ -41,7 +41,6 @@ class SearchTabsFragment : Fragment() {
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
         val mAdapter = Adapter(this)
         mViewPager.adapter = mAdapter
-        mViewPager.offscreenPageLimit = 1
         mViewPager.setPageTransformer(
             createPageTransform(
                 Settings.get().main().viewpager_page_transform

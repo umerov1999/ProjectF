@@ -33,8 +33,16 @@ class StoryPagerPresenter(
 ) : AccountDependencyPresenter<IStoryPagerView>(accountId, savedInstanceState),
     IStatusChangeListener, IStoryPlayer.IVideoSizeChangeListener {
     private var mStoryPlayer: IStoryPlayer? = null
+    private var isPlayBackSpeed = false
+
     fun isStoryIsVideo(pos: Int): Boolean {
-        return mStories[pos].photo == null && mStories[pos].video != null
+        return mStories[pos].isStoryIsVideo()
+    }
+
+    fun togglePlaybackSpeed(): Boolean {
+        isPlayBackSpeed = !isPlayBackSpeed
+        mStoryPlayer?.setPlaybackSpeed(isPlayBackSpeed)
+        return isPlayBackSpeed
     }
 
     fun getStory(pos: Int): Story {
@@ -77,15 +85,16 @@ class StoryPagerPresenter(
     }
 
     private fun initStoryPlayer() {
-        if (mStoryPlayer != null) {
-            val old: IStoryPlayer? = mStoryPlayer
-            mStoryPlayer = null
-            old?.release()
-        }
         val story = mStories[mCurrentIndex]
         if (story.video == null) {
+            if (mStoryPlayer != null) {
+                val old: IStoryPlayer? = mStoryPlayer
+                mStoryPlayer = null
+                old?.release()
+            }
             return
         }
+        val update: Boolean = mStoryPlayer != null
         val url = firstNonEmptyString(
             story.video?.mp4link2160, story.video?.mp4link1440,
             story.video?.mp4link1080, story.video?.mp4link720, story.video?.mp4link480,
@@ -95,9 +104,14 @@ class StoryPagerPresenter(
             view?.showError(R.string.unable_to_play_file)
             return
         }
-        mStoryPlayer = storyPlayerFactory.createStoryPlayer(url, false)
-        mStoryPlayer?.addStatusChangeListener(this)
-        mStoryPlayer?.addVideoSizeChangeListener(this)
+        if (!update) {
+            mStoryPlayer = storyPlayerFactory.createStoryPlayer(url, false)
+            mStoryPlayer?.setPlaybackSpeed(isPlayBackSpeed)
+            mStoryPlayer?.addStatusChangeListener(this)
+            mStoryPlayer?.addVideoSizeChangeListener(this)
+        } else {
+            mStoryPlayer?.updateSource(url)
+        }
         try {
             mStoryPlayer?.play()
         } catch (e: Exception) {
@@ -148,7 +162,7 @@ class StoryPagerPresenter(
     private fun resolveToolbarSubtitle() {
         view?.setToolbarSubtitle(
             mStories[mCurrentIndex],
-            accountId
+            accountId, isPlayBackSpeed
         )
     }
 

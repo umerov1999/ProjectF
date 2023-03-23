@@ -63,7 +63,6 @@ class LocalServerTabsFragment : BaseFragment(), BackPressCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val viewPager: ViewPager2 = view.findViewById(R.id.fragment_tabs_pager)
-        viewPager.offscreenPageLimit = 1
         viewPager.setPageTransformer(
             Utils.createPageTransform(
                 Settings.get().main().getViewpager_page_transform()

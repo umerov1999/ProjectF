@@ -63,7 +63,6 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
             presenter?.fireAddDeleteButtonClick()
         }
         mViewPager = findViewById(R.id.view_pager)
-        mViewPager?.offscreenPageLimit = 1
         mViewPager?.setPageTransformer(
             Utils.createPageTransform(
                 Settings.get().main().viewpager_page_transform

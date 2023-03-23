@@ -159,7 +159,7 @@ class FileManagerRemotePresenter(
             v.setDate(item.modification_time)
             v.setTitle(item.file_name)
             v.setLink(item.url)
-            v.setDuration(item.size.toInt())
+            v.setDuration(item.size)
             view?.displayVideo(v)
         } else if (item.type == FileType.audio) {
             val list = if (q == null) fileList else fileListSearch

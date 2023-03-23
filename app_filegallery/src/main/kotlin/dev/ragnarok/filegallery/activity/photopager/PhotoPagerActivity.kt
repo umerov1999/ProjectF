@@ -160,7 +160,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
         mViewPager = findViewById(R.id.view_pager)
-        mViewPager?.offscreenPageLimit = 1
         mViewPager?.setPageTransformer(
             Utils.createPageTransform(
                 Settings.get().main().getViewpager_page_transform()

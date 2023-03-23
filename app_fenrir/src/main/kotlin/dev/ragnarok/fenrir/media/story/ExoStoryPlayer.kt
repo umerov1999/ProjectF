@@ -25,6 +25,7 @@ class ExoStoryPlayer(
     private val statusChangeListeners: MutableList<IStatusChangeListener> = ArrayList(1)
     override var videoSize: VideoSize? = null
         private set
+    private var playbackSpeed = false
     private val videoListener: Player.Listener = object : Player.Listener {
         override fun onVideoSizeChanged(videoSize: com.google.android.exoplayer2.video.VideoSize) {
             this@ExoStoryPlayer.videoSize = VideoSize(videoSize.width, videoSize.height)
@@ -33,7 +34,7 @@ class ExoStoryPlayer(
 
         override fun onRenderedFirstFrame() {}
         override fun onPlaybackStateChanged(state: @Player.State Int) {
-            d("FenrirExo", "onPlaybackStateChanged, state: $state")
+            d("FenrirExoStoryPlayer", "onPlaybackStateChanged, state: $state")
             onInternalPlayerStateChanged(state)
         }
     }
@@ -48,6 +49,22 @@ class ExoStoryPlayer(
             IStatus.INIT -> preparePlayer()
             IStatus.PREPARING -> {}
         }
+    }
+
+    override fun updateSource(url: String?) {
+        internalPlayer?.stop()
+        setStatus(IStatus.PREPARING)
+        val userAgent = UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
+        val mediaSource: MediaSource =
+            ProgressiveMediaSource.Factory(getExoPlayerFactory(userAgent, proxyConfig))
+                .createMediaSource(
+                    makeMediaItem(
+                        url
+                    )
+                )
+        internalPlayer?.playWhenReady = true
+        internalPlayer?.setMediaSource(mediaSource)
+        internalPlayer?.prepare()
     }
 
     private fun preparePlayer() {
@@ -71,7 +88,16 @@ class ExoStoryPlayer(
         internalPlayer?.addListener(videoListener)
         internalPlayer?.playWhenReady = true
         internalPlayer?.setMediaSource(mediaSource)
+        internalPlayer?.setPlaybackSpeed(if (playbackSpeed) 2f else 1f)
         internalPlayer?.prepare()
+    }
+
+    override val isPlaybackSpeed: Boolean
+        get() = playbackSpeed
+
+    override fun setPlaybackSpeed(isSpeed: Boolean) {
+        playbackSpeed = isSpeed
+        internalPlayer?.setPlaybackSpeed(if (playbackSpeed) 2f else 1f)
     }
 
     internal fun onInternalPlayerStateChanged(state: @Player.State Int) {

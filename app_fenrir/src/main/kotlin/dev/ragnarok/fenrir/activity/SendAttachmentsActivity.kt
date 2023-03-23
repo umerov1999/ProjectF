@@ -42,6 +42,19 @@ class SendAttachmentsActivity : MainActivity() {
             context.startActivity(intent)
         }
 
+        fun startForSendAttachmentsIntent(
+            context: Context,
+            accountId: Long,
+            bundle: ModelsBundle?
+        ): Intent {
+            val intent = Intent(context, SendAttachmentsActivity::class.java)
+            intent.action = ACTION_SEND_ATTACHMENTS
+            intent.putExtra(EXTRA_INPUT_ATTACHMENTS, bundle)
+            intent.putExtra(EXTRA_NO_REQUIRE_PIN, true)
+            intent.putExtra(Extra.PLACE, PlaceFactory.getDialogsPlace(accountId, accountId, null))
+            return intent
+        }
+
         fun startForSendAttachmentsFor(
             context: Context,
             accountId: Long,
@@ -62,11 +75,17 @@ class SendAttachmentsActivity : MainActivity() {
             context.startActivity(intent)
         }
 
-
         fun startForSendAttachments(context: Context, accountId: Long, model: AbsModel) {
             startForSendAttachments(context, accountId, ModelsBundle(1).append(model))
         }
 
+        fun startForSendAttachmentsIntent(
+            context: Context,
+            accountId: Long,
+            model: AbsModel
+        ): Intent {
+            return startForSendAttachmentsIntent(context, accountId, ModelsBundle(1).append(model))
+        }
 
         fun startForSendAttachmentsFor(
             context: Context,

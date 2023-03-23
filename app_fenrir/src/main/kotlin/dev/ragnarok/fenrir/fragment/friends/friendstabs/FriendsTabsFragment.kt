@@ -73,7 +73,6 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
         val root = inflater.inflate(R.layout.fragment_friends_tabs, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
         viewPager = root.findViewById(R.id.viewpager)
-        viewPager?.offscreenPageLimit = 1
         viewPager?.setPageTransformer(
             createPageTransform(
                 Settings.get().main().viewpager_page_transform

@@ -36,6 +36,7 @@ class ShortVideoPagerPresenter(
     private var nextFrom: String? = null
     private var isEndContent: Boolean = false
     private var loadingNow = false
+    private var isPlayBackSpeed = false
 
     override fun onGuiCreated(viewHost: IShortVideoPagerView) {
         super.onGuiCreated(viewHost)
@@ -46,6 +47,12 @@ class ShortVideoPagerPresenter(
         resolveAspectRatio()
         resolvePreparingProgress()
         resolveToolbarSubtitle()
+    }
+
+    fun togglePlaybackSpeed(): Boolean {
+        isPlayBackSpeed = !isPlayBackSpeed
+        mShortVideoPlayer?.setPlaybackSpeed(isPlayBackSpeed)
+        return isPlayBackSpeed
     }
 
     private fun receiveShortVideos() {
@@ -123,11 +130,7 @@ class ShortVideoPagerPresenter(
     }
 
     private fun initStoryPlayer() {
-        if (mShortVideoPlayer != null) {
-            val old: IStoryPlayer? = mShortVideoPlayer
-            mShortVideoPlayer = null
-            old?.release()
-        }
+        val update: Boolean = mShortVideoPlayer != null
         val shortVideo = mShortVideos[mCurrentIndex]
         val url = firstNonEmptyString(
             shortVideo.mp4link2160, shortVideo.mp4link1440,
@@ -138,9 +141,14 @@ class ShortVideoPagerPresenter(
             view?.showError(R.string.unable_to_play_file)
             return
         }
-        mShortVideoPlayer = storyPlayerFactory.createStoryPlayer(url, false)
-        mShortVideoPlayer?.addStatusChangeListener(this)
-        mShortVideoPlayer?.addVideoSizeChangeListener(this)
+        if (!update) {
+            mShortVideoPlayer = storyPlayerFactory.createStoryPlayer(url, false)
+            mShortVideoPlayer?.setPlaybackSpeed(isPlayBackSpeed)
+            mShortVideoPlayer?.addStatusChangeListener(this)
+            mShortVideoPlayer?.addVideoSizeChangeListener(this)
+        } else {
+            mShortVideoPlayer?.updateSource(url)
+        }
         try {
             mShortVideoPlayer?.play()
         } catch (e: Exception) {
@@ -191,7 +199,7 @@ class ShortVideoPagerPresenter(
         }
         view?.setToolbarSubtitle(
             mShortVideos[mCurrentIndex],
-            accountId
+            accountId, isPlayBackSpeed
         )
     }
 

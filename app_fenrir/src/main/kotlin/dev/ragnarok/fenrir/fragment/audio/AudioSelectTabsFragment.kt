@@ -52,7 +52,6 @@ class AudioSelectTabsFragment : BaseFragment(), MenuProvider {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
         val viewPager: ViewPager2 = view.findViewById(R.id.fragment_audios_pager)
-        viewPager.offscreenPageLimit = 1
         viewPager.setPageTransformer(
             createPageTransform(
                 Settings.get().main().viewpager_page_transform

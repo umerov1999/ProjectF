@@ -18,7 +18,7 @@ class VideoDtoAdapter : AbsAdapter<Video>("Video") {
         dto.setOwnerId(optLong(root, "owner_id"))
         dto.setTitle(optString(root, "title"))
         dto.setDescription(optString(root, "description"))
-        dto.setDuration(optInt(root, "duration"))
+        dto.setDuration(optLong(root, "duration"))
         dto.setDate(optLong(root, "date"))
         dto.setRepeat(optBoolean(root, "repeat"))
         if (hasObject(root, "files")) {

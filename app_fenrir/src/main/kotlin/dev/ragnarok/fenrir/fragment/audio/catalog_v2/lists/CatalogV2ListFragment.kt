@@ -146,7 +146,6 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
         val root = inflater.inflate(R.layout.fragment_catalog_v2_list, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
         viewPager = root.findViewById(R.id.fragment_audios_pager)
-        viewPager?.offscreenPageLimit = 1
         mAdapter = Adapter(this)
         viewPager?.adapter = mAdapter
         viewPager?.setPageTransformer(

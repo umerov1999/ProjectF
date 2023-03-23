@@ -50,6 +50,7 @@ import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.ExpandableSurfaceView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
@@ -60,6 +61,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
     private var mViewPager: ViewPager2? = null
     private var mToolbar: Toolbar? = null
     private var mAvatar: ImageView? = null
+    private var mPlaySpeed: ImageView? = null
     private var transformation: Transformation? = null
     private var mDownload: CircleCounterButton? = null
     private var mShare: CircleCounterButton? = null
@@ -72,7 +74,8 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
     private var mLoadingProgressBarDispose = Disposable.disposed()
     private var mLoadingProgressBarLoaded = false
     private var mLoadingProgressBar: RLottieImageView? = null
-    private var shortVideoLength: TextView? = null
+    private var shortVideoDuration: TextView? = null
+    private var playDispose = Disposable.disposed()
 
     @LayoutRes
     override fun getNoMainContentView(): Int {
@@ -88,10 +91,19 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         setSupportActionBar(mToolbar)
         mAvatar = findViewById(R.id.toolbar_avatar)
         mViewPager = findViewById(R.id.view_pager)
-        mViewPager?.offscreenPageLimit = 1
         likeButton = findViewById(R.id.like_button)
         commentsButton = findViewById(R.id.comments_button)
-        shortVideoLength = findViewById(R.id.item_short_video_length)
+        shortVideoDuration = findViewById(R.id.item_short_video_duration)
+        mPlaySpeed = findViewById(R.id.toolbar_play_speed)
+        mPlaySpeed?.setOnClickListener {
+            val stateSpeed = presenter?.togglePlaybackSpeed() ?: false
+            Utils.setTint(
+                mPlaySpeed,
+                if (stateSpeed) CurrentTheme.getColorPrimary(this) else Color.parseColor(
+                    "#ffffff"
+                )
+            )
+        }
         commentsButton?.setOnClickListener {
             presenter?.fireCommentsClick()
         }
@@ -130,7 +142,11 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         mViewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                presenter?.firePageSelected(position)
+                playDispose.dispose()
+                playDispose = Observable.just(Object())
+                    .delay(400, TimeUnit.MILLISECONDS)
+                    .toMainThread()
+                    .subscribe { presenter?.firePageSelected(position) }
             }
         })
         mDownload = findViewById(R.id.button_download)
@@ -412,7 +428,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         supportActionBar?.title = getString(titleRes, *params)
     }
 
-    override fun setToolbarSubtitle(shortVideo: Video, account_id: Long) {
+    override fun setToolbarSubtitle(shortVideo: Video, account_id: Long, isPlaySpeed: Boolean) {
         supportActionBar?.subtitle = shortVideo.optionalOwner?.fullName
         mAvatar?.setOnClickListener {
             shortVideo.optionalOwner?.let { it1 ->
@@ -428,7 +444,13 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
                 Constants.PICASSO_TAG
             )
         }
-        shortVideoLength?.text = AppTextUtils.getDurationString(shortVideo.duration)
+        Utils.setTint(
+            mPlaySpeed,
+            if (isPlaySpeed) CurrentTheme.getColorPrimary(this) else Color.parseColor(
+                "#ffffff"
+            )
+        )
+        shortVideoDuration?.text = AppTextUtils.getDurationString(shortVideo.duration)
         displayLikes(shortVideo.likesCount, shortVideo.isUserLikes)
         displayCommentCount(shortVideo.commentsCount)
     }
@@ -453,6 +475,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         super.onDestroy()
         helpDisposable.dispose()
         mLoadingProgressBarDispose.dispose()
+        playDispose.dispose()
     }
 
     override fun onNext() {

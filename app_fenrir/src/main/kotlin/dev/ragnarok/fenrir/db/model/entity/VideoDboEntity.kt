@@ -62,7 +62,7 @@ class VideoDboEntity : DboEntity() {
         private set
     var isRepeat = false
         private set
-    var duration = 0
+    var duration = 0L
         private set
     var private = false
         private set
@@ -212,7 +212,7 @@ class VideoDboEntity : DboEntity() {
         return this
     }
 
-    fun setDuration(duration: Int): VideoDboEntity {
+    fun setDuration(duration: Long): VideoDboEntity {
         this.duration = duration
         return this
     }

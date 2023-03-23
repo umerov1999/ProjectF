@@ -1790,7 +1790,6 @@
     <string name="local_media_server">Local Media Server</string>
     <string name="on_server">On Server</string>
     <string name="no_system_equalizer">No system equalizer found</string>
-    <string name="equalizer_closed">equalizer closed</string>
     <string name="show_hidden_accounts">Show hidden accounts</string>
     <string name="set_device">Set Device</string>
     <string name="not_read">Not read</string>

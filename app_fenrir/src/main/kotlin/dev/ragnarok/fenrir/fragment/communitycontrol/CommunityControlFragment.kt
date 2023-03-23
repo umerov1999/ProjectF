@@ -46,7 +46,6 @@ class CommunityControlFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_community_control, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
         val pager: ViewPager2 = root.findViewById(R.id.view_pager)
-        pager.offscreenPageLimit = 1
         pager.setPageTransformer(
             createPageTransform(
                 Settings.get().main().viewpager_page_transform

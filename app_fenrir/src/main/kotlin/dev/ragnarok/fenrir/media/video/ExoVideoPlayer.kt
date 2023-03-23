@@ -43,6 +43,7 @@ class ExoVideoPlayer(
         config: ProxyConfig?,
         @InternalVideoSize size: Int
     ) {
+        player?.stop()
         source = createMediaSource(
             context,
             url,
@@ -91,10 +92,8 @@ class ExoVideoPlayer(
         get() = playbackSpeed
 
     override fun togglePlaybackSpeed() {
-        if (player != null) {
-            playbackSpeed = !playbackSpeed
-            player.setPlaybackSpeed(if (playbackSpeed) 2f else 1f)
-        }
+        playbackSpeed = !playbackSpeed
+        player?.setPlaybackSpeed(if (playbackSpeed) 2f else 1f)
     }
 
     override fun release() {
