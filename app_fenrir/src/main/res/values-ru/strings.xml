@@ -1554,6 +1554,7 @@
     <string name="on_server">На сервере</string>
     <string name="no_system_equalizer">Нет системного эквалайзера</string>
     <string name="show_hidden_accounts">Показывать скрытые аккаунты</string>
+    <string name="disable_hidden_accounts">Блокировать скрытые аккаунты</string>
     <string name="set_device">Задать устройство</string>
     <string name="not_read">Непрочитанные</string>
     <string name="not_read_show">Быстрые непрочитанные</string>
@@ -1717,4 +1718,5 @@
     <string name="answer">Ответить</string>
     <string name="clips">Клипы</string>
     <string name="stories">Истории</string>
+    <string name="account_not_registered">Аккаунт не зарегистрирован!</string>
 </resources>

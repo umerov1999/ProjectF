@@ -47,7 +47,7 @@ object ShortcutUtils {
                 .get()
         }
         val intent = Intent(context.applicationContext, MainActivity::class.java)
-        intent.action = MainActivity.ACTION_SWITH_ACCOUNT
+        intent.action = MainActivity.ACTION_SWITCH_ACCOUNT
         intent.putExtra(Extra.ACCOUNT_ID, accountId)
         val id = "fenrir_account_$accountId"
         sendShortcutBroadcast(context, id, intent, title, avatar)

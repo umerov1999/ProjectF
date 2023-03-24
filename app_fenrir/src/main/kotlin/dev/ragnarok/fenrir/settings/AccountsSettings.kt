@@ -24,12 +24,7 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
     private val tokens: MutableMap<Long, String> = Collections.synchronizedMap(HashMap(1))
     private val types: MutableMap<Long, Int> = Collections.synchronizedMap(HashMap(1))
     private val devices: MutableMap<Long, String> = Collections.synchronizedMap(HashMap(1))
-    private val accounts: MutableSet<String> = Collections.synchronizedSet(
-        preferences.getStringSet(
-            KEY_ACCOUNT_UIDS,
-            HashSet(1)
-        )!!
-    )
+    private val accounts: MutableSet<Long> = Collections.synchronizedSet(HashSet(1))
     private val currentPublisher = PublishProcessor.create<Long>()
     private fun notifyAboutRegisteredChanges() {
         changesPublisher.onNext(this)
@@ -44,14 +39,7 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
     }
 
     override val registered: List<Long>
-        get() {
-            val ids: MutableList<Long> = ArrayList(accounts.size)
-            for (stringuid in accounts) {
-                val uid = stringuid.toLong()
-                ids.add(uid)
-            }
-            return ids
-        }
+        get() = ArrayList(accounts)
 
     @SuppressLint("CheckResult")
     private fun fireAccountChange() {
@@ -73,27 +61,32 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
             fireAccountChange()
         }
 
-    override fun remove(accountId: Long) {
+    override fun remove(accountId: Long): Long? {
         val currentAccountId = current
         val preferences = getPreferences(app)
-        accounts.remove(accountId.toString())
+        accounts.remove(accountId)
+        val tmpStore = fetchAccountsFromPrefs()
+        tmpStore.remove(accountId)
         preferences.edit()
-            .putStringSet(KEY_ACCOUNT_UIDS, accounts)
+            .putStringSet(KEY_ACCOUNT_UIDS, makeAccountsToPrefs(tmpStore))
             .apply()
+        var firstUserAccountId: Long? = null
         if (accountId == currentAccountId) {
             val accountIds = registered
-            var fisrtUserAccountId: Long? = null
 
             // делаем активным первый аккаунт ПОЛЬЗОВАТЕЛЯ
             for (existsId in accountIds) {
-                if (existsId > 0) {
-                    fisrtUserAccountId = existsId
+                if (existsId > 0 && !isHiddenType(
+                        types[existsId] ?: Constants.DEFAULT_ACCOUNT_TYPE
+                    )
+                ) {
+                    firstUserAccountId = existsId
                     break
                 }
             }
-            if (fisrtUserAccountId != null) {
+            if (firstUserAccountId != null) {
                 preferences.edit()
-                    .putLong(KEY_CURRENT, fisrtUserAccountId)
+                    .putLong(KEY_CURRENT, firstUserAccountId)
                     .apply()
             } else {
                 preferences.edit()
@@ -103,13 +96,16 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         }
         notifyAboutRegisteredChanges()
         fireAccountChange()
+        return firstUserAccountId
     }
 
     override fun registerAccountId(accountId: Long, setCurrent: Boolean) {
         val preferences = getPreferences(app)
-        accounts.add(accountId.toString())
+        accounts.add(accountId)
         val editor = preferences.edit()
-        editor.putStringSet(KEY_ACCOUNT_UIDS, accounts)
+        val tmpStore = fetchAccountsFromPrefs()
+        tmpStore.add(accountId)
+        editor.putStringSet(KEY_ACCOUNT_UIDS, makeAccountsToPrefs(tmpStore))
         if (setCurrent) {
             editor.putLong(KEY_CURRENT, accountId)
         }
@@ -164,6 +160,17 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         get() = tokens[current]
 
     @AccountType
+    override val currentType: Int
+        get() = types[current] ?: Constants.DEFAULT_ACCOUNT_TYPE
+
+    private fun isHiddenType(@AccountType type: Int): Boolean {
+        return type == AccountType.KATE_HIDDEN || type == AccountType.VK_ANDROID_HIDDEN
+    }
+
+    override val currentHidden: Boolean
+        get() = isHiddenType(types[current] ?: Constants.DEFAULT_ACCOUNT_TYPE)
+
+    @AccountType
     override fun getType(accountId: Long): Int {
         if (types.containsKey(accountId)) {
             val ret = types[accountId]
@@ -207,6 +214,58 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
             .apply()
     }
 
+    private fun makeAccountsToPrefs(data: HashSet<Long>): HashSet<String> {
+        val ret = HashSet<String>()
+        for (i in data) {
+            ret.add(i.toString())
+        }
+        return ret
+    }
+
+    private fun fetchAccountsFromPrefs(): HashSet<Long> {
+        val ret = HashSet<Long>()
+        for (i in preferences.getStringSet(
+            KEY_ACCOUNT_UIDS,
+            HashSet(1)
+        ).orEmpty()) {
+            ret.add(i.toLong())
+        }
+        return ret
+    }
+
+    override fun loadAccounts(refresh: Boolean) {
+        if (refresh) {
+            types.clear()
+            tokens.clear()
+            devices.clear()
+            accounts.clear()
+            accounts.addAll(
+                fetchAccountsFromPrefs()
+            )
+        }
+        val disableHidden = preferences.getBoolean("disable_hidden_accounts", false)
+        val aids: Collection<Long> = registered
+
+        for (aid in aids) {
+            types[aid] = preferences.getInt(typeAccKeyFor(aid), Constants.DEFAULT_ACCOUNT_TYPE)
+        }
+        for (aid in aids) {
+            if (disableHidden && isHiddenType(types[aid] ?: Constants.DEFAULT_ACCOUNT_TYPE)) {
+                accounts.remove(aid)
+                types.remove(aid)
+                continue
+            }
+            val token = preferences.getString(tokenKeyFor(aid), null)
+            if (token.nonNullNoEmpty()) {
+                tokens[aid] = token
+            }
+            val device = preferences.getString(deviceKeyFor(aid), null)
+            if (device.nonNullNoEmpty()) {
+                devices[aid] = device
+            }
+        }
+    }
+
     companion object {
         private const val KEY_ACCOUNT_UIDS = "account_uids"
         private const val KEY_CURRENT = "current_account_id_long"
@@ -228,17 +287,9 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
     }
 
     init {
-        val aids: Collection<Long> = registered
-        for (aid in aids) {
-            val token = preferences.getString(tokenKeyFor(aid), null)
-            if (token.nonNullNoEmpty()) {
-                tokens[aid] = token
-            }
-            val device = preferences.getString(deviceKeyFor(aid), null)
-            if (device.nonNullNoEmpty()) {
-                devices[aid] = device
-            }
-            types[aid] = preferences.getInt(typeAccKeyFor(aid), Constants.DEFAULT_ACCOUNT_TYPE)
-        }
+        accounts.addAll(
+            fetchAccountsFromPrefs()
+        )
+        loadAccounts(false)
     }
 }

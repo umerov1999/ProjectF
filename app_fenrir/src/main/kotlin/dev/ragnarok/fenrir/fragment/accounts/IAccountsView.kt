@@ -16,6 +16,8 @@ interface IAccountsView : IMvpView, IErrorView, IToastView {
 
     fun notifyDataSetChanged()
     fun notifyItemRemoved(position: Int)
+    fun notifyItemChanged(position: Int)
+    fun notifyItemRangeChanged(positionStart: Int, count: Int)
     fun notifyItemRangeRemoved(positionStart: Int, count: Int)
     fun notifyItemRangeInserted(positionStart: Int, count: Int)
     fun showColoredSnack(text: String?, @ColorInt color: Int)

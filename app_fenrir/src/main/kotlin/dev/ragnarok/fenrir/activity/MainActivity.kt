@@ -791,133 +791,161 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         if (intent == null) {
             return false
         }
-        if (ACTION_OPEN_WALL == intent.action) {
-            val owner_id = intent.extras!!.getLong(Extra.OWNER_ID)
-            PlaceFactory.getOwnerWallPlace(mAccountId, owner_id, null).tryOpenWith(this)
-            return true
-        }
-        if (ACTION_SWITH_ACCOUNT == intent.action) {
-            val newAccountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
-            if (Settings.get().accounts().current != newAccountId) {
-                Settings.get()
-                    .accounts().current = newAccountId
-                mAccountId = newAccountId
+        Logger.d(TAG, "handleIntent, extras: ${intent.extras}, action: ${intent.action}")
+        when {
+            ACTION_OPEN_WALL == intent.action -> {
+                val owner_id = intent.extras!!.getLong(Extra.OWNER_ID)
+                PlaceFactory.getOwnerWallPlace(mAccountId, owner_id, null).tryOpenWith(this)
+                return true
             }
-            intent.action = ACTION_MAIN
-        }
-        if (ACTION_SHORTCUT_WALL == intent.action) {
-            val newAccountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
-            val ownerId = intent.extras!!.getLong(Extra.OWNER_ID)
-            if (Settings.get().accounts().current != newAccountId) {
-                Settings.get()
-                    .accounts().current = newAccountId
-                mAccountId = newAccountId
-            }
-            clearBackStack()
-            openPlace(PlaceFactory.getOwnerWallPlace(newAccountId, ownerId, null))
-            return true
-        }
-        val extras = intent.extras
-        val action = intent.action
-        Logger.d(TAG, "handleIntent, extras: $extras, action: $action")
-        if (Intent.ACTION_SEND_MULTIPLE == action) {
-            val mime = intent.type
-            if (getMainActivityTransform() == MainActivityTransforms.MAIN && extras != null && mime.nonNullNoEmpty() && isMimeAudio(
-                    mime
-                ) && extras.containsKey(Intent.EXTRA_STREAM)
-            ) {
-                val uris = intent.getParcelableArrayListExtraCompat<Uri>(Intent.EXTRA_STREAM)
-                if (uris.nonNullNoEmpty()) {
-                    val playlist = ArrayList<Audio>(
-                        uris.size
-                    )
-                    for (i in uris) {
-                        val track = UploadUtils.findFileName(this, i) ?: return false
-                        var TrackName = track.replace(".mp3", "")
-                        var Artist = ""
-                        val arr = TrackName.split(Regex(" - ")).toTypedArray()
-                        if (arr.size > 1) {
-                            Artist = arr[0]
-                            TrackName = TrackName.replace("$Artist - ", "")
-                        }
-                        val tmp = Audio().setIsLocal().setThumb_image_big(
-                            "share_$i"
-                        ).setThumb_image_little("share_$i").setUrl(i.toString())
-                            .setOwnerId(mAccountId).setArtist(Artist).setTitle(TrackName)
-                            .setId(i.toString().hashCode())
-                        playlist.add(tmp)
+
+            ACTION_SWITCH_ACCOUNT == intent.action -> {
+                val newAccountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
+                if (Settings.get().accounts().current != newAccountId) {
+                    if (!Settings.get().accounts().registered.contains(newAccountId)) {
+                        createCustomToast(this).showToastError(R.string.account_not_registered)
+                    } else {
+                        Settings.get()
+                            .accounts().current = newAccountId
+                        mAccountId = newAccountId
                     }
-                    intent.removeExtra(Intent.EXTRA_STREAM)
-                    startForPlayList(this, playlist, 0, false)
-                    PlaceFactory.getPlayerPlace(mAccountId).tryOpenWith(this)
                 }
+                intent.action = ACTION_MAIN
             }
-        }
-        if (extras != null && checkInputExist(this)) {
-            mCurrentFrontSection = AbsNavigationView.SECTION_ITEM_DIALOGS
-            openNavigationPage(AbsNavigationView.SECTION_ITEM_DIALOGS, false)
-            return true
-        }
-        if (ACTION_SEND_ATTACHMENTS == action) {
-            mCurrentFrontSection = AbsNavigationView.SECTION_ITEM_DIALOGS
-            openNavigationPage(AbsNavigationView.SECTION_ITEM_DIALOGS, false)
-            return true
-        }
-        if (ACTION_OPEN_PLACE == action) {
-            val place: Place = intent.getParcelableExtraCompat(Extra.PLACE) ?: return false
-            openPlace(place)
-            return if (place.type == Place.CHAT) {
-                Settings.get().ui().swipes_chat_mode != SwipesChatMode.SLIDR || Settings.get()
+
+            ACTION_SHORTCUT_WALL == intent.action -> {
+                var newAccountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
+                val prefsAid = Settings.get()
+                    .accounts()
+                    .current
+                val ownerId = intent.extras!!.getLong(Extra.OWNER_ID)
+                if (prefsAid != newAccountId) {
+                    if (!Settings.get().accounts().registered.contains(newAccountId)) {
+                        newAccountId = prefsAid
+                        createCustomToast(this).showToastError(R.string.account_not_registered)
+                    } else {
+                        Settings.get()
+                            .accounts().current = newAccountId
+                        mAccountId = newAccountId
+                    }
+                }
+                clearBackStack()
+                openPlace(PlaceFactory.getOwnerWallPlace(newAccountId, ownerId, null))
+                return true
+            }
+
+            ACTION_CHAT_FROM_SHORTCUT == intent.action -> {
+                var aid = intent.extras!!.getLong(Extra.ACCOUNT_ID)
+                val prefsAid = Settings.get()
+                    .accounts()
+                    .current
+                if (prefsAid != aid) {
+                    if (!Settings.get().accounts().registered.contains(aid)) {
+                        aid = prefsAid
+                        createCustomToast(this).showToastError(R.string.account_not_registered)
+                    } else {
+                        Settings.get()
+                            .accounts().current = aid
+                    }
+                }
+                val peerId = intent.extras!!.getLong(Extra.PEER_ID)
+                val title = intent.getStringExtra(Extra.TITLE)
+                val imgUrl = intent.getStringExtra(Extra.IMAGE)
+                val peer = Peer(peerId).setTitle(title).setAvaUrl(imgUrl)
+                PlaceFactory.getChatPlace(aid, aid, peer).tryOpenWith(this)
+                return Settings.get()
+                    .ui().swipes_chat_mode != SwipesChatMode.SLIDR || Settings.get()
                     .ui().swipes_chat_mode == SwipesChatMode.DISABLED
-            } else true
-        }
-        if (ACTION_OPEN_AUDIO_PLAYER == action) {
-            openPlace(PlaceFactory.getPlayerPlace(mAccountId))
-            return false
-        }
-        if (ACTION_CHAT_FROM_SHORTCUT == action) {
-            val aid = intent.extras!!.getLong(Extra.ACCOUNT_ID)
-            val prefsAid = Settings.get()
-                .accounts()
-                .current
-            if (prefsAid != aid) {
-                Settings.get()
-                    .accounts().current = aid
             }
-            val peerId = intent.extras!!.getLong(Extra.PEER_ID)
-            val title = intent.getStringExtra(Extra.TITLE)
-            val imgUrl = intent.getStringExtra(Extra.IMAGE)
-            val peer = Peer(peerId).setTitle(title).setAvaUrl(imgUrl)
-            PlaceFactory.getChatPlace(aid, aid, peer).tryOpenWith(this)
-            return Settings.get().ui().swipes_chat_mode != SwipesChatMode.SLIDR || Settings.get()
-                .ui().swipes_chat_mode == SwipesChatMode.DISABLED
-        }
-        if (Intent.ACTION_VIEW == action) {
-            val data = intent.data
-            val mime = intent.type ?: ""
-            if (getMainActivityTransform() == MainActivityTransforms.MAIN && mime.nonNullNoEmpty() && isMimeAudio(
-                    mime
-                )
-            ) {
-                val track = UploadUtils.findFileName(this, data) ?: return false
-                var TrackName = track.replace(".mp3", "")
-                var Artist = ""
-                val arr = TrackName.split(Regex(" - ")).toTypedArray()
-                if (arr.size > 1) {
-                    Artist = arr[0]
-                    TrackName = TrackName.replace("$Artist - ", "")
+
+            Intent.ACTION_SEND_MULTIPLE == intent.action -> {
+                val mime = intent.type
+                if (getMainActivityTransform() == MainActivityTransforms.MAIN && intent.extras != null && mime.nonNullNoEmpty() && isMimeAudio(
+                        mime
+                    ) && intent.extras?.containsKey(Intent.EXTRA_STREAM) == true
+                ) {
+                    val uris = intent.getParcelableArrayListExtraCompat<Uri>(Intent.EXTRA_STREAM)
+                    if (uris.nonNullNoEmpty()) {
+                        val playlist = ArrayList<Audio>(
+                            uris.size
+                        )
+                        for (i in uris) {
+                            val track = UploadUtils.findFileName(this, i) ?: return false
+                            var TrackName = track.replace(".mp3", "")
+                            var Artist = ""
+                            val arr = TrackName.split(Regex(" - ")).toTypedArray()
+                            if (arr.size > 1) {
+                                Artist = arr[0]
+                                TrackName = TrackName.replace("$Artist - ", "")
+                            }
+                            val tmp = Audio().setIsLocal().setThumb_image_big(
+                                "share_$i"
+                            ).setThumb_image_little("share_$i").setUrl(i.toString())
+                                .setOwnerId(mAccountId).setArtist(Artist).setTitle(TrackName)
+                                .setId(i.toString().hashCode())
+                            playlist.add(tmp)
+                        }
+                        intent.removeExtra(Intent.EXTRA_STREAM)
+                        startForPlayList(this, playlist, 0, false)
+                        PlaceFactory.getPlayerPlace(mAccountId).tryOpenWith(this)
+                    }
                 }
-                val tmp =
-                    Audio().setIsLocal().setThumb_image_big("share_$data").setThumb_image_little(
-                        "share_$data"
-                    ).setUrl(data.toString()).setOwnerId(mAccountId).setArtist(Artist)
-                        .setTitle(TrackName).setId(data.toString().hashCode())
-                startForPlayList(this, ArrayList(listOf(tmp)), 0, false)
-                PlaceFactory.getPlayerPlace(mAccountId).tryOpenWith(this)
+            }
+
+            ACTION_SEND_ATTACHMENTS == intent.action -> {
+                mCurrentFrontSection = AbsNavigationView.SECTION_ITEM_DIALOGS
+                openNavigationPage(AbsNavigationView.SECTION_ITEM_DIALOGS, false)
+                return true
+            }
+
+            ACTION_OPEN_PLACE == intent.action -> {
+                val place: Place = intent.getParcelableExtraCompat(Extra.PLACE) ?: return false
+                openPlace(place)
+                return if (place.type == Place.CHAT) {
+                    Settings.get().ui().swipes_chat_mode != SwipesChatMode.SLIDR || Settings.get()
+                        .ui().swipes_chat_mode == SwipesChatMode.DISABLED
+                } else true
+            }
+
+            ACTION_OPEN_AUDIO_PLAYER == intent.action -> {
+                openPlace(PlaceFactory.getPlayerPlace(mAccountId))
                 return false
             }
-            LinkHelper.openUrl(this, mAccountId, data.toString(), isMain)
-            return true
+
+            Intent.ACTION_VIEW == intent.action -> {
+                val data = intent.data
+                val mime = intent.type ?: ""
+                if (getMainActivityTransform() == MainActivityTransforms.MAIN && mime.nonNullNoEmpty() && isMimeAudio(
+                        mime
+                    )
+                ) {
+                    val track = UploadUtils.findFileName(this, data) ?: return false
+                    var TrackName = track.replace(".mp3", "")
+                    var Artist = ""
+                    val arr = TrackName.split(Regex(" - ")).toTypedArray()
+                    if (arr.size > 1) {
+                        Artist = arr[0]
+                        TrackName = TrackName.replace("$Artist - ", "")
+                    }
+                    val tmp =
+                        Audio().setIsLocal().setThumb_image_big("share_$data")
+                            .setThumb_image_little(
+                                "share_$data"
+                            ).setUrl(data.toString()).setOwnerId(mAccountId).setArtist(Artist)
+                            .setTitle(TrackName).setId(data.toString().hashCode())
+                    startForPlayList(this, ArrayList(listOf(tmp)), 0, false)
+                    PlaceFactory.getPlayerPlace(mAccountId).tryOpenWith(this)
+                    return false
+                }
+                LinkHelper.openUrl(this, mAccountId, data.toString(), isMain)
+                return true
+            }
+
+            intent.extras != null && checkInputExist(this) -> {
+                mCurrentFrontSection = AbsNavigationView.SECTION_ITEM_DIALOGS
+                openNavigationPage(AbsNavigationView.SECTION_ITEM_DIALOGS, false)
+                return true
+            }
         }
         return false
     }
@@ -1861,14 +1889,16 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
     companion object {
         const val ACTION_MAIN = "android.intent.action.MAIN"
-        const val ACTION_CHAT_FROM_SHORTCUT = "dev.ragnarok.fenrir.ACTION_CHAT_FROM_SHORTCUT"
         const val ACTION_OPEN_PLACE = "dev.ragnarok.fenrir.activity.MainActivity.openPlace"
         const val ACTION_OPEN_AUDIO_PLAYER =
             "dev.ragnarok.fenrir.activity.MainActivity.openAudioPlayer"
         const val ACTION_SEND_ATTACHMENTS = "dev.ragnarok.fenrir.ACTION_SEND_ATTACHMENTS"
-        const val ACTION_SWITH_ACCOUNT = "dev.ragnarok.fenrir.ACTION_SWITH_ACCOUNT"
+
+        const val ACTION_SWITCH_ACCOUNT = "dev.ragnarok.fenrir.ACTION_SWITCH_ACCOUNT"
         const val ACTION_SHORTCUT_WALL = "dev.ragnarok.fenrir.ACTION_SHORTCUT_WALL"
         const val ACTION_OPEN_WALL = "dev.ragnarok.fenrir.ACTION_OPEN_WALL"
+        const val ACTION_CHAT_FROM_SHORTCUT = "dev.ragnarok.fenrir.ACTION_CHAT_FROM_SHORTCUT"
+
         const val EXTRA_NO_REQUIRE_PIN = "no_require_pin"
 
         /**

@@ -165,7 +165,11 @@ interface ISettings {
         val registered: List<Long>
         var current: Long
         val currentAccessToken: String?
-        fun remove(accountId: Long)
+
+        @AccountType
+        val currentType: Int
+        val currentHidden: Boolean
+        fun remove(accountId: Long): Long?
         fun registerAccountId(accountId: Long, setCurrent: Boolean)
         fun storeAccessToken(accountId: Long, accessToken: String?)
         fun storeLogin(accountId: Long, loginCombo: String?)
@@ -181,6 +185,8 @@ interface ISettings {
         fun removeAccessToken(accountId: Long)
         fun removeType(accountId: Long)
         fun removeLogin(accountId: Long)
+
+        fun loadAccounts(refresh: Boolean)
 
         companion object {
             const val INVALID_ID = -1L

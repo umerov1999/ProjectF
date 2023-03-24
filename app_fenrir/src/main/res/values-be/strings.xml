@@ -1552,6 +1552,7 @@
     <string name="on_server">На серверы</string>
     <string name="no_system_equalizer">Няма сістэмнага эквалайзера</string>
     <string name="show_hidden_accounts">Паказваць схаваныя акаўнты</string>
+    <string name="disable_hidden_accounts">Блакаваць схаваныя акаўнты</string>
     <string name="set_device">Задаць прыладу</string>
     <string name="not_read">Непрачытаныя</string>
     <string name="not_read_show">Хуткія непрачытаныя</string>
@@ -1715,4 +1716,5 @@
     <string name="answer">Адказаць</string>
     <string name="clips">Кліпы</string>
     <string name="stories">Гісторыі</string>
+    <string name="account_not_registered">Акаўнт не зарэгістраваны!</string>
 </resources>

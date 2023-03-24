@@ -355,6 +355,14 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         mAdapter?.notifyItemRemoved(position)
     }
 
+    override fun notifyItemChanged(position: Int) {
+        mAdapter?.notifyItemChanged(position)
+    }
+
+    override fun notifyItemRangeChanged(positionStart: Int, count: Int) {
+        mAdapter?.notifyItemRangeChanged(positionStart, count)
+    }
+
     override fun notifyItemRangeRemoved(positionStart: Int, count: Int) {
         mAdapter?.notifyItemRangeRemoved(positionStart, count)
     }

@@ -302,6 +302,17 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
                 defaultValue = true
                 titleRes = R.string.show_hidden_accounts
             }
+
+            switch("disable_hidden_accounts") {
+                defaultValue = false
+                titleRes = R.string.disable_hidden_accounts
+                onCheckedBeforeChange {
+                    !Settings.get().accounts().currentHidden
+                }
+                onCheckedChange {
+                    Settings.get().accounts().loadAccounts(true)
+                }
+            }
         }
     }
 

@@ -162,7 +162,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         Settings.get()
             .accounts()
             .removeDevice(account.getOwnerObjectId())
-        Settings.get()
+        val s = Settings.get()
             .accounts()
             .remove(account.getOwnerObjectId())
         DBHelper.removeDatabaseFor(context, account.getOwnerObjectId())
@@ -170,6 +170,14 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         val indx = indexOf(account.getOwnerObjectId())
         mData.removeAt(indx)
         view?.notifyItemRemoved(indx)
+        s?.let {
+            for (o in mData.indices) {
+                if (mData[o].getOwnerObjectId() == s) {
+                    view?.notifyItemChanged(o)
+                    break
+                }
+            }
+        }
         view?.resolveEmptyText(mData.isEmpty())
         appendDisposable(
             Includes.stores.stickers().clearAccount(account.getOwnerObjectId()).fromIOToMain()
