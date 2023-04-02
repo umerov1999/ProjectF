@@ -27,7 +27,7 @@ class TopicsAdapter(
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
     private var firstLastPadding = 0
     override fun onBindItemViewHolder(viewHolder: ViewHolder, position: Int, type: Int) {
-        val item = getItem(position - headersCount)
+        val item = getItem(position)
         val context = viewHolder.itemView.context
         viewHolder.title.text = item.title
         viewHolder.subtitle.text = context.getString(

@@ -6,6 +6,7 @@ import dev.ragnarok.fenrir.api.model.VKApiVideoAlbum
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.SearchVideoResponse
+import dev.ragnarok.fenrir.api.model.server.VKApiVideosUploadServer
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
 
@@ -225,6 +226,20 @@ class IVideoService : IServiceRest() {
                 "name" to name,
                 "desc" to desc
             ), baseInt
+        )
+    }
+
+    fun getVideoServer(
+        is_private: Int?,
+        group_id: Long?,
+        name: String?
+    ): Single<BaseResponse<VKApiVideosUploadServer>> {
+        return rest.request(
+            "video.save", form(
+                "is_private" to is_private,
+                "group_id" to group_id,
+                "name" to name
+            ), base(VKApiVideosUploadServer.serializer())
         )
     }
 }

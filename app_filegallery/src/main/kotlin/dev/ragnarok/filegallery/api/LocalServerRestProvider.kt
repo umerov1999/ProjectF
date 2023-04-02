@@ -15,8 +15,8 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
-class OtherRestProvider @SuppressLint("CheckResult") constructor(private val mainSettings: IMainSettings) :
-    IOtherRestProvider {
+class LocalServerRestProvider @SuppressLint("CheckResult") constructor(private val mainSettings: IMainSettings) :
+    ILocalServerRestProvider {
     private val localServerRestLock = Any()
     private var localServerRestInstance: SimplePostHttp? = null
     private fun onLocalServerSettingsChanged() {

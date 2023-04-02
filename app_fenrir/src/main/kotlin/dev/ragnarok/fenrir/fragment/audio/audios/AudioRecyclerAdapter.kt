@@ -729,9 +729,9 @@ class AudioRecyclerAdapter(
         }
         viewHolder.play.setOnClickListener { v: View ->
             if (Settings.get().main().isRevert_play_audio) {
-                doMenu(viewHolder, position, v, audio)
+                doMenu(viewHolder, getItemRawPosition(viewHolder.bindingAdapterPosition), v, audio)
             } else {
-                doPlay(position, audio)
+                doPlay(getItemRawPosition(viewHolder.bindingAdapterPosition), audio)
             }
         }
         if (!iSSelectMode) {
@@ -785,9 +785,14 @@ class AudioRecyclerAdapter(
                 viewHolder.cancelSelectionAnimation()
                 viewHolder.startSomeAnimation()
                 if (Settings.get().main().isRevert_play_audio) {
-                    doPlay(position, audio)
+                    doPlay(getItemRawPosition(viewHolder.bindingAdapterPosition), audio)
                 } else {
-                    doMenu(viewHolder, position, view, audio)
+                    doMenu(
+                        viewHolder,
+                        getItemRawPosition(viewHolder.bindingAdapterPosition),
+                        view,
+                        audio
+                    )
                 }
             }
         } else {
@@ -854,7 +859,7 @@ class AudioRecyclerAdapter(
         val Track: View = itemView.findViewById(R.id.track_option)
         val selectionView: MaterialCardView = itemView.findViewById(R.id.item_audio_selection)
         val isSelectedView: MaterialCardView = itemView.findViewById(R.id.item_audio_select_add)
-        val animationAdapter: Animator.AnimatorListener
+        private val animationAdapter: Animator.AnimatorListener
         var animator: ObjectAnimator? = null
         fun startSelectionAnimation() {
             selectionView.setCardBackgroundColor(CurrentTheme.getColorPrimary(mContext))

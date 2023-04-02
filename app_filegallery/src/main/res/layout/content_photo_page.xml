@@ -10,6 +10,15 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true" />
 
+    <View
+        android:id="@+id/selected_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:alpha="0.7"
+        android:background="?colorPrimary"
+        android:visibility="gone" />
+
     <dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"

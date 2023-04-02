@@ -32,7 +32,7 @@ class LogsAdapter(data: MutableList<LogEventWrapper>, private val actionListener
     }
 
     private fun canReduce(body: String?): Boolean {
-        return Utils.safeLenghtOf(body) > MAX_BODY_LENGHT
+        return Utils.safeLenghtOf(body) > MAX_BODY_LENGTH
     }
 
     private fun setupBodyRoot(holder: Holder, wrapper: LogEventWrapper) {
@@ -43,7 +43,7 @@ class LogsAdapter(data: MutableList<LogEventWrapper>, private val actionListener
             holder.body.text = body
         } else {
             holder.buttonExpand.visibility = View.VISIBLE
-            holder.body.text = AppTextUtils.reduceText(body, MAX_BODY_LENGHT)
+            holder.body.text = AppTextUtils.reduceText(body, MAX_BODY_LENGTH)
         }
     }
 
@@ -71,6 +71,6 @@ class LogsAdapter(data: MutableList<LogEventWrapper>, private val actionListener
     }
 
     companion object {
-        private const val MAX_BODY_LENGHT = 400
+        private const val MAX_BODY_LENGTH = 400
     }
 }

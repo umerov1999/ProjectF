@@ -38,13 +38,31 @@ object HttpLoggerAndParser {
         return this
     }
 
-    val DEFAULT_LOGGING_INTERCEPTOR: OkHttp3LoggingInterceptor by lazy {
+    private val DEFAULT_LOGGING_INTERCEPTOR: OkHttp3LoggingInterceptor by lazy {
+        OkHttp3LoggingInterceptor().setLevel(OkHttp3LoggingInterceptor.Level.BODY)
+    }
+
+    private val UPLOAD_LOGGING_INTERCEPTOR: OkHttp3LoggingInterceptor by lazy {
+        //OkHttp3LoggingInterceptor().setLevel(OkHttp3LoggingInterceptor.Level.HEADERS)
         OkHttp3LoggingInterceptor().setLevel(OkHttp3LoggingInterceptor.Level.BODY)
     }
 
     fun adjust(builder: OkHttpClient.Builder) {
         if (Constants.IS_DEBUG) {
+            /*
+            if (Settings.get().other().currentParser == ParserType.JSON) {
+                builder.addInterceptor(DEFAULT_LOGGING_INTERCEPTOR)
+            } else {
+                builder.addInterceptor(UPLOAD_LOGGING_INTERCEPTOR)
+            }
+             */
             builder.addInterceptor(DEFAULT_LOGGING_INTERCEPTOR)
+        }
+    }
+
+    fun adjustUpload(builder: OkHttpClient.Builder) {
+        if (Constants.IS_DEBUG) {
+            builder.addInterceptor(UPLOAD_LOGGING_INTERCEPTOR)
         }
     }
 

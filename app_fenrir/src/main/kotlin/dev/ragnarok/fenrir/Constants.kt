@@ -17,8 +17,8 @@ object Constants {
     const val FILE_PROVIDER_AUTHORITY: String = BuildConfig.APPLICATION_ID + ".file_provider"
     const val VK_ANDROID_APP_VERSION_NAME = "8.15"
     const val VK_ANDROID_APP_VERSION_CODE = "15271"
-    const val KATE_APP_VERSION_NAME = "97.1 lite"
-    const val KATE_APP_VERSION_CODE = "532"
+    const val KATE_APP_VERSION_NAME = "99 lite"
+    const val KATE_APP_VERSION_CODE = "535"
     const val API_ID: Int = BuildConfig.VK_API_APP_ID
     const val SECRET: String = BuildConfig.VK_CLIENT_SECRET
     const val PHOTOS_PATH = "DCIM/Fenrir"

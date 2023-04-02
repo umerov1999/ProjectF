@@ -95,7 +95,7 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
             }
         }
         holder.clicked.setOnClickListener {
-            clickListener?.onClick(position, category)
+            clickListener?.onClick(holder.bindingAdapterPosition, category)
         }
     }
 
@@ -133,7 +133,7 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
             }
         }
         holder.clicked.setOnClickListener {
-            clickListener?.onClick(position, category)
+            clickListener?.onClick(holder.bindingAdapterPosition, category)
         }
         holder.gradient.background = GradientDrawable(
             GradientDrawable.Orientation.TL_BR,

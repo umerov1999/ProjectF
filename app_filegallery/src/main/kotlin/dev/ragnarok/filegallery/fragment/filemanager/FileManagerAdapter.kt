@@ -448,7 +448,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
             }
         }
         holder.itemView.setOnLongClickListener {
-            doAudioMenu(position, item)
+            doAudioMenu(holder.bindingAdapterPosition, item)
             true
         }
         updateAudioStatus(holder, item)

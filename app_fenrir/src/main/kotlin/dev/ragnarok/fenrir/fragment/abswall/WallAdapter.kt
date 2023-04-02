@@ -60,9 +60,9 @@ class WallAdapter(
             }
 
             TYPE_SCHEDULED -> {
-                val scheludedHolder = viewHolder as ScheludedHolder
-                configNormalPost(scheludedHolder, item)
-                bindScheludedButtonsBlock(scheludedHolder, item)
+                val scheduledHolder = viewHolder as ScheduledHolder
+                configNormalPost(scheduledHolder, item)
+                bindScheludedButtonsBlock(scheduledHolder, item)
             }
 
             TYPE_DELETED -> bindDeleted(viewHolder as DeletedHolder, item)
@@ -73,7 +73,7 @@ class WallAdapter(
         nonPublishedPostActionListener = listener
     }
 
-    private fun bindScheludedButtonsBlock(holder: ScheludedHolder, post: Post) {
+    private fun bindScheludedButtonsBlock(holder: ScheduledHolder, post: Post) {
         holder.deleteButton.setOnClickListener {
             nonPublishedPostActionListener?.onButtonRemoveClick(post)
         }
@@ -194,7 +194,7 @@ class WallAdapter(
         when (type) {
             TYPE_NORMAL -> return NormalHolder(view)
             TYPE_DELETED -> return DeletedHolder(view)
-            TYPE_SCHEDULED -> return ScheludedHolder(view)
+            TYPE_SCHEDULED -> return ScheduledHolder(view)
         }
         throw IllegalArgumentException()
     }
@@ -287,7 +287,7 @@ class WallAdapter(
 
     }
 
-    private inner class ScheludedHolder(view: View) : AbsPostHolder(view) {
+    private inner class ScheduledHolder(view: View) : AbsPostHolder(view) {
         val deleteButton: CircleCounterButton = root.findViewById(R.id.button_delete)
     }
 

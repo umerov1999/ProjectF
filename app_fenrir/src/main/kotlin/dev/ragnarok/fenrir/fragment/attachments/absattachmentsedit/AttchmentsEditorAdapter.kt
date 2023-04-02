@@ -47,7 +47,7 @@ class AttchmentsEditorAdapter(
         sharedHolders.put(attachment.id, viewHolder)
         configView(attachment, viewHolder)
         viewHolder.vRemove.setOnClickListener {
-            val dataposition = viewHolder.bindingAdapterPosition - headersCount
+            val dataposition = getItemRawPosition(viewHolder.bindingAdapterPosition)
             callback.onRemoveClick(dataposition, attachment)
         }
     }

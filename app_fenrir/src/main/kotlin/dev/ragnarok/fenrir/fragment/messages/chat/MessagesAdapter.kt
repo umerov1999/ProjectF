@@ -85,34 +85,34 @@ class MessagesAdapter(
     ) {
         val message = getItem(position)
         when (type) {
-            TYPE_SERVICE -> bindServiceHolder(viewHolder as ServiceMessageHolder, message, position)
+            TYPE_SERVICE -> bindServiceHolder(viewHolder as ServiceMessageHolder, message)
             TYPE_GRAFFITI_FRIEND, TYPE_GRAFFITI_MY, TYPE_MY_MESSAGE, TYPE_FRIEND_MESSAGE -> bindNormalMessage(
                 viewHolder as MessageHolder,
-                message,
-                position
+                message
             )
 
             TYPE_STICKER_FRIEND, TYPE_STICKER_MY -> bindStickerHolder(
                 viewHolder as StickerMessageHolder,
-                message,
-                position
+                message
             )
 
             TYPE_GIFT_FRIEND, TYPE_GIFT_MY -> bindGiftHolder(
                 viewHolder as GiftMessageHolder,
-                message,
-                position
+                message
             )
         }
     }
 
-    private fun bindStickerHolder(holder: StickerMessageHolder, message: Message, position: Int) {
-        bindBaseMessageHolder(holder, message, position)
+    private fun bindStickerHolder(holder: StickerMessageHolder, message: Message) {
+        bindBaseMessageHolder(holder, message)
         if (message.isDeleted) {
             holder.root.alpha = 0.6f
             holder.Restore.visibility = View.VISIBLE
             holder.Restore.setOnClickListener {
-                onMessageActionListener?.onRestoreClick(message, holder.bindingAdapterPosition)
+                onMessageActionListener?.onRestoreClick(
+                    message,
+                    getItemRawPosition(holder.bindingAdapterPosition)
+                )
             }
         } else {
             holder.root.alpha = 1f
@@ -166,13 +166,16 @@ class MessagesAdapter(
         setItems(messages)
     }
 
-    private fun bindGiftHolder(holder: GiftMessageHolder, message: Message, position: Int) {
-        bindBaseMessageHolder(holder, message, position)
+    private fun bindGiftHolder(holder: GiftMessageHolder, message: Message) {
+        bindBaseMessageHolder(holder, message)
         if (message.isDeleted) {
             holder.root.alpha = 0.6f
             holder.Restore.visibility = View.VISIBLE
             holder.Restore.setOnClickListener {
-                onMessageActionListener?.onRestoreClick(message, holder.bindingAdapterPosition)
+                onMessageActionListener?.onRestoreClick(
+                    message,
+                    getItemRawPosition(holder.bindingAdapterPosition)
+                )
             }
         } else {
             holder.root.alpha = 1f
@@ -251,7 +254,7 @@ class MessagesAdapter(
         root.background.alpha = 60
     }
 
-    private fun bindBaseMessageHolder(holder: BaseMessageHolder, message: Message, position: Int) {
+    private fun bindBaseMessageHolder(holder: BaseMessageHolder, message: Message) {
         holder.important.visibility = if (message.isImportant) View.VISIBLE else View.GONE
         bindStatusText(holder.status, message.status, message.date, message.updateTime)
         var read =
@@ -270,22 +273,36 @@ class MessagesAdapter(
         }
         if (holder.user != null) holder.user.text = message.sender?.fullName
         holder.avatar.setOnClickListener {
-            onMessageActionListener?.onAvatarClick(message, message.senderId, position)
+            onMessageActionListener?.onAvatarClick(
+                message,
+                message.senderId,
+                getItemRawPosition(holder.bindingAdapterPosition)
+            )
         }
         holder.avatar.setOnLongClickListener {
-            onMessageActionListener?.onLongAvatarClick(message, message.senderId, position)
+            onMessageActionListener?.onLongAvatarClick(
+                message,
+                message.senderId,
+                getItemRawPosition(holder.bindingAdapterPosition)
+            )
             true
         }
         holder.itemView.setOnClickListener {
-            onMessageActionListener?.onMessageClicked(message, position)
+            onMessageActionListener?.onMessageClicked(
+                message,
+                getItemRawPosition(holder.bindingAdapterPosition)
+            )
         }
         holder.itemView.setOnLongClickListener {
-            onMessageActionListener?.onMessageLongClick(message, position) == true
+            onMessageActionListener?.onMessageLongClick(
+                message,
+                getItemRawPosition(holder.bindingAdapterPosition)
+            ) == true
         }
     }
 
-    private fun bindNormalMessage(holder: MessageHolder, message: Message, position: Int) {
-        bindBaseMessageHolder(holder, message, position)
+    private fun bindNormalMessage(holder: MessageHolder, message: Message) {
+        bindBaseMessageHolder(holder, message)
         if (holder.botKeyboardView != null && message.keyboard?.inline == true && message.keyboard?.buttons?.size.orZero() > 0) {
             holder.botKeyboardView.visibility = View.VISIBLE
             holder.botKeyboardView.setButtons(message.keyboard?.buttons, false)
@@ -301,7 +318,10 @@ class MessagesAdapter(
             holder.root.alpha = 0.6f
             holder.Restore.visibility = View.VISIBLE
             holder.Restore.setOnClickListener {
-                onMessageActionListener?.onRestoreClick(message, holder.bindingAdapterPosition)
+                onMessageActionListener?.onRestoreClick(
+                    message,
+                    getItemRawPosition(holder.bindingAdapterPosition)
+                )
             }
         } else {
             holder.root.alpha = 1f
@@ -382,16 +402,19 @@ class MessagesAdapter(
         }
     }
 
-    private fun bindServiceHolder(holder: ServiceMessageHolder, message: Message, position: Int) {
+    private fun bindServiceHolder(holder: ServiceMessageHolder, message: Message) {
         if (message.isDeleted) {
             holder.root.alpha = 0.6f
-            holder.Restore.visibility = View.VISIBLE
-            holder.Restore.setOnClickListener {
-                onMessageActionListener?.onRestoreClick(message, holder.bindingAdapterPosition)
+            holder.bRestore.visibility = View.VISIBLE
+            holder.bRestore.setOnClickListener {
+                onMessageActionListener?.onRestoreClick(
+                    message,
+                    getItemRawPosition(holder.bindingAdapterPosition)
+                )
             }
         } else {
             holder.root.alpha = 1f
-            holder.Restore.visibility = View.GONE
+            holder.bRestore.visibility = View.GONE
         }
         if (message.keyboard?.inline == true && message.keyboard?.buttons?.size.orZero() > 0) {
             holder.botKeyboardView.visibility = View.VISIBLE
@@ -410,7 +433,10 @@ class MessagesAdapter(
         bindReadState(holder.itemView, message.status == MessageStatus.SENT && read)
         holder.tvAction.text = message.getServiceText(context)
         holder.itemView.setOnClickListener {
-            onMessageActionListener?.onMessageClicked(message, position)
+            onMessageActionListener?.onMessageClicked(
+                message,
+                getItemRawPosition(holder.bindingAdapterPosition)
+            )
         }
         holder.itemView.setOnLongClickListener {
             onMessageActionListener?.onMessageDelete(message)
@@ -527,7 +553,7 @@ class MessagesAdapter(
         val attachmentsRoot: View = itemView.findViewById(R.id.item_message_attachment_container)
         val mAttachmentsHolder: AttachmentsHolder = AttachmentsHolder()
         val botKeyboardView: BotKeyboardView = itemView.findViewById(R.id.input_keyboard_container)
-        val Restore: Button = itemView.findViewById(R.id.item_message_restore)
+        val bRestore: Button = itemView.findViewById(R.id.item_message_restore)
 
         init {
             mAttachmentsHolder.setVgAudios(itemView.findViewById(R.id.audio_attachments))

@@ -30,7 +30,12 @@ class FaveArticlesAdapter(private var data: List<Article>, private val context: 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val article = data[position]
         holder.btFave.setImageResource(R.drawable.favorite)
-        holder.btFave.setOnClickListener { clickListener?.onDelete(position, article) }
+        holder.btFave.setOnClickListener {
+            clickListener?.onDelete(
+                holder.bindingAdapterPosition,
+                article
+            )
+        }
         if (article.uRL != null) {
             holder.ivButton.visibility = View.VISIBLE
             holder.ivButton.setOnClickListener {

@@ -52,4 +52,28 @@ object BitmapSafeResize {
         bitmap.recycle()
         return tmp
     }
+
+    interface ResizeBitmap {
+        fun doResize(resizedWidth: Int, resizedHeight: Int)
+    }
+
+    fun checkSizeOfBitmapP(sourceWidth: Int, sourceHeight: Int, callback: ResizeBitmap) {
+        if (maxResolution < 0 || sourceWidth <= 0 || sourceHeight <= 0 || sourceWidth <= maxResolution && sourceHeight <= maxResolution) {
+            return
+        }
+        var mWidth = sourceWidth
+        var mHeight = sourceHeight
+        val mCo = mHeight.coerceAtMost(mWidth).toFloat() / mHeight.coerceAtLeast(mWidth)
+        if (mWidth > mHeight) {
+            mWidth = maxResolution
+            mHeight = (maxResolution * mCo).toInt()
+        } else {
+            mHeight = maxResolution
+            mWidth = (maxResolution * mCo).toInt()
+        }
+        if (mWidth <= 0 || mHeight <= 0) {
+            return
+        }
+        callback.doResize(mWidth, mHeight)
+    }
 }

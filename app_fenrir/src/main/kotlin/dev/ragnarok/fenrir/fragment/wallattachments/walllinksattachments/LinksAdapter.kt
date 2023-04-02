@@ -58,7 +58,10 @@ class LinksAdapter(data: MutableList<Link>) :
             viewHolder.ivEmpty.visibility = View.VISIBLE
         }
         viewHolder.itemView.setOnClickListener {
-            mActionListener?.onLinkClick(viewHolder.bindingAdapterPosition, item)
+            mActionListener?.onLinkClick(
+                getItemRawPosition(viewHolder.bindingAdapterPosition),
+                item
+            )
         }
         viewHolder.itemView.setOnLongClickListener {
             linkConversationListener ?: return@setOnLongClickListener false

@@ -191,6 +191,8 @@ object BitmapUtils {
                     ImageDecoder.ALLOCATOR_SOFTWARE
                 }
             }
+            var resWidth = imageInfo.size.width
+            var resHeight = imageInfo.size.height
             if (request.hasSize()) {
                 val size = imageInfo.size
                 val width = size.width
@@ -200,8 +202,16 @@ object BitmapUtils {
                 if (shouldResize(request.onlyScaleDown, width, height, targetWidth, targetHeight)) {
                     val ratio = ratio(targetWidth, targetHeight, width, height, request)
                     imageDecoder.setTargetSize(width / ratio, height / ratio)
+                    resWidth = width / ratio
+                    resHeight = height / ratio
                 }
             }
+            BitmapSafeResize.checkSizeOfBitmapP(resWidth, resHeight, object :
+                BitmapSafeResize.ResizeBitmap {
+                override fun doResize(resizedWidth: Int, resizedHeight: Int) {
+                    imageDecoder.setTargetSize(resizedWidth, resizedHeight)
+                }
+            })
         }
     }
 

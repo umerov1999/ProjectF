@@ -1,14 +1,11 @@
 package dev.ragnarok.filegallery.api.interfaces
 
 import androidx.annotation.CheckResult
-import dev.ragnarok.filegallery.api.PercentagePublisher
-import dev.ragnarok.filegallery.api.model.response.BaseResponse
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileRemote
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
 import io.reactivex.rxjava3.core.Single
-import java.io.InputStream
 
 interface ILocalServerApi {
     @CheckResult
@@ -72,12 +69,4 @@ interface ILocalServerApi {
 
     @CheckResult
     fun rebootPC(type: String?): Single<Int>
-
-    @CheckResult
-    fun remotePlayAudioRx(
-        server: String,
-        filename: String?,
-        inputStream: InputStream,
-        listener: PercentagePublisher?
-    ): Single<BaseResponse<Int>>
 }

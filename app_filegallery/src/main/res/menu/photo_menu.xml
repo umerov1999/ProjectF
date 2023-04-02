@@ -6,4 +6,13 @@
     <item
         android:id="@+id/save_on_drive"
         android:title="@string/save_to_drive" />
+    <item
+        android:id="@+id/start_select_mode"
+        android:title="@string/start_select_mode" />
+    <item
+        android:id="@+id/end_select_mode"
+        android:title="@string/end_select_mode" />
+    <item
+        android:id="@+id/send_action"
+        android:title="@string/send_action" />
 </menu>

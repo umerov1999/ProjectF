@@ -449,9 +449,9 @@ class AudioLocalServerRecyclerAdapter(
         }
         holder.play.setOnClickListener { v: View ->
             if (Settings.get().main().isRevert_play_audio) {
-                doMenu(holder, position, v, audio)
+                doMenu(holder, holder.bindingAdapterPosition, v, audio)
             } else {
-                doPlay(position, audio)
+                doPlay(holder.bindingAdapterPosition, audio)
             }
         }
         holder.Track.setOnLongClickListener { v: View? ->
@@ -500,9 +500,9 @@ class AudioLocalServerRecyclerAdapter(
             holder.cancelSelectionAnimation()
             holder.startSomeAnimation()
             if (Settings.get().main().isRevert_play_audio) {
-                doPlay(position, audio)
+                doPlay(holder.bindingAdapterPosition, audio)
             } else {
-                doMenu(holder, position, view, audio)
+                doMenu(holder, holder.bindingAdapterPosition, view, audio)
             }
         }
     }

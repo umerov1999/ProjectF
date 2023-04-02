@@ -1063,9 +1063,9 @@ class CatalogV2SectionAdapter(
             }
             play.setOnClickListener { v: View ->
                 if (Settings.get().main().isRevert_play_audio) {
-                    doMenu(this, position, v, audio)
+                    doMenu(this, getItemRawPosition(bindingAdapterPosition), v, audio)
                 } else {
-                    doPlay(position, audio)
+                    doPlay(getItemRawPosition(bindingAdapterPosition), audio)
                 }
             }
             if (isLongPressDownload) {
@@ -1121,9 +1121,9 @@ class CatalogV2SectionAdapter(
                 cancelSelectionAnimation()
                 startSomeAnimation()
                 if (Settings.get().main().isRevert_play_audio) {
-                    doPlay(position, audio)
+                    doPlay(getItemRawPosition(bindingAdapterPosition), audio)
                 } else {
-                    doMenu(this, position, view, audio)
+                    doMenu(this, getItemRawPosition(bindingAdapterPosition), view, audio)
                 }
             }
         }

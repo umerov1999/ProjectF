@@ -20,9 +20,17 @@ class HorizontalMenuAdapter(data: MutableList<CommunityDetails.Menu>) :
             viewHolder.menu_image.visibility = View.VISIBLE
             displayAvatar(viewHolder.menu_image, null, item.cover, Constants.PICASSO_TAG)
         } else viewHolder.menu_image.visibility = View.INVISIBLE
-        viewHolder.itemView.setOnClickListener { listener?.onWallMenuClick(item, position) }
+        viewHolder.itemView.setOnClickListener {
+            listener?.onWallMenuClick(
+                item,
+                getItemRawPosition(viewHolder.bindingAdapterPosition)
+            )
+        }
         viewHolder.itemView.setOnLongClickListener {
-            listener?.onWallMenuLongClick(item, position)
+            listener?.onWallMenuLongClick(
+                item,
+                getItemRawPosition(viewHolder.bindingAdapterPosition)
+            )
             true
         }
     }

@@ -13,38 +13,38 @@ buildscript {
     ext.appFileGalleryVersionName = "1.999"
 
     //androidx libraries
-    ext.activityVersion = "1.7.0-rc01"
+    ext.activityVersion = "1.7.0"
     ext.annotationVersion = "1.6.0"
     ext.appcompatVersion = "1.6.1"
     ext.biometricVersion = "1.2.0-alpha05"
     ext.browserVersion = "1.5.0"
-    ext.cameraVersion = "1.2.1"
+    ext.cameraVersion = "1.2.2"
     ext.cardviewVersion = "1.0.0"
-    ext.collectionVersion = "1.3.0-alpha02"
+    ext.collectionVersion = "1.3.0-alpha04"
     ext.concurentVersion = "1.2.0-alpha01"
-    ext.constraintlayoutVersion = "2.2.0-alpha08"
+    ext.constraintlayoutVersion = "2.2.0-alpha09"
     ext.coordinatorlayoutVersion = "1.2.0"
     ext.coreVersion = "1.10.0-rc01"
     ext.customviewVersion = "1.2.0-alpha02"
     ext.customviewPoolingcontainerVersion = "1.0.0"
-    ext.drawerlayoutVersion = "1.2.0-rc01"
+    ext.drawerlayoutVersion = "1.2.0"
     ext.dynamicanimationVersion = "1.1.0-alpha03"
     ext.exifinterfaceVersion = "1.3.6"
-    ext.fragmentVersion = "1.6.0-alpha07"
-    ext.lifecycleVersion = "2.6.0"
+    ext.fragmentVersion = "1.6.0-alpha08"
+    ext.lifecycleVersion = "2.6.1"
     ext.loaderVersion = "1.1.0"
     ext.mediaVersion = "1.7.0-alpha01"
     ext.recyclerviewVersion = "1.3.0"
-    ext.savedStateVersion = "1.2.0"
+    ext.savedStateVersion = "1.2.1"
     ext.swiperefreshlayoutVersion = "1.2.0-alpha01"
-    ext.tracingVersion = "1.2.0-beta01"
+    ext.tracingVersion = "1.2.0-beta02"
     ext.transitionVersion = "1.4.1"
     ext.vectordrawableVersion = "1.2.0-beta01"
-    ext.webkitVersion = "1.6.0"
-    ext.workVersion = "2.8.0"
+    ext.webkitVersion = "1.6.1"
+    ext.workVersion = "2.8.1"
 
     //firebase libraries
-    ext.firebaseDatatransportVersion = "18.1.7"
+    ext.firebaseDatatransportVersion = "18.1.8"
     ext.firebaseMessagingVersion = "23.1.2"
 
     //firebase common libraries
@@ -56,7 +56,7 @@ buildscript {
     ext.autoValueVersion = "1.10.1"
 
     //common libraries
-    ext.kotlin_version = "1.8.20-RC2"
+    ext.kotlin_version = "1.8.20"
     ext.kotlin_coroutines = "1.7.0-Beta"
     ext.kotlin_serializer = "1.5.0"
     ext.okhttpLibraryVersion = "5.0.0-alpha.11"
@@ -67,7 +67,7 @@ buildscript {
     ext.errorproneVersion = "2.15.0"
     ext.checkerCompatQualVersion = "2.5.5"
     ext.checkerQualAndroidVersion = "3.32.0"
-    ext.desugarLibraryVersion = "2.0.2"
+    ext.desugarLibraryVersion = "2.0.3"
 
     //APP_PROPS
     ext.targetAbi = is_developer_build ? ["arm64-v8a", "x86_64"] : ["arm64-v8a", "armeabi-v7a", "x86_64"]
@@ -91,7 +91,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.0.0-beta05"
+        classpath "com.android.tools.build:gradle:8.0.0-rc01"
         classpath "com.google.gms:google-services:4.3.15"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"

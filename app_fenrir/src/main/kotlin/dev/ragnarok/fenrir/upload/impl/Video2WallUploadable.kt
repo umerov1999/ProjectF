@@ -37,7 +37,7 @@ class Video2WallUploadable(
         val ownerId = upload.destination.ownerId
         val groupId = if (ownerId < 0) abs(ownerId) else null
         val serverSingle = networker.vkDefault(accountId)
-            .docs()
+            .video()
             .getVideoServer(1, groupId, UploadUtils.findFileName(context, upload.fileUri))
             .map<UploadServer> { s: VKApiVideosUploadServer -> s }
         return serverSingle.flatMap { server ->

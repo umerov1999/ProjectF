@@ -18,4 +18,5 @@ interface IPhotoPagerView : IMvpView, IErrorView, IToastView {
     fun returnOnlyPos(position: Int)
     fun returnFileInfo(path: String)
     fun displayVideo(video: Video)
+    fun setupOptionMenu(isLocal: Boolean)
 }

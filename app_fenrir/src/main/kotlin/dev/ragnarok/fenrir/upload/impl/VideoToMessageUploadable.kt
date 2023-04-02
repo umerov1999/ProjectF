@@ -36,7 +36,7 @@ class VideoToMessageUploadable(
         val accountId = upload.accountId
         val messageId = upload.destination.id
         val serverSingle = networker.vkDefault(accountId)
-            .docs()
+            .video()
             .getVideoServer(1, null, UploadUtils.findFileName(context, upload.fileUri))
             .map<UploadServer> { s: VKApiVideosUploadServer -> s }
         return serverSingle.flatMap { server ->

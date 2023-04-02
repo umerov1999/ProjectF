@@ -48,7 +48,7 @@ class FaveVideosAdapter(private val context: Context, private var data: List<Vid
             holder.videoService.visibility = View.GONE
         }
         holder.card.setOnClickListener {
-            videoOnClickListener?.onVideoClick(position, video)
+            videoOnClickListener?.onVideoClick(holder.bindingAdapterPosition, video)
         }
     }
 

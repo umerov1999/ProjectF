@@ -4,7 +4,6 @@ import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiDoc
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiDocsUploadServer
-import dev.ragnarok.fenrir.api.model.server.VKApiVideosUploadServer
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
 
@@ -123,20 +122,6 @@ class IDocsService : IServiceRest() {
             "docs.getUploadServer",
             form("group_id" to groupId),
             base(VKApiDocsUploadServer.serializer())
-        )
-    }
-
-    fun getVideoServer(
-        is_private: Int?,
-        group_id: Long?,
-        name: String?
-    ): Single<BaseResponse<VKApiVideosUploadServer>> {
-        return rest.request(
-            "video.save", form(
-                "is_private" to is_private,
-                "group_id" to group_id,
-                "name" to name
-            ), base(VKApiVideosUploadServer.serializer())
         )
     }
 

@@ -367,18 +367,18 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
         }
         holder.play.setOnClickListener { v: View ->
             if (Settings.get().main().isRevert_play_audio) {
-                doMenu(position, v, audio)
+                doMenu(holder.bindingAdapterPosition, v, audio)
             } else {
-                doPlay(position, audio)
+                doPlay(holder.bindingAdapterPosition, audio)
             }
         }
         holder.Track.setOnClickListener { view: View ->
             holder.cancelSelectionAnimation()
             holder.startSomeAnimation()
             if (Settings.get().main().isRevert_play_audio) {
-                doPlay(position, audio)
+                doPlay(holder.bindingAdapterPosition, audio)
             } else {
-                doMenu(position, view, audio)
+                doMenu(holder.bindingAdapterPosition, view, audio)
             }
         }
     }

@@ -30,7 +30,7 @@ class VideoUploadable(private val context: Context, private val networker: INetw
         val groupId = if (ownerId >= 0) null else ownerId
         val isPrivate = upload.destination.id == 0
         val serverSingle = networker.vkDefault(accountId)
-            .docs()
+            .video()
             .getVideoServer(
                 if (isPrivate) 1 else 0, groupId, UploadUtils.findFileName(
                     context, upload.fileUri

@@ -51,7 +51,7 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
             val filename = UploadUtils.findFileName(
                 context, uri
             )
-            networker.localServerApi()
+            networker.uploads()
                 .remotePlayAudioRx(server_url, filename, inputStream, listener)
                 .doFinally(safelyCloseAction(inputStream))
                 .flatMap { dto ->

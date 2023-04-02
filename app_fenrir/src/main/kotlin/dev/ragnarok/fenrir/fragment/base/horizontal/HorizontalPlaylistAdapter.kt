@@ -68,8 +68,18 @@ class HorizontalPlaylistAdapter(data: MutableList<AudioPlaylist>) :
         }
         viewHolder.update.text =
             AppTextUtils.getDateFromUnixTime(context, playlist.getUpdate_time())
-        viewHolder.add.setOnClickListener { listener?.onPlayListClick(playlist, position) }
-        viewHolder.share.setOnClickListener { listener?.onShareClick(playlist, position) }
+        viewHolder.add.setOnClickListener {
+            listener?.onPlayListClick(
+                playlist,
+                getItemRawPosition(viewHolder.bindingAdapterPosition)
+            )
+        }
+        viewHolder.share.setOnClickListener {
+            listener?.onShareClick(
+                playlist,
+                getItemRawPosition(viewHolder.bindingAdapterPosition)
+            )
+        }
         if (playlist.getId() >= 0) {
             viewHolder.add.visibility = View.VISIBLE
             viewHolder.share.visibility = View.VISIBLE

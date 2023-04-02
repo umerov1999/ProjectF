@@ -243,4 +243,7 @@
     <string name="scan_qr">Сканировать QR</string>
     <string name="client_rest_shutdown">Запрос отменён</string>
     <string name="internal_server_error">Ошибка сервера (HTTP: %1$d)</string>
+    <string name="start_select_mode">Режим выбора</string>
+    <string name="end_select_mode">Завершить выбор</string>
+    <string name="send_action">Отправить</string>
 </resources>

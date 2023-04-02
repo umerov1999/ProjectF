@@ -243,4 +243,7 @@
     <string name="scan_qr">Сканаваць QR</string>
     <string name="client_rest_shutdown">Запыт скасаваны</string>
     <string name="internal_server_error">Памылка сервера (HTTP: %1$d)</string>
+    <string name="start_select_mode">Рэжым выбару</string>
+    <string name="end_select_mode">Завяршыць выбар</string>
+    <string name="send_action">Адправіць</string>
 </resources>

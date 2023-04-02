@@ -92,7 +92,6 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
 
         companion object {
             /** A [Logger] defaults output appropriate for the current platform. */
-            @JvmField
             val DEFAULT: Logger = DefaultLogger()
 
             private class DefaultLogger : Logger {

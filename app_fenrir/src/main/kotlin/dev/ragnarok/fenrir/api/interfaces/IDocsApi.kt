@@ -5,7 +5,6 @@ import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiDoc
 import dev.ragnarok.fenrir.api.model.server.VKApiDocsUploadServer
-import dev.ragnarok.fenrir.api.model.server.VKApiVideosUploadServer
 import io.reactivex.rxjava3.core.Single
 
 interface IDocsApi {
@@ -29,13 +28,6 @@ interface IDocsApi {
 
     @CheckResult
     fun getMessagesUploadServer(peerId: Long?, type: String?): Single<VKApiDocsUploadServer>
-
-    @CheckResult
-    fun getVideoServer(
-        isPrivate: Int?,
-        group_id: Long?,
-        name: String?
-    ): Single<VKApiVideosUploadServer>
 
     @CheckResult
     operator fun get(

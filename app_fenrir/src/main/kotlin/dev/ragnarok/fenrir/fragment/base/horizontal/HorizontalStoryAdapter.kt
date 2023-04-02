@@ -61,11 +61,16 @@ class HorizontalStoryAdapter(data: MutableList<Story>) :
                 Constants.PICASSO_TAG
             )
         }
-        viewHolder.itemView.setOnClickListener { listener?.onStoryClick(item, position) }
+        viewHolder.itemView.setOnClickListener {
+            listener?.onStoryClick(
+                item,
+                getItemRawPosition(viewHolder.bindingAdapterPosition)
+            )
+        }
         viewHolder.itemView.setOnLongClickListener {
             listener?.onStoryLongClick(
                 item,
-                position
+                getItemRawPosition(viewHolder.bindingAdapterPosition)
             ) == true
         }
     }

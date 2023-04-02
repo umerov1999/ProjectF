@@ -84,8 +84,8 @@ class ImageListAdapter : RecyclerView.Adapter<ImageListAdapter.ImageVewHolder>()
             }
 
             itemView.setOnClickListener {
-                mOnRecyclerImageClickListener?.onRecyclerImageClick(position)
-                selectPosition(position)
+                mOnRecyclerImageClickListener?.onRecyclerImageClick(bindingAdapterPosition)
+                selectPosition(bindingAdapterPosition)
             }
 
             if (mCurrentSelectedIndex == position)

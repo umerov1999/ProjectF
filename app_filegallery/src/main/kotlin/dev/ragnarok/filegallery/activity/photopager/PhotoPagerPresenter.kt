@@ -105,6 +105,7 @@ open class PhotoPagerPresenter internal constructor(
 
     private fun onPositionChanged() {
         refreshInfoViews()
+        view?.let { resolveOptionMenu(it) }
     }
 
     fun refreshInfoViews() {
@@ -308,6 +309,21 @@ open class PhotoPagerPresenter internal constructor(
 
     fun resolveToolbarVisibility() {
         view?.setToolbarVisible(hasPhotos() && !mFullScreen)
+    }
+
+    override fun onViewHostAttached(view: IPhotoPagerView) {
+        super.onViewHostAttached(view)
+        resolveOptionMenu(view)
+    }
+
+    private fun isLocal(): Boolean {
+        return hasPhotos() && current.inLocal()
+    }
+
+    private fun resolveOptionMenu(view: IPhotoPagerView) {
+        view.setupOptionMenu(
+            isLocal()
+        )
     }
 
     val currentFile: String

@@ -86,11 +86,11 @@ open class PhotoPagerPresenter internal constructor(
 
     override fun onViewHostAttached(view: IPhotoPagerView) {
         super.onViewHostAttached(view)
-        resolveOptionMenu()
+        resolveOptionMenu(view)
     }
 
-    private fun resolveOptionMenu() {
-        view?.setupOptionMenu(
+    private fun resolveOptionMenu(view: IPhotoPagerView) {
+        view.setupOptionMenu(
             canSaveYourself(),
             canDelete()
         )
@@ -198,7 +198,7 @@ open class PhotoPagerPresenter internal constructor(
     private fun onPositionChanged() {
         refreshInfoViews(true)
         resolveRestoreButtonVisibility()
-        resolveOptionMenu()
+        view?.let { resolveOptionMenu(it) }
     }
 
     private fun showPhotoInfo(photo: Photo, album: PhotoAlbum?, bundle: IOwnersBundle?) {
@@ -301,7 +301,7 @@ open class PhotoPagerPresenter internal constructor(
         resolveWithUserView()
         resolveShareView()
         resolveCommentsView()
-        resolveOptionMenu()
+        view?.let { resolveOptionMenu(it) }
         if (need_update && need_update_info() && hasPhotos()) {
             val photo = current
             if (photo.albumId != -311) {

@@ -38,10 +38,13 @@ class DocsAsImagesAdapter(data: MutableList<Document>) :
                 .cancelRequest(viewHolder.image)
         }
         viewHolder.itemView.setOnClickListener {
-            mActionListener?.onDocClick(viewHolder.bindingAdapterPosition, item)
+            mActionListener?.onDocClick(getItemRawPosition(viewHolder.bindingAdapterPosition), item)
         }
         viewHolder.itemView.setOnLongClickListener {
-            mActionListener?.onDocLongClick(viewHolder.bindingAdapterPosition, item) == true
+            mActionListener?.onDocLongClick(
+                getItemRawPosition(viewHolder.bindingAdapterPosition),
+                item
+            ) == true
         }
     }
 

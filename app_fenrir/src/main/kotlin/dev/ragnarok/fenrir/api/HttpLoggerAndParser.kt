@@ -100,11 +100,11 @@ object HttpLoggerAndParser {
         return this
     }
 
-    val DEFAULT_LOGGING_INTERCEPTOR: OkHttp3LoggingInterceptor by lazy {
+    private val DEFAULT_LOGGING_INTERCEPTOR: OkHttp3LoggingInterceptor by lazy {
         OkHttp3LoggingInterceptor().setLevel(OkHttp3LoggingInterceptor.Level.BODY)
     }
 
-    val UPLOAD_LOGGING_INTERCEPTOR: OkHttp3LoggingInterceptor by lazy {
+    private val UPLOAD_LOGGING_INTERCEPTOR: OkHttp3LoggingInterceptor by lazy {
         //OkHttp3LoggingInterceptor().setLevel(OkHttp3LoggingInterceptor.Level.HEADERS)
         OkHttp3LoggingInterceptor().setLevel(OkHttp3LoggingInterceptor.Level.BODY)
     }

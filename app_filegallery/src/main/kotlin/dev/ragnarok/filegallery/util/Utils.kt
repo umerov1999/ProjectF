@@ -46,6 +46,9 @@ object Utils {
     var density = 1f
         private set
 
+    var shouldSelectPhoto = false
+    val listSelected: ArrayList<String> = ArrayList()
+
     fun stringEmptyIfNull(orig: String?): String {
         return orig ?: ""
     }

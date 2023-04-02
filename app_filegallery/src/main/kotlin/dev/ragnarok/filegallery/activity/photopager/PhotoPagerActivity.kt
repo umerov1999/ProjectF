@@ -15,13 +15,16 @@ import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.FileProvider
 import androidx.core.net.toFile
+import androidx.core.view.MenuProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.squareup.picasso3.Callback
 import com.squareup.picasso3.Rotatable
+import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.StubAnimatorListener
@@ -57,7 +60,7 @@ import java.util.concurrent.TimeUnit
 
 
 class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>(), IPhotoPagerView,
-    PlaceProvider, AppStyleable {
+    PlaceProvider, AppStyleable, MenuProvider {
     companion object {
         private const val EXTRA_PHOTOS = "photos"
         private const val ACTION_OPEN =
@@ -105,6 +108,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     private var mPagerAdapter: Adapter? = null
     private val bShowPhotosLine = Settings.get().main().isShow_photos_line()
     private val mAdapterRecycler = ImageListAdapter()
+    private var isLocalPhoto = false
 
     @get:LayoutRes
     override val noMainContentView: Int
@@ -186,7 +190,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 }
             }
         })
-
+        addMenuProvider(this, this)
         if (bShowPhotosLine) {
             mPreviewsRecycler?.layoutManager =
                 LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -223,22 +227,69 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.photo_menu, menu)
-        return true
+    override fun onPrepareMenu(menu: Menu) {
+        menu.findItem(R.id.save_on_drive).isVisible = !isLocalPhoto
+        if (!isLocalPhoto) {
+            menu.findItem(R.id.start_select_mode).isVisible = false
+            menu.findItem(R.id.end_select_mode).isVisible = false
+            menu.findItem(R.id.send_action).isVisible = false
+        } else {
+            menu.findItem(R.id.start_select_mode).isVisible = !Utils.shouldSelectPhoto
+            menu.findItem(R.id.end_select_mode).isVisible = Utils.shouldSelectPhoto
+            menu.findItem(R.id.send_action).isVisible =
+                Utils.shouldSelectPhoto && Utils.listSelected.isNotEmpty()
+        }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.photo_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
             R.id.save_on_drive -> {
                 presenter?.fireSaveOnDriveClick()
                 return true
             }
 
-            R.id.detect_qr -> presenter?.fireDetectQRClick(this)
+            R.id.detect_qr -> {
+                presenter?.fireDetectQRClick(this)
+                return true
+            }
+
+            R.id.start_select_mode -> {
+                Utils.shouldSelectPhoto = true
+                return true
+            }
+
+            R.id.end_select_mode -> {
+                Utils.shouldSelectPhoto = false
+                Utils.listSelected.clear()
+                mPagerAdapter?.notifyDataSetChanged()
+                return true
+            }
+
+            R.id.send_action -> {
+                val intent_send = Intent(Intent.ACTION_SEND_MULTIPLE)
+                intent_send.type = "image/*"
+                val listImage: ArrayList<Uri> = ArrayList(Utils.listSelected.size)
+                for (i in Utils.listSelected) {
+                    listImage.add(
+                        FileProvider.getUriForFile(
+                            this,
+                            Constants.FILE_PROVIDER_AUTHORITY,
+                            Uri.parse(i).toFile()
+                        )
+                    )
+                }
+                intent_send.putParcelableArrayListExtra(
+                    Intent.EXTRA_STREAM, listImage
+                ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                startActivity(intent_send)
+                return true
+            }
         }
-        return super.onOptionsItemSelected(item)
+        return false
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PhotoPagerPresenter> =
@@ -360,6 +411,11 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         PlaceFactory.getInternalPlayerPlace(video).tryOpenWith(this)
     }
 
+    override fun setupOptionMenu(isLocal: Boolean) {
+        isLocalPhoto = isLocal
+        this.invalidateOptionsMenu()
+    }
+
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
@@ -406,11 +462,43 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         val reload: FloatingActionButton
         private val mPicassoLoadCallback: WeakPicassoLoadCallback
         val photo: TouchImageView
+        val selected: View
         val progress: RLottieImageView
         var animationDispose: Disposable = Disposable.disposed()
         private var mAnimationLoaded = false
         private var mLoadingNow = false
         fun bindTo(photo_image: Photo) {
+            selected.visibility =
+                if (Utils.shouldSelectPhoto && photo_image.inLocal() && Utils.listSelected.contains(
+                        photo_image.photo_url
+                    )
+                ) View.VISIBLE else View.GONE
+            photo.setOnLongClickListener {
+                if (Utils.shouldSelectPhoto) {
+                    if (photo_image.inLocal()) {
+                        if (Utils.listSelected.contains(photo_image.photo_url)) {
+                            Utils.listSelected.remove(photo_image.photo_url)
+                            selected.visibility = View.GONE
+                        } else {
+                            photo_image.photo_url?.let { it1 -> Utils.listSelected.add(it1) }
+                            selected.visibility = View.VISIBLE
+                        }
+                    }
+                    true
+                } else {
+                    val o = presenter?.fireSaveOnDriveClick()
+                    if (o == true && photo.drawable is Rotatable) {
+                        var rot = (photo.drawable as Rotatable).getRotation() + 45f
+                        if (rot >= 360f) {
+                            rot = 0f
+                        }
+                        (photo.drawable as Rotatable).rotate(rot)
+                        photo.fitImageToView()
+                        photo.invalidate()
+                    }
+                    true
+                }
+            }
             photo.resetZoom()
             reload.setOnClickListener {
                 reload.visibility = View.INVISIBLE
@@ -511,6 +599,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
 
         init {
             photo = view.findViewById(idOfImageView())
+            selected = view.findViewById(R.id.selected_view)
             photo.maxZoom = 8f
             photo.doubleTapScale = 2f
             photo.doubleTapMaxZoom = 4f
@@ -529,19 +618,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 LayoutInflater.from(container.context)
                     .inflate(R.layout.content_photo_page, container, false)
             )
-            ret.photo.setOnLongClickListener {
-                val o = presenter?.fireSaveOnDriveClick()
-                if (o == true && ret.photo.drawable is Rotatable) {
-                    var rot = (ret.photo.drawable as Rotatable).getRotation() + 45f
-                    if (rot >= 360f) {
-                        rot = 0f
-                    }
-                    (ret.photo.drawable as Rotatable).rotate(rot)
-                    ret.photo.fitImageToView()
-                    ret.photo.invalidate()
-                }
-                true
-            }
             ret.photo.setOnTouchListener { view: View, event: MotionEvent ->
                 if (event.pointerCount >= 2 || view.canScrollHorizontally(1) && view.canScrollHorizontally(
                         -1

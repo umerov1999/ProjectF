@@ -8,7 +8,6 @@ import dev.ragnarok.filegallery.model.FileRemote
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
 import io.reactivex.rxjava3.core.Single
-import okhttp3.MultipartBody
 
 class ILocalServerService : IServiceRest() {
     fun getAudios(
@@ -165,12 +164,5 @@ class ILocalServerService : IServiceRest() {
         type: String?
     ): Single<BaseResponse<Int>> {
         return rest.request("rebootPC", form("type" to type), baseInt)
-    }
-
-    fun remotePlayAudioRx(
-        server: String,
-        file: MultipartBody.Part
-    ): Single<BaseResponse<Int>> {
-        return rest.doMultipartFormFullUrl(server, file, baseInt)
     }
 }

@@ -10,6 +10,7 @@ import dev.ragnarok.fenrir.api.model.VKApiVideoAlbum
 import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.SearchVideoResponse
+import dev.ragnarok.fenrir.api.model.server.VKApiVideosUploadServer
 import dev.ragnarok.fenrir.api.services.IVideoService
 import io.reactivex.rxjava3.core.Single
 
@@ -181,6 +182,22 @@ internal class VideoApi(accountId: Long, provider: IServiceProvider) :
                 service.edit(ownerId, video_id, name, desc)
                     .map(extractResponseWithErrorHandling())
                     .map { it == 1 }
+            }
+    }
+
+    override fun getVideoServer(
+        isPrivate: Int?,
+        group_id: Long?,
+        name: String?
+    ): Single<VKApiVideosUploadServer> {
+        return provideService(IVideoService(), TokenType.USER)
+            .flatMap { service ->
+                var finalName = name
+                if (finalName?.startsWith("VID_", false) == true) {
+                    finalName = "Telegram $finalName"
+                }
+                service.getVideoServer(isPrivate, group_id, finalName)
+                    .map(extractResponseWithErrorHandling())
             }
     }
 }

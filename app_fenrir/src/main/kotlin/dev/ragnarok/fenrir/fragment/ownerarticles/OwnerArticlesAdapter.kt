@@ -28,9 +28,9 @@ class OwnerArticlesAdapter(private var data: List<Article>, private val context:
         holder.btFave.setImageResource(if (article.isFavorite) R.drawable.favorite else R.drawable.star_add)
         holder.btFave.setOnClickListener {
             if (article.isFavorite) {
-                clickListener?.onDelete(position, article)
+                clickListener?.onDelete(holder.bindingAdapterPosition, article)
             } else {
-                clickListener?.onAdd(position, article)
+                clickListener?.onAdd(holder.bindingAdapterPosition, article)
             }
         }
         holder.btShare.setOnClickListener { clickListener?.onShare(article) }

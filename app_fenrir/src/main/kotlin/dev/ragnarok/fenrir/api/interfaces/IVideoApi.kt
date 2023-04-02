@@ -8,6 +8,7 @@ import dev.ragnarok.fenrir.api.model.VKApiVideoAlbum
 import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.SearchVideoResponse
+import dev.ragnarok.fenrir.api.model.server.VKApiVideosUploadServer
 import io.reactivex.rxjava3.core.Single
 
 interface IVideoApi {
@@ -75,4 +76,11 @@ interface IVideoApi {
 
     @CheckResult
     fun edit(ownerId: Long, video_id: Int, name: String?, desc: String?): Single<Boolean>
+
+    @CheckResult
+    fun getVideoServer(
+        isPrivate: Int?,
+        group_id: Long?,
+        name: String?
+    ): Single<VKApiVideosUploadServer>
 }

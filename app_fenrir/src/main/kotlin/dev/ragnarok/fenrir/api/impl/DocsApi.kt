@@ -7,7 +7,6 @@ import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiDoc
 import dev.ragnarok.fenrir.api.model.server.VKApiDocsUploadServer
-import dev.ragnarok.fenrir.api.model.server.VKApiVideosUploadServer
 import dev.ragnarok.fenrir.api.services.IDocsService
 import io.reactivex.rxjava3.core.Single
 
@@ -71,18 +70,6 @@ internal class DocsApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
         return provideService(IDocsService(), TokenType.USER)
             .flatMap { service ->
                 service.getUploadServer(groupId)
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
-    override fun getVideoServer(
-        isPrivate: Int?,
-        group_id: Long?,
-        name: String?
-    ): Single<VKApiVideosUploadServer> {
-        return provideService(IDocsService(), TokenType.USER)
-            .flatMap { service ->
-                service.getVideoServer(isPrivate, group_id, name)
                     .map(extractResponseWithErrorHandling())
             }
     }

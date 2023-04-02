@@ -44,11 +44,11 @@ class VideosAdapter(private val context: Context, private var data: List<Video>)
             holder.videoService.visibility = View.GONE
         }
         holder.card.setOnClickListener {
-            videoOnClickListener?.onVideoClick(position, video)
+            videoOnClickListener?.onVideoClick(holder.bindingAdapterPosition, video)
         }
         holder.card.setOnLongClickListener {
             videoOnClickListener?.onVideoLongClick(
-                position,
+                holder.bindingAdapterPosition,
                 video
             ) == true
         }

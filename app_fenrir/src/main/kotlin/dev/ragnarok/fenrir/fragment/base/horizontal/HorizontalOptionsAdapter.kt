@@ -48,7 +48,10 @@ class HorizontalOptionsAdapter<T : Entry>(data: MutableList<T>) :
         viewHolder.delete.visibility = if (item.isCustom) View.VISIBLE else View.GONE
         viewHolder.delete.setOnClickListener {
             if (item.isCustom) {
-                delete_listener?.onDeleteOptionClick(item, position)
+                delete_listener?.onDeleteOptionClick(
+                    item,
+                    getItemRawPosition(viewHolder.bindingAdapterPosition)
+                )
             }
         }
     }
