@@ -10,15 +10,15 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.PowerManager
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.DefaultRenderersFactory
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.PlaybackException
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.Player.PlayWhenReadyChangeReason
-import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.common.Player.PlayWhenReadyChangeReason
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.media.exo.ExoUtil.pausePlayer
 import dev.ragnarok.fenrir.media.exo.ExoUtil.startPlayer
@@ -39,6 +39,7 @@ import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.getExoPlayerFactory
 import dev.ragnarok.fenrir.util.Utils.makeMediaItem
 
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePlayer,
     SensorEventListener {
     private val app: Context = context.applicationContext

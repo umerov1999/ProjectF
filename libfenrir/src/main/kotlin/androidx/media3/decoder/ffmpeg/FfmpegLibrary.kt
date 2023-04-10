@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.ext.ffmpeg
+package androidx.media3.decoder.ffmpeg
 
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlayerLibraryInfo
-import com.google.android.exoplayer2.util.Log
-import com.google.android.exoplayer2.util.MimeTypes
+import androidx.media3.common.C
+import androidx.media3.common.MediaLibraryInfo
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import dev.ragnarok.fenrir.module.FenrirNative
 
 /**
  * Configures and queries the underlying native library.
  */
+@UnstableApi
 object FfmpegLibrary {
     private const val TAG = "FfmpegLibrary"
 
@@ -99,6 +101,6 @@ object FfmpegLibrary {
     private external fun ffmpegHasDecoder(codecName: String): Boolean
 
     init {
-        ExoPlayerLibraryInfo.registerModule("goog.exo.ffmpeg")
+        MediaLibraryInfo.registerModule("media3.decoder.ffmpeg")
     }
 }

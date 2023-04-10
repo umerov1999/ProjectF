@@ -1,10 +1,10 @@
 package dev.ragnarok.fenrir.media.story
 
 import android.view.SurfaceHolder
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import dev.ragnarok.fenrir.App.Companion.instance
 import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.media.story.IStoryPlayer.IStatus
@@ -15,6 +15,7 @@ import dev.ragnarok.fenrir.util.Logger.d
 import dev.ragnarok.fenrir.util.Utils.getExoPlayerFactory
 import dev.ragnarok.fenrir.util.Utils.makeMediaItem
 
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class ExoStoryPlayer(
     private val url: String,
     private val proxyConfig: ProxyConfig?,
@@ -27,7 +28,7 @@ class ExoStoryPlayer(
         private set
     private var playbackSpeed = false
     private val videoListener: Player.Listener = object : Player.Listener {
-        override fun onVideoSizeChanged(videoSize: com.google.android.exoplayer2.video.VideoSize) {
+        override fun onVideoSizeChanged(videoSize: androidx.media3.common.VideoSize) {
             this@ExoStoryPlayer.videoSize = VideoSize(videoSize.width, videoSize.height)
             this@ExoStoryPlayer.onVideoSizeChanged()
         }

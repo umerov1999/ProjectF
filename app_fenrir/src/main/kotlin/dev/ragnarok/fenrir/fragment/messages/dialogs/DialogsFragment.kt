@@ -203,7 +203,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         })
         mSwipeRefreshLayout = root.findViewById(R.id.swipeRefreshLayout)
         mSwipeRefreshLayout?.setOnRefreshListener {
-            presenter?.fireRefresh()
+            presenter?.fireRefreshConfirmationHidden()
         }
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
         mAdapter = DialogsAdapter(requireActivity(), emptyList())

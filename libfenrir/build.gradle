@@ -63,6 +63,6 @@ dependencies {
     implementation("androidx.collection:collection-ktx:$collectionVersion")
     implementation("com.squareup.okio:okio:$okioVersion")
     implementation("com.google.guava:guava:$guavaVersion")
-    implementation("com.google.android.exoplayer:exoplayer-core:$exoLibraryVersion")
+    implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("com.google.errorprone:error_prone_annotations:${errorproneVersion}")
 }

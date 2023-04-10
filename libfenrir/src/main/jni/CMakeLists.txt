@@ -148,6 +148,7 @@ add_library(libyuv STATIC
         animation/libyuv/source/rotate_win.cc
         animation/libyuv/source/rotate.cc
         animation/libyuv/source/row_any.cc
+        animation/libyuv/source/row_rvv.cc
         animation/libyuv/source/row_lasx.cc
         animation/libyuv/source/row_lsx.cc
         animation/libyuv/source/row_common.cc

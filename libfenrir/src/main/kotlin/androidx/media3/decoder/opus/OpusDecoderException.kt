@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.ext.ffmpeg
+package androidx.media3.decoder.opus
 
-import com.google.android.exoplayer2.decoder.DecoderException
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.decoder.DecoderException
 
 /**
- * Thrown when an FFmpeg decoder error occurs.
+ * Thrown when an Opus decoder error occurs.
  */
-class FfmpegDecoderException : DecoderException {
+@UnstableApi
+class OpusDecoderException : DecoderException {
     /* package */
     internal constructor(message: String) : super(message)
 

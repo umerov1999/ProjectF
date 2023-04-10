@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.ext.opus
+package androidx.media3.decoder.opus
 
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.C.CryptoType
-import com.google.android.exoplayer2.ExoPlayerLibraryInfo
+import androidx.media3.common.C
+import androidx.media3.common.MediaLibraryInfo
+import androidx.media3.common.util.UnstableApi
 import dev.ragnarok.fenrir.module.FenrirNative.isNativeLoaded
 
 /**
  * Configures and queries the underlying native library.
  */
+@UnstableApi
 object OpusLibrary {
     private var cryptoType = C.CRYPTO_TYPE_UNSUPPORTED
 
@@ -35,7 +36,7 @@ object OpusLibrary {
      * protected content, or [C.CRYPTO_TYPE_UNSUPPORTED] if the library does not support
      * decryption.
      */
-    fun setCrypto(cryptoType: @CryptoType Int) {
+    fun setCrypto(cryptoType: @C.CryptoType Int) {
         OpusLibrary.cryptoType = cryptoType
     }
 
@@ -48,7 +49,7 @@ object OpusLibrary {
     /**
      * Returns whether the library supports the given [C.CryptoType].
      */
-    fun supportsCryptoType(cryptoType: @CryptoType Int): Boolean {
+    fun supportsCryptoType(cryptoType: @C.CryptoType Int): Boolean {
         return (cryptoType == C.CRYPTO_TYPE_NONE
                 || cryptoType != C.CRYPTO_TYPE_UNSUPPORTED && cryptoType == OpusLibrary.cryptoType)
     }
@@ -57,6 +58,6 @@ object OpusLibrary {
     external fun opusIsSecureDecodeSupported(): Boolean
 
     init {
-        ExoPlayerLibraryInfo.registerModule("goog.exo.opus")
+        MediaLibraryInfo.registerModule("media3.decoder.opus")
     }
 }

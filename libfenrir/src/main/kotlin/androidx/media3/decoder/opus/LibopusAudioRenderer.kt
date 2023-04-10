@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.ext.opus
+package androidx.media3.decoder.opus
 
 import android.os.Handler
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.Format
-import com.google.android.exoplayer2.audio.AudioProcessor
-import com.google.android.exoplayer2.audio.AudioRendererEventListener
-import com.google.android.exoplayer2.audio.AudioSink
-import com.google.android.exoplayer2.audio.DecoderAudioRenderer
-import com.google.android.exoplayer2.decoder.CryptoConfig
-import com.google.android.exoplayer2.util.MimeTypes
-import com.google.android.exoplayer2.util.TraceUtil
-import com.google.android.exoplayer2.util.Util
+import androidx.media3.common.C
+import androidx.media3.common.Format
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.audio.AudioProcessor
+import androidx.media3.common.util.TraceUtil
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
+import androidx.media3.decoder.CryptoConfig
+import androidx.media3.exoplayer.audio.AudioRendererEventListener
+import androidx.media3.exoplayer.audio.AudioSink
+import androidx.media3.exoplayer.audio.DecoderAudioRenderer
 import dev.ragnarok.fenrir.module.FenrirNative
 
 /**
  * Decodes and renders audio using the native Opus decoder.
  */
+@UnstableApi
 @Suppress("UNUSED")
 class LibopusAudioRenderer : DecoderAudioRenderer<OpusDecoder> {
     constructor() : this( /* eventHandler= */null,  /* eventListener= */null)

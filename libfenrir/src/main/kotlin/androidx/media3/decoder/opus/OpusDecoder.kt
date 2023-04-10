@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.ext.opus
+package androidx.media3.decoder.opus
 
 import androidx.annotation.VisibleForTesting
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.decoder.*
-import com.google.android.exoplayer2.util.Assertions
-import com.google.android.exoplayer2.util.Util
+import androidx.media3.common.C
+import androidx.media3.common.util.Assertions
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
+import androidx.media3.decoder.CryptoConfig
+import androidx.media3.decoder.CryptoException
+import androidx.media3.decoder.DecoderInputBuffer
+import androidx.media3.decoder.SimpleDecoder
+import androidx.media3.decoder.SimpleDecoderOutputBuffer
 import dev.ragnarok.fenrir.module.FenrirNative
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -45,6 +50,7 @@ import kotlin.experimental.or
  * @throws OpusDecoderException Thrown if an exception occurs when initializing the decoder.
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+@UnstableApi
 @Suppress("UNCHECKED_CAST")
 class OpusDecoder(
     numInputBuffers: Int,

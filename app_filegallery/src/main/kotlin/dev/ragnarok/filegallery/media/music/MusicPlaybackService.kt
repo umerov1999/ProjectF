@@ -19,14 +19,20 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.media.session.MediaButtonReceiver
-import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.DefaultRenderersFactory.*
-import com.google.android.exoplayer2.Player.PlayWhenReadyChangeReason
-import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.upstream.DefaultDataSource
-import com.google.android.exoplayer2.upstream.RawResourceDataSource
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.common.Player.PlayWhenReadyChangeReason
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.RawResourceDataSource
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
+import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
+import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso.LoadedFrom
 import dev.ragnarok.filegallery.*
@@ -925,6 +931,7 @@ class MusicPlaybackService : Service() {
         }
     }
 
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     private class MultiPlayer(service: MusicPlaybackService) {
         val mService: WeakReference<MusicPlaybackService> = WeakReference(service)
         var mCurrentMediaPlayer: ExoPlayer = ExoPlayer.Builder(

@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.ext.ffmpeg
+package androidx.media3.decoder.ffmpeg
 
 import android.os.Handler
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.C.PcmEncoding
-import com.google.android.exoplayer2.Format
-import com.google.android.exoplayer2.RendererCapabilities.AdaptiveSupport
-import com.google.android.exoplayer2.audio.*
-import com.google.android.exoplayer2.decoder.CryptoConfig
-import com.google.android.exoplayer2.util.Assertions
-import com.google.android.exoplayer2.util.MimeTypes
-import com.google.android.exoplayer2.util.TraceUtil
-import com.google.android.exoplayer2.util.Util
+import androidx.media3.common.C
+import androidx.media3.common.Format
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.audio.AudioProcessor
+import androidx.media3.common.util.Assertions
+import androidx.media3.common.util.TraceUtil
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
+import androidx.media3.decoder.CryptoConfig
+import androidx.media3.exoplayer.RendererCapabilities
+import androidx.media3.exoplayer.audio.AudioRendererEventListener
+import androidx.media3.exoplayer.audio.AudioSink
+import androidx.media3.exoplayer.audio.DecoderAudioRenderer
+import androidx.media3.exoplayer.audio.DefaultAudioSink
 import dev.ragnarok.fenrir.module.FenrirNative
 
 /**
  * Decodes and renders audio using FFmpeg.
  */
+@UnstableApi
 @Suppress("UNUSED")
 class FfmpegAudioRenderer
 /**
@@ -89,7 +94,7 @@ class FfmpegAudioRenderer
         }
     }
 
-    override fun supportsMixedMimeTypeAdaptation(): @AdaptiveSupport Int {
+    override fun supportsMixedMimeTypeAdaptation(): @RendererCapabilities.AdaptiveSupport Int {
         return ADAPTIVE_NOT_SEAMLESS
     }
 
@@ -121,7 +126,7 @@ class FfmpegAudioRenderer
      * Returns whether the renderer's [AudioSink] supports the PCM format that will be output
      * from the decoder for the given input format and requested output encoding.
      */
-    private fun sinkSupportsFormat(inputFormat: Format, pcmEncoding: @PcmEncoding Int): Boolean {
+    private fun sinkSupportsFormat(inputFormat: Format, pcmEncoding: @C.PcmEncoding Int): Boolean {
         return sinkSupportsFormat(
             Util.getPcmFormat(pcmEncoding, inputFormat.channelCount, inputFormat.sampleRate)
         )

@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.media.exo
 
-import com.google.android.exoplayer2.ExoPlayer
+import androidx.media3.exoplayer.ExoPlayer
 
 object ExoUtil {
     fun pausePlayer(player: ExoPlayer?) {

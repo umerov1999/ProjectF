@@ -14,8 +14,8 @@ import android.view.WindowManager
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
+import androidx.media3.common.MediaItem
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.exoplayer2.MediaItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.module.rlottie.RLottieDrawable
 import dev.ragnarok.filegallery.BuildConfig
@@ -420,6 +420,7 @@ object Utils {
         }
     }
 
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     fun getExoPlayerFactory(userAgent: String?): OkHttpDataSource.Factory {
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
             .readTimeout(Constants.EXO_PLAYER_TIMEOUT, TimeUnit.SECONDS)

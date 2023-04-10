@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer2.ext.ffmpeg
+package androidx.media3.decoder.ffmpeg
 
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.C.PcmEncoding
-import com.google.android.exoplayer2.Format
-import com.google.android.exoplayer2.decoder.DecoderInputBuffer
-import com.google.android.exoplayer2.decoder.SimpleDecoder
-import com.google.android.exoplayer2.decoder.SimpleDecoderOutputBuffer
-import com.google.android.exoplayer2.util.Assertions
-import com.google.android.exoplayer2.util.MimeTypes
-import com.google.android.exoplayer2.util.ParsableByteArray
-import com.google.android.exoplayer2.util.Util
+import androidx.media3.common.C
+import androidx.media3.common.Format
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.util.Assertions
+import androidx.media3.common.util.ParsableByteArray
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
+import androidx.media3.decoder.DecoderInputBuffer
+import androidx.media3.decoder.SimpleDecoder
+import androidx.media3.decoder.SimpleDecoderOutputBuffer
 import dev.ragnarok.fenrir.module.FenrirNative
 import java.nio.ByteBuffer
 
@@ -32,6 +32,7 @@ import java.nio.ByteBuffer
  * FFmpeg audio decoder.
  */
 /* package */
+@UnstableApi
 @Suppress("UNCHECKED_CAST")
 class FfmpegAudioDecoder(
     format: Format,
@@ -49,7 +50,7 @@ class FfmpegAudioDecoder(
     /**
      * Returns the encoding of output audio.
      */
-    val encoding: @PcmEncoding Int
+    val encoding: @C.PcmEncoding Int
     private val outputBufferSize: Int
     private var nativeContext // May be reassigned on resetting the codec.
             : Long

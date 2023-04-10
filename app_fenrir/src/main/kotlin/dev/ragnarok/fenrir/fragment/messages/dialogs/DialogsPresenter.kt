@@ -407,6 +407,15 @@ class DialogsPresenter(
         requestAtLast()
     }
 
+    fun fireRefreshConfirmationHidden() {
+        if (isHiddenAccount(accountId)) {
+            resolveRefreshingView()
+            view?.askToReload()
+        } else {
+            fireRefresh()
+        }
+    }
+
     fun fireSearchClick() {
         assertPositive(dialogsOwnerId)
         view?.goToSearch(accountId)

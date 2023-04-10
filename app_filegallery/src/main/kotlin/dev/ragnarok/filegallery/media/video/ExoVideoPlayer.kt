@@ -2,15 +2,15 @@ package dev.ragnarok.filegallery.media.video
 
 import android.content.Context
 import android.view.SurfaceHolder
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.DefaultRenderersFactory
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.upstream.DefaultDataSource
-import com.google.android.exoplayer2.video.VideoSize
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.Player
+import androidx.media3.common.VideoSize
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.media.exo.ExoUtil.pausePlayer
 import dev.ragnarok.filegallery.media.exo.ExoUtil.startPlayer
@@ -18,6 +18,7 @@ import dev.ragnarok.filegallery.media.video.IVideoPlayer.IUpdatePlayListener
 import dev.ragnarok.filegallery.util.Utils
 import java.lang.ref.WeakReference
 
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class ExoVideoPlayer(
     context: Context,
     url: String?,

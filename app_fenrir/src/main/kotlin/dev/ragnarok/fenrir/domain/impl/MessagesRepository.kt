@@ -190,7 +190,7 @@ class MessagesRepository(
             })
     }
 
-    private fun onUpdloadSuccess(upload: Upload) {
+    private fun onUploadSuccess(upload: Upload) {
         val accountId = upload.accountId
         val messagesId = upload.destination.id
         compositeDisposable.add(uploadManager[accountId, upload.destination]
@@ -1774,7 +1774,7 @@ class MessagesRepository(
             uploadManager.observeResults()
                 .filter { it.first.destination.method == Method.TO_MESSAGE }
                 .subscribe({ result ->
-                    onUpdloadSuccess(
+                    onUploadSuccess(
                         result.first
                     )
                 }, ignore())

@@ -23,6 +23,7 @@ import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.db.DBHelper
+import dev.ragnarok.fenrir.db.model.entity.DialogDboEntity
 import dev.ragnarok.fenrir.domain.IAccountsInteractor
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.InteractorFactory
@@ -37,6 +38,7 @@ import dev.ragnarok.fenrir.model.Account
 import dev.ragnarok.fenrir.model.IOwnersBundle
 import dev.ragnarok.fenrir.model.SaveAccount
 import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.model.criteria.DialogsCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.nonNullNoEmptyOr
 import dev.ragnarok.fenrir.requireNonNull
@@ -53,8 +55,10 @@ import dev.ragnarok.fenrir.util.serializeble.json.JsonObjectBuilder
 import dev.ragnarok.fenrir.util.serializeble.json.contentOrNull
 import dev.ragnarok.fenrir.util.serializeble.json.decodeFromStream
 import dev.ragnarok.fenrir.util.serializeble.json.intOrNull
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
 import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 import dev.ragnarok.fenrir.util.serializeble.json.jsonPrimitive
+import dev.ragnarok.fenrir.util.serializeble.json.long
 import dev.ragnarok.fenrir.util.serializeble.json.longOrNull
 import dev.ragnarok.fenrir.util.serializeble.json.put
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
@@ -62,6 +66,7 @@ import dev.ragnarok.fenrir.util.toast.CustomToast
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.exceptions.Exceptions
+import kotlinx.serialization.builtins.ListSerializer
 import okhttp3.FormBody
 import okhttp3.Request
 import okhttp3.Response
@@ -495,6 +500,26 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                         R.string.need_restart
                     )
                 }
+                try {
+                    if (obj.has("conversations_saved")) {
+                        for (i in obj["conversations_saved"]?.asJsonArray.orEmpty()) {
+                            val aid = i.asJsonObject["account_id"]?.jsonPrimitive?.long ?: continue
+                            val dialogsJsonElem =
+                                i.asJsonObject["conversation"]?.jsonArray ?: continue
+                            if (!dialogsJsonElem.isEmpty()) {
+                                Includes.stores.dialogs().insertDialogs(
+                                    aid, kJson.decodeFromJsonElement(
+                                        ListSerializer(
+                                            DialogDboEntity.serializer()
+                                        ), dialogsJsonElem
+                                    ), true
+                                ).blockingAwait()
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
             view?.customToast?.showToast(
                 R.string.accounts_restored,
@@ -533,7 +558,8 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         try {
             val root = JsonObjectBuilder()
             val arr = JsonArrayBuilder()
-            for (i in Settings.get().accounts().registered) {
+            val registered = Settings.get().accounts().registered
+            for (i in registered) {
                 val temp = JsonObjectBuilder()
                 val owner = Users?.getById(i)
                 temp.put("user_name", owner?.fullName)
@@ -560,6 +586,33 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             root.put("fenrir_accounts", arr.build())
             val settings = SettingsBackup().doBackup()
             root.put("settings", settings)
+
+            val arrDialogs = JsonArrayBuilder()
+            for (i in registered) {
+                if (Utils.isHiddenAccount(i)) {
+                    try {
+                        val dialogs =
+                            Includes.stores.dialogs().getDialogs(DialogsCriteria(i)).blockingGet()
+                        val tmp = JsonObjectBuilder()
+                        tmp.put(
+                            "account_id", i
+                        )
+                        tmp.put(
+                            "conversation", kJson.encodeToJsonElement(
+                                ListSerializer(
+                                    DialogDboEntity.serializer()
+                                ), dialogs
+                            )
+                        )
+                        arrDialogs.add(
+                            tmp.build()
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            root.put("conversations_saved", arrDialogs.build())
             val bytes = Json { prettyPrint = true }.printJsonElement(root.build()).toByteArray(
                 Charsets.UTF_8
             )

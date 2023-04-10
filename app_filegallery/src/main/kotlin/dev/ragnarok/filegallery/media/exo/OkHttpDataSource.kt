@@ -1,13 +1,17 @@
 package dev.ragnarok.filegallery.media.exo
 
 import android.net.Uri
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlayerLibraryInfo
-import com.google.android.exoplayer2.PlaybackException
-import com.google.android.exoplayer2.upstream.*
-import com.google.android.exoplayer2.upstream.HttpDataSource.*
-import com.google.android.exoplayer2.util.Assertions
-import com.google.android.exoplayer2.util.Util
+import androidx.media3.common.C
+import androidx.media3.common.MediaLibraryInfo
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.util.Assertions
+import androidx.media3.common.util.Util
+import androidx.media3.datasource.BaseDataSource
+import androidx.media3.datasource.DataSourceException
+import androidx.media3.datasource.DataSpec
+import androidx.media3.datasource.HttpDataSource
+import androidx.media3.datasource.HttpUtil
+import androidx.media3.datasource.TransferListener
 import com.google.common.base.Predicate
 import com.google.common.net.HttpHeaders
 import com.google.common.util.concurrent.SettableFuture
@@ -28,24 +32,25 @@ import java.util.concurrent.ExecutionException
  * priority) the `dataSpec`, [.setRequestProperty] and the default parameters used to
  * construct the instance.
  */
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class OkHttpDataSource internal constructor(
     callFactory: OkHttpClient,
     userAgent: String?,
     cacheControl: CacheControl?,
-    defaultRequestProperties: RequestProperties?,
+    defaultRequestProperties: HttpDataSource.RequestProperties?,
     contentTypePredicate: Predicate<String>?
 ) : BaseDataSource( /* isNetwork = */true), HttpDataSource {
     companion object {
         init {
-            ExoPlayerLibraryInfo.registerModule("goog.exo.okhttp")
+            MediaLibraryInfo.registerModule("media3.datasource.okhttp")
         }
     }
 
     private val callFactory: OkHttpClient
-    private val requestProperties: RequestProperties
+    private val requestProperties: HttpDataSource.RequestProperties
     private val userAgent: String?
     private val cacheControl: CacheControl?
-    private val defaultRequestProperties: RequestProperties?
+    private val defaultRequestProperties: HttpDataSource.RequestProperties?
     private val contentTypePredicate: Predicate<String>?
     private var dataSpec: DataSpec? = null
     private var response: Response? = null
@@ -80,7 +85,7 @@ class OkHttpDataSource internal constructor(
         requestProperties.clear()
     }
 
-    @Throws(HttpDataSourceException::class)
+    @Throws(HttpDataSource.HttpDataSourceException::class)
     override fun open(dataSpec: DataSpec): Long {
         this.dataSpec = dataSpec
         bytesRead = 0
@@ -96,8 +101,8 @@ class OkHttpDataSource internal constructor(
             responseBody = response?.body ?: return -1
             responseByteStream = responseBody.byteStream()
         } catch (e: IOException) {
-            throw HttpDataSourceException.createForIOException(
-                e, dataSpec, HttpDataSourceException.TYPE_OPEN
+            throw HttpDataSource.HttpDataSourceException.createForIOException(
+                e, dataSpec, HttpDataSource.HttpDataSourceException.TYPE_OPEN
             )
         }
         val responseCode = response.code
@@ -123,7 +128,7 @@ class OkHttpDataSource internal constructor(
             closeConnectionQuietly()
             val cause: IOException? =
                 if (responseCode == 416) DataSourceException(PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE) else null
-            throw InvalidResponseCodeException(
+            throw HttpDataSource.InvalidResponseCodeException(
                 responseCode, response.message, cause, headers, dataSpec, errorResponseBody
             )
         }
@@ -133,7 +138,7 @@ class OkHttpDataSource internal constructor(
         val contentType = mediaType?.toString() ?: ""
         if (contentTypePredicate != null && !contentTypePredicate.apply(contentType)) {
             closeConnectionQuietly()
-            throw InvalidContentTypeException(contentType, dataSpec)
+            throw HttpDataSource.InvalidContentTypeException(contentType, dataSpec)
         }
 
         // If we requested a range starting from a non-zero position and received a 200 rather than a
@@ -153,20 +158,20 @@ class OkHttpDataSource internal constructor(
         transferStarted(dataSpec)
         try {
             skipFully(bytesToSkip, dataSpec)
-        } catch (e: HttpDataSourceException) {
+        } catch (e: HttpDataSource.HttpDataSourceException) {
             closeConnectionQuietly()
             throw e
         }
         return bytesToRead
     }
 
-    @Throws(HttpDataSourceException::class)
+    @Throws(HttpDataSource.HttpDataSourceException::class)
     override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
         return try {
             readInternal(buffer, offset, length)
         } catch (e: IOException) {
-            throw HttpDataSourceException.createForIOException(
-                e, Util.castNonNull(dataSpec), HttpDataSourceException.TYPE_READ
+            throw HttpDataSource.HttpDataSourceException.createForIOException(
+                e, Util.castNonNull(dataSpec), HttpDataSource.HttpDataSourceException.TYPE_READ
             )
         }
     }
@@ -182,16 +187,16 @@ class OkHttpDataSource internal constructor(
     /**
      * Establishes a connection.
      */
-    @Throws(HttpDataSourceException::class)
+    @Throws(HttpDataSource.HttpDataSourceException::class)
     private fun makeRequest(dataSpec: DataSpec): Request {
         val position = dataSpec.position
         val length = dataSpec.length
         val url = dataSpec.uri.toString().toHttpUrlOrNull()
-            ?: throw HttpDataSourceException(
+            ?: throw HttpDataSource.HttpDataSourceException(
                 "Malformed URL",
                 dataSpec,
                 PlaybackException.ERROR_CODE_FAILED_RUNTIME_CHECK,
-                HttpDataSourceException.TYPE_OPEN
+                HttpDataSource.HttpDataSourceException.TYPE_OPEN
             )
         val builder: Request.Builder = Request.Builder().url(url)
         if (cacheControl != null) {
@@ -259,11 +264,11 @@ class OkHttpDataSource internal constructor(
      *
      * @param bytesToSkipLong The number of bytes to skip.
      * @param dataSpec    The [DataSpec].
-     * @throws HttpDataSourceException If the thread is interrupted during the operation, or an error
+     * @throws HttpDataSource.HttpDataSourceException If the thread is interrupted during the operation, or an error
      * occurs while reading from the source, or if the data ended before skipping the specified
      * number of bytes.
      */
-    @Throws(HttpDataSourceException::class)
+    @Throws(HttpDataSource.HttpDataSourceException::class)
     private fun skipFully(bytesToSkipLong: Long, dataSpec: DataSpec) {
         var bytesToSkip = bytesToSkipLong
         if (bytesToSkip == 0L) {
@@ -278,23 +283,23 @@ class OkHttpDataSource internal constructor(
                     throw InterruptedIOException()
                 }
                 if (read == -1) {
-                    throw HttpDataSourceException(
+                    throw HttpDataSource.HttpDataSourceException(
                         dataSpec,
                         PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE,
-                        HttpDataSourceException.TYPE_OPEN
+                        HttpDataSource.HttpDataSourceException.TYPE_OPEN
                     )
                 }
                 bytesToSkip -= read.toLong()
                 bytesTransferred(read)
             }
         } catch (e: IOException) {
-            if (e is HttpDataSourceException) {
+            if (e is HttpDataSource.HttpDataSourceException) {
                 throw e
             } else {
-                throw HttpDataSourceException(
+                throw HttpDataSource.HttpDataSourceException(
                     dataSpec,
                     PlaybackException.ERROR_CODE_IO_UNSPECIFIED,
-                    HttpDataSourceException.TYPE_OPEN
+                    HttpDataSource.HttpDataSourceException.TYPE_OPEN
                 )
             }
         }
@@ -349,10 +354,11 @@ class OkHttpDataSource internal constructor(
     }
 
     /**
-     * [DataSource.Factory] for [OkHttpDataSource] instances.
+     * [androidx.media3.datasource.DataSource.Factory] for [OkHttpDataSource] instances.
      */
     class Factory(private val callFactory: OkHttpClient) : HttpDataSource.Factory {
-        private val defaultRequestProperties: RequestProperties = RequestProperties()
+        private val defaultRequestProperties: HttpDataSource.RequestProperties =
+            HttpDataSource.RequestProperties()
         private var userAgent: String? = null
         private var transferListener: TransferListener? = null
         private var cacheControl: CacheControl? = null
@@ -419,7 +425,7 @@ class OkHttpDataSource internal constructor(
          * The default is `null`.
          *
          *
-         * See [DataSource.addTransferListener].
+         * See [androidx.media3.datasource.DataSource.addTransferListener].
          *
          * @param transferListener The listener that will be used.
          * @return This factory.
@@ -446,6 +452,6 @@ class OkHttpDataSource internal constructor(
         this.cacheControl = cacheControl
         this.defaultRequestProperties = defaultRequestProperties
         this.contentTypePredicate = contentTypePredicate
-        requestProperties = RequestProperties()
+        requestProperties = HttpDataSource.RequestProperties()
     }
 }
