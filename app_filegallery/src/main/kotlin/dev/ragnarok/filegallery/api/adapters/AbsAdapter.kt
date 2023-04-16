@@ -116,6 +116,25 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             }
         }
 
+        @JvmOverloads
+        fun optString(json: JsonObject?, names: List<String>, fallback: String? = null): String? {
+            contract {
+                returns(true) implies (json != null)
+            }
+            json ?: return fallback
+            for (i in names) {
+                try {
+                    val element = json[i]
+                    if (element is JsonPrimitive) return element.content else continue
+                } catch (e: Exception) {
+                    if (Constants.IS_DEBUG) {
+                        e.printStackTrace()
+                    }
+                    continue
+                }
+            }
+            return fallback
+        }
 
         fun optBoolean(json: JsonObject?, name: String): Boolean {
             contract {

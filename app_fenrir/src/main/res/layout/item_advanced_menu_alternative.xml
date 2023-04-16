@@ -75,7 +75,6 @@
                 android:id="@+id/item_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:autoLink="all"
                 android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                 tools:text="Example" />
 

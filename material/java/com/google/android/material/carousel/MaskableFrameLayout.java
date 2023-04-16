@@ -54,6 +54,7 @@ public class MaskableFrameLayout extends FrameLayout implements Maskable, Shapea
   @Nullable private OnMaskChangedListener onMaskChangedListener;
   @NonNull private ShapeAppearanceModel shapeAppearanceModel;
   private final MaskableDelegate maskableDelegate = createMaskableDelegate();
+  @Nullable private Boolean savedForceCompatClippingEnabled = null;
 
   public MaskableFrameLayout(@NonNull Context context) {
     this(context, null);
@@ -73,8 +74,8 @@ public class MaskableFrameLayout extends FrameLayout implements Maskable, Shapea
   private MaskableDelegate createMaskableDelegate() {
     if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
       return new MaskableDelegateV33(this);
-    } else if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      return new MaskableDelegateV21(this);
+    } else if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP_MR1) {
+      return new MaskableDelegateV22(this);
     } else {
       return new MaskableDelegateV14();
     }
@@ -84,6 +85,24 @@ public class MaskableFrameLayout extends FrameLayout implements Maskable, Shapea
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
     onMaskChanged();
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    // Restore any saved force compat clipping setting.
+    if (savedForceCompatClippingEnabled != null) {
+      maskableDelegate.setForceCompatClippingEnabled(this, savedForceCompatClippingEnabled);
+    }
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    // When detaching from the window, force canvas clipping to avoid any transitions from releasing
+    // the mask outline set by the MaskableDelegate's ViewOutlineProvider, if any.
+    savedForceCompatClippingEnabled = maskableDelegate.isForceCompatClippingEnabled();
+    maskableDelegate.setForceCompatClippingEnabled(this, true);
+    super.onDetachedFromWindow();
   }
 
   @Override
@@ -160,7 +179,6 @@ public class MaskableFrameLayout extends FrameLayout implements Maskable, Shapea
     }
   }
 
-
   /**
    * Set whether this view should always use canvas clipping to clip to its masked shape.
    *
@@ -222,6 +240,10 @@ public class MaskableFrameLayout extends FrameLayout implements Maskable, Shapea
      */
     abstract boolean shouldUseCompatClipping();
 
+    boolean isForceCompatClippingEnabled() {
+      return forceCompatClippingEnabled;
+    }
+
     /**
      * Set whether the client would like to always use compat clipping regardless of whether other
      * means are available.
@@ -280,7 +302,7 @@ public class MaskableFrameLayout extends FrameLayout implements Maskable, Shapea
   }
 
   /**
-   * A {@link MaskableDelegate} implementation for API 14-20 that always clips using canvas
+   * A {@link MaskableDelegate} implementation for API 14-21 that always clips using canvas
    * clipping.
    */
   private static class MaskableDelegateV14 extends MaskableDelegate {
@@ -303,19 +325,20 @@ public class MaskableFrameLayout extends FrameLayout implements Maskable, Shapea
   }
 
   /**
-   * A {@link MaskableDelegate} for API 21-32 that uses {@link ViewOutlineProvider} to clip when the
+   * A {@link MaskableDelegate} for API 22-32 that uses {@link ViewOutlineProvider} to clip when the
    * shape being clipped is a round rect with symmetrical corners and canvas clipping for all other
-   * shapes.
+   * shapes. This way is not used for API 21 because outline invalidation is incorrectly implemented
+   * in this version.
    *
    * <p>{@link Outline#setRoundRect(Rect, float)} is only able to clip to a rectangle with a single
    * corner radius for all four corners.
    */
-  @RequiresApi(VERSION_CODES.LOLLIPOP)
-  private static class MaskableDelegateV21 extends MaskableDelegate {
+  @RequiresApi(VERSION_CODES.LOLLIPOP_MR1)
+  private static class MaskableDelegateV22 extends MaskableDelegate {
 
     private boolean isShapeRoundRect = false;
 
-    MaskableDelegateV21(View view) {
+    MaskableDelegateV22(View view) {
       initMaskOutlineProvider(view);
     }
 
@@ -366,8 +389,8 @@ public class MaskableFrameLayout extends FrameLayout implements Maskable, Shapea
   }
 
   /**
-   * A {@link MaskableDelegate} for API 33+ that uses {@link ViewOutlineProvider} to clip for
-   * all shapes.
+   * A {@link MaskableDelegate} for API 33+ that uses {@link ViewOutlineProvider} to clip for all
+   * shapes.
    *
    * <p>{@link Outline#setPath(Path)} was added in API 33 and allows using {@link
    * ViewOutlineProvider} to clip for all shapes.

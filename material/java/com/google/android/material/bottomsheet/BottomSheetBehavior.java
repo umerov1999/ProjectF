@@ -37,6 +37,7 @@ import android.util.Log;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.RoundedCorner;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -44,12 +45,14 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewParent;
+import android.view.WindowInsets;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -217,6 +220,8 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
 
   private static final int VIEW_INDEX_BOTTOM_SHEET = 0;
 
+  private static final int INVALID_POSITION = -1;
+
   @VisibleForTesting
   static final int VIEW_INDEX_ACCESSIBILITY_DELEGATE_VIEW = 1;
 
@@ -321,7 +326,7 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
 
   int activePointerId;
 
-  private int initialY;
+  private int initialY = INVALID_POSITION;
 
   boolean touchingScrollingChild;
 
@@ -563,11 +568,12 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
     if (parentHeight - childHeight < insetTop) {
       if (paddingTopSystemWindowInsets) {
         // If the bottomsheet would land in the middle of the status bar when fully expanded add
-        // extra space to make sure it goes all the way.
-        childHeight = parentHeight;
+        // extra space to make sure it goes all the way up or up to max height if it is specified.
+        childHeight = (maxHeight == NO_MAX_SIZE) ? parentHeight : min(parentHeight, maxHeight);
       } else {
         // If we don't want the bottomsheet to go under the status bar we cap its height
-        childHeight = parentHeight - insetTop;
+        int insetHeight = parentHeight - insetTop;
+        childHeight = (maxHeight == NO_MAX_SIZE) ? insetHeight : min(insetHeight, maxHeight);
       }
     }
     fitToContentsOffset = max(0, parentHeight - childHeight);
@@ -655,6 +661,7 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
         && state != STATE_DRAGGING
         && !parent.isPointInChildBounds(scroll, (int) event.getX(), (int) event.getY())
         && viewDragHelper != null
+        && initialY != INVALID_POSITION
         && Math.abs(initialY - event.getY()) > viewDragHelper.getTouchSlop();
   }
 
@@ -1408,7 +1415,7 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
       if (interpolatorAnimator.isRunning()) {
         interpolatorAnimator.reverse();
       } else {
-        float to = removeCorners ? 0f : 1f;
+        float to = removeCorners ? calculateInterpolationWithCornersRemoved() : 1f;
         float from = 1f - to;
         interpolatorAnimator.setFloatValues(from, to);
         interpolatorAnimator.start();
@@ -1417,8 +1424,48 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
       if (interpolatorAnimator != null && interpolatorAnimator.isRunning()) {
         interpolatorAnimator.cancel();
       }
-      materialShapeDrawable.setInterpolation(expandedCornersRemoved ? 0f : 1f);
+      materialShapeDrawable.setInterpolation(
+          expandedCornersRemoved ? calculateInterpolationWithCornersRemoved() : 1f);
     }
+  }
+
+  private float calculateInterpolationWithCornersRemoved() {
+    if (materialShapeDrawable != null
+        && viewRef != null
+        && viewRef.get() != null
+        && VERSION.SDK_INT >= VERSION_CODES.S) {
+      V view = viewRef.get();
+      int[] location = new int[2];
+      view.getLocationOnScreen(location);
+      // Only use device corner radius if sheet is touching top of screen.
+      if (location[1] == 0) {
+        final WindowInsets insets = view.getRootWindowInsets();
+        if (insets != null) {
+          float topLeftInterpolation =
+              calculateCornerInterpolation(
+                  materialShapeDrawable.getTopLeftCornerResolvedSize(),
+                  insets.getRoundedCorner(RoundedCorner.POSITION_TOP_LEFT));
+          float topRightInterpolation =
+              calculateCornerInterpolation(
+                  materialShapeDrawable.getTopRightCornerResolvedSize(),
+                  insets.getRoundedCorner(RoundedCorner.POSITION_TOP_RIGHT));
+          return Math.max(topLeftInterpolation, topRightInterpolation);
+        }
+      }
+    }
+    return 0;
+  }
+
+  @RequiresApi(VERSION_CODES.S)
+  private float calculateCornerInterpolation(
+      float materialShapeDrawableCornerSize, @Nullable RoundedCorner deviceRoundedCorner) {
+    if (deviceRoundedCorner != null) {
+      float deviceCornerRadius = deviceRoundedCorner.getRadius();
+      if (deviceCornerRadius > 0 && materialShapeDrawableCornerSize > 0) {
+        return deviceCornerRadius / materialShapeDrawableCornerSize;
+      }
+    }
+    return 0;
   }
 
   private boolean isExpandedAndShouldRemoveCorners() {
@@ -1462,6 +1509,7 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
 
   private void reset() {
     activePointerId = ViewDragHelper.INVALID_POINTER;
+    initialY = INVALID_POSITION;
     if (velocityTracker != null) {
       velocityTracker.recycle();
       velocityTracker = null;
@@ -1573,7 +1621,7 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
   }
 
   private void createShapeValueAnimator() {
-    interpolatorAnimator = ValueAnimator.ofFloat(0f, 1f);
+    interpolatorAnimator = ValueAnimator.ofFloat(calculateInterpolationWithCornersRemoved(), 1f);
     interpolatorAnimator.setDuration(CORNER_ANIMATION_DURATION);
     interpolatorAnimator.addUpdateListener(
         new AnimatorUpdateListener() {

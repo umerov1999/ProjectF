@@ -70,7 +70,7 @@ class VideoDtoAdapter : AbsAdapter<VKApiVideo>("VKApiVideo") {
             dto.mp4_1440 = optString(filesRoot, "mp4_1440")
             dto.mp4_2160 = optString(filesRoot, "mp4_2160")
             dto.external = optString(filesRoot, "external")
-            dto.hls = optString(filesRoot, "hls")
+            dto.hls = optString(filesRoot, listOf("hls", "hls_ondemand"))
             dto.live = optString(filesRoot, "live")
         }
         val sz =

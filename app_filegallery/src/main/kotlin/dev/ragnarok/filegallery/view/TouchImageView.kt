@@ -310,7 +310,7 @@ open class TouchImageView @JvmOverloads constructor(
 
     public override fun onSaveInstanceState(): Parcelable? {
         val bundle = Bundle()
-        bundle.putParcelable("instanceState", super.onSaveInstanceState())
+        bundle.putParcelable(STATE, super.onSaveInstanceState())
         bundle.putInt("orientation", orientation)
         bundle.putFloat("saveScale", currentZoom)
         bundle.putFloat("matchViewHeight", matchViewHeight)
@@ -343,7 +343,7 @@ open class TouchImageView @JvmOverloads constructor(
             if (orientation != oldOrientation) {
                 orientationJustChanged = true
             }
-            super.onRestoreInstanceState(state.getParcelableCompat("instanceState"))
+            super.onRestoreInstanceState(state.getParcelableCompat(STATE))
             return
         }
         super.onRestoreInstanceState(state)
@@ -487,10 +487,8 @@ open class TouchImageView @JvmOverloads constructor(
         resetZoom()
         scaleImage(scale.toDouble(), viewWidth / 2.toFloat(), viewHeight / 2.toFloat(), true)
         touchMatrix.getValues(floatMatrix)
-        floatMatrix[Matrix.MTRANS_X] =
-            (viewWidth - matchViewWidth) / 2 - focusX * (scale - 1) * matchViewWidth
-        floatMatrix[Matrix.MTRANS_Y] =
-            (viewHeight - matchViewHeight) / 2 - focusY * (scale - 1) * matchViewHeight
+        floatMatrix[Matrix.MTRANS_X] = -(focusX * imageWidth - viewWidth * 0.5f)
+        floatMatrix[Matrix.MTRANS_Y] = -(focusY * imageHeight - viewHeight * 0.5f)
         touchMatrix.setValues(floatMatrix)
         fixTrans()
         savePreviousImageValues()
@@ -695,6 +693,10 @@ open class TouchImageView @JvmOverloads constructor(
         orientationJustChanged = false
         val drawable = drawable
         if (drawable == null || drawable.intrinsicWidth == 0 || drawable.intrinsicHeight == 0) {
+            return
+        }
+        @Suppress("SENSELESS_COMPARISON")
+        if (touchMatrix == null || prevMatrix == null) {
             return
         }
         if (userSpecifiedMinScale == AUTOMATIC_MIN_ZOOM) {
@@ -1461,6 +1463,8 @@ open class TouchImageView @JvmOverloads constructor(
     }
 
     companion object {
+        private const val STATE = "instanceState"
+
         // SuperMin and SuperMax multipliers. Determine how much the image can be zoomed below or above the zoom boundaries,
         // before animating back to the min/max zoom boundary.
         private const val SUPER_MIN_MULTIPLIER = .75f

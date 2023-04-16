@@ -95,7 +95,11 @@ class UserDetailsPresenter(
         val domain =
             if (user.domain.nonNullNoEmpty()) "@" + user.domain else "@" + user.getOwnerObjectId()
         items.add(
-            AdvancedItem(1, AdvancedItem.TYPE_COPY_DETAILS_ONLY, Text(R.string.id))
+            AdvancedItem(
+                1, Text(R.string.id),
+                AdvancedItem.TYPE_COPY_DETAILS_ONLY,
+                autolink = false
+            )
                 .setSubtitle(Text(domain))
                 .setIcon(Icon.fromResources(R.drawable.person))
                 .setSection(mainSection)
@@ -125,7 +129,7 @@ class UserDetailsPresenter(
         if (user.bdate.nonNullNoEmpty()) {
             val formatted = getDateWithZeros(user.bdate)
             items.add(
-                AdvancedItem(3, Text(R.string.birthday))
+                AdvancedItem(3, Text(R.string.birthday), autolink = false)
                     .setSubtitle(Text(formatted))
                     .setIcon(Icon.fromResources(R.drawable.cake))
                     .setSection(mainSection)
@@ -173,7 +177,7 @@ class UserDetailsPresenter(
         }
         if (details.getSkype().nonNullNoEmpty()) {
             items.add(
-                AdvancedItem(9, AdvancedItem.TYPE_COPY_DETAILS_ONLY, Text(R.string.skype))
+                AdvancedItem(9, Text(R.string.skype), AdvancedItem.TYPE_COPY_DETAILS_ONLY)
                     .setSubtitle(Text(details.getSkype()))
                     .setIcon(R.drawable.ic_skype)
                     .setSection(mainSection)
@@ -181,7 +185,7 @@ class UserDetailsPresenter(
         }
         if (details.getInstagram().nonNullNoEmpty()) {
             items.add(
-                AdvancedItem(10, AdvancedItem.TYPE_OPEN_URL, Text(R.string.instagram))
+                AdvancedItem(10, Text(R.string.instagram), AdvancedItem.TYPE_OPEN_URL)
                     .setSubtitle(Text(details.getInstagram()))
                     .setUrlPrefix("https://www.instagram.com")
                     .setIcon(R.drawable.instagram)
@@ -190,7 +194,7 @@ class UserDetailsPresenter(
         }
         if (details.getTwitter().nonNullNoEmpty()) {
             items.add(
-                AdvancedItem(11, AdvancedItem.TYPE_OPEN_URL, Text(R.string.twitter))
+                AdvancedItem(11, Text(R.string.twitter), AdvancedItem.TYPE_OPEN_URL)
                     .setSubtitle(Text(details.getTwitter()))
                     .setIcon(R.drawable.twitter)
                     .setUrlPrefix("https://mobile.twitter.com")
@@ -199,7 +203,7 @@ class UserDetailsPresenter(
         }
         if (details.getFacebook().nonNullNoEmpty()) {
             items.add(
-                AdvancedItem(12, AdvancedItem.TYPE_OPEN_URL, Text(R.string.facebook))
+                AdvancedItem(12, Text(R.string.facebook), AdvancedItem.TYPE_OPEN_URL)
                     .setSubtitle(Text(details.getFacebook()))
                     .setIcon(R.drawable.facebook)
                     .setUrlPrefix("https://m.facebook.com")

@@ -1,5 +1,8 @@
 package dev.ragnarok.fenrir.fragment.base
 
+import android.text.util.Linkify.EMAIL_ADDRESSES
+import android.text.util.Linkify.PHONE_NUMBERS
+import android.text.util.Linkify.WEB_URLS
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,7 +78,6 @@ class RecyclerMenuAdapter : RecyclerView.Adapter<MenuItemHolder> {
                 section != previous.section
             }
         }
-        holder.headerRoot.setOnClickListener { }
         if (headerVisible) {
             holder.headerRoot.visibility = View.VISIBLE
             holder.headerText.text = section?.title?.getText(context)
@@ -93,6 +95,11 @@ class RecyclerMenuAdapter : RecyclerView.Adapter<MenuItemHolder> {
         holder.itemTitle.text = item.title?.getText(context)
         holder.itemSubtitle.visibility =
             if (item.subtitle == null) View.GONE else View.VISIBLE
+        if (item.autolink) {
+            holder.itemSubtitle.autoLinkMask = WEB_URLS or EMAIL_ADDRESSES or PHONE_NUMBERS
+        } else {
+            holder.itemSubtitle.autoLinkMask = 0
+        }
         holder.itemSubtitle.text = item.subtitle?.getText(context)
         val last = position == itemCount - 1
         val dividerVisible: Boolean = if (last) {
@@ -106,11 +113,8 @@ class RecyclerMenuAdapter : RecyclerView.Adapter<MenuItemHolder> {
             actionListener?.onClick(item)
         }
         holder.itemRoot.setOnLongClickListener {
-            if (actionListener != null) {
-                actionListener?.onLongClick(item)
-                return@setOnLongClickListener true
-            }
-            false
+            actionListener?.onLongClick(item) ?: return@setOnLongClickListener false
+            true
         }
     }
 

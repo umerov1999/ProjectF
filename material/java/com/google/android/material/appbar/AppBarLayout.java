@@ -280,8 +280,8 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
     if (a.hasValue(R.styleable.AppBarLayout_expanded)) {
       setExpanded(
           a.getBoolean(R.styleable.AppBarLayout_expanded, false),
-          false, /* animate */
-          false /* force */);
+          /* animate */ false,
+          /* force */ false);
     }
 
     if (Build.VERSION.SDK_INT >= 21 && a.hasValue(R.styleable.AppBarLayout_elevation)) {
@@ -2043,7 +2043,7 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
 
     @Override
     int getMaxDragOffset(@NonNull T view) {
-      return -view.getDownNestedScrollRange();
+      return -view.getDownNestedScrollRange() + view.getTopInset();
     }
 
     @Override
@@ -2214,7 +2214,15 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
       if (forceJump || (changed && shouldJumpElevationState(parent, layout))) {
         // If the collapsed state changed, we may need to
         // jump to the current state if we have an overlapping view
-        layout.jumpDrawablesToCurrentState();
+        if (layout.getBackground() != null) {
+          layout.getBackground().jumpToCurrentState();
+        }
+        if (VERSION.SDK_INT >= VERSION_CODES.M && layout.getForeground() != null) {
+          layout.getForeground().jumpToCurrentState();
+        }
+        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP && layout.getStateListAnimator() != null) {
+          layout.getStateListAnimator().jumpToCurrentState();
+        }
       }
     }
 
