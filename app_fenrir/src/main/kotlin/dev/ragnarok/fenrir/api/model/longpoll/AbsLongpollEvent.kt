@@ -1,9 +1,9 @@
 package dev.ragnarok.fenrir.api.model.longpoll
 
-import dev.ragnarok.fenrir.api.adapters.LongpollUpdateAdapter
+import dev.ragnarok.fenrir.api.adapters.LongpollUpdateDtoAdapter
 import kotlinx.serialization.Serializable
 
-@Serializable(with = LongpollUpdateAdapter::class)
+@Serializable(with = LongpollUpdateDtoAdapter::class)
 open class AbsLongpollEvent(val action: Int) {
     companion object {
         const val ACTION_MESSAGES_FLAGS_SET = 2

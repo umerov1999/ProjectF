@@ -2,13 +2,14 @@ package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.api.model.VKApiPostSource
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class PostSourceDtoAdapter : AbsAdapter<VKApiPostSource>("VKApiPostSource") {
+class PostSourceDtoAdapter : AbsDtoAdapter<VKApiPostSource>("VKApiPostSource") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
     ): VKApiPostSource {
-        val root = json.asJsonObject
+        val root = json.jsonObject
         val dto = VKApiPostSource()
         dto.type = VKApiPostSource.Type.parse(optString(root, "type"))
         dto.platform = optString(root, "platform")

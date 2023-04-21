@@ -4,9 +4,11 @@ import dev.ragnarok.fenrir.api.model.VKApiAudioPlaylist
 import dev.ragnarok.fenrir.api.model.response.ServicePlaylistResponse
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
 class ServicePlaylistResponseDtoAdapter :
-    AbsAdapter<ServicePlaylistResponse>("ServicePlaylistResponse") {
+    AbsDtoAdapter<ServicePlaylistResponse>("ServicePlaylistResponse") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -14,11 +16,11 @@ class ServicePlaylistResponseDtoAdapter :
         if (!checkObject(json)) {
             throw Exception("$TAG error parse object")
         }
-        val root = json.asJsonObject
+        val root = json.jsonObject
         val dto = ServicePlaylistResponse()
         dto.playlists = ArrayList()
         if (checkArray(root["response"])) {
-            val response = root.getAsJsonArray("response")
+            val response = root["response"]?.jsonArray
             for (i in response.orEmpty()) {
                 if (checkObject(i)) {
                     dto.playlists?.add(

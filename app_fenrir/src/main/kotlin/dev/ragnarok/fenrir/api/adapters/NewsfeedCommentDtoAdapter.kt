@@ -4,8 +4,9 @@ import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.*
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class NewsfeedCommentDtoAdapter : AbsAdapter<Dto>("Dto") {
+class NewsfeedCommentDtoAdapter : AbsDtoAdapter<Dto>("Dto") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -13,7 +14,7 @@ class NewsfeedCommentDtoAdapter : AbsAdapter<Dto>("Dto") {
         if (!checkObject(json)) {
             throw UnsupportedOperationException()
         }
-        val root = json.asJsonObject
+        val root = json.jsonObject
         when (optString(root, "type", "post")) {
             "photo" -> {
                 return PhotoDto(kJson.decodeFromJsonElement(VKApiPhoto.serializer(), root))

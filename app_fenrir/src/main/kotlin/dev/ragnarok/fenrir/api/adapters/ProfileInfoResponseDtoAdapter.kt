@@ -2,9 +2,10 @@ package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfoResponse
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
 class ProfileInfoResponseDtoAdapter :
-    AbsAdapter<VKApiProfileInfoResponse>("VKApiProfileInfoResponse") {
+    AbsDtoAdapter<VKApiProfileInfoResponse>("VKApiProfileInfoResponse") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -13,7 +14,7 @@ class ProfileInfoResponseDtoAdapter :
             throw Exception("$TAG error parse object")
         }
         val info = VKApiProfileInfoResponse()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         if (root.has("name_request")) {
             info.status = 2
         } else {

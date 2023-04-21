@@ -6,9 +6,10 @@ import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 import dev.ragnarok.fenrir.util.serializeble.json.intOrNull
-import dev.ragnarok.fenrir.util.serializeble.json.jsonPrimitive
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class VideoAlbumDtoAdapter : AbsAdapter<VKApiVideoAlbum>("VKApiVideoAlbum") {
+class VideoAlbumDtoAdapter : AbsDtoAdapter<VKApiVideoAlbum>("VKApiVideoAlbum") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -17,7 +18,7 @@ class VideoAlbumDtoAdapter : AbsAdapter<VKApiVideoAlbum>("VKApiVideoAlbum") {
             throw Exception("$TAG error parse object")
         }
         val album = VKApiVideoAlbum()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         album.id = optInt(root, "id")
         album.owner_id = optLong(root, "owner_id")
         album.title = optString(root, "title")
@@ -30,20 +31,20 @@ class VideoAlbumDtoAdapter : AbsAdapter<VKApiVideoAlbum>("VKApiVideoAlbum") {
                 }
         }
         if (hasArray(root, "image")) {
-            val images = root.getAsJsonArray("image")
+            val images = root["image"]?.jsonArray
             for (i in 0 until images?.size.orZero()) {
                 if (!checkObject(images?.get(i))) {
                     continue
                 }
-                if (images?.get(i)?.asJsonObject?.get("width")?.jsonPrimitive?.intOrNull.orZero() >= 800) {
-                    album.image = images?.get(i)?.asJsonObject?.get("url")?.jsonPrimitive?.content
+                if (images?.get(i)?.jsonObject?.get("width")?.asPrimitiveSafe?.intOrNull.orZero() >= 800) {
+                    album.image = images?.get(i)?.jsonObject?.get("url")?.asPrimitiveSafe?.content
                     break
                 }
             }
             if (album.image == null) {
                 if (checkObject(images?.get(images.size - 1))) {
                     album.image =
-                        images?.get(images.size - 1)?.asJsonObject?.get("url")?.jsonPrimitive?.content
+                        images?.get(images.size - 1)?.jsonObject?.get("url")?.asPrimitiveSafe?.content
                 }
             }
         } else if (root.has("photo_800")) {

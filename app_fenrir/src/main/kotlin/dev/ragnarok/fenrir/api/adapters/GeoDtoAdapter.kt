@@ -4,7 +4,7 @@ import dev.ragnarok.fenrir.api.model.VKApiGeo
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class GeoDtoAdapter : AbsAdapter<VKApiGeo>("VKApiGeo") {
+class GeoDtoAdapter : AbsDtoAdapter<VKApiGeo>("VKApiGeo") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement

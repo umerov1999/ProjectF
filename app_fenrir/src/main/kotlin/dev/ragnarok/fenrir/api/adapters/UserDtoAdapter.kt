@@ -6,8 +6,10 @@ import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class UserDtoAdapter : AbsAdapter<VKApiUser>("VKApiUser") {
+class UserDtoAdapter : AbsDtoAdapter<VKApiUser>("VKApiUser") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -16,7 +18,7 @@ class UserDtoAdapter : AbsAdapter<VKApiUser>("VKApiUser") {
             throw Exception("$TAG error parse object")
         }
         val dto = VKApiUser()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         dto.id = optLong(root, "id")
         if (dto.id == 0L) dto.id = optLong(root, "user_id")
         dto.first_name = optString(root, Fields.USER_FIELDS.FIRST_NAME)
@@ -28,7 +30,7 @@ class UserDtoAdapter : AbsAdapter<VKApiUser>("VKApiUser") {
         dto.photo_100 = optString(root, Fields.USER_FIELDS.PHOTO_100)
         dto.photo_200 = optString(root, Fields.USER_FIELDS.PHOTO_200)
         if (hasObject(root, Fields.USER_FIELDS.LAST_SEEN)) {
-            val lastSeenRoot = root.getAsJsonObject(Fields.USER_FIELDS.LAST_SEEN)
+            val lastSeenRoot = root[Fields.USER_FIELDS.LAST_SEEN]?.jsonObject
             dto.last_seen = optLong(lastSeenRoot, "time")
             dto.platform = optInt(lastSeenRoot, Fields.USER_FIELDS.PLATFORM)
         }
@@ -66,7 +68,7 @@ class UserDtoAdapter : AbsAdapter<VKApiUser>("VKApiUser") {
             }
         }
         if (hasObject(root, Fields.USER_FIELDS.PERSONAL)) {
-            val personal = root.getAsJsonObject(Fields.USER_FIELDS.PERSONAL)
+            val personal = root[Fields.USER_FIELDS.PERSONAL]?.jsonObject
             dto.smoking = optInt(personal, "smoking")
             dto.alcohol = optInt(personal, "alcohol")
             dto.political = optInt(personal, "political")
@@ -75,7 +77,7 @@ class UserDtoAdapter : AbsAdapter<VKApiUser>("VKApiUser") {
             dto.inspired_by = optString(personal, "inspired_by")
             dto.religion = optString(personal, "religion")
             if (hasArray(personal, "langs")) {
-                val langs = personal["langs"]?.asJsonArray
+                val langs = personal["langs"]?.jsonArray
                 dto.langs = Array(langs?.size.orZero()) { optString(langs, it) ?: "null" }
             }
         }

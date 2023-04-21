@@ -11,12 +11,12 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.serializeble.json.*
 import java.util.Collections
 
-class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?") {
+class LongpollUpdateDtoAdapter : AbsDtoAdapter<AbsLongpollEvent?>("AbsLongpollEvent?") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
     ): AbsLongpollEvent? {
-        val array = json.asJsonArray
+        val array = json.jsonArray
         val action = array[0].jsonPrimitive.int
         return deserialize(action, array)
     }
@@ -125,7 +125,7 @@ class LongpollUpdateAdapter : AbsAdapter<AbsLongpollEvent?>("AbsLongpollEvent?")
             update.sourceAct = optString(extra, "source_act")
             update.sourceMid = optLong(extra, "source_mid")
             update.payload = optString(extra, "payload")
-            if (extra.has("keyboard")) {
+            if (hasObject(extra, "keyboard")) {
                 update.keyboard =
                     extra["keyboard"]?.let {
                         kJson.decodeFromJsonElement(

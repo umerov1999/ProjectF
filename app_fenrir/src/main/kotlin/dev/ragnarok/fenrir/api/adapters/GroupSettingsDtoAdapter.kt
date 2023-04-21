@@ -3,11 +3,12 @@ package dev.ragnarok.fenrir.api.adapters
 import dev.ragnarok.fenrir.api.model.GroupSettingsDto
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.JsonPrimitive
 import dev.ragnarok.fenrir.util.serializeble.json.int
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 import dev.ragnarok.fenrir.util.serializeble.json.jsonPrimitive
 
-class GroupSettingsAdapter : AbsAdapter<GroupSettingsDto>("GroupSettingsDto") {
+class GroupSettingsDtoAdapter : AbsDtoAdapter<GroupSettingsDto>("GroupSettingsDto") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -16,7 +17,7 @@ class GroupSettingsAdapter : AbsAdapter<GroupSettingsDto>("GroupSettingsDto") {
             throw Exception("$TAG error parse object")
         }
         val dto = GroupSettingsDto()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         dto.title = optString(root, "title")
         dto.description = optString(root, "description")
         dto.address = optString(root, "address")
@@ -37,7 +38,7 @@ class GroupSettingsAdapter : AbsAdapter<GroupSettingsDto>("GroupSettingsDto") {
         dto.public_date = optString(root, "public_date")
         dto.public_date_label = optString(root, "public_date_label")
         val publicCategoryJson = root["public_category"]
-        if (publicCategoryJson is JsonPrimitive) {
+        if (checkPrimitive(publicCategoryJson)) {
             try {
                 dto.public_category = publicCategoryJson.jsonPrimitive.int.toString()
             } catch (e: Exception) {
@@ -45,7 +46,7 @@ class GroupSettingsAdapter : AbsAdapter<GroupSettingsDto>("GroupSettingsDto") {
             }
         }
         val publicSubCategoryJson = root["public_subcategory"]
-        if (publicSubCategoryJson is JsonPrimitive) {
+        if (checkPrimitive(publicSubCategoryJson)) {
             try {
                 dto.public_subcategory = publicSubCategoryJson.jsonPrimitive.int.toString()
             } catch (e: Exception) {
@@ -54,7 +55,7 @@ class GroupSettingsAdapter : AbsAdapter<GroupSettingsDto>("GroupSettingsDto") {
         }
         if (hasArray(root, "public_category_list")) {
             dto.public_category_list = parseArray(
-                root.getAsJsonArray("public_category_list"), emptyList(),
+                root["public_category_list"]?.jsonArray, emptyList(),
                 GroupSettingsDto.PublicCategory.serializer()
             )
         }
@@ -74,6 +75,6 @@ class GroupSettingsAdapter : AbsAdapter<GroupSettingsDto>("GroupSettingsDto") {
     }
 
     companion object {
-        private val TAG = GroupSettingsAdapter::class.java.simpleName
+        private val TAG = GroupSettingsDtoAdapter::class.java.simpleName
     }
 }

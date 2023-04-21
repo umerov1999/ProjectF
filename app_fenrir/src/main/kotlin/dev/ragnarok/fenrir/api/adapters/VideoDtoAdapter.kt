@@ -7,8 +7,10 @@ import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class VideoDtoAdapter : AbsAdapter<VKApiVideo>("VKApiVideo") {
+class VideoDtoAdapter : AbsDtoAdapter<VKApiVideo>("VKApiVideo") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -16,7 +18,7 @@ class VideoDtoAdapter : AbsAdapter<VKApiVideo>("VKApiVideo") {
         if (!checkObject(json)) {
             throw Exception("$TAG error parse object")
         }
-        val root = json.asJsonObject
+        val root = json.jsonObject
         val dto = VKApiVideo()
         dto.id = optInt(root, "id")
         dto.owner_id = optLong(root, "owner_id")
@@ -41,7 +43,7 @@ class VideoDtoAdapter : AbsAdapter<VKApiVideo>("VKApiVideo") {
         dto.access_key = optString(root, "access_key")
         dto.album_id = optInt(root, "album_id")
         if (hasObject(root, "likes")) {
-            val likesRoot = root.getAsJsonObject("likes")
+            val likesRoot = root["likes"]?.jsonObject
             dto.likes = optInt(likesRoot, "count")
             dto.user_likes = optBoolean(likesRoot, "user_likes")
         }
@@ -61,7 +63,7 @@ class VideoDtoAdapter : AbsAdapter<VKApiVideo>("VKApiVideo") {
                 }
         }
         if (hasObject(root, "files")) {
-            val filesRoot = root.getAsJsonObject("files")
+            val filesRoot = root["files"]?.jsonObject
             dto.mp4_240 = optString(filesRoot, "mp4_240")
             dto.mp4_360 = optString(filesRoot, "mp4_360")
             dto.mp4_480 = optString(filesRoot, "mp4_480")
@@ -76,28 +78,28 @@ class VideoDtoAdapter : AbsAdapter<VKApiVideo>("VKApiVideo") {
         val sz =
             if (dto.external.nonNullNoEmpty() && dto.external?.contains("youtube") == true) 320 else 800
         if (hasArray(root, "image")) {
-            val images = root.getAsJsonArray("image")
+            val images = root["image"]?.jsonArray
             if (images?.size.orZero() > 0) {
                 for (i in 0 until images?.size.orZero()) {
-                    if (optInt(images?.get(i)?.asJsonObject, "width") >= sz) {
-                        dto.image = optString(images?.get(i)?.asJsonObject, "url")
+                    if (optInt(images?.get(i)?.asJsonObjectSafe, "width") >= sz) {
+                        dto.image = optString(images?.get(i)?.asJsonObjectSafe, "url")
                         break
                     }
                 }
                 if (dto.image == null) dto.image =
-                    optString(images?.get(images.size - 1)?.asJsonObject, "url")
+                    optString(images?.get(images.size - 1)?.jsonObject, "url")
             }
         } else if (dto.image == null && hasArray(root, "first_frame")) {
-            val images = root.getAsJsonArray("first_frame")
+            val images = root["first_frame"]?.jsonArray
             if (images?.size.orZero() > 0) {
                 for (i in 0 until images?.size.orZero()) {
-                    if (optInt(images?.get(i)?.asJsonObject, "width") >= 800) {
-                        dto.image = optString(images?.get(i)?.asJsonObject, "url")
+                    if (optInt(images?.get(i)?.asJsonObjectSafe, "width") >= 800) {
+                        dto.image = optString(images?.get(i)?.asJsonObjectSafe, "url")
                         break
                     }
                 }
                 if (dto.image == null) dto.image =
-                    optString(images?.get(images.size - 1)?.asJsonObject, "url")
+                    optString(images?.get(images.size - 1)?.asJsonObjectSafe, "url")
             }
         } else if (dto.image == null) {
             if (root.has("photo_800")) {

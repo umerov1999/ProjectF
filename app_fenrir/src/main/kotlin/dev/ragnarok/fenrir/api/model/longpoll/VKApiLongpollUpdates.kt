@@ -1,10 +1,10 @@
 package dev.ragnarok.fenrir.api.model.longpoll
 
-import dev.ragnarok.fenrir.api.adapters.LongpollUpdatesAdapter
+import dev.ragnarok.fenrir.api.adapters.LongpollUpdatesDtoAdapter
 import dev.ragnarok.fenrir.util.Utils.safeCountOfMultiple
 import kotlinx.serialization.Serializable
 
-@Serializable(with = LongpollUpdatesAdapter::class)
+@Serializable(with = LongpollUpdatesDtoAdapter::class)
 class VKApiLongpollUpdates {
     // TODO Message edit update
     //{"ts":1841741106,"updates":[[5,1200880,51,26632922,1528116889,"и тд",{"title":""},{},1000771599]]}

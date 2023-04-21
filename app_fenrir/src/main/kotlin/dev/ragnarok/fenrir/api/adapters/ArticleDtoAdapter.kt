@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 
 import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class ArticleDtoAdapter : AbsAdapter<VKApiArticle>("VKApiArticle") {
+class ArticleDtoAdapter : AbsDtoAdapter<VKApiArticle>("VKApiArticle") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement

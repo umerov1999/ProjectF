@@ -15,7 +15,8 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.serializeble.json.*
 import kotlinx.serialization.builtins.ListSerializer
 
-class FeedbackVKOfficialDtoAdapter : AbsAdapter<FeedbackVKOfficialList>("FeedbackVKOfficialList") {
+class FeedbackVKOfficialDtoAdapter :
+    AbsDtoAdapter<FeedbackVKOfficialList>("FeedbackVKOfficialList") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -157,7 +158,7 @@ class FeedbackVKOfficialDtoAdapter : AbsAdapter<FeedbackVKOfficialList>("Feedbac
                 if (hasArray(main_item, "image_object")) {
                     val jsonPhotos2 = main_item["image_object"]?.jsonArray
                     dto.iconURL =
-                        jsonPhotos2?.get(jsonPhotos2.size - 1)?.jsonObject?.get("url")?.jsonPrimitive?.content
+                        jsonPhotos2?.get(jsonPhotos2.size - 1)?.asJsonObjectSafe?.get("url")?.asPrimitiveSafe?.content
                 }
                 if ("photo" == optString(main_item, "type")) {
                     attachments.add(

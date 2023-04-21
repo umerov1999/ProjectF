@@ -2,9 +2,10 @@ package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.api.model.VKApiAudioPlaylist
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
 import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class AudioPlaylistDtoAdapter : AbsAdapter<VKApiAudioPlaylist>("VKApiAudioPlaylist") {
+class AudioPlaylistDtoAdapter : AbsDtoAdapter<VKApiAudioPlaylist>("VKApiAudioPlaylist") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -24,43 +25,43 @@ class AudioPlaylistDtoAdapter : AbsAdapter<VKApiAudioPlaylist>("VKApiAudioPlayli
         album.Year = optInt(root, "year")
         if (hasArray(root, "genres")) {
             val build = StringBuilder()
-            val gnr = root.getAsJsonArray("genres")
+            val gnr = root["genres"]?.jsonArray
             var isFirst = true
             for (i in gnr.orEmpty()) {
                 if (!checkObject(i)) {
                     continue
                 }
                 if (isFirst) isFirst = false else build.append(", ")
-                val value = optString(i.asJsonObject, "name")
+                val value = optString(i.jsonObject, "name")
                 if (value != null) build.append(value)
             }
             album.genre = build.toString()
         }
         if (hasObject(root, "original")) {
-            val orig = root.getAsJsonObject("original")
+            val orig = root["original"]?.jsonObject
             album.original_id = optInt(orig, "playlist_id")
             album.original_owner_id = optLong(orig, "owner_id")
             album.original_access_key = optString(orig, "access_key")
         }
         if (hasArray(root, "main_artists")) {
-            val artist = root.getAsJsonArray("main_artists")?.get(0)
+            val artist = root["main_artists"]?.jsonArray?.get(0)
             if (checkObject(artist)) {
-                album.artist_name = optString(artist.asJsonObject, "name")
+                album.artist_name = optString(artist.jsonObject, "name")
             }
         }
         if (hasObject(root, "photo")) {
-            val thmb = root.getAsJsonObject("photo")
+            val thmb = root["photo"]?.jsonObject
             if (thmb.has("photo_600")) album.thumb_image =
                 optString(thmb, "photo_600") else if (thmb.has("photo_300")) album.thumb_image =
                 optString(thmb, "photo_300")
         } else if (hasArray(root, "thumbs")) {
-            val thmbc = root.getAsJsonArray("thumbs")?.get(0)
+            val thmbc = root["thumbs"]?.jsonArray?.get(0)
             if (checkObject(thmbc)) {
-                if (thmbc.asJsonObject.has("photo_600")) album.thumb_image = optString(
-                    thmbc.asJsonObject,
+                if (thmbc.jsonObject.has("photo_600")) album.thumb_image = optString(
+                    thmbc.jsonObject,
                     "photo_600"
-                ) else if (thmbc.asJsonObject.has("photo_300")) album.thumb_image =
-                    optString(thmbc.asJsonObject, "photo_300")
+                ) else if (thmbc.jsonObject.has("photo_300")) album.thumb_image =
+                    optString(thmbc.jsonObject, "photo_300")
             }
         }
         return album

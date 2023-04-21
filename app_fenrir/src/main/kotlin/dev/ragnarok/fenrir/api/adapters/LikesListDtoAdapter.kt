@@ -8,8 +8,10 @@ import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class LikesListAdapter : AbsAdapter<LikesListResponse>("LikesListResponse") {
+class LikesListDtoAdapter : AbsDtoAdapter<LikesListResponse>("LikesListResponse") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -18,16 +20,16 @@ class LikesListAdapter : AbsAdapter<LikesListResponse>("LikesListResponse") {
             throw Exception("$TAG error parse object")
         }
         val response = LikesListResponse()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         response.count = optInt(root, "count")
         if (hasArray(root, "items")) {
-            val itemsArray = root.getAsJsonArray("items")
+            val itemsArray = root["items"]?.jsonArray
             response.owners = ArrayList(itemsArray?.size.orZero())
             for (i in 0 until itemsArray?.size.orZero()) {
                 if (!checkObject(itemsArray?.get(i))) {
                     continue
                 }
-                val itemRoot = itemsArray?.get(i)?.asJsonObject
+                val itemRoot = itemsArray?.get(i)?.jsonObject
                 val type = optString(itemRoot, "type")
                 var owner: VKApiOwner? = null
                 if ("profile" == type || "user" == type) {
@@ -48,6 +50,6 @@ class LikesListAdapter : AbsAdapter<LikesListResponse>("LikesListResponse") {
     }
 
     companion object {
-        private val TAG = LikesListAdapter::class.java.simpleName
+        private val TAG = LikesListDtoAdapter::class.java.simpleName
     }
 }

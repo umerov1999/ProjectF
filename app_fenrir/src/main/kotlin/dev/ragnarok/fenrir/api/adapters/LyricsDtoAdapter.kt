@@ -4,8 +4,10 @@ import dev.ragnarok.fenrir.api.model.VKApiLyrics
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class LyricsAdapter : AbsAdapter<VKApiLyrics>("VKApiLyrics") {
+class LyricsDtoAdapter : AbsDtoAdapter<VKApiLyrics>("VKApiLyrics") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -14,17 +16,17 @@ class LyricsAdapter : AbsAdapter<VKApiLyrics>("VKApiLyrics") {
             throw Exception("$TAG error parse object")
         }
         val response = VKApiLyrics()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         if (hasObject(root, "lyrics")) {
-            root["lyrics"]?.asJsonObject?.let {
+            root["lyrics"]?.jsonObject?.let {
                 val str = StringBuilder()
                 if (hasArray(it, "text")) {
-                    for (s in it["text"]?.asJsonArray.orEmpty()) {
+                    for (s in it["text"]?.jsonArray.orEmpty()) {
                         str.append(s.asPrimitiveSafe?.content.orEmpty()).append("\r\n")
                     }
                 }
                 if (hasArray(it, "timestamps")) {
-                    for (s in it["timestamps"]?.asJsonArray.orEmpty()) {
+                    for (s in it["timestamps"]?.jsonArray.orEmpty()) {
                         if (!checkObject(s)) {
                             continue
                         }
@@ -52,6 +54,6 @@ class LyricsAdapter : AbsAdapter<VKApiLyrics>("VKApiLyrics") {
     }
 
     companion object {
-        private val TAG = LyricsAdapter::class.java.simpleName
+        private val TAG = LyricsDtoAdapter::class.java.simpleName
     }
 }

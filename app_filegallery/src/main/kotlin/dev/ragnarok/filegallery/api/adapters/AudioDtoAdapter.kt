@@ -2,8 +2,9 @@ package dev.ragnarok.filegallery.api.adapters
 
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.util.serializeble.json.JsonElement
+import dev.ragnarok.filegallery.util.serializeble.json.jsonObject
 
-class AudioDtoAdapter : AbsAdapter<Audio>("Audio") {
+class AudioDtoAdapter : AbsDtoAdapter<Audio>("Audio") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -12,7 +13,7 @@ class AudioDtoAdapter : AbsAdapter<Audio>("Audio") {
             throw Exception("$TAG error parse object")
         }
         val dto = Audio()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         dto.setId(optInt(root, "id"))
         dto.setOwnerId(optLong(root, "owner_id"))
         dto.setArtist(optString(root, "artist"))
@@ -20,9 +21,9 @@ class AudioDtoAdapter : AbsAdapter<Audio>("Audio") {
         dto.setDuration(optInt(root, "duration"))
         dto.setUrl(optString(root, "url"))
         if (hasObject(root, "album")) {
-            var thmb = root.getAsJsonObject("album")
+            var thmb = root["album"]?.jsonObject
             if (hasObject(thmb, "thumb")) {
-                thmb = thmb.getAsJsonObject("thumb")
+                thmb = thmb["thumb"]?.jsonObject
                 if (thmb.has("photo_600")) {
                     dto.setThumb_image(optString(thmb, "photo_600"))
                 }

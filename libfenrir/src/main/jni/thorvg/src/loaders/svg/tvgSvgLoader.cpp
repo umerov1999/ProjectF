@@ -252,6 +252,36 @@ static SvgMaskType _toMaskType(const char* str)
 }
 
 
+//The default rendering order: fill, stroke, markers
+//If any is omitted, will be rendered in its default order after the specified ones.
+static bool _toPaintOrder(const char* str)
+{
+    uint8_t position = 1;
+    uint8_t strokePosition = 0;
+    uint8_t fillPosition = 0;
+
+    while (*str != '\0') {
+        str = _skipSpace(str, nullptr);
+        if (!strncmp(str, "fill", 4)) {
+            fillPosition = position++;
+            str += 4;
+        } else if (!strncmp(str, "stroke", 6)) {
+            strokePosition = position++;
+            str += 6;
+        } else if (!strncmp(str, "markers", 7)) {
+            str += 7;
+        } else {
+            return _toPaintOrder("fill stroke");
+        }
+    }
+
+    if (fillPosition == 0) fillPosition = position++;
+    if (strokePosition == 0) strokePosition = position++;
+
+    return fillPosition < strokePosition;
+}
+
+
 #define _PARSE_TAG(Type, Name, Name1, Tags_Array, Default)                        \
     static Type _to##Name1(const char* str)                                       \
     {                                                                             \
@@ -1014,6 +1044,13 @@ static void _handleDisplayAttr(TVG_UNUSED SvgLoaderData* loader, SvgNode* node, 
 }
 
 
+static void _handlePaintOrderAttr(TVG_UNUSED SvgLoaderData* loader, SvgNode* node, const char* value)
+{
+    node->style->flags = (SvgStyleFlags)((int)node->style->flags | (int)SvgStyleFlags::PaintOrder);
+    node->style->paintOrder = _toPaintOrder(value);
+}
+
+
 static void _handleCssClassAttr(SvgLoaderData* loader, SvgNode* node, const char* value)
 {
     auto cssClass = &node->style->cssClass;
@@ -1064,7 +1101,8 @@ static constexpr struct
     STYLE_DEF(clip-path, ClipPath, SvgStyleFlags::ClipPath),
     STYLE_DEF(mask, Mask, SvgStyleFlags::Mask),
     STYLE_DEF(mask-type, MaskType, SvgStyleFlags::MaskType),
-    STYLE_DEF(display, Display, SvgStyleFlags::Display)
+    STYLE_DEF(display, Display, SvgStyleFlags::Display),
+    STYLE_DEF(paint-order, PaintOrder, SvgStyleFlags::PaintOrder)
 };
 
 
@@ -1265,6 +1303,8 @@ static SvgNode* _createNode(SvgNode* parent, SvgNodeType type)
     //Default line join is miter
     node->style->stroke.join = StrokeJoin::Miter;
     node->style->stroke.scale = 1.0;
+
+    node->style->paintOrder = _toPaintOrder("fill stroke");
 
     //Default display is true("inline").
     node->display = true;
@@ -2691,6 +2731,9 @@ static void _styleInherit(SvgStyleProperty* child, const SvgStyleProperty* paren
         child->color = parent->color;
         child->curColorSet = parent->curColorSet;
     }
+    if (!((int)child->flags & (int)SvgStyleFlags::PaintOrder)) {
+        child->paintOrder = parent->paintOrder;
+    }
     //Fill
     if (!((int)child->fill.flags & (int)SvgFillFlags::Paint)) {
         child->fill.paint.color = parent->fill.paint.color;
@@ -2748,6 +2791,9 @@ static void _styleCopy(SvgStyleProperty* to, const SvgStyleProperty* from)
     if (from->curColorSet) {
         to->color = from->color;
         to->curColorSet = true;
+    }
+    if (((int)from->flags & (int)SvgStyleFlags::PaintOrder)) {
+        to->paintOrder = from->paintOrder;
     }
     //Fill
     to->fill.flags = (SvgFillFlags)((int)to->fill.flags | (int)from->fill.flags);
@@ -2979,6 +3025,7 @@ static void _svgLoaderParserXmlOpen(SvgLoaderData* loader, const char* content, 
         //Parse the empty tag
         attrs = content;
         while ((attrs != nullptr) && *attrs != '>') attrs++;
+        if (empty) attrs--;
     }
 
     if (attrs) {

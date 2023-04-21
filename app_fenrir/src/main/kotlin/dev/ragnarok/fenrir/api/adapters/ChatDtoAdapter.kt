@@ -7,10 +7,11 @@ import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.JsonPrimitive
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 import dev.ragnarok.fenrir.util.serializeble.json.long
 
-class ChatDtoAdapter : AbsAdapter<VKApiChat>("VKApiChat") {
+class ChatDtoAdapter : AbsDtoAdapter<VKApiChat>("VKApiChat") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -19,7 +20,7 @@ class ChatDtoAdapter : AbsAdapter<VKApiChat>("VKApiChat") {
             throw Exception("$TAG error parse object")
         }
         val dto = VKApiChat()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         dto.id = optLong(root, "id")
         dto.type = optString(root, "type")
         dto.title = optString(root, "title")
@@ -28,11 +29,11 @@ class ChatDtoAdapter : AbsAdapter<VKApiChat>("VKApiChat") {
         dto.photo_200 = optString(root, "photo_200")
         dto.admin_id = optLong(root, "admin_id")
         if (hasArray(root, "users")) {
-            val users = root.getAsJsonArray("users")
+            val users = root["users"]?.jsonArray
             dto.users = ArrayList(users?.size.orZero())
             for (i in 0 until users?.size.orZero()) {
                 val userElement = users?.get(i)
-                if (userElement is JsonPrimitive) {
+                if (checkPrimitive(userElement)) {
                     val user = VKApiUser()
                     user.id = userElement.long
                     val chatUserDto = ChatUserDto()
@@ -42,7 +43,7 @@ class ChatDtoAdapter : AbsAdapter<VKApiChat>("VKApiChat") {
                     if (!checkObject(userElement)) {
                         continue
                     }
-                    val jsonObject = userElement.asJsonObject
+                    val jsonObject = userElement.jsonObject
                     val type = optString(jsonObject, "type")
                     val chatUserDto = ChatUserDto()
                     chatUserDto.type = type

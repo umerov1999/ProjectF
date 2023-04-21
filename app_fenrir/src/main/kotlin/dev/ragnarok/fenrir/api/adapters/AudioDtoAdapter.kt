@@ -4,9 +4,10 @@ import dev.ragnarok.fenrir.api.model.VKApiAudio
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
 import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class AudioDtoAdapter : AbsAdapter<VKApiAudio>("VKApiAudio") {
+class AudioDtoAdapter : AbsDtoAdapter<VKApiAudio>("VKApiAudio") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -28,7 +29,7 @@ class AudioDtoAdapter : AbsAdapter<VKApiAudio>("VKApiAudio") {
         dto.access_key = optString(root, "access_key")
         dto.isHq = optBoolean(root, "is_hq")
         if (hasArray(root, "main_artists")) {
-            val arr = root.getAsJsonArray("main_artists")
+            val arr = root["main_artists"]?.jsonArray
             val main_artists: HashMap<String, String> = HashMap(arr?.size.orZero())
             for (i in arr.orEmpty()) {
                 if (!checkObject(i)) {
@@ -44,13 +45,13 @@ class AudioDtoAdapter : AbsAdapter<VKApiAudio>("VKApiAudio") {
             dto.main_artists = main_artists
         }
         if (hasObject(root, "album")) {
-            var thmb = root.getAsJsonObject("album")
+            var thmb = root["album"]?.jsonObject
             dto.album_id = optInt(thmb, "id")
             dto.album_owner_id = optLong(thmb, "owner_id")
             dto.album_access_key = optString(thmb, "access_key")
             dto.album_title = optString(thmb, "title")
             if (hasObject(thmb, "thumb")) {
-                thmb = thmb.getAsJsonObject("thumb")
+                thmb = thmb["thumb"]?.jsonObject
                 when {
                     thmb.has("photo_135") -> dto.thumb_image_little = optString(
                         thmb,

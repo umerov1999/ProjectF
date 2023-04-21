@@ -1,9 +1,9 @@
 package dev.ragnarok.fenrir.api.model
 
-import dev.ragnarok.fenrir.api.adapters.LyricsAdapter
+import dev.ragnarok.fenrir.api.adapters.LyricsDtoAdapter
 import kotlinx.serialization.Serializable
 
-@Serializable(with = LyricsAdapter::class)
+@Serializable(with = LyricsDtoAdapter::class)
 class VKApiLyrics {
     var text: String? = null
 }

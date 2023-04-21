@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class AttachmentsEntryDtoAdapter : AbsAdapter<VKApiAttachments.Entry>("VKApiAttachments.Entry") {
+class AttachmentsEntryDtoAdapter : AbsDtoAdapter<VKApiAttachments.Entry>("VKApiAttachments.Entry") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement

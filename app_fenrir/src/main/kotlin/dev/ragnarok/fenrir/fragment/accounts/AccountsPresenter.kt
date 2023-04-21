@@ -12,11 +12,11 @@ import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.Auth
-import dev.ragnarok.fenrir.api.adapters.AbsAdapter.Companion.asJsonArray
-import dev.ragnarok.fenrir.api.adapters.AbsAdapter.Companion.asJsonObject
-import dev.ragnarok.fenrir.api.adapters.AbsAdapter.Companion.asJsonObjectSafe
-import dev.ragnarok.fenrir.api.adapters.AbsAdapter.Companion.asPrimitiveSafe
-import dev.ragnarok.fenrir.api.adapters.AbsAdapter.Companion.has
+import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter.Companion.asJsonObjectSafe
+import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter.Companion.asPrimitiveSafe
+import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter.Companion.hasArray
+import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter.Companion.hasObject
+import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter.Companion.hasPrimitive
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
@@ -394,14 +394,14 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             if (file.exists()) {
                 val elem = kJson.parseToJsonElement(FileInputStream(file)).jsonObject
 
-                val exchangeToken = elem["exchange_token"]?.jsonPrimitive?.contentOrNull
+                val exchangeToken = elem["exchange_token"]?.asPrimitiveSafe?.contentOrNull
                     ?: return
                 val type =
-                    elem["type"]?.jsonPrimitive?.intOrNull ?: return
-                val device = elem["device"]?.jsonPrimitive?.contentOrNull
-                val device_id = elem["device_id"]?.jsonPrimitive?.contentOrNull
-                val api_ver = elem["api_ver"]?.jsonPrimitive?.contentOrNull
-                val sak_version = elem["sak_version"]?.jsonPrimitive?.contentOrNull
+                    elem["type"]?.asPrimitiveSafe?.intOrNull ?: return
+                val device = elem["device"]?.asPrimitiveSafe?.contentOrNull
+                val device_id = elem["device_id"]?.asPrimitiveSafe?.contentOrNull
+                val api_ver = elem["api_ver"]?.asPrimitiveSafe?.contentOrNull
+                val sak_version = elem["sak_version"]?.asPrimitiveSafe?.contentOrNull
 
                 appendDisposable(
                     networker.vkDirectAuth(type, device).authByExchangeToken(
@@ -428,7 +428,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                         )
                         view?.showColoredSnack(R.string.success, Color.parseColor("#AA48BE2D"))
 
-                        if (elem.has("login")) {
+                        if (hasPrimitive(elem, "login")) {
                             Settings.get().accounts().storeLogin(
                                 user_id,
                                 elem["login"]?.jsonPrimitive?.contentOrNull ?: return@subscribe
@@ -469,43 +469,43 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                         ?.showToastWarningBottom(R.string.settings_for_another_client)
                 }
                 val reader = obj["fenrir_accounts"]
-                for (i in reader?.asJsonArray.orEmpty()) {
-                    val elem = i.asJsonObject
-                    val id = elem["user_id"]?.jsonPrimitive?.longOrNull ?: continue
+                for (i in reader?.jsonArray.orEmpty()) {
+                    val elem = i.jsonObject
+                    val id = elem["user_id"]?.asPrimitiveSafe?.longOrNull ?: continue
                     if (Settings.get().accounts().registered.contains(id)) continue
-                    val token = elem["access_token"]?.jsonPrimitive?.contentOrNull ?: continue
-                    val Type = elem["type"]?.jsonPrimitive?.intOrNull ?: continue
+                    val token = elem["access_token"]?.asPrimitiveSafe?.contentOrNull ?: continue
+                    val Type = elem["type"]?.asPrimitiveSafe?.intOrNull ?: continue
                     processNewAccount(
                         id, token, Type, null, null, "fenrir_app",
                         isCurrent = false,
                         needSave = false
                     )
-                    if (elem.has("login")) {
+                    if (hasPrimitive(elem, "login")) {
                         Settings.get().accounts().storeLogin(
                             id,
                             elem["login"]?.jsonPrimitive?.contentOrNull ?: continue
                         )
                     }
-                    if (elem.has("device")) {
+                    if (hasPrimitive(elem, "device")) {
                         Settings.get().accounts().storeDevice(
                             id,
                             elem["device"]?.jsonPrimitive?.contentOrNull ?: continue
                         )
                     }
                 }
-                if (obj.has("settings")) {
-                    SettingsBackup().doRestore(obj["settings"]?.asJsonObject)
+                if (hasObject(obj, "settings")) {
+                    SettingsBackup().doRestore(obj["settings"]?.jsonObject)
                     view?.customToast?.setDuration(Toast.LENGTH_LONG)
                     view?.customToast?.showToastSuccessBottom(
                         R.string.need_restart
                     )
                 }
                 try {
-                    if (obj.has("conversations_saved")) {
-                        for (i in obj["conversations_saved"]?.asJsonArray.orEmpty()) {
-                            val aid = i.asJsonObject["account_id"]?.jsonPrimitive?.long ?: continue
+                    if (hasArray(obj, "conversations_saved")) {
+                        for (i in obj["conversations_saved"]?.jsonArray.orEmpty()) {
+                            val aid = i.jsonObject["account_id"]?.asPrimitiveSafe?.long ?: continue
                             val dialogsJsonElem =
-                                i.asJsonObject["conversation"]?.jsonArray ?: continue
+                                i.jsonObject["conversation"]?.jsonArray ?: continue
                             if (!dialogsJsonElem.isEmpty()) {
                                 Includes.stores.dialogs().insertDialogs(
                                     aid, kJson.decodeFromJsonElement(

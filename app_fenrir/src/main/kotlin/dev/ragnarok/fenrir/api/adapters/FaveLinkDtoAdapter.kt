@@ -5,8 +5,9 @@ import dev.ragnarok.fenrir.api.model.VKApiPhoto
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 import dev.ragnarok.fenrir.util.serializeble.json.JsonObject
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class FaveLinkDtoAdapter : AbsAdapter<FaveLinkDto>("FaveLinkDto") {
+class FaveLinkDtoAdapter : AbsDtoAdapter<FaveLinkDto>("FaveLinkDto") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -15,9 +16,9 @@ class FaveLinkDtoAdapter : AbsAdapter<FaveLinkDto>("FaveLinkDto") {
             throw Exception("$TAG error parse object")
         }
         val link = FaveLinkDto()
-        var root: JsonObject? = json.asJsonObject
+        var root: JsonObject? = json.jsonObject
         if (!hasObject(root, "link")) return link
-        root = root["link"]?.asJsonObject
+        root = root["link"]?.jsonObject
         link.id = optString(root, "id")
         link.description = optString(root, "description")
         if (hasObject(root, "photo")) {

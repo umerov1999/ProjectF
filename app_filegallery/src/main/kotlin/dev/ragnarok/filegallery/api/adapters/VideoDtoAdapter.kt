@@ -2,9 +2,10 @@ package dev.ragnarok.filegallery.api.adapters
 
 import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.util.serializeble.json.JsonElement
-import dev.ragnarok.filegallery.util.serializeble.json.jsonPrimitive
+import dev.ragnarok.filegallery.util.serializeble.json.jsonArray
+import dev.ragnarok.filegallery.util.serializeble.json.jsonObject
 
-class VideoDtoAdapter : AbsAdapter<Video>("Video") {
+class VideoDtoAdapter : AbsDtoAdapter<Video>("Video") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -12,7 +13,7 @@ class VideoDtoAdapter : AbsAdapter<Video>("Video") {
         if (!checkObject(json)) {
             throw Exception("$TAG error parse object")
         }
-        val root = json.asJsonObject
+        val root = json.jsonObject
         val dto = Video()
         dto.setId(optInt(root, "id"))
         dto.setOwnerId(optLong(root, "owner_id"))
@@ -22,12 +23,12 @@ class VideoDtoAdapter : AbsAdapter<Video>("Video") {
         dto.setDate(optLong(root, "date"))
         dto.setRepeat(optBoolean(root, "repeat"))
         if (hasObject(root, "files")) {
-            val filesRoot = root.getAsJsonObject("files")
+            val filesRoot = root["files"]?.jsonObject
             dto.setLink(optString(filesRoot, "mp4_720"))
         }
         if (hasArray(root, "image")) {
-            val images = root.getAsJsonArray("image")
-            dto.setImage(images?.get(images.size - 1)?.asJsonObject?.get("url")?.jsonPrimitive?.content)
+            val images = root["image"]?.jsonArray
+            dto.setImage(images?.get(images.size - 1)?.asJsonObjectSafe?.get("url")?.asPrimitiveSafe?.content)
         }
         return dto
     }

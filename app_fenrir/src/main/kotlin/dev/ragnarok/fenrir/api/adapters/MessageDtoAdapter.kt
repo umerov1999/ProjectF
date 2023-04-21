@@ -6,8 +6,10 @@ import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class MessageDtoAdapter : AbsAdapter<VKApiMessage>("VKApiMessage") {
+class MessageDtoAdapter : AbsDtoAdapter<VKApiMessage>("VKApiMessage") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -16,7 +18,7 @@ class MessageDtoAdapter : AbsAdapter<VKApiMessage>("VKApiMessage") {
             throw Exception("$TAG error parse object")
         }
         val dto = VKApiMessage()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         dto.id = optInt(root, "id")
         dto.out = optBoolean(root, "out")
         dto.peer_id = optLong(root, "peer_id")
@@ -43,7 +45,7 @@ class MessageDtoAdapter : AbsAdapter<VKApiMessage>("VKApiMessage") {
                 }
         }
         if (hasArray(root, "fwd_messages")) {
-            val fwdArray = root.getAsJsonArray("fwd_messages")
+            val fwdArray = root["fwd_messages"]?.jsonArray
             dto.fwd_messages = ArrayList(fwdArray?.size.orZero())
             for (i in 0 until fwdArray?.size.orZero()) {
                 if (!checkObject(fwdArray?.get(i))) {
@@ -80,12 +82,12 @@ class MessageDtoAdapter : AbsAdapter<VKApiMessage>("VKApiMessage") {
         dto.conversation_message_id = optInt(root, "conversation_message_id")
         val actionJson = root["action"]
         if (checkObject(actionJson)) {
-            dto.action = optString(actionJson.asJsonObject, "type")
-            dto.action_mid = optLong(actionJson.asJsonObject, "member_id")
-            dto.action_text = optString(actionJson.asJsonObject, "text")
-            dto.action_email = optString(actionJson.asJsonObject, "email")
-            if (hasObject(actionJson.asJsonObject, "photo")) {
-                val photoJson = actionJson.asJsonObject.getAsJsonObject("photo")
+            dto.action = optString(actionJson.jsonObject, "type")
+            dto.action_mid = optLong(actionJson.jsonObject, "member_id")
+            dto.action_text = optString(actionJson.jsonObject, "text")
+            dto.action_email = optString(actionJson.jsonObject, "email")
+            if (hasObject(actionJson.jsonObject, "photo")) {
+                val photoJson = actionJson.jsonObject["photo"]?.jsonObject
                 dto.action_photo_50 = optString(photoJson, "photo_50")
                 dto.action_photo_100 = optString(photoJson, "photo_100")
                 dto.action_photo_200 = optString(photoJson, "photo_200")

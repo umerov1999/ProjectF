@@ -47,10 +47,9 @@ import dev.ragnarok.filegallery.activity.ActivityFeatures
 import dev.ragnarok.filegallery.activity.ActivityUtils
 import dev.ragnarok.filegallery.activity.EnterPinActivity
 import dev.ragnarok.filegallery.activity.FileManagerSelectActivity
-import dev.ragnarok.filegallery.api.adapters.AbsAdapter.Companion.asJsonObject
-import dev.ragnarok.filegallery.api.adapters.AbsAdapter.Companion.asJsonObjectSafe
-import dev.ragnarok.filegallery.api.adapters.AbsAdapter.Companion.asPrimitiveSafe
-import dev.ragnarok.filegallery.api.adapters.AbsAdapter.Companion.has
+import dev.ragnarok.filegallery.api.adapters.AbsDtoAdapter.Companion.asJsonObjectSafe
+import dev.ragnarok.filegallery.api.adapters.AbsDtoAdapter.Companion.asPrimitiveSafe
+import dev.ragnarok.filegallery.api.adapters.AbsDtoAdapter.Companion.hasObject
 import dev.ragnarok.filegallery.listener.BackPressCallback
 import dev.ragnarok.filegallery.listener.CanBackPressedCallback
 import dev.ragnarok.filegallery.listener.OnSectionResumeCallback
@@ -190,8 +189,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                             ?.showToastError(R.string.wrong_settings_format)
                         return@registerForActivityResult
                     }
-                    if (objApp.has("settings")) {
-                        SettingsBackup().doRestore(objApp["settings"]?.asJsonObject)
+                    if (hasObject(objApp, "settings")) {
+                        SettingsBackup().doRestore(objApp["settings"]?.jsonObject)
                         createCustomToast(requireActivity(), null)?.setDuration(Toast.LENGTH_LONG)
                             ?.showToastSuccessBottom(
                                 R.string.need_restart

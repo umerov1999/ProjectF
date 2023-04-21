@@ -5,10 +5,12 @@ import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 import java.util.Locale
 import kotlin.math.abs
 
-class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
+class CommunityDtoAdapter : AbsDtoAdapter<VKApiCommunity>("VKApiCommunity") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -16,7 +18,7 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
         if (!checkObject(json)) {
             throw Exception("$TAG error parse object")
         }
-        val root = json.asJsonObject
+        val root = json.jsonObject
         val dto = VKApiCommunity()
         dto.id = optLong(root, "id")
         dto.name = optString(root, Fields.GROUP_FIELDS.NAME)
@@ -26,14 +28,14 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
             String.format(Locale.getDefault(), "club%d", abs(dto.id))
         )
         if (hasObject(root, Fields.GROUP_FIELDS.MENU)) {
-            val pMenu = root.getAsJsonObject(Fields.GROUP_FIELDS.MENU)
+            val pMenu = root[Fields.GROUP_FIELDS.MENU]?.jsonObject
             if (hasArray(pMenu, "items")) {
                 dto.menu = ArrayList()
-                for (i in pMenu.getAsJsonArray("items").orEmpty()) {
+                for (i in pMenu["items"]?.jsonArray.orEmpty()) {
                     if (!checkObject(i)) {
                         continue
                     }
-                    val p = i.asJsonObject
+                    val p = i.jsonObject
                     val o = VKApiCommunity.Menu()
                     o.id = optInt(p, "id")
                     o.title = optString(p, "title")
@@ -42,11 +44,11 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
                     if (hasArray(p, "cover")) {
                         var wd = 0
                         var hd = 0
-                        for (s in p.getAsJsonArray("cover").orEmpty()) {
+                        for (s in p["cover"]?.jsonArray.orEmpty()) {
                             if (!checkObject(s)) {
                                 continue
                             }
-                            val f = s.asJsonObject
+                            val f = s.jsonObject
                             if (optInt(f, "width") > wd || optInt(f, "height") > hd) {
                                 wd = optInt(f, "width")
                                 hd = optInt(f, "height")
@@ -91,7 +93,7 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
                 }
         }
         if (hasObject(root, Fields.GROUP_FIELDS.BAN_INFO)) {
-            val banInfo = root.getAsJsonObject(Fields.GROUP_FIELDS.BAN_INFO)
+            val banInfo = root[Fields.GROUP_FIELDS.BAN_INFO]?.jsonObject
             dto.blacklisted = true
             dto.ban_end_date = optLong(banInfo, "end_date")
             dto.ban_comment = optString(banInfo, "comment")
@@ -99,7 +101,7 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
         dto.description = optString(root, Fields.GROUP_FIELDS.DESCRIPTION)
         dto.members_count = optInt(root, Fields.GROUP_FIELDS.MEMBERS_COUNT)
         if (hasObject(root, Fields.GROUP_FIELDS.COUNTERS)) {
-            val counters = root.getAsJsonObject(Fields.GROUP_FIELDS.COUNTERS)
+            val counters = root[Fields.GROUP_FIELDS.COUNTERS]?.jsonObject
             dto.counters = counters?.let {
                 kJson.decodeFromJsonElement(VKApiCommunity.Counters.serializer(), it)
             }
@@ -109,7 +111,7 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
                 dto.counters = VKApiCommunity.Counters()
             }
             dto.counters?.chats = optInt(
-                root.getAsJsonObject(Fields.GROUP_FIELDS.CHATS_STATUS),
+                root[Fields.GROUP_FIELDS.CHATS_STATUS]?.jsonObject,
                 "count",
                 VKApiCommunity.Counters.NO_COUNTER
             )
@@ -130,12 +132,12 @@ class CommunityDtoAdapter : AbsAdapter<VKApiCommunity>("VKApiCommunity") {
             }
         }
         dto.contacts = parseArray(
-            root.getAsJsonArray(Fields.GROUP_FIELDS.CONTACTS),
+            root[Fields.GROUP_FIELDS.CONTACTS]?.jsonArray,
             null,
             VKApiCommunity.Contact.serializer()
         )
         dto.links = parseArray(
-            root.getAsJsonArray(Fields.GROUP_FIELDS.LINKS),
+            root[Fields.GROUP_FIELDS.LINKS]?.jsonArray,
             null,
             VKApiCommunity.Link.serializer()
         )

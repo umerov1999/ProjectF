@@ -6,8 +6,9 @@ import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 import dev.ragnarok.fenrir.util.serializeble.json.JsonObject
 import dev.ragnarok.fenrir.util.serializeble.json.decodeFromJsonElementOrNull
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
+class FeedbackDtoAdapter : AbsDtoAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -15,7 +16,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
         if (!checkObject(json)) {
             throw Exception("$TAG error parse object")
         }
-        val root = json.asJsonObject
+        val root = json.jsonObject
         return when (val type = optString(root, "type")) {
             "follow", "friend_accepted" -> USERS_PARSER.parse(
                 root
@@ -57,7 +58,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
             val dto = createDto()
             dto?.type = optString(root, "type")
             dto?.date = optLong(root, "date")
-            if (root.has("reply")) {
+            if (hasObject(root, "reply")) {
                 dto?.reply =
                     kJson.decodeFromJsonElementOrNull(
                         VKApiComment.serializer(),
@@ -165,7 +166,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
             }
             dto.comments_of = when (dto.type) {
                 "reply_comment" -> {
-                    root.getAsJsonObject("parent")?.get("post")?.let {
+                    root["parent"]?.asJsonObjectSafe?.get("post")?.let {
                         kJson.decodeFromJsonElement(
                             VKApiPost.serializer(),
                             it
@@ -174,7 +175,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                 }
 
                 "reply_comment_photo" -> {
-                    root.getAsJsonObject("parent")?.get("photo")?.let {
+                    root["parent"]?.asJsonObjectSafe?.get("photo")?.let {
                         kJson.decodeFromJsonElement(
                             VKApiPhoto.serializer(),
                             it
@@ -183,7 +184,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                 }
 
                 "reply_comment_video" -> {
-                    root.getAsJsonObject("parent")?.get("video")?.let {
+                    root["parent"]?.asJsonObjectSafe?.get("video")?.let {
                         kJson.decodeFromJsonElement(
                             VKApiVideo.serializer(),
                             it
@@ -255,7 +256,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
             val dto = super.parse(root)
             dto.commented = when (dto.type) {
                 "like_comment" -> {
-                    root.getAsJsonObject("parent")?.get("post")?.let {
+                    root["parent"]?.asJsonObjectSafe?.get("post")?.let {
                         kJson.decodeFromJsonElement(
                             VKApiPost.serializer(),
                             it
@@ -264,7 +265,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                 }
 
                 "like_comment_photo" -> {
-                    root.getAsJsonObject("parent")?.get("photo")?.let {
+                    root["parent"]?.asJsonObjectSafe?.get("photo")?.let {
                         kJson.decodeFromJsonElement(
                             VKApiPhoto.serializer(),
                             it
@@ -273,7 +274,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                 }
 
                 "like_comment_video" -> {
-                    root.getAsJsonObject("parent")?.get("video")?.let {
+                    root["parent"]?.asJsonObjectSafe?.get("video")?.let {
                         kJson.decodeFromJsonElement(
                             VKApiVideo.serializer(),
                             it
@@ -282,7 +283,7 @@ class FeedbackDtoAdapter : AbsAdapter<VKApiBaseFeedback>("VKApiBaseFeedback") {
                 }
 
                 "like_comment_topic" -> {
-                    root.getAsJsonObject("parent")?.get("topic")?.let {
+                    root["parent"]?.asJsonObjectSafe?.get("topic")?.let {
                         kJson.decodeFromJsonElement(
                             VKApiTopic.serializer(),
                             it

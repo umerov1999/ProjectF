@@ -254,13 +254,18 @@ static void _applyComposition(Paint* paint, const SvgNode* node, const Box& vBox
             node->style->clipPath.applying = true;
 
             auto comp = Shape::gen();
-            if (node->transform) comp->transform(*node->transform);
 
             auto child = compNode->child.data;
             auto valid = false; //Composite only when valid shapes are existed
 
             for (uint32_t i = 0; i < compNode->child.count; ++i, ++child) {
                 if (_appendChildShape(*child, comp.get(), vBox, svgPath)) valid = true;
+            }
+
+            if (node->transform) {
+                auto m = comp->transform();
+                m = mathMultiply(node->transform, &m);
+                comp->transform(m);
             }
 
             if (valid) paint->composite(move(comp), CompositeMethod::ClipPath);
@@ -330,6 +335,8 @@ static void _applyProperty(SvgNode* node, Shape* vg, const Box& vBox, const stri
 
     //Apply the fill rule
     vg->fill((tvg::FillRule)style->fill.fillRule);
+    //Rendering order
+    vg->order(!style->paintOrder);
 
     //Apply node opacity
     if (style->opacity < 255) vg->opacity(style->opacity);
@@ -756,13 +763,23 @@ static unique_ptr<Scene> _sceneBuildHelper(const SvgNode* node, const Box& vBox,
 
 static void _applySvgViewFlag(const Scene* scene, float& vx, float& vy, float& vw, float& vh, float& w, float& h, SvgViewFlag viewFlag)
 {
-    if (!((uint32_t)viewFlag & (uint32_t)SvgViewFlag::Viewbox)) {
-        scene->bounds(&vx, &vy, &vw, &vh, false);
-        if ((uint32_t)viewFlag & (uint32_t)SvgViewFlag::Width) vw = w;
-        if ((uint32_t)viewFlag & (uint32_t)SvgViewFlag::Height) vh = h;
+    bool noViewbox = !((uint32_t)viewFlag & (uint32_t)SvgViewFlag::Viewbox);
+    bool noWidth = !((uint32_t)viewFlag & (uint32_t)SvgViewFlag::Width);
+    bool noHeight = !((uint32_t)viewFlag & (uint32_t)SvgViewFlag::Height);
+
+    if (noViewbox) {
+        float x, y;
+        scene->bounds(&x, &y, &vw, &vh, false);
+        if (noWidth && noHeight) {
+            vx = x;
+            vy = y;
+        } else {
+            vw = noWidth ? vw : w;
+            vh = noHeight ? vh : h;
+        }
     }
-    if (!((uint32_t)viewFlag & (uint32_t)SvgViewFlag::Width)) w = vw;
-    if (!((uint32_t)viewFlag & (uint32_t)SvgViewFlag::Height)) h = vh;
+    w = noWidth ? vw : w;
+    h = noHeight ? vh : h;
 }
 
 /************************************************************************/

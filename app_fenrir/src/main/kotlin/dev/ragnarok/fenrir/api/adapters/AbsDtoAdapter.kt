@@ -5,17 +5,15 @@ import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.JsonArray
 import dev.ragnarok.fenrir.util.serializeble.json.JsonDecoder
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.JsonNull
 import dev.ragnarok.fenrir.util.serializeble.json.JsonObject
 import dev.ragnarok.fenrir.util.serializeble.json.JsonPrimitive
 import dev.ragnarok.fenrir.util.serializeble.json.booleanOrNull
 import dev.ragnarok.fenrir.util.serializeble.json.doubleOrNull
 import dev.ragnarok.fenrir.util.serializeble.json.floatOrNull
-import dev.ragnarok.fenrir.util.serializeble.json.int
 import dev.ragnarok.fenrir.util.serializeble.json.intOrNull
 import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 import dev.ragnarok.fenrir.util.serializeble.json.jsonPrimitive
-import dev.ragnarok.fenrir.util.serializeble.json.long
 import dev.ragnarok.fenrir.util.serializeble.json.longOrNull
 import dev.ragnarok.fenrir.util.serializeble.msgpack.internal.BasicMsgPackDecoder
 import kotlinx.serialization.KSerializer
@@ -25,7 +23,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlin.contracts.contract
 
-abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
+abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor(name)
 
     override fun deserialize(decoder: Decoder): T {
@@ -49,7 +47,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
 
         fun checkPrimitive(element: JsonElement?): Boolean {
             contract {
-                returns(true) implies (element is JsonPrimitive)
+                returns(true) implies (element is JsonPrimitive && element !is JsonNull)
             }
             return element is JsonPrimitive
         }
@@ -68,7 +66,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             }
             obj ?: return false
             if (obj.containsKey(name)) {
-                return obj[name] is JsonPrimitive
+                return checkPrimitive(obj[name])
             }
             return false
         }
@@ -80,7 +78,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             }
             obj ?: return false
             if (obj.containsKey(name)) {
-                return obj[name] is JsonObject
+                return checkObject(obj[name])
             }
             return false
         }
@@ -92,8 +90,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             }
             obj ?: return false
             if (obj.containsKey(name)) {
-                val element = obj[name]
-                return element is JsonArray && element.jsonArray.size > 0
+                return checkArray(obj[name])
             }
             return false
         }
@@ -107,7 +104,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             json ?: return fallback
             return try {
                 val element = json[name]
-                if (element is JsonPrimitive) element.content else fallback
+                if (checkPrimitive(element)) element.content else fallback
             } catch (e: Exception) {
                 if (Constants.IS_DEBUG) {
                     e.printStackTrace()
@@ -125,7 +122,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             for (i in names) {
                 try {
                     val element = json[i]
-                    if (element is JsonPrimitive) return element.content else continue
+                    if (checkPrimitive(element)) return element.content else continue
                 } catch (e: Exception) {
                     if (Constants.IS_DEBUG) {
                         e.printStackTrace()
@@ -164,7 +161,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             json ?: return fallback
             return try {
                 val element = json[name]
-                (element as? JsonPrimitive)?.intOrNull ?: fallback
+                if (checkPrimitive(element)) element.intOrNull ?: fallback else fallback
             } catch (e: Exception) {
                 if (Constants.IS_DEBUG) {
                     e.printStackTrace()
@@ -181,7 +178,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             json ?: return fallback
             return try {
                 val element = json[name]
-                (element as? JsonPrimitive)?.floatOrNull ?: fallback
+                if (checkPrimitive(element)) element.floatOrNull ?: fallback else fallback
             } catch (e: Exception) {
                 if (Constants.IS_DEBUG) {
                     e.printStackTrace()
@@ -198,7 +195,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             json ?: return fallback
             return try {
                 val element = json[name]
-                (element as? JsonPrimitive)?.doubleOrNull ?: fallback
+                if (checkPrimitive(element)) element.doubleOrNull ?: fallback else fallback
             } catch (e: Exception) {
                 if (Constants.IS_DEBUG) {
                     e.printStackTrace()
@@ -215,7 +212,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             json ?: return fallback
             return try {
                 val element = json[name]
-                (element as? JsonPrimitive)?.longOrNull ?: fallback
+                if (checkPrimitive(element)) element.longOrNull ?: fallback else fallback
             } catch (e: Exception) {
                 if (Constants.IS_DEBUG) {
                     e.printStackTrace()
@@ -232,7 +229,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             return try {
                 for (name in names) {
                     val element = json[name]
-                    if (element is JsonPrimitive) {
+                    if (checkPrimitive(element)) {
                         return element.intOrNull ?: fallback
                     }
                 }
@@ -253,7 +250,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             return try {
                 for (name in names) {
                     val element = json[name]
-                    if (element is JsonPrimitive) {
+                    if (checkPrimitive(element)) {
                         return element.longOrNull ?: fallback
                     }
                 }
@@ -274,7 +271,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             array ?: return fallback
             return try {
                 val opt = opt(array, index)
-                (opt as? JsonPrimitive)?.longOrNull ?: fallback
+                if (checkPrimitive(opt)) opt.longOrNull ?: fallback else fallback
             } catch (e: Exception) {
                 if (Constants.IS_DEBUG) {
                     e.printStackTrace()
@@ -292,7 +289,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             array ?: return fallback
             return try {
                 val opt = opt(array, index)
-                (opt as? JsonPrimitive)?.intOrNull ?: fallback
+                if (checkPrimitive(opt)) opt.intOrNull ?: fallback else fallback
             } catch (e: Exception) {
                 if (Constants.IS_DEBUG) {
                     e.printStackTrace()
@@ -321,7 +318,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             array ?: return fallback
             return try {
                 val opt = opt(array, index)
-                if (opt is JsonPrimitive) opt.content else fallback
+                if (checkPrimitive(opt)) opt.content else fallback
             } catch (e: Exception) {
                 if (Constants.IS_DEBUG) {
                     e.printStackTrace()
@@ -483,7 +480,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             array ?: return LongArray(0)
             val list = LongArray(array.size)
             for (i in 0 until array.size) {
-                list[i] = array[i].jsonPrimitive.long
+                list[i] = array[i].asPrimitiveSafe?.longOrNull ?: 0
             }
             return list
         }
@@ -495,7 +492,7 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             array ?: return IntArray(0)
             val list = IntArray(array.size)
             for (i in 0 until array.size) {
-                list[i] = array[i].jsonPrimitive.int
+                list[i] = array[i].asPrimitiveSafe?.intOrNull ?: 0
             }
             return list
         }
@@ -508,28 +505,14 @@ abstract class AbsAdapter<T>(name: String) : KSerializer<T> {
             return Array(array.size) { optString(array, it) ?: "null" }
         }
 
-        fun JsonObject?.getAsJsonArray(name: String): JsonArray? {
-            return this?.get(name)?.jsonArray
-        }
-
-        fun JsonObject?.getAsJsonObject(name: String): JsonObject? {
-            return this?.get(name)?.jsonObject
-        }
-
-        val JsonElement.asJsonObject: JsonObject
-            get() = this as? JsonObject ?: error("JsonObject")
-
         val JsonElement.asJsonObjectSafe: JsonObject?
-            get() = this as? JsonObject
+            get() = if (checkObject(this)) this else null
 
         val JsonElement.asPrimitiveSafe: JsonPrimitive?
-            get() = this as? JsonPrimitive
+            get() = if (checkPrimitive(this)) this else null
 
         val JsonElement.asJsonArraySafe: JsonArray?
-            get() = this as? JsonArray
-
-        val JsonElement.asJsonArray: JsonArray
-            get() = this as? JsonArray ?: error("JsonArray")
+            get() = if (checkArray(this)) this else null
 
         fun JsonObject?.has(name: String): Boolean {
             return this?.containsKey(name) ?: false

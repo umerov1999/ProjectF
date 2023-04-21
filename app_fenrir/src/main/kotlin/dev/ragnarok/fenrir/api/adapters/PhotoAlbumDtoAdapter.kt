@@ -6,8 +6,10 @@ import dev.ragnarok.fenrir.api.model.VKApiPrivacy
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class PhotoAlbumDtoAdapter : AbsAdapter<VKApiPhotoAlbum>("VKApiPhotoAlbum") {
+class PhotoAlbumDtoAdapter : AbsDtoAdapter<VKApiPhotoAlbum>("VKApiPhotoAlbum") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -16,7 +18,7 @@ class PhotoAlbumDtoAdapter : AbsAdapter<VKApiPhotoAlbum>("VKApiPhotoAlbum") {
             throw Exception("$TAG error parse object")
         }
         val album = VKApiPhotoAlbum()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         album.id = optInt(root, "id")
         album.thumb_id = optInt(root, "thumb_id")
         album.owner_id = optLong(root, "owner_id")
@@ -40,7 +42,7 @@ class PhotoAlbumDtoAdapter : AbsAdapter<VKApiPhotoAlbum>("VKApiPhotoAlbum") {
                 }
         }
         if (hasArray(root, "sizes")) {
-            val sizesArray = root.getAsJsonArray("sizes")
+            val sizesArray = root["sizes"]?.jsonArray
             album.photo = ArrayList(sizesArray?.size.orZero())
             for (i in 0 until sizesArray?.size.orZero()) {
                 album.photo?.add(
@@ -51,9 +53,9 @@ class PhotoAlbumDtoAdapter : AbsAdapter<VKApiPhotoAlbum>("VKApiPhotoAlbum") {
                 )
             }
         } else if (hasObject(root, "thumb")) {
-            val thumb = root.getAsJsonObject("thumb")
+            val thumb = root["thumb"]?.jsonObject
             if (hasArray(thumb, "sizes")) {
-                val sizesArray = thumb.getAsJsonArray("sizes")
+                val sizesArray = thumb["sizes"]?.jsonArray
                 album.photo = ArrayList(sizesArray?.size.orZero())
                 for (i in 0 until sizesArray?.size.orZero()) {
                     album.photo?.add(

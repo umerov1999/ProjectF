@@ -2,11 +2,11 @@ package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.api.model.database.SchoolClazzDto
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.JsonPrimitive
 import dev.ragnarok.fenrir.util.serializeble.json.intOrNull
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
 import dev.ragnarok.fenrir.util.serializeble.json.jsonPrimitive
 
-class SchoolClazzDtoAdapter : AbsAdapter<SchoolClazzDto>("SchoolClazzDto") {
+class SchoolClazzDtoAdapter : AbsDtoAdapter<SchoolClazzDto>("SchoolClazzDto") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -15,9 +15,9 @@ class SchoolClazzDtoAdapter : AbsAdapter<SchoolClazzDto>("SchoolClazzDto") {
             throw Exception("$TAG error parse object")
         }
         val dto = SchoolClazzDto()
-        val root = json.asJsonArray
+        val root = json.jsonArray
         dto.id = optInt(root, 0)
-        if (root[1] is JsonPrimitive) {
+        if (checkPrimitive(root[1])) {
             val second = root[1].jsonPrimitive
             if (second.isString) {
                 dto.title = second.content

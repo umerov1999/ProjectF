@@ -4,9 +4,10 @@ import dev.ragnarok.fenrir.api.model.VKApiAttachments
 import dev.ragnarok.fenrir.api.model.VKApiComment
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 import kotlinx.serialization.builtins.ListSerializer
 
-class CommentDtoAdapter : AbsAdapter<VKApiComment>("VKApiComment") {
+class CommentDtoAdapter : AbsDtoAdapter<VKApiComment>("VKApiComment") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -15,7 +16,7 @@ class CommentDtoAdapter : AbsAdapter<VKApiComment>("VKApiComment") {
             throw Exception("$TAG error parse object")
         }
         val dto = VKApiComment()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         dto.id = optInt(root, "id")
         dto.from_id = optLong(root, "from_id")
         if (dto.from_id == 0L) {
@@ -31,7 +32,7 @@ class CommentDtoAdapter : AbsAdapter<VKApiComment>("VKApiComment") {
             }
         }
         if (hasObject(root, "thread")) {
-            val threadRoot = root.getAsJsonObject("thread")
+            val threadRoot = root["thread"]?.jsonObject
             dto.threads_count = optInt(threadRoot, "count")
             if (hasArray(threadRoot, "items")) {
                 dto.threads = threadRoot["items"]?.let {
@@ -41,7 +42,7 @@ class CommentDtoAdapter : AbsAdapter<VKApiComment>("VKApiComment") {
         }
         dto.pid = optInt(root, "pid")
         if (hasObject(root, "likes")) {
-            val likesRoot = root.getAsJsonObject("likes")
+            val likesRoot = root["likes"]?.jsonObject
             dto.likes = optInt(likesRoot, "count")
             dto.user_likes = optBoolean(likesRoot, "user_likes")
             dto.can_like = optBoolean(likesRoot, "can_like")

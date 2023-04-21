@@ -5,8 +5,9 @@ import dev.ragnarok.fenrir.api.model.VKApiStory
 import dev.ragnarok.fenrir.api.model.VKApiVideo
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class StoryDtoAdapter : AbsAdapter<VKApiStory>("VKApiStory") {
+class StoryDtoAdapter : AbsDtoAdapter<VKApiStory>("VKApiStory") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -15,7 +16,7 @@ class StoryDtoAdapter : AbsAdapter<VKApiStory>("VKApiStory") {
             throw Exception("$TAG error parse object")
         }
         val story = VKApiStory()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         story.id = optInt(root, "id")
         story.owner_id = optLong(root, "owner_id")
         story.date = optLong(root, "owner_id")
@@ -39,7 +40,7 @@ class StoryDtoAdapter : AbsAdapter<VKApiStory>("VKApiStory") {
                 }
         }
         if (hasObject(root, "link")) {
-            story.target_url = optString(root.getAsJsonObject("link"), "url")
+            story.target_url = optString(root["link"]?.jsonObject, "url")
         }
         return story
     }

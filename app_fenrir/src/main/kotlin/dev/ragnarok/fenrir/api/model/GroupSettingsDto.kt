@@ -1,10 +1,10 @@
 package dev.ragnarok.fenrir.api.model
 
-import dev.ragnarok.fenrir.api.adapters.GroupSettingsAdapter
+import dev.ragnarok.fenrir.api.adapters.GroupSettingsDtoAdapter
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable(with = GroupSettingsAdapter::class)
+@Serializable(with = GroupSettingsDtoAdapter::class)
 class GroupSettingsDto {
     var title: String? = null
     var description: String? = null

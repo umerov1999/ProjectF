@@ -5,8 +5,10 @@ import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class LongpollUpdatesAdapter : AbsAdapter<VKApiLongpollUpdates>("VkApiLongpollUpdates") {
+class LongpollUpdatesDtoAdapter : AbsDtoAdapter<VKApiLongpollUpdates>("VkApiLongpollUpdates") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -15,13 +17,13 @@ class LongpollUpdatesAdapter : AbsAdapter<VKApiLongpollUpdates>("VkApiLongpollUp
         if (!checkObject(json)) {
             throw Exception("$TAG error parse object")
         }
-        val root = json.asJsonObject
+        val root = json.jsonObject
         updates.failed = optInt(root, "failed")
         updates.ts = optLong(root, "ts")
         val array = root["updates"]
         if (checkArray(array)) {
-            for (i in 0 until array.asJsonArray.size) {
-                val updateArray = array.asJsonArraySafe?.get(i)?.asJsonArraySafe
+            for (i in 0 until array.jsonArray.size) {
+                val updateArray = array.jsonArray[i].asJsonArraySafe
                 val event: AbsLongpollEvent? =
                     updateArray?.let {
                         kJson.decodeFromJsonElement(
@@ -40,6 +42,6 @@ class LongpollUpdatesAdapter : AbsAdapter<VKApiLongpollUpdates>("VkApiLongpollUp
     }
 
     companion object {
-        private val TAG = LongpollUpdatesAdapter::class.java.simpleName
+        private val TAG = LongpollUpdatesDtoAdapter::class.java.simpleName
     }
 }

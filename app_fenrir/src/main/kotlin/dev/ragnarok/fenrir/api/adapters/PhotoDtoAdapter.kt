@@ -6,8 +6,10 @@ import dev.ragnarok.fenrir.api.model.VKApiPhoto
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
+import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 
-class PhotoDtoAdapter : AbsAdapter<VKApiPhoto>("VKApiPhoto") {
+class PhotoDtoAdapter : AbsDtoAdapter<VKApiPhoto>("VKApiPhoto") {
     @Throws(Exception::class)
     override fun deserialize(
         json: JsonElement
@@ -16,7 +18,7 @@ class PhotoDtoAdapter : AbsAdapter<VKApiPhoto>("VKApiPhoto") {
             throw Exception("$TAG error parse object")
         }
         val photo = VKApiPhoto()
-        val root = json.asJsonObject
+        val root = json.jsonObject
         photo.id = optInt(root, "id")
         photo.album_id = optInt(root, "album_id")
         photo.date = optLong(root, "date")
@@ -26,7 +28,7 @@ class PhotoDtoAdapter : AbsAdapter<VKApiPhoto>("VKApiPhoto") {
         photo.text = optString(root, "text")
         photo.access_key = optString(root, "access_key")
         if (hasObject(root, "likes")) {
-            val likesRoot = root["likes"]?.asJsonObject
+            val likesRoot = root["likes"]?.jsonObject
             photo.likes = optInt(likesRoot, "count")
             photo.user_likes = optBoolean(likesRoot, "user_likes")
         }
@@ -36,17 +38,17 @@ class PhotoDtoAdapter : AbsAdapter<VKApiPhoto>("VKApiPhoto") {
             }
         }
         if (hasObject(root, "tags")) {
-            val tagsRoot = root["tags"]?.asJsonObject
+            val tagsRoot = root["tags"]?.jsonObject
             photo.tags = optInt(tagsRoot, "count")
         }
         if (hasObject(root, "reposts")) {
-            val repostsRoot = root["reposts"]?.asJsonObject
+            val repostsRoot = root["reposts"]?.jsonObject
             photo.reposts = optInt(repostsRoot, "count")
         }
         photo.can_comment = optBoolean(root, "can_comment")
         photo.post_id = optInt(root, "post_id")
         if (hasArray(root, "sizes")) {
-            val sizesArray = root.getAsJsonArray("sizes")
+            val sizesArray = root["sizes"]?.jsonArray
             photo.sizes = ArrayList(sizesArray?.size.orZero())
             for (i in 0 until sizesArray?.size.orZero()) {
                 if (!checkObject(sizesArray?.get(i))) {
