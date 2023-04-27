@@ -268,6 +268,7 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
                 LayoutInflater.from(container.context)
                     .inflate(R.layout.content_gif_page, container, false)
             )
+            ret.mGifView.orientationLocked = TouchImageView.OrientationLocked.HORIZONTAL
             ret.mGifView.setOnTouchListener { view: View, event: MotionEvent ->
                 if (event.pointerCount >= 2 || view.canScrollHorizontally(1) && view.canScrollHorizontally(
                         -1

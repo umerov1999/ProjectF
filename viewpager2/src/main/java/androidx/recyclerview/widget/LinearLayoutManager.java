@@ -27,7 +27,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -87,30 +86,6 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
      */
     private boolean mLastStackFromEnd;
 
-    /**
-     * Whether the last layout filled the entire viewport
-     *
-     * If the last layout did not fill the viewport, we should not attempt to calculate an
-     * anchoring based on the current children (other than if one is focused), because there
-     * isn't any scrolling that could have occurred that would indicate a position in the list
-     * that needs to be preserved - and in fact, trying to do so could produce the wrong result,
-     * such as the case of anchoring to a loading spinner at the end of the list.
-     */
-    private boolean mLastLayoutFilledViewport = false;
-
-    /**
-     * Whether the *current* layout filled the entire viewport
-     *
-     * This is used to populate mLastLayoutFilledViewport. It exists as a separate variable
-     * because we need to populate it at the correct moment, which is tricky due to the
-     * LayoutManager layout being called multiple times.  We want to not set it in prelayout
-     * (because that's not the real layout), but we want to set it the *first* time that the
-     * actual layout is run, because for certain non-exact layout cases, there are two passes,
-     * with the second pass being provided an EXACTLY spec (when the actual spec was non-exact).
-     * This would otherwise incorrectly believe the viewport was filled, because it was provided
-     * just enough space to contain the content, and thus it would always fill the viewport.
-     */
-    private Boolean mThisLayoutFilledViewport = null;
 
     /**
      * Defines if layout should be calculated from end to start.
@@ -290,10 +265,6 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
     public void onInitializeAccessibilityNodeInfo(@NonNull RecyclerView.Recycler recycler,
             @NonNull RecyclerView.State state, @NonNull AccessibilityNodeInfoCompat info) {
         super.onInitializeAccessibilityNodeInfo(recycler, state, info);
-        // Set the class name so this is treated as a list. This helps accessibility services
-        // distinguish lists from one row or one column grids.
-        info.setClassName(ListView.class.getName());
-
         // TODO(b/251823537)
         if (mRecyclerView.mAdapter != null && mRecyclerView.mAdapter.getItemCount() > 0) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -801,10 +772,6 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
                 fixOffset = fixLayoutStartGap(startOffset, recycler, state, false);
                 startOffset += fixOffset;
                 endOffset += fixOffset;
-                if (!state.isPreLayout() && mThisLayoutFilledViewport == null) {
-                    mThisLayoutFilledViewport =
-                            (startOffset <= mOrientationHelper.getStartAfterPadding());
-                }
             } else {
                 int fixOffset = fixLayoutStartGap(startOffset, recycler, state, true);
                 startOffset += fixOffset;
@@ -812,10 +779,6 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
                 fixOffset = fixLayoutEndGap(endOffset, recycler, state, false);
                 startOffset += fixOffset;
                 endOffset += fixOffset;
-                if (!state.isPreLayout() && mThisLayoutFilledViewport == null) {
-                    mThisLayoutFilledViewport =
-                            (endOffset >= mOrientationHelper.getEndAfterPadding());
-                }
             }
         }
         layoutForPredictiveAnimations(recycler, state, startOffset, endOffset);
@@ -837,8 +800,6 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
         mPendingSavedState = null; // we don't need this anymore
         mPendingScrollPosition = RecyclerView.NO_POSITION;
         mPendingScrollPositionOffset = INVALID_OFFSET;
-        mLastLayoutFilledViewport = mThisLayoutFilledViewport != null && mThisLayoutFilledViewport;
-        mThisLayoutFilledViewport = null;
         mAnchorInfo.reset();
     }
 
@@ -948,19 +909,11 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
         if (getChildCount() == 0) {
             return false;
         }
-
         final View focused = getFocusedChild();
         if (focused != null && anchorInfo.isViewValidAsAnchor(focused, state)) {
             anchorInfo.assignFromViewAndKeepVisibleRect(focused, getPosition(focused));
             return true;
         }
-
-        // If we did not fill the layout, don't anchor. This prevents, for example,
-        // anchoring to the bottom of the list when there is a loading indicator.
-        if (!mLastLayoutFilledViewport) {
-            return false;
-        }
-
         if (mLastStackFromEnd != mStackFromEnd) {
             return false;
         }

@@ -57,7 +57,7 @@ buildscript {
     ext.autoValueVersion = "1.10.1"
 
     //common libraries
-    ext.kotlin_version = "1.8.20"
+    ext.kotlin_version = "1.8.21"
     ext.kotlin_coroutines = "1.7.0-RC"
     ext.kotlin_serializer = "1.5.0"
     ext.okhttpLibraryVersion = "5.0.0-alpha.11"

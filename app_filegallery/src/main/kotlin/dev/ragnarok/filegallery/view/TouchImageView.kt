@@ -20,6 +20,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.widget.OverScroller
 import androidx.appcompat.widget.AppCompatImageView
+import com.squareup.picasso3.Rotatable
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable
 import dev.ragnarok.filegallery.R
@@ -64,8 +65,8 @@ open class TouchImageView @JvmOverloads constructor(
     private var viewSizeChangeFixedPixel: FixedPixel? = FixedPixel.CENTER
     private var orientationJustChanged = false
 
-    internal enum class ImageActionState {
-        NONE, DRAG, ZOOM, FLING, ANIMATE_ZOOM
+    enum class ImageActionState {
+        NONE, DRAG, MOVE, CANT_MOVE, ZOOM, FLING, ANIMATE_ZOOM
     }
 
     private var imageActionState: ImageActionState? = null
@@ -108,8 +109,15 @@ open class TouchImageView @JvmOverloads constructor(
     private var touchCoordinatesListener: OnTouchCoordinatesListener? = null
     private var doubleTapListener: OnDoubleTapListener? = null
     private var userTouchListener: OnTouchListener? = null
+    private var stateListener: StateListener? = null
     private var touchImageViewListener: OnTouchImageViewListener? = null
     private var animDrawable: AnimatedFileDrawable? = null
+
+    enum class OrientationLocked {
+        HORIZONTAL, VERTICAL
+    }
+
+    var orientationLocked = OrientationLocked.HORIZONTAL
 
     init {
         super.setClickable(true)
@@ -146,6 +154,14 @@ open class TouchImageView @JvmOverloads constructor(
 
     fun setRotateImageToFitScreen(rotateImageToFitScreen: Boolean) {
         isRotateImageToFitScreen = rotateImageToFitScreen
+    }
+
+    interface StateListener {
+        fun onChangeState(imageActionState: ImageActionState, zoomed: Boolean)
+    }
+
+    fun setOnStateChangeListener(onStateListener: StateListener) {
+        stateListener = onStateListener
     }
 
     override fun setOnTouchListener(onTouchListener: OnTouchListener?) {
@@ -882,11 +898,11 @@ open class TouchImageView @JvmOverloads constructor(
     }
 
     internal fun setState(imageActionState: ImageActionState) {
+        if (this.imageActionState == imageActionState) {
+            return
+        }
         this.imageActionState = imageActionState
-    }
-
-    fun canScrollHorizontallyFroyo(direction: Int): Boolean {
-        return canScrollHorizontally(direction)
+        stateListener?.onChangeState(imageActionState, isZoomed)
     }
 
     override fun canScrollHorizontally(direction: Int): Boolean {
@@ -980,7 +996,7 @@ open class TouchImageView @JvmOverloads constructor(
             }
             gestureDetector.onTouchEvent(event)
             val curr = PointF(event.x, event.y)
-            if (imageActionState == ImageActionState.NONE || imageActionState == ImageActionState.DRAG || imageActionState == ImageActionState.FLING) {
+            if (imageActionState == ImageActionState.NONE || imageActionState == ImageActionState.DRAG || imageActionState == ImageActionState.MOVE || imageActionState == ImageActionState.CANT_MOVE || imageActionState == ImageActionState.FLING) {
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
                         last.set(curr)
@@ -988,9 +1004,29 @@ open class TouchImageView @JvmOverloads constructor(
                         setState(ImageActionState.DRAG)
                     }
 
-                    MotionEvent.ACTION_MOVE -> if (imageActionState == ImageActionState.DRAG) {
+                    MotionEvent.ACTION_MOVE -> if (imageActionState == ImageActionState.DRAG || imageActionState == ImageActionState.MOVE || imageActionState == ImageActionState.CANT_MOVE) {
                         val deltaX = curr.x - last.x
                         val deltaY = curr.y - last.y
+                        if (orientationLocked == OrientationLocked.HORIZONTAL) {
+                            if (deltaX < 1 && deltaX > -1 || abs(deltaX) < abs(deltaY) || canScrollHorizontally(
+                                    if (deltaX < 0) 1 else -1
+                                )
+                            ) {
+                                setState(ImageActionState.MOVE)
+                            } else {
+                                setState(ImageActionState.CANT_MOVE)
+                            }
+                        } else {
+                            if (deltaY < 1 && deltaY > -1 || abs(deltaY) < abs(deltaX) || canScrollVertically(
+                                    if (deltaY < 0) 1 else -1
+                                )
+                            ) {
+                                setState(ImageActionState.MOVE)
+                            } else {
+                                setState(ImageActionState.CANT_MOVE)
+                            }
+                        }
+
                         val fixTransX = getFixDragTrans(deltaX, viewWidth.toFloat(), imageWidth)
                         val fixTransY = getFixDragTrans(deltaY, viewHeight.toFloat(), imageHeight)
                         touchMatrix.postTranslate(fixTransX, fixTransY)
@@ -998,9 +1034,13 @@ open class TouchImageView @JvmOverloads constructor(
                         last[curr.x] = curr.y
                     }
 
-                    MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> setState(
-                        ImageActionState.NONE
-                    )
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_POINTER_UP -> {
+                        if (imageActionState != ImageActionState.FLING) {
+                            setState(
+                                ImageActionState.NONE
+                            )
+                        }
+                    }
                 }
             }
 
@@ -1268,7 +1308,6 @@ open class TouchImageView @JvmOverloads constructor(
         }
 
         fun cancelFling() {
-            setState(ImageActionState.NONE)
             scroller.forceFinished(true)
         }
 
@@ -1278,6 +1317,9 @@ open class TouchImageView @JvmOverloads constructor(
             // Listener runnable updated with each frame of fling animation.
             touchImageViewListener?.onMove()
             if (scroller.isFinished) {
+                if (imageActionState == ImageActionState.FLING) {
+                    setState(ImageActionState.NONE)
+                }
                 return
             }
             if (scroller.computeScrollOffset()) {
@@ -1291,9 +1333,10 @@ open class TouchImageView @JvmOverloads constructor(
                 fixTrans()
                 imageMatrix = touchMatrix
                 compatPostOnAnimation(this)
+            } else if (imageActionState == ImageActionState.FLING) {
+                setState(ImageActionState.NONE)
             }
         }
-
     }
 
     private class CompatScroller(context: Context?) {
@@ -1460,6 +1503,33 @@ open class TouchImageView @JvmOverloads constructor(
             this.zoomFinishedListener = listener
         }
 
+    }
+
+    class StateValues(
+        val viewWidth: Int,
+        val viewHeight: Int,
+        val bitmapWidth: Int,
+        val bitmapHeight: Int,
+        viewMatrix: Matrix
+    ) {
+        val matrix = FloatArray(9)
+
+        init {
+            viewMatrix.getValues(matrix)
+        }
+    }
+
+    fun getStateValues(): StateValues? {
+        if (drawable == null || drawable is Rotatable && (drawable as Rotatable).getRotation() != 0f) {
+            return null
+        }
+        return StateValues(
+            viewWidth,
+            viewHeight,
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            touchMatrix
+        )
     }
 
     companion object {

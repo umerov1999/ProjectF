@@ -119,7 +119,6 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
 
                 }).build()
         )
-
         ret.photo.setOnLongClickListener {
             doSaveOnDrive(true)
             true
@@ -304,6 +303,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         }
 
         private fun loadImage(url: String?) {
+            PicassoInstance.with().cancelRequest(photo)
             mLoadingNow = true
             resolveProgressVisibility(true)
             PicassoInstance.with()

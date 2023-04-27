@@ -563,12 +563,12 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             }
             mLoadingNow = true
             resolveProgressVisibility(true)
+            PicassoInstance.with().cancelRequest(photo)
             if (!image.isGif) {
                 PicassoInstance.with()
                     .load(image.photo_url)
                     .into(photo, mPicassoLoadCallback)
             } else {
-                PicassoInstance.with().cancelRequest(photo)
                 photo.fromAnimFile(Uri.parse(image.photo_url).toFile())
                 mLoadingNow = false
                 resolveProgressVisibility(true)
@@ -640,10 +640,12 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             return ret
         }
 
+        /*
         override fun onViewDetachedFromWindow(holder: PhotoViewHolder) {
             super.onViewDetachedFromWindow(holder)
             PicassoInstance.with().cancelRequest(holder.photo)
         }
+         */
 
         override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
             val photo = mPhotos[position]

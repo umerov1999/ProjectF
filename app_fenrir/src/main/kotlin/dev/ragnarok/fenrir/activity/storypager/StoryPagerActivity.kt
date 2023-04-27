@@ -519,6 +519,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         private var mLoadingNow = false
         override fun bindTo(story: Story) {
             photo.resetZoom()
+            photo.orientationLocked = TouchImageView.OrientationLocked.VERTICAL
             if (story.isIs_expired) {
                 createCustomToast(this@StoryPagerActivity).showToastError(R.string.is_expired)
                 mLoadingNow = false
@@ -587,6 +588,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         }
 
         private fun loadImage(url: String) {
+            PicassoInstance.with().cancelRequest(photo)
             mLoadingNow = true
             resolveProgressVisibility(true)
             PicassoInstance.with()

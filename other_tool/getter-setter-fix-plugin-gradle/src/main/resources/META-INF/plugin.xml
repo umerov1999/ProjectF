@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <idea-plugin>
     <id>dev.ragnarok.intellij.getter_setter_plugin</id>
     <name>Getter Setter Kotlin Fixer</name>

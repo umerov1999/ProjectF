@@ -8,10 +8,15 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Matrix
 import android.os.Bundle
 import android.util.SparseIntArray
 import android.view.*
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
@@ -19,6 +24,7 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuProvider
+import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -317,6 +323,10 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         }
         mButtonWithUser = findViewById(R.id.with_user_button)
         mButtonWithUser?.setOnClickListener { presenter?.fireWithUserClick() }
+        mButtonWithUser?.setOnLongClickListener {
+            presenter?.fireWithUserLongClick()
+            true
+        }
         mButtonComments = findViewById(R.id.comments_button)
         mButtonComments?.setOnClickListener { presenter?.fireCommentsButtonClick() }
         buttonShare = findViewById(R.id.share_button)
@@ -674,6 +684,10 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         mToolbar?.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
+    override fun rebindPhotoAtPartial(position: Int) {
+        mPagerAdapter?.notifyItemChanged(position)
+    }
+
     override fun rebindPhotoAt(position: Int) {
         mPagerAdapter?.notifyItemChanged(position)
         if (bShowPhotosLine && mAdapterRecycler.getSize() > 1) {
@@ -761,13 +775,94 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         val reload: FloatingActionButton
         private val mPicassoLoadCallback: WeakPicassoLoadCallback
         val photo: TouchImageView
+        val tagsPlaceholder: FrameLayout
         val progress: RLottieImageView
         var animationDispose: Disposable = Disposable.disposed()
         private var mAnimationLoaded = false
         private var mLoadingNow = false
+        private var tagCleared = true
+        private var currentPhoto: Photo? = null
+
+        fun clearTags() {
+            if (tagCleared) {
+                return
+            }
+            tagsPlaceholder.removeAllViews()
+            tagsPlaceholder.visibility = View.GONE
+            tagCleared = true
+        }
+
+        fun addTags() {
+            if (!tagCleared) {
+                return
+            }
+            val currPhoto = currentPhoto ?: return
+            if (!currPhoto.showPhotoTags || currPhoto.photoTags.isNullOrEmpty()) {
+                return
+            }
+            val tags = currPhoto.photoTags
+            val stateValues = photo.getStateValues() ?: return
+            if (stateValues.viewWidth <= 0 || stateValues.viewHeight <= 0 || stateValues.bitmapWidth <= 0 || stateValues.bitmapHeight <= 0) {
+                return
+            }
+            val scaleX: Double = stateValues.matrix[Matrix.MSCALE_X].toDouble()
+            val bitmapWidth: Double = stateValues.bitmapWidth.toDouble()
+            val preScaledBitmapWidth = scaleX * bitmapWidth / 100.0
+            val scaleY: Double = stateValues.matrix[Matrix.MSCALE_Y].toDouble()
+            val bitmapHeight: Double = stateValues.bitmapHeight.toDouble()
+            val preScaledBitmapHeight = scaleY * bitmapHeight / 100.0
+            val transX: Double = stateValues.matrix[Matrix.MTRANS_X].toDouble()
+            val transY: Double = stateValues.matrix[Matrix.MTRANS_Y].toDouble()
+
+            var has = false
+            for (i in tags.orEmpty()) {
+                val leftMargin = transX + i.getX() * preScaledBitmapWidth
+                val topMargin = transY + i.getY() * preScaledBitmapHeight
+                val layoutWidth = ((i.getX2() - i.getX()) * preScaledBitmapWidth)
+                val layoutHeight = ((i.getY2() - i.getY()) * preScaledBitmapHeight)
+
+                if (leftMargin > stateValues.viewWidth || leftMargin < -50.0 || topMargin > stateValues.viewHeight || topMargin < -50.0) {
+                    continue
+                } else {
+                    val layoutParams = FrameLayout.LayoutParams(-2, -2)
+                    layoutParams.leftMargin = leftMargin.toInt()
+                    layoutParams.topMargin = topMargin.toInt()
+                    val inflate =
+                        layoutInflater.inflate(R.layout.photo_tag_item, null as ViewGroup?)
+                    inflate.findViewById<TextView>(R.id.tv_ph_tag_name)?.let { txt ->
+                        txt.visibility =
+                            if (i.getTaggedName().nonNullNoEmpty()) View.VISIBLE else View.GONE
+                        txt.text = i.getTaggedName()
+                        txt.tag = i
+                        txt.setOnClickListener {
+                            val photoTag = txt.tag as? PhotoTags
+                            if (photoTag != null) {
+                                PlaceFactory.getOwnerWallPlace(
+                                    Settings.get().accounts().current, photoTag.getUserId(), null
+                                ).tryOpenWith(this@PhotoPagerActivity)
+                            }
+                        }
+                    }
+                    (inflate.findViewById(R.id.iv_ph_tag_border) as ImageView).layoutParams =
+                        LinearLayout.LayoutParams(layoutWidth.toInt(), layoutHeight.toInt())
+                    tagsPlaceholder.addView(inflate, layoutParams)
+                    if (!has) {
+                        has = true
+                    }
+                }
+            }
+            if (has) {
+                tagCleared = false
+                tagsPlaceholder.visibility = View.VISIBLE
+            }
+        }
+
         fun bindTo(photo_image: Photo) {
+            clearTags()
             photo.resetZoom()
+            photo.orientationLocked = TouchImageView.OrientationLocked.HORIZONTAL
             val size: Int = photoSizeFromPrefs
+            currentPhoto = photo_image
             val url = photo_image.getUrlForSize(size, true)
             reload.setOnClickListener {
                 reload.visibility = View.INVISIBLE
@@ -829,6 +924,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         }
 
         private fun loadImage(url: String) {
+            PicassoInstance.with().cancelRequest(photo)
             mLoadingNow = true
             resolveProgressVisibility(true)
             PicassoInstance.with()
@@ -850,6 +946,11 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             mLoadingNow = false
             resolveProgressVisibility(false)
             reload.visibility = View.INVISIBLE
+
+            clearTags()
+            photo.doOnPreDraw {
+                addTags()
+            }
         }
 
         override fun onError(t: Throwable) {
@@ -865,6 +966,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             photo.doubleTapMaxZoom = 4f
             progress = view.findViewById(idOfProgressBar())
             reload = view.findViewById(R.id.goto_button)
+            tagsPlaceholder = view.findViewById(R.id.tags_placeholder)
             mPicassoLoadCallback = WeakPicassoLoadCallback(this)
             photo.setOnClickListener { presenter?.firePhotoTap() }
         }
@@ -886,12 +988,42 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     if (rot >= 360f) {
                         rot = 0f
                     }
+                    if (rot == 0f) {
+                        ret.clearTags()
+                        ret.addTags()
+                    } else {
+                        ret.clearTags()
+                    }
                     (ret.photo.drawable as Rotatable).rotate(rot)
                     ret.photo.fitImageToView()
                     ret.photo.invalidate()
                 }
                 true
             }
+            ret.photo.setOnStateChangeListener(object : TouchImageView.StateListener {
+                override fun onChangeState(
+                    imageActionState: TouchImageView.ImageActionState,
+                    zoomed: Boolean
+                ) {
+                    when (imageActionState) {
+                        TouchImageView.ImageActionState.NONE -> {
+                            ret.addTags()
+                        }
+
+                        TouchImageView.ImageActionState.CANT_MOVE, TouchImageView.ImageActionState.MOVE, TouchImageView.ImageActionState.FLING -> {
+                            if (zoomed) {
+                                ret.clearTags()
+                            }
+                        }
+
+                        TouchImageView.ImageActionState.ZOOM, TouchImageView.ImageActionState.ANIMATE_ZOOM -> {
+                            ret.clearTags()
+                        }
+
+                        else -> {}
+                    }
+                }
+            })
             ret.photo.setOnTouchListener { view: View, event: MotionEvent ->
                 if (event.pointerCount >= 2 || view.canScrollHorizontally(1) && view.canScrollHorizontally(
                         -1
@@ -914,10 +1046,12 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             return ret
         }
 
+        /*
         override fun onViewDetachedFromWindow(holder: PhotoViewHolder) {
             super.onViewDetachedFromWindow(holder)
             PicassoInstance.with().cancelRequest(holder.photo)
         }
+         */
 
         override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
             val photo = mPhotos[position]

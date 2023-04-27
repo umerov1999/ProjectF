@@ -488,6 +488,18 @@ object Dto2Model {
             .setSrc(dto.src)
     }
 
+    fun transform(dto: VKApiPhotoTags): PhotoTags {
+        return PhotoTags(dto.id, dto.user_id)
+            .setPlacerId(dto.placer_id)
+            .setTaggedName(dto.tagged_name)
+            .setDate(dto.date)
+            .setX(dto.x)
+            .setY(dto.y)
+            .setX2(dto.x2)
+            .setY2(dto.y2)
+            .setViewed(dto.viewed)
+    }
+
     fun transform(dto: VKApiDoc.Video): VideoPreview {
         return VideoPreview()
             .setHeight(dto.height)

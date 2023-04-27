@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.domain.impl
 import android.provider.BaseColumns
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
-import dev.ragnarok.fenrir.api.model.VKApiPhotoTags
 import dev.ragnarok.fenrir.db.interfaces.IStorages
 import dev.ragnarok.fenrir.db.model.PhotoPatch
 import dev.ragnarok.fenrir.db.model.PhotoPatch.Like
@@ -31,6 +30,7 @@ import dev.ragnarok.fenrir.model.CommentedType
 import dev.ragnarok.fenrir.model.IOwnersBundle
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.PhotoTags
 import dev.ragnarok.fenrir.model.criteria.PhotoAlbumsCriteria
 import dev.ragnarok.fenrir.model.criteria.PhotoCriteria
 import dev.ragnarok.fenrir.settings.Settings
@@ -221,9 +221,13 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         ownerId: Long?,
         photo_id: Int?,
         access_key: String?
-    ): Single<List<VKApiPhotoTags>> {
+    ): Single<List<PhotoTags>> {
         return networker.vkDefault(accountId)
-            .photos().getTags(ownerId, photo_id, access_key)
+            .photos().getTags(ownerId, photo_id, access_key).map { it1 ->
+                mapAll(
+                    it1
+                ) { transform(it) }
+            }
     }
 
     override fun getAllComments(

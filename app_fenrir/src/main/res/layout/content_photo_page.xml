@@ -10,6 +10,13 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true" />
 
+    <FrameLayout
+        android:id="@+id/tags_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
     <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"

@@ -50,6 +50,10 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         private set
     var msgPeerId = 0L
         private set
+    var photoTags: List<PhotoTags>? = null
+        private set
+    var showPhotoTags: Boolean = false
+        private set
 
     constructor()
     internal constructor(parcel: ParcelNative) {
@@ -72,6 +76,8 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         repostsCount = parcel.readInt()
         msgId = parcel.readInt()
         msgPeerId = parcel.readLong()
+        photoTags = parcel.readParcelableList(PhotoTags.NativeCreator)
+        showPhotoTags = parcel.readBoolean()
     }
 
     internal constructor(parcel: Parcel) {
@@ -94,6 +100,8 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         repostsCount = parcel.readInt()
         msgId = parcel.readInt()
         msgPeerId = parcel.readLong()
+        photoTags = parcel.createTypedArrayList(PhotoTags.CREATOR)
+        showPhotoTags = parcel.getBoolean()
     }
 
     @AbsModelType
@@ -175,6 +183,21 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         return this
     }
 
+    fun setPhotoTags(photoTags: List<PhotoTags>?): Photo {
+        this.photoTags = photoTags
+        return this
+    }
+
+    fun setShowPhotoTags(showPhotoTags: Boolean): Photo {
+        this.showPhotoTags = showPhotoTags
+        return this
+    }
+
+    fun toggleShowPhotoTags(): Photo {
+        showPhotoTags = !showPhotoTags
+        return this
+    }
+
     fun getUrlForSize(@PhotoSize size: Int, excludeNonAspectRatio: Boolean): String? {
         return sizes?.getUrlForSize(size, excludeNonAspectRatio)
     }
@@ -228,6 +251,8 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         parcel.writeInt(repostsCount)
         parcel.writeInt(msgId)
         parcel.writeLong(msgPeerId)
+        parcel.writeTypedList(photoTags)
+        parcel.putBoolean(showPhotoTags)
     }
 
     fun generateWebLink(): String {
@@ -267,6 +292,8 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         dest.writeInt(repostsCount)
         dest.writeInt(msgId)
         dest.writeLong(msgPeerId)
+        dest.writeParcelableList(photoTags)
+        dest.writeBoolean(showPhotoTags)
     }
 
     companion object {

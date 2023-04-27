@@ -34,6 +34,7 @@ import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.push.OwnerInfo
@@ -316,7 +317,15 @@ open class PhotoPagerPresenter internal constructor(
                             if (ne.accessKey == null) {
                                 ne.setAccessKey(photo.accessKey)
                             }
+                            val old = mPhotos[currentIndex]
                             mPhotos[currentIndex] = ne
+                            mPhotos[currentIndex].let { uit ->
+                                uit.setShowPhotoTags(old.showPhotoTags)
+                                uit.setPhotoTags(old.photoTags)
+                                uit.setMsgId(old.msgId)
+                                uit.setDeleted(old.isDeleted)
+                                uit.setMsgPeerId(old.msgPeerId)
+                            }
                             refreshInfoViews(false)
                         }
                     }) { })
@@ -571,40 +580,88 @@ open class PhotoPagerPresenter internal constructor(
         )
     }
 
+    private fun showWithUserDialog(photo: Photo) {
+        photo.setShowPhotoTags(true)
+        view?.rebindPhotoAtPartial(currentIndex)
+        val buttons: MutableList<FunctionSource> = ArrayList(photo.photoTags?.size.orZero())
+        for (i in photo.photoTags.orEmpty()) {
+            if (i.getUserId() != 0L) {
+                buttons.add(FunctionSource(i.getTaggedName(), R.drawable.person) {
+                    PlaceFactory.getOwnerWallPlace(
+                        accountId, i.getUserId(), null
+                    ).tryOpenWith(context)
+                })
+            } else {
+                buttons.add(FunctionSource(i.getTaggedName(), R.drawable.pencil) {})
+            }
+        }
+        val adapter = ButtonAdapter(context, buttons)
+        MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.has_tags)
+            .setPositiveButton(R.string.button_ok, null)
+            .setCancelable(true)
+            .setView(
+                Utils.createAlertRecycleFrame(
+                    context,
+                    adapter,
+                    null,
+                    accountId
+                )
+            )
+            .show()
+    }
+
     fun fireWithUserClick() {
         val photo = current
-        appendDisposable(
-            InteractorFactory.createPhotosInteractor()
-                .getTags(accountId, photo.ownerId, photo.getObjectId(), photo.accessKey)
-                .fromIOToMain()
-                .subscribe({
-                    val buttons: MutableList<FunctionSource> = ArrayList(it.size)
-                    for (i in it) {
-                        if (i.user_id != 0L) {
-                            buttons.add(FunctionSource(i.tagged_name, R.drawable.person) {
-                                PlaceFactory.getOwnerWallPlace(
-                                    accountId, i.user_id, null
-                                ).tryOpenWith(context)
-                            })
-                        } else {
-                            buttons.add(FunctionSource(i.tagged_name, R.drawable.pencil) {})
+        if (photo.showPhotoTags) {
+            photo.setShowPhotoTags(false)
+            view?.rebindPhotoAtPartial(currentIndex)
+            return
+        }
+        if (photo.photoTags.isNullOrEmpty()) {
+            appendDisposable(
+                InteractorFactory.createPhotosInteractor()
+                    .getTags(accountId, photo.ownerId, photo.getObjectId(), photo.accessKey)
+                    .fromIOToMain()
+                    .subscribe({
+                        photo.setPhotoTags(it)
+                        photo.setShowPhotoTags(true)
+                        view?.rebindPhotoAtPartial(currentIndex)
+                    }) { throwable ->
+                        view?.let {
+                            showError(
+                                it,
+                                throwable
+                            )
                         }
-                    }
-                    val adapter = ButtonAdapter(context, buttons)
-                    MaterialAlertDialogBuilder(context)
-                        .setTitle(R.string.has_tags)
-                        .setPositiveButton(R.string.button_ok, null)
-                        .setCancelable(true)
-                        .setView(Utils.createAlertRecycleFrame(context, adapter, null, accountId))
-                        .show()
-                }) { throwable ->
-                    view?.let {
-                        showError(
-                            it,
-                            throwable
-                        )
-                    }
-                })
+                    })
+        } else {
+            photo.setShowPhotoTags(true)
+            view?.rebindPhotoAtPartial(currentIndex)
+        }
+    }
+
+    fun fireWithUserLongClick() {
+        val photo = current
+        if (photo.photoTags.isNullOrEmpty()) {
+            appendDisposable(
+                InteractorFactory.createPhotosInteractor()
+                    .getTags(accountId, photo.ownerId, photo.getObjectId(), photo.accessKey)
+                    .fromIOToMain()
+                    .subscribe({
+                        photo.setPhotoTags(it)
+                        showWithUserDialog(photo)
+                    }) { throwable ->
+                        view?.let {
+                            showError(
+                                it,
+                                throwable
+                            )
+                        }
+                    })
+        } else {
+            showWithUserDialog(photo)
+        }
     }
 
     private fun hasPhotos(): Boolean {

@@ -25,6 +25,7 @@ interface IPhotoPagerView : IMvpView, IErrorView, IToastView {
     fun setButtonsBarVisible(visible: Boolean)
     fun setToolbarVisible(visible: Boolean)
     fun rebindPhotoAt(position: Int)
+    fun rebindPhotoAtPartial(position: Int)
     fun closeOnly()
     fun returnInfo(position: Int, parcelNativePtr: Long)
     fun returnOnlyPos(position: Int)

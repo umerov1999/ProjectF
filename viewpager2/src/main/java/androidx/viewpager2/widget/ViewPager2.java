@@ -18,6 +18,7 @@ package androidx.viewpager2.widget;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
 import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
+
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import android.annotation.SuppressLint;
@@ -75,7 +76,6 @@ import java.lang.annotation.Retention;
  * @see androidx.viewpager.widget.ViewPager
  */
 public final class ViewPager2 extends ViewGroup {
-    /** @hide */
     @RestrictTo(LIBRARY_GROUP_PREFIX)
     @Retention(SOURCE)
     @IntDef({ORIENTATION_HORIZONTAL, ORIENTATION_VERTICAL})
@@ -85,14 +85,12 @@ public final class ViewPager2 extends ViewGroup {
     public static final int ORIENTATION_HORIZONTAL = RecyclerView.HORIZONTAL;
     public static final int ORIENTATION_VERTICAL = RecyclerView.VERTICAL;
 
-    /** @hide */
     @RestrictTo(LIBRARY_GROUP_PREFIX)
     @Retention(SOURCE)
     @IntDef({SCROLL_STATE_IDLE, SCROLL_STATE_DRAGGING, SCROLL_STATE_SETTLING})
     public @interface ScrollState {
     }
 
-    /** @hide */
     @SuppressWarnings("WeakerAccess")
     @RestrictTo(LIBRARY_GROUP_PREFIX)
     @Retention(SOURCE)

@@ -1,11 +1,11 @@
 package dev.ragnarok.fenrir.domain
 
-import dev.ragnarok.fenrir.api.model.VKApiPhotoTags
 import dev.ragnarok.fenrir.fragment.search.criteria.PhotoSearchCriteria
 import dev.ragnarok.fenrir.model.AccessIdPair
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.PhotoTags
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
@@ -86,7 +86,7 @@ interface IPhotosInteractor {
         ownerId: Long?,
         photo_id: Int?,
         access_key: String?
-    ): Single<List<VKApiPhotoTags>>
+    ): Single<List<PhotoTags>>
 
     fun getAllComments(
         accountId: Long,
