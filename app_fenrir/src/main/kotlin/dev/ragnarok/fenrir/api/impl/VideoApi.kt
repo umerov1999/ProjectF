@@ -195,6 +195,12 @@ internal class VideoApi(accountId: Long, provider: IServiceProvider) :
                 var finalName = name
                 if (finalName?.startsWith("VID_", false) == true) {
                     finalName = "Telegram $finalName"
+                } else if (finalName?.startsWith("VID-", false) == true && finalName.contains(
+                        "-WA",
+                        false
+                    )
+                ) {
+                    finalName = "WhatsApp $finalName"
                 }
                 service.getVideoServer(isPrivate, group_id, finalName)
                     .map(extractResponseWithErrorHandling())

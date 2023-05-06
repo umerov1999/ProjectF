@@ -66,14 +66,13 @@ struct Picture::Impl
     Surface* surface = nullptr;       //bitmap picture uses
     RenderData rd = nullptr;          //engine data
     float w = 0, h = 0;
-    uint32_t rendererColorSpace = 0;
     RenderMesh rm;                    //mesh data
     bool resizing = false;
 
     ~Impl()
     {
         if (paint) delete(paint);
-        free(surface);
+        delete(surface);
     }
 
     bool dispose(RenderMethod& renderer)
@@ -86,7 +85,7 @@ struct Picture::Impl
         return ret;
     }
 
-    uint32_t reload()
+    uint32_t load()
     {
         if (loader) {
             if (!paint) {
@@ -104,10 +103,11 @@ struct Picture::Impl
                     if (paint) return RenderUpdateFlag::None;
                 }
             }
-            free(surface);
-            if ((surface = loader->bitmap(rendererColorSpace).release())) {
-                loader->close();
-                return RenderUpdateFlag::Image;
+            if (!surface) {
+                if ((surface = loader->bitmap().release())) {
+                    loader->close();
+                    return RenderUpdateFlag::Image;
+                }
             }
         }
         return RenderUpdateFlag::None;
@@ -129,8 +129,7 @@ struct Picture::Impl
 
     RenderData update(RenderMethod &renderer, const RenderTransform* pTransform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag pFlag, bool clipper)
     {
-        rendererColorSpace = renderer.colorSpace();
-        auto flag = reload();
+        auto flag = load();
 
         if (surface) {
             auto transform = resizeTransform(pTransform);
@@ -267,7 +266,7 @@ struct Picture::Impl
 
     Paint* duplicate()
     {
-        reload();
+        load();
 
         auto ret = Picture::gen();
 
@@ -276,8 +275,10 @@ struct Picture::Impl
 
         dup->loader = loader;
         if (surface) {
-            dup->surface = static_cast<Surface*>(malloc(sizeof(Surface)));
+            dup->surface = new Surface;
             *dup->surface = *surface;
+            //TODO: A dupilcation is not a proxy... it needs copy of the pixel data?
+            dup->surface->owner = false;
         }
         dup->w = w;
         dup->h = h;
@@ -294,7 +295,7 @@ struct Picture::Impl
 
     Iterator* iterator()
     {
-        reload();
+        load();
         return new PictureIterator(paint);
     }
 };

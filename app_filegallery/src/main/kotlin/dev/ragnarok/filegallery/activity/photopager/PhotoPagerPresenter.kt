@@ -7,7 +7,6 @@ import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
@@ -15,10 +14,10 @@ import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTI
 import androidx.core.net.toFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.zxing.*
-import com.google.zxing.common.HybridBinarizer
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso
 import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.activity.qr.CameraScanActivity
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
@@ -32,8 +31,6 @@ import dev.ragnarok.filegallery.util.DownloadWorkUtils.doDownloadPhoto
 import dev.ragnarok.filegallery.util.Utils
 import java.io.File
 import java.util.Calendar
-import java.util.EnumMap
-import java.util.EnumSet
 
 open class PhotoPagerPresenter internal constructor(
     initialData: ArrayList<Photo>,
@@ -151,46 +148,6 @@ open class PhotoPagerPresenter internal constructor(
         return false
     }
 
-    internal fun decodeFromBitmap(gen: Bitmap?): String? {
-        if (gen == null) {
-            return "error"
-        }
-        var generatedQRCode: Bitmap? = gen
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && generatedQRCode?.config == Bitmap.Config.HARDWARE) {
-            generatedQRCode = generatedQRCode.copy(Bitmap.Config.ARGB_8888, true)
-        }
-        if (generatedQRCode == null) {
-            return "error"
-        }
-        val width: Int = generatedQRCode.width
-        val height: Int = generatedQRCode.height
-        val pixels = IntArray(width * height)
-        generatedQRCode.getPixels(pixels, 0, width, 0, 0, width, height)
-        val source = RGBLuminanceSource(width, height, pixels)
-        val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
-        val reader = MultiFormatReader()
-        val hints: MutableMap<DecodeHintType, Any> = EnumMap(DecodeHintType::class.java)
-        hints[DecodeHintType.POSSIBLE_FORMATS] = EnumSet.of(
-            BarcodeFormat.QR_CODE,
-            BarcodeFormat.EAN_13,
-            BarcodeFormat.EAN_8,
-            BarcodeFormat.RSS_14,
-            BarcodeFormat.CODE_39,
-            BarcodeFormat.CODE_93,
-            BarcodeFormat.CODE_128,
-            BarcodeFormat.ITF
-        )
-        reader.setHints(hints)
-        val result: Result = try {
-            reader.decodeWithState(binaryBitmap)
-        } catch (e: Exception) {
-            return e.localizedMessage
-        } ?: run {
-            return "error"
-        }
-        return result.text
-    }
-
     @Suppress("deprecation")
     private fun getCustomTabsPackages(context: Context): ArrayList<ResolveInfo> {
         val pm = context.packageManager
@@ -241,7 +198,7 @@ open class PhotoPagerPresenter internal constructor(
         PicassoInstance.with().load(current.photo_url)
             .into(object : BitmapTarget {
                 override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
-                    val data = decodeFromBitmap(bitmap)
+                    val data = CameraScanActivity.decodeFromBitmap(bitmap)
                     MaterialAlertDialogBuilder(context)
                         .setIcon(R.drawable.qr_code)
                         .setMessage(data)

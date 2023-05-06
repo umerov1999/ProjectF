@@ -20,7 +20,9 @@ import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Pair
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 
@@ -298,6 +300,12 @@ class VideoPreviewPresenter(
     }
 
     fun fireLikeClick() {
+        if (Settings.get().other().isDisable_likes || Utils.isHiddenAccount(
+                accountId
+            )
+        ) {
+            return
+        }
         video?.let {
             val add = !it.isUserLikes
             appendDisposable(interactor.likeOrDislike(accountId, ownerId, videoId, accessKey, add)

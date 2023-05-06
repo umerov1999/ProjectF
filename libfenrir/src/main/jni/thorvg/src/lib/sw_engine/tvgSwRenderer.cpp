@@ -167,6 +167,9 @@ struct SwShapeTask : SwTask
             }
         }
 
+        //Clear current task memorypool here if the clippers would use the same memory pool
+        shapeDelOutline(&shape, mpool, tid);
+
         //Clip Path
         for (auto clip = clips.data; clip < (clips.data + clips.count); ++clip) {
             auto clipper = static_cast<SwTask*>(*clip);
@@ -177,11 +180,10 @@ struct SwShapeTask : SwTask
             //Clip stroke rle
             if (shape.strokeRle && !clipper->clip(shape.strokeRle)) goto err;
         }
-        goto end;
+        return;
 
     err:
         shapeReset(&shape);
-    end:
         shapeDelOutline(&shape, mpool, tid);
     }
 
@@ -258,6 +260,7 @@ struct SwSceneTask : SwTask
 struct SwImageTask : SwTask
 {
     SwImage image;
+    Surface* source;                            //Image source
     const RenderMesh* mesh = nullptr;           //Should be valid ptr in action
 
     bool clip(SwRleData* target) override
@@ -276,6 +279,17 @@ struct SwImageTask : SwTask
     {
         auto clipRegion = bbox;
 
+        //Convert colorspace if it's not aligned.
+        if (source->owner) {
+            if (source->cs != surface->cs) rasterConvertCS(source, surface->cs);
+            if (!source->premultiplied) rasterPremultiply(source);
+        }
+
+        image.data = source->buffer;
+        image.w = source->w;
+        image.h = source->h;
+        image.stride = source->stride;
+
         //Invisible shape turned to visible by alpha.
         if ((flags & (RenderUpdateFlag::Image | RenderUpdateFlag::Transform | RenderUpdateFlag::Color)) && (opacity > 0)) {
             imageReset(&image);
@@ -287,17 +301,19 @@ struct SwImageTask : SwTask
             if (mesh->triangleCnt == 0 && clips.count > 0) {
                 if (!imageGenRle(&image, bbox, false)) goto end;
                 if (image.rle) {
+                    //Clear current task memorypool here if the clippers would use the same memory pool
+                    imageDelOutline(&image, mpool, tid);
                     for (auto clip = clips.data; clip < (clips.data + clips.count); ++clip) {
                         auto clipper = static_cast<SwTask*>(*clip);
                         //Guarantee composition targets get ready.
                         clipper->done(tid);
                         if (!clipper->clip(image.rle)) goto err;
                     }
+                    return;
                 }
             }
         }
         goto end;
-
     err:
         rleReset(image.rle);
     end:
@@ -407,7 +423,7 @@ bool SwRenderer::viewport(const RenderRegion& vp)
 }
 
 
-bool SwRenderer::target(uint32_t* buffer, uint32_t stride, uint32_t w, uint32_t h, uint32_t colorSpace)
+bool SwRenderer::target(uint32_t* buffer, uint32_t stride, uint32_t w, uint32_t h, ColorSpace cs)
 {
     if (!buffer || stride == 0 || w == 0 || h == 0 || w > stride) return false;
 
@@ -417,7 +433,9 @@ bool SwRenderer::target(uint32_t* buffer, uint32_t stride, uint32_t w, uint32_t 
     surface->stride = stride;
     surface->w = w;
     surface->h = h;
-    surface->cs = colorSpace;
+    surface->cs = cs;
+    surface->premultiplied = true;
+    surface->owner = true;
 
     vport.x = vport.y = 0;
     vport.w = surface->w;
@@ -447,7 +465,7 @@ void SwRenderer::clearCompositors()
 bool SwRenderer::postRender()
 {
     //Unmultiply alpha if needed
-    if (surface->cs == SwCanvas::ABGR8888_STRAIGHT || surface->cs == SwCanvas::ARGB8888_STRAIGHT) {
+    if (surface->cs == ColorSpace::ABGR8888S || surface->cs == ColorSpace::ARGB8888S) {
         rasterUnpremultiply(surface);
     }
 
@@ -709,16 +727,13 @@ void* SwRenderer::prepareCommon(SwTask* task, const RenderTransform* transform, 
 }
 
 
-RenderData SwRenderer::prepare(Surface* image, const RenderMesh* mesh, RenderData data, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flags)
+RenderData SwRenderer::prepare(Surface* surface, const RenderMesh* mesh, RenderData data, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flags)
 {
     //prepare task
     auto task = static_cast<SwImageTask*>(data);
     if (!task) task = new SwImageTask;
     if (flags & RenderUpdateFlag::Image) {
-        task->image.data = image->buffer;
-        task->image.w = image->w;
-        task->image.h = image->h;
-        task->image.stride = image->stride;
+        task->source = surface;
         task->mesh = mesh;
     }
     return prepareCommon(task, transform, opacity, clips, flags);
@@ -752,13 +767,6 @@ RenderData SwRenderer::prepare(const RenderShape& rshape, RenderData data, const
 
 SwRenderer::SwRenderer():mpool(globalMpool)
 {
-}
-
-
-uint32_t SwRenderer::colorSpace()
-{
-    if (surface) return surface->cs;
-    return tvg::SwCanvas::ARGB8888;
 }
 
 

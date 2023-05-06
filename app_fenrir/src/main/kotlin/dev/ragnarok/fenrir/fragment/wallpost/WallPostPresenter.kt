@@ -26,6 +26,8 @@ import dev.ragnarok.fenrir.model.ParcelableOwnerWrapper
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
+import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 
@@ -255,6 +257,12 @@ class WallPostPresenter(
     }
 
     fun fireLikeClick() {
+        if (Settings.get().other().isDisable_likes || Utils.isHiddenAccount(
+                accountId
+            )
+        ) {
+            return
+        }
         if (post != null) {
             appendDisposable(wallInteractor.like(
                 accountId,

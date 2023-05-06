@@ -15,6 +15,7 @@ import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.VideoSize
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.doDownloadVideo
 import dev.ragnarok.fenrir.util.Pair
@@ -266,6 +267,12 @@ class ShortVideoPagerPresenter(
     }
 
     fun fireLikeClick() {
+        if (Settings.get().other().isDisable_likes || Utils.isHiddenAccount(
+                accountId
+            )
+        ) {
+            return
+        }
         if (mShortVideos.isEmpty()) {
             return
         }

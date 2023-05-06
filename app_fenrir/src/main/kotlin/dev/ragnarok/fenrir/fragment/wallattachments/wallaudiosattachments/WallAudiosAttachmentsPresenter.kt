@@ -9,6 +9,8 @@ import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.criteria.WallCriteria
+import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.intValueIn
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
@@ -171,6 +173,12 @@ class WallAudiosAttachmentsPresenter(
     }
 
     fun fireLikeClick(post: Post) {
+        if (Settings.get().other().isDisable_likes || Utils.isHiddenAccount(
+                accountId
+            )
+        ) {
+            return
+        }
         appendDisposable(fInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
             .fromIOToMain()
             .subscribe(ignore()) { t ->

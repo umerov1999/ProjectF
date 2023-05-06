@@ -10,6 +10,8 @@ import dev.ragnarok.fenrir.domain.Repository.walls
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.findInfoByPredicate
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -140,6 +142,12 @@ class FavePostsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireLikeClick(post: Post) {
+        if (Settings.get().other().isDisable_likes || Utils.isHiddenAccount(
+                accountId
+            )
+        ) {
+            return
+        }
         appendDisposable(wallInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
             .fromIOToMain()
             .subscribe(ignore()) { t -> onLikeError(t) })

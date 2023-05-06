@@ -14,9 +14,11 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.core.Single
 
@@ -83,6 +85,12 @@ class NewsFeedSearchPresenter(
     }
 
     fun fireLikeClick(post: Post) {
+        if (Settings.get().other().isDisable_likes || Utils.isHiddenAccount(
+                accountId
+            )
+        ) {
+            return
+        }
         appendDisposable(walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
             .fromIOToMain()
             .subscribe(ignore()) { t ->

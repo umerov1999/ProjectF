@@ -473,6 +473,11 @@ class CameraScanActivity : NoMainActivity() {
             val height = generatedQRCode.height
             val pixels = IntArray(width * height)
             generatedQRCode.getPixels(pixels, 0, width, 0, 0, width, height)
+            for (i in pixels.indices) {
+                if (Color.alpha(pixels[i]) < 90) {
+                    pixels[i] = Color.WHITE
+                }
+            }
             val source = RGBLuminanceSource(width, height, pixels)
             val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
 

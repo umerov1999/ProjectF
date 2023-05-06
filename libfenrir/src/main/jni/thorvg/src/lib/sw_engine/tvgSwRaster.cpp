@@ -1452,10 +1452,10 @@ void rasterRGBA32(uint32_t *dst, uint32_t val, uint32_t offset, int32_t len)
 
 bool rasterCompositor(SwSurface* surface)
 {
-    if (surface->cs == SwCanvas::ABGR8888 || surface->cs == SwCanvas::ABGR8888_STRAIGHT) {
+    if (surface->cs == ColorSpace::ABGR8888 || surface->cs == ColorSpace::ABGR8888S) {
         surface->blender.join = _abgrJoin;
         surface->blender.lumaValue = _abgrLumaValue;
-    } else if (surface->cs == SwCanvas::ARGB8888 || surface->cs == SwCanvas::ARGB8888_STRAIGHT) {
+    } else if (surface->cs == ColorSpace::ARGB8888 || surface->cs == ColorSpace::ARGB8888S) {
         surface->blender.join = _argbJoin;
         surface->blender.lumaValue = _argbLumaValue;
     } else {
@@ -1481,8 +1481,10 @@ bool rasterClear(SwSurface* surface)
 }
 
 
-void rasterUnpremultiply(SwSurface* surface)
+void rasterUnpremultiply(Surface* surface)
 {
+    TVGLOG("SW_ENGINE", "Unpremultiply [Size: %d x %d]", surface->w, surface->h);
+
     //OPTIMIZE_ME: +SIMD
     for (uint32_t y = 0; y < surface->h; y++) {
         auto buffer = surface->buffer + surface->stride * y;
@@ -1503,6 +1505,25 @@ void rasterUnpremultiply(SwSurface* surface)
             }
         }
     }
+    surface->premultiplied = false;
+}
+
+
+void rasterPremultiply(Surface* surface)
+{
+    TVGLOG("SW_ENGINE", "Premultiply [Size: %d x %d]", surface->w, surface->h);
+
+    //OPTIMIZE_ME: +SIMD
+    auto buffer = surface->buffer;
+    for (uint32_t y = 0; y < surface->h; ++y, buffer += surface->stride) {
+        auto dst = buffer;
+        for (uint32_t x = 0; x < surface->w; ++x, ++dst) {
+            auto c = *dst;
+            auto a = (c >> 24);
+            *dst = (c & 0xff000000) + ((((c >> 8) & 0xff) * a) & 0xff00) + ((((c & 0x00ff00ff) * a) >> 8) & 0x00ff00ff);
+        }
+    }
+    surface->premultiplied = true;
 }
 
 
@@ -1572,4 +1593,22 @@ bool rasterImage(SwSurface* surface, SwImage* image, const RenderMesh* mesh, con
     //TODO: case: _rasterAlphaImageMesh()
     if (mesh && mesh->triangleCnt > 0) return _transformedRGBAImageMesh(surface, image, mesh, transform, &bbox, opacity);
     else return _rasterRGBAImage(surface, image, transform, bbox, opacity);
+}
+
+
+bool rasterConvertCS(Surface* surface, ColorSpace to)
+{
+    //TOOD: Support SIMD accelerations
+    auto from = surface->cs;
+
+    if ((from == ColorSpace::ABGR8888 && to == ColorSpace::ARGB8888) || (from == ColorSpace::ABGR8888S && to == ColorSpace::ARGB8888S)) {
+        surface->cs = to;
+        return cRasterABGRtoARGB(surface);
+    }
+    if ((from == ColorSpace::ARGB8888 && to == ColorSpace::ABGR8888) || (from == ColorSpace::ARGB8888S && to == ColorSpace::ABGR8888S)) {
+        surface->cs = to;
+        return cRasterARGBtoABGR(surface);
+    }
+
+    return false;
 }

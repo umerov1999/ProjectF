@@ -1755,10 +1755,17 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 pref("account_cache_cleaner") {
                     titleRes = R.string.account_cache_cleaner
                     onClick {
-                        DBHelper.removeDatabaseFor(requireActivity(), accountId)
-                        cleanCache(requireActivity(), true)
-                        Includes.stores.stickers().clearAccount(accountId).fromIOToMain()
-                            .subscribe(RxUtils.dummy(), RxUtils.ignore())
+                        MaterialAlertDialogBuilder(requireActivity()).setIcon(R.drawable.ic_outline_delete)
+                            .setTitle(R.string.select)
+                            .setMessage(R.string.do_delete)
+                            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                                DBHelper.removeDatabaseFor(requireActivity(), accountId)
+                                cleanCache(requireActivity(), true)
+                                Includes.stores.stickers().clearAccount(accountId).fromIOToMain()
+                                    .subscribe(RxUtils.dummy(), RxUtils.ignore())
+                            }
+                            .setNegativeButton(R.string.button_no, null)
+                            .setCancelable(true).show()
                         true
                     }
                 }

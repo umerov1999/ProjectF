@@ -29,18 +29,31 @@
 namespace tvg
 {
 
+using RenderData = void*;
+
 enum RenderUpdateFlag {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, All = 255};
+
+struct Surface;
+
+enum ColorSpace
+{
+    ABGR8888 = 0,      //The channels are joined in the order: alpha, blue, green, red. Colors are alpha-premultiplied.
+    ARGB8888,          //The channels are joined in the order: alpha, red, green, blue. Colors are alpha-premultiplied.
+    ABGR8888S,         //The channels are joined in the order: alpha, blue, green, red. Colors are un-alpha-premultiplied.
+    ARGB8888S,         //The channels are joined in the order: alpha, red, green, blue. Colors are un-alpha-premultiplied.
+    Unsupported        //TODO: Change to the default, At the moment, we put it in the last to align with SwCanvas::Colorspace.
+};
 
 struct Surface
 {
-    //TODO: Union for multiple types
     uint32_t* buffer;
-    uint32_t  stride;
-    uint32_t  w, h;
-    uint32_t  cs;
-};
+    uint32_t stride;
+    uint32_t w, h;
+    ColorSpace  cs;
 
-using RenderData = void*;
+    bool premultiplied;      //Alpha-premultiplied
+    bool owner;              //Only owner could modify the buffer
+};
 
 struct Compositor
 {
@@ -199,7 +212,7 @@ public:
     virtual ~RenderMethod() {}
     virtual RenderData prepare(const RenderShape& rshape, RenderData data, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flags, bool clipper) = 0;
     virtual RenderData prepare(const Array<RenderData>& scene, RenderData data, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flags) = 0;
-    virtual RenderData prepare(Surface* image, const RenderMesh* mesh, RenderData data, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flags) = 0;
+    virtual RenderData prepare(Surface* surface, const RenderMesh* mesh, RenderData data, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flags) = 0;
     virtual bool preRender() = 0;
     virtual bool renderShape(RenderData data) = 0;
     virtual bool renderImage(RenderData data) = 0;
@@ -215,8 +228,6 @@ public:
     virtual Compositor* target(const RenderRegion& region) = 0;
     virtual bool beginComposite(Compositor* cmp, CompositeMethod method, uint32_t opacity) = 0;
     virtual bool endComposite(Compositor* cmp) = 0;
-
-    virtual uint32_t colorSpace() = 0;
 };
 
 }
