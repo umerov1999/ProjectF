@@ -4,6 +4,7 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.Apis.get
 import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.db.serialize.Serializers
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model
@@ -36,7 +37,7 @@ class ChatAttachmentPhotoPresenter(peerId: Long, accountId: Long, savedInstanceS
     ): Single<Pair<String?, List<Photo>>> {
         return get().vkDefault(accountId)
             .messages()
-            .getHistoryAttachments(peerId, "photo", nextFrom, 1, 50, null)
+            .getHistoryAttachments(peerId, VKApiAttachment.TYPE_PHOTO, nextFrom, 1, 1, 45, 50, null)
             .map { response ->
                 val photos: MutableList<Photo> = ArrayList()
                 response.items.nonNullNoEmpty {

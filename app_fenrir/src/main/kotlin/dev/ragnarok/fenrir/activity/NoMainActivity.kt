@@ -33,6 +33,7 @@ abstract class NoMainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
         Utils.prepareDensity(this)
+        Utils.registerColorsThorVG(this)
         super.onCreate(savedInstanceState)
         isZoomPhoto = Settings.get().other().isDo_zoom_photo
         setContentView(getNoMainContentView())

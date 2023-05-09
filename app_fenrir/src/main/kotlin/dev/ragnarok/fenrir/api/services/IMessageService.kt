@@ -401,6 +401,8 @@ class IMessageService : IServiceRest() {
         startFrom: String?,
         count: Int?,
         photoSizes: Int?,
+        preserve_order: Int?,
+        max_forwards_level: Int?,
         fields: String?
     ): Single<BaseResponse<AttachmentsHistoryResponse>> {
         return rest.request(
@@ -411,7 +413,9 @@ class IMessageService : IServiceRest() {
                 "start_from" to startFrom,
                 "count" to count,
                 "photo_sizes" to photoSizes,
-                "fields" to fields
+                "fields" to fields,
+                "preserve_order" to preserve_order,
+                "max_forwards_level" to max_forwards_level
             ),
             base(AttachmentsHistoryResponse.serializer())
         )

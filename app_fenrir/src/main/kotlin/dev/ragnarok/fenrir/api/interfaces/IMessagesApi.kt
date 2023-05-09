@@ -98,8 +98,14 @@ interface IMessagesApi {
 
     @CheckResult
     fun getHistoryAttachments(
-        peerId: Long, mediaType: String?, startFrom: String?, photoSizes: Int?,
-        count: Int?, fields: String?
+        peerId: Long,
+        mediaType: String?,
+        startFrom: String?,
+        photoSizes: Int?,
+        preserve_order: Int?,
+        max_forwards_level: Int?,
+        count: Int?,
+        fields: String?
     ): Single<AttachmentsHistoryResponse>
 
     @CheckResult

@@ -4,6 +4,7 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.Apis.get
 import dev.ragnarok.fenrir.api.model.VKApiVideo
+import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model
 import dev.ragnarok.fenrir.fragment.conversation.abschatattachments.BaseChatAttachmentsPresenter
 import dev.ragnarok.fenrir.model.Video
@@ -30,7 +31,7 @@ class ChatAttachmentVideoPresenter(peerId: Long, accountId: Long, savedInstanceS
     ): Single<Pair<String?, List<Video>>> {
         return get().vkDefault(accountId)
             .messages()
-            .getHistoryAttachments(peerId, "video", nextFrom, 1, 50, null)
+            .getHistoryAttachments(peerId, VKApiAttachment.TYPE_VIDEO, nextFrom, 1, 1, 45, 50, null)
             .map { response ->
                 val videos: MutableList<Video> = ArrayList(
                     Utils.safeCountOf(response.items)

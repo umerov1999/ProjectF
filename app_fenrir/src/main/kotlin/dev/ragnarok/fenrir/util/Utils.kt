@@ -15,6 +15,7 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Parcel
+import android.util.ArrayMap
 import android.util.SparseArray
 import android.util.TypedValue
 import android.view.Display
@@ -50,7 +51,9 @@ import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.media.exo.OkHttpDataSource
 import dev.ragnarok.fenrir.model.*
 import dev.ragnarok.fenrir.model.Sticker.LocalSticker
+import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.rlottie.RLottieDrawable
+import dev.ragnarok.fenrir.module.thorvg.ThorVGRender
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
@@ -90,6 +93,8 @@ object Utils {
     var isCompressOutgoingTraffic = false
     var currentParser = 0
 
+    var currentColorsReplacement = ArrayMap<String, Int>()
+
     fun getCachedMyStickers(): MutableList<LocalSticker> {
         return cachedMyStickers
     }
@@ -107,6 +112,24 @@ object Utils {
         }
     }
      */
+
+    fun registerColorsThorVG(context: Context) {
+        if (!FenrirNative.isNativeLoaded) {
+            return
+        }
+        val tmpMap = mapOf(
+            "primary_color" to CurrentTheme.getColorPrimary(context),
+            "secondary_color" to CurrentTheme.getColorSecondary(context),
+            "on_surface_color" to CurrentTheme.getColorOnSurface(context),
+            "white_color_contrast_fix" to CurrentTheme.getColorWhiteContrastFix(context),
+            "black_color_contrast_fix" to CurrentTheme.getColorBlackContrastFix(context)
+        )
+        if (currentColorsReplacement != tmpMap) {
+            currentColorsReplacement.clear()
+            currentColorsReplacement.putAll(tmpMap)
+            ThorVGRender.registerColors(currentColorsReplacement)
+        }
+    }
 
     fun needReloadNews(account_id: Long): Boolean {
         if (!reload_news.contains(account_id)) {

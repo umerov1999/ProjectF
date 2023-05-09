@@ -262,13 +262,24 @@ internal class MessagesApi(accountId: Long, provider: IServiceProvider) :
         mediaType: String?,
         startFrom: String?,
         photoSizes: Int?,
+        preserve_order: Int?,
+        max_forwards_level: Int?,
         count: Int?,
         fields: String?
     ): Single<AttachmentsHistoryResponse> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service
-                    .getHistoryAttachments(peerId, mediaType, startFrom, count, photoSizes, fields)
+                    .getHistoryAttachments(
+                        peerId,
+                        mediaType,
+                        startFrom,
+                        count,
+                        photoSizes,
+                        preserve_order,
+                        max_forwards_level,
+                        fields
+                    )
                     .map(extractResponseWithErrorHandling())
             }
     }

@@ -31,7 +31,7 @@ class ChatAttachmentDocsPresenter(peerId: Long, accountId: Long, savedInstanceSt
     ): Single<Pair<String?, List<Document>>> {
         return get().vkDefault(accountId)
             .messages()
-            .getHistoryAttachments(peerId, VKApiAttachment.TYPE_DOC, nextFrom, 1, 50, null)
+            .getHistoryAttachments(peerId, VKApiAttachment.TYPE_DOC, nextFrom, 1, 1, 45, 50, null)
             .map { response ->
                 val docs: MutableList<Document> = ArrayList(
                     Utils.safeCountOf(response.items)

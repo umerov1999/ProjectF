@@ -43,6 +43,7 @@ class PostPublishPrepareActivity : AppCompatActivity(), RecyclerMenuAdapter.Acti
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
         Utils.prepareDensity(this)
+        Utils.registerColorsThorVG(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post_publish_prepare)
         adapter = RecyclerMenuAdapter(R.layout.item_advanced_menu_alternative, emptyList())

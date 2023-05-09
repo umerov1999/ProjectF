@@ -31,7 +31,7 @@ class ChatAttachmentLinksPresenter(peerId: Long, accountId: Long, savedInstanceS
     ): Single<Pair<String?, List<Link>>> {
         return get().vkDefault(accountId)
             .messages()
-            .getHistoryAttachments(peerId, VKApiAttachment.TYPE_LINK, nextFrom, 1, 50, null)
+            .getHistoryAttachments(peerId, VKApiAttachment.TYPE_LINK, nextFrom, 1, 1, 45, 50, null)
             .map { response ->
                 val docs: MutableList<Link> = ArrayList(Utils.safeCountOf(response.items))
                 response.items.nonNullNoEmpty {

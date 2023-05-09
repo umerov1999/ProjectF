@@ -148,6 +148,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
         Utils.prepareDensity(this)
+        Utils.registerColorsThorVG(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
         val surfaceContainer = findViewById<ViewGroup>(R.id.videoSurfaceContainer)

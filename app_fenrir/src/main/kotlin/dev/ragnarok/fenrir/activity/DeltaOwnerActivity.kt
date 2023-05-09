@@ -60,6 +60,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
     public override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(ThemesController.currentStyle())
         Utils.prepareDensity(this)
+        Utils.registerColorsThorVG(this)
         super.onCreate(savedInstanceState)
         attach(
             this,
