@@ -7,16 +7,11 @@ import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.activity.result.ActivityResultLauncher
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentResultListener
 
 open class Place : Parcelable {
     val type: Int
     var isNeedFinishMain = false
         private set
-    private var requestListenerKey: String? = null
-    private var requestListener: FragmentResultListener? = null
     private var activityResultLauncher: ActivityResultLauncher<Intent>? = null
     private var args: Bundle? = null
 
@@ -33,15 +28,6 @@ open class Place : Parcelable {
         if (context is PlaceProvider) {
             (context as PlaceProvider).openPlace(this)
         }
-    }
-
-    fun setFragmentListener(
-        requestListenerKey: String,
-        requestListener: FragmentResultListener
-    ): Place {
-        this.requestListenerKey = requestListenerKey
-        this.requestListener = requestListener
-        return this
     }
 
     fun setActivityResultLauncher(activityResultLauncher: ActivityResultLauncher<Intent>): Place {
@@ -97,18 +83,6 @@ open class Place : Parcelable {
 
     fun safeArguments(): Bundle {
         return args ?: Bundle()
-    }
-
-    fun applyFragmentListener(fragment: Fragment, fragmentManager: FragmentManager) {
-        requestListener?.let {
-            requestListenerKey?.let { it1 ->
-                fragmentManager.setFragmentResultListener(
-                    it1,
-                    fragment,
-                    it
-                )
-            }
-        }
     }
 
     fun launchActivityForResult(context: Activity, intent: Intent) {

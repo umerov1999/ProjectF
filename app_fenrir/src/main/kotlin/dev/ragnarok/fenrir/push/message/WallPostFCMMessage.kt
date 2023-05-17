@@ -43,7 +43,7 @@ class WallPostFCMMessage {
     private var place: String? = null
     private var owner_id = 0L
     private var title: String? = null
-    fun nofify(context: Context, accountId: Long) {
+    fun notify(context: Context, accountId: Long) {
         if (accountId == owner_id) {
             notifyWallPost(context, accountId)
         } else {

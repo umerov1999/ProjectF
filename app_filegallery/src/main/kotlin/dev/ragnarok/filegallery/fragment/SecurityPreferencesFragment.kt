@@ -21,7 +21,7 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.activity.ActivityFeatures
 import dev.ragnarok.filegallery.activity.ActivityUtils
 import dev.ragnarok.filegallery.activity.CreatePinActivity
-import dev.ragnarok.filegallery.fragment.createpin.CreatePinFragment
+import dev.ragnarok.filegallery.fragment.pin.createpin.CreatePinFragment
 import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.listener.BackPressCallback
 import dev.ragnarok.filegallery.listener.CanBackPressedCallback

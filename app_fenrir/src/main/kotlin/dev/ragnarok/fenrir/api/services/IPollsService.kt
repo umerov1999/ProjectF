@@ -11,6 +11,8 @@ class IPollsService : IServiceRest() {
         question: String?,
         isAnonymous: Int?,
         isMultiple: Int?,
+        disableUnvote: Int?,
+        backgroundId: Int?,
         ownerId: Long?,
         addAnswers: String?
     ): Single<BaseResponse<VKApiPoll>> {
@@ -19,6 +21,8 @@ class IPollsService : IServiceRest() {
                 "question" to question,
                 "is_anonymous" to isAnonymous,
                 "is_multiple" to isMultiple,
+                "disable_unvote" to disableUnvote,
+                "background_id" to backgroundId,
                 "owner_id" to ownerId,
                 "add_answers" to addAnswers
             ), base(VKApiPoll.serializer())
@@ -94,6 +98,12 @@ class IPollsService : IServiceRest() {
                 "fields" to fields,
                 "name_case" to nameCase
             ), baseList(PollUsersResponse.serializer())
+        )
+    }
+
+    fun getBackgrounds(): Single<BaseResponse<List<VKApiPoll.Background>>> {
+        return rest.request(
+            "polls.getBackgrounds", null, baseList(VKApiPoll.Background.serializer())
         )
     }
 }

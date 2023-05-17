@@ -2,8 +2,11 @@ package dev.ragnarok.fenrir.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.annotation.ColorInt
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
+import dev.ragnarok.fenrir.readTypedObjectCompat
+import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Poll : AbsModel {
     val id: Int
@@ -40,6 +43,8 @@ class Poll : AbsModel {
         private set
     var photo: String? = null
         private set
+    var background: PollBackground? = null
+        private set
 
     internal constructor(parcel: Parcel) {
         id = parcel.readInt()
@@ -60,6 +65,7 @@ class Poll : AbsModel {
         endDate = parcel.readLong()
         isMultiple = parcel.getBoolean()
         photo = parcel.readString()
+        background = parcel.readTypedObjectCompat(PollBackground.CREATOR)
     }
 
     constructor(id: Int, ownerId: Long) {
@@ -86,6 +92,7 @@ class Poll : AbsModel {
         parcel.writeLong(endDate)
         parcel.putBoolean(isMultiple)
         parcel.writeString(photo)
+        parcel.writeTypedObjectCompat(background, flags)
     }
 
     @AbsModelType
@@ -145,6 +152,11 @@ class Poll : AbsModel {
 
     fun setPhoto(photo: String?): Poll {
         this.photo = photo
+        return this
+    }
+
+    fun setBackground(background: PollBackground?): Poll {
+        this.background = background
         return this
     }
 
@@ -234,6 +246,137 @@ class Poll : AbsModel {
             }
 
             override fun newArray(size: Int): Array<Answer?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
+    class PollBackground : AbsModel {
+        val id: Int
+        var angle: Int = 0
+            private set
+        var name: String? = null
+            private set
+        var points: List<PollBackgroundPoint>? = null
+            private set
+
+        constructor(id: Int) {
+            this.id = id
+        }
+
+        internal constructor(parcel: Parcel) {
+            id = parcel.readInt()
+            angle = parcel.readInt()
+            points = parcel.createTypedArrayList(PollBackgroundPoint.CREATOR)
+            name = parcel.readString()
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(id)
+            parcel.writeInt(angle)
+            parcel.writeTypedList(points)
+            parcel.writeString(name)
+        }
+
+        @AbsModelType
+        override fun getModelType(): Int {
+            return AbsModelType.MODEL_POLL_BACKGROUND
+        }
+
+        fun getColors(): IntArray {
+            val tmpPoints = points
+            tmpPoints ?: return IntArray(0)
+            val arr = IntArray(tmpPoints.size)
+            for (i in tmpPoints.indices) {
+                arr[i] = tmpPoints[i].color
+            }
+            return arr
+        }
+
+        fun getPositions(): FloatArray {
+            val tmpPoints = points
+            tmpPoints ?: return FloatArray(0)
+            val arr = FloatArray(tmpPoints.size)
+            for (i in tmpPoints.indices) {
+                arr[i] = tmpPoints[i].position
+            }
+            return arr
+        }
+
+        fun setName(name: String?): PollBackground {
+            this.name = name
+            return this
+        }
+
+        fun setAngle(angle: Int): PollBackground {
+            this.angle = angle
+            return this
+        }
+
+        fun setPoints(points: List<PollBackgroundPoint>?): PollBackground {
+            this.points = points
+            return this
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<PollBackground> {
+            override fun createFromParcel(parcel: Parcel): PollBackground {
+                return PollBackground(parcel)
+            }
+
+            override fun newArray(size: Int): Array<PollBackground?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
+    class PollBackgroundPoint : AbsModel {
+        @ColorInt
+        var color: Int = 0
+            private set
+        var position: Float = 0f
+            private set
+
+        constructor()
+
+        internal constructor(parcel: Parcel) {
+            color = parcel.readInt()
+            position = parcel.readFloat()
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(color)
+            parcel.writeFloat(position)
+        }
+
+        @AbsModelType
+        override fun getModelType(): Int {
+            return AbsModelType.MODEL_POLL_BACKGROUND_POINT
+        }
+
+        fun setColor(@ColorInt color: Int): PollBackgroundPoint {
+            this.color = color
+            return this
+        }
+
+        fun setPosition(position: Float): PollBackgroundPoint {
+            this.position = position
+            return this
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<PollBackgroundPoint> {
+            override fun createFromParcel(parcel: Parcel): PollBackgroundPoint {
+                return PollBackgroundPoint(parcel)
+            }
+
+            override fun newArray(size: Int): Array<PollBackgroundPoint?> {
                 return arrayOfNulls(size)
             }
         }

@@ -3,8 +3,8 @@ package dev.ragnarok.fenrir.activity
 import android.os.Bundle
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fragment.localimagealbums.LocalImageAlbumsFragment
-import dev.ragnarok.fenrir.fragment.localphotos.LocalPhotosFragment
+import dev.ragnarok.fenrir.fragment.photos.localimagealbums.LocalImageAlbumsFragment
+import dev.ragnarok.fenrir.fragment.photos.localphotos.LocalPhotosFragment
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.LocalImageAlbum
 import dev.ragnarok.fenrir.place.Place

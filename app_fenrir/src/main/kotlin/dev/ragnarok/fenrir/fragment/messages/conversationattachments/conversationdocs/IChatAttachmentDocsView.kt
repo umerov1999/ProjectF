@@ -1,0 +1,6 @@
+package dev.ragnarok.fenrir.fragment.messages.conversationattachments.conversationdocs
+
+import dev.ragnarok.fenrir.fragment.messages.conversationattachments.abschatattachments.IBaseChatAttachmentsView
+import dev.ragnarok.fenrir.model.Document
+
+interface IChatAttachmentDocsView : IBaseChatAttachmentsView<Document>

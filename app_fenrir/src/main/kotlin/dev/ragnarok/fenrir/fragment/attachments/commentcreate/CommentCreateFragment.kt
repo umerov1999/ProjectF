@@ -15,11 +15,9 @@ import dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit.AbsAttachment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 
-
 class CommentCreateFragment :
     AbsAttachmentsEditFragment<CommentCreatePresenter, ICreateCommentView>(), ICreateCommentView,
     MenuProvider {
-
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommentCreatePresenter> {
         return object : IPresenterFactory<CommentCreatePresenter> {
             override fun create(): CommentCreatePresenter {

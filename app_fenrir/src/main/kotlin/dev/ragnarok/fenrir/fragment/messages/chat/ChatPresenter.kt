@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.fragment.messages.chat
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -14,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.activity.ActivityUtils
 import dev.ragnarok.fenrir.api.model.AttachmentTokens
@@ -355,9 +357,9 @@ class ChatPresenter(
         )
     }
 
-    private fun onDialogRemovedSuccessfully(oldaccountId: Long) {
+    private fun onDialogRemovedSuccessfully(oldAccountId: Long) {
         view?.showSnackbar(R.string.deleted, true)
-        if (accountId != oldaccountId) {
+        if (accountId != oldAccountId) {
             return
         }
         data.clear()
@@ -433,7 +435,7 @@ class ChatPresenter(
             resolveToolbarSubtitle()
             resolveToolbarTitle()
         }
-        view?.convert_to_keyboard(data.getCurrentKeyboard())
+        view?.convertToKeyboard(data.getCurrentKeyboard())
 
         resolvePinnedMessageView()
         resolveInputView()
@@ -987,7 +989,7 @@ class ChatPresenter(
 
     fun fireAttachButtonClick() {
         edited?.run {
-            view?.showEditAttachmentsDialog(attachments)
+            view?.showEditAttachmentsDialog(attachments, isGroupChat)
             return
         }
 
@@ -1004,7 +1006,8 @@ class ChatPresenter(
             messagesOwnerId,
             destination,
             draftMessageText,
-            outConfig.getModels()
+            outConfig.getModels(),
+            isGroupChat
         ) // TODO: 15.08.2017
     }
 
@@ -1306,7 +1309,7 @@ class ChatPresenter(
                 .updateDialogKeyboard(accountId, peerId, message.keyboard)
                 .fromIOToMain()
                 .subscribe(dummy(), ignore())
-            view?.convert_to_keyboard(message.keyboard)
+            view?.convertToKeyboard(message.keyboard)
         }
         if (Settings.get().other().isAuto_read && !Processors.realtimeMessages
                 .isNotificationIntercepted(accountId, peerId)
@@ -1979,7 +1982,7 @@ class ChatPresenter(
 
     private fun resolveResumePeer() {
         view?.notifyChatResume(accountId, peerId, peer.getTitle(), peer.avaUrl)
-        view?.convert_to_keyboard(conversation?.getCurrentKeyboard())
+        view?.convertToKeyboard(conversation?.getCurrentKeyboard())
     }
 
     private fun uploadStreamsImpl(streams: List<Uri>, size: Int?, is_video: Boolean) {
@@ -2077,7 +2080,7 @@ class ChatPresenter(
     public override fun onActionModeForwardClick() {
         val selected = getSelected(data)
         if (selected.isNotEmpty()) {
-            view?.diplayForwardTypeSelectDialog(selected)
+            view?.displayForwardTypeSelectDialog(selected)
         }
     }
 
@@ -2157,7 +2160,7 @@ class ChatPresenter(
 
     private fun fireEncriptionEnableClick(@KeyLocationPolicy policy: Int, pairs: List<AesKeyPair>) {
         if (pairs.isEmpty()) {
-            view?.displayIniciateKeyExchangeQuestion(policy)
+            view?.displayInitiateKeyExchangeQuestion(policy)
         } else {
             Settings.get().security().enableMessageEncryption(messagesOwnerId, peerId, policy)
             resolveOptionMenu()
@@ -2493,6 +2496,25 @@ class ChatPresenter(
                 .setFileUri(Uri.parse(file))
             uploadManager.enqueue(listOf(intent))
         }
+    }
+
+    fun fireCompressSettings(context: Context) {
+        if (isGroupChat) {
+            view?.openPollCreationWindow(accountId, messagesOwnerId)
+            return
+        }
+        MaterialAlertDialogBuilder(context)
+            .setTitle(context.getString(R.string.select_image_size_title))
+            .setSingleChoiceItems(
+                R.array.array_image_sizes_settings_names,
+                Settings.get().main().uploadImageSizePref
+            ) { dialogInterface: DialogInterface, j: Int ->
+                Settings.get().main().uploadImageSize = j
+                dialogInterface.dismiss()
+            }
+            .setCancelable(true)
+            .setNegativeButton(R.string.button_cancel, null)
+            .show()
     }
 
     fun fireEditLocalPhotosSelected(localPhotos: List<LocalPhoto>, imageSize: Int) {

@@ -29,7 +29,6 @@ import androidx.media3.exoplayer.RendererCapabilities
 import androidx.media3.exoplayer.audio.AudioRendererEventListener
 import androidx.media3.exoplayer.audio.AudioSink
 import androidx.media3.exoplayer.audio.DecoderAudioRenderer
-import androidx.media3.exoplayer.audio.DefaultAudioSink
 import dev.ragnarok.fenrir.module.FenrirNative
 
 /**
@@ -37,22 +36,7 @@ import dev.ragnarok.fenrir.module.FenrirNative
  */
 @UnstableApi
 @Suppress("UNUSED")
-class FfmpegAudioRenderer
-/**
- * Creates a new instance.
- *
- * @param eventHandler  A handler to use when delivering events to `eventListener`. May be
- * null if delivery of events is not required.
- * @param eventListener A listener of events. May be null if delivery of events is not required.
- * @param audioSink     The sink to which audio will be output.
- */
-    (
-    eventHandler: Handler?,
-    eventListener: AudioRendererEventListener?,
-    audioSink: AudioSink
-) : DecoderAudioRenderer<FfmpegAudioDecoder>(eventHandler, eventListener, audioSink) {
-    constructor() : this( /* eventHandler= */null,  /* eventListener= */null)
-
+class FfmpegAudioRenderer : DecoderAudioRenderer<FfmpegAudioDecoder> {
     /**
      * Creates a new instance.
      *
@@ -65,11 +49,21 @@ class FfmpegAudioRenderer
         eventHandler: Handler?,
         eventListener: AudioRendererEventListener?,
         vararg audioProcessors: AudioProcessor
-    ) : this(
-        eventHandler,
-        eventListener,
-        DefaultAudioSink.Builder().setAudioProcessors(audioProcessors).build()
-    )
+    ) : super(eventHandler, eventListener, *audioProcessors)
+
+    /**
+     * Creates a new instance.
+     *
+     * @param eventHandler  A handler to use when delivering events to `eventListener`. May be
+     * null if delivery of events is not required.
+     * @param eventListener A listener of events. May be null if delivery of events is not required.
+     * @param audioSink     The sink to which audio will be output.
+     */
+    constructor(
+        eventHandler: Handler?,
+        eventListener: AudioRendererEventListener?,
+        audioSink: AudioSink
+    ) : super(eventHandler, eventListener, audioSink)
 
     override fun getName(): String {
         return TAG

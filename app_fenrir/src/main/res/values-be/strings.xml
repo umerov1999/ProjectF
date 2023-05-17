@@ -137,6 +137,7 @@
     <string name="general_settings">Агульныя</string>
     <string name="about_settings">Аб дадатку</string>
     <string name="account_cache_cleaner">Ачысціць кэш і базу дадзеных</string>
+    <string name="ask_account_cache_cleaner">Ачысціць кэш і базу дадзеных?</string>
     <string name="cache_cleaner">Ачысціць кэш</string>
     <!-- Quick Reply-->
     <string name="go_to_dialog">Да дыялогу</string>
@@ -732,7 +733,7 @@
     <string name="attachments_in_chat">Матэрыялы гутаркі</string>
     <string name="attachments_in_wall">Матэрыялы сцяны</string>
     <string name="messages_in_json">Чат Json (%1$d паведамленняў)</string>
-    <string name="change_hrono_history">Паказаць пачатак</string>
+    <string name="change_chrono_history">Паказаць пачатак</string>
     <string name="show_profile">Профіль</string>
     <string name="unknown_photos_count">невядома</string>
     <string name="photos_count">%1$d фота</string>
@@ -1030,7 +1031,6 @@
     <string name="vk_photos_tab_title">Фота ВК</string>
     <string name="local_photos_tab_title">Лакальныя фота</string>
     <string name="local_gallery_tab_title">Галерэя</string>
-    <string name="send_short">Адпр.</string>
     <string name="message_attachment_empty_text">Укладанняў пакуль няма (ліміт 10)</string>
     <string name="button_add_photo">Дадаць фота/відэа</string>
     <string name="log_type_error">Выключэнні</string>
@@ -1403,6 +1403,7 @@
     <string name="be_online">Быць анлайн</string>
     <string name="wall_attachments">Укладанні на сцяне</string>
     <string name="posts_analized">%1$d пастоў праверана</string>
+    <string name="messages_analized">%1$d паведамленняў праверана</string>
     <string name="comments_analized">%1$d каментароў праверана</string>
     <string name="photo_rounded_view">Скругленне краёў малюнкаў</string>
     <string name="font_size">Памер шрыфта</string>
@@ -1717,4 +1718,6 @@
     <string name="clips">Кліпы</string>
     <string name="stories">Гісторыі</string>
     <string name="account_not_registered">Акаўнт не зарэгістраваны!</string>
+    <string name="disable_unvote">Забараніць адмену голасу</string>
+    <string name="empty_background">Пусты фон</string>
 </resources>

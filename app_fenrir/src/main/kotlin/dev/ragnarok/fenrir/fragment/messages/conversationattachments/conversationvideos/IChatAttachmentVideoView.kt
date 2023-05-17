@@ -1,0 +1,6 @@
+package dev.ragnarok.fenrir.fragment.messages.conversationattachments.conversationvideos
+
+import dev.ragnarok.fenrir.fragment.messages.conversationattachments.abschatattachments.IBaseChatAttachmentsView
+import dev.ragnarok.fenrir.model.Video
+
+interface IChatAttachmentVideoView : IBaseChatAttachmentsView<Video>

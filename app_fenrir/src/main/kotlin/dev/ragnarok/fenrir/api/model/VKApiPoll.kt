@@ -64,6 +64,7 @@ class VKApiPoll
     var end_date: Long = 0
     var multiple = false
     var photo: Photo? = null
+    var background: Background? = null
     override fun getType(): String {
         return VKApiAttachment.TYPE_POLL
     }
@@ -92,6 +93,21 @@ class VKApiPoll
          * Rate of this answer in percent
          */
         var rate = 0.0
+    }
+
+    @Serializable
+    class Background {
+        var type: String? = null
+        var id = 0
+        var angle = 0
+        var name: String? = null
+        var points: List<BackgroundPoint>? = null
+    }
+
+    @Serializable
+    class BackgroundPoint {
+        var color: String? = null
+        var position = 0.0f
     }
 
     @Serializable

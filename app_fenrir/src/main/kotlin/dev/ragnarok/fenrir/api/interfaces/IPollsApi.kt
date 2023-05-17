@@ -11,6 +11,8 @@ interface IPollsApi {
         question: String?,
         isAnonymous: Boolean?,
         isMultiple: Boolean?,
+        disableUnvote: Boolean,
+        backgroundId: Int?,
         ownerId: Long,
         addAnswers: List<String>
     ): Single<VKApiPoll>
@@ -37,4 +39,7 @@ interface IPollsApi {
         answer_ids: List<Long>,
         offset: Int?, count: Int?
     ): Single<List<VKApiUser>>
+
+    @CheckResult
+    fun getBackgrounds(): Single<List<VKApiPoll.Background>>
 }

@@ -23,32 +23,36 @@
     #undef TVG_API
 #endif
 
-#if defined(_WIN32) && !defined(__clang__)
-    #if TVG_BUILD
-        #if TVG_EXPORT
+#ifndef TVG_STATIC
+    #ifdef _WIN32
+        #if TVG_BUILD
             #define TVG_API __declspec(dllexport)
         #else
-            #define TVG_API
+            #define TVG_API __declspec(dllimport)
         #endif
+    #elif (defined(__SUNPRO_C)  || defined(__SUNPRO_CC))
+        #define TVG_API __global
     #else
-        #define TVG_API __declspec(dllimport)
-    #endif
-    #define TVG_DEPRECATED __declspec(deprecated)
-#else
-    #if TVG_BUILD
-        #if TVG_EXPORT
-            #define TVG_API __attribute__ ((visibility ("default")))
+        #if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER)
+            #define TVG_API __attribute__ ((visibility("default")))
         #else
             #define TVG_API
         #endif
-    #else
-        #define TVG_API
     #endif
-    #define TVG_DEPRECATED __attribute__ ((__deprecated__))
+#else
+    #define TVG_API
 #endif
 
-#ifdef __cplusplus
-extern "C" {
+#ifdef TVG_DEPRECATED
+    #undef TVG_DEPRECATED
+#endif
+
+#ifdef _WIN32
+    #define TVG_DEPRECATED __declspec(deprecated)
+#elif __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
+    #define TVG_DEPRECATED __attribute__ ((__deprecated__))
+#else
+    #define TVG_DEPRECATED
 #endif
 
 #define _TVG_DECLARE_PRIVATE(A) \
@@ -164,7 +168,7 @@ enum class CompositeMethod
     ClipPath,     ///< The intersection of the source and the target is determined and only the resulting pixels from the source are rendered.
     AlphaMask,    ///< The pixels of the source and the target are alpha blended. As a result, only the part of the source, which alpha intersects with the target is visible.
     InvAlphaMask, ///< The pixels of the source and the complement to the target's pixels are alpha blended. As a result, only the part of the source which alpha is not covered by the target is visible.
-    LumaMask      ///< @BETA_API The source pixels are converted to the grayscale (luma value) and alpha blended with the target. As a result, only the part of the source, which intersects with the target is visible.
+    LumaMask      ///< The source pixels are converted to the grayscale (luma value) and alpha blended with the target. As a result, only the part of the source, which intersects with the target is visible. @since 0.9
 };
 
 /**
@@ -320,21 +324,6 @@ public:
      * @return Result::Success when succeed, Result::InvalidArguments otherwise.
      */
     Result composite(std::unique_ptr<Paint> target, CompositeMethod method) noexcept;
-
-    /**
-     * @brief Gets the bounding box of the paint object before any transformation.
-     *
-     * @param[out] x The x coordinate of the upper left corner of the object.
-     * @param[out] y The y coordinate of the upper left corner of the object.
-     * @param[out] w The width of the object.
-     * @param[out] h The height of the object.
-     *
-     * @return Result::Success when succeed, Result::InsufficientCondition otherwise.
-     *
-     * @note The bounding box doesn't indicate the final rendered region. It's the smallest rectangle that encloses the object.
-     * @see Paint::bounds(float* x, float* y, float* w, float* h, bool transformed);
-     */
-    TVG_DEPRECATED Result bounds(float* x, float* y, float* w, float* h) const noexcept;
 
     /**
      * @brief Gets the axis-aligned bounding box of the paint object.
@@ -1150,24 +1139,6 @@ public:
      *
      * @param[in] data A pointer to a memory location where the content of the picture file is stored.
      * @param[in] size The size in bytes of the memory occupied by the @p data.
-     * @param[in] copy Decides whether the data should be copied into the engine local buffer.
-     *
-     * @retval Result::Success When succeed.
-     * @retval Result::InvalidArguments In case no data are provided or the @p size is zero or less.
-     * @retval Result::NonSupport When trying to load a file with an unknown extension.
-     * @retval Result::Unknown If an error occurs at a later stage.
-     *
-     * @warning: you have responsibility to release the @p data memory if the @p copy is true
-     * @deprecated Use load(const char* data, uint32_t size, const std::string& mimeType, bool copy) instead.
-     * @see Result load(const char* data, uint32_t size, const std::string& mimeType, bool copy = false) noexcept
-     */
-    TVG_DEPRECATED Result load(const char* data, uint32_t size, bool copy = false) noexcept;
-
-    /**
-     * @brief Loads a picture data from a memory block of a given size.
-     *
-     * @param[in] data A pointer to a memory location where the content of the picture file is stored.
-     * @param[in] size The size in bytes of the memory occupied by the @p data.
      * @param[in] mimeType Mimetype or extension of data such as "jpg", "jpeg", "svg", "svg+xml", "png", etc. In case an empty string or an unknown type is provided, the loaders will be tried one by one.
      * @param[in] copy If @c true the data are copied into the engine local buffer, otherwise they are not.
      *
@@ -1219,9 +1190,10 @@ public:
     /**
      * @brief Loads a raw data from a memory block with a given size.
      *
-     * @warning Please do not use it, this API is not official one. It could be modified in the next version.
+     * @retval Result::Success When succeed, Result::InsufficientCondition otherwise.
+     * @retval Result::FailedAllocation An internal error possibly with memory allocation.
      *
-     * @BETA_API
+     * @since 0.9
      */
     Result load(uint32_t* data, uint32_t w, uint32_t h, bool copy) noexcept;
 
@@ -1661,12 +1633,32 @@ public:
     _TVG_DECLARE_PRIVATE(Accessor);
 };
 
+
+/**
+ * @brief The cast() function is a utility function used to cast a 'Paint' to type 'T'.
+ *
+ * @BETA_API
+ */
+template<typename T>
+std::unique_ptr<T> cast(Paint* paint)
+{
+    return std::unique_ptr<T>(static_cast<T*>(paint));
+}
+
+/**
+ * @brief The cast() function is a utility function used to cast a 'Fill' to type 'T'.
+ *
+ * @BETA_API
+ */
+template<typename T>
+std::unique_ptr<T> cast(Fill* fill)
+{
+    return std::unique_ptr<T>(static_cast<T*>(fill));
+}
+
+
 /** @}*/
 
 } //namespace
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif //_THORVG_H_

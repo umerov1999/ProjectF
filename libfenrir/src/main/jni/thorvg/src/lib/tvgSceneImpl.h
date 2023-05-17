@@ -59,10 +59,10 @@ struct SceneIterator : Iterator
 struct Scene::Impl
 {
     Array<Paint*> paints;
-    uint8_t opacity;                     //for composition
     RenderMethod* renderer = nullptr;    //keep it for explicit clear
     RenderData rd = nullptr;
     Scene* scene = nullptr;
+    uint8_t opacity;                     //for composition
 
     Impl(Scene* s) : scene(s)
     {
@@ -100,9 +100,11 @@ struct Scene::Impl
         if (opacity == 255) return false;
 
         //If scene has several children or only scene, it may require composition.
-        if (paints.count > 1) return true;
-        if (paints.count == 1 && (*paints.data)->identifier() == TVG_CLASS_ID_SCENE) return true;
-        return false;
+        //OPTIMIZE: the bitmap type of the picture would not need the composition.
+        //OPTIMIZE: a single paint of a scene would not need the composition.
+        if (paints.count == 1 && (*paints.data)->identifier() == TVG_CLASS_ID_SHAPE) return false;
+
+        return true;
     }
 
     RenderData update(RenderMethod &renderer, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag flag, bool clipper)
@@ -135,7 +137,7 @@ struct Scene::Impl
         Compositor* cmp = nullptr;
 
         if (needComposition(opacity)) {
-            cmp = renderer.target(bounds(renderer));
+            cmp = renderer.target(bounds(renderer), renderer.colorSpace());
             renderer.beginComposite(cmp, CompositeMethod::None, opacity);
         }
 

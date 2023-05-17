@@ -3,7 +3,7 @@ package dev.ragnarok.filegallery.activity
 import android.content.Context
 import android.os.Bundle
 import dev.ragnarok.filegallery.R
-import dev.ragnarok.filegallery.fragment.enterpin.EnterPinFragment
+import dev.ragnarok.filegallery.fragment.pin.enterpin.EnterPinFragment
 import dev.ragnarok.filegallery.util.Utils
 
 open class EnterPinActivity : NoMainActivity() {

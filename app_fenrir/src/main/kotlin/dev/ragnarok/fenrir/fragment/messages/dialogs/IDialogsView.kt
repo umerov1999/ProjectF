@@ -34,7 +34,7 @@ interface IDialogsView : IMvpView, IErrorView, IToastView {
 
     interface IContextView {
         fun setCanDelete(can: Boolean)
-        fun setCanAddToHomescreen(can: Boolean)
+        fun setCanAddToHomeScreen(can: Boolean)
         fun setCanConfigNotifications(can: Boolean)
         fun setCanAddToShortcuts(can: Boolean)
         fun setIsHidden(can: Boolean)

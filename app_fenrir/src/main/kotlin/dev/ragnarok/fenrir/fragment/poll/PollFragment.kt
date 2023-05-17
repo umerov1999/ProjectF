@@ -23,6 +23,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.util.Utils.appLocale
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.view.AspectRatioImageView
+import dev.ragnarok.fenrir.view.PollGradientDrawable
 import dev.ragnarok.fenrir.view.ProgressButton
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -34,6 +35,7 @@ class PollFragment : BaseMvpFragment<PollPresenter, IPollView>(), IPollView,
     private var mAnswersAdapter: PollAnswersAdapter? = null
     private var mButton: ProgressButton? = null
     private var photo: AspectRatioImageView? = null
+    private var recyclerView: RecyclerView? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,8 +43,8 @@ class PollFragment : BaseMvpFragment<PollPresenter, IPollView>(), IPollView,
     ): View? {
         val root = inflater.inflate(R.layout.fragment_poll, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
-        val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        recyclerView = root.findViewById(R.id.recycler_view)
+        recyclerView?.layoutManager = LinearLayoutManager(requireActivity())
         mAnswersAdapter = PollAnswersAdapter(requireActivity(), mutableListOf())
         mAnswersAdapter?.setListener(this)
         val header = LayoutInflater.from(requireActivity())
@@ -55,7 +57,7 @@ class PollFragment : BaseMvpFragment<PollPresenter, IPollView>(), IPollView,
         mButton?.onButtonClick {
             presenter?.fireButtonClick()
         }
-        recyclerView.adapter = mAnswersAdapter
+        recyclerView?.adapter = mAnswersAdapter
         return root
     }
 
@@ -78,15 +80,20 @@ class PollFragment : BaseMvpFragment<PollPresenter, IPollView>(), IPollView,
         actionBar?.setTitle(if (anonymous) R.string.anonymous_poll else R.string.open_poll)
     }
 
-    override fun displayCreationTime(unixtime: Long) {
+    override fun setupGradientBackground(background: Poll.PollBackground?) {
+        recyclerView?.background =
+            if (background == null) null else PollGradientDrawable(background)
+    }
+
+    override fun displayCreationTime(unixTime: Long) {
         val actionBar = supportToolbarFor(this)
         if (actionBar != null) {
-            if (unixtime <= 0) {
+            if (unixTime <= 0) {
                 actionBar.setSubtitle(R.string.unknown_error)
                 return
             }
             val formattedDate = SimpleDateFormat("dd.MM.yyyy HH:mm", appLocale)
-                .format(Date(unixtime * 1000))
+                .format(Date(unixTime * 1000))
             actionBar.subtitle = formattedDate
         }
     }

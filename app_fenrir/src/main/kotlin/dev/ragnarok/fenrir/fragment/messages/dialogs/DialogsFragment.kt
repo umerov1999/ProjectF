@@ -92,7 +92,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             Settings.get().security().showHiddenDialogs = true
-            ReconfigureOptionsHide(true)
+            reconfigureOptionsHide(true)
             notifyDataSetChanged()
         }
     }
@@ -106,7 +106,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         }
     }
 
-    internal fun ReconfigureOptionsHide(isShowHidden: Boolean) {
+    internal fun reconfigureOptionsHide(isShowHidden: Boolean) {
         mAdapter?.updateShowHidden(isShowHidden)
         if (!Settings.get().security().hasHiddenDialogs()) {
             mFab?.setImageResource(R.drawable.pencil)
@@ -174,7 +174,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         mFab?.setOnClickListener {
             if (Settings.get().security().showHiddenDialogs) {
                 Settings.get().security().showHiddenDialogs = false
-                ReconfigureOptionsHide(false)
+                reconfigureOptionsHide(false)
                 notifyDataSetChanged()
             } else {
                 if (mFab?.isEdit == true) {
@@ -209,7 +209,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         mAdapter = DialogsAdapter(requireActivity(), emptyList())
         mAdapter?.setClickListener(this)
         mRecyclerView?.adapter = mAdapter
-        ReconfigureOptionsHide(Settings.get().security().showHiddenDialogs)
+        reconfigureOptionsHide(Settings.get().security().showHiddenDialogs)
         return root
     }
 
@@ -279,7 +279,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                 true
             )
         )
-        if (contextView.pCanAddToHomescreen) {
+        if (contextView.pCanAddToHomeScreen) {
             menus.add(OptionRequest(3, addToHomeScreen, R.drawable.ic_home_outline, false))
         }
         if (contextView.pCanConfigNotifications) {
@@ -384,7 +384,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                             securitySettingsPlace.tryOpenWith(requireActivity())
                         } else {
                             Settings.get().security().addHiddenDialog(dialog.getOwnerObjectId())
-                            ReconfigureOptionsHide(Settings.get().security().showHiddenDialogs)
+                            reconfigureOptionsHide(Settings.get().security().showHiddenDialogs)
                             notifyDataSetChanged()
                             if (needHelp(HelperSimple.HIDDEN_DIALOGS, 3)) {
                                 showSnackbar(R.string.hidden_dialogs_helper, true)
@@ -393,7 +393,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
 
                         7 -> {
                             Settings.get().security().removeHiddenDialog(dialog.getOwnerObjectId())
-                            ReconfigureOptionsHide(Settings.get().security().showHiddenDialogs)
+                            reconfigureOptionsHide(Settings.get().security().showHiddenDialogs)
                             notifyDataSetChanged()
                         }
 
@@ -577,7 +577,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
 
     private class ContextView : IContextView {
         var pCanDelete = false
-        var pCanAddToHomescreen = false
+        var pCanAddToHomeScreen = false
         var pCanConfigNotifications = false
         var pCanAddToShortcuts = false
         var pCanRead = false
@@ -587,8 +587,8 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
             pCanDelete = can
         }
 
-        override fun setCanAddToHomescreen(can: Boolean) {
-            pCanAddToHomescreen = can
+        override fun setCanAddToHomeScreen(can: Boolean) {
+            pCanAddToHomeScreen = can
         }
 
         override fun setCanConfigNotifications(can: Boolean) {

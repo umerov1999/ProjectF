@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:colorBackground"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
@@ -13,35 +14,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?android:colorBackground"
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp"
-                android:text="@string/poll_question"
-                android:textSize="@dimen/font_size_additional" />
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/dialog_poll_create_question"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:background="?attr/messages_background_color"
-                android:padding="8dp"
-                android:textSize="@dimen/font_size_subtitle" />
+                android:layout_marginTop="4dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:padding="8dp"
-                android:text="@string/poll_options"
-                android:textSize="@dimen/font_size_additional" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dialog_poll_create_question"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/poll_question"
+                    android:textSize="@dimen/font_size_subtitle" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:id="@+id/dialog_poll_create_options"
@@ -49,119 +37,175 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:background="?attr/messages_background_color"
-                    android:padding="8dp"
-                    android:textSize="@dimen/font_size_subtitle" />
+                    android:layout_marginTop="4dp">
 
-                <com.google.android.material.textfield.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/poll_options"
+                        android:textSize="@dimen/font_size_subtitle" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/poll_options"
+                        android:textSize="@dimen/font_size_subtitle" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_option"
+                        android:textSize="@dimen/font_size_subtitle" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="?attr/messages_background_color"
-                    android:padding="8dp"
-                    android:textSize="@dimen/font_size_subtitle" />
+                    android:visibility="gone">
 
-                <com.google.android.material.textfield.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_option"
+                        android:textSize="@dimen/font_size_subtitle" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="?attr/messages_background_color"
-                    android:hint="@string/add_option"
-                    android:padding="8dp"
-                    android:textSize="@dimen/font_size_subtitle" />
+                    android:visibility="gone">
 
-                <com.google.android.material.textfield.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_option"
+                        android:textSize="@dimen/font_size_subtitle" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="?attr/messages_background_color"
-                    android:hint="@string/add_option"
-                    android:padding="8dp"
-                    android:textSize="@dimen/font_size_subtitle"
-                    android:visibility="gone" />
+                    android:visibility="gone">
 
-                <com.google.android.material.textfield.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_option"
+                        android:textSize="@dimen/font_size_subtitle" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="?attr/messages_background_color"
-                    android:hint="@string/add_option"
-                    android:padding="8dp"
-                    android:textSize="@dimen/font_size_subtitle"
-                    android:visibility="gone" />
+                    android:visibility="gone">
 
-                <com.google.android.material.textfield.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_option"
+                        android:textSize="@dimen/font_size_subtitle" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="?attr/messages_background_color"
-                    android:hint="@string/add_option"
-                    android:padding="8dp"
-                    android:textSize="@dimen/font_size_subtitle"
-                    android:visibility="gone" />
+                    android:visibility="gone">
 
-                <com.google.android.material.textfield.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_option"
+                        android:textSize="@dimen/font_size_subtitle" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="?attr/messages_background_color"
-                    android:hint="@string/add_option"
-                    android:padding="8dp"
-                    android:textSize="@dimen/font_size_subtitle"
-                    android:visibility="gone" />
+                    android:visibility="gone">
 
-                <com.google.android.material.textfield.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_option"
+                        android:textSize="@dimen/font_size_subtitle" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="?attr/messages_background_color"
-                    android:hint="@string/add_option"
-                    android:padding="8dp"
-                    android:textSize="@dimen/font_size_subtitle"
-                    android:visibility="gone" />
+                    android:visibility="gone">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="?attr/messages_background_color"
-                    android:hint="@string/add_option"
-                    android:padding="8dp"
-                    android:textSize="@dimen/font_size_subtitle"
-                    android:visibility="gone" />
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="?attr/messages_background_color"
-                    android:hint="@string/add_option"
-                    android:padding="8dp"
-                    android:textSize="@dimen/font_size_subtitle"
-                    android:visibility="gone" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_option"
+                        android:textSize="@dimen/font_size_subtitle" />
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
-            <com.google.android.material.checkbox.MaterialCheckBox
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/poll_background_option"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:scrollbars="none" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/dialog_poll_create_anonymous"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:checked="false"
                 android:text="@string/anonymous_poll" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/dialog_poll_create_multiply"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:checked="false"
                 android:text="@string/multiply_poll" />
 
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/disable_unvote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:checked="false"
+                android:text="@string/disable_unvote" />
 
         </LinearLayout>
 

@@ -76,7 +76,7 @@ class FcmListenerService : FirebaseMessagingService() {
                     .notify(accountId)
 
                 PushType.POST -> WallPostFCMMessage.fromRemoteMessage(message)
-                    ?.nofify(context, accountId)
+                    ?.notify(context, accountId)
 
                 PushType.COMMENT -> CommentFCMMessage.fromRemoteMessage(message)
                     ?.notify(context, accountId)

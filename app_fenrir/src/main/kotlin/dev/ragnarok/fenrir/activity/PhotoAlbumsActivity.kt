@@ -3,8 +3,8 @@ package dev.ragnarok.fenrir.activity
 import android.os.Bundle
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fragment.vkphotoalbums.VKPhotoAlbumsFragment
-import dev.ragnarok.fenrir.fragment.vkphotos.VKPhotosFragment
+import dev.ragnarok.fenrir.fragment.photos.vkphotoalbums.VKPhotoAlbumsFragment
+import dev.ragnarok.fenrir.fragment.photos.vkphotos.VKPhotosFragment
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceProvider
 

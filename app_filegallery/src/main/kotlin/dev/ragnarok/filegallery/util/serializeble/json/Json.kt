@@ -87,14 +87,32 @@ sealed class Json(
     }
 
     /**
+     * Decodes and deserializes the given JSON [string] to the value of type [T] using deserializer
+     * retrieved from the reified type parameter.
+     *
+     * @throws SerializationException in case of any decoding-specific error
+     * @throws IllegalArgumentException if the decoded input is not a valid instance of [T]
+     */
+    @OptIn(InternalSerializationApi::class)
+    inline fun <reified T> decodeFromString(
+        @FormatLanguage(
+            "json",
+            "",
+            ""
+        ) string: String
+    ): T =
+        decodeFromString(serializersModule.serializer(), string)
+
+    /**
      * Deserializes the given JSON [string] into a value of type [T] using the given [deserializer].
      *
      * @throws [SerializationException] if the given JSON string is not a valid JSON input for the type [T]
      * @throws [IllegalArgumentException] if the decoded input cannot be represented as a valid instance of type [T]
      */
+    @OptIn(InternalSerializationApi::class)
     final override fun <T> decodeFromString(
         deserializer: DeserializationStrategy<T>,
-        string: String
+        @FormatLanguage("json", "", "") string: String
     ): T {
         val lexer = StringJsonLexer(string)
         val input = StreamingJsonDecoder(this, WriteMode.OBJ, lexer, deserializer.descriptor, null)
@@ -187,7 +205,7 @@ enum class DecodeSequenceMode {
 
     /**
      * Declares that parser itself should select between [WHITESPACE_SEPARATED] and [ARRAY_WRAPPED] modes.
-     * The selection is performed by looking on the first meaningful character of the stream.
+     * The selection is performed by looking at the first meaningful character of the stream.
      *
      * In most cases, auto-detection is sufficient to correctly parse an input.
      * If the input is _whitespace-separated stream of the arrays_, parser could select an incorrect mode,

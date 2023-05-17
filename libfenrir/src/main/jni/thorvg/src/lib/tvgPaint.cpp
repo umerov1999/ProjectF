@@ -167,9 +167,10 @@ bool Paint::Impl::render(RenderMethod& renderer)
     if (compData && compData->method != CompositeMethod::ClipPath && !(compData->target->pImpl->ctxFlag & ContextFlag::FastTrack)) {
         auto region = smethod->bounds(renderer);
         if (region.w == 0 || region.h == 0) return true;
-        cmp = renderer.target(region);
-        renderer.beginComposite(cmp, CompositeMethod::None, 255);
-        compData->target->pImpl->render(renderer);
+        cmp = renderer.target(region, COMPOSITE_TO_COLORSPACE(renderer, compData->method));
+        if (renderer.beginComposite(cmp, CompositeMethod::None, 255)) {
+            compData->target->pImpl->render(renderer);
+        }
     }
 
     if (cmp) renderer.beginComposite(cmp, compData->method, compData->target->pImpl->opacity);
@@ -344,12 +345,6 @@ Matrix Paint::transform() noexcept
     auto pTransform = pImpl->transform();
     if (pTransform) return *pTransform;
     return {1, 0, 0, 0, 1, 0, 0, 0, 1};
-}
-
-
-TVG_DEPRECATED Result Paint::bounds(float* x, float* y, float* w, float* h) const noexcept
-{
-    return this->bounds(x, y, w, h, false);
 }
 
 

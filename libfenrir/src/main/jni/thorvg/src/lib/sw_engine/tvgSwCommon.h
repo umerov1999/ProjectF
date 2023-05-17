@@ -223,11 +223,16 @@ struct SwImage
 {
     SwOutline*   outline = nullptr;
     SwRleData*   rle = nullptr;
-    uint32_t*    data = nullptr;
+    union {
+        pixel_t*  data;      //system based data pointer
+        uint32_t* buf32;     //for explicit 32bits channels
+        uint8_t*  buf8;      //for explicit 8bits grayscale
+    };
     uint32_t     w, h, stride;
     int32_t      ox = 0;         //offset x
     int32_t      oy = 0;         //offset y
     float        scale;
+    uint8_t      channelSize;
 
     bool         direct = false;  //draw image directly (with offset)
     bool         scaled = false;  //draw scaled image
@@ -236,7 +241,7 @@ struct SwImage
 struct SwBlender
 {
     uint32_t (*join)(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-    uint32_t (*lumaValue)(uint32_t c);
+    uint8_t (*luma)(uint8_t* c);
 };
 
 struct SwCompositor;
@@ -356,7 +361,7 @@ bool rasterShape(SwSurface* surface, SwShape* shape, uint8_t r, uint8_t g, uint8
 bool rasterImage(SwSurface* surface, SwImage* image, const RenderMesh* mesh, const Matrix* transform, const SwBBox& bbox, uint32_t opacity);
 bool rasterStroke(SwSurface* surface, SwShape* shape, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 bool rasterGradientStroke(SwSurface* surface, SwShape* shape, unsigned id);
-bool rasterClear(SwSurface* surface);
+bool rasterClear(SwSurface* surface, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 void rasterRGBA32(uint32_t *dst, uint32_t val, uint32_t offset, int32_t len);
 void rasterUnpremultiply(Surface* surface);
 void rasterPremultiply(Surface* surface);

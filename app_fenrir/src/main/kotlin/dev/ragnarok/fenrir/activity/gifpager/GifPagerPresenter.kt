@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fragment.absdocumentpreview.BaseDocumentPresenter
+import dev.ragnarok.fenrir.fragment.docs.absdocumentpreview.BaseDocumentPresenter
 import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.doDownloadDoc

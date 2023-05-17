@@ -291,6 +291,7 @@
     <string name="general_settings">Commons</string>
     <string name="about_settings">About application</string>
     <string name="account_cache_cleaner">Clear cache and sql</string>
+    <string name="ask_account_cache_cleaner">Do clear cache and sql?</string>
     <string name="cache_cleaner">Clear cache</string>
     <!-- Quick Reply-->
     <string name="go_to_dialog">To dialog</string>
@@ -932,7 +933,7 @@
     <string name="attachments_in_chat">Chat materials</string>
     <string name="attachments_in_wall">Wall materials</string>
     <string name="messages_in_json">Chat JSON (%1$d messages)</string>
-    <string name="change_hrono_history">Show start</string>
+    <string name="change_chrono_history">Show start</string>
     <string name="show_profile">Profile</string>
     <string name="unknown_photos_count">unknown</string>
     <string name="photos_count">%1$d photo</string>
@@ -1252,7 +1253,6 @@
     <string name="vk_photos_tab_title">Photo VK</string>
     <string name="local_photos_tab_title">Local photos</string>
     <string name="local_gallery_tab_title">Gallery</string>
-    <string name="send_short">Send</string>
     <string name="message_attachment_empty_text">No attachments yet (limit 10)</string>
     <string name="button_add_photo">Add photo/video</string>
     <string name="log_type_error">Exceptions</string>
@@ -1641,6 +1641,7 @@
     <string name="be_online">Stay online</string>
     <string name="wall_attachments">Wall attachments</string>
     <string name="posts_analized">%1$d posts checked</string>
+    <string name="messages_analized">%1$d messages checked</string>
     <string name="comments_analized">%1$d comments checked</string>
     <string name="photo_rounded_view">Round image edges</string>
     <string name="font_size">Font size</string>
@@ -1956,4 +1957,6 @@
     <string name="clips">Clips</string>
     <string name="stories">Stories</string>
     <string name="account_not_registered">Account not registered!</string>
+    <string name="disable_unvote">Disable unvote</string>
+    <string name="empty_background">Empty Background</string>
 </resources>

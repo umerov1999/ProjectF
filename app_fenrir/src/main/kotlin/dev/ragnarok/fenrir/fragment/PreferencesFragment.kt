@@ -1757,7 +1757,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     onClick {
                         MaterialAlertDialogBuilder(requireActivity()).setIcon(R.drawable.ic_outline_delete)
                             .setTitle(R.string.select)
-                            .setMessage(R.string.do_delete)
+                            .setMessage(R.string.ask_account_cache_cleaner)
                             .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
                                 DBHelper.removeDatabaseFor(requireActivity(), accountId)
                                 cleanCache(requireActivity(), true)

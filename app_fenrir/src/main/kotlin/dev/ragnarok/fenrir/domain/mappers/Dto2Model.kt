@@ -1,7 +1,51 @@
 package dev.ragnarok.fenrir.domain.mappers
 
-import dev.ragnarok.fenrir.api.model.*
+import android.graphics.Color
+import dev.ragnarok.fenrir.api.model.FaveLinkDto
+import dev.ragnarok.fenrir.api.model.PhotoSizeDto
+import dev.ragnarok.fenrir.api.model.VKApiArticle
+import dev.ragnarok.fenrir.api.model.VKApiAttachments
+import dev.ragnarok.fenrir.api.model.VKApiAudio
+import dev.ragnarok.fenrir.api.model.VKApiAudioArtist
+import dev.ragnarok.fenrir.api.model.VKApiAudioMessage
+import dev.ragnarok.fenrir.api.model.VKApiAudioPlaylist
+import dev.ragnarok.fenrir.api.model.VKApiCall
+import dev.ragnarok.fenrir.api.model.VKApiChat
+import dev.ragnarok.fenrir.api.model.VKApiComment
+import dev.ragnarok.fenrir.api.model.VKApiCommunity
+import dev.ragnarok.fenrir.api.model.VKApiConversation
 import dev.ragnarok.fenrir.api.model.VKApiConversation.CurrentKeyboard
+import dev.ragnarok.fenrir.api.model.VKApiDialog
+import dev.ragnarok.fenrir.api.model.VKApiDoc
+import dev.ragnarok.fenrir.api.model.VKApiEvent
+import dev.ragnarok.fenrir.api.model.VKApiFriendList
+import dev.ragnarok.fenrir.api.model.VKApiGeo
+import dev.ragnarok.fenrir.api.model.VKApiGift
+import dev.ragnarok.fenrir.api.model.VKApiGiftItem
+import dev.ragnarok.fenrir.api.model.VKApiGraffiti
+import dev.ragnarok.fenrir.api.model.VKApiGroupChats
+import dev.ragnarok.fenrir.api.model.VKApiLink
+import dev.ragnarok.fenrir.api.model.VKApiMarket
+import dev.ragnarok.fenrir.api.model.VKApiMarketAlbum
+import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.VKApiNarratives
+import dev.ragnarok.fenrir.api.model.VKApiNews
+import dev.ragnarok.fenrir.api.model.VKApiNotSupported
+import dev.ragnarok.fenrir.api.model.VKApiOwner
+import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
+import dev.ragnarok.fenrir.api.model.VKApiPhotoTags
+import dev.ragnarok.fenrir.api.model.VKApiPoll
+import dev.ragnarok.fenrir.api.model.VKApiPost
+import dev.ragnarok.fenrir.api.model.VKApiPrivacy
+import dev.ragnarok.fenrir.api.model.VKApiShortLink
+import dev.ragnarok.fenrir.api.model.VKApiSticker
+import dev.ragnarok.fenrir.api.model.VKApiStory
+import dev.ragnarok.fenrir.api.model.VKApiTopic
+import dev.ragnarok.fenrir.api.model.VKApiUser
+import dev.ragnarok.fenrir.api.model.VKApiVideo
+import dev.ragnarok.fenrir.api.model.VKApiWallReply
+import dev.ragnarok.fenrir.api.model.VKApiWikiPage
 import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import dev.ragnarok.fenrir.api.model.longpoll.AddMessageUpdate
 import dev.ragnarok.fenrir.api.model.response.FavePageResponse
@@ -11,9 +55,63 @@ import dev.ragnarok.fenrir.crypt.MessageType
 import dev.ragnarok.fenrir.db.model.entity.PostDboEntity
 import dev.ragnarok.fenrir.domain.mappers.MapUtil.calculateConversationAcl
 import dev.ragnarok.fenrir.domain.mappers.MapUtil.mapAll
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Article
+import dev.ragnarok.fenrir.model.Attachments
+import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.model.AudioArtist
 import dev.ragnarok.fenrir.model.AudioArtist.AudioArtistImage
+import dev.ragnarok.fenrir.model.AudioPlaylist
+import dev.ragnarok.fenrir.model.Call
+import dev.ragnarok.fenrir.model.Chat
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.Conversation
+import dev.ragnarok.fenrir.model.CryptStatus
+import dev.ragnarok.fenrir.model.Dialog
+import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.model.Document.VideoPreview
+import dev.ragnarok.fenrir.model.Event
+import dev.ragnarok.fenrir.model.FaveLink
+import dev.ragnarok.fenrir.model.FavePage
+import dev.ragnarok.fenrir.model.FavePageType
+import dev.ragnarok.fenrir.model.FriendList
+import dev.ragnarok.fenrir.model.Geo
+import dev.ragnarok.fenrir.model.Gift
+import dev.ragnarok.fenrir.model.GiftItem
+import dev.ragnarok.fenrir.model.Graffiti
+import dev.ragnarok.fenrir.model.GroupChats
+import dev.ragnarok.fenrir.model.IOwnersBundle
+import dev.ragnarok.fenrir.model.Keyboard
+import dev.ragnarok.fenrir.model.Link
+import dev.ragnarok.fenrir.model.Market
+import dev.ragnarok.fenrir.model.MarketAlbum
+import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.MessageStatus
+import dev.ragnarok.fenrir.model.Narratives
+import dev.ragnarok.fenrir.model.News
+import dev.ragnarok.fenrir.model.NotSupported
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.OwnerType
+import dev.ragnarok.fenrir.model.Peer
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.PhotoSizes
+import dev.ragnarok.fenrir.model.PhotoTags
+import dev.ragnarok.fenrir.model.Poll
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.PostSource
+import dev.ragnarok.fenrir.model.Privacy
+import dev.ragnarok.fenrir.model.ShortLink
+import dev.ragnarok.fenrir.model.SimplePrivacy
+import dev.ragnarok.fenrir.model.Sticker
+import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.Topic
+import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.model.VoiceMessage
+import dev.ragnarok.fenrir.model.WallReply
+import dev.ragnarok.fenrir.model.WikiPage
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.requireNonNull
@@ -657,6 +755,30 @@ object Dto2Model {
         return url
     }
 
+    fun buildPollBackgroundGradient(background: VKApiPoll.Background?): Poll.PollBackground? {
+        if (background == null || background.type != "gradient") {
+            return null
+        }
+        val list = ArrayList<Poll.PollBackgroundPoint>()
+        for (i in background.points.orEmpty()) {
+            if (i.color.nonNullNoEmpty()) {
+                try {
+                    list.add(
+                        Poll.PollBackgroundPoint().setColor(Color.parseColor("#" + i.color))
+                            .setPosition(i.position)
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    continue
+                }
+            }
+        }
+        if (list.isEmpty()) {
+            return null
+        }
+        return Poll.PollBackground(background.id).setName(background.name)
+            .setAngle(background.angle).setPoints(list)
+    }
 
     fun transform(dto: VKApiPoll): Poll {
         val answers: MutableList<Poll.Answer> = ArrayList(safeCountOf(dto.answers))
@@ -687,6 +809,7 @@ object Dto2Model {
             .setEndDate(dto.end_date)
             .setMultiple(dto.multiple)
             .setPhoto(buildPollPhoto(dto.photo))
+            .setBackground(buildPollBackgroundGradient(dto.background))
     }
 
 

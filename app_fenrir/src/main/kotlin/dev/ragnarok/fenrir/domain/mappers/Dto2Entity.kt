@@ -1,10 +1,62 @@
 package dev.ragnarok.fenrir.domain.mappers
 
-import dev.ragnarok.fenrir.api.model.*
+import android.graphics.Color
+import dev.ragnarok.fenrir.api.model.PhotoSizeDto
+import dev.ragnarok.fenrir.api.model.VKApiArticle
+import dev.ragnarok.fenrir.api.model.VKApiAttachments
+import dev.ragnarok.fenrir.api.model.VKApiAudio
+import dev.ragnarok.fenrir.api.model.VKApiAudioArtist
+import dev.ragnarok.fenrir.api.model.VKApiAudioMessage
+import dev.ragnarok.fenrir.api.model.VKApiAudioPlaylist
+import dev.ragnarok.fenrir.api.model.VKApiCall
+import dev.ragnarok.fenrir.api.model.VKApiCareer
+import dev.ragnarok.fenrir.api.model.VKApiCity
+import dev.ragnarok.fenrir.api.model.VKApiComment
+import dev.ragnarok.fenrir.api.model.VKApiCommunity
+import dev.ragnarok.fenrir.api.model.VKApiConversation
 import dev.ragnarok.fenrir.api.model.VKApiConversation.CurrentKeyboard
+import dev.ragnarok.fenrir.api.model.VKApiCountry
+import dev.ragnarok.fenrir.api.model.VKApiDialog
+import dev.ragnarok.fenrir.api.model.VKApiDoc
+import dev.ragnarok.fenrir.api.model.VKApiEvent
+import dev.ragnarok.fenrir.api.model.VKApiGeo
+import dev.ragnarok.fenrir.api.model.VKApiGiftItem
+import dev.ragnarok.fenrir.api.model.VKApiGraffiti
+import dev.ragnarok.fenrir.api.model.VKApiLink
+import dev.ragnarok.fenrir.api.model.VKApiMarket
+import dev.ragnarok.fenrir.api.model.VKApiMarketAlbum
+import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.VKApiMilitary
+import dev.ragnarok.fenrir.api.model.VKApiNews
+import dev.ragnarok.fenrir.api.model.VKApiNotSupported
+import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
+import dev.ragnarok.fenrir.api.model.VKApiPoll
+import dev.ragnarok.fenrir.api.model.VKApiPost
+import dev.ragnarok.fenrir.api.model.VKApiPrivacy
+import dev.ragnarok.fenrir.api.model.VKApiSchool
+import dev.ragnarok.fenrir.api.model.VKApiSticker
 import dev.ragnarok.fenrir.api.model.VKApiSticker.VKApiAnimation
+import dev.ragnarok.fenrir.api.model.VKApiStickerSet
 import dev.ragnarok.fenrir.api.model.VKApiStickerSet.Product
-import dev.ragnarok.fenrir.api.model.feedback.*
+import dev.ragnarok.fenrir.api.model.VKApiStory
+import dev.ragnarok.fenrir.api.model.VKApiTopic
+import dev.ragnarok.fenrir.api.model.VKApiUniversity
+import dev.ragnarok.fenrir.api.model.VKApiUser
+import dev.ragnarok.fenrir.api.model.VKApiVideo
+import dev.ragnarok.fenrir.api.model.VKApiVideoAlbum
+import dev.ragnarok.fenrir.api.model.VKApiWallReply
+import dev.ragnarok.fenrir.api.model.VKApiWikiPage
+import dev.ragnarok.fenrir.api.model.feedback.VKApiBaseFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiCommentFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiCopyFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiLikeCommentFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiLikeFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiMentionCommentFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiMentionWallFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiReplyCommentFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiUsersFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiWallFeedback
 import dev.ragnarok.fenrir.api.model.interfaces.Commentable
 import dev.ragnarok.fenrir.api.model.interfaces.Likeable
 import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
@@ -12,15 +64,72 @@ import dev.ragnarok.fenrir.api.model.response.FavePageResponse
 import dev.ragnarok.fenrir.crypt.CryptHelper.analizeMessageBody
 import dev.ragnarok.fenrir.crypt.MessageType
 import dev.ragnarok.fenrir.db.model.IdPairEntity
-import dev.ragnarok.fenrir.db.model.entity.*
+import dev.ragnarok.fenrir.db.model.entity.ArticleDboEntity
+import dev.ragnarok.fenrir.db.model.entity.AudioArtistDboEntity
 import dev.ragnarok.fenrir.db.model.entity.AudioArtistDboEntity.AudioArtistImageEntity
+import dev.ragnarok.fenrir.db.model.entity.AudioDboEntity
+import dev.ragnarok.fenrir.db.model.entity.AudioMessageDboEntity
+import dev.ragnarok.fenrir.db.model.entity.AudioPlaylistDboEntity
+import dev.ragnarok.fenrir.db.model.entity.CallDboEntity
+import dev.ragnarok.fenrir.db.model.entity.CareerEntity
+import dev.ragnarok.fenrir.db.model.entity.CityEntity
+import dev.ragnarok.fenrir.db.model.entity.CommentEntity
+import dev.ragnarok.fenrir.db.model.entity.CommunityDetailsEntity
+import dev.ragnarok.fenrir.db.model.entity.CommunityEntity
+import dev.ragnarok.fenrir.db.model.entity.CopiesEntity
+import dev.ragnarok.fenrir.db.model.entity.CountryDboEntity
+import dev.ragnarok.fenrir.db.model.entity.DboEntity
+import dev.ragnarok.fenrir.db.model.entity.DialogDboEntity
+import dev.ragnarok.fenrir.db.model.entity.DocumentDboEntity
 import dev.ragnarok.fenrir.db.model.entity.DocumentDboEntity.GraffitiDbo
 import dev.ragnarok.fenrir.db.model.entity.DocumentDboEntity.VideoPreviewDbo
+import dev.ragnarok.fenrir.db.model.entity.EventDboEntity
+import dev.ragnarok.fenrir.db.model.entity.FavePageEntity
+import dev.ragnarok.fenrir.db.model.entity.GeoDboEntity
+import dev.ragnarok.fenrir.db.model.entity.GiftItemDboEntity
+import dev.ragnarok.fenrir.db.model.entity.GraffitiDboEntity
+import dev.ragnarok.fenrir.db.model.entity.KeyboardEntity
 import dev.ragnarok.fenrir.db.model.entity.KeyboardEntity.ButtonEntity
+import dev.ragnarok.fenrir.db.model.entity.LinkDboEntity
+import dev.ragnarok.fenrir.db.model.entity.MarketAlbumDboEntity
+import dev.ragnarok.fenrir.db.model.entity.MarketDboEntity
+import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
+import dev.ragnarok.fenrir.db.model.entity.MilitaryEntity
+import dev.ragnarok.fenrir.db.model.entity.NewsDboEntity
+import dev.ragnarok.fenrir.db.model.entity.NotSupportedDboEntity
+import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
+import dev.ragnarok.fenrir.db.model.entity.PageDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PhotoAlbumDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PhotoDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PhotoSizeEntity
+import dev.ragnarok.fenrir.db.model.entity.PollDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PostDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PostDboEntity.SourceDbo
+import dev.ragnarok.fenrir.db.model.entity.PrivacyEntity
+import dev.ragnarok.fenrir.db.model.entity.SchoolEntity
+import dev.ragnarok.fenrir.db.model.entity.SimpleDialogEntity
+import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity.AnimationEntity
+import dev.ragnarok.fenrir.db.model.entity.StickerSetEntity
+import dev.ragnarok.fenrir.db.model.entity.StoryDboEntity
+import dev.ragnarok.fenrir.db.model.entity.TopicDboEntity
+import dev.ragnarok.fenrir.db.model.entity.UniversityEntity
+import dev.ragnarok.fenrir.db.model.entity.UserDetailsEntity
 import dev.ragnarok.fenrir.db.model.entity.UserDetailsEntity.RelativeEntity
-import dev.ragnarok.fenrir.db.model.entity.feedback.*
+import dev.ragnarok.fenrir.db.model.entity.UserEntity
+import dev.ragnarok.fenrir.db.model.entity.VideoAlbumDboEntity
+import dev.ragnarok.fenrir.db.model.entity.VideoDboEntity
+import dev.ragnarok.fenrir.db.model.entity.WallReplyDboEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.CopyEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.FeedbackEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.LikeCommentEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.LikeEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.MentionCommentEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.MentionEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.NewCommentEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.PostFeedbackEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.ReplyCommentEntity
+import dev.ragnarok.fenrir.db.model.entity.feedback.UsersEntity
 import dev.ragnarok.fenrir.domain.mappers.MapUtil.calculateConversationAcl
 import dev.ragnarok.fenrir.domain.mappers.MapUtil.mapAll
 import dev.ragnarok.fenrir.model.CommentedType
@@ -1026,6 +1135,36 @@ object Dto2Entity {
         return url
     }
 
+    private fun buildPollBackgroundGradient(background: VKApiPoll.Background?): PollDboEntity.BackgroundEntity? {
+        if (background == null || background.type != "gradient") {
+            return null
+        }
+        val list = ArrayList<PollDboEntity.BackgroundPointEntity>()
+        for (i in background.points.orEmpty()) {
+            if (i.color.nonNullNoEmpty()) {
+                try {
+                    val pp = PollDboEntity.BackgroundPointEntity(
+                        Color.parseColor("#" + i.color),
+                        i.position
+                    )
+                    list.add(pp)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    continue
+                }
+            }
+        }
+        if (list.isEmpty()) {
+            return null
+        }
+        return PollDboEntity.BackgroundEntity(
+            background.id,
+            background.angle,
+            background.name,
+            list
+        )
+    }
+
     private fun buildPollEntity(dto: VKApiPoll): PollDboEntity {
         return PollDboEntity().set(dto.id, dto.owner_id)
             .setAnonymous(dto.anonymous)
@@ -1050,6 +1189,7 @@ object Dto2Entity {
             .setEndDate(dto.end_date)
             .setMultiple(dto.multiple)
             .setPhoto(buildPollPhoto(dto.photo))
+            .setBackground(buildPollBackgroundGradient(dto.background))
     }
 
 

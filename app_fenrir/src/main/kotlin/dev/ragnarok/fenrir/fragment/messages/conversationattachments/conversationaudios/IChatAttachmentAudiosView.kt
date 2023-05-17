@@ -1,0 +1,6 @@
+package dev.ragnarok.fenrir.fragment.messages.conversationattachments.conversationaudios
+
+import dev.ragnarok.fenrir.fragment.messages.conversationattachments.abschatattachments.IBaseChatAttachmentsView
+import dev.ragnarok.fenrir.model.Audio
+
+interface IChatAttachmentAudiosView : IBaseChatAttachmentsView<Audio>

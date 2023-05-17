@@ -23,7 +23,7 @@ import dev.ragnarok.fenrir.fragment.base.BaseFragment
 import dev.ragnarok.fenrir.fragment.localserver.videoslocalserver.VideosLocalServerFragment
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.VideoSearchCriteria
-import dev.ragnarok.fenrir.fragment.videoalbums.VideoAlbumsFragment
+import dev.ragnarok.fenrir.fragment.videos.videoalbums.VideoAlbumsFragment
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleTabSearchPlace

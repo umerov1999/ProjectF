@@ -36,14 +36,14 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
 
     fun setupPrimaryButtonAsEditing(canSave: Boolean)
     fun setupPrimaryButtonAsRecording()
-    fun setupPrimaryButtonAsRegular(canSend: Boolean, canStartRecoring: Boolean)
+    fun setupPrimaryButtonAsRegular(canSend: Boolean, canStartRecording: Boolean)
 
     fun displayPinnedMessage(pinned: Message?, canChange: Boolean)
     fun hideInputView()
 
     fun goToMessageAttachmentsEditor(
         accountId: Long, messageOwnerId: Long, destination: UploadDestination,
-        body: String?, attachments: ModelsBundle?
+        body: String?, attachments: ModelsBundle?, isGroupChat: Boolean
     )
 
     fun showErrorSendDialog(message: Message)
@@ -54,10 +54,10 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
         canChangeTitle: Boolean,
         canShowMembers: Boolean,
         encryptionStatusVisible: Boolean,
-        encryprionEnabled: Boolean,
+        encryptionEnabled: Boolean,
         encryptionPlusEnabled: Boolean,
         keyExchangeVisible: Boolean,
-        HronoVisible: Boolean,
+        chronoVisible: Boolean,
         ProfileVisible: Boolean,
         InviteLink: Boolean
     )
@@ -74,13 +74,13 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
     fun showChatTitleChangeDialog(initialValue: String?)
     fun showUserWall(accountId: Long, peerId: Long)
     fun forwardMessagesToAnotherConversation(messages: ArrayList<Message>, accountId: Long)
-    fun diplayForwardTypeSelectDialog(messages: ArrayList<Message>)
+    fun displayForwardTypeSelectDialog(messages: ArrayList<Message>)
     fun setEmptyTextVisible(visible: Boolean)
     fun setupRecordPauseButton(available: Boolean, isPlaying: Boolean)
-    fun displayIniciateKeyExchangeQuestion(@KeyLocationPolicy keyStoragePolicy: Int)
+    fun displayInitiateKeyExchangeQuestion(@KeyLocationPolicy keyStoragePolicy: Int)
     fun showEncryptionKeysPolicyChooseDialog(requestCode: Int)
     fun showEncryptionDisclaimerDialog(requestCode: Int)
-    fun showEditAttachmentsDialog(attachments: MutableList<AttachmentEntry>)
+    fun showEditAttachmentsDialog(attachments: MutableList<AttachmentEntry>, isGroupChat: Boolean)
 
     fun displayEditingMessage(message: Message?)
 
@@ -110,8 +110,10 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
         peer: Peer
     )
 
-    fun convert_to_keyboard(keyboard: Keyboard?)
+    fun convertToKeyboard(keyboard: Keyboard?)
 
     fun updateStickers(items: List<Sticker>)
     fun copyToClipBoard(link: String)
+
+    fun openPollCreationWindow(accountId: Long, ownerId: Long)
 }

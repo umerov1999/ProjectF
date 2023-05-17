@@ -26,7 +26,7 @@
 /* External Class Implementation                                        */
 /************************************************************************/
 
-Picture::Picture() : pImpl(new Impl)
+Picture::Picture() : pImpl(new Impl(this))
 {
     Paint::pImpl->id = TVG_CLASS_ID_PICTURE;
     Paint::pImpl->method(new PaintMethod<Picture::Impl>(pImpl));
@@ -64,12 +64,6 @@ Result Picture::load(const char* data, uint32_t size, const string& mimeType, bo
     if (!data || size <= 0) return Result::InvalidArguments;
 
     return pImpl->load(data, size, mimeType, copy);
-}
-
-
-TVG_DEPRECATED Result Picture::load(const char* data, uint32_t size, bool copy) noexcept
-{
-    return load(data, size, "", copy);
 }
 
 
@@ -116,7 +110,7 @@ const uint32_t* Picture::data(uint32_t* w, uint32_t* h) const noexcept
         if (w) *w = 0;
         if (h) *h = 0;
     }
-    if (pImpl->surface) return pImpl->surface->buffer;
+    if (pImpl->surface) return pImpl->surface->buf32;
     else return nullptr;
 }
 

@@ -8,7 +8,7 @@ interface IPollView : IMvpView, IErrorView {
     fun displayQuestion(title: String?)
     fun displayPhoto(photo_url: String?)
     fun displayType(anonymous: Boolean)
-    fun displayCreationTime(unixtime: Long)
+    fun displayCreationTime(unixTime: Long)
     fun displayVoteCount(count: Int)
     fun displayVotesList(
         answers: MutableList<Poll.Answer>?,
@@ -19,6 +19,7 @@ interface IPollView : IMvpView, IErrorView {
 
     fun displayLoading(loading: Boolean)
     fun setupButton(voted: Boolean)
+    fun setupGradientBackground(background: Poll.PollBackground?)
 
     fun openVoters(
         accountId: Long,

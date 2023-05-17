@@ -15,9 +15,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.fave.FaveTabsFragment
+import dev.ragnarok.fenrir.fragment.photos.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
-import dev.ragnarok.fenrir.fragment.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.types.*
 import dev.ragnarok.fenrir.link.types.FaveLink

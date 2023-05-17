@@ -637,7 +637,7 @@ class DialogsPresenter(
         val isHide = Settings.get().security().isHiddenDialog(dialog.getOwnerObjectId())
         contextView.setCanDelete(true)
         contextView.setCanRead(!isHiddenCurrent && !dialog.isLastMessageOut && dialog.lastMessageId != dialog.inRead)
-        contextView.setCanAddToHomescreen(dialogsOwnerId > 0 && !isHide)
+        contextView.setCanAddToHomeScreen(dialogsOwnerId > 0 && !isHide)
         contextView.setCanAddToShortcuts(dialogsOwnerId > 0 && !isHide)
         contextView.setCanConfigNotifications(dialogsOwnerId > 0)
         contextView.setPinned(dialog.major_id > 0)

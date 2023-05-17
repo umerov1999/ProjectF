@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.fragment.base
 
 import android.graphics.Color
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import dev.ragnarok.fenrir.Includes.provideApplicationContext
@@ -11,8 +12,10 @@ import dev.ragnarok.fenrir.fragment.base.compat.AbsMvpDialogFragment
 import dev.ragnarok.fenrir.fragment.base.core.AbsPresenter
 import dev.ragnarok.fenrir.fragment.base.core.IErrorView
 import dev.ragnarok.fenrir.fragment.base.core.IMvpView
+import dev.ragnarok.fenrir.fragment.base.core.IProgressView
 import dev.ragnarok.fenrir.fragment.base.core.IToastView
 import dev.ragnarok.fenrir.service.ErrorLocalizer
+import dev.ragnarok.fenrir.util.spots.SpotsDialog
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
@@ -20,8 +23,8 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 abstract class BaseMvpDialogFragment<P : AbsPresenter<V>, V : IMvpView> :
-    AbsMvpDialogFragment<P, V>(), IMvpView, IErrorView, IToastView {
-
+    AbsMvpDialogFragment<P, V>(), IMvpView, IProgressView, IErrorView, IToastView {
+    private var mLoadingProgressDialog: AlertDialog? = null
     override fun showError(errorText: String?) {
         if (isAdded) {
             customToast.showToastError(errorText)
@@ -67,6 +70,24 @@ abstract class BaseMvpDialogFragment<P : AbsPresenter<V>, V : IMvpView> :
                 }
                 snack.show()
             } ?: showError(ErrorLocalizer.localizeThrowable(provideApplicationContext(), throwable))
+        }
+    }
+
+    override fun displayProgressDialog(
+        @StringRes title: Int,
+        @StringRes message: Int,
+        cancelable: Boolean
+    ) {
+        dismissProgressDialog()
+        mLoadingProgressDialog = SpotsDialog.Builder().setContext(requireActivity())
+            .setMessage(getString(title) + ": " + getString(message)).setCancelable(cancelable)
+            .build()
+        mLoadingProgressDialog?.show()
+    }
+
+    override fun dismissProgressDialog() {
+        if (mLoadingProgressDialog?.isShowing == true) {
+            mLoadingProgressDialog?.cancel()
         }
     }
 

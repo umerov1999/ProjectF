@@ -43,11 +43,12 @@ import dev.ragnarok.fenrir.dialog.LandscapeExpandBottomSheetDialog
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
+import dev.ragnarok.fenrir.fragment.messages.chat.sheet.AttachmentsBottomSheetAdapter
+import dev.ragnarok.fenrir.fragment.messages.chat.sheet.MessageAttachmentsFragment
 import dev.ragnarok.fenrir.fragment.messages.chatusersdomain.ChatUsersDomainFragment
+import dev.ragnarok.fenrir.fragment.poll.createpoll.CreatePollDialogFragment
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.MessageSearchCriteria
-import dev.ragnarok.fenrir.fragment.sheet.AttachmentsBottomSheetAdapter
-import dev.ragnarok.fenrir.fragment.sheet.MessageAttachmentsFragment
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.link.internal.TopicLink
 import dev.ragnarok.fenrir.listener.*
@@ -203,6 +204,13 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parentFragmentManager.setFragmentResultListener(
+            CreatePollDialogFragment.REQUEST_CREATE_POLL_EDIT,
+            this
+        ) { _: String?, result: Bundle ->
+            val poll: Poll = result.getParcelableCompat("poll") ?: return@setFragmentResultListener
+            presenter?.fireEditAttachmentsSelected(arrayListOf(poll))
+        }
+        parentFragmentManager.setFragmentResultListener(
             MessageAttachmentsFragment.MESSAGE_CLOSE_ONLY,
             this
         ) { _, _ -> presenter?.fireSendClickFromAttachments() }
@@ -230,7 +238,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
         toolbar = root.findViewById(R.id.toolbar)
         toolbar?.inflateMenu(R.menu.menu_chat)
-        toolbar?.menu?.let { PrepareOptionsMenu(it) }
+        toolbar?.menu?.let { prepareOptionsMenu(it) }
         toolbar?.setOnMenuItemClickListener { item: MenuItem ->
             optionsMenuItemSelected(item)
         }
@@ -360,7 +368,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         return root
     }
 
-    override fun convert_to_keyboard(keyboard: Keyboard?) {
+    override fun convertToKeyboard(keyboard: Keyboard?) {
         keyboard ?: return
         inputViewController?.updateBotKeyboard(keyboard, !Utils.isHiddenCurrent)
     }
@@ -712,8 +720,8 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         inputViewController?.switchModeToRecording()
     }
 
-    override fun setupPrimaryButtonAsRegular(canSend: Boolean, canStartRecoring: Boolean) {
-        inputViewController?.switchModeToNormal(canSend, canStartRecoring)
+    override fun setupPrimaryButtonAsRegular(canSend: Boolean, canStartRecording: Boolean) {
+        inputViewController?.switchModeToNormal(canSend, canStartRecording)
     }
 
     override fun requestRecordPermissions() {
@@ -1075,13 +1083,14 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
     override fun goToMessageAttachmentsEditor(
         accountId: Long, messageOwnerId: Long, destination: UploadDestination,
-        body: String?, attachments: ModelsBundle?
+        body: String?, attachments: ModelsBundle?, isGroupChat: Boolean
     ) {
         val fragment = MessageAttachmentsFragment.newInstance(
             accountId,
             messageOwnerId,
             destination.id,
-            attachments
+            attachments,
+            isGroupChat
         )
         fragment.show(parentFragmentManager, "message-attachments")
     }
@@ -1150,6 +1159,11 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         openRequestAudioVideoDoc.launch(intent)
     }
 
+    override fun openPollCreationWindow(accountId: Long, ownerId: Long) {
+        CreatePollDialogFragment.newInstance(accountId, ownerId, true)
+            .show(parentFragmentManager, "poll_edit")
+    }
+
     internal fun onEditCameraClick() {
         if (AppPerms.hasCameraPermission(requireContext())) {
             presenter?.fireEditCameraClick()
@@ -1159,6 +1173,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             else
                 requestCameraEditPermission.launch()
         }
+    }
+
+    internal fun onCompressSettingsClick() {
+        presenter?.fireCompressSettings(requireActivity())
     }
 
     override fun startCamera(fileUri: Uri) {
@@ -1204,7 +1222,8 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     private class EditAttachmentsHolder(
         rootView: View,
         fragment: ChatFragment,
-        attachments: MutableList<AttachmentEntry>
+        attachments: MutableList<AttachmentEntry>,
+        isGroupChat: Boolean
     ) : AttachmentsBottomSheetAdapter.ActionListener, View.OnClickListener {
         override fun onClick(v: View) {
             when (v.id) {
@@ -1214,6 +1233,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 R.id.buttonAudio -> reference.get()?.presenter?.onEditAddAudioClick()
                 R.id.buttonDoc -> reference.get()?.presenter?.onEditAddDocClick()
                 R.id.buttonCamera -> reference.get()?.onEditCameraClick()
+                R.id.button_photo_settings -> reference.get()?.onCompressSettingsClick()
             }
         }
 
@@ -1245,6 +1265,15 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             rootView.findViewById<View>(R.id.buttonDoc).setOnClickListener(this)
             rootView.findViewById<View>(R.id.buttonCamera).setOnClickListener(this)
             rootView.findViewById<View>(R.id.buttonSave).setOnClickListener(this)
+            rootView.findViewById<View>(R.id.button_photo_settings).setOnClickListener(this)
+
+            rootView.findViewById<View>(R.id.button_photo_settings).visibility =
+                if (Settings.get()
+                        .other().isChange_upload_size || isGroupChat
+                ) View.VISIBLE else View.GONE
+
+            rootView.findViewById<ImageView>(R.id.button_photo_settings)
+                .setImageResource(if (isGroupChat) R.drawable.chart_bar else R.drawable.photo_sizes)
 
             checkEmptyViewVisibility()
         }
@@ -1304,11 +1333,14 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     private var editAttachmentsHolder: EditAttachmentsHolder? = null
     private var editAttachmentsDialog: Dialog? = null
 
-    override fun showEditAttachmentsDialog(attachments: MutableList<AttachmentEntry>) {
+    override fun showEditAttachmentsDialog(
+        attachments: MutableList<AttachmentEntry>,
+        isGroupChat: Boolean
+    ) {
         val view = View.inflate(requireActivity(), R.layout.bottom_sheet_attachments_edit, null)
 
         val reference = WeakReference(this)
-        editAttachmentsHolder = EditAttachmentsHolder(view, this, attachments)
+        editAttachmentsHolder = EditAttachmentsHolder(view, this, attachments, isGroupChat)
         editAttachmentsDialog = LandscapeExpandBottomSheetDialog(requireActivity())
             .apply {
                 setContentView(view)
@@ -1343,10 +1375,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         canChangeTitle: Boolean,
         canShowMembers: Boolean,
         encryptionStatusVisible: Boolean,
-        encryprionEnabled: Boolean,
+        encryptionEnabled: Boolean,
         encryptionPlusEnabled: Boolean,
         keyExchangeVisible: Boolean,
-        HronoVisible: Boolean,
+        chronoVisible: Boolean,
         ProfileVisible: Boolean,
         InviteLink: Boolean
     ) {
@@ -1355,16 +1387,16 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             put(CHANGE_CHAT_TITLE_VISIBLE, canChangeTitle)
             put(CHAT_MEMBERS_VISIBLE, canShowMembers)
             put(ENCRYPTION_STATUS_VISIBLE, encryptionStatusVisible)
-            put(ENCRYPTION_ENABLED, encryprionEnabled)
+            put(ENCRYPTION_ENABLED, encryptionEnabled)
             put(ENCRYPTION_PLUS_ENABLED, encryptionPlusEnabled)
             put(KEY_EXCHANGE_VISIBLE, keyExchangeVisible)
-            put(HRONO_VISIBLE, HronoVisible)
+            put(CHRONO_VISIBLE, chronoVisible)
             put(PROFILE_VISIBLE, ProfileVisible)
             put(CAN_GENERATE_INVITE_LINK, InviteLink)
         }
 
         try {
-            PrepareOptionsMenu(toolbar?.menu ?: return)
+            prepareOptionsMenu(toolbar?.menu ?: return)
         } catch (ignored: Exception) {
 
         }
@@ -1480,7 +1512,8 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             FindAttachmentType.TYPE_DOC,
             FindAttachmentType.TYPE_AUDIO,
             FindAttachmentType.TYPE_LINK,
-            FindAttachmentType.TYPE_POST
+            FindAttachmentType.TYPE_POST,
+            FindAttachmentType.TYPE_MULTI
         )
 
         val menus = ModalBottomSheetDialogFragment.Builder().apply {
@@ -1490,6 +1523,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             add(OptionRequest(3, getString(R.string.music), R.drawable.song, true))
             add(OptionRequest(4, getString(R.string.links), R.drawable.web, true))
             add(OptionRequest(5, getString(R.string.posts), R.drawable.pencil, true))
+            add(OptionRequest(6, getString(R.string.search), R.drawable.magnify, true))
         }
 
         menus.show(childFragmentManager, "attachments_select",
@@ -1592,7 +1626,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         )
     }
 
-    override fun diplayForwardTypeSelectDialog(messages: ArrayList<Message>) {
+    override fun displayForwardTypeSelectDialog(messages: ArrayList<Message>) {
         val items = arrayOf(getString(R.string.here), getString(R.string.to_another_dialogue))
 
         val listener = DialogInterface.OnClickListener { _, which ->
@@ -1633,7 +1667,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         inputViewController?.setupRecordPauseButton(available, isPlaying)
     }
 
-    override fun displayIniciateKeyExchangeQuestion(@KeyLocationPolicy keyStoragePolicy: Int) {
+    override fun displayInitiateKeyExchangeQuestion(@KeyLocationPolicy keyStoragePolicy: Int) {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.key_exchange)
             .setMessage(R.string.you_dont_have_encryption_keys_stored_initiate_key_exchange)
@@ -1692,7 +1726,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     }
 
     @SuppressLint("ResourceType")
-    fun PrepareOptionsMenu(menu: Menu) {
+    fun prepareOptionsMenu(menu: Menu) {
         menu.run {
             findItem(R.id.action_leave_chat).isVisible =
                 optionMenuSettings.get(LEAVE_CHAT_VISIBLE, false)
@@ -1702,8 +1736,8 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 optionMenuSettings.get(CHAT_MEMBERS_VISIBLE, false)
             findItem(R.id.action_key_exchange).isVisible =
                 optionMenuSettings.get(KEY_EXCHANGE_VISIBLE, false)
-            findItem(R.id.change_hrono_history).isVisible =
-                optionMenuSettings.get(HRONO_VISIBLE, false)
+            findItem(R.id.change_chrono_history).isVisible =
+                optionMenuSettings.get(CHRONO_VISIBLE, false)
             findItem(R.id.show_profile).isVisible = optionMenuSettings.get(PROFILE_VISIBLE, false)
             findItem(R.id.action_invite_link).isVisible =
                 optionMenuSettings.get(CAN_GENERATE_INVITE_LINK, false)
@@ -1811,7 +1845,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 return true
             }
 
-            R.id.change_hrono_history -> {
+            R.id.change_chrono_history -> {
                 recyclerView?.scrollToPosition(0)
                 presenter?.invertChronology()
                 presenter?.fireRefreshClick()
@@ -2114,7 +2148,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         private const val ENCRYPTION_ENABLED = 5
         private const val ENCRYPTION_PLUS_ENABLED = 6
         private const val KEY_EXCHANGE_VISIBLE = 7
-        private const val HRONO_VISIBLE = 8
+        private const val CHRONO_VISIBLE = 8
         private const val PROFILE_VISIBLE = 9
         private const val CAN_GENERATE_INVITE_LINK = 10
     }

@@ -95,6 +95,30 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
+
+        parentFragmentManager.setFragmentResultListener(
+            CommentCreateFragment.REQUEST_CREATE_COMMENT,
+            this
+        ) { _: String?, result: Bundle ->
+            val body = result.getString(Extra.BODY)
+            lazyPresenter {
+                fireEditBodyResult(body)
+            }
+        }
+
+        parentFragmentManager.setFragmentResultListener(
+            CommentEditFragment.REQUEST_COMMENT_EDIT,
+            this
+        ) { _: String?, result: Bundle ->
+            val comment1: Comment? = result.getParcelableCompat(
+                Extra.COMMENT
+            )
+            if (comment1 != null) {
+                lazyPresenter {
+                    fireCommentEditResult(comment1)
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -266,12 +290,6 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         draftCommentBody: String?
     ) {
         getCommentCreatePlace(accountId, draftCommentId, sourceOwnerId, draftCommentBody)
-            .setFragmentListener(CommentCreateFragment.REQUEST_CREATE_COMMENT) { _: String?, result: Bundle ->
-                val body = result.getString(Extra.BODY)
-                lazyPresenter {
-                    fireEditBodyResult(body)
-                }
-            }
             .tryOpenWith(requireActivity())
     }
 
@@ -296,16 +314,6 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
 
     override fun goToCommentEdit(accountId: Long, comment: Comment, commemtId: Int?) {
         getEditCommentPlace(accountId, comment, commemtId)
-            .setFragmentListener(CommentEditFragment.REQUEST_COMMENT_EDIT) { _: String?, result: Bundle ->
-                val comment1: Comment? = result.getParcelableCompat(
-                    Extra.COMMENT
-                )
-                if (comment1 != null) {
-                    lazyPresenter {
-                        fireCommentEditResult(comment1)
-                    }
-                }
-            }
             .tryOpenWith(requireActivity())
     }
 

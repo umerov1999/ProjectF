@@ -25,7 +25,7 @@ class ParcelableModelWrapper : Parcelable {
                     return arrayOfNulls(size)
                 }
             }
-        private val TYPES: ArrayMap<Int, (parcel: Parcel) -> AbsModel?> = ArrayMap(43)
+        private val TYPES: ArrayMap<Int, (parcel: Parcel) -> AbsModel?> = ArrayMap(45)
 
         fun wrap(model: AbsModel): ParcelableModelWrapper {
             return ParcelableModelWrapper(model)
@@ -110,6 +110,10 @@ class ParcelableModelWrapper : Parcelable {
             TYPES[AbsModelType.MODEL_POLL] = { it.readTypedObjectCompat(Poll.CREATOR) }
             TYPES[AbsModelType.MODEL_POLL_ANSWER] =
                 { it.readTypedObjectCompat(Poll.Answer.CREATOR) }
+            TYPES[AbsModelType.MODEL_POLL_BACKGROUND] =
+                { it.readTypedObjectCompat(Poll.PollBackground.CREATOR) }
+            TYPES[AbsModelType.MODEL_POLL_BACKGROUND_POINT] =
+                { it.readTypedObjectCompat(Poll.PollBackgroundPoint.CREATOR) }
             TYPES[AbsModelType.MODEL_POST] = { it.readTypedObjectCompat(Post.CREATOR) }
             TYPES[AbsModelType.MODEL_SHORT_LINK] = { it.readTypedObjectCompat(ShortLink.CREATOR) }
             TYPES[AbsModelType.MODEL_STICKER] = { it.readTypedObjectCompat(Sticker.CREATOR) }

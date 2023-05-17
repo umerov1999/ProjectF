@@ -10,6 +10,8 @@ interface IPollInteractor {
         question: String?,
         anon: Boolean,
         multiple: Boolean,
+        disableUnvote: Boolean,
+        backgroundId: Int?,
         ownerId: Long,
         options: List<String>
     ): Single<Poll>
@@ -26,4 +28,6 @@ interface IPollInteractor {
         offset: Int?,
         count: Int?
     ): Single<List<User>>
+
+    fun getBackgrounds(accountId: Long): Single<List<Poll.PollBackground>>
 }

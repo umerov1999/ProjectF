@@ -529,6 +529,7 @@ object NotificationHelper {
             .setSmallIcon(R.drawable.client_round)
             .setContentText(text)
             .setContentTitle(title)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
             .setAutoCancel(true)
         builder.priority = NotificationCompat.PRIORITY_HIGH
         if (!url.isNullOrEmpty()) {

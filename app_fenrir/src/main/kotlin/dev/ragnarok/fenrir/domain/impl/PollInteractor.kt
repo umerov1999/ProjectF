@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.domain.impl
 
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.domain.IPollInteractor
+import dev.ragnarok.fenrir.domain.mappers.Dto2Model
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformUsers
 import dev.ragnarok.fenrir.model.Poll
@@ -14,12 +15,14 @@ class PollInteractor(private val networker: INetworker) : IPollInteractor {
         question: String?,
         anon: Boolean,
         multiple: Boolean,
+        disableUnvote: Boolean,
+        backgroundId: Int?,
         ownerId: Long,
         options: List<String>
     ): Single<Poll> {
         return networker.vkDefault(accountId)
             .polls()
-            .create(question, anon, multiple, ownerId, options)
+            .create(question, anon, multiple, disableUnvote, backgroundId, ownerId, options)
             .map { transform(it) }
     }
 
@@ -48,6 +51,23 @@ class PollInteractor(private val networker: INetworker) : IPollInteractor {
                     poll.id,
                     poll.isBoard
                 )
+            }
+    }
+
+    override fun getBackgrounds(accountId: Long): Single<List<Poll.PollBackground>> {
+        return networker.vkDefault(accountId)
+            .polls()
+            .getBackgrounds()
+            .flatMap {
+                val tmpList = ArrayList<Poll.PollBackground>(it.size + 1)
+                tmpList.add(Poll.PollBackground(-1).setName("default"))
+                for (i in it) {
+                    val s = Dto2Model.buildPollBackgroundGradient(i)
+                    if (s != null) {
+                        tmpList.add(s)
+                    }
+                }
+                Single.just(tmpList)
             }
     }
 

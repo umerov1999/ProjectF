@@ -63,8 +63,8 @@
         android:title="@string/short_link" />
 
     <item
-        android:id="@+id/change_hrono_history"
-        android:title="@string/change_hrono_history" />
+        android:id="@+id/change_chrono_history"
+        android:title="@string/change_chrono_history" />
 
     <item
         android:id="@+id/action_attachments_in_conversation"

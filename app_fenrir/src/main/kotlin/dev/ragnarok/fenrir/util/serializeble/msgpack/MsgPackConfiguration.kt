@@ -35,7 +35,12 @@ data class MsgPackConfiguration(
      * Useful when only parts of data are of interest
      * false by default
      */
-    val ignoreUnknownKeys: Boolean = true
+    val ignoreUnknownKeys: Boolean = true,
+    /**
+     * Encode enum values as Ints corresponding to their ordinal values
+     * false by default
+     */
+    val ordinalEnums: Boolean = false
 ) {
     companion object {
         val default: MsgPackConfiguration = MsgPackConfiguration()

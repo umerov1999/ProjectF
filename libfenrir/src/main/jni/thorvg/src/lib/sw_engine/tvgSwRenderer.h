@@ -47,13 +47,14 @@ public:
     RenderRegion region(RenderData data) override;
     RenderRegion viewport() override;
     bool viewport(const RenderRegion& vp) override;
+    ColorSpace colorSpace() override;
 
     bool clear() override;
     bool sync() override;
-    bool target(uint32_t* buffer, uint32_t stride, uint32_t w, uint32_t h, ColorSpace cs);
+    bool target(pixel_t* data, uint32_t stride, uint32_t w, uint32_t h, ColorSpace cs);
     bool mempool(bool shared);
 
-    Compositor* target(const RenderRegion& region) override;
+    Compositor* target(const RenderRegion& region, ColorSpace cs) override;
     bool beginComposite(Compositor* cmp, CompositeMethod method, uint32_t opacity) override;
     bool endComposite(Compositor* cmp) override;
     void clearCompositors();

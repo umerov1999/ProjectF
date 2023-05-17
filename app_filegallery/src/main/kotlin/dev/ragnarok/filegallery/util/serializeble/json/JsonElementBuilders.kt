@@ -147,6 +147,15 @@ class JsonArrayBuilder @PublishedApi internal constructor() {
         return true
     }
 
+    /**
+     * Adds the given JSON [elements] to a resulting JSON array.
+     *
+     * @return `true` if the list was changed as the result of the operation.
+     */
+    @ExperimentalSerializationApi
+    fun addAll(elements: Collection<JsonElement>): Boolean =
+        content.addAll(elements)
+
     @PublishedApi
     internal fun build(): JsonArray = JsonArray(content)
 }
@@ -197,6 +206,35 @@ fun JsonArrayBuilder.addJsonObject(builderAction: JsonObjectBuilder.() -> Unit):
 fun JsonArrayBuilder.addJsonArray(builderAction: JsonArrayBuilder.() -> Unit): Boolean =
     add(buildJsonArray(builderAction))
 
+/**
+ * Adds the given string [values] to a resulting JSON array.
+ *
+ * @return `true` if the list was changed as the result of the operation.
+ */
+@JvmName("addAllStrings")
+@ExperimentalSerializationApi
+fun JsonArrayBuilder.addAll(values: Collection<String?>): Boolean =
+    addAll(values.map(::JsonPrimitive))
+
+/**
+ * Adds the given boolean [values] to a resulting JSON array.
+ *
+ * @return `true` if the list was changed as the result of the operation.
+ */
+@JvmName("addAllBooleans")
+@ExperimentalSerializationApi
+fun JsonArrayBuilder.addAll(values: Collection<Boolean?>): Boolean =
+    addAll(values.map(::JsonPrimitive))
+
+/**
+ * Adds the given numeric [values] to a resulting JSON array.
+ *
+ * @return `true` if the list was changed as the result of the operation.
+ */
+@JvmName("addAllNumbers")
+@ExperimentalSerializationApi
+fun JsonArrayBuilder.addAll(values: Collection<Number?>): Boolean =
+    addAll(values.map(::JsonPrimitive))
 
 @DslMarker
 internal annotation class JsonDslMarker

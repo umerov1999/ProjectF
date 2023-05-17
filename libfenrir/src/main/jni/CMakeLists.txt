@@ -72,7 +72,7 @@ add_library(thorvg STATIC
         thorvg/src/loaders/svg/tvgXmlParser.cpp)
 
 target_compile_options(thorvg PRIVATE
-        -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter ${SYM_VISIBILITY})
+        -DTVG_STATIC=1 -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter ${SYM_VISIBILITY})
 target_include_directories(thorvg PRIVATE
         thorvg/inc
         thorvg/src/lib

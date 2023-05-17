@@ -19,6 +19,8 @@ internal class PollsApi(accountId: Long, provider: IServiceProvider) :
         question: String?,
         isAnonymous: Boolean?,
         isMultiple: Boolean?,
+        disableUnvote: Boolean,
+        backgroundId: Int?,
         ownerId: Long,
         addAnswers: List<String>
     ): Single<VKApiPoll> {
@@ -29,6 +31,8 @@ internal class PollsApi(accountId: Long, provider: IServiceProvider) :
                         question,
                         integerFromBoolean(isAnonymous),
                         integerFromBoolean(isMultiple),
+                        integerFromBoolean(disableUnvote),
+                        backgroundId,
                         ownerId,
                         Json.encodeToString(ListSerializer(String.serializer()), addAnswers)
                     )
@@ -68,6 +72,14 @@ internal class PollsApi(accountId: Long, provider: IServiceProvider) :
         return provideService(IPollsService(), TokenType.USER)
             .flatMap { service ->
                 service.getById(ownerId, integerFromBoolean(isBoard), pollId)
+                    .map(extractResponseWithErrorHandling())
+            }
+    }
+
+    override fun getBackgrounds(): Single<List<VKApiPoll.Background>> {
+        return provideService(IPollsService(), TokenType.USER)
+            .flatMap { service ->
+                service.getBackgrounds()
                     .map(extractResponseWithErrorHandling())
             }
     }

@@ -30,6 +30,8 @@ import androidx.annotation.IntDef
     AbsModelType.MODEL_PHOTO_ALBUM,
     AbsModelType.MODEL_POLL,
     AbsModelType.MODEL_POLL_ANSWER,
+    AbsModelType.MODEL_POLL_BACKGROUND,
+    AbsModelType.MODEL_POLL_BACKGROUND_POINT,
     AbsModelType.MODEL_POST,
     AbsModelType.MODEL_SHORT_LINK,
     AbsModelType.MODEL_STICKER,
@@ -79,21 +81,23 @@ annotation class AbsModelType {
         const val MODEL_PHOTO_ALBUM = 24
         const val MODEL_POLL = 25
         const val MODEL_POLL_ANSWER = 26
-        const val MODEL_POST = 27
-        const val MODEL_SHORT_LINK = 28
-        const val MODEL_STICKER = 29
-        const val MODEL_STORY = 30
-        const val MODEL_TOPIC = 31
-        const val MODEL_USER = 32
-        const val MODEL_VIDEO = 33
-        const val MODEL_VIDEO_ALBUM = 34
-        const val MODEL_VOICE_MESSAGE = 35
-        const val MODEL_WALL_REPLY = 36
-        const val MODEL_WIKI_PAGE = 37
-        const val MODEL_AUDIO_CATALOG_V2_ARTIST = 38
-        const val MODEL_UPLOAD = 39
-        const val MODEL_GEO = 40
-        const val MODEL_CATALOG_V2_BLOCK = 41
-        const val MODEL_CATALOG_V2_LINK = 42
+        const val MODEL_POLL_BACKGROUND = 27
+        const val MODEL_POLL_BACKGROUND_POINT = 28
+        const val MODEL_POST = 29
+        const val MODEL_SHORT_LINK = 30
+        const val MODEL_STICKER = 31
+        const val MODEL_STORY = 32
+        const val MODEL_TOPIC = 33
+        const val MODEL_USER = 34
+        const val MODEL_VIDEO = 35
+        const val MODEL_VIDEO_ALBUM = 36
+        const val MODEL_VOICE_MESSAGE = 37
+        const val MODEL_WALL_REPLY = 38
+        const val MODEL_WIKI_PAGE = 39
+        const val MODEL_AUDIO_CATALOG_V2_ARTIST = 40
+        const val MODEL_UPLOAD = 41
+        const val MODEL_GEO = 42
+        const val MODEL_CATALOG_V2_BLOCK = 43
+        const val MODEL_CATALOG_V2_LINK = 44
     }
 }

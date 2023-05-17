@@ -6,10 +6,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.fragment.abswall.WallAdapter
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.WallSearchCriteria
+import dev.ragnarok.fenrir.fragment.wall.WallAdapter
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.util.Utils.is600dp

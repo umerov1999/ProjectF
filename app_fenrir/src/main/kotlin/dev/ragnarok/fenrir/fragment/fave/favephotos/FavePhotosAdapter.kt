@@ -24,6 +24,9 @@ class FavePhotosAdapter(context: Context, private var data: List<Photo>) :
     private var photoSelectionListener: PhotoSelectionListener? = null
     private var photoConversationListener: PhotoConversationListener? = null
     private var currentPosition = -1
+    var attachedRecyclerView: RecyclerView? = null
+        private set
+
     fun updateCurrentPosition(currentPosition: Int) {
         this.currentPosition = currentPosition
         notifyDataSetChanged()
@@ -102,6 +105,16 @@ class FavePhotosAdapter(context: Context, private var data: List<Photo>) :
 
     interface PhotoConversationListener {
         fun onGoPhotoConversation(photo: Photo)
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        attachedRecyclerView = recyclerView
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        attachedRecyclerView = null
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

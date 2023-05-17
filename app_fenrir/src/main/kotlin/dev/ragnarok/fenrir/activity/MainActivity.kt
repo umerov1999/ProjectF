@@ -48,7 +48,6 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.impl.CountersInteractor
 import dev.ragnarok.fenrir.fragment.*
 import dev.ragnarok.fenrir.fragment.PreferencesFragment.Companion.cleanCache
-import dev.ragnarok.fenrir.fragment.abswall.AbsWallFragment
 import dev.ragnarok.fenrir.fragment.attachments.commentcreate.CommentCreateFragment
 import dev.ragnarok.fenrir.fragment.attachments.commentedit.CommentEditFragment
 import dev.ragnarok.fenrir.fragment.attachments.postcreate.PostCreateFragment
@@ -64,37 +63,35 @@ import dev.ragnarok.fenrir.fragment.audio.catalog_v2.lists.CatalogV2ListFragment
 import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.CatalogV2SectionFragment
 import dev.ragnarok.fenrir.fragment.comments.CommentsFragment
 import dev.ragnarok.fenrir.fragment.communities.CommunitiesFragment
-import dev.ragnarok.fenrir.fragment.communitycontrol.CommunityControlFragment
-import dev.ragnarok.fenrir.fragment.communitycontrol.communityban.CommunityBanEditFragment
-import dev.ragnarok.fenrir.fragment.communitycontrol.communityinfocontacts.CommunityInfoContactsFragment
-import dev.ragnarok.fenrir.fragment.communitycontrol.communityinfolinks.CommunityInfoLinksFragment
-import dev.ragnarok.fenrir.fragment.communitycontrol.communitymanageredit.CommunityManagerEditFragment
-import dev.ragnarok.fenrir.fragment.communitycontrol.communitymembers.CommunityMembersFragment
-import dev.ragnarok.fenrir.fragment.conversation.ConversationFragmentFactory
-import dev.ragnarok.fenrir.fragment.createphotoalbum.CreatePhotoAlbumFragment
-import dev.ragnarok.fenrir.fragment.createpin.CreatePinFragment
-import dev.ragnarok.fenrir.fragment.createpoll.CreatePollFragment
+import dev.ragnarok.fenrir.fragment.communities.communitycontrol.CommunityControlFragment
+import dev.ragnarok.fenrir.fragment.communities.communitycontrol.communityban.CommunityBanEditFragment
+import dev.ragnarok.fenrir.fragment.communities.communitycontrol.communityinfocontacts.CommunityInfoContactsFragment
+import dev.ragnarok.fenrir.fragment.communities.communitycontrol.communityinfolinks.CommunityInfoLinksFragment
+import dev.ragnarok.fenrir.fragment.communities.communitycontrol.communitymanageredit.CommunityManagerEditFragment
+import dev.ragnarok.fenrir.fragment.communities.communitycontrol.communitymembers.CommunityMembersFragment
+import dev.ragnarok.fenrir.fragment.communities.groupchats.GroupChatsFragment
 import dev.ragnarok.fenrir.fragment.docs.DocsFragment
 import dev.ragnarok.fenrir.fragment.docs.DocsListPresenter
 import dev.ragnarok.fenrir.fragment.fave.FaveTabsFragment
 import dev.ragnarok.fenrir.fragment.feed.FeedFragment
+import dev.ragnarok.fenrir.fragment.feed.feedbanned.FeedBannedFragment
+import dev.ragnarok.fenrir.fragment.feed.newsfeedcomments.NewsfeedCommentsFragment
+import dev.ragnarok.fenrir.fragment.feed.newsfeedmentions.NewsfeedMentionsFragment
 import dev.ragnarok.fenrir.fragment.feedback.FeedbackFragment
-import dev.ragnarok.fenrir.fragment.feedbackvkofficial.FeedbackVKOfficialFragment
-import dev.ragnarok.fenrir.fragment.feedbanned.FeedBannedFragment
+import dev.ragnarok.fenrir.fragment.feedback.feedbackvkofficial.FeedbackVKOfficialFragment
 import dev.ragnarok.fenrir.fragment.friends.birthday.BirthDayFragment
 import dev.ragnarok.fenrir.fragment.friends.friendsbyphones.FriendsByPhonesFragment
 import dev.ragnarok.fenrir.fragment.friends.friendstabs.FriendsTabsFragment
 import dev.ragnarok.fenrir.fragment.gifts.GiftsFragment
-import dev.ragnarok.fenrir.fragment.groupchats.GroupChatsFragment
 import dev.ragnarok.fenrir.fragment.likes.LikesFragment
 import dev.ragnarok.fenrir.fragment.likes.storiesview.StoriesViewFragment
 import dev.ragnarok.fenrir.fragment.localserver.filemanagerremote.FileManagerRemoteFragment
 import dev.ragnarok.fenrir.fragment.localserver.photoslocalserver.PhotosLocalServerFragment
 import dev.ragnarok.fenrir.fragment.logs.LogsFragment
-import dev.ragnarok.fenrir.fragment.marketview.MarketViewFragment
 import dev.ragnarok.fenrir.fragment.messages.chat.ChatFragment
 import dev.ragnarok.fenrir.fragment.messages.chat.ChatFragment.Companion.newInstance
 import dev.ragnarok.fenrir.fragment.messages.chatmembers.ChatMembersFragment
+import dev.ragnarok.fenrir.fragment.messages.conversationattachments.ConversationFragmentFactory
 import dev.ragnarok.fenrir.fragment.messages.dialogs.DialogsFragment
 import dev.ragnarok.fenrir.fragment.messages.fwds.FwdsFragment
 import dev.ragnarok.fenrir.fragment.messages.importantmessages.ImportantMessagesFragment
@@ -103,13 +100,19 @@ import dev.ragnarok.fenrir.fragment.messages.notreadmessages.NotReadMessagesFrag
 import dev.ragnarok.fenrir.fragment.narratives.NarrativesFragment
 import dev.ragnarok.fenrir.fragment.navigationedit.DrawerEditFragment
 import dev.ragnarok.fenrir.fragment.navigationedit.SideDrawerEditFragment
-import dev.ragnarok.fenrir.fragment.newsfeedcomments.NewsfeedCommentsFragment
-import dev.ragnarok.fenrir.fragment.newsfeedmentions.NewsfeedMentionsFragment
 import dev.ragnarok.fenrir.fragment.ownerarticles.OwnerArticlesFragment
-import dev.ragnarok.fenrir.fragment.photoallcomment.PhotoAllCommentFragment
+import dev.ragnarok.fenrir.fragment.photos.createphotoalbum.CreatePhotoAlbumFragment
+import dev.ragnarok.fenrir.fragment.photos.photoallcomment.PhotoAllCommentFragment
+import dev.ragnarok.fenrir.fragment.photos.vkphotoalbums.VKPhotoAlbumsFragment
+import dev.ragnarok.fenrir.fragment.photos.vkphotos.IVKPhotosView
+import dev.ragnarok.fenrir.fragment.photos.vkphotos.VKPhotosFragment
+import dev.ragnarok.fenrir.fragment.pin.createpin.CreatePinFragment
 import dev.ragnarok.fenrir.fragment.poll.PollFragment
-import dev.ragnarok.fenrir.fragment.productalbums.ProductAlbumsFragment
+import dev.ragnarok.fenrir.fragment.poll.createpoll.CreatePollFragment
+import dev.ragnarok.fenrir.fragment.poll.voters.VotersFragment
 import dev.ragnarok.fenrir.fragment.products.ProductsFragment
+import dev.ragnarok.fenrir.fragment.products.marketview.MarketViewFragment
+import dev.ragnarok.fenrir.fragment.products.productalbums.ProductAlbumsFragment
 import dev.ragnarok.fenrir.fragment.requestexecute.RequestExecuteFragment
 import dev.ragnarok.fenrir.fragment.search.AudioSearchTabsFragment
 import dev.ragnarok.fenrir.fragment.search.SearchTabsFragment
@@ -119,19 +122,16 @@ import dev.ragnarok.fenrir.fragment.shortedlinks.ShortedLinksFragment
 import dev.ragnarok.fenrir.fragment.theme.ThemeFragment
 import dev.ragnarok.fenrir.fragment.topics.TopicsFragment
 import dev.ragnarok.fenrir.fragment.userbanned.UserBannedFragment
-import dev.ragnarok.fenrir.fragment.userdetails.UserDetailsFragment.Companion.newInstance
-import dev.ragnarok.fenrir.fragment.videoalbumsbyvideo.VideoAlbumsByVideoFragment
-import dev.ragnarok.fenrir.fragment.videopreview.VideoPreviewFragment
 import dev.ragnarok.fenrir.fragment.videos.IVideosListView
 import dev.ragnarok.fenrir.fragment.videos.VideosFragment
 import dev.ragnarok.fenrir.fragment.videos.VideosTabsFragment
-import dev.ragnarok.fenrir.fragment.vkphotoalbums.VKPhotoAlbumsFragment
-import dev.ragnarok.fenrir.fragment.vkphotos.IVKPhotosView
-import dev.ragnarok.fenrir.fragment.vkphotos.VKPhotosFragment
-import dev.ragnarok.fenrir.fragment.voters.VotersFragment
-import dev.ragnarok.fenrir.fragment.wallattachments.WallAttachmentsFragmentFactory
-import dev.ragnarok.fenrir.fragment.wallattachments.wallsearchcommentsattachments.WallSearchCommentsAttachmentsFragment
-import dev.ragnarok.fenrir.fragment.wallpost.WallPostFragment
+import dev.ragnarok.fenrir.fragment.videos.videoalbumsbyvideo.VideoAlbumsByVideoFragment
+import dev.ragnarok.fenrir.fragment.videos.videopreview.VideoPreviewFragment
+import dev.ragnarok.fenrir.fragment.wall.AbsWallFragment
+import dev.ragnarok.fenrir.fragment.wall.userdetails.UserDetailsFragment.Companion.newInstance
+import dev.ragnarok.fenrir.fragment.wall.wallattachments.WallAttachmentsFragmentFactory
+import dev.ragnarok.fenrir.fragment.wall.wallattachments.wallsearchcommentsattachments.WallSearchCommentsAttachmentsFragment
+import dev.ragnarok.fenrir.fragment.wall.wallpost.WallPostFragment
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.listener.*
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
@@ -1404,11 +1404,8 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.EDIT_COMMENT -> {
                 val comment: Comment? = args.getParcelableCompat(Extra.COMMENT)
                 val accountId = args.getLong(Extra.ACCOUNT_ID)
-                val commemtId = args.getInt(Extra.COMMENT_ID)
-                val commentEditFragment =
-                    CommentEditFragment.newInstance(accountId, comment, commemtId)
-                place.applyFragmentListener(commentEditFragment, supportFragmentManager)
-                attachToFront(commentEditFragment)
+                val commentId = args.getInt(Extra.COMMENT_ID)
+                attachToFront(CommentEditFragment.newInstance(accountId, comment, commentId))
             }
 
             Place.EDIT_POST -> {
@@ -1570,9 +1567,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.UNREAD_MESSAGES -> attachToFront(NotReadMessagesFragment.newInstance(args))
             Place.SECURITY -> attachToFront(SecurityPreferencesFragment())
             Place.CREATE_POLL -> {
-                val createPollFragment = CreatePollFragment.newInstance(args)
-                place.applyFragmentListener(createPollFragment, supportFragmentManager)
-                attachToFront(createPollFragment)
+                attachToFront(CreatePollFragment.newInstance(args))
             }
 
             Place.COMMENT_CREATE -> openCommentCreatePlace(place)
@@ -1764,7 +1759,6 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             args.getLong(Extra.OWNER_ID),
             args.getString(Extra.BODY)
         )
-        place.applyFragmentListener(fragment, supportFragmentManager)
         attachToFront(fragment)
     }
 

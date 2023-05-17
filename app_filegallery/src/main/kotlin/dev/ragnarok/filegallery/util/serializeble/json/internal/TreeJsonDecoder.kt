@@ -202,9 +202,14 @@ private sealed class AbstractJsonTreeDecoder(
             ), json
         )
         else super.decodeTaggedInline(tag, inlineDescriptor)
+
+    override fun decodeInline(descriptor: SerialDescriptor): Decoder {
+        return if (currentTagOrNull != null) super.decodeInline(descriptor)
+        else JsonPrimitiveDecoder(json, value).decodeInline(descriptor)
+    }
 }
 
-private class JsonPrimitiveDecoder(json: Json, override val value: JsonPrimitive) :
+private class JsonPrimitiveDecoder(json: Json, override val value: JsonElement) :
     AbstractJsonTreeDecoder(json, value) {
 
     init {

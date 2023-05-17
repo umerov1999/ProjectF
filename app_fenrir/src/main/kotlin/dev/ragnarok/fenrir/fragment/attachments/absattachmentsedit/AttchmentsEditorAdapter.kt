@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.view.View
@@ -306,11 +307,12 @@ class AttchmentsEditorAdapter(
         holder.photoImageView.setOnClickListener(null)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun bindPoll(holder: ViewHolder, poll: Poll) {
         with()
             .load(R.drawable.background_gray)
             .into(holder.photoImageView)
-        holder.tvTitle.text = poll.question
+        holder.tvTitle.text = context.getString(R.string.poll) + " " + poll.question.orEmpty()
         holder.photoImageView.setOnClickListener(null)
     }
 

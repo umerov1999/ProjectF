@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.db.model.entity
 
+import androidx.annotation.ColorInt
 import androidx.annotation.Keep
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -35,6 +36,8 @@ class PollDboEntity : DboEntity() {
     var isBoard = false
         private set
     var photo: String? = null
+        private set
+    var background: BackgroundEntity? = null
         private set
 
     operator fun set(id: Int, ownerId: Long): PollDboEntity {
@@ -98,6 +101,11 @@ class PollDboEntity : DboEntity() {
         return this
     }
 
+    fun setBackground(background: BackgroundEntity?): PollDboEntity {
+        this.background = background
+        return this
+    }
+
     fun setVoteCount(voteCount: Int): PollDboEntity {
         this.voteCount = voteCount
         return this
@@ -122,6 +130,19 @@ class PollDboEntity : DboEntity() {
         isBoard = board
         return this
     }
+
+    @Keep
+    @Serializable
+    class BackgroundEntity(
+        var id: Int,
+        var angle: Int,
+        var name: String?,
+        var points: List<BackgroundPointEntity>
+    )
+
+    @Keep
+    @Serializable
+    class BackgroundPointEntity(@ColorInt var color: Int, var position: Float)
 
     @Keep
     @Serializable

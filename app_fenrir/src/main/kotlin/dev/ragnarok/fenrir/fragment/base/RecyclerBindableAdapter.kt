@@ -78,6 +78,10 @@ abstract class RecyclerBindableAdapter<T, VH : RecyclerView.ViewHolder>(private 
         notifyItemRangeChanged(positionStart, itemCount)
     }
 
+    fun notifyItemBindableRangeRemoved(position: Int, count: Int) {
+        notifyItemRangeRemoved(position + headersCount, count)
+    }
+
     fun notifyItemBindableRangeInserted(position: Int, count: Int) {
         notifyItemRangeInserted(position + headersCount, count)
     }

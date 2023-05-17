@@ -8,7 +8,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.Repository.owners
-import dev.ragnarok.fenrir.fragment.videopreview.MenuAdapter
+import dev.ragnarok.fenrir.fragment.videos.videopreview.MenuAdapter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Post

@@ -32,7 +32,7 @@ abstract class BaseMsgPackExtensionSerializer<T> : KSerializer<T> {
                 extension.extTypeId
             )
         }
-        encoder.encodeSerializableValue(serializer, serialize(value))
+        encoder.encodeSerializableValue(serializer, extension)
     }
 
     abstract fun deserialize(extension: MsgPackExtension): T

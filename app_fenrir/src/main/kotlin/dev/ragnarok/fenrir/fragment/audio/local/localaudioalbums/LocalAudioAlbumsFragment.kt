@@ -12,7 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpBottomSheetDialogFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
-import dev.ragnarok.fenrir.fragment.localimagealbums.LocalPhotoAlbumsAdapter
+import dev.ragnarok.fenrir.fragment.photos.localimagealbums.LocalPhotoAlbumsAdapter
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.LocalImageAlbum
 import dev.ragnarok.fenrir.picasso.Content_Local

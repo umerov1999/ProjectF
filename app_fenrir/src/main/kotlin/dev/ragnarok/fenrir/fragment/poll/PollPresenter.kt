@@ -87,6 +87,7 @@ class PollPresenter(accountId: Long, private var mPoll: Poll, savedInstanceState
 
     private fun resolvePhotoView() {
         view?.displayPhoto(mPoll.photo)
+        view?.setupGradientBackground(mPoll.background)
     }
 
     override fun onGuiCreated(viewHost: IPollView) {

@@ -28,6 +28,9 @@ class ProfileCoverDrawable(private val bitmap: Bitmap, private val targetAlpha: 
     }
 
     private fun printBitmap(canvas: Canvas) {
+        if (bounds.width() <= 0 || bounds.height() <= 0) {
+            return
+        }
         val pScale =
             determineImageScale(bounds.width(), bounds.height(), bitmap.width, bitmap.height)
         val px = bounds.width() * pScale

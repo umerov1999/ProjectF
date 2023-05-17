@@ -53,33 +53,58 @@ sealed class JsonPrimitive : JsonElement() {
     override fun toString(): String = content
 }
 
-/**
- * Creates [JsonPrimitive] from the given boolean.
- */
+/** Creates a [JsonPrimitive] from the given boolean. */
 fun JsonPrimitive(value: Boolean?): JsonPrimitive {
     if (value == null) return JsonNull
     return JsonLiteral(value, isString = false)
 }
 
-/**
- * Creates [JsonPrimitive] from the given number.
- */
+/** Creates a [JsonPrimitive] from the given number. */
 fun JsonPrimitive(value: Number?): JsonPrimitive {
     if (value == null) return JsonNull
     return JsonLiteral(value, isString = false)
 }
 
 /**
- * Creates [JsonPrimitive] from the given string.
+ * Creates a numeric [JsonPrimitive] from the given [UByte].
+ *
+ * The value will be encoded as a JSON number.
  */
+@ExperimentalSerializationApi
+fun JsonPrimitive(value: UByte): JsonPrimitive = JsonPrimitive(value.toULong())
+
+/**
+ * Creates a numeric [JsonPrimitive] from the given [UShort].
+ *
+ * The value will be encoded as a JSON number.
+ */
+@ExperimentalSerializationApi
+fun JsonPrimitive(value: UShort): JsonPrimitive = JsonPrimitive(value.toULong())
+
+/**
+ * Creates a numeric [JsonPrimitive] from the given [UInt].
+ *
+ * The value will be encoded as a JSON number.
+ */
+@ExperimentalSerializationApi
+fun JsonPrimitive(value: UInt): JsonPrimitive = JsonPrimitive(value.toULong())
+
+/**
+ * Creates a numeric [JsonPrimitive] from the given [ULong].
+ *
+ * The value will be encoded as a JSON number.
+ */
+@SuppressAnimalSniffer // Long.toUnsignedString(long)
+@ExperimentalSerializationApi
+fun JsonPrimitive(value: ULong): JsonPrimitive = JsonUnquotedLiteral(value.toString())
+
+/** Creates a [JsonPrimitive] from the given string. */
 fun JsonPrimitive(value: String?): JsonPrimitive {
     if (value == null) return JsonNull
     return JsonLiteral(value, isString = true)
 }
 
-/**
- * Creates [JsonNull].
- */
+/** Creates [JsonNull]. */
 @ExperimentalSerializationApi
 @Suppress("FunctionName", "UNUSED_PARAMETER") // allows to call `JsonPrimitive(null)`
 fun JsonPrimitive(value: Nothing?): JsonNull = JsonNull

@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.activity
 import android.content.Context
 import android.os.Bundle
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fragment.enterpin.EnterPinFragment
+import dev.ragnarok.fenrir.fragment.pin.enterpin.EnterPinFragment
 import dev.ragnarok.fenrir.util.Utils
 
 open class EnterPinActivity : NoMainActivity() {

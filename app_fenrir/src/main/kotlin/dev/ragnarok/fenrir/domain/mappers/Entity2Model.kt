@@ -824,6 +824,22 @@ object Entity2Model {
             .setVoteCount(entity.voteCount)
     }
 
+    fun map(entity: PollDboEntity.BackgroundPointEntity): Poll.PollBackgroundPoint {
+        return Poll.PollBackgroundPoint()
+            .setColor(entity.color)
+            .setPosition(entity.position)
+    }
+
+    fun map(entity: PollDboEntity.BackgroundEntity?): Poll.PollBackground? {
+        if (entity == null) {
+            return null
+        }
+        return Poll.PollBackground(entity.id)
+            .setAngle(entity.angle)
+            .setName(entity.name)
+            .setPoints(mapAll(entity.points, Entity2Model::map))
+    }
+
     private fun buildPollFromDbo(entity: PollDboEntity): Poll {
         return Poll(entity.id, entity.ownerId)
             .setAnonymous(entity.isAnonymous)
@@ -842,6 +858,7 @@ object Entity2Model {
             .setEndDate(entity.endDate)
             .setMultiple(entity.isMultiple)
             .setPhoto(entity.photo)
+            .setBackground(map(entity.background))
     }
 
     private fun buildLinkFromDbo(dbo: LinkDboEntity): Link {

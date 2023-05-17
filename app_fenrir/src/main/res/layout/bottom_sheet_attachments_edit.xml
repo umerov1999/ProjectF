@@ -50,6 +50,17 @@
         android:padding="8dp">
 
         <ImageView
+            android:id="@+id/button_photo_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@null"
+            android:padding="12dp"
+            android:src="@drawable/photo_sizes"
+            app:tint="?attr/colorSecondary" />
+
+        <ImageView
             android:id="@+id/buttonCamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -105,11 +116,11 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonSave"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="@string/save" />
+            android:layout_marginStart="8dp"
+            app:icon="@drawable/check" />
     </LinearLayout>
 
 </LinearLayout>

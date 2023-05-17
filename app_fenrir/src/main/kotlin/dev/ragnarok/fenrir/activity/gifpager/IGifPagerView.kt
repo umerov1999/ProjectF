@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.activity.gifpager
 
 import androidx.annotation.StringRes
-import dev.ragnarok.fenrir.fragment.absdocumentpreview.IBasicDocumentView
+import dev.ragnarok.fenrir.fragment.docs.absdocumentpreview.IBasicDocumentView
 import dev.ragnarok.fenrir.model.Document
 
 interface IGifPagerView : IBasicDocumentView {

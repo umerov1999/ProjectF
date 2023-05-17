@@ -64,39 +64,42 @@ class RoundCornerLinearView : LinearLayout {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        val widthTmp = width
+        val heightTmp = height
+        if (widthTmp <= 0 || heightTmp <= 0) {
+            return
+        }
         FILL_PAINT.color = color
         FILL_PAINT.shader = null
-        val width = width
-        val height = height
         PATH.reset()
         PATH.moveTo(0f, radius_top_left)
         PATH.arcTo(0f, 0f, 2 * radius_top_left, 2 * radius_top_left, 180f, 90f, false)
-        PATH.lineTo(width - radius_top_right, 0f)
+        PATH.lineTo(widthTmp - radius_top_right, 0f)
         PATH.arcTo(
-            width - 2 * radius_top_right,
+            widthTmp - 2 * radius_top_right,
             0f,
-            width.toFloat(),
+            widthTmp.toFloat(),
             2 * radius_top_right,
             270f,
             90f,
             false
         )
-        PATH.lineTo(width.toFloat(), height - radius_bottom_right)
+        PATH.lineTo(widthTmp.toFloat(), heightTmp - radius_bottom_right)
         PATH.arcTo(
-            width - 2 * radius_bottom_right,
-            height - 2 * radius_bottom_right,
-            width.toFloat(),
-            height.toFloat(),
+            widthTmp - 2 * radius_bottom_right,
+            heightTmp - 2 * radius_bottom_right,
+            widthTmp.toFloat(),
+            heightTmp.toFloat(),
             0f,
             90f,
             false
         )
-        PATH.lineTo(radius_bottom_left, height.toFloat())
+        PATH.lineTo(radius_bottom_left, heightTmp.toFloat())
         PATH.arcTo(
             0f,
-            height - 2 * radius_bottom_left,
+            heightTmp - 2 * radius_bottom_left,
             2 * radius_bottom_left,
-            height.toFloat(),
+            heightTmp.toFloat(),
             90f,
             90f,
             false
