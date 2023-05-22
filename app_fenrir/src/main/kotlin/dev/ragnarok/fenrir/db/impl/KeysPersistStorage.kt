@@ -5,7 +5,7 @@ import android.database.Cursor
 import android.provider.BaseColumns
 import dev.ragnarok.fenrir.crypt.AesKeyPair
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getKeysContentUriFor
-import dev.ragnarok.fenrir.db.column.KeyColumns
+import dev.ragnarok.fenrir.db.column.EncryptionKeysForMessagesColumns
 import dev.ragnarok.fenrir.db.interfaces.IKeysStorage
 import dev.ragnarok.fenrir.exception.DatabaseException
 import dev.ragnarok.fenrir.getInt
@@ -24,14 +24,14 @@ import io.reactivex.rxjava3.core.SingleEmitter
 internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), IKeysStorage {
     private fun map(cursor: Cursor): AesKeyPair {
         return AesKeyPair()
-            .setVersion(cursor.getInt(KeyColumns.VERSION))
-            .setPeerId(cursor.getLong(KeyColumns.PEER_ID))
-            .setSessionId(cursor.getLong(KeyColumns.SESSION_ID))
-            .setDate(cursor.getLong(KeyColumns.DATE))
-            .setStartMessageId(cursor.getInt(KeyColumns.START_SESSION_MESSAGE_ID))
-            .setEndMessageId(cursor.getInt(KeyColumns.END_SESSION_MESSAGE_ID))
-            .setHisAesKey(cursor.getString(KeyColumns.IN_KEY))
-            .setMyAesKey(cursor.getString(KeyColumns.OUT_KEY))
+            .setVersion(cursor.getInt(EncryptionKeysForMessagesColumns.VERSION))
+            .setPeerId(cursor.getLong(EncryptionKeysForMessagesColumns.PEER_ID))
+            .setSessionId(cursor.getLong(EncryptionKeysForMessagesColumns.SESSION_ID))
+            .setDate(cursor.getLong(EncryptionKeysForMessagesColumns.DATE))
+            .setStartMessageId(cursor.getInt(EncryptionKeysForMessagesColumns.START_SESSION_MESSAGE_ID))
+            .setEndMessageId(cursor.getInt(EncryptionKeysForMessagesColumns.END_SESSION_MESSAGE_ID))
+            .setHisAesKey(cursor.getString(EncryptionKeysForMessagesColumns.IN_KEY))
+            .setMyAesKey(cursor.getString(EncryptionKeysForMessagesColumns.OUT_KEY))
     }
 
     override fun saveKeyPair(pair: AesKeyPair): Completable {
@@ -43,14 +43,14 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
                 return@create
             }
             val cv = ContentValues()
-            cv.put(KeyColumns.VERSION, pair.version)
-            cv.put(KeyColumns.PEER_ID, pair.peerId)
-            cv.put(KeyColumns.SESSION_ID, pair.sessionId)
-            cv.put(KeyColumns.DATE, pair.date)
-            cv.put(KeyColumns.START_SESSION_MESSAGE_ID, pair.startMessageId)
-            cv.put(KeyColumns.END_SESSION_MESSAGE_ID, pair.endMessageId)
-            cv.put(KeyColumns.OUT_KEY, pair.myAesKey)
-            cv.put(KeyColumns.IN_KEY, pair.hisAesKey)
+            cv.put(EncryptionKeysForMessagesColumns.VERSION, pair.version)
+            cv.put(EncryptionKeysForMessagesColumns.PEER_ID, pair.peerId)
+            cv.put(EncryptionKeysForMessagesColumns.SESSION_ID, pair.sessionId)
+            cv.put(EncryptionKeysForMessagesColumns.DATE, pair.date)
+            cv.put(EncryptionKeysForMessagesColumns.START_SESSION_MESSAGE_ID, pair.startMessageId)
+            cv.put(EncryptionKeysForMessagesColumns.END_SESSION_MESSAGE_ID, pair.endMessageId)
+            cv.put(EncryptionKeysForMessagesColumns.OUT_KEY, pair.myAesKey)
+            cv.put(EncryptionKeysForMessagesColumns.IN_KEY, pair.hisAesKey)
             val uri = getKeysContentUriFor(pair.accountId)
             context.contentResolver.insert(uri, cv)
             e.onComplete()
@@ -82,7 +82,7 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
                 .query(
                     uri,
                     null,
-                    KeyColumns.PEER_ID + " = ?",
+                    EncryptionKeysForMessagesColumns.PEER_ID + " = ?",
                     arrayOf(peerId.toString()),
                     BaseColumns._ID
                 )
@@ -107,7 +107,7 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
                 .query(
                     uri,
                     null,
-                    KeyColumns.PEER_ID + " = ?",
+                    EncryptionKeysForMessagesColumns.PEER_ID + " = ?",
                     arrayOf(peerId.toString()),
                     BaseColumns._ID + " DESC LIMIT 1"
                 )
@@ -129,7 +129,7 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
                 .query(
                     uri,
                     null,
-                    KeyColumns.SESSION_ID + " = ?",
+                    EncryptionKeysForMessagesColumns.SESSION_ID + " = ?",
                     arrayOf(sessionId.toString()),
                     null
                 )

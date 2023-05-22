@@ -130,9 +130,15 @@ interface ISettings {
         fun isEnable_dirs_files_count(): Boolean
         fun get_last_audio_sync(): Long
         fun set_last_audio_sync(time: Long)
-        fun get_last_stickers_sync(accountId: Long): Long
-        fun del_last_stickers_sync(accountId: Long)
-        fun set_last_stickers_sync(accountId: Long, time: Long)
+        fun get_last_sticker_sets_sync(accountId: Long): Long
+        fun set_last_sticker_sets_sync(accountId: Long, time: Long)
+        fun get_last_sticker_sets_custom_sync(accountId: Long): Long
+        fun set_last_sticker_sets_custom_sync(accountId: Long, time: Long)
+        fun get_last_sticker_keywords_sync(accountId: Long): Long
+        fun set_last_sticker_keywords_sync(accountId: Long, time: Long)
+        fun del_last_sticker_sets_sync(accountId: Long)
+        fun del_last_sticker_sets_custom_sync(accountId: Long)
+        fun del_last_sticker_keywords_sync(accountId: Long)
         val isOngoing_player_notification: Boolean
         fun reloadOwnerChangesMonitor()
         fun isOwnerInChangesMonitor(ownerId: Long): Boolean

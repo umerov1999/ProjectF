@@ -8,8 +8,9 @@ import io.reactivex.rxjava3.core.Single
 
 interface IStickersStorage : IStorage {
     fun storeStickerSets(accountId: Long, sets: List<StickerSetEntity>): Completable
+    fun storeStickerSetsCustom(accountId: Long, sets: List<StickerSetEntity>): Completable
     fun storeKeyWords(accountId: Long, sets: List<StickersKeywordsEntity>): Completable
-    fun getPurchasedAndActive(accountId: Long): Single<List<StickerSetEntity>>
+    fun getStickerSets(accountId: Long): Single<List<StickerSetEntity>>
     fun getKeywordsStickers(accountId: Long, s: String?): Single<List<StickerDboEntity>>
     fun clearAccount(accountId: Long): Completable
 }

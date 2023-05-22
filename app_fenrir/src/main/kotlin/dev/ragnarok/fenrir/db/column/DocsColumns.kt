@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.db.column
 
 import android.provider.BaseColumns
 
-object DocColumns : BaseColumns {
+object DocsColumns : BaseColumns {
     const val TABLENAME = "docs"
     const val DOC_ID = "doc_id"
     const val OWNER_ID = "owner_id"

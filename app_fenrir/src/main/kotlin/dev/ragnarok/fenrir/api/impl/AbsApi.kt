@@ -233,6 +233,13 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                         .blockingGet()
                 }
             }
+            /*
+            response.executeErrors.nonNullNoEmpty {
+                it[0].requireNonNull { sit ->
+                    throw Exceptions.propagate(ApiException(sit))
+                }
+            }
+             */
             response.response ?: throw NullPointerException("VK return null response")
         }
     }
@@ -254,6 +261,13 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                         .blockingGet()
                 }
             }
+            /*
+            response.executeErrors.nonNullNoEmpty {
+                it[0].requireNonNull { sit ->
+                    throw Exceptions.propagate(ApiException(sit))
+                }
+            }
+             */
             Completable.complete()
         }
     }

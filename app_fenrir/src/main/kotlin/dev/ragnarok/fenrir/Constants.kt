@@ -6,8 +6,8 @@ object Constants {
     const val API_VERSION = "5.131"
     const val AUTH_VERSION = API_VERSION
 
-    const val DATABASE_FENRIR_VERSION = 27
-    const val DATABASE_TEMPORARY_VERSION = 5
+    const val DATABASE_FENRIR_VERSION = 28
+    const val DATABASE_TEMPORARY_VERSION = 6
     const val EXPORT_SETTINGS_FORMAT = 1
     const val forceDeveloperMode = BuildConfig.FORCE_DEVELOPER_MODE
 
@@ -17,8 +17,8 @@ object Constants {
     const val FILE_PROVIDER_AUTHORITY: String = BuildConfig.APPLICATION_ID + ".file_provider"
     const val VK_ANDROID_APP_VERSION_NAME = "8.15"
     const val VK_ANDROID_APP_VERSION_CODE = "15271"
-    const val KATE_APP_VERSION_NAME = "99 lite"
-    const val KATE_APP_VERSION_CODE = "535"
+    const val KATE_APP_VERSION_NAME = "100 lite"
+    const val KATE_APP_VERSION_CODE = "536"
     const val API_ID: Int = BuildConfig.VK_API_APP_ID
     const val SECRET: String = BuildConfig.VK_CLIENT_SECRET
     const val PHOTOS_PATH = "DCIM/Fenrir"

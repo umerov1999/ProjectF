@@ -7,7 +7,7 @@ import android.provider.BaseColumns
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getGroupsContentUriFor
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getTopicsContentUriFor
-import dev.ragnarok.fenrir.db.column.GroupColumns
+import dev.ragnarok.fenrir.db.column.GroupsColumns
 import dev.ragnarok.fenrir.db.column.TopicsColumns
 import dev.ragnarok.fenrir.db.impl.OwnersStorage.Companion.appendOwnersInsertOperations
 import dev.ragnarok.fenrir.db.interfaces.ITopicsStore
@@ -89,8 +89,8 @@ internal class TopicsStorage(base: AppStorages) : AbsStorage(base), ITopicsStore
                 )
             }
             val cv = ContentValues()
-            cv.put(GroupColumns.CAN_ADD_TOPICS, canAddTopic)
-            cv.put(GroupColumns.TOPICS_ORDER, defaultOrder)
+            cv.put(GroupsColumns.CAN_ADD_TOPICS, canAddTopic)
+            cv.put(GroupsColumns.TOPICS_ORDER, defaultOrder)
             operations.add(
                 ContentProviderOperation
                     .newUpdate(getGroupsContentUriFor(accountId))

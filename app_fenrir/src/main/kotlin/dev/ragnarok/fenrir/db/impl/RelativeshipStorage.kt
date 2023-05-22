@@ -8,8 +8,8 @@ import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getFriendListsContentUriFor
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getRelativeshipContentUriFor
 import dev.ragnarok.fenrir.db.column.FriendListsColumns
-import dev.ragnarok.fenrir.db.column.RelationshipColumns
-import dev.ragnarok.fenrir.db.column.RelationshipColumns.getCV
+import dev.ragnarok.fenrir.db.column.RelationshipsColumns
+import dev.ragnarok.fenrir.db.column.RelationshipsColumns.getCV
 import dev.ragnarok.fenrir.db.impl.OwnersStorage.Companion.appendCommunitiesInsertOperation
 import dev.ragnarok.fenrir.db.impl.OwnersStorage.Companion.appendUsersInsertOperation
 import dev.ragnarok.fenrir.db.interfaces.IRelativeshipStorage
@@ -69,7 +69,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
             accountId,
             users,
             objectId,
-            RelationshipColumns.TYPE_FRIEND,
+            RelationshipsColumns.TYPE_FRIEND,
             clearBeforeStore
         )
     }
@@ -104,7 +104,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
             accountId,
             users,
             objectId,
-            RelationshipColumns.TYPE_FOLLOWER,
+            RelationshipsColumns.TYPE_FOLLOWER,
             clearBeforeStore
         )
     }
@@ -119,7 +119,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
             accountId,
             users,
             objectId,
-            RelationshipColumns.TYPE_REQUESTS,
+            RelationshipsColumns.TYPE_REQUESTS,
             clearBeforeStore
         )
     }
@@ -134,30 +134,30 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
             accountId,
             users,
             objectId,
-            RelationshipColumns.TYPE_GROUP_MEMBER,
+            RelationshipsColumns.TYPE_GROUP_MEMBER,
             clearBeforeStore
         )
     }
 
     override fun getGroupMembers(accountId: Long, groupId: Long): Single<List<UserEntity>> {
-        return getUsersForType(accountId, groupId, RelationshipColumns.TYPE_GROUP_MEMBER)
+        return getUsersForType(accountId, groupId, RelationshipsColumns.TYPE_GROUP_MEMBER)
     }
 
     override fun getFriends(accountId: Long, objectId: Long): Single<List<UserEntity>> {
-        return getUsersForType(accountId, objectId, RelationshipColumns.TYPE_FRIEND)
+        return getUsersForType(accountId, objectId, RelationshipsColumns.TYPE_FRIEND)
     }
 
     override fun getFollowers(accountId: Long, objectId: Long): Single<List<UserEntity>> {
-        return getUsersForType(accountId, objectId, RelationshipColumns.TYPE_FOLLOWER)
+        return getUsersForType(accountId, objectId, RelationshipsColumns.TYPE_FOLLOWER)
     }
 
     override fun getRequests(accountId: Long): Single<List<UserEntity>> {
-        return getUsersForType(accountId, accountId, RelationshipColumns.TYPE_REQUESTS)
+        return getUsersForType(accountId, accountId, RelationshipsColumns.TYPE_REQUESTS)
     }
 
     override fun getCommunities(accountId: Long, ownerId: Long): Single<List<CommunityEntity>> {
         return Single.create { emitter: SingleEmitter<List<CommunityEntity>> ->
-            val cursor = getCursorForType(accountId, ownerId, RelationshipColumns.TYPE_MEMBER)
+            val cursor = getCursorForType(accountId, ownerId, RelationshipsColumns.TYPE_MEMBER)
             val dbos: MutableList<CommunityEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
@@ -186,14 +186,14 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
                     clearOperationFor(
                         accountId,
                         userId,
-                        RelationshipColumns.TYPE_MEMBER
+                        RelationshipsColumns.TYPE_MEMBER
                     )
                 )
             }
             for (dbo in communities) {
                 operations.add(
                     ContentProviderOperation.newInsert(uri)
-                        .withValues(getCV(userId, -dbo.id, RelationshipColumns.TYPE_MEMBER))
+                        .withValues(getCV(userId, -dbo.id, RelationshipsColumns.TYPE_MEMBER))
                         .build()
                 )
             }
@@ -206,7 +206,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
     private fun getCursorForType(accountId: Long, objectId: Long, relationType: Int): Cursor? {
         val uri = getRelativeshipContentUriFor(accountId)
         val where =
-            RelationshipColumns.FULL_TYPE + " = ? AND " + RelationshipColumns.OBJECT_ID + " = ?"
+            RelationshipsColumns.FULL_TYPE + " = ? AND " + RelationshipsColumns.OBJECT_ID + " = ?"
         val args = arrayOf(relationType.toString(), objectId.toString())
         return contentResolver.query(uri, null, where, args, null)
     }
@@ -256,7 +256,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
     ): ContentProviderOperation {
         val uri = getRelativeshipContentUriFor(accountId)
         val clearWhere =
-            RelationshipColumns.OBJECT_ID + " = ? AND " + RelationshipColumns.TYPE + " = ?"
+            RelationshipsColumns.OBJECT_ID + " = ? AND " + RelationshipsColumns.TYPE + " = ?"
         val clearWhereArgs = arrayOf(objectId.toString(), type.toString())
         return ContentProviderOperation
             .newDelete(uri)
@@ -266,51 +266,51 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
 
     companion object {
         internal fun mapCommunity(cursor: Cursor): CommunityEntity {
-            return CommunityEntity(cursor.getLong(RelationshipColumns.SUBJECT_ID))
-                .setName(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_GROUP_NAME))
-                .setScreenName(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_GROUP_SCREEN_NAME))
-                .setClosed(cursor.getInt(RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_CLOSED))
-                .setBlacklisted(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_BLACK_LISTED))
-                .setVerified(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_VERIFIED))
-                .setAdmin(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_ADMIN))
-                .setAdminLevel(cursor.getInt(RelationshipColumns.FOREIGN_SUBJECT_GROUP_ADMIN_LEVEL))
-                .setMember(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_MEMBER))
-                .setMemberStatus(cursor.getInt(RelationshipColumns.FOREIGN_SUBJECT_GROUP_MEMBER_STATUS))
-                .setMembersCount(cursor.getInt(RelationshipColumns.FOREIGN_SUBJECT_GROUP_MEMBERS_COUNT))
-                .setType(cursor.getInt(RelationshipColumns.FOREIGN_SUBJECT_GROUP_TYPE))
-                .setHasUnseenStories(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_GROUP_HAS_UNSEEN_STORIES))
-                .setPhoto50(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_GROUP_PHOTO_50))
-                .setPhoto100(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_GROUP_PHOTO_100))
-                .setPhoto200(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_GROUP_PHOTO_200))
+            return CommunityEntity(cursor.getLong(RelationshipsColumns.SUBJECT_ID))
+                .setName(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_NAME))
+                .setScreenName(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_SCREEN_NAME))
+                .setClosed(cursor.getInt(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_CLOSED))
+                .setBlacklisted(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_BLACK_LISTED))
+                .setVerified(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_VERIFIED))
+                .setAdmin(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_ADMIN))
+                .setAdminLevel(cursor.getInt(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_ADMIN_LEVEL))
+                .setMember(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_MEMBER))
+                .setMemberStatus(cursor.getInt(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_MEMBER_STATUS))
+                .setMembersCount(cursor.getInt(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_MEMBERS_COUNT))
+                .setType(cursor.getInt(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_TYPE))
+                .setHasUnseenStories(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_HAS_UNSEEN_STORIES))
+                .setPhoto50(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_PHOTO_50))
+                .setPhoto100(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_PHOTO_100))
+                .setPhoto200(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_GROUP_PHOTO_200))
         }
 
         internal fun mapDbo(cursor: Cursor): UserEntity {
             val gid =
-                abs(cursor.getLong(RelationshipColumns.SUBJECT_ID))
+                abs(cursor.getLong(RelationshipsColumns.SUBJECT_ID))
             return UserEntity(gid)
-                .setFirstName(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_USER_FIRST_NAME))
-                .setLastName(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_USER_LAST_NAME))
-                .setOnline(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_USER_ONLINE))
-                .setOnlineMobile(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_USER_ONLINE))
-                .setOnlineApp(cursor.getInt(RelationshipColumns.FOREIGN_SUBJECT_USER_ONLINE_APP))
-                .setPhoto50(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_50))
-                .setPhoto100(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_100))
-                .setPhoto200(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_200))
-                .setPhotoMax(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_MAX))
-                .setLastSeen(cursor.getLong(RelationshipColumns.FOREIGN_SUBJECT_USER_LAST_SEEN))
-                .setPlatform(cursor.getInt(RelationshipColumns.FOREIGN_SUBJECT_USER_PLATFORM))
-                .setStatus(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_USER_STATUS))
-                .setSex(cursor.getInt(RelationshipColumns.FOREIGN_SUBJECT_USER_SEX))
-                .setFriend(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_USER_IS_FRIEND))
-                .setFriendStatus(cursor.getInt(RelationshipColumns.FOREIGN_SUBJECT_USER_FRIEND_STATUS))
-                .setCanWritePrivateMessage(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_USER_WRITE_MESSAGE_STATUS))
-                .setBdate(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_USER_BDATE))
-                .setBlacklisted_by_me(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_USER_IS_USER_BLACK_LIST))
-                .setBlacklisted(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_USER_IS_BLACK_LISTED))
-                .setCan_access_closed(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_USER_IS_CAN_ACCESS_CLOSED))
-                .setVerified(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_USER_IS_VERIFIED))
-                .setMaiden_name(cursor.getString(RelationshipColumns.FOREIGN_SUBJECT_USER_MAIDEN_NAME))
-                .setHasUnseenStories(cursor.getBoolean(RelationshipColumns.FOREIGN_SUBJECT_USER_HAS_UNSEEN_STORIES))
+                .setFirstName(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_USER_FIRST_NAME))
+                .setLastName(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_USER_LAST_NAME))
+                .setOnline(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_USER_ONLINE))
+                .setOnlineMobile(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_USER_ONLINE))
+                .setOnlineApp(cursor.getInt(RelationshipsColumns.FOREIGN_SUBJECT_USER_ONLINE_APP))
+                .setPhoto50(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_50))
+                .setPhoto100(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_100))
+                .setPhoto200(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_200))
+                .setPhotoMax(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_MAX))
+                .setLastSeen(cursor.getLong(RelationshipsColumns.FOREIGN_SUBJECT_USER_LAST_SEEN))
+                .setPlatform(cursor.getInt(RelationshipsColumns.FOREIGN_SUBJECT_USER_PLATFORM))
+                .setStatus(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_USER_STATUS))
+                .setSex(cursor.getInt(RelationshipsColumns.FOREIGN_SUBJECT_USER_SEX))
+                .setFriend(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_FRIEND))
+                .setFriendStatus(cursor.getInt(RelationshipsColumns.FOREIGN_SUBJECT_USER_FRIEND_STATUS))
+                .setCanWritePrivateMessage(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_USER_WRITE_MESSAGE_STATUS))
+                .setBdate(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_USER_BDATE))
+                .setBlacklisted_by_me(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_USER_BLACK_LIST))
+                .setBlacklisted(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_BLACK_LISTED))
+                .setCan_access_closed(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_CAN_ACCESS_CLOSED))
+                .setVerified(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_VERIFIED))
+                .setMaiden_name(cursor.getString(RelationshipsColumns.FOREIGN_SUBJECT_USER_MAIDEN_NAME))
+                .setHasUnseenStories(cursor.getBoolean(RelationshipsColumns.FOREIGN_SUBJECT_USER_HAS_UNSEEN_STORIES))
         }
     }
 }

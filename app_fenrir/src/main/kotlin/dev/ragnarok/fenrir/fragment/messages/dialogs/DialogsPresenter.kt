@@ -37,7 +37,6 @@ import dev.ragnarok.fenrir.util.Utils.isHiddenAccount
 import dev.ragnarok.fenrir.util.Utils.isHiddenCurrent
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.needReloadDialogs
-import dev.ragnarok.fenrir.util.Utils.needReloadStickers
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -90,7 +89,7 @@ class DialogsPresenter(
         dialogs.clear()
         dialogs.addAll(data)
         safeNotifyDataSetChanged()
-        if (!isHiddenCurrent && needReloadStickers(accountId)) {
+        if (!isHiddenCurrent) {
             receiveStickers()
         }
     }
@@ -231,14 +230,41 @@ class DialogsPresenter(
             return
         }
         try {
-            InteractorFactory.createStickersInteractor()
-                .getAndStoreStickerSets(accountId)
-                .fromIOToMain()
-                .subscribe(dummy()) {
-                    if (Settings.get().other().isDeveloper_mode) {
-                        showError(it)
+            if (Utils.needReloadStickerSets(accountId)) {
+                InteractorFactory.createStickersInteractor()
+                    .reciveAndStoreStickerSets(accountId)
+                    .fromIOToMain()
+                    .subscribe(dummy()) {
+                        Settings.get().other().del_last_sticker_sets_sync(accountId)
+                        if (Settings.get().other().isDeveloper_mode) {
+                            showError(it)
+                        }
                     }
-                }
+            }
+            if (Utils.needReloadStickerSetsCustom(accountId)) {
+                InteractorFactory.createStickersInteractor()
+                    .reciveAndStoreCustomStickerSets(accountId)
+                    .fromIOToMain()
+                    .subscribe(dummy()) {
+                        Settings.get().other().del_last_sticker_sets_custom_sync(accountId)
+                        if (Settings.get().other().isDeveloper_mode) {
+                            showError(it)
+                        }
+                    }
+            }
+            if (Settings.get()
+                    .other().isHint_stickers && Utils.needReloadStickerKeywords(accountId)
+            ) {
+                InteractorFactory.createStickersInteractor()
+                    .reciveAndStoreKeywordsStickers(accountId)
+                    .fromIOToMain()
+                    .subscribe(dummy()) {
+                        Settings.get().other().del_last_sticker_keywords_sync(accountId)
+                        if (Settings.get().other().isDeveloper_mode) {
+                            showError(it)
+                        }
+                    }
+            }
         } catch (e: Exception) {
             if (Settings.get().other().isDeveloper_mode) {
                 showError(e)
@@ -254,7 +280,7 @@ class DialogsPresenter(
         resolveRefreshingView()
         view?.notifyHasAttachments(models != null)
         if (Settings.get().other().isNot_update_dialogs || isHiddenCurrent) {
-            if (!isHiddenCurrent && needReloadStickers(accountId)) {
+            if (!isHiddenCurrent) {
                 receiveStickers()
             }
             if (needReloadDialogs(accountId)) {

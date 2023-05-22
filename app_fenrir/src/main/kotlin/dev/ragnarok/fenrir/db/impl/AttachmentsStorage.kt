@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getMessagesAttachm
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getPostsAttachmentsContentUriFor
 import dev.ragnarok.fenrir.db.column.attachments.CommentsAttachmentsColumns
 import dev.ragnarok.fenrir.db.column.attachments.MessagesAttachmentsColumns
-import dev.ragnarok.fenrir.db.column.attachments.WallAttachmentsColumns
+import dev.ragnarok.fenrir.db.column.attachments.WallsAttachmentsColumns
 import dev.ragnarok.fenrir.db.interfaces.Cancelable
 import dev.ragnarok.fenrir.db.interfaces.IAttachmentsStorage
 import dev.ragnarok.fenrir.db.model.entity.DboEntity
@@ -206,7 +206,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
             when (type) {
                 AttachToType.COMMENT -> return CommentsAttachmentsColumns.C_ID
                 AttachToType.MESSAGE -> return MessagesAttachmentsColumns.M_ID
-                AttachToType.POST -> return WallAttachmentsColumns.P_ID
+                AttachToType.POST -> return WallsAttachmentsColumns.P_ID
             }
             throw IllegalArgumentException()
         }
@@ -215,7 +215,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
             when (type) {
                 AttachToType.COMMENT -> return CommentsAttachmentsColumns.DATA
                 AttachToType.MESSAGE -> return MessagesAttachmentsColumns.DATA
-                AttachToType.POST -> return WallAttachmentsColumns.DATA
+                AttachToType.POST -> return WallsAttachmentsColumns.DATA
             }
             throw IllegalArgumentException()
         }

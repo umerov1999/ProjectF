@@ -32,7 +32,9 @@ class PeerPatch(val id: Long) {
     }
 
     fun withLastMessage(id: Int): PeerPatch {
-        lastMessage = LastMessage(id)
+        if (id != 0) {
+            lastMessage = LastMessage(id)
+        }
         return this
     }
 

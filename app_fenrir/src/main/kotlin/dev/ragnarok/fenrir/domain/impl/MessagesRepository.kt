@@ -25,17 +25,17 @@ import dev.ragnarok.fenrir.db.model.MessagePatch.Important
 import dev.ragnarok.fenrir.db.model.PeerPatch
 import dev.ragnarok.fenrir.db.model.entity.DialogDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
-import dev.ragnarok.fenrir.db.model.entity.SimpleDialogEntity
+import dev.ragnarok.fenrir.db.model.entity.PeerDialogEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity
 import dev.ragnarok.fenrir.domain.IMessagesDecryptor
 import dev.ragnarok.fenrir.domain.IMessagesRepository
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.InteractorFactory.createAccountInteractor
 import dev.ragnarok.fenrir.domain.Mode
-import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapConversation
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapDialog
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapMessage
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapOwners
+import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapPeerDialog
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformMessages
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformOwners
@@ -407,7 +407,7 @@ class MessagesRepository(
         peerId: Long
     ): Single<Optional<Conversation>> {
         return storages.dialogs()
-            .findSimple(accountId, peerId)
+            .findPeerDialog(accountId, peerId)
             .flatMap { optional ->
                 if (optional.isEmpty) {
                     return@flatMap Single.just(empty<Conversation>())
@@ -430,14 +430,14 @@ class MessagesRepository(
                 val dto = response.items?.get(0) ?: return@flatMap Single.error<Conversation>(
                     NotFoundException()
                 )
-                val entity = mapConversation(dto, response.contacts)
+                val entity = mapPeerDialog(dto, response.contacts)
                     ?: return@flatMap Single.error<Conversation>(
                         NotFoundException()
                     )
                 val existsOwners = transformOwners(response.profiles, response.groups)
                 val ownerEntities = mapOwners(response.profiles, response.groups)
                 ownersRepository.insertOwners(accountId, ownerEntities)
-                    .andThen(storages.dialogs().saveSimple(accountId, entity))
+                    .andThen(storages.dialogs().savePeerDialog(accountId, entity))
                     .andThen(Single.just(entity))
                     .compose(simpleEntity2Conversation(accountId, existsOwners))
             }
@@ -480,8 +480,8 @@ class MessagesRepository(
     private fun simpleEntity2Conversation(
         accountId: Long,
         existingOwners: Collection<Owner>
-    ): SingleTransformer<SimpleDialogEntity, Conversation> {
-        return SingleTransformer { single: Single<SimpleDialogEntity> ->
+    ): SingleTransformer<PeerDialogEntity, Conversation> {
+        return SingleTransformer { single: Single<PeerDialogEntity> ->
             single
                 .flatMap { entity ->
                     val owners = VKOwnIds()
@@ -1722,7 +1722,7 @@ class MessagesRepository(
 
         internal fun entity2Model(
             accountId: Long,
-            entity: SimpleDialogEntity,
+            entity: PeerDialogEntity,
             owners: IOwnersBundle
         ): Conversation {
             return Conversation(entity.peerId)

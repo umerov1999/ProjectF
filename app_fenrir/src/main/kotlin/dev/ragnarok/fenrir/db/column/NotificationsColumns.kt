@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.db.column
 
 import android.provider.BaseColumns
 
-object NotificationColumns : BaseColumns {
+object NotificationsColumns : BaseColumns {
     const val TABLENAME = "notifications"
     const val DATE = "date"
     const val CONTENT_PACK = "content_pack"

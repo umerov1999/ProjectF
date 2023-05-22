@@ -70,6 +70,7 @@ protected: \
 #define _TVG_DECLARE_ACCESSOR() \
     friend Canvas; \
     friend Scene; \
+    friend Shape; \
     friend Picture; \
     friend Accessor; \
     friend IteratorAccessor
@@ -81,6 +82,7 @@ namespace tvg
 class RenderMethod;
 class IteratorAccessor;
 class Scene;
+class Shape;
 class Picture;
 class Canvas;
 class Accessor;
@@ -168,7 +170,8 @@ enum class CompositeMethod
     ClipPath,     ///< The intersection of the source and the target is determined and only the resulting pixels from the source are rendered.
     AlphaMask,    ///< The pixels of the source and the target are alpha blended. As a result, only the part of the source, which alpha intersects with the target is visible.
     InvAlphaMask, ///< The pixels of the source and the complement to the target's pixels are alpha blended. As a result, only the part of the source which alpha is not covered by the target is visible.
-    LumaMask      ///< The source pixels are converted to the grayscale (luma value) and alpha blended with the target. As a result, only the part of the source, which intersects with the target is visible. @since 0.9
+    LumaMask,     ///< The source pixels are converted to the grayscale (luma value) and alpha blended with the target. As a result, only the part of the source, which intersects with the target is visible. @since 0.9
+    InvLumaMask   ///< The source pixels are converted to the grayscale (luma value) and the complement to the target's pixels are alpha blended. As a result, only the part of the source which grayscale is not covered by the target is visible. @BETA_API
 };
 
 /**
@@ -988,7 +991,8 @@ public:
      * @param[in] strokeFirst If @c true the stroke is rendered before the fill, otherwise the stroke is rendered as the second one (the default option).
      *
      * @return Result::Success when succeed, Result::FailedAllocation otherwise.
-     * @BETA_API
+     *
+     * @since 0.10
      */
     Result order(bool strokeFirst) noexcept;
 
@@ -1236,15 +1240,6 @@ public:
     uint32_t mesh(const Polygon** triangles) const noexcept;
 
     /**
-     * @brief Gets the position and the size of the loaded SVG picture.
-     *
-     * @warning Please do not use it, this API is not official one. It could be modified in the next version.
-     *
-     * @BETA_API
-     */
-    Result viewbox(float* x, float* y, float* w, float* h) const noexcept;
-
-    /**
      * @brief Creates a new Picture object.
      *
      * @return A new Picture object.
@@ -1359,8 +1354,8 @@ public:
     {
         ABGR8888 = 0,      ///< The channels are joined in the order: alpha, blue, green, red. Colors are alpha-premultiplied.
         ARGB8888,          ///< The channels are joined in the order: alpha, red, green, blue. Colors are alpha-premultiplied.
-        ABGR8888_STRAIGHT, ///< @BETA_API The channels are joined in the order: alpha, blue, green, red. Colors are un-alpha-premultiplied.
-        ARGB8888_STRAIGHT, ///< @BETA_API The channels are joined in the order: alpha, red, green, blue. Colors are un-alpha-premultiplied.
+        ABGR8888S,         ///< @BETA_API The channels are joined in the order: alpha, blue, green, red. Colors are un-alpha-premultiplied.
+        ARGB8888S,         ///< @BETA_API The channels are joined in the order: alpha, red, green, blue. Colors are un-alpha-premultiplied.
     };
 
     /**
@@ -1600,7 +1595,7 @@ public:
  *
  * @warning We strongly warn you not to change the paints of a scene unless you really know the design-structure.
  *
- * @BETA_API
+ * @since 0.10
  */
 class TVG_API Accessor final
 {
@@ -1616,8 +1611,6 @@ public:
      * @return Return the given @p picture instance.
      *
      * @note The bitmap based picture might not have the scene-tree.
-     *
-     * @BETA_API
      */
     std::unique_ptr<Picture> set(std::unique_ptr<Picture> picture, std::function<bool(const Paint* paint)> func) noexcept;
 
@@ -1625,8 +1618,6 @@ public:
      * @brief Creates a new Accessor object.
      *
      * @return A new Accessor object.
-     *
-     * @BETA_API
      */
     static std::unique_ptr<Accessor> gen() noexcept;
 

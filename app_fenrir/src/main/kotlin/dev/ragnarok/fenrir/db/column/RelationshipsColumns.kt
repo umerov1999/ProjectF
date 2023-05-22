@@ -3,13 +3,13 @@ package dev.ragnarok.fenrir.db.column
 import android.content.ContentValues
 import android.provider.BaseColumns
 
-object RelationshipColumns : BaseColumns {
+object RelationshipsColumns : BaseColumns {
     const val TYPE_FRIEND = 1
     const val TYPE_FOLLOWER = 2
     const val TYPE_GROUP_MEMBER = 3
     const val TYPE_MEMBER = 4
     const val TYPE_REQUESTS = 5
-    const val TABLENAME = "relationship"
+    const val TABLENAME = "relationships"
     const val OBJECT_ID = "object_id"
     const val SUBJECT_ID = "subject_id"
     const val TYPE = "type"

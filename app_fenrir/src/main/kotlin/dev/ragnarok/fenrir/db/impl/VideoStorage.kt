@@ -6,7 +6,7 @@ import android.database.Cursor
 import android.provider.BaseColumns
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getVideosContentUriFor
-import dev.ragnarok.fenrir.db.column.VideoColumns
+import dev.ragnarok.fenrir.db.column.VideosColumns
 import dev.ragnarok.fenrir.db.interfaces.IVideoStorage
 import dev.ragnarok.fenrir.db.model.entity.PrivacyEntity
 import dev.ragnarok.fenrir.db.model.entity.VideoDboEntity
@@ -39,18 +39,18 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
                 }
 
                 criteria.getAlbumId() == 0 -> {
-                    where = VideoColumns.OWNER_ID + " = ?"
+                    where = VideosColumns.OWNER_ID + " = ?"
                     args = arrayOf(criteria.getOwnerId().toString())
                 }
 
                 else -> {
-                    where = VideoColumns.OWNER_ID + " = ? AND " + VideoColumns.ALBUM_ID + " = ?"
+                    where = VideosColumns.OWNER_ID + " = ? AND " + VideosColumns.ALBUM_ID + " = ?"
                     args =
                         arrayOf(criteria.getOwnerId().toString(), criteria.getAlbumId().toString())
                 }
             }
             val cursor =
-                contentResolver.query(uri, null, where, args, VideoColumns.ADDING_DATE + " DESC")
+                contentResolver.query(uri, null, where, args, VideosColumns.ADDING_DATE + " DESC")
             val videos = ArrayList<VideoDboEntity>(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
@@ -66,43 +66,43 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
     }
 
     private fun mapVideo(cursor: Cursor): VideoDboEntity {
-        val id = cursor.getInt(VideoColumns.VIDEO_ID)
-        val ownerId = cursor.getLong(VideoColumns.ORIGINAL_OWNER_ID)
+        val id = cursor.getInt(VideosColumns.VIDEO_ID)
+        val ownerId = cursor.getLong(VideosColumns.ORIGINAL_OWNER_ID)
         val video = VideoDboEntity().set(id, ownerId)
-            .setAlbumId(cursor.getInt(VideoColumns.ALBUM_ID))
-            .setTitle(cursor.getString(VideoColumns.TITLE))
-            .setDescription(cursor.getString(VideoColumns.DESCRIPTION))
-            .setLink(cursor.getString(VideoColumns.LINK))
-            .setDuration(cursor.getLong(VideoColumns.DURATION))
-            .setDate(cursor.getLong(VideoColumns.DATE))
-            .setAddingDate(cursor.getLong(VideoColumns.ADDING_DATE))
-            .setViews(cursor.getInt(VideoColumns.VIEWS))
-            .setPlayer(cursor.getString(VideoColumns.PLAYER))
-            .setImage(cursor.getString(VideoColumns.IMAGE))
-            .setAccessKey(cursor.getString(VideoColumns.ACCESS_KEY))
-            .setCommentsCount(cursor.getInt(VideoColumns.COMMENTS))
-            .setCanComment(cursor.getBoolean(VideoColumns.CAN_COMMENT))
-            .setPrivate(cursor.getBoolean(VideoColumns.IS_PRIVATE))
-            .setFavorite(cursor.getBoolean(VideoColumns.IS_FAVORITE))
-            .setCanRepost(cursor.getBoolean(VideoColumns.CAN_REPOST))
-            .setUserLikes(cursor.getBoolean(VideoColumns.USER_LIKES))
-            .setLikesCount(cursor.getInt(VideoColumns.LIKES))
-            .setRepeat(cursor.getBoolean(VideoColumns.REPEAT))
-            .setMp4link240(cursor.getString(VideoColumns.MP4_240))
-            .setMp4link360(cursor.getString(VideoColumns.MP4_360))
-            .setMp4link480(cursor.getString(VideoColumns.MP4_480))
-            .setMp4link720(cursor.getString(VideoColumns.MP4_720))
-            .setMp4link1080(cursor.getString(VideoColumns.MP4_1080))
-            .setMp4link1440(cursor.getString(VideoColumns.MP4_1440))
-            .setMp4link2160(cursor.getString(VideoColumns.MP4_2160))
-            .setExternalLink(cursor.getString(VideoColumns.EXTERNAL))
-            .setHls(cursor.getString(VideoColumns.HLS))
-            .setLive(cursor.getString(VideoColumns.LIVE))
-            .setPlatform(cursor.getString(VideoColumns.PLATFORM))
-            .setCanEdit(cursor.getBoolean(VideoColumns.CAN_EDIT))
-            .setCanAdd(cursor.getBoolean(VideoColumns.CAN_ADD))
+            .setAlbumId(cursor.getInt(VideosColumns.ALBUM_ID))
+            .setTitle(cursor.getString(VideosColumns.TITLE))
+            .setDescription(cursor.getString(VideosColumns.DESCRIPTION))
+            .setLink(cursor.getString(VideosColumns.LINK))
+            .setDuration(cursor.getLong(VideosColumns.DURATION))
+            .setDate(cursor.getLong(VideosColumns.DATE))
+            .setAddingDate(cursor.getLong(VideosColumns.ADDING_DATE))
+            .setViews(cursor.getInt(VideosColumns.VIEWS))
+            .setPlayer(cursor.getString(VideosColumns.PLAYER))
+            .setImage(cursor.getString(VideosColumns.IMAGE))
+            .setAccessKey(cursor.getString(VideosColumns.ACCESS_KEY))
+            .setCommentsCount(cursor.getInt(VideosColumns.COMMENTS))
+            .setCanComment(cursor.getBoolean(VideosColumns.CAN_COMMENT))
+            .setPrivate(cursor.getBoolean(VideosColumns.IS_PRIVATE))
+            .setFavorite(cursor.getBoolean(VideosColumns.IS_FAVORITE))
+            .setCanRepost(cursor.getBoolean(VideosColumns.CAN_REPOST))
+            .setUserLikes(cursor.getBoolean(VideosColumns.USER_LIKES))
+            .setLikesCount(cursor.getInt(VideosColumns.LIKES))
+            .setRepeat(cursor.getBoolean(VideosColumns.REPEAT))
+            .setMp4link240(cursor.getString(VideosColumns.MP4_240))
+            .setMp4link360(cursor.getString(VideosColumns.MP4_360))
+            .setMp4link480(cursor.getString(VideosColumns.MP4_480))
+            .setMp4link720(cursor.getString(VideosColumns.MP4_720))
+            .setMp4link1080(cursor.getString(VideosColumns.MP4_1080))
+            .setMp4link1440(cursor.getString(VideosColumns.MP4_1440))
+            .setMp4link2160(cursor.getString(VideosColumns.MP4_2160))
+            .setExternalLink(cursor.getString(VideosColumns.EXTERNAL))
+            .setHls(cursor.getString(VideosColumns.HLS))
+            .setLive(cursor.getString(VideosColumns.LIVE))
+            .setPlatform(cursor.getString(VideosColumns.PLATFORM))
+            .setCanEdit(cursor.getBoolean(VideosColumns.CAN_EDIT))
+            .setCanAdd(cursor.getBoolean(VideosColumns.CAN_ADD))
         val privacyViewText =
-            cursor.getBlob(VideoColumns.PRIVACY_VIEW)
+            cursor.getBlob(VideosColumns.PRIVACY_VIEW)
         if (privacyViewText.nonNullNoEmpty()) {
             video.setPrivacyView(
                 MsgPack.decodeFromByteArrayEx(
@@ -112,7 +112,7 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
             )
         }
         val privacyCommentText =
-            cursor.getBlob(VideoColumns.PRIVACY_COMMENT)
+            cursor.getBlob(VideosColumns.PRIVACY_COMMENT)
         if (privacyCommentText.nonNullNoEmpty()) {
             video.setPrivacyComment(
                 MsgPack.decodeFromByteArrayEx(
@@ -140,7 +140,7 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
                         ContentProviderOperation
                             .newDelete(uri)
                             .withSelection(
-                                VideoColumns.OWNER_ID + " = ?",
+                                VideosColumns.OWNER_ID + " = ?",
                                 arrayOf(ownerId.toString())
                             )
                             .build()
@@ -150,7 +150,7 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
                         ContentProviderOperation
                             .newDelete(uri)
                             .withSelection(
-                                VideoColumns.OWNER_ID + " = ? AND " + VideoColumns.ALBUM_ID + " = ?",
+                                VideosColumns.OWNER_ID + " = ? AND " + VideosColumns.ALBUM_ID + " = ?",
                                 arrayOf(ownerId.toString(), albumId.toString())
                             )
                             .build()
@@ -159,7 +159,7 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
             }
             for (dbo in videos) {
                 val cv = getCV(dbo, ownerId)
-                cv.put(VideoColumns.ALBUM_ID, albumId)
+                cv.put(VideosColumns.ALBUM_ID, albumId)
                 operations.add(
                     ContentProviderOperation
                         .newInsert(uri)
@@ -177,63 +177,63 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
      * Поэтому необходимо отдельно сохранять идентикатор owner-а, у кого в видеозаписях мы нашли видео */
         fun getCV(dbo: VideoDboEntity, ownerId: Long): ContentValues {
             val cv = ContentValues()
-            cv.put(VideoColumns.VIDEO_ID, dbo.id)
-            cv.put(VideoColumns.OWNER_ID, ownerId)
-            cv.put(VideoColumns.ORIGINAL_OWNER_ID, dbo.ownerId)
-            cv.put(VideoColumns.ALBUM_ID, dbo.albumId)
-            cv.put(VideoColumns.TITLE, dbo.title)
-            cv.put(VideoColumns.DESCRIPTION, dbo.description)
-            cv.put(VideoColumns.DURATION, dbo.duration)
-            cv.put(VideoColumns.LINK, dbo.link)
-            cv.put(VideoColumns.DATE, dbo.date)
-            cv.put(VideoColumns.ADDING_DATE, dbo.addingDate)
-            cv.put(VideoColumns.VIEWS, dbo.views)
-            cv.put(VideoColumns.PLAYER, dbo.player)
-            cv.put(VideoColumns.IMAGE, dbo.image)
-            cv.put(VideoColumns.ACCESS_KEY, dbo.accessKey)
-            cv.put(VideoColumns.COMMENTS, dbo.commentsCount)
-            cv.put(VideoColumns.CAN_COMMENT, dbo.isCanComment)
-            cv.put(VideoColumns.IS_PRIVATE, dbo.private)
-            cv.put(VideoColumns.IS_FAVORITE, dbo.isFavorite)
-            cv.put(VideoColumns.CAN_REPOST, dbo.isCanRepost)
-            cv.put(VideoColumns.USER_LIKES, dbo.isUserLikes)
-            cv.put(VideoColumns.REPEAT, dbo.isRepeat)
-            cv.put(VideoColumns.LIKES, dbo.likesCount)
+            cv.put(VideosColumns.VIDEO_ID, dbo.id)
+            cv.put(VideosColumns.OWNER_ID, ownerId)
+            cv.put(VideosColumns.ORIGINAL_OWNER_ID, dbo.ownerId)
+            cv.put(VideosColumns.ALBUM_ID, dbo.albumId)
+            cv.put(VideosColumns.TITLE, dbo.title)
+            cv.put(VideosColumns.DESCRIPTION, dbo.description)
+            cv.put(VideosColumns.DURATION, dbo.duration)
+            cv.put(VideosColumns.LINK, dbo.link)
+            cv.put(VideosColumns.DATE, dbo.date)
+            cv.put(VideosColumns.ADDING_DATE, dbo.addingDate)
+            cv.put(VideosColumns.VIEWS, dbo.views)
+            cv.put(VideosColumns.PLAYER, dbo.player)
+            cv.put(VideosColumns.IMAGE, dbo.image)
+            cv.put(VideosColumns.ACCESS_KEY, dbo.accessKey)
+            cv.put(VideosColumns.COMMENTS, dbo.commentsCount)
+            cv.put(VideosColumns.CAN_COMMENT, dbo.isCanComment)
+            cv.put(VideosColumns.IS_PRIVATE, dbo.private)
+            cv.put(VideosColumns.IS_FAVORITE, dbo.isFavorite)
+            cv.put(VideosColumns.CAN_REPOST, dbo.isCanRepost)
+            cv.put(VideosColumns.USER_LIKES, dbo.isUserLikes)
+            cv.put(VideosColumns.REPEAT, dbo.isRepeat)
+            cv.put(VideosColumns.LIKES, dbo.likesCount)
 
             dbo.privacyView.ifNonNull({
                 cv.put(
-                    VideoColumns.PRIVACY_VIEW,
+                    VideosColumns.PRIVACY_VIEW,
                     MsgPack.encodeToByteArrayEx(PrivacyEntity.serializer(), it)
                 )
             }, {
                 cv.putNull(
-                    VideoColumns.PRIVACY_VIEW
+                    VideosColumns.PRIVACY_VIEW
                 )
             })
 
             dbo.privacyComment.ifNonNull({
                 cv.put(
-                    VideoColumns.PRIVACY_VIEW,
+                    VideosColumns.PRIVACY_VIEW,
                     MsgPack.encodeToByteArrayEx(PrivacyEntity.serializer(), it)
                 )
             }, {
                 cv.putNull(
-                    VideoColumns.PRIVACY_VIEW
+                    VideosColumns.PRIVACY_VIEW
                 )
             })
-            cv.put(VideoColumns.MP4_240, dbo.mp4link240)
-            cv.put(VideoColumns.MP4_360, dbo.mp4link360)
-            cv.put(VideoColumns.MP4_480, dbo.mp4link480)
-            cv.put(VideoColumns.MP4_720, dbo.mp4link720)
-            cv.put(VideoColumns.MP4_1080, dbo.mp4link1080)
-            cv.put(VideoColumns.MP4_1440, dbo.mp4link1440)
-            cv.put(VideoColumns.MP4_2160, dbo.mp4link2160)
-            cv.put(VideoColumns.EXTERNAL, dbo.externalLink)
-            cv.put(VideoColumns.HLS, dbo.hls)
-            cv.put(VideoColumns.LIVE, dbo.live)
-            cv.put(VideoColumns.PLATFORM, dbo.platform)
-            cv.put(VideoColumns.CAN_EDIT, dbo.isCanEdit)
-            cv.put(VideoColumns.CAN_ADD, dbo.isCanAdd)
+            cv.put(VideosColumns.MP4_240, dbo.mp4link240)
+            cv.put(VideosColumns.MP4_360, dbo.mp4link360)
+            cv.put(VideosColumns.MP4_480, dbo.mp4link480)
+            cv.put(VideosColumns.MP4_720, dbo.mp4link720)
+            cv.put(VideosColumns.MP4_1080, dbo.mp4link1080)
+            cv.put(VideosColumns.MP4_1440, dbo.mp4link1440)
+            cv.put(VideosColumns.MP4_2160, dbo.mp4link2160)
+            cv.put(VideosColumns.EXTERNAL, dbo.externalLink)
+            cv.put(VideosColumns.HLS, dbo.hls)
+            cv.put(VideosColumns.LIVE, dbo.live)
+            cv.put(VideosColumns.PLATFORM, dbo.platform)
+            cv.put(VideosColumns.CAN_EDIT, dbo.isCanEdit)
+            cv.put(VideosColumns.CAN_ADD, dbo.isCanAdd)
             return cv
         }
     }

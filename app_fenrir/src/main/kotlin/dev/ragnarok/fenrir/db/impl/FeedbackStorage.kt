@@ -6,7 +6,7 @@ import android.database.Cursor
 import android.provider.BaseColumns
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getNotificationsContentUriFor
-import dev.ragnarok.fenrir.db.column.NotificationColumns
+import dev.ragnarok.fenrir.db.column.NotificationsColumns
 import dev.ragnarok.fenrir.db.interfaces.IFeedbackStorage
 import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
 import dev.ragnarok.fenrir.db.model.entity.feedback.FeedbackEntity
@@ -39,9 +39,9 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
             for (i in dbos.indices) {
                 val dbo = dbos[i]
                 val cv = ContentValues()
-                cv.put(NotificationColumns.DATE, dbo.date)
+                cv.put(NotificationsColumns.DATE, dbo.date)
                 cv.put(
-                    NotificationColumns.CONTENT_PACK,
+                    NotificationsColumns.CONTENT_PACK,
                     MsgPack.encodeToByteArrayEx(FeedbackEntity.serializer(), dbo)
                 )
                 val index = addToListAndReturnIndex(
@@ -76,7 +76,7 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
                     null,
                     where,
                     args,
-                    NotificationColumns.DATE + " DESC"
+                    NotificationsColumns.DATE + " DESC"
                 )
             } else {
                 context.contentResolver.query(
@@ -84,7 +84,7 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
                     null,
                     null,
                     null,
-                    NotificationColumns.DATE + " DESC"
+                    NotificationsColumns.DATE + " DESC"
                 )
             }
             val dtos: MutableList<FeedbackEntity> = ArrayList(safeCountOf(cursor))
@@ -103,7 +103,7 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
     }
 
     private fun mapDto(cursor: Cursor): FeedbackEntity {
-        val data = cursor.getBlob(NotificationColumns.CONTENT_PACK)!!
+        val data = cursor.getBlob(NotificationsColumns.CONTENT_PACK)!!
         return MsgPack.decodeFromByteArrayEx(FeedbackEntity.serializer(), data)
     }
 
@@ -127,9 +127,9 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
             for (i in dbos.indices) {
                 val dbo = dbos[i]
                 val cv = ContentValues()
-                cv.put(NotificationColumns.DATE, dbo.time)
+                cv.put(NotificationsColumns.DATE, dbo.time)
                 cv.put(
-                    NotificationColumns.CONTENT_PACK,
+                    NotificationsColumns.CONTENT_PACK,
                     MsgPack.encodeToByteArrayEx(FeedbackVKOfficial.serializer(), dbo)
                 )
                 val index = addToListAndReturnIndex(
@@ -163,7 +163,7 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
                     null,
                     where,
                     args,
-                    NotificationColumns.DATE + " DESC"
+                    NotificationsColumns.DATE + " DESC"
                 )
             } else {
                 context.contentResolver.query(
@@ -171,7 +171,7 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
                     null,
                     null,
                     null,
-                    NotificationColumns.DATE + " DESC"
+                    NotificationsColumns.DATE + " DESC"
                 )
             }
             val dtos: MutableList<FeedbackVKOfficial> = ArrayList(safeCountOf(cursor))
@@ -190,7 +190,7 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
     }
 
     private fun mapDtoOfficial(cursor: Cursor): FeedbackVKOfficial {
-        val data = cursor.getBlob(NotificationColumns.CONTENT_PACK)!!
+        val data = cursor.getBlob(NotificationsColumns.CONTENT_PACK)!!
         return MsgPack.decodeFromByteArrayEx(FeedbackVKOfficial.serializer(), data)
     }
 }

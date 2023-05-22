@@ -99,6 +99,7 @@ import dev.ragnarok.fenrir.db.model.entity.NewsDboEntity
 import dev.ragnarok.fenrir.db.model.entity.NotSupportedDboEntity
 import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
 import dev.ragnarok.fenrir.db.model.entity.PageDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PeerDialogEntity
 import dev.ragnarok.fenrir.db.model.entity.PhotoAlbumDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PhotoDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PhotoSizeEntity
@@ -107,7 +108,6 @@ import dev.ragnarok.fenrir.db.model.entity.PostDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PostDboEntity.SourceDbo
 import dev.ragnarok.fenrir.db.model.entity.PrivacyEntity
 import dev.ragnarok.fenrir.db.model.entity.SchoolEntity
-import dev.ragnarok.fenrir.db.model.entity.SimpleDialogEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity.AnimationEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerSetEntity
@@ -867,11 +867,11 @@ object Dto2Entity {
     }
 
 
-    fun mapConversation(
+    fun mapPeerDialog(
         dto: VKApiConversation,
         contacts: List<VKApiConversation.ContactElement>?
-    ): SimpleDialogEntity? {
-        val entity = SimpleDialogEntity(dto.peer?.id ?: return null)
+    ): PeerDialogEntity? {
+        val entity = PeerDialogEntity(dto.peer?.id ?: return null)
             .setInRead(dto.inRead)
             .setOutRead(dto.outRead)
             .setUnreadCount(dto.unreadCount)

@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.BuildConfig
 import dev.ragnarok.fenrir.db.column.*
 import dev.ragnarok.fenrir.db.column.attachments.CommentsAttachmentsColumns
 import dev.ragnarok.fenrir.db.column.attachments.MessagesAttachmentsColumns
-import dev.ragnarok.fenrir.db.column.attachments.WallAttachmentsColumns
+import dev.ragnarok.fenrir.db.column.attachments.WallsAttachmentsColumns
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Logger
 
@@ -569,167 +569,167 @@ class FenrirContentProvider : ContentProvider() {
         init {
             //Setup projection maps
             sUsersProjectionMap = HashMap()
-            sUsersProjectionMap[BaseColumns._ID] = UserColumns.FULL_ID
-            sUsersProjectionMap[UserColumns.FIRST_NAME] = UserColumns.FULL_FIRST_NAME
-            sUsersProjectionMap[UserColumns.LAST_NAME] =
-                UserColumns.FULL_LAST_NAME
-            sUsersProjectionMap[UserColumns.ONLINE] = UserColumns.FULL_ONLINE
-            sUsersProjectionMap[UserColumns.ONLINE_MOBILE] = UserColumns.FULL_ONLINE_MOBILE
-            sUsersProjectionMap[UserColumns.ONLINE_APP] = UserColumns.FULL_ONLINE_APP
-            sUsersProjectionMap[UserColumns.PHOTO_50] = UserColumns.FULL_PHOTO_50
-            sUsersProjectionMap[UserColumns.PHOTO_100] =
-                UserColumns.FULL_PHOTO_100
-            sUsersProjectionMap[UserColumns.PHOTO_200] = UserColumns.FULL_PHOTO_200
-            sUsersProjectionMap[UserColumns.PHOTO_MAX] = UserColumns.FULL_PHOTO_MAX
-            sUsersProjectionMap[UserColumns.LAST_SEEN] = UserColumns.FULL_LAST_SEEN
-            sUsersProjectionMap[UserColumns.HAS_UNSEEN_STORIES] =
-                UserColumns.FULL_HAS_UNSEEN_STORIES
-            sUsersProjectionMap[UserColumns.PLATFORM] =
-                UserColumns.FULL_PLATFORM
-            sUsersProjectionMap[UserColumns.USER_STATUS] = UserColumns.FULL_USER_STATUS
-            sUsersProjectionMap[UserColumns.SEX] = UserColumns.FULL_SEX
-            sUsersProjectionMap[UserColumns.DOMAIN] =
-                UserColumns.FULL_DOMAIN
-            sUsersProjectionMap[UserColumns.IS_FRIEND] = UserColumns.FULL_IS_FRIEND
-            sUsersProjectionMap[UserColumns.FRIEND_STATUS] = UserColumns.FULL_FRIEND_STATUS
-            sUsersProjectionMap[UserColumns.WRITE_MESSAGE_STATUS] =
-                UserColumns.FULL_WRITE_MESSAGE_STATUS
-            sUsersProjectionMap[UserColumns.IS_USER_BLACK_LIST] =
-                UserColumns.FULL_IS_USER_BLACK_LIST
-            sUsersProjectionMap[UserColumns.IS_BLACK_LISTED] = UserColumns.FULL_IS_BLACK_LISTED
-            sUsersProjectionMap[UserColumns.IS_CAN_ACCESS_CLOSED] =
-                UserColumns.FULL_IS_CAN_ACCESS_CLOSED
-            sUsersProjectionMap[UserColumns.IS_VERIFIED] = UserColumns.FULL_IS_VERIFIED
-            sUsersProjectionMap[UserColumns.MAIDEN_NAME] = UserColumns.FULL_MAIDEN_NAME
-            sUsersProjectionMap[UserColumns.BDATE] = UserColumns.FULL_BDATE
+            sUsersProjectionMap[BaseColumns._ID] = UsersColumns.FULL_ID
+            sUsersProjectionMap[UsersColumns.FIRST_NAME] = UsersColumns.FULL_FIRST_NAME
+            sUsersProjectionMap[UsersColumns.LAST_NAME] =
+                UsersColumns.FULL_LAST_NAME
+            sUsersProjectionMap[UsersColumns.ONLINE] = UsersColumns.FULL_ONLINE
+            sUsersProjectionMap[UsersColumns.ONLINE_MOBILE] = UsersColumns.FULL_ONLINE_MOBILE
+            sUsersProjectionMap[UsersColumns.ONLINE_APP] = UsersColumns.FULL_ONLINE_APP
+            sUsersProjectionMap[UsersColumns.PHOTO_50] = UsersColumns.FULL_PHOTO_50
+            sUsersProjectionMap[UsersColumns.PHOTO_100] =
+                UsersColumns.FULL_PHOTO_100
+            sUsersProjectionMap[UsersColumns.PHOTO_200] = UsersColumns.FULL_PHOTO_200
+            sUsersProjectionMap[UsersColumns.PHOTO_MAX] = UsersColumns.FULL_PHOTO_MAX
+            sUsersProjectionMap[UsersColumns.LAST_SEEN] = UsersColumns.FULL_LAST_SEEN
+            sUsersProjectionMap[UsersColumns.HAS_UNSEEN_STORIES] =
+                UsersColumns.FULL_HAS_UNSEEN_STORIES
+            sUsersProjectionMap[UsersColumns.PLATFORM] =
+                UsersColumns.FULL_PLATFORM
+            sUsersProjectionMap[UsersColumns.USER_STATUS] = UsersColumns.FULL_USER_STATUS
+            sUsersProjectionMap[UsersColumns.SEX] = UsersColumns.FULL_SEX
+            sUsersProjectionMap[UsersColumns.DOMAIN] =
+                UsersColumns.FULL_DOMAIN
+            sUsersProjectionMap[UsersColumns.IS_FRIEND] = UsersColumns.FULL_IS_FRIEND
+            sUsersProjectionMap[UsersColumns.FRIEND_STATUS] = UsersColumns.FULL_FRIEND_STATUS
+            sUsersProjectionMap[UsersColumns.WRITE_MESSAGE_STATUS] =
+                UsersColumns.FULL_WRITE_MESSAGE_STATUS
+            sUsersProjectionMap[UsersColumns.IS_USER_BLACK_LIST] =
+                UsersColumns.FULL_IS_USER_BLACK_LIST
+            sUsersProjectionMap[UsersColumns.IS_BLACK_LISTED] = UsersColumns.FULL_IS_BLACK_LISTED
+            sUsersProjectionMap[UsersColumns.IS_CAN_ACCESS_CLOSED] =
+                UsersColumns.FULL_IS_CAN_ACCESS_CLOSED
+            sUsersProjectionMap[UsersColumns.IS_VERIFIED] = UsersColumns.FULL_IS_VERIFIED
+            sUsersProjectionMap[UsersColumns.MAIDEN_NAME] = UsersColumns.FULL_MAIDEN_NAME
+            sUsersProjectionMap[UsersColumns.BDATE] = UsersColumns.FULL_BDATE
 
             sRelativeshipProjectionMap = HashMap()
-            sRelativeshipProjectionMap[BaseColumns._ID] = RelationshipColumns.FULL_ID
-            sRelativeshipProjectionMap[RelationshipColumns.OBJECT_ID] =
-                RelationshipColumns.FULL_OBJECT_ID
-            sRelativeshipProjectionMap[RelationshipColumns.SUBJECT_ID] =
-                RelationshipColumns.FULL_SUBJECT_ID
-            sRelativeshipProjectionMap[RelationshipColumns.TYPE] = RelationshipColumns.FULL_TYPE
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_FIRST_NAME] =
-                UserColumns.FULL_FIRST_NAME + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_FIRST_NAME
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_LAST_NAME] =
-                UserColumns.FULL_LAST_NAME + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_LAST_NAME
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_ONLINE] =
-                UserColumns.FULL_ONLINE + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_ONLINE
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_ONLINE_MOBILE] =
-                UserColumns.FULL_ONLINE_MOBILE + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_ONLINE_MOBILE
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_ONLINE_APP] =
-                UserColumns.FULL_ONLINE_APP + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_ONLINE_APP
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_50] =
-                UserColumns.FULL_PHOTO_50 + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_50
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_100] =
-                UserColumns.FULL_PHOTO_100 + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_100
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_200] =
-                UserColumns.FULL_PHOTO_200 + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_200
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_MAX] =
-                UserColumns.FULL_PHOTO_MAX + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_PHOTO_MAX
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_HAS_UNSEEN_STORIES] =
-                UserColumns.FULL_HAS_UNSEEN_STORIES + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_HAS_UNSEEN_STORIES
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_LAST_SEEN] =
-                UserColumns.FULL_LAST_SEEN + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_LAST_SEEN
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_PLATFORM] =
-                UserColumns.FULL_PLATFORM + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_PLATFORM
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_STATUS] =
-                UserColumns.FULL_USER_STATUS + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_STATUS
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_SEX] =
-                UserColumns.FULL_SEX + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_SEX
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_IS_FRIEND] =
-                UserColumns.FULL_IS_FRIEND + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_IS_FRIEND
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_FRIEND_STATUS] =
-                UserColumns.FULL_FRIEND_STATUS + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_FRIEND_STATUS
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_WRITE_MESSAGE_STATUS] =
-                UserColumns.FULL_WRITE_MESSAGE_STATUS + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_WRITE_MESSAGE_STATUS
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_IS_USER_BLACK_LIST] =
-                UserColumns.FULL_IS_USER_BLACK_LIST + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_IS_USER_BLACK_LIST
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_IS_BLACK_LISTED] =
-                UserColumns.FULL_IS_BLACK_LISTED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_IS_BLACK_LISTED
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_IS_CAN_ACCESS_CLOSED] =
-                UserColumns.FULL_IS_CAN_ACCESS_CLOSED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_IS_CAN_ACCESS_CLOSED
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_IS_VERIFIED] =
-                UserColumns.FULL_IS_VERIFIED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_IS_VERIFIED
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_MAIDEN_NAME] =
-                UserColumns.FULL_MAIDEN_NAME + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_MAIDEN_NAME
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_USER_BDATE] =
-                UserColumns.FULL_BDATE + " AS " + RelationshipColumns.FOREIGN_SUBJECT_USER_BDATE
+            sRelativeshipProjectionMap[BaseColumns._ID] = RelationshipsColumns.FULL_ID
+            sRelativeshipProjectionMap[RelationshipsColumns.OBJECT_ID] =
+                RelationshipsColumns.FULL_OBJECT_ID
+            sRelativeshipProjectionMap[RelationshipsColumns.SUBJECT_ID] =
+                RelationshipsColumns.FULL_SUBJECT_ID
+            sRelativeshipProjectionMap[RelationshipsColumns.TYPE] = RelationshipsColumns.FULL_TYPE
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_FIRST_NAME] =
+                UsersColumns.FULL_FIRST_NAME + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_FIRST_NAME
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_LAST_NAME] =
+                UsersColumns.FULL_LAST_NAME + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_LAST_NAME
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_ONLINE] =
+                UsersColumns.FULL_ONLINE + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_ONLINE
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_ONLINE_MOBILE] =
+                UsersColumns.FULL_ONLINE_MOBILE + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_ONLINE_MOBILE
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_ONLINE_APP] =
+                UsersColumns.FULL_ONLINE_APP + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_ONLINE_APP
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_50] =
+                UsersColumns.FULL_PHOTO_50 + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_50
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_100] =
+                UsersColumns.FULL_PHOTO_100 + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_100
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_200] =
+                UsersColumns.FULL_PHOTO_200 + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_200
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_MAX] =
+                UsersColumns.FULL_PHOTO_MAX + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_PHOTO_MAX
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_HAS_UNSEEN_STORIES] =
+                UsersColumns.FULL_HAS_UNSEEN_STORIES + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_HAS_UNSEEN_STORIES
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_LAST_SEEN] =
+                UsersColumns.FULL_LAST_SEEN + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_LAST_SEEN
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_PLATFORM] =
+                UsersColumns.FULL_PLATFORM + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_PLATFORM
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_STATUS] =
+                UsersColumns.FULL_USER_STATUS + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_STATUS
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_SEX] =
+                UsersColumns.FULL_SEX + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_SEX
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_FRIEND] =
+                UsersColumns.FULL_IS_FRIEND + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_FRIEND
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_FRIEND_STATUS] =
+                UsersColumns.FULL_FRIEND_STATUS + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_FRIEND_STATUS
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_WRITE_MESSAGE_STATUS] =
+                UsersColumns.FULL_WRITE_MESSAGE_STATUS + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_WRITE_MESSAGE_STATUS
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_USER_BLACK_LIST] =
+                UsersColumns.FULL_IS_USER_BLACK_LIST + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_USER_BLACK_LIST
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_BLACK_LISTED] =
+                UsersColumns.FULL_IS_BLACK_LISTED + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_BLACK_LISTED
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_CAN_ACCESS_CLOSED] =
+                UsersColumns.FULL_IS_CAN_ACCESS_CLOSED + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_CAN_ACCESS_CLOSED
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_VERIFIED] =
+                UsersColumns.FULL_IS_VERIFIED + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_IS_VERIFIED
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_MAIDEN_NAME] =
+                UsersColumns.FULL_MAIDEN_NAME + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_MAIDEN_NAME
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_USER_BDATE] =
+                UsersColumns.FULL_BDATE + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_USER_BDATE
 
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_NAME] =
-                GroupColumns.FULL_NAME + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_NAME
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_SCREEN_NAME] =
-                GroupColumns.FULL_SCREEN_NAME + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_SCREEN_NAME
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_PHOTO_50] =
-                GroupColumns.FULL_PHOTO_50 + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_PHOTO_50
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_PHOTO_100] =
-                GroupColumns.FULL_PHOTO_100 + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_PHOTO_100
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_PHOTO_200] =
-                GroupColumns.FULL_PHOTO_200 + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_PHOTO_200
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_CLOSED] =
-                GroupColumns.FULL_IS_CLOSED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_CLOSED
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_BLACK_LISTED] =
-                GroupColumns.FULL_IS_BLACK_LISTED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_BLACK_LISTED
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_VERIFIED] =
-                GroupColumns.FULL_IS_VERIFIED + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_VERIFIED
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_HAS_UNSEEN_STORIES] =
-                GroupColumns.FULL_HAS_UNSEEN_STORIES + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_HAS_UNSEEN_STORIES
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_ADMIN] =
-                GroupColumns.FULL_IS_ADMIN + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_ADMIN
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_ADMIN_LEVEL] =
-                GroupColumns.FULL_ADMIN_LEVEL + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_ADMIN_LEVEL
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_MEMBER] =
-                GroupColumns.FULL_IS_MEMBER + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_IS_MEMBER
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_MEMBERS_COUNT] =
-                GroupColumns.FULL_MEMBERS_COUNT + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_MEMBERS_COUNT
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_MEMBER_STATUS] =
-                GroupColumns.FULL_MEMBER_STATUS + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_MEMBER_STATUS
-            sRelativeshipProjectionMap[RelationshipColumns.FOREIGN_SUBJECT_GROUP_TYPE] =
-                GroupColumns.FULL_TYPE + " AS " + RelationshipColumns.FOREIGN_SUBJECT_GROUP_TYPE
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_NAME] =
+                GroupsColumns.FULL_NAME + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_NAME
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_SCREEN_NAME] =
+                GroupsColumns.FULL_SCREEN_NAME + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_SCREEN_NAME
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_PHOTO_50] =
+                GroupsColumns.FULL_PHOTO_50 + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_PHOTO_50
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_PHOTO_100] =
+                GroupsColumns.FULL_PHOTO_100 + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_PHOTO_100
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_PHOTO_200] =
+                GroupsColumns.FULL_PHOTO_200 + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_PHOTO_200
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_CLOSED] =
+                GroupsColumns.FULL_IS_CLOSED + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_CLOSED
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_BLACK_LISTED] =
+                GroupsColumns.FULL_IS_BLACK_LISTED + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_BLACK_LISTED
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_VERIFIED] =
+                GroupsColumns.FULL_IS_VERIFIED + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_VERIFIED
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_HAS_UNSEEN_STORIES] =
+                GroupsColumns.FULL_HAS_UNSEEN_STORIES + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_HAS_UNSEEN_STORIES
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_ADMIN] =
+                GroupsColumns.FULL_IS_ADMIN + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_ADMIN
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_ADMIN_LEVEL] =
+                GroupsColumns.FULL_ADMIN_LEVEL + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_ADMIN_LEVEL
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_MEMBER] =
+                GroupsColumns.FULL_IS_MEMBER + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_IS_MEMBER
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_MEMBERS_COUNT] =
+                GroupsColumns.FULL_MEMBERS_COUNT + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_MEMBERS_COUNT
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_MEMBER_STATUS] =
+                GroupsColumns.FULL_MEMBER_STATUS + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_MEMBER_STATUS
+            sRelativeshipProjectionMap[RelationshipsColumns.FOREIGN_SUBJECT_GROUP_TYPE] =
+                GroupsColumns.FULL_TYPE + " AS " + RelationshipsColumns.FOREIGN_SUBJECT_GROUP_TYPE
 
             sMessagesProjectionMap = HashMap()
-            sMessagesProjectionMap[MessageColumns._ID] = MessageColumns.FULL_ID
-            sMessagesProjectionMap[MessageColumns.PEER_ID] = MessageColumns.FULL_PEER_ID
-            sMessagesProjectionMap[MessageColumns.FROM_ID] = MessageColumns.FULL_FROM_ID
-            sMessagesProjectionMap[MessageColumns.DATE] = MessageColumns.FULL_DATE
+            sMessagesProjectionMap[MessagesColumns._ID] = MessagesColumns.FULL_ID
+            sMessagesProjectionMap[MessagesColumns.PEER_ID] = MessagesColumns.FULL_PEER_ID
+            sMessagesProjectionMap[MessagesColumns.FROM_ID] = MessagesColumns.FULL_FROM_ID
+            sMessagesProjectionMap[MessagesColumns.DATE] = MessagesColumns.FULL_DATE
             //sMessagesProjectionMap.put(MessageColumns.READ_STATE, MessageColumns.FULL_READ_STATE);
-            sMessagesProjectionMap[MessageColumns.OUT] = MessageColumns.FULL_OUT
+            sMessagesProjectionMap[MessagesColumns.OUT] = MessagesColumns.FULL_OUT
             //sMessagesProjectionMap.put(MessageColumns.TITLE, MessageColumns.FULL_TITLE);
-            sMessagesProjectionMap[MessageColumns.BODY] =
-                MessageColumns.FULL_BODY
-            sMessagesProjectionMap[MessageColumns.ENCRYPTED] =
-                MessageColumns.FULL_ENCRYPTED
-            sMessagesProjectionMap[MessageColumns.DELETED] = MessageColumns.FULL_DELETED
-            sMessagesProjectionMap[MessageColumns.DELETED_FOR_ALL] =
-                MessageColumns.FULL_DELETED_FOR_ALL
-            sMessagesProjectionMap[MessageColumns.IMPORTANT] = MessageColumns.FULL_IMPORTANT
-            sMessagesProjectionMap[MessageColumns.FORWARD_COUNT] =
-                MessageColumns.FULL_FORWARD_COUNT
-            sMessagesProjectionMap[MessageColumns.HAS_ATTACHMENTS] =
-                MessageColumns.FULL_HAS_ATTACHMENTS
-            sMessagesProjectionMap[MessageColumns.STATUS] =
-                MessageColumns.FULL_STATUS
-            sMessagesProjectionMap[MessageColumns.ATTACH_TO] = MessageColumns.FULL_ATTACH_TO
-            sMessagesProjectionMap[MessageColumns.ORIGINAL_ID] =
-                MessageColumns.FULL_ORIGINAL_ID
-            sMessagesProjectionMap[MessageColumns.UPDATE_TIME] = MessageColumns.FULL_UPDATE_TIME
-            sMessagesProjectionMap[MessageColumns.ACTION] =
-                MessageColumns.FULL_ACTION
-            sMessagesProjectionMap[MessageColumns.ACTION_MID] =
-                MessageColumns.FULL_ACTION_MID
-            sMessagesProjectionMap[MessageColumns.ACTION_EMAIL] = MessageColumns.FULL_ACTION_EMAIL
-            sMessagesProjectionMap[MessageColumns.ACTION_TEXT] = MessageColumns.FULL_ACTION_TEXT
-            sMessagesProjectionMap[MessageColumns.PHOTO_50] =
-                MessageColumns.FULL_PHOTO_50
-            sMessagesProjectionMap[MessageColumns.PHOTO_100] = MessageColumns.FULL_PHOTO_100
-            sMessagesProjectionMap[MessageColumns.PHOTO_200] = MessageColumns.FULL_PHOTO_200
-            sMessagesProjectionMap[MessageColumns.RANDOM_ID] =
-                MessageColumns.FULL_RANDOM_ID
-            sMessagesProjectionMap[MessageColumns.EXTRAS] = MessageColumns.FULL_EXTRAS
-            sMessagesProjectionMap[MessageColumns.PAYLOAD] =
-                MessageColumns.FULL_PAYLOAD
-            sMessagesProjectionMap[MessageColumns.KEYBOARD] = MessageColumns.FULL_KEYBOARD
+            sMessagesProjectionMap[MessagesColumns.BODY] =
+                MessagesColumns.FULL_BODY
+            sMessagesProjectionMap[MessagesColumns.ENCRYPTED] =
+                MessagesColumns.FULL_ENCRYPTED
+            sMessagesProjectionMap[MessagesColumns.DELETED] = MessagesColumns.FULL_DELETED
+            sMessagesProjectionMap[MessagesColumns.DELETED_FOR_ALL] =
+                MessagesColumns.FULL_DELETED_FOR_ALL
+            sMessagesProjectionMap[MessagesColumns.IMPORTANT] = MessagesColumns.FULL_IMPORTANT
+            sMessagesProjectionMap[MessagesColumns.FORWARD_COUNT] =
+                MessagesColumns.FULL_FORWARD_COUNT
+            sMessagesProjectionMap[MessagesColumns.HAS_ATTACHMENTS] =
+                MessagesColumns.FULL_HAS_ATTACHMENTS
+            sMessagesProjectionMap[MessagesColumns.STATUS] =
+                MessagesColumns.FULL_STATUS
+            sMessagesProjectionMap[MessagesColumns.ATTACH_TO] = MessagesColumns.FULL_ATTACH_TO
+            sMessagesProjectionMap[MessagesColumns.ORIGINAL_ID] =
+                MessagesColumns.FULL_ORIGINAL_ID
+            sMessagesProjectionMap[MessagesColumns.UPDATE_TIME] = MessagesColumns.FULL_UPDATE_TIME
+            sMessagesProjectionMap[MessagesColumns.ACTION] =
+                MessagesColumns.FULL_ACTION
+            sMessagesProjectionMap[MessagesColumns.ACTION_MID] =
+                MessagesColumns.FULL_ACTION_MID
+            sMessagesProjectionMap[MessagesColumns.ACTION_EMAIL] = MessagesColumns.FULL_ACTION_EMAIL
+            sMessagesProjectionMap[MessagesColumns.ACTION_TEXT] = MessagesColumns.FULL_ACTION_TEXT
+            sMessagesProjectionMap[MessagesColumns.PHOTO_50] =
+                MessagesColumns.FULL_PHOTO_50
+            sMessagesProjectionMap[MessagesColumns.PHOTO_100] = MessagesColumns.FULL_PHOTO_100
+            sMessagesProjectionMap[MessagesColumns.PHOTO_200] = MessagesColumns.FULL_PHOTO_200
+            sMessagesProjectionMap[MessagesColumns.RANDOM_ID] =
+                MessagesColumns.FULL_RANDOM_ID
+            sMessagesProjectionMap[MessagesColumns.EXTRAS] = MessagesColumns.FULL_EXTRAS
+            sMessagesProjectionMap[MessagesColumns.PAYLOAD] =
+                MessagesColumns.FULL_PAYLOAD
+            sMessagesProjectionMap[MessagesColumns.KEYBOARD] = MessagesColumns.FULL_KEYBOARD
 
             sMessagesAttachmentsProjectionMap = HashMap()
             sMessagesAttachmentsProjectionMap[BaseColumns._ID] = MessagesAttachmentsColumns.FULL_ID
@@ -831,22 +831,22 @@ class FenrirContentProvider : ContentProvider() {
             sDialogsProjectionMap[DialogsColumns.MINOR_ID] =
                 DialogsColumns.FULL_MINOR_ID
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_FROM_ID] =
-                MessageColumns.FULL_FROM_ID + " AS " + DialogsColumns.FOREIGN_MESSAGE_FROM_ID
+                MessagesColumns.FULL_FROM_ID + " AS " + DialogsColumns.FOREIGN_MESSAGE_FROM_ID
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_BODY] =
-                MessageColumns.FULL_BODY + " AS " + DialogsColumns.FOREIGN_MESSAGE_BODY
+                MessagesColumns.FULL_BODY + " AS " + DialogsColumns.FOREIGN_MESSAGE_BODY
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_DATE] =
-                MessageColumns.FULL_DATE + " AS " + DialogsColumns.FOREIGN_MESSAGE_DATE
+                MessagesColumns.FULL_DATE + " AS " + DialogsColumns.FOREIGN_MESSAGE_DATE
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_OUT] =
-                MessageColumns.FULL_OUT + " AS " + DialogsColumns.FOREIGN_MESSAGE_OUT
+                MessagesColumns.FULL_OUT + " AS " + DialogsColumns.FOREIGN_MESSAGE_OUT
             //sDialogsProjectionMap.put(DialogsColumns.FOREIGN_MESSAGE_READ_STATE, MessageColumns.FULL_READ_STATE + " AS " + DialogsColumns.FOREIGN_MESSAGE_READ_STATE);
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_HAS_ATTACHMENTS] =
-                MessageColumns.FULL_HAS_ATTACHMENTS + " AS " + DialogsColumns.FOREIGN_MESSAGE_HAS_ATTACHMENTS
+                MessagesColumns.FULL_HAS_ATTACHMENTS + " AS " + DialogsColumns.FOREIGN_MESSAGE_HAS_ATTACHMENTS
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_FWD_COUNT] =
-                MessageColumns.FULL_FORWARD_COUNT + " AS " + DialogsColumns.FOREIGN_MESSAGE_FWD_COUNT
+                MessagesColumns.FULL_FORWARD_COUNT + " AS " + DialogsColumns.FOREIGN_MESSAGE_FWD_COUNT
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_ACTION] =
-                MessageColumns.FULL_ACTION + " AS " + DialogsColumns.FOREIGN_MESSAGE_ACTION
+                MessagesColumns.FULL_ACTION + " AS " + DialogsColumns.FOREIGN_MESSAGE_ACTION
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_ENCRYPTED] =
-                MessageColumns.FULL_ENCRYPTED + " AS " + DialogsColumns.FOREIGN_MESSAGE_ENCRYPTED
+                MessagesColumns.FULL_ENCRYPTED + " AS " + DialogsColumns.FOREIGN_MESSAGE_ENCRYPTED
 
             sPeersProjectionMap = HashMap()
             sPeersProjectionMap[BaseColumns._ID] = PeersColumns.FULL_ID
@@ -871,83 +871,83 @@ class FenrirContentProvider : ContentProvider() {
             sPeersProjectionMap[PeersColumns.MINOR_ID] = PeersColumns.FULL_MINOR_ID
 
             sDocsProjectionMap = HashMap()
-            sDocsProjectionMap[BaseColumns._ID] = DocColumns.FULL_ID
-            sDocsProjectionMap[DocColumns.DOC_ID] = DocColumns.FULL_DOC_ID
-            sDocsProjectionMap[DocColumns.OWNER_ID] = DocColumns.FULL_OWNER_ID
-            sDocsProjectionMap[DocColumns.TITLE] = DocColumns.FULL_TITLE
-            sDocsProjectionMap[DocColumns.SIZE] = DocColumns.FULL_SIZE
-            sDocsProjectionMap[DocColumns.EXT] = DocColumns.FULL_EXT
-            sDocsProjectionMap[DocColumns.URL] = DocColumns.FULL_URL
-            sDocsProjectionMap[DocColumns.PHOTO] = DocColumns.FULL_PHOTO
-            sDocsProjectionMap[DocColumns.GRAFFITI] =
-                DocColumns.FULL_GRAFFITI
-            sDocsProjectionMap[DocColumns.VIDEO] = DocColumns.FULL_VIDEO
-            sDocsProjectionMap[DocColumns.DATE] = DocColumns.FULL_DATE
-            sDocsProjectionMap[DocColumns.TYPE] = DocColumns.FULL_TYPE
-            sDocsProjectionMap[DocColumns.ACCESS_KEY] = DocColumns.FULL_ACCESS_KEY
+            sDocsProjectionMap[BaseColumns._ID] = DocsColumns.FULL_ID
+            sDocsProjectionMap[DocsColumns.DOC_ID] = DocsColumns.FULL_DOC_ID
+            sDocsProjectionMap[DocsColumns.OWNER_ID] = DocsColumns.FULL_OWNER_ID
+            sDocsProjectionMap[DocsColumns.TITLE] = DocsColumns.FULL_TITLE
+            sDocsProjectionMap[DocsColumns.SIZE] = DocsColumns.FULL_SIZE
+            sDocsProjectionMap[DocsColumns.EXT] = DocsColumns.FULL_EXT
+            sDocsProjectionMap[DocsColumns.URL] = DocsColumns.FULL_URL
+            sDocsProjectionMap[DocsColumns.PHOTO] = DocsColumns.FULL_PHOTO
+            sDocsProjectionMap[DocsColumns.GRAFFITI] =
+                DocsColumns.FULL_GRAFFITI
+            sDocsProjectionMap[DocsColumns.VIDEO] = DocsColumns.FULL_VIDEO
+            sDocsProjectionMap[DocsColumns.DATE] = DocsColumns.FULL_DATE
+            sDocsProjectionMap[DocsColumns.TYPE] = DocsColumns.FULL_TYPE
+            sDocsProjectionMap[DocsColumns.ACCESS_KEY] = DocsColumns.FULL_ACCESS_KEY
 
             sVideosProjectionMap = HashMap()
             sVideosProjectionMap[BaseColumns._ID] =
-                VideoColumns.FULL_ID
-            sVideosProjectionMap[VideoColumns.VIDEO_ID] =
-                VideoColumns.FULL_VIDEO_ID
-            sVideosProjectionMap[VideoColumns.OWNER_ID] =
-                VideoColumns.FULL_OWNER_ID
-            sVideosProjectionMap[VideoColumns.ORIGINAL_OWNER_ID] =
-                VideoColumns.FULL_ORIGINAL_OWNER_ID
-            sVideosProjectionMap[VideoColumns.ALBUM_ID] = VideoColumns.FULL_ALBUM_ID
-            sVideosProjectionMap[VideoColumns.TITLE] = VideoColumns.FULL_TITLE
-            sVideosProjectionMap[VideoColumns.DESCRIPTION] =
-                VideoColumns.FULL_DESCRIPTION
-            sVideosProjectionMap[VideoColumns.DURATION] =
-                VideoColumns.FULL_DURATION
-            sVideosProjectionMap[VideoColumns.LINK] = VideoColumns.FULL_LINK
-            sVideosProjectionMap[VideoColumns.DATE] =
-                VideoColumns.FULL_DATE
-            sVideosProjectionMap[VideoColumns.ADDING_DATE] = VideoColumns.FULL_ADDING_DATE
-            sVideosProjectionMap[VideoColumns.VIEWS] = VideoColumns.FULL_VIEWS
-            sVideosProjectionMap[VideoColumns.PLAYER] = VideoColumns.FULL_PLAYER
-            sVideosProjectionMap[VideoColumns.IMAGE] = VideoColumns.FULL_IMAGE
-            sVideosProjectionMap[VideoColumns.ACCESS_KEY] =
-                VideoColumns.FULL_ACCESS_KEY
-            sVideosProjectionMap[VideoColumns.COMMENTS] =
-                VideoColumns.FULL_COMMENTS
-            sVideosProjectionMap[VideoColumns.CAN_COMMENT] = VideoColumns.FULL_CAN_COMMENT
-            sVideosProjectionMap[VideoColumns.IS_PRIVATE] = VideoColumns.FULL_IS_PRIVATE
-            sVideosProjectionMap[VideoColumns.IS_FAVORITE] = VideoColumns.FULL_IS_FAVORITE
-            sVideosProjectionMap[VideoColumns.CAN_REPOST] =
-                VideoColumns.FULL_CAN_REPOST
-            sVideosProjectionMap[VideoColumns.USER_LIKES] =
-                VideoColumns.FULL_USER_LIKES
-            sVideosProjectionMap[VideoColumns.REPEAT] =
-                VideoColumns.FULL_REPEAT
-            sVideosProjectionMap[VideoColumns.LIKES] = VideoColumns.FULL_LIKES
-            sVideosProjectionMap[VideoColumns.PRIVACY_VIEW] = VideoColumns.FULL_PRIVACY_VIEW
-            sVideosProjectionMap[VideoColumns.PRIVACY_COMMENT] =
-                VideoColumns.FULL_PRIVACY_COMMENT
-            sVideosProjectionMap[VideoColumns.MP4_240] =
-                VideoColumns.FULL_MP4_240
-            sVideosProjectionMap[VideoColumns.MP4_360] =
-                VideoColumns.FULL_MP4_360
-            sVideosProjectionMap[VideoColumns.MP4_480] =
-                VideoColumns.FULL_MP4_480
-            sVideosProjectionMap[VideoColumns.MP4_720] =
-                VideoColumns.FULL_MP4_720
-            sVideosProjectionMap[VideoColumns.MP4_1080] =
-                VideoColumns.FULL_MP4_1080
-            sVideosProjectionMap[VideoColumns.MP4_1440] =
-                VideoColumns.FULL_MP4_1440
-            sVideosProjectionMap[VideoColumns.MP4_2160] =
-                VideoColumns.FULL_MP4_2160
-            sVideosProjectionMap[VideoColumns.EXTERNAL] = VideoColumns.FULL_EXTERNAL
-            sVideosProjectionMap[VideoColumns.HLS] = VideoColumns.FULL_HLS
-            sVideosProjectionMap[VideoColumns.LIVE] =
-                VideoColumns.FULL_LIVE
-            sVideosProjectionMap[VideoColumns.PLATFORM] =
-                VideoColumns.FULL_PLATFORM
-            sVideosProjectionMap[VideoColumns.CAN_EDIT] =
-                VideoColumns.FULL_CAN_EDIT
-            sVideosProjectionMap[VideoColumns.CAN_ADD] = VideoColumns.FULL_CAN_ADD
+                VideosColumns.FULL_ID
+            sVideosProjectionMap[VideosColumns.VIDEO_ID] =
+                VideosColumns.FULL_VIDEO_ID
+            sVideosProjectionMap[VideosColumns.OWNER_ID] =
+                VideosColumns.FULL_OWNER_ID
+            sVideosProjectionMap[VideosColumns.ORIGINAL_OWNER_ID] =
+                VideosColumns.FULL_ORIGINAL_OWNER_ID
+            sVideosProjectionMap[VideosColumns.ALBUM_ID] = VideosColumns.FULL_ALBUM_ID
+            sVideosProjectionMap[VideosColumns.TITLE] = VideosColumns.FULL_TITLE
+            sVideosProjectionMap[VideosColumns.DESCRIPTION] =
+                VideosColumns.FULL_DESCRIPTION
+            sVideosProjectionMap[VideosColumns.DURATION] =
+                VideosColumns.FULL_DURATION
+            sVideosProjectionMap[VideosColumns.LINK] = VideosColumns.FULL_LINK
+            sVideosProjectionMap[VideosColumns.DATE] =
+                VideosColumns.FULL_DATE
+            sVideosProjectionMap[VideosColumns.ADDING_DATE] = VideosColumns.FULL_ADDING_DATE
+            sVideosProjectionMap[VideosColumns.VIEWS] = VideosColumns.FULL_VIEWS
+            sVideosProjectionMap[VideosColumns.PLAYER] = VideosColumns.FULL_PLAYER
+            sVideosProjectionMap[VideosColumns.IMAGE] = VideosColumns.FULL_IMAGE
+            sVideosProjectionMap[VideosColumns.ACCESS_KEY] =
+                VideosColumns.FULL_ACCESS_KEY
+            sVideosProjectionMap[VideosColumns.COMMENTS] =
+                VideosColumns.FULL_COMMENTS
+            sVideosProjectionMap[VideosColumns.CAN_COMMENT] = VideosColumns.FULL_CAN_COMMENT
+            sVideosProjectionMap[VideosColumns.IS_PRIVATE] = VideosColumns.FULL_IS_PRIVATE
+            sVideosProjectionMap[VideosColumns.IS_FAVORITE] = VideosColumns.FULL_IS_FAVORITE
+            sVideosProjectionMap[VideosColumns.CAN_REPOST] =
+                VideosColumns.FULL_CAN_REPOST
+            sVideosProjectionMap[VideosColumns.USER_LIKES] =
+                VideosColumns.FULL_USER_LIKES
+            sVideosProjectionMap[VideosColumns.REPEAT] =
+                VideosColumns.FULL_REPEAT
+            sVideosProjectionMap[VideosColumns.LIKES] = VideosColumns.FULL_LIKES
+            sVideosProjectionMap[VideosColumns.PRIVACY_VIEW] = VideosColumns.FULL_PRIVACY_VIEW
+            sVideosProjectionMap[VideosColumns.PRIVACY_COMMENT] =
+                VideosColumns.FULL_PRIVACY_COMMENT
+            sVideosProjectionMap[VideosColumns.MP4_240] =
+                VideosColumns.FULL_MP4_240
+            sVideosProjectionMap[VideosColumns.MP4_360] =
+                VideosColumns.FULL_MP4_360
+            sVideosProjectionMap[VideosColumns.MP4_480] =
+                VideosColumns.FULL_MP4_480
+            sVideosProjectionMap[VideosColumns.MP4_720] =
+                VideosColumns.FULL_MP4_720
+            sVideosProjectionMap[VideosColumns.MP4_1080] =
+                VideosColumns.FULL_MP4_1080
+            sVideosProjectionMap[VideosColumns.MP4_1440] =
+                VideosColumns.FULL_MP4_1440
+            sVideosProjectionMap[VideosColumns.MP4_2160] =
+                VideosColumns.FULL_MP4_2160
+            sVideosProjectionMap[VideosColumns.EXTERNAL] = VideosColumns.FULL_EXTERNAL
+            sVideosProjectionMap[VideosColumns.HLS] = VideosColumns.FULL_HLS
+            sVideosProjectionMap[VideosColumns.LIVE] =
+                VideosColumns.FULL_LIVE
+            sVideosProjectionMap[VideosColumns.PLATFORM] =
+                VideosColumns.FULL_PLATFORM
+            sVideosProjectionMap[VideosColumns.CAN_EDIT] =
+                VideosColumns.FULL_CAN_EDIT
+            sVideosProjectionMap[VideosColumns.CAN_ADD] = VideosColumns.FULL_CAN_ADD
 
             sPostsProjectionMap = HashMap()
             sPostsProjectionMap[BaseColumns._ID] = PostsColumns.FULL_ID
@@ -994,37 +994,37 @@ class FenrirContentProvider : ContentProvider() {
 
             sPostsMessagesAttachmentsProjectionMap = HashMap()
             sPostsMessagesAttachmentsProjectionMap[BaseColumns._ID] =
-                WallAttachmentsColumns.FULL_ID
-            sPostsMessagesAttachmentsProjectionMap[WallAttachmentsColumns.P_ID] =
-                WallAttachmentsColumns.FULL_P_ID
-            sPostsMessagesAttachmentsProjectionMap[WallAttachmentsColumns.DATA] =
-                WallAttachmentsColumns.FULL_DATA
+                WallsAttachmentsColumns.FULL_ID
+            sPostsMessagesAttachmentsProjectionMap[WallsAttachmentsColumns.P_ID] =
+                WallsAttachmentsColumns.FULL_P_ID
+            sPostsMessagesAttachmentsProjectionMap[WallsAttachmentsColumns.DATA] =
+                WallsAttachmentsColumns.FULL_DATA
 
             sGroupsProjectionMap = HashMap()
-            sGroupsProjectionMap[BaseColumns._ID] = GroupColumns.FULL_ID
-            sGroupsProjectionMap[GroupColumns.NAME] = GroupColumns.FULL_NAME
-            sGroupsProjectionMap[GroupColumns.SCREEN_NAME] = GroupColumns.FULL_SCREEN_NAME
-            sGroupsProjectionMap[GroupColumns.HAS_UNSEEN_STORIES] =
-                GroupColumns.FULL_HAS_UNSEEN_STORIES
-            sGroupsProjectionMap[GroupColumns.IS_CLOSED] =
-                GroupColumns.FULL_IS_CLOSED
-            sGroupsProjectionMap[GroupColumns.IS_VERIFIED] = GroupColumns.FULL_IS_VERIFIED
-            sGroupsProjectionMap[GroupColumns.IS_ADMIN] = GroupColumns.FULL_IS_ADMIN
-            sGroupsProjectionMap[GroupColumns.ADMIN_LEVEL] = GroupColumns.FULL_ADMIN_LEVEL
-            sGroupsProjectionMap[GroupColumns.IS_MEMBER] = GroupColumns.FULL_IS_MEMBER
-            sGroupsProjectionMap[GroupColumns.MEMBERS_COUNT] = GroupColumns.FULL_MEMBERS_COUNT
-            sGroupsProjectionMap[GroupColumns.MEMBER_STATUS] = GroupColumns.FULL_MEMBER_STATUS
-            sGroupsProjectionMap[GroupColumns.TYPE] =
-                GroupColumns.FULL_TYPE
-            sGroupsProjectionMap[GroupColumns.PHOTO_50] =
-                GroupColumns.FULL_PHOTO_50
-            sGroupsProjectionMap[GroupColumns.PHOTO_100] = GroupColumns.FULL_PHOTO_100
-            sGroupsProjectionMap[GroupColumns.PHOTO_200] =
-                GroupColumns.FULL_PHOTO_200
-            sGroupsProjectionMap[GroupColumns.CAN_ADD_TOPICS] =
-                GroupColumns.FULL_CAN_ADD_TOPICS
-            sGroupsProjectionMap[GroupColumns.TOPICS_ORDER] = GroupColumns.FULL_TOPICS_ORDER
-            sGroupsProjectionMap[GroupColumns.IS_BLACK_LISTED] = GroupColumns.FULL_IS_BLACK_LISTED
+            sGroupsProjectionMap[BaseColumns._ID] = GroupsColumns.FULL_ID
+            sGroupsProjectionMap[GroupsColumns.NAME] = GroupsColumns.FULL_NAME
+            sGroupsProjectionMap[GroupsColumns.SCREEN_NAME] = GroupsColumns.FULL_SCREEN_NAME
+            sGroupsProjectionMap[GroupsColumns.HAS_UNSEEN_STORIES] =
+                GroupsColumns.FULL_HAS_UNSEEN_STORIES
+            sGroupsProjectionMap[GroupsColumns.IS_CLOSED] =
+                GroupsColumns.FULL_IS_CLOSED
+            sGroupsProjectionMap[GroupsColumns.IS_VERIFIED] = GroupsColumns.FULL_IS_VERIFIED
+            sGroupsProjectionMap[GroupsColumns.IS_ADMIN] = GroupsColumns.FULL_IS_ADMIN
+            sGroupsProjectionMap[GroupsColumns.ADMIN_LEVEL] = GroupsColumns.FULL_ADMIN_LEVEL
+            sGroupsProjectionMap[GroupsColumns.IS_MEMBER] = GroupsColumns.FULL_IS_MEMBER
+            sGroupsProjectionMap[GroupsColumns.MEMBERS_COUNT] = GroupsColumns.FULL_MEMBERS_COUNT
+            sGroupsProjectionMap[GroupsColumns.MEMBER_STATUS] = GroupsColumns.FULL_MEMBER_STATUS
+            sGroupsProjectionMap[GroupsColumns.TYPE] =
+                GroupsColumns.FULL_TYPE
+            sGroupsProjectionMap[GroupsColumns.PHOTO_50] =
+                GroupsColumns.FULL_PHOTO_50
+            sGroupsProjectionMap[GroupsColumns.PHOTO_100] = GroupsColumns.FULL_PHOTO_100
+            sGroupsProjectionMap[GroupsColumns.PHOTO_200] =
+                GroupsColumns.FULL_PHOTO_200
+            sGroupsProjectionMap[GroupsColumns.CAN_ADD_TOPICS] =
+                GroupsColumns.FULL_CAN_ADD_TOPICS
+            sGroupsProjectionMap[GroupsColumns.TOPICS_ORDER] = GroupsColumns.FULL_TOPICS_ORDER
+            sGroupsProjectionMap[GroupsColumns.IS_BLACK_LISTED] = GroupsColumns.FULL_IS_BLACK_LISTED
 
             sCommentsProjectionMap = HashMap()
             sCommentsProjectionMap[BaseColumns._ID] = CommentsColumns.FULL_ID
@@ -1146,9 +1146,9 @@ class FenrirContentProvider : ContentProvider() {
 
             sGroupsDetProjectionMap = HashMap()
             sGroupsDetProjectionMap[BaseColumns._ID] =
-                GroupsDetColumns.FULL_ID
-            sGroupsDetProjectionMap[GroupsDetColumns.DATA] =
-                GroupsDetColumns.FULL_DATA
+                GroupsDetailsColumns.FULL_ID
+            sGroupsDetProjectionMap[GroupsDetailsColumns.DATA] =
+                GroupsDetailsColumns.FULL_DATA
 
             sVideoAlbumsProjectionMap = HashMap()
             sVideoAlbumsProjectionMap[BaseColumns._ID] =
@@ -1189,15 +1189,15 @@ class FenrirContentProvider : ContentProvider() {
             //sTopicsProjectionMap.put(TopicsColumns.POLL_ID, TopicsColumns.FULL_POLL_ID);
 
             sNoticationsProjectionMap = HashMap()
-            sNoticationsProjectionMap[BaseColumns._ID] = NotificationColumns.FULL_ID
-            sNoticationsProjectionMap[NotificationColumns.DATE] =
-                NotificationColumns.FULL_DATE
-            sNoticationsProjectionMap[NotificationColumns.CONTENT_PACK] =
-                NotificationColumns.FULL_CONTENT_PACK
+            sNoticationsProjectionMap[BaseColumns._ID] = NotificationsColumns.FULL_ID
+            sNoticationsProjectionMap[NotificationsColumns.DATE] =
+                NotificationsColumns.FULL_DATE
+            sNoticationsProjectionMap[NotificationsColumns.CONTENT_PACK] =
+                NotificationsColumns.FULL_CONTENT_PACK
 
             sUserDetProjectionMap = HashMap()
-            sUserDetProjectionMap[BaseColumns._ID] = UsersDetColumns.FULL_ID
-            sUserDetProjectionMap[UsersDetColumns.DATA] = UsersDetColumns.FULL_DATA
+            sUserDetProjectionMap[BaseColumns._ID] = UsersDetailsColumns.FULL_ID
+            sUserDetProjectionMap[UsersDetailsColumns.DATA] = UsersDetailsColumns.FULL_DATA
 
             sFavePhotosProjectionMap = HashMap()
             sFavePhotosProjectionMap[BaseColumns._ID] =
@@ -1221,25 +1221,25 @@ class FenrirContentProvider : ContentProvider() {
                 FaveArticlesColumns.FULL_ARTICLE
 
             sFaveProductsProjectionMap = HashMap()
-            sFaveProductsProjectionMap[BaseColumns._ID] = FaveProductColumns.FULL_ID
-            sFaveProductsProjectionMap[FaveProductColumns.PRODUCT] =
-                FaveProductColumns.FULL_PRODUCT
+            sFaveProductsProjectionMap[BaseColumns._ID] = FaveProductsColumns.FULL_ID
+            sFaveProductsProjectionMap[FaveProductsColumns.PRODUCT] =
+                FaveProductsColumns.FULL_PRODUCT
 
             sFaveUsersProjectionMap = HashMap()
             sFaveUsersProjectionMap[BaseColumns._ID] =
-                FavePageColumns.FULL_ID
-            sFaveUsersProjectionMap[FavePageColumns.UPDATED_TIME] = FavePageColumns.UPDATED_TIME
-            sFaveUsersProjectionMap[FavePageColumns.DESCRIPTION] =
-                FavePageColumns.DESCRIPTION
-            sFaveUsersProjectionMap[FavePageColumns.FAVE_TYPE] = FavePageColumns.FAVE_TYPE
+                FavePagesColumns.FULL_ID
+            sFaveUsersProjectionMap[FavePagesColumns.UPDATED_TIME] = FavePagesColumns.UPDATED_TIME
+            sFaveUsersProjectionMap[FavePagesColumns.DESCRIPTION] =
+                FavePagesColumns.DESCRIPTION
+            sFaveUsersProjectionMap[FavePagesColumns.FAVE_TYPE] = FavePagesColumns.FAVE_TYPE
 
             sFaveGroupsProjectionMap = HashMap()
             sFaveGroupsProjectionMap[BaseColumns._ID] =
-                FavePageColumns.FULL_GROUPS_ID
-            sFaveGroupsProjectionMap[FavePageColumns.UPDATED_TIME] =
-                FavePageColumns.UPDATED_TIME
-            sFaveGroupsProjectionMap[FavePageColumns.DESCRIPTION] = FavePageColumns.DESCRIPTION
-            sFaveGroupsProjectionMap[FavePageColumns.FAVE_TYPE] = FavePageColumns.FAVE_TYPE
+                FavePagesColumns.FULL_GROUPS_ID
+            sFaveGroupsProjectionMap[FavePagesColumns.UPDATED_TIME] =
+                FavePagesColumns.UPDATED_TIME
+            sFaveGroupsProjectionMap[FavePagesColumns.DESCRIPTION] = FavePagesColumns.DESCRIPTION
+            sFaveGroupsProjectionMap[FavePagesColumns.FAVE_TYPE] = FavePagesColumns.FAVE_TYPE
 
             sFaveLinksProjectionMap = HashMap()
             sFaveLinksProjectionMap[BaseColumns._ID] =
@@ -1280,20 +1280,23 @@ class FenrirContentProvider : ContentProvider() {
                 FriendListsColumns.FULL_NAME
 
             sKeysProjectionMap = HashMap()
-            sKeysProjectionMap[BaseColumns._ID] = KeyColumns.FULL_ID
-            sKeysProjectionMap[KeyColumns.VERSION] = KeyColumns.FULL_VERSION
-            sKeysProjectionMap[KeyColumns.PEER_ID] =
-                KeyColumns.FULL_PEER_ID
-            sKeysProjectionMap[KeyColumns.SESSION_ID] =
-                KeyColumns.FULL_SESSION_ID
-            sKeysProjectionMap[KeyColumns.DATE] = KeyColumns.FULL_DATE
-            sKeysProjectionMap[KeyColumns.START_SESSION_MESSAGE_ID] =
-                KeyColumns.FULL_START_SESSION_MESSAGE_ID
-            sKeysProjectionMap[KeyColumns.END_SESSION_MESSAGE_ID] =
-                KeyColumns.FULL_END_SESSION_MESSAGE_ID
-            sKeysProjectionMap[KeyColumns.OUT_KEY] = KeyColumns.FULL_OUT_KEY
-            sKeysProjectionMap[KeyColumns.IN_KEY] =
-                KeyColumns.FULL_IN_KEY
+            sKeysProjectionMap[BaseColumns._ID] = EncryptionKeysForMessagesColumns.FULL_ID
+            sKeysProjectionMap[EncryptionKeysForMessagesColumns.VERSION] =
+                EncryptionKeysForMessagesColumns.FULL_VERSION
+            sKeysProjectionMap[EncryptionKeysForMessagesColumns.PEER_ID] =
+                EncryptionKeysForMessagesColumns.FULL_PEER_ID
+            sKeysProjectionMap[EncryptionKeysForMessagesColumns.SESSION_ID] =
+                EncryptionKeysForMessagesColumns.FULL_SESSION_ID
+            sKeysProjectionMap[EncryptionKeysForMessagesColumns.DATE] =
+                EncryptionKeysForMessagesColumns.FULL_DATE
+            sKeysProjectionMap[EncryptionKeysForMessagesColumns.START_SESSION_MESSAGE_ID] =
+                EncryptionKeysForMessagesColumns.FULL_START_SESSION_MESSAGE_ID
+            sKeysProjectionMap[EncryptionKeysForMessagesColumns.END_SESSION_MESSAGE_ID] =
+                EncryptionKeysForMessagesColumns.FULL_END_SESSION_MESSAGE_ID
+            sKeysProjectionMap[EncryptionKeysForMessagesColumns.OUT_KEY] =
+                EncryptionKeysForMessagesColumns.FULL_OUT_KEY
+            sKeysProjectionMap[EncryptionKeysForMessagesColumns.IN_KEY] =
+                EncryptionKeysForMessagesColumns.FULL_IN_KEY
 
             //testProjectionMaps()
         }
@@ -1365,12 +1368,12 @@ class FenrirContentProvider : ContentProvider() {
         val matchUri: Int = sUriMatcher.match(uri)
         when (matchUri) {
             URI_USERS -> {
-                rowId = db.replace(UserColumns.TABLENAME, null, values)
+                rowId = db.replace(UsersColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(USER_CONTENT_URI, rowId)
             }
 
             URI_MESSAGES -> {
-                rowId = db.replace(MessageColumns.TABLENAME, null, values)
+                rowId = db.replace(MessagesColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(MESSAGE_CONTENT_URI, rowId)
             }
 
@@ -1400,12 +1403,12 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_DOCS -> {
-                rowId = db.replace(DocColumns.TABLENAME, null, values)
+                rowId = db.replace(DocsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(DOCS_CONTENT_URI, rowId)
             }
 
             URI_VIDEOS -> {
-                rowId = db.replace(VideoColumns.TABLENAME, null, values)
+                rowId = db.replace(VideosColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(VIDEOS_CONTENT_URI, rowId)
             }
 
@@ -1415,17 +1418,17 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_POST_ATTACHMENTS -> {
-                rowId = db.replace(WallAttachmentsColumns.TABLENAME, null, values)
+                rowId = db.replace(WallsAttachmentsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(POSTS_ATTACHMENTS_CONTENT_URI, rowId)
             }
 
             URI_GROUPS -> {
-                rowId = db.replace(GroupColumns.TABLENAME, null, values)
+                rowId = db.replace(GroupsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(GROUPS_CONTENT_URI, rowId)
             }
 
             URI_RELATIVESHIP -> {
-                rowId = db.replace(RelationshipColumns.TABLENAME, null, values)
+                rowId = db.replace(RelationshipsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(RELATIVESHIP_CONTENT_URI, rowId)
             }
 
@@ -1450,7 +1453,7 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_GROUPS_DET -> {
-                rowId = db.replace(GroupsDetColumns.TABLENAME, null, values)
+                rowId = db.replace(GroupsDetailsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(GROUPS_DET_CONTENT_URI, rowId)
             }
 
@@ -1465,12 +1468,12 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_NOTIFICATIONS -> {
-                rowId = db.replace(NotificationColumns.TABLENAME, null, values)
+                rowId = db.replace(NotificationsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(NOTIFICATIONS_CONTENT_URI, rowId)
             }
 
             URI_USER_DET -> {
-                rowId = db.replace(UsersDetColumns.TABLENAME, null, values)
+                rowId = db.replace(UsersDetailsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(USER_DET_CONTENT_URI, rowId)
             }
 
@@ -1485,12 +1488,12 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_FAVE_PAGES -> {
-                rowId = db.replace(FavePageColumns.TABLENAME, null, values)
+                rowId = db.replace(FavePagesColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FAVE_PAGES_CONTENT_URI, rowId)
             }
 
             URI_FAVE_GROUPS -> {
-                rowId = db.replace(FavePageColumns.GROUPSTABLENAME, null, values)
+                rowId = db.replace(FavePagesColumns.GROUPSTABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FAVE_GROUPS_CONTENT_URI, rowId)
             }
 
@@ -1505,7 +1508,7 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_FAVE_PRODUCTS -> {
-                rowId = db.replace(FaveProductColumns.TABLENAME, null, values)
+                rowId = db.replace(FaveProductsColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(FAVE_PRODUCTS_CONTENT_URI, rowId)
             }
 
@@ -1530,7 +1533,7 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_KEYS -> {
-                rowId = db.replace(KeyColumns.TABLENAME, null, values)
+                rowId = db.replace(EncryptionKeysForMessagesColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(KEYS_CONTENT_URI, rowId)
             }
 
@@ -1538,7 +1541,7 @@ class FenrirContentProvider : ContentProvider() {
         }
         safeNotifyChange(resultUri)
         if (matchUri == URI_MESSAGES && values != null) {
-            val peerId: Long = values.getAsLong(MessageColumns.PEER_ID)
+            val peerId: Long = values.getAsLong(MessagesColumns.PEER_ID)
             val dUri: Uri = ContentUris.withAppendedId(DIALOGS_CONTENT_URI, peerId)
             safeNotifyChange(dUri)
         }
@@ -1559,33 +1562,33 @@ class FenrirContentProvider : ContentProvider() {
         val _QB = SQLiteQueryBuilder()
         val _TableType: Int = when (sUriMatcher.match(uri)) {
             URI_USERS -> {
-                _QB.tables = UserColumns.TABLENAME
+                _QB.tables = UsersColumns.TABLENAME
                 _QB.projectionMap = sUsersProjectionMap
                 URI_USERS
             }
 
             URI_USERS_ID -> {
-                _QB.tables = UserColumns.TABLENAME
+                _QB.tables = UsersColumns.TABLENAME
                 _QB.projectionMap = sUsersProjectionMap
-                _QB.appendWhere(UserColumns.FULL_ID + "=" + uri.pathSegments[1])
+                _QB.appendWhere(UsersColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_USERS
             }
 
             URI_GROUPS -> {
-                _QB.tables = GroupColumns.TABLENAME
+                _QB.tables = GroupsColumns.TABLENAME
                 _QB.projectionMap = sGroupsProjectionMap
                 URI_GROUPS
             }
 
             URI_GROUPS_ID -> {
-                _QB.tables = GroupColumns.TABLENAME
+                _QB.tables = GroupsColumns.TABLENAME
                 _QB.projectionMap = sGroupsProjectionMap
-                _QB.appendWhere(GroupColumns.FULL_ID + "=" + uri.pathSegments[1])
+                _QB.appendWhere(GroupsColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_GROUPS
             }
 
             URI_MESSAGES -> {
-                _QB.tables = MessageColumns.TABLENAME
+                _QB.tables = MessagesColumns.TABLENAME
                 //" LEFT OUTER JOIN " + PeerColumns.TABLENAME + " ON " + MessageColumns.FULL_FROM_ID + " = " + PeerColumns.FULL_ID +
                 //" LEFT OUTER JOIN " + UserColumns.TABLENAME + " ON " + MessageColumns.FULL_ACTION_MID + " = " + UserColumns.FULL_ID);
                 _QB.projectionMap = sMessagesProjectionMap
@@ -1593,11 +1596,11 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_MESSAGES_ID -> {
-                _QB.tables = MessageColumns.TABLENAME
+                _QB.tables = MessagesColumns.TABLENAME
                 //" LEFT OUTER JOIN " + PeerColumns.TABLENAME + " ON " + MessageColumns.FULL_FROM_ID + " = " + PeerColumns.FULL_ID +
                 //" LEFT OUTER JOIN " + UserColumns.TABLENAME + " ON " + MessageColumns.FULL_ACTION_MID + " = " + UserColumns.FULL_ID);
                 _QB.projectionMap = sMessagesProjectionMap
-                _QB.appendWhere(MessageColumns.FULL_ID + "=" + uri.pathSegments[1])
+                _QB.appendWhere(MessagesColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_MESSAGES
             }
 
@@ -1647,7 +1650,7 @@ class FenrirContentProvider : ContentProvider() {
 
             URI_DIALOGS -> {
                 _QB.tables =
-                    DialogsColumns.TABLENAME + " LEFT OUTER JOIN " + MessageColumns.TABLENAME + " ON " + DialogsColumns.FULL_LAST_MESSAGE_ID + " = " + MessageColumns.FULL_ID
+                    DialogsColumns.TABLENAME + " LEFT OUTER JOIN " + MessagesColumns.TABLENAME + " ON " + DialogsColumns.FULL_LAST_MESSAGE_ID + " = " + MessagesColumns.FULL_ID
                 _QB.projectionMap = sDialogsProjectionMap
                 URI_DIALOGS
             }
@@ -1659,28 +1662,28 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_DOCS -> {
-                _QB.tables = DocColumns.TABLENAME
+                _QB.tables = DocsColumns.TABLENAME
                 _QB.projectionMap = sDocsProjectionMap
                 URI_DOCS
             }
 
             URI_DOCS_ID -> {
-                _QB.tables = DocColumns.TABLENAME
+                _QB.tables = DocsColumns.TABLENAME
                 _QB.projectionMap = sDocsProjectionMap
-                _QB.appendWhere(DocColumns.FULL_ID + "=" + uri.pathSegments[1])
+                _QB.appendWhere(DocsColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_DOCS
             }
 
             URI_VIDEOS -> {
-                _QB.tables = VideoColumns.TABLENAME
+                _QB.tables = VideosColumns.TABLENAME
                 _QB.projectionMap = sVideosProjectionMap
                 URI_VIDEOS
             }
 
             URI_VIDEOS_ID -> {
-                _QB.tables = VideoColumns.TABLENAME
+                _QB.tables = VideosColumns.TABLENAME
                 _QB.projectionMap = sVideosProjectionMap
-                _QB.appendWhere(VideoColumns.FULL_ID + "=" + uri.pathSegments[1])
+                _QB.appendWhere(VideosColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_DOCS
             }
 
@@ -1698,22 +1701,22 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_POST_ATTACHMENTS -> {
-                _QB.tables = WallAttachmentsColumns.TABLENAME
+                _QB.tables = WallsAttachmentsColumns.TABLENAME
                 _QB.projectionMap = sPostsMessagesAttachmentsProjectionMap
                 URI_POST_ATTACHMENTS
             }
 
             URI_POST_ATTACHMENTS_ID -> {
-                _QB.tables = WallAttachmentsColumns.TABLENAME
+                _QB.tables = WallsAttachmentsColumns.TABLENAME
                 _QB.projectionMap = sPostsMessagesAttachmentsProjectionMap
-                _QB.appendWhere(WallAttachmentsColumns.FULL_ID + "=" + uri.pathSegments[1])
+                _QB.appendWhere(WallsAttachmentsColumns.FULL_ID + "=" + uri.pathSegments[1])
                 URI_POST_ATTACHMENTS
             }
 
             URI_RELATIVESHIP -> {
-                _QB.tables = RelationshipColumns.TABLENAME +
-                        " LEFT OUTER JOIN " + UserColumns.TABLENAME + " ON " + RelationshipColumns.FULL_SUBJECT_ID + " = " + UserColumns.FULL_ID +
-                        " LEFT OUTER JOIN " + GroupColumns.TABLENAME + " ON -" + RelationshipColumns.FULL_SUBJECT_ID + " = " + GroupColumns.FULL_ID
+                _QB.tables = RelationshipsColumns.TABLENAME +
+                        " LEFT OUTER JOIN " + UsersColumns.TABLENAME + " ON " + RelationshipsColumns.FULL_SUBJECT_ID + " = " + UsersColumns.FULL_ID +
+                        " LEFT OUTER JOIN " + GroupsColumns.TABLENAME + " ON -" + RelationshipsColumns.FULL_SUBJECT_ID + " = " + GroupsColumns.FULL_ID
                 _QB.projectionMap = sRelativeshipProjectionMap
                 URI_RELATIVESHIP
             }
@@ -1769,15 +1772,15 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_GROUPS_DET -> {
-                _QB.tables = GroupsDetColumns.TABLENAME
+                _QB.tables = GroupsDetailsColumns.TABLENAME
                 _QB.projectionMap = sGroupsDetProjectionMap
                 URI_GROUPS_DET
             }
 
             URI_GROUPS_DET_ID -> {
-                _QB.tables = GroupsDetColumns.TABLENAME
+                _QB.tables = GroupsDetailsColumns.TABLENAME
                 _QB.projectionMap = sGroupsDetProjectionMap
-                _QB.appendWhere(GroupsDetColumns.FULL_ID + " = " + uri.pathSegments[1])
+                _QB.appendWhere(GroupsDetailsColumns.FULL_ID + " = " + uri.pathSegments[1])
                 URI_GROUPS_DET
             }
 
@@ -1794,21 +1797,21 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_NOTIFICATIONS -> {
-                _QB.tables = NotificationColumns.TABLENAME
+                _QB.tables = NotificationsColumns.TABLENAME
                 _QB.projectionMap = sNoticationsProjectionMap
                 URI_NOTIFICATIONS
             }
 
             URI_USER_DET -> {
-                _QB.tables = UsersDetColumns.TABLENAME
+                _QB.tables = UsersDetailsColumns.TABLENAME
                 _QB.projectionMap = sUserDetProjectionMap
                 URI_USER_DET
             }
 
             URI_USER_DET_ID -> {
-                _QB.tables = UsersDetColumns.TABLENAME
+                _QB.tables = UsersDetailsColumns.TABLENAME
                 _QB.projectionMap = sUserDetProjectionMap
-                _QB.appendWhere(UsersDetColumns.FULL_ID + " = " + uri.pathSegments[1])
+                _QB.appendWhere(UsersDetailsColumns.FULL_ID + " = " + uri.pathSegments[1])
                 URI_USER_DET
             }
 
@@ -1831,23 +1834,23 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_FAVE_PRODUCTS -> {
-                _QB.tables = FaveProductColumns.TABLENAME
+                _QB.tables = FaveProductsColumns.TABLENAME
                 _QB.projectionMap = sFaveProductsProjectionMap
                 URI_FAVE_PRODUCTS
             }
 
             URI_FAVE_PAGES -> {
-                _QB.tables = FavePageColumns.TABLENAME +
-                        " LEFT OUTER JOIN " + UserColumns.TABLENAME +
-                        " users ON " + FavePageColumns.FULL_ID + " = users." + BaseColumns._ID
+                _QB.tables = FavePagesColumns.TABLENAME +
+                        " LEFT OUTER JOIN " + UsersColumns.TABLENAME +
+                        " users ON " + FavePagesColumns.FULL_ID + " = users." + BaseColumns._ID
                 _QB.projectionMap = sFaveUsersProjectionMap
                 URI_FAVE_PAGES
             }
 
             URI_FAVE_GROUPS -> {
-                _QB.tables = FavePageColumns.GROUPSTABLENAME +
-                        " LEFT OUTER JOIN " + GroupColumns.TABLENAME +
-                        " groups ON " + FavePageColumns.FULL_GROUPS_ID + " = groups." + BaseColumns._ID
+                _QB.tables = FavePagesColumns.GROUPSTABLENAME +
+                        " LEFT OUTER JOIN " + GroupsColumns.TABLENAME +
+                        " groups ON " + FavePagesColumns.FULL_GROUPS_ID + " = groups." + BaseColumns._ID
                 _QB.projectionMap = sFaveGroupsProjectionMap
                 URI_FAVE_GROUPS
             }
@@ -1883,7 +1886,7 @@ class FenrirContentProvider : ContentProvider() {
             }
 
             URI_KEYS -> {
-                _QB.tables = KeyColumns.TABLENAME
+                _QB.tables = EncryptionKeysForMessagesColumns.TABLENAME
                 _QB.projectionMap = sKeysProjectionMap
                 URI_KEYS
             }
@@ -1895,40 +1898,40 @@ class FenrirContentProvider : ContentProvider() {
         val _OrderBy: String = if (sortOrder.isNullOrEmpty()) {
             // If no sort order is specified use the default
             when (_TableType) {
-                URI_USERS -> UserColumns.FULL_LAST_NAME + " ASC"
-                URI_GROUPS -> GroupColumns.FULL_NAME + " ASC"
-                URI_MESSAGES -> MessageColumns.FULL_STATUS + ", " + MessageColumns.FULL_ID + " ASC"
+                URI_USERS -> UsersColumns.FULL_LAST_NAME + " ASC"
+                URI_GROUPS -> GroupsColumns.FULL_NAME + " ASC"
+                URI_MESSAGES -> MessagesColumns.FULL_STATUS + ", " + MessagesColumns.FULL_ID + " ASC"
                 URI_MESSAGES_ATTACHMENTS -> MessagesAttachmentsColumns.FULL_ID + " ASC"
                 URI_PHOTOS -> PhotosColumns.FULL_ID + " ASC"
                 URI_PHOTOS_EXTENDED -> PhotosExtendedColumns.FULL_ID + " ASC"
-                URI_DIALOGS -> MessageColumns.FULL_DATE + " DESC"
+                URI_DIALOGS -> MessagesColumns.FULL_DATE + " DESC"
                 URI_PEERS -> PeersColumns.FULL_ID + " DESC"
-                URI_DOCS -> DocColumns.FULL_ID + " ASC"
-                URI_VIDEOS -> VideoColumns.FULL_ID + " ASC"
+                URI_DOCS -> DocsColumns.FULL_ID + " ASC"
+                URI_VIDEOS -> VideosColumns.FULL_ID + " ASC"
                 URI_POSTS -> PostsColumns.FULL_ID + " ASC"
-                URI_POST_ATTACHMENTS -> WallAttachmentsColumns.FULL_ID + " ASC"
-                URI_RELATIVESHIP -> RelationshipColumns.FULL_ID + " ASC"
+                URI_POST_ATTACHMENTS -> WallsAttachmentsColumns.FULL_ID + " ASC"
+                URI_RELATIVESHIP -> RelationshipsColumns.FULL_ID + " ASC"
                 URI_COMMENTS -> CommentsColumns.FULL_COMMENT_ID + " ASC"
                 URI_COMMENTS_ATTACHMENTS -> CommentsAttachmentsColumns.FULL_ID + " ASC"
                 URI_PHOTO_ALBUMS -> PhotoAlbumsColumns.FULL_ID + " ASC"
                 URI_NEWS -> NewsColumns.FULL_ID + " ASC"
-                URI_GROUPS_DET -> GroupsDetColumns.FULL_ID + " ASC"
+                URI_GROUPS_DET -> GroupsDetailsColumns.FULL_ID + " ASC"
                 URI_VIDEO_ALBUMS -> VideoAlbumsColumns.FULL_ID + " ASC"
                 URI_TOPICS -> TopicsColumns.FULL_ID + " ASC"
-                URI_NOTIFICATIONS -> NotificationColumns.FULL_ID + " ASC"
-                URI_USER_DET -> UsersDetColumns.FULL_ID + " ASC"
+                URI_NOTIFICATIONS -> NotificationsColumns.FULL_ID + " ASC"
+                URI_USER_DET -> UsersDetailsColumns.FULL_ID + " ASC"
                 URI_FAVE_PHOTOS -> FavePhotosColumns.FULL_ID + " ASC"
                 URI_FAVE_VIDEOS -> FaveVideosColumns.FULL_ID + " ASC"
                 URI_FAVE_ARTICLES -> FaveArticlesColumns.FULL_ID + " ASC"
-                URI_FAVE_PRODUCTS -> FaveProductColumns.FULL_ID + " ASC"
-                URI_FAVE_PAGES -> FavePageColumns.UPDATED_TIME + " DESC"
-                URI_FAVE_GROUPS -> FavePageColumns.UPDATED_TIME + " DESC"
+                URI_FAVE_PRODUCTS -> FaveProductsColumns.FULL_ID + " ASC"
+                URI_FAVE_PAGES -> FavePagesColumns.UPDATED_TIME + " DESC"
+                URI_FAVE_GROUPS -> FavePagesColumns.UPDATED_TIME + " DESC"
                 URI_FAVE_LINKS -> FaveLinksColumns.FULL_ID + " ASC"
                 URI_FAVE_POSTS -> FavePostsColumns.FULL_ID + " ASC"
                 URI_COUNTRIES -> CountriesColumns.FULL_ID + " ASC"
                 URI_FEED_LISTS -> FeedListsColumns.FULL_ID + " ASC"
                 URI_FRIEND_LISTS -> FriendListsColumns.FULL_ID + " ASC"
-                URI_KEYS -> KeyColumns.FULL_ID + " ASC"
+                URI_KEYS -> EncryptionKeysForMessagesColumns.FULL_ID + " ASC"
                 else -> throw UnknownError("Unknown table type for sort order")
             }
         } else {
@@ -2009,19 +2012,19 @@ class FenrirContentProvider : ContentProvider() {
         var selection = pSelection
         val tbName: String
         when (sUriMatcher.match(uri)) {
-            URI_MESSAGES -> tbName = MessageColumns.TABLENAME
+            URI_MESSAGES -> tbName = MessagesColumns.TABLENAME
             URI_MESSAGES_ID -> {
                 val id = uri.lastPathSegment
                 selection = if (selection.isNullOrEmpty()) {
-                    MessageColumns._ID + " = " + id
+                    MessagesColumns._ID + " = " + id
                 } else {
-                    selection + " AND " + MessageColumns._ID + " = " + id
+                    selection + " AND " + MessagesColumns._ID + " = " + id
                 }
-                tbName = MessageColumns.TABLENAME
+                tbName = MessagesColumns.TABLENAME
             }
 
             URI_DIALOGS -> tbName = DialogsColumns.TABLENAME
-            URI_RELATIVESHIP -> tbName = RelationshipColumns.TABLENAME
+            URI_RELATIVESHIP -> tbName = RelationshipsColumns.TABLENAME
             URI_POSTS -> tbName = PostsColumns.TABLENAME
             URI_POSTS_ID -> {
                 val postId = uri.lastPathSegment
@@ -2038,11 +2041,11 @@ class FenrirContentProvider : ContentProvider() {
             URI_MESSAGES_ATTACHMENTS -> tbName = MessagesAttachmentsColumns.TABLENAME
             URI_COMMENTS -> tbName = CommentsColumns.TABLENAME
             URI_PHOTO_ALBUMS -> tbName = PhotoAlbumsColumns.TABLENAME
-            URI_POST_ATTACHMENTS -> tbName = WallAttachmentsColumns.TABLENAME
+            URI_POST_ATTACHMENTS -> tbName = WallsAttachmentsColumns.TABLENAME
             URI_COMMENTS_ATTACHMENTS -> tbName = CommentsAttachmentsColumns.TABLENAME
-            URI_DOCS -> tbName = DocColumns.TABLENAME
+            URI_DOCS -> tbName = DocsColumns.TABLENAME
             URI_NEWS -> tbName = NewsColumns.TABLENAME
-            URI_GROUPS_DET -> tbName = GroupsDetColumns.TABLENAME
+            URI_GROUPS_DET -> tbName = GroupsDetailsColumns.TABLENAME
             URI_GROUPS_DET_ID -> {
                 val groupDetId = uri.lastPathSegment
                 selection = if (selection.isNullOrEmpty()) {
@@ -2050,14 +2053,14 @@ class FenrirContentProvider : ContentProvider() {
                 } else {
                     selection + " AND " + BaseColumns._ID + " = " + groupDetId
                 }
-                tbName = GroupsDetColumns.TABLENAME
+                tbName = GroupsDetailsColumns.TABLENAME
             }
 
             URI_VIDEO_ALBUMS -> tbName = VideoAlbumsColumns.TABLENAME
-            URI_VIDEOS -> tbName = VideoColumns.TABLENAME
+            URI_VIDEOS -> tbName = VideosColumns.TABLENAME
             URI_TOPICS -> tbName = TopicsColumns.TABLENAME
-            URI_NOTIFICATIONS -> tbName = NotificationColumns.TABLENAME
-            URI_USER_DET -> tbName = UsersDetColumns.TABLENAME
+            URI_NOTIFICATIONS -> tbName = NotificationsColumns.TABLENAME
+            URI_USER_DET -> tbName = UsersDetailsColumns.TABLENAME
             URI_USER_DET_ID -> {
                 val userDetId = uri.lastPathSegment
                 selection = if (selection.isNullOrEmpty()) {
@@ -2065,21 +2068,21 @@ class FenrirContentProvider : ContentProvider() {
                 } else {
                     selection + " AND " + BaseColumns._ID + " = " + userDetId
                 }
-                tbName = UsersDetColumns.TABLENAME
+                tbName = UsersDetailsColumns.TABLENAME
             }
 
             URI_FAVE_PHOTOS -> tbName = FavePhotosColumns.TABLENAME
             URI_FAVE_VIDEOS -> tbName = FaveVideosColumns.TABLENAME
             URI_FAVE_ARTICLES -> tbName = FaveArticlesColumns.TABLENAME
-            URI_FAVE_PRODUCTS -> tbName = FaveProductColumns.TABLENAME
-            URI_FAVE_PAGES -> tbName = FavePageColumns.TABLENAME
-            URI_FAVE_GROUPS -> tbName = FavePageColumns.GROUPSTABLENAME
+            URI_FAVE_PRODUCTS -> tbName = FaveProductsColumns.TABLENAME
+            URI_FAVE_PAGES -> tbName = FavePagesColumns.TABLENAME
+            URI_FAVE_GROUPS -> tbName = FavePagesColumns.GROUPSTABLENAME
             URI_FAVE_LINKS -> tbName = FaveLinksColumns.TABLENAME
             URI_FAVE_POSTS -> tbName = FavePostsColumns.TABLENAME
             URI_COUNTRIES -> tbName = CountriesColumns.TABLENAME
             URI_FEED_LISTS -> tbName = FeedListsColumns.TABLENAME
             URI_FRIEND_LISTS -> tbName = FriendListsColumns.TABLENAME
-            URI_KEYS -> tbName = KeyColumns.TABLENAME
+            URI_KEYS -> tbName = EncryptionKeysForMessagesColumns.TABLENAME
             else -> throw IllegalArgumentException("Wrong URI: $uri")
         }
         val db: SQLiteDatabase = getDbHelper(uri).writableDatabase
@@ -2097,18 +2100,18 @@ class FenrirContentProvider : ContentProvider() {
         var selection = pSelection
         val tbName: String
         when (sUriMatcher.match(uri)) {
-            URI_MESSAGES -> tbName = MessageColumns.TABLENAME
+            URI_MESSAGES -> tbName = MessagesColumns.TABLENAME
             URI_MESSAGES_ID -> {
                 val id = uri.lastPathSegment
                 selection = if (selection.isNullOrEmpty()) {
-                    MessageColumns._ID + " = " + id
+                    MessagesColumns._ID + " = " + id
                 } else {
-                    selection + " AND " + MessageColumns._ID + " = " + id
+                    selection + " AND " + MessagesColumns._ID + " = " + id
                 }
-                tbName = MessageColumns.TABLENAME
+                tbName = MessagesColumns.TABLENAME
             }
 
-            URI_USERS -> tbName = UserColumns.TABLENAME
+            URI_USERS -> tbName = UsersColumns.TABLENAME
             URI_USERS_ID -> {
                 val userID = uri.lastPathSegment
                 selection = if (selection.isNullOrEmpty()) {
@@ -2116,10 +2119,10 @@ class FenrirContentProvider : ContentProvider() {
                 } else {
                     selection + " AND " + BaseColumns._ID + " = " + userID
                 }
-                tbName = UserColumns.TABLENAME
+                tbName = UsersColumns.TABLENAME
             }
 
-            URI_GROUPS -> tbName = GroupColumns.TABLENAME
+            URI_GROUPS -> tbName = GroupsColumns.TABLENAME
             URI_GROUPS_ID -> {
                 val groupID = uri.lastPathSegment
                 selection = if (selection.isNullOrEmpty()) {
@@ -2127,7 +2130,7 @@ class FenrirContentProvider : ContentProvider() {
                 } else {
                     selection + " AND " + BaseColumns._ID + " = " + groupID
                 }
-                tbName = GroupColumns.TABLENAME
+                tbName = GroupsColumns.TABLENAME
             }
 
             URI_DIALOGS -> tbName = DialogsColumns.TABLENAME
@@ -2155,7 +2158,7 @@ class FenrirContentProvider : ContentProvider() {
                 tbName = PhotosColumns.TABLENAME
             }
 
-            URI_VIDEOS -> tbName = VideoColumns.TABLENAME
+            URI_VIDEOS -> tbName = VideosColumns.TABLENAME
             URI_COMMENTS -> tbName = CommentsColumns.TABLENAME
             URI_COMMENTS_ID -> {
                 val commentId = uri.lastPathSegment
@@ -2167,10 +2170,10 @@ class FenrirContentProvider : ContentProvider() {
                 tbName = CommentsColumns.TABLENAME
             }
 
-            URI_RELATIVESHIP -> tbName = RelationshipColumns.TABLENAME
+            URI_RELATIVESHIP -> tbName = RelationshipsColumns.TABLENAME
             URI_PHOTO_ALBUMS -> tbName = PhotoAlbumsColumns.TABLENAME
             URI_NEWS -> tbName = NewsColumns.TABLENAME
-            URI_GROUPS_DET -> tbName = GroupsDetColumns.TABLENAME
+            URI_GROUPS_DET -> tbName = GroupsDetailsColumns.TABLENAME
             URI_GROUPS_DET_ID -> {
                 val groupDetId = uri.lastPathSegment
                 selection = if (selection.isNullOrEmpty()) {
@@ -2178,13 +2181,13 @@ class FenrirContentProvider : ContentProvider() {
                 } else {
                     selection + " AND " + BaseColumns._ID + " = " + groupDetId
                 }
-                tbName = GroupsDetColumns.TABLENAME
+                tbName = GroupsDetailsColumns.TABLENAME
             }
 
             URI_VIDEO_ALBUMS -> tbName = VideoAlbumsColumns.TABLENAME
             URI_TOPICS -> tbName = TopicsColumns.TABLENAME
-            URI_NOTIFICATIONS -> tbName = NotificationColumns.TABLENAME
-            URI_USER_DET -> tbName = UsersDetColumns.TABLENAME
+            URI_NOTIFICATIONS -> tbName = NotificationsColumns.TABLENAME
+            URI_USER_DET -> tbName = UsersDetailsColumns.TABLENAME
             URI_USER_DET_ID -> {
                 val userDetId = uri.lastPathSegment
                 selection = if (selection.isNullOrEmpty()) {
@@ -2192,28 +2195,28 @@ class FenrirContentProvider : ContentProvider() {
                 } else {
                     selection + " AND " + BaseColumns._ID + " = " + userDetId
                 }
-                tbName = UsersDetColumns.TABLENAME
+                tbName = UsersDetailsColumns.TABLENAME
             }
 
             URI_FAVE_PHOTOS -> tbName = FavePhotosColumns.TABLENAME
             URI_FAVE_VIDEOS -> tbName = FaveVideosColumns.TABLENAME
             URI_FAVE_ARTICLES -> tbName = FaveArticlesColumns.TABLENAME
-            URI_FAVE_PRODUCTS -> tbName = FaveProductColumns.TABLENAME
-            URI_FAVE_PAGES -> tbName = FavePageColumns.TABLENAME
-            URI_FAVE_GROUPS -> tbName = FavePageColumns.GROUPSTABLENAME
+            URI_FAVE_PRODUCTS -> tbName = FaveProductsColumns.TABLENAME
+            URI_FAVE_PAGES -> tbName = FavePagesColumns.TABLENAME
+            URI_FAVE_GROUPS -> tbName = FavePagesColumns.GROUPSTABLENAME
             URI_FAVE_LINKS -> tbName = FaveLinksColumns.TABLENAME
             URI_FAVE_POSTS -> tbName = FavePostsColumns.TABLENAME
             URI_COUNTRIES -> tbName = CountriesColumns.TABLENAME
             URI_FEED_LISTS -> tbName = FeedListsColumns.TABLENAME
             URI_FRIEND_LISTS -> tbName = FriendListsColumns.TABLENAME
-            URI_KEYS -> tbName = KeyColumns.TABLENAME
+            URI_KEYS -> tbName = EncryptionKeysForMessagesColumns.TABLENAME
             else -> throw IllegalArgumentException("Wrong URI: $uri")
         }
         val db: SQLiteDatabase = getDbHelper(uri).writableDatabase
         val cnt: Int =
             db.updateWithOnConflict(tbName, values, selection, selectionArgs, CONFLICT_REPLACE)
         safeNotifyChange(uri)
-        if (tbName == MessageColumns.TABLENAME) {
+        if (tbName == MessagesColumns.TABLENAME) {
             safeNotifyChange(DIALOGS_CONTENT_URI)
         }
         return cnt

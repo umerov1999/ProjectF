@@ -5,10 +5,10 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.BaseColumns
 import dev.ragnarok.fenrir.db.TempDataHelper
-import dev.ragnarok.fenrir.db.column.AudioColumns
-import dev.ragnarok.fenrir.db.column.LogColumns
+import dev.ragnarok.fenrir.db.column.AudiosColumns
+import dev.ragnarok.fenrir.db.column.LogsColumns
 import dev.ragnarok.fenrir.db.column.SearchRequestColumns
-import dev.ragnarok.fenrir.db.column.ShortcutColumns
+import dev.ragnarok.fenrir.db.column.ShortcutsColumns
 import dev.ragnarok.fenrir.db.column.TempDataColumns
 import dev.ragnarok.fenrir.db.interfaces.ITempDataStorage
 import dev.ragnarok.fenrir.db.serialize.ISerializeAdapter
@@ -46,7 +46,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             val start = System.currentTimeMillis()
             val where = TempDataColumns.OWNER_ID + " = ? AND " + TempDataColumns.SOURCE_ID + " = ?"
             val args = arrayOf(ownerId.toString(), sourceId.toString())
-            val cursor = helper.readableDatabase.query(
+            val cursor = helper.writableDatabase.query(
                 TempDataColumns.TABLENAME,
                 PROJECTION_TEMPORARY, where, args, null, null, null
             )
@@ -116,7 +116,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             val start = System.currentTimeMillis()
             val where = SearchRequestColumns.SOURCE_ID + " = ?"
             val args = arrayOf(sourceId.toString())
-            val cursor = helper.readableDatabase.query(
+            val cursor = helper.writableDatabase.query(
                 SearchRequestColumns.TABLENAME,
                 PROJECTION_SEARCH, where, args, null, null, BaseColumns._ID + " DESC"
             )
@@ -186,15 +186,15 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 return@create
             }
             db.delete(
-                ShortcutColumns.TABLENAME,
-                ShortcutColumns.ACTION + " = ?", arrayOf(action)
+                ShortcutsColumns.TABLENAME,
+                ShortcutsColumns.ACTION + " = ?", arrayOf(action)
             )
             try {
                 val cv = ContentValues()
-                cv.put(ShortcutColumns.ACTION, action)
-                cv.put(ShortcutColumns.NAME, name)
-                cv.put(ShortcutColumns.COVER, cover)
-                db.insert(ShortcutColumns.TABLENAME, null, cv)
+                cv.put(ShortcutsColumns.ACTION, action)
+                cv.put(ShortcutsColumns.NAME, name)
+                cv.put(ShortcutsColumns.COVER, cover)
+                db.insert(ShortcutsColumns.TABLENAME, null, cv)
                 if (!it.isDisposed) {
                     db.setTransactionSuccessful()
                 }
@@ -217,14 +217,14 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             try {
                 for (i in list) {
                     db.delete(
-                        ShortcutColumns.TABLENAME,
-                        ShortcutColumns.ACTION + " = ?", arrayOf(i.action)
+                        ShortcutsColumns.TABLENAME,
+                        ShortcutsColumns.ACTION + " = ?", arrayOf(i.action)
                     )
                     val cv = ContentValues()
-                    cv.put(ShortcutColumns.ACTION, i.action)
-                    cv.put(ShortcutColumns.NAME, i.name)
-                    cv.put(ShortcutColumns.COVER, i.cover)
-                    db.insert(ShortcutColumns.TABLENAME, null, cv)
+                    cv.put(ShortcutsColumns.ACTION, i.action)
+                    cv.put(ShortcutsColumns.NAME, i.name)
+                    cv.put(ShortcutsColumns.COVER, i.cover)
+                    db.insert(ShortcutsColumns.TABLENAME, null, cv)
                 }
                 if (!it.isDisposed) {
                     db.setTransactionSuccessful()
@@ -240,8 +240,8 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         return Completable.fromAction {
             val start = System.currentTimeMillis()
             val count = helper.writableDatabase.delete(
-                ShortcutColumns.TABLENAME,
-                ShortcutColumns.ACTION + " = ?", arrayOf(action)
+                ShortcutsColumns.TABLENAME,
+                ShortcutsColumns.ACTION + " = ?", arrayOf(action)
             )
             log("SearchRequestHelperStorage.delete", start, "count: $count")
         }
@@ -249,8 +249,8 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
 
     override fun getShortcutAll(): Single<List<ShortcutStored>> {
         return Single.fromCallable {
-            val cursor = helper.readableDatabase.query(
-                ShortcutColumns.TABLENAME,
+            val cursor = helper.writableDatabase.query(
+                ShortcutsColumns.TABLENAME,
                 PROJECTION_SHORTCUT,
                 null,
                 null,
@@ -271,11 +271,11 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         return Single.fromCallable {
             val now = System.currentTimeMillis()
             val cv = ContentValues()
-            cv.put(LogColumns.TYPE, type)
-            cv.put(LogColumns.TAG, tag)
-            cv.put(LogColumns.BODY, body)
-            cv.put(LogColumns.DATE, now)
-            val id = helper.writableDatabase.insert(LogColumns.TABLENAME, null, cv)
+            cv.put(LogsColumns.TYPE, type)
+            cv.put(LogsColumns.TAG, tag)
+            cv.put(LogsColumns.BODY, body)
+            cv.put(LogsColumns.DATE, now)
+            val id = helper.writableDatabase.insert(LogsColumns.TABLENAME, null, cv)
             LogEvent(id.toInt())
                 .setBody(body)
                 .setTag(tag)
@@ -287,8 +287,8 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
     override fun deleteAudio(sourceOwner: Long, id: Int, ownerId: Long): Completable {
         return Completable.fromAction {
             helper.writableDatabase.delete(
-                AudioColumns.TABLENAME,
-                AudioColumns.SOURCE_OWNER_ID + " = ? AND " + AudioColumns.AUDIO_ID + " = ? AND " + AudioColumns.AUDIO_OWNER_ID + " = ?",
+                AudiosColumns.TABLENAME,
+                AudiosColumns.SOURCE_OWNER_ID + " = ? AND " + AudiosColumns.AUDIO_ID + " = ? AND " + AudiosColumns.AUDIO_OWNER_ID + " = ?",
                 arrayOf(sourceOwner.toString(), id.toString(), ownerId.toString())
             )
         }
@@ -297,7 +297,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
     override fun deleteAudios(): Completable {
         return Completable.fromAction {
             helper.writableDatabase.delete(
-                AudioColumns.TABLENAME,
+                AudiosColumns.TABLENAME,
                 null, null
             )
         }
@@ -305,14 +305,14 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
 
     override fun getAudiosAll(sourceOwner: Long): Single<List<Audio>> {
         return Single.fromCallable {
-            val cursor = helper.readableDatabase.query(
-                AudioColumns.TABLENAME,
+            val cursor = helper.writableDatabase.query(
+                AudiosColumns.TABLENAME,
                 PROJECTION_AUDIO,
-                AudioColumns.SOURCE_OWNER_ID + " = ?",
+                AudiosColumns.SOURCE_OWNER_ID + " = ?",
                 arrayOf(sourceOwner.toString()),
                 null,
                 null,
-                AudioColumns.DATE + " DESC"
+                AudiosColumns.DATE + " DESC"
             )
             val data: MutableList<Audio> = ArrayList(cursor.count)
             while (cursor.moveToNext()) {
@@ -336,34 +336,34 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             try {
                 if (clear) {
                     db.delete(
-                        AudioColumns.TABLENAME,
-                        AudioColumns.SOURCE_OWNER_ID + " = ?", arrayOf(sourceOwner.toString())
+                        AudiosColumns.TABLENAME,
+                        AudiosColumns.SOURCE_OWNER_ID + " = ?", arrayOf(sourceOwner.toString())
                     )
                 }
                 for (i in list) {
                     val cv = ContentValues()
-                    cv.put(AudioColumns.SOURCE_OWNER_ID, sourceOwner)
-                    cv.put(AudioColumns.AUDIO_ID, i.id)
-                    cv.put(AudioColumns.AUDIO_OWNER_ID, i.ownerId)
-                    cv.put(AudioColumns.ARTIST, i.artist)
-                    cv.put(AudioColumns.TITLE, i.title)
-                    cv.put(AudioColumns.DURATION, i.duration)
-                    cv.put(AudioColumns.URL, i.url)
-                    cv.put(AudioColumns.LYRICS_ID, i.lyricsId)
-                    cv.put(AudioColumns.DATE, i.date)
-                    cv.put(AudioColumns.ALBUM_ID, i.albumId)
-                    cv.put(AudioColumns.ALBUM_OWNER_ID, i.album_owner_id)
-                    cv.put(AudioColumns.ALBUM_ACCESS_KEY, i.album_access_key)
-                    cv.put(AudioColumns.GENRE, i.genre)
-                    cv.put(AudioColumns.DELETED, i.isDeleted)
-                    cv.put(AudioColumns.ACCESS_KEY, i.accessKey)
-                    cv.put(AudioColumns.THUMB_IMAGE_BIG, i.thumb_image_big)
-                    cv.put(AudioColumns.THUMB_IMAGE_VERY_BIG, i.thumb_image_very_big)
-                    cv.put(AudioColumns.THUMB_IMAGE_LITTLE, i.thumb_image_little)
-                    cv.put(AudioColumns.ALBUM_TITLE, i.album_title)
+                    cv.put(AudiosColumns.SOURCE_OWNER_ID, sourceOwner)
+                    cv.put(AudiosColumns.AUDIO_ID, i.id)
+                    cv.put(AudiosColumns.AUDIO_OWNER_ID, i.ownerId)
+                    cv.put(AudiosColumns.ARTIST, i.artist)
+                    cv.put(AudiosColumns.TITLE, i.title)
+                    cv.put(AudiosColumns.DURATION, i.duration)
+                    cv.put(AudiosColumns.URL, i.url)
+                    cv.put(AudiosColumns.LYRICS_ID, i.lyricsId)
+                    cv.put(AudiosColumns.DATE, i.date)
+                    cv.put(AudiosColumns.ALBUM_ID, i.albumId)
+                    cv.put(AudiosColumns.ALBUM_OWNER_ID, i.album_owner_id)
+                    cv.put(AudiosColumns.ALBUM_ACCESS_KEY, i.album_access_key)
+                    cv.put(AudiosColumns.GENRE, i.genre)
+                    cv.put(AudiosColumns.DELETED, i.isDeleted)
+                    cv.put(AudiosColumns.ACCESS_KEY, i.accessKey)
+                    cv.put(AudiosColumns.THUMB_IMAGE_BIG, i.thumb_image_big)
+                    cv.put(AudiosColumns.THUMB_IMAGE_VERY_BIG, i.thumb_image_very_big)
+                    cv.put(AudiosColumns.THUMB_IMAGE_LITTLE, i.thumb_image_little)
+                    cv.put(AudiosColumns.ALBUM_TITLE, i.album_title)
                     i.main_artists.ifNonNull({
                         cv.put(
-                            AudioColumns.MAIN_ARTISTS,
+                            AudiosColumns.MAIN_ARTISTS,
                             MsgPack.encodeToByteArrayEx(
                                 MapSerializer(
                                     String.serializer(),
@@ -372,10 +372,10 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                             )
                         )
                     }, {
-                        cv.putNull(AudioColumns.MAIN_ARTISTS)
+                        cv.putNull(AudiosColumns.MAIN_ARTISTS)
                     })
-                    cv.put(AudioColumns.IS_HQ, i.isHq)
-                    db.insert(AudioColumns.TABLENAME, null, cv)
+                    cv.put(AudiosColumns.IS_HQ, i.isHq)
+                    db.insert(AudiosColumns.TABLENAME, null, cv)
                 }
                 if (!it1.isDisposed) {
                     db.setTransactionSuccessful()
@@ -389,10 +389,10 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
 
     override fun getLogAll(type: Int): Single<List<LogEvent>> {
         return Single.fromCallable {
-            val cursor = helper.readableDatabase.query(
-                LogColumns.TABLENAME,
+            val cursor = helper.writableDatabase.query(
+                LogsColumns.TABLENAME,
                 PROJECTION_LOG,
-                LogColumns.TYPE + " = ?",
+                LogsColumns.TYPE + " = ?",
                 arrayOf(type.toString()),
                 null,
                 null,
@@ -418,64 +418,64 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             BaseColumns._ID, SearchRequestColumns.SOURCE_ID, SearchRequestColumns.QUERY
         )
         private val PROJECTION_SHORTCUT = arrayOf(
-            BaseColumns._ID, ShortcutColumns.ACTION, ShortcutColumns.COVER, ShortcutColumns.NAME
+            BaseColumns._ID, ShortcutsColumns.ACTION, ShortcutsColumns.COVER, ShortcutsColumns.NAME
         )
         private val PROJECTION_LOG = arrayOf(
             BaseColumns._ID,
-            LogColumns.TYPE,
-            LogColumns.DATE,
-            LogColumns.TAG,
-            LogColumns.BODY
+            LogsColumns.TYPE,
+            LogsColumns.DATE,
+            LogsColumns.TAG,
+            LogsColumns.BODY
         )
 
         private val PROJECTION_AUDIO = arrayOf(
             BaseColumns._ID,
-            AudioColumns.SOURCE_OWNER_ID,
-            AudioColumns.AUDIO_ID,
-            AudioColumns.AUDIO_OWNER_ID,
-            AudioColumns.ARTIST,
-            AudioColumns.TITLE,
-            AudioColumns.DURATION,
-            AudioColumns.URL,
-            AudioColumns.LYRICS_ID,
-            AudioColumns.DATE,
-            AudioColumns.ALBUM_ID,
-            AudioColumns.ALBUM_OWNER_ID,
-            AudioColumns.ALBUM_ACCESS_KEY,
-            AudioColumns.GENRE,
-            AudioColumns.DELETED,
-            AudioColumns.ACCESS_KEY,
-            AudioColumns.THUMB_IMAGE_BIG,
-            AudioColumns.THUMB_IMAGE_VERY_BIG,
-            AudioColumns.THUMB_IMAGE_LITTLE,
-            AudioColumns.ALBUM_TITLE,
-            AudioColumns.MAIN_ARTISTS,
-            AudioColumns.IS_HQ
+            AudiosColumns.SOURCE_OWNER_ID,
+            AudiosColumns.AUDIO_ID,
+            AudiosColumns.AUDIO_OWNER_ID,
+            AudiosColumns.ARTIST,
+            AudiosColumns.TITLE,
+            AudiosColumns.DURATION,
+            AudiosColumns.URL,
+            AudiosColumns.LYRICS_ID,
+            AudiosColumns.DATE,
+            AudiosColumns.ALBUM_ID,
+            AudiosColumns.ALBUM_OWNER_ID,
+            AudiosColumns.ALBUM_ACCESS_KEY,
+            AudiosColumns.GENRE,
+            AudiosColumns.DELETED,
+            AudiosColumns.ACCESS_KEY,
+            AudiosColumns.THUMB_IMAGE_BIG,
+            AudiosColumns.THUMB_IMAGE_VERY_BIG,
+            AudiosColumns.THUMB_IMAGE_LITTLE,
+            AudiosColumns.ALBUM_TITLE,
+            AudiosColumns.MAIN_ARTISTS,
+            AudiosColumns.IS_HQ
         )
 
         internal fun mapAudio(cursor: Cursor): Audio {
             val v = Audio()
-                .setId(cursor.getInt(AudioColumns.AUDIO_ID))
-                .setOwnerId(cursor.getLong(AudioColumns.AUDIO_OWNER_ID))
-                .setArtist(cursor.getString(AudioColumns.ARTIST))
-                .setTitle(cursor.getString(AudioColumns.TITLE))
-                .setDuration(cursor.getInt(AudioColumns.DURATION))
-                .setUrl(cursor.getString(AudioColumns.URL))
-                .setLyricsId(cursor.getInt(AudioColumns.LYRICS_ID))
-                .setDate(cursor.getLong(AudioColumns.DATE))
-                .setAlbumId(cursor.getInt(AudioColumns.ALBUM_ID))
-                .setAlbum_owner_id(cursor.getLong(AudioColumns.ALBUM_OWNER_ID))
-                .setAlbum_access_key(cursor.getString(AudioColumns.ALBUM_ACCESS_KEY))
-                .setGenre(cursor.getInt(AudioColumns.GENRE))
-                .setAccessKey(cursor.getString(AudioColumns.ACCESS_KEY))
-                .setAlbum_title(cursor.getString(AudioColumns.ALBUM_TITLE))
-                .setThumb_image_big(cursor.getString(AudioColumns.THUMB_IMAGE_BIG))
-                .setThumb_image_little(cursor.getString(AudioColumns.THUMB_IMAGE_LITTLE))
-                .setThumb_image_very_big(cursor.getString(AudioColumns.THUMB_IMAGE_VERY_BIG))
-                .setIsHq(cursor.getBoolean(AudioColumns.IS_HQ))
-                .setDeleted(cursor.getBoolean(AudioColumns.DELETED))
+                .setId(cursor.getInt(AudiosColumns.AUDIO_ID))
+                .setOwnerId(cursor.getLong(AudiosColumns.AUDIO_OWNER_ID))
+                .setArtist(cursor.getString(AudiosColumns.ARTIST))
+                .setTitle(cursor.getString(AudiosColumns.TITLE))
+                .setDuration(cursor.getInt(AudiosColumns.DURATION))
+                .setUrl(cursor.getString(AudiosColumns.URL))
+                .setLyricsId(cursor.getInt(AudiosColumns.LYRICS_ID))
+                .setDate(cursor.getLong(AudiosColumns.DATE))
+                .setAlbumId(cursor.getInt(AudiosColumns.ALBUM_ID))
+                .setAlbum_owner_id(cursor.getLong(AudiosColumns.ALBUM_OWNER_ID))
+                .setAlbum_access_key(cursor.getString(AudiosColumns.ALBUM_ACCESS_KEY))
+                .setGenre(cursor.getInt(AudiosColumns.GENRE))
+                .setAccessKey(cursor.getString(AudiosColumns.ACCESS_KEY))
+                .setAlbum_title(cursor.getString(AudiosColumns.ALBUM_TITLE))
+                .setThumb_image_big(cursor.getString(AudiosColumns.THUMB_IMAGE_BIG))
+                .setThumb_image_little(cursor.getString(AudiosColumns.THUMB_IMAGE_LITTLE))
+                .setThumb_image_very_big(cursor.getString(AudiosColumns.THUMB_IMAGE_VERY_BIG))
+                .setIsHq(cursor.getBoolean(AudiosColumns.IS_HQ))
+                .setDeleted(cursor.getBoolean(AudiosColumns.DELETED))
             val artistsSourceText =
-                cursor.getBlob(AudioColumns.MAIN_ARTISTS)
+                cursor.getBlob(AudiosColumns.MAIN_ARTISTS)
             if (artistsSourceText.nonNullNoEmpty()) {
                 v.setMain_artists(
                     MsgPack.decodeFromByteArrayEx(
@@ -492,17 +492,17 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
 
         internal fun mapLog(cursor: Cursor): LogEvent {
             return LogEvent(cursor.getInt(BaseColumns._ID))
-                .setType(cursor.getInt(LogColumns.TYPE))
-                .setDate(cursor.getLong(LogColumns.DATE))
-                .setTag(cursor.getString(LogColumns.TAG))
-                .setBody(cursor.getString(LogColumns.BODY))
+                .setType(cursor.getInt(LogsColumns.TYPE))
+                .setDate(cursor.getLong(LogsColumns.DATE))
+                .setTag(cursor.getString(LogsColumns.TAG))
+                .setBody(cursor.getString(LogsColumns.BODY))
         }
 
         internal fun mapShortcut(cursor: Cursor): ShortcutStored {
             return ShortcutStored()
-                .setAction(cursor.getString(ShortcutColumns.ACTION)!!)
-                .setName(cursor.getString(ShortcutColumns.NAME)!!)
-                .setCover(cursor.getString(ShortcutColumns.COVER)!!)
+                .setAction(cursor.getString(ShortcutsColumns.ACTION)!!)
+                .setName(cursor.getString(ShortcutsColumns.NAME)!!)
+                .setCover(cursor.getString(ShortcutsColumns.COVER)!!)
         }
     }
 }

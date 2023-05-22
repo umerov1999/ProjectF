@@ -148,18 +148,41 @@ object Utils {
         return false
     }
 
-
-    fun needReloadStickers(account_id: Long): Boolean {
-        Settings.get().other().get_last_stickers_sync(account_id).let {
+    fun needReloadStickerSets(account_id: Long): Boolean {
+        Settings.get().other().get_last_sticker_sets_sync(account_id).let {
             if (it <= 0 || (System.currentTimeMillis() / 1000L) - it > 900) {
                 Settings.get().other()
-                    .set_last_stickers_sync(account_id, System.currentTimeMillis() / 1000L)
+                    .set_last_sticker_sets_sync(account_id, System.currentTimeMillis() / 1000L)
                 return true
             }
         }
         return false
     }
 
+    fun needReloadStickerSetsCustom(account_id: Long): Boolean {
+        Settings.get().other().get_last_sticker_sets_custom_sync(account_id).let {
+            if (it <= 0 || (System.currentTimeMillis() / 1000L) - it > 400) {
+                Settings.get().other()
+                    .set_last_sticker_sets_custom_sync(
+                        account_id,
+                        System.currentTimeMillis() / 1000L
+                    )
+                return true
+            }
+        }
+        return false
+    }
+
+    fun needReloadStickerKeywords(account_id: Long): Boolean {
+        Settings.get().other().get_last_sticker_keywords_sync(account_id).let {
+            if (it <= 0 || (System.currentTimeMillis() / 1000L) - it > 3600) {
+                Settings.get().other()
+                    .set_last_sticker_keywords_sync(account_id, System.currentTimeMillis() / 1000L)
+                return true
+            }
+        }
+        return false
+    }
 
     inline fun <reified T> lastOf(data: List<T>): T {
         return data[data.size - 1]

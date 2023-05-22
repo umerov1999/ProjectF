@@ -77,8 +77,8 @@ class DialogDboEntity(val peerId: Long) : DboEntity() {
         return this
     }
 
-    fun simplify(): SimpleDialogEntity {
-        return SimpleDialogEntity(peerId)
+    fun toPeerDialog(): PeerDialogEntity {
+        return PeerDialogEntity(peerId)
             .setTitle(title)
             .setPhoto200(photo200)
             .setPhoto100(photo100)

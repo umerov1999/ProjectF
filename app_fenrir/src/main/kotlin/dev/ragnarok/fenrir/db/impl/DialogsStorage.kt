@@ -19,7 +19,7 @@ import dev.ragnarok.fenrir.db.model.PeerPatch
 import dev.ragnarok.fenrir.db.model.entity.DialogDboEntity
 import dev.ragnarok.fenrir.db.model.entity.KeyboardEntity
 import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
-import dev.ragnarok.fenrir.db.model.entity.SimpleDialogEntity
+import dev.ragnarok.fenrir.db.model.entity.PeerDialogEntity
 import dev.ragnarok.fenrir.getBlob
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.getInt
@@ -98,19 +98,20 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         return Completable.create { emitter: CompletableEmitter ->
             val start = System.currentTimeMillis()
             val uri = getDialogsContentUriFor(accountId)
+            val peersUri = getPeersContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBefore) {
                 operations.add(ContentProviderOperation.newDelete(uri).build())
             }
             for (entity in dbos) {
-                val simple = entity.simplify()
+                val peerDialog = entity.toPeerDialog()
                 operations.add(
                     ContentProviderOperation.newInsert(uri).withValues(createCv(entity)).build()
                 )
                 operations.add(
                     ContentProviderOperation
-                        .newInsert(getPeersContentUriFor(accountId))
-                        .withValues(createPeerCv(simple))
+                        .newInsert(peersUri)
+                        .withValues(createPeerCv(peerDialog))
                         .build()
                 )
                 entity.message?.let {
@@ -151,7 +152,7 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         return cv
     }
 
-    private fun createPeerCv(entity: SimpleDialogEntity): ContentValues {
+    private fun createPeerCv(entity: PeerDialogEntity): ContentValues {
         val cv = ContentValues()
         cv.put(BaseColumns._ID, entity.peerId)
         cv.put(PeersColumns.UNREAD, entity.unreadCount)
@@ -181,10 +182,11 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         cv.put(PeersColumns.IS_GROUP_CHANNEL, entity.isGroupChannel)
         cv.put(PeersColumns.MAJOR_ID, entity.major_id)
         cv.put(PeersColumns.MINOR_ID, entity.minor_id)
+        cv.put(PeersColumns.LAST_MESSAGE_ID, entity.lastMessageId)
         return cv
     }
 
-    override fun saveSimple(accountId: Long, entity: SimpleDialogEntity): Completable {
+    override fun savePeerDialog(accountId: Long, entity: PeerDialogEntity): Completable {
         return Completable.create { emitter: CompletableEmitter ->
             val uri = getPeersContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
@@ -261,8 +263,8 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         }
     }
 
-    override fun findSimple(accountId: Long, peerId: Long): Single<Optional<SimpleDialogEntity>> {
-        return Single.create { emitter: SingleEmitter<Optional<SimpleDialogEntity>> ->
+    override fun findPeerDialog(accountId: Long, peerId: Long): Single<Optional<PeerDialogEntity>> {
+        return Single.create { emitter: SingleEmitter<Optional<PeerDialogEntity>> ->
             val projection = arrayOf(
                 PeersColumns.UNREAD,
                 PeersColumns.TITLE,
@@ -284,12 +286,12 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
                 uri, projection,
                 PeersColumns.FULL_ID + " = ?", arrayOf(peerId.toString()), null
             )
-            var entity: SimpleDialogEntity? = null
+            var entity: PeerDialogEntity? = null
             if (cursor != null) {
                 if (cursor.moveToNext()) {
                     val pinJson = cursor.getBlob(PeersColumns.PINNED)
                     val keyboardJson = cursor.getBlob(PeersColumns.KEYBOARD)
-                    entity = SimpleDialogEntity(peerId)
+                    entity = PeerDialogEntity(peerId)
                         .setUnreadCount(cursor.getInt(PeersColumns.UNREAD))
                         .setTitle(cursor.getString(PeersColumns.TITLE))
                         .setPhoto200(cursor.getString(PeersColumns.PHOTO_200))

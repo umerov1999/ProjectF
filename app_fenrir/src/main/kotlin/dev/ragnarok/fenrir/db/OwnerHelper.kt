@@ -4,8 +4,8 @@ import android.content.Context
 import android.provider.BaseColumns
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getGroupsContentUriFor
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getUserContentUriFor
-import dev.ragnarok.fenrir.db.column.GroupColumns
-import dev.ragnarok.fenrir.db.column.UserColumns
+import dev.ragnarok.fenrir.db.column.GroupsColumns
+import dev.ragnarok.fenrir.db.column.UsersColumns
 import dev.ragnarok.fenrir.getString
 
 object OwnerHelper {
@@ -20,8 +20,8 @@ object OwnerHelper {
             if (uCursor != null) {
                 if (uCursor.moveToNext()) {
                     result =
-                        uCursor.getString(UserColumns.FIRST_NAME) +
-                                " " + uCursor.getString(UserColumns.LAST_NAME)
+                        uCursor.getString(UsersColumns.FIRST_NAME) +
+                                " " + uCursor.getString(UsersColumns.LAST_NAME)
                 }
                 uCursor.close()
             }
@@ -32,7 +32,7 @@ object OwnerHelper {
             )
             if (gCursor != null) {
                 if (gCursor.moveToNext()) {
-                    result = gCursor.getString(GroupColumns.NAME)
+                    result = gCursor.getString(GroupsColumns.NAME)
                 }
                 gCursor.close()
             }

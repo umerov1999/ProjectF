@@ -2,8 +2,8 @@ package dev.ragnarok.fenrir.db.column.attachments
 
 import android.provider.BaseColumns
 
-object WallAttachmentsColumns : BaseColumns {
-    const val TABLENAME = "wall_attachments"
+object WallsAttachmentsColumns : BaseColumns {
+    const val TABLENAME = "walls_attachments"
     const val P_ID = "post_id"
     const val DATA = "data"
     const val FULL_ID = TABLENAME + "." + BaseColumns._ID

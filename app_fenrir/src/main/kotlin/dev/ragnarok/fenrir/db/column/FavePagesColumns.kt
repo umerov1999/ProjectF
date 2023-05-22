@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.db.column
 
 import android.provider.BaseColumns
 
-object FavePageColumns : BaseColumns {
+object FavePagesColumns : BaseColumns {
     const val TABLENAME = "fave_pages"
     const val GROUPSTABLENAME = "fave_groups"
     const val FULL_ID = TABLENAME + "." + BaseColumns._ID

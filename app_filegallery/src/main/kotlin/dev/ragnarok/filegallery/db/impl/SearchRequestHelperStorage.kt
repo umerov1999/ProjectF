@@ -38,7 +38,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
         return Single.fromCallable {
             val where = SearchRequestColumns.SOURCE_ID + " = ?"
             val args = arrayOf(sourceId.toString())
-            val cursor = helper.readableDatabase.query(
+            val cursor = helper.writableDatabase.query(
                 SearchRequestColumns.TABLENAME,
                 QUERY_PROJECTION, where, args, null, null, BaseColumns._ID + " DESC"
             )
@@ -90,7 +90,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
         return Single.fromCallable {
             val where = FilesColumns.PARENT_DIR + " = ?"
             val args = arrayOf(parent)
-            val cursor = helper.readableDatabase.query(
+            val cursor = helper.writableDatabase.query(
                 FilesColumns.TABLENAME,
                 FILES_PROJECTION,
                 where,
@@ -374,7 +374,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
         return Single.fromCallable {
             val where = TagDirsColumns.OWNER_ID + " = ?"
             val args = arrayOf(ownerId.toString())
-            val cursor = helper.readableDatabase.query(
+            val cursor = helper.writableDatabase.query(
                 TagDirsColumns.TABLENAME,
                 TAG_DIR_PROJECTION, where, args, null, null, BaseColumns._ID + " DESC"
             )
@@ -404,7 +404,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
 
     override fun getAllTagDirs(): Single<List<TagDir>> {
         return Single.fromCallable {
-            val cursor = helper.readableDatabase.query(
+            val cursor = helper.writableDatabase.query(
                 TagDirsColumns.TABLENAME,
                 TAG_DIR_PROJECTION, null, null, null, null, BaseColumns._ID + " DESC"
             )
@@ -515,7 +515,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
 
     override fun getTagOwners(): Single<List<TagOwner>> {
         return Single.fromCallable {
-            val db = helper.readableDatabase
+            val db = helper.writableDatabase
             val cursor = db.query(
                 TagOwnerColumns.TABLENAME,
                 TAG_OWNER_PROJECTION, null, null, null, null, BaseColumns._ID + " DESC"

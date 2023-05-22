@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.db.column
 
 import android.provider.BaseColumns
 
-object AudioColumns : BaseColumns {
+object AudiosColumns : BaseColumns {
     const val TABLENAME = "audio_cache_data"
 
     const val SOURCE_OWNER_ID = "source_owner_id"

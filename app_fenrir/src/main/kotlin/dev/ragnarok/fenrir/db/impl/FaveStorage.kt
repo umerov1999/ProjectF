@@ -16,10 +16,10 @@ import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getFaveUsersConten
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getFaveVideosContentUriFor
 import dev.ragnarok.fenrir.db.column.FaveArticlesColumns
 import dev.ragnarok.fenrir.db.column.FaveLinksColumns
-import dev.ragnarok.fenrir.db.column.FavePageColumns
+import dev.ragnarok.fenrir.db.column.FavePagesColumns
 import dev.ragnarok.fenrir.db.column.FavePhotosColumns
 import dev.ragnarok.fenrir.db.column.FavePostsColumns
-import dev.ragnarok.fenrir.db.column.FaveProductColumns
+import dev.ragnarok.fenrir.db.column.FaveProductsColumns
 import dev.ragnarok.fenrir.db.column.FaveVideosColumns
 import dev.ragnarok.fenrir.db.interfaces.IFaveStorage
 import dev.ragnarok.fenrir.db.model.entity.ArticleDboEntity
@@ -395,7 +395,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
     }
 
     private fun mapProduct(cursor: Cursor): MarketDboEntity {
-        val json = cursor.getBlob(FaveProductColumns.PRODUCT)!!
+        val json = cursor.getBlob(FaveProductsColumns.PRODUCT)!!
         return MsgPack.decodeFromByteArrayEx(MarketDboEntity.serializer(), json)
     }
 
@@ -503,7 +503,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
                 val dbo = products[i]
                 val cv = ContentValues()
                 cv.put(
-                    FaveProductColumns.PRODUCT,
+                    FaveProductsColumns.PRODUCT,
                     MsgPack.encodeToByteArrayEx(MarketDboEntity.serializer(), dbo)
                 )
                 val index = addToListAndReturnIndex(
@@ -607,9 +607,9 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         internal fun createFaveCv(dbo: FavePageEntity): ContentValues {
             val cv = ContentValues()
             cv.put(BaseColumns._ID, dbo.id)
-            cv.put(FavePageColumns.DESCRIPTION, dbo.description)
-            cv.put(FavePageColumns.FAVE_TYPE, dbo.faveType)
-            cv.put(FavePageColumns.UPDATED_TIME, dbo.updateDate)
+            cv.put(FavePagesColumns.DESCRIPTION, dbo.description)
+            cv.put(FavePagesColumns.FAVE_TYPE, dbo.faveType)
+            cv.put(FavePagesColumns.UPDATED_TIME, dbo.updateDate)
             return cv
         }
 
@@ -623,9 +623,9 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
 
         internal fun mapFaveUserDbo(cursor: Cursor, accountId: Long): FavePageEntity {
             return FavePageEntity(cursor.getLong(BaseColumns._ID))
-                .setDescription(cursor.getString(FavePageColumns.DESCRIPTION))
-                .setUpdateDate(cursor.getLong(FavePageColumns.UPDATED_TIME))
-                .setFaveType(cursor.getString(FavePageColumns.FAVE_TYPE))
+                .setDescription(cursor.getString(FavePagesColumns.DESCRIPTION))
+                .setUpdateDate(cursor.getLong(FavePagesColumns.UPDATED_TIME))
+                .setFaveType(cursor.getString(FavePagesColumns.FAVE_TYPE))
                 .setUser(
                     mapUser(
                         accountId,
@@ -636,9 +636,9 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
 
         internal fun mapFaveGroupDbo(cursor: Cursor, accountId: Long): FavePageEntity {
             return FavePageEntity(cursor.getLong(BaseColumns._ID))
-                .setDescription(cursor.getString(FavePageColumns.DESCRIPTION))
-                .setUpdateDate(cursor.getLong(FavePageColumns.UPDATED_TIME))
-                .setFaveType(cursor.getString(FavePageColumns.FAVE_TYPE))
+                .setDescription(cursor.getString(FavePagesColumns.DESCRIPTION))
+                .setUpdateDate(cursor.getLong(FavePagesColumns.UPDATED_TIME))
+                .setFaveType(cursor.getString(FavePagesColumns.FAVE_TYPE))
                 .setGroup(
                     mapGroup(
                         accountId,

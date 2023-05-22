@@ -7,7 +7,9 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
 interface IStickersInteractor {
-    fun getAndStoreStickerSets(accountId: Long): Completable
+    fun reciveAndStoreCustomStickerSets(accountId: Long): Completable
+    fun reciveAndStoreStickerSets(accountId: Long): Completable
+    fun reciveAndStoreKeywordsStickers(accountId: Long): Completable
     fun getStickerSets(accountId: Long): Single<List<StickerSet>>
     fun getKeywordsStickers(accountId: Long, s: String?): Single<List<Sticker>>
     fun placeToStickerCache(context: Context): Completable

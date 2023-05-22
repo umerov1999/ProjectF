@@ -4,16 +4,16 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class StickersKeywords : Parcelable {
-    private val keywords: List<String>?
-    private val stickers: List<Sticker>?
+    private val keywords: List<String>
+    private val stickers: List<Sticker>
 
     internal constructor(parcel: Parcel) {
         keywords = ArrayList()
         parcel.readStringList(keywords)
-        stickers = parcel.createTypedArrayList(Sticker.CREATOR)
+        stickers = parcel.createTypedArrayList(Sticker.CREATOR).orEmpty()
     }
 
-    constructor(keywords: List<String>?, stickers: List<Sticker>?) {
+    constructor(keywords: List<String>, stickers: List<Sticker>) {
         this.keywords = keywords
         this.stickers = stickers
     }
@@ -23,11 +23,11 @@ class StickersKeywords : Parcelable {
         dest.writeTypedList(stickers)
     }
 
-    fun getKeywords(): List<String>? {
+    fun getKeywords(): List<String> {
         return keywords
     }
 
-    fun getStickers(): List<Sticker>? {
+    fun getStickers(): List<Sticker> {
         return stickers
     }
 

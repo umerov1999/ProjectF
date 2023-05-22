@@ -344,16 +344,40 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         getPreferences(app).edit().putLong("last_audio_sync", time).apply()
     }
 
-    override fun get_last_stickers_sync(accountId: Long): Long {
-        return getPreferences(app).getLong("last_stickers_sync_$accountId", -1)
+    override fun get_last_sticker_sets_sync(accountId: Long): Long {
+        return getPreferences(app).getLong("last_sticker_sets_sync_$accountId", -1)
     }
 
-    override fun del_last_stickers_sync(accountId: Long) {
-        getPreferences(app).edit().remove("last_stickers_sync_$accountId").apply()
+    override fun set_last_sticker_sets_sync(accountId: Long, time: Long) {
+        getPreferences(app).edit().putLong("last_sticker_sets_sync_$accountId", time).apply()
     }
 
-    override fun set_last_stickers_sync(accountId: Long, time: Long) {
-        getPreferences(app).edit().putLong("last_stickers_sync_$accountId", time).apply()
+    override fun get_last_sticker_sets_custom_sync(accountId: Long): Long {
+        return getPreferences(app).getLong("last_sticker_sets_sync_custom_$accountId", -1)
+    }
+
+    override fun set_last_sticker_sets_custom_sync(accountId: Long, time: Long) {
+        getPreferences(app).edit().putLong("last_sticker_sets_sync_custom_$accountId", time).apply()
+    }
+
+    override fun get_last_sticker_keywords_sync(accountId: Long): Long {
+        return getPreferences(app).getLong("last_sticker_keywords_sync_$accountId", -1)
+    }
+
+    override fun set_last_sticker_keywords_sync(accountId: Long, time: Long) {
+        getPreferences(app).edit().putLong("last_sticker_keywords_sync_$accountId", time).apply()
+    }
+
+    override fun del_last_sticker_sets_sync(accountId: Long) {
+        getPreferences(app).edit().remove("last_sticker_sets_sync_$accountId").apply()
+    }
+
+    override fun del_last_sticker_sets_custom_sync(accountId: Long) {
+        getPreferences(app).edit().remove("last_sticker_sets_sync_custom_$accountId").apply()
+    }
+
+    override fun del_last_sticker_keywords_sync(accountId: Long) {
+        getPreferences(app).edit().remove("last_sticker_keywords_sync_$accountId").apply()
     }
 
     override fun is_notification_force_link(): Boolean {

@@ -2,11 +2,10 @@ package dev.ragnarok.fenrir.domain.impl
 
 import android.content.Context
 import dev.ragnarok.fenrir.api.interfaces.INetworker
-import dev.ragnarok.fenrir.api.model.VKApiSticker
 import dev.ragnarok.fenrir.api.model.VKApiStickerSet.Product
-import dev.ragnarok.fenrir.api.model.VKApiStickerSetsData
 import dev.ragnarok.fenrir.api.model.VKApiStickersKeywords
 import dev.ragnarok.fenrir.db.interfaces.IStickersStorage
+import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerSetEntity
 import dev.ragnarok.fenrir.db.model.entity.StickersKeywordsEntity
 import dev.ragnarok.fenrir.domain.IStickersInteractor
@@ -19,6 +18,8 @@ import dev.ragnarok.fenrir.domain.mappers.MapUtil.mapAllMutable
 import dev.ragnarok.fenrir.model.Sticker
 import dev.ragnarok.fenrir.model.Sticker.LocalSticker
 import dev.ragnarok.fenrir.model.StickerSet
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermissionSimple
 import dev.ragnarok.fenrir.util.Utils.getCachedMyStickers
@@ -31,78 +32,61 @@ import java.util.Arrays
 
 class StickersInteractor(private val networker: INetworker, private val storage: IStickersStorage) :
     IStickersInteractor {
-    override fun getAndStoreStickerSets(accountId: Long): Completable {
-        val stickerSet = networker.vkDefault(accountId)
-            .store()
-            .stickers
-            .flatMapCompletable { items: VKApiStickerSetsData? ->
-                val list: MutableList<Product> = listEmptyIfNullMutable(items?.sticker_pack?.items)
-                if (Settings.get().ui().isStickers_by_new) {
-                    list.reverse()
-                }
+    override fun reciveAndStoreCustomStickerSets(accountId: Long): Completable {
+        return networker.vkDefault(accountId)
+            .store().recentStickers
+            .flatMapCompletable { items ->
                 val temp = StickerSetEntity(-1).setTitle("recent")
-                    .setStickers(mapAll(listEmptyIfNull(listEmptyIfNull(items?.recent?.items))) {
+                    .setStickers(mapAll(listEmptyIfNull(listEmptyIfNull(items.items))) {
                         mapSticker(
                             it
                         )
                     }).setActive(true).setPurchased(true)
-                val ret =
-                    mapAllMutable(list) { mapStickerSet(it) }
-                ret.add(temp)
+                storage.storeStickerSetsCustom(accountId, listOf(temp))
+            }
+    }
+
+    override fun reciveAndStoreStickerSets(accountId: Long): Completable {
+        return networker.vkDefault(accountId)
+            .store()
+            .stickersSets
+            .flatMapCompletable { items ->
+                val list: MutableList<Product> = listEmptyIfNullMutable(items.items)
+                if (Settings.get().ui().isStickers_by_new) {
+                    list.reverse()
+                }
+                val ret = mapAllMutable(list) { mapStickerSet(it) }
                 storage.storeStickerSets(accountId, ret)
             }
-        return if (Settings.get().other().isHint_stickers) {
-            stickerSet.andThen(
-                networker.vkDefault(accountId)
-                    .store()
-                    .stickerKeywords
-                    .flatMapCompletable { hint: VKApiStickersKeywords ->
-                        getStickersKeywordsAndStore(
-                            accountId,
-                            hint
-                        )
-                    })
-        } else stickerSet
     }
 
-    private fun generateKeywords(
-        s: List<List<VKApiSticker>?>,
-        w: List<List<String>?>
-    ): List<StickersKeywordsEntity> {
-        val ret: MutableList<StickersKeywordsEntity> = ArrayList(w.size)
-        for (i in w.indices) {
-            if (w[i].isNullOrEmpty()) {
-                continue
+    override fun reciveAndStoreKeywordsStickers(accountId: Long): Completable {
+        return networker.vkDefault(accountId)
+            .store()
+            .stickerKeywords
+            .flatMapCompletable { items ->
+                val list: MutableList<VKApiStickersKeywords> =
+                    listEmptyIfNullMutable(items.dictionary)
+                val temp: MutableList<StickersKeywordsEntity> = ArrayList()
+                for (i in list) {
+                    val userStickers = ArrayList<StickerDboEntity>(i.user_stickers?.size.orZero())
+                    val stickersKeywords = ArrayList<String>(i.words?.size.orZero())
+                    for (s in i.user_stickers.orEmpty()) {
+                        s?.let { mapSticker(it) }?.let { userStickers.add(it) }
+                    }
+                    for (s in i.words.orEmpty()) {
+                        s.nonNullNoEmpty {
+                            stickersKeywords.add(it)
+                        }
+                    }
+                    temp.add(StickersKeywordsEntity(stickersKeywords, userStickers))
+                }
+                storage.storeKeyWords(accountId, temp)
             }
-            if (s[i].isNullOrEmpty()) {
-                continue
-            }
-            ret.add(
-                StickersKeywordsEntity(
-                    w[i], mapAll(
-                        s[i]
-                    ) { mapSticker(it) })
-            )
-        }
-        return ret
-    }
-
-    private fun getStickersKeywordsAndStore(
-        accountId: Long,
-        items: VKApiStickersKeywords
-    ): Completable {
-        val s: List<List<VKApiSticker>?> = listEmptyIfNull(items.words_stickers)
-        val w: List<List<String>?> = listEmptyIfNull(items.keywords)
-        val temp: MutableList<StickersKeywordsEntity> = ArrayList()
-        if (w.isEmpty() || s.isEmpty() || w.size != s.size) {
-            return storage.storeKeyWords(accountId, temp)
-        }
-        temp.addAll(generateKeywords(s, w))
-        return storage.storeKeyWords(accountId, temp)
     }
 
     override fun getStickerSets(accountId: Long): Single<List<StickerSet>> {
-        return storage.getPurchasedAndActive(accountId)
+        return storage.getStickerSets(accountId)
             .map { entities ->
                 mapAll(entities) {
                     map(

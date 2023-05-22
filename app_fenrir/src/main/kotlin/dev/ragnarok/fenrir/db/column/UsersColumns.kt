@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.db.column
 
 import android.provider.BaseColumns
 
-object UserColumns : BaseColumns {
+object UsersColumns : BaseColumns {
     /**
      * The table name of books = "books"
      */

@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.db.column
 
 import android.provider.BaseColumns
 
-object MessageColumns : BaseColumns {
+object MessagesColumns : BaseColumns {
     const val TABLENAME = "messages"
     const val _ID = "_id"
     const val PEER_ID = "peer_id"

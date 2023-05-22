@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.db.column
 
 import android.provider.BaseColumns
 
-object GroupColumns : BaseColumns {
+object GroupsColumns : BaseColumns {
     const val TABLENAME = "groups"
     const val NAME = "name"
     const val SCREEN_NAME = "screen_name"

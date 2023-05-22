@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.db.column
 import android.provider.BaseColumns
 
 object FaveLinksColumns : BaseColumns {
-    const val TABLENAME = "fave_link"
+    const val TABLENAME = "fave_links"
     const val LINK_ID = "link_id"
     const val URL = "url"
     const val TITLE = "title"

@@ -2,8 +2,8 @@ package dev.ragnarok.fenrir.db.column
 
 import android.provider.BaseColumns
 
-object KeyColumns : BaseColumns {
-    const val TABLENAME = "keys"
+object EncryptionKeysForMessagesColumns : BaseColumns {
+    const val TABLENAME = "encryption_keys_for_messages"
     const val VERSION = "version"
     const val PEER_ID = "peer_id"
     const val SESSION_ID = "session_id"

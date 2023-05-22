@@ -11,6 +11,6 @@ open class VKResponse {
 
     /*
     @SerialName("execute_errors")
-    var executeErrors: List<Error>? = null
-     */
+    var executeErrors: List<Error?>? = null
+    */
 }

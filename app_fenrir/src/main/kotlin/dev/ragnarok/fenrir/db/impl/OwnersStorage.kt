@@ -64,7 +64,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             var details: UserDetailsEntity? = null
             if (cursor != null) {
                 if (cursor.moveToNext()) {
-                    val json = cursor.getBlob(UsersDetColumns.DATA)
+                    val json = cursor.getBlob(UsersDetailsColumns.DATA)
                     if (json.nonNullNoEmpty()) {
                         details =
                             MsgPack.decodeFromByteArrayEx(UserDetailsEntity.serializer(), json)
@@ -88,7 +88,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             var details: CommunityDetailsEntity? = null
             if (cursor != null) {
                 if (cursor.moveToNext()) {
-                    val json = cursor.getBlob(GroupsDetColumns.DATA)
+                    val json = cursor.getBlob(GroupsDetailsColumns.DATA)
                     if (json.nonNullNoEmpty()) {
                         details =
                             MsgPack.decodeFromByteArrayEx(CommunityDetailsEntity.serializer(), json)
@@ -109,7 +109,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             val cv = ContentValues()
             cv.put(BaseColumns._ID, groupId)
             cv.put(
-                GroupsDetColumns.DATA,
+                GroupsDetailsColumns.DATA,
                 MsgPack.encodeToByteArrayEx(CommunityDetailsEntity.serializer(), dbo)
             )
             val uri = getGroupsDetContentUriFor(accountId)
@@ -126,7 +126,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             val cv = ContentValues()
             cv.put(BaseColumns._ID, userId)
             cv.put(
-                UsersDetColumns.DATA,
+                UsersDetailsColumns.DATA,
                 MsgPack.encodeToByteArrayEx(UserDetailsEntity.serializer(), dbo)
             )
             val uri = getUserDetContentUriFor(accountId)
@@ -143,12 +143,12 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             for (patch in patches) {
                 val cv = ContentValues()
                 patch.status.requireNonNull {
-                    cv.put(UserColumns.USER_STATUS, it.status)
+                    cv.put(UsersColumns.USER_STATUS, it.status)
                 }
                 patch.online.requireNonNull {
-                    cv.put(UserColumns.ONLINE, it.isOnline)
-                    cv.put(UserColumns.LAST_SEEN, it.lastSeen)
-                    cv.put(UserColumns.PLATFORM, it.platform)
+                    cv.put(UsersColumns.ONLINE, it.isOnline)
+                    cv.put(UsersColumns.LAST_SEEN, it.lastSeen)
+                    cv.put(UsersColumns.PLATFORM, it.platform)
                 }
                 if (cv.size() > 0) {
                     operations.add(
@@ -199,7 +199,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
 
     override fun getLocalizedUserActivity(accountId: Long, userId: Long): Maybe<String> {
         return Maybe.create { e: MaybeEmitter<String> ->
-            val uProjection = arrayOf(UserColumns.LAST_SEEN, UserColumns.ONLINE, UserColumns.SEX)
+            val uProjection = arrayOf(UsersColumns.LAST_SEEN, UsersColumns.ONLINE, UsersColumns.SEX)
             val uri = getUserContentUriFor(accountId)
             val where = BaseColumns._ID + " = ?"
             val args = arrayOf(userId.toString())
@@ -207,10 +207,10 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             if (cursor != null) {
                 if (cursor.moveToNext()) {
                     val online =
-                        cursor.getBoolean(UserColumns.ONLINE)
+                        cursor.getBoolean(UsersColumns.ONLINE)
                     val lastSeen =
-                        cursor.getLong(UserColumns.LAST_SEEN)
-                    val sex = cursor.getInt(UserColumns.SEX)
+                        cursor.getLong(UsersColumns.LAST_SEEN)
+                    val sex = cursor.getInt(UsersColumns.SEX)
                     val userActivityLine =
                         getUserActivityLine(context, lastSeen, online, sex, false)
                     e.onSuccess(userActivityLine)
@@ -261,7 +261,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     override fun findUserByDomain(accountId: Long, domain: String?): Single<Optional<UserEntity>> {
         return Single.create { emitter: SingleEmitter<Optional<UserEntity>> ->
             val uri = getUserContentUriFor(accountId)
-            val where = UserColumns.DOMAIN + " LIKE ?"
+            val where = UsersColumns.DOMAIN + " LIKE ?"
             val args = arrayOf(domain)
             val cursor = contentResolver.query(uri, null, where, args, null)
             var entity: UserEntity? = null
@@ -278,8 +278,8 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     override fun findFriendBirtday(accountId: Long): Single<List<User>> {
         return Single.create {
             val uri = getUserContentUriFor(accountId)
-            val where = UserColumns.BDATE + " IS NOT NULL AND " + UserColumns.IS_FRIEND + " = 1"
-            val cursor = contentResolver.query(uri, null, where, null, UserColumns.BDATE + " DESC")
+            val where = UsersColumns.BDATE + " IS NOT NULL AND " + UsersColumns.IS_FRIEND + " = 1"
+            val cursor = contentResolver.query(uri, null, where, null, UsersColumns.BDATE + " DESC")
             val listEntity: ArrayList<User> = ArrayList()
             while (cursor?.moveToNext() == true) {
                 Entity2Model.map(mapUserDbo(cursor))?.let { it1 -> listEntity.add(it1) }
@@ -295,7 +295,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     ): Single<Optional<CommunityEntity>> {
         return Single.create { emitter: SingleEmitter<Optional<CommunityEntity>> ->
             val uri = getGroupsContentUriFor(accountId)
-            val where = GroupColumns.SCREEN_NAME + " LIKE ?"
+            val where = GroupsColumns.SCREEN_NAME + " LIKE ?"
             val args = arrayOf(domain)
             val cursor = contentResolver.query(uri, null, where, args, null)
             var entity: CommunityEntity? = null
@@ -527,99 +527,99 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         private fun createCv(dbo: CommunityEntity): ContentValues {
             val cv = ContentValues()
             cv.put(BaseColumns._ID, dbo.id)
-            cv.put(GroupColumns.NAME, dbo.name)
-            cv.put(GroupColumns.SCREEN_NAME, dbo.screenName)
-            cv.put(GroupColumns.IS_CLOSED, dbo.closed)
-            cv.put(GroupColumns.IS_BLACK_LISTED, dbo.isBlacklisted)
-            cv.put(GroupColumns.IS_VERIFIED, dbo.isVerified)
-            cv.put(GroupColumns.HAS_UNSEEN_STORIES, dbo.hasUnseenStories)
-            cv.put(GroupColumns.IS_ADMIN, dbo.isAdmin)
-            cv.put(GroupColumns.ADMIN_LEVEL, dbo.adminLevel)
-            cv.put(GroupColumns.IS_MEMBER, dbo.isMember)
-            cv.put(GroupColumns.MEMBER_STATUS, dbo.memberStatus)
-            cv.put(GroupColumns.MEMBERS_COUNT, dbo.membersCount)
-            cv.put(GroupColumns.TYPE, dbo.type)
-            cv.put(GroupColumns.PHOTO_50, dbo.photo50)
-            cv.put(GroupColumns.PHOTO_100, dbo.photo100)
-            cv.put(GroupColumns.PHOTO_200, dbo.photo200)
+            cv.put(GroupsColumns.NAME, dbo.name)
+            cv.put(GroupsColumns.SCREEN_NAME, dbo.screenName)
+            cv.put(GroupsColumns.IS_CLOSED, dbo.closed)
+            cv.put(GroupsColumns.IS_BLACK_LISTED, dbo.isBlacklisted)
+            cv.put(GroupsColumns.IS_VERIFIED, dbo.isVerified)
+            cv.put(GroupsColumns.HAS_UNSEEN_STORIES, dbo.hasUnseenStories)
+            cv.put(GroupsColumns.IS_ADMIN, dbo.isAdmin)
+            cv.put(GroupsColumns.ADMIN_LEVEL, dbo.adminLevel)
+            cv.put(GroupsColumns.IS_MEMBER, dbo.isMember)
+            cv.put(GroupsColumns.MEMBER_STATUS, dbo.memberStatus)
+            cv.put(GroupsColumns.MEMBERS_COUNT, dbo.membersCount)
+            cv.put(GroupsColumns.TYPE, dbo.type)
+            cv.put(GroupsColumns.PHOTO_50, dbo.photo50)
+            cv.put(GroupsColumns.PHOTO_100, dbo.photo100)
+            cv.put(GroupsColumns.PHOTO_200, dbo.photo200)
             return cv
         }
 
         private fun createCv(dbo: UserEntity): ContentValues {
             val cv = ContentValues()
             cv.put(BaseColumns._ID, dbo.id)
-            cv.put(UserColumns.FIRST_NAME, dbo.firstName)
-            cv.put(UserColumns.LAST_NAME, dbo.lastName)
-            cv.put(UserColumns.ONLINE, dbo.isOnline)
-            cv.put(UserColumns.ONLINE_MOBILE, dbo.isOnlineMobile)
-            cv.put(UserColumns.ONLINE_APP, dbo.onlineApp)
-            cv.put(UserColumns.PHOTO_50, dbo.photo50)
-            cv.put(UserColumns.PHOTO_100, dbo.photo100)
-            cv.put(UserColumns.PHOTO_200, dbo.photo200)
-            cv.put(UserColumns.PHOTO_MAX, dbo.photoMax)
-            cv.put(UserColumns.LAST_SEEN, dbo.lastSeen)
-            cv.put(UserColumns.PLATFORM, dbo.platform)
-            cv.put(UserColumns.USER_STATUS, dbo.status)
-            cv.put(UserColumns.SEX, dbo.sex)
-            cv.put(UserColumns.DOMAIN, dbo.domain)
-            cv.put(UserColumns.IS_FRIEND, dbo.isFriend)
-            cv.put(UserColumns.FRIEND_STATUS, dbo.friendStatus)
-            cv.put(UserColumns.WRITE_MESSAGE_STATUS, dbo.canWritePrivateMessage)
-            cv.put(UserColumns.BDATE, dbo.bdate)
-            cv.put(UserColumns.IS_USER_BLACK_LIST, dbo.blacklisted_by_me)
-            cv.put(UserColumns.IS_BLACK_LISTED, dbo.blacklisted)
-            cv.put(UserColumns.IS_VERIFIED, dbo.isVerified)
-            cv.put(UserColumns.HAS_UNSEEN_STORIES, dbo.hasUnseenStories)
-            cv.put(UserColumns.IS_CAN_ACCESS_CLOSED, dbo.isCan_access_closed)
-            cv.put(UserColumns.MAIDEN_NAME, dbo.maiden_name)
+            cv.put(UsersColumns.FIRST_NAME, dbo.firstName)
+            cv.put(UsersColumns.LAST_NAME, dbo.lastName)
+            cv.put(UsersColumns.ONLINE, dbo.isOnline)
+            cv.put(UsersColumns.ONLINE_MOBILE, dbo.isOnlineMobile)
+            cv.put(UsersColumns.ONLINE_APP, dbo.onlineApp)
+            cv.put(UsersColumns.PHOTO_50, dbo.photo50)
+            cv.put(UsersColumns.PHOTO_100, dbo.photo100)
+            cv.put(UsersColumns.PHOTO_200, dbo.photo200)
+            cv.put(UsersColumns.PHOTO_MAX, dbo.photoMax)
+            cv.put(UsersColumns.LAST_SEEN, dbo.lastSeen)
+            cv.put(UsersColumns.PLATFORM, dbo.platform)
+            cv.put(UsersColumns.USER_STATUS, dbo.status)
+            cv.put(UsersColumns.SEX, dbo.sex)
+            cv.put(UsersColumns.DOMAIN, dbo.domain)
+            cv.put(UsersColumns.IS_FRIEND, dbo.isFriend)
+            cv.put(UsersColumns.FRIEND_STATUS, dbo.friendStatus)
+            cv.put(UsersColumns.WRITE_MESSAGE_STATUS, dbo.canWritePrivateMessage)
+            cv.put(UsersColumns.BDATE, dbo.bdate)
+            cv.put(UsersColumns.IS_USER_BLACK_LIST, dbo.blacklisted_by_me)
+            cv.put(UsersColumns.IS_BLACK_LISTED, dbo.blacklisted)
+            cv.put(UsersColumns.IS_VERIFIED, dbo.isVerified)
+            cv.put(UsersColumns.HAS_UNSEEN_STORIES, dbo.hasUnseenStories)
+            cv.put(UsersColumns.IS_CAN_ACCESS_CLOSED, dbo.isCan_access_closed)
+            cv.put(UsersColumns.MAIDEN_NAME, dbo.maiden_name)
             return cv
         }
 
         internal fun mapCommunityDbo(cursor: Cursor): CommunityEntity {
             return CommunityEntity(cursor.getLong(BaseColumns._ID))
-                .setName(cursor.getString(GroupColumns.NAME))
-                .setScreenName(cursor.getString(GroupColumns.SCREEN_NAME))
-                .setClosed(cursor.getInt(GroupColumns.IS_CLOSED))
-                .setVerified(cursor.getBoolean(GroupColumns.IS_VERIFIED))
-                .setHasUnseenStories(cursor.getBoolean(GroupColumns.HAS_UNSEEN_STORIES))
-                .setBlacklisted(cursor.getBoolean(GroupColumns.IS_BLACK_LISTED))
-                .setAdmin(cursor.getBoolean(GroupColumns.IS_ADMIN))
-                .setAdminLevel(cursor.getInt(GroupColumns.ADMIN_LEVEL))
-                .setMember(cursor.getBoolean(GroupColumns.IS_MEMBER))
-                .setMemberStatus(cursor.getInt(GroupColumns.MEMBER_STATUS))
-                .setMembersCount(cursor.getInt(GroupColumns.MEMBERS_COUNT))
-                .setType(cursor.getInt(GroupColumns.TYPE))
-                .setPhoto50(cursor.getString(GroupColumns.PHOTO_50))
-                .setPhoto100(cursor.getString(GroupColumns.PHOTO_100))
-                .setPhoto200(cursor.getString(GroupColumns.PHOTO_200))
+                .setName(cursor.getString(GroupsColumns.NAME))
+                .setScreenName(cursor.getString(GroupsColumns.SCREEN_NAME))
+                .setClosed(cursor.getInt(GroupsColumns.IS_CLOSED))
+                .setVerified(cursor.getBoolean(GroupsColumns.IS_VERIFIED))
+                .setHasUnseenStories(cursor.getBoolean(GroupsColumns.HAS_UNSEEN_STORIES))
+                .setBlacklisted(cursor.getBoolean(GroupsColumns.IS_BLACK_LISTED))
+                .setAdmin(cursor.getBoolean(GroupsColumns.IS_ADMIN))
+                .setAdminLevel(cursor.getInt(GroupsColumns.ADMIN_LEVEL))
+                .setMember(cursor.getBoolean(GroupsColumns.IS_MEMBER))
+                .setMemberStatus(cursor.getInt(GroupsColumns.MEMBER_STATUS))
+                .setMembersCount(cursor.getInt(GroupsColumns.MEMBERS_COUNT))
+                .setType(cursor.getInt(GroupsColumns.TYPE))
+                .setPhoto50(cursor.getString(GroupsColumns.PHOTO_50))
+                .setPhoto100(cursor.getString(GroupsColumns.PHOTO_100))
+                .setPhoto200(cursor.getString(GroupsColumns.PHOTO_200))
         }
 
         internal fun mapUserDbo(cursor: Cursor): UserEntity {
             return UserEntity(cursor.getLong(BaseColumns._ID))
-                .setFirstName(cursor.getString(UserColumns.FIRST_NAME))
-                .setLastName(cursor.getString(UserColumns.LAST_NAME))
-                .setOnline(cursor.getBoolean(UserColumns.ONLINE))
-                .setOnlineMobile(cursor.getBoolean(UserColumns.ONLINE_MOBILE))
-                .setOnlineApp(cursor.getInt(UserColumns.ONLINE_APP))
-                .setPhoto50(cursor.getString(UserColumns.PHOTO_50))
-                .setPhoto100(cursor.getString(UserColumns.PHOTO_100))
-                .setPhoto200(cursor.getString(UserColumns.PHOTO_200))
-                .setPhotoMax(cursor.getString(UserColumns.PHOTO_MAX))
-                .setLastSeen(cursor.getLong(UserColumns.LAST_SEEN))
-                .setPlatform(cursor.getInt(UserColumns.PLATFORM))
-                .setStatus(cursor.getString(UserColumns.USER_STATUS))
-                .setSex(cursor.getInt(UserColumns.SEX))
-                .setDomain(cursor.getString(UserColumns.DOMAIN))
-                .setFriend(cursor.getBoolean(UserColumns.IS_FRIEND))
-                .setFriendStatus(cursor.getInt(UserColumns.FRIEND_STATUS))
-                .setCanWritePrivateMessage(cursor.getBoolean(UserColumns.WRITE_MESSAGE_STATUS))
-                .setBdate(cursor.getString(UserColumns.BDATE))
-                .setBlacklisted_by_me(cursor.getBoolean(UserColumns.IS_USER_BLACK_LIST))
-                .setBlacklisted(cursor.getBoolean(UserColumns.IS_BLACK_LISTED))
-                .setVerified(cursor.getBoolean(UserColumns.IS_VERIFIED))
-                .setHasUnseenStories(cursor.getBoolean(UserColumns.HAS_UNSEEN_STORIES))
-                .setCan_access_closed(cursor.getBoolean(UserColumns.IS_CAN_ACCESS_CLOSED))
-                .setMaiden_name(cursor.getString(UserColumns.MAIDEN_NAME))
+                .setFirstName(cursor.getString(UsersColumns.FIRST_NAME))
+                .setLastName(cursor.getString(UsersColumns.LAST_NAME))
+                .setOnline(cursor.getBoolean(UsersColumns.ONLINE))
+                .setOnlineMobile(cursor.getBoolean(UsersColumns.ONLINE_MOBILE))
+                .setOnlineApp(cursor.getInt(UsersColumns.ONLINE_APP))
+                .setPhoto50(cursor.getString(UsersColumns.PHOTO_50))
+                .setPhoto100(cursor.getString(UsersColumns.PHOTO_100))
+                .setPhoto200(cursor.getString(UsersColumns.PHOTO_200))
+                .setPhotoMax(cursor.getString(UsersColumns.PHOTO_MAX))
+                .setLastSeen(cursor.getLong(UsersColumns.LAST_SEEN))
+                .setPlatform(cursor.getInt(UsersColumns.PLATFORM))
+                .setStatus(cursor.getString(UsersColumns.USER_STATUS))
+                .setSex(cursor.getInt(UsersColumns.SEX))
+                .setDomain(cursor.getString(UsersColumns.DOMAIN))
+                .setFriend(cursor.getBoolean(UsersColumns.IS_FRIEND))
+                .setFriendStatus(cursor.getInt(UsersColumns.FRIEND_STATUS))
+                .setCanWritePrivateMessage(cursor.getBoolean(UsersColumns.WRITE_MESSAGE_STATUS))
+                .setBdate(cursor.getString(UsersColumns.BDATE))
+                .setBlacklisted_by_me(cursor.getBoolean(UsersColumns.IS_USER_BLACK_LIST))
+                .setBlacklisted(cursor.getBoolean(UsersColumns.IS_BLACK_LISTED))
+                .setVerified(cursor.getBoolean(UsersColumns.IS_VERIFIED))
+                .setHasUnseenStories(cursor.getBoolean(UsersColumns.HAS_UNSEEN_STORIES))
+                .setCan_access_closed(cursor.getBoolean(UsersColumns.IS_CAN_ACCESS_CLOSED))
+                .setMaiden_name(cursor.getString(UsersColumns.MAIDEN_NAME))
         }
     }
 

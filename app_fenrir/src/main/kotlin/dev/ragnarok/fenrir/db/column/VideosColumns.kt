@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.db.column
 
 import android.provider.BaseColumns
 
-object VideoColumns : BaseColumns {
+object VideosColumns : BaseColumns {
     const val TABLENAME = "videos"
     const val VIDEO_ID = "video_id"
     const val OWNER_ID = "owner_id"

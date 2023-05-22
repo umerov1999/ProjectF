@@ -5,7 +5,7 @@ import android.content.ContentValues
 import android.database.Cursor
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getDocsContentUriFor
-import dev.ragnarok.fenrir.db.column.DocColumns
+import dev.ragnarok.fenrir.db.column.DocsColumns
 import dev.ragnarok.fenrir.db.interfaces.IDocsStorage
 import dev.ragnarok.fenrir.db.model.entity.DocumentDboEntity
 import dev.ragnarok.fenrir.db.model.entity.DocumentDboEntity.GraffitiDbo
@@ -36,10 +36,10 @@ internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
             val args: Array<String>
             val filter = criteria.filter
             if (filter != null && filter != DocFilter.Type.ALL) {
-                where = DocColumns.OWNER_ID + " = ? AND " + DocColumns.TYPE + " = ?"
+                where = DocsColumns.OWNER_ID + " = ? AND " + DocsColumns.TYPE + " = ?"
                 args = arrayOf(criteria.ownerId.toString(), filter.toString())
             } else {
-                where = DocColumns.OWNER_ID + " = ?"
+                where = DocsColumns.OWNER_ID + " = ?"
                 args = arrayOf(criteria.ownerId.toString())
             }
             val cursor = contentResolver.query(uri, null, where, args, null)
@@ -71,49 +71,49 @@ internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
             if (clearBeforeInsert) {
                 operations.add(
                     ContentProviderOperation.newDelete(uri)
-                        .withSelection(DocColumns.OWNER_ID + " = ?", arrayOf(ownerId.toString()))
+                        .withSelection(DocsColumns.OWNER_ID + " = ?", arrayOf(ownerId.toString()))
                         .build()
                 )
             }
             for (entity in entities) {
                 val cv = ContentValues()
-                cv.put(DocColumns.DOC_ID, entity.id)
-                cv.put(DocColumns.OWNER_ID, entity.ownerId)
-                cv.put(DocColumns.TITLE, entity.title)
-                cv.put(DocColumns.SIZE, entity.size)
-                cv.put(DocColumns.EXT, entity.ext)
-                cv.put(DocColumns.URL, entity.url)
-                cv.put(DocColumns.DATE, entity.date)
-                cv.put(DocColumns.TYPE, entity.type)
-                cv.put(DocColumns.ACCESS_KEY, entity.accessKey)
+                cv.put(DocsColumns.DOC_ID, entity.id)
+                cv.put(DocsColumns.OWNER_ID, entity.ownerId)
+                cv.put(DocsColumns.TITLE, entity.title)
+                cv.put(DocsColumns.SIZE, entity.size)
+                cv.put(DocsColumns.EXT, entity.ext)
+                cv.put(DocsColumns.URL, entity.url)
+                cv.put(DocsColumns.DATE, entity.date)
+                cv.put(DocsColumns.TYPE, entity.type)
+                cv.put(DocsColumns.ACCESS_KEY, entity.accessKey)
                 entity.photo.ifNonNull({
                     cv.put(
-                        DocColumns.PHOTO,
+                        DocsColumns.PHOTO,
                         MsgPack.encodeToByteArrayEx(PhotoSizeEntity.serializer(), it)
                     )
                 }, {
                     cv.putNull(
-                        DocColumns.PHOTO
+                        DocsColumns.PHOTO
                     )
                 })
                 entity.graffiti.ifNonNull({
                     cv.put(
-                        DocColumns.GRAFFITI,
+                        DocsColumns.GRAFFITI,
                         MsgPack.encodeToByteArrayEx(GraffitiDbo.serializer(), it)
                     )
                 }, {
                     cv.putNull(
-                        DocColumns.GRAFFITI
+                        DocsColumns.GRAFFITI
                     )
                 })
                 entity.video.ifNonNull({
                     cv.put(
-                        DocColumns.VIDEO,
+                        DocsColumns.VIDEO,
                         MsgPack.encodeToByteArrayEx(VideoPreviewDbo.serializer(), it)
                     )
                 }, {
                     cv.putNull(
-                        DocColumns.VIDEO
+                        DocsColumns.VIDEO
                     )
                 })
                 operations.add(
@@ -131,7 +131,7 @@ internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
     override fun delete(accountId: Long, docId: Int, ownerId: Long): Completable {
         return Completable.fromAction {
             val uri = getDocsContentUriFor(accountId)
-            val where = DocColumns.DOC_ID + " = ? AND " + DocColumns.OWNER_ID + " = ?"
+            val where = DocsColumns.DOC_ID + " = ? AND " + DocsColumns.OWNER_ID + " = ?"
             val args = arrayOf(docId.toString(), ownerId.toString())
             contentResolver.delete(uri, where, args)
         }
@@ -139,19 +139,19 @@ internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
 
     companion object {
         internal fun map(cursor: Cursor): DocumentDboEntity {
-            val id = cursor.getInt(DocColumns.DOC_ID)
-            val ownerId = cursor.getLong(DocColumns.OWNER_ID)
+            val id = cursor.getInt(DocsColumns.DOC_ID)
+            val ownerId = cursor.getLong(DocsColumns.OWNER_ID)
             val document = DocumentDboEntity().set(id, ownerId)
-                .setTitle(cursor.getString(DocColumns.TITLE))
-                .setSize(cursor.getLong(DocColumns.SIZE))
-                .setExt(cursor.getString(DocColumns.EXT))
-                .setUrl(cursor.getString(DocColumns.URL))
-                .setType(cursor.getInt(DocColumns.TYPE))
-                .setDate(cursor.getLong(DocColumns.DATE))
-                .setAccessKey(cursor.getString(DocColumns.ACCESS_KEY))
-            val photoJson = cursor.getBlob(DocColumns.PHOTO)
-            val graffitiJson = cursor.getBlob(DocColumns.GRAFFITI)
-            val videoJson = cursor.getBlob(DocColumns.VIDEO)
+                .setTitle(cursor.getString(DocsColumns.TITLE))
+                .setSize(cursor.getLong(DocsColumns.SIZE))
+                .setExt(cursor.getString(DocsColumns.EXT))
+                .setUrl(cursor.getString(DocsColumns.URL))
+                .setType(cursor.getInt(DocsColumns.TYPE))
+                .setDate(cursor.getLong(DocsColumns.DATE))
+                .setAccessKey(cursor.getString(DocsColumns.ACCESS_KEY))
+            val photoJson = cursor.getBlob(DocsColumns.PHOTO)
+            val graffitiJson = cursor.getBlob(DocsColumns.GRAFFITI)
+            val videoJson = cursor.getBlob(DocsColumns.VIDEO)
             if (photoJson.nonNullNoEmpty()) {
                 document.setPhoto(
                     MsgPack.decodeFromByteArrayEx(

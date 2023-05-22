@@ -32,7 +32,7 @@ constexpr auto PATH_KAPPA = 0.552284f;
 /* External Class Implementation                                        */
 /************************************************************************/
 
-Shape :: Shape() : pImpl(new Impl())
+Shape :: Shape() : pImpl(new Impl(this))
 {
     Paint::pImpl->id = TVG_CLASS_ID_SHAPE;
     Paint::pImpl->method(new PaintMethod<Shape::Impl>(pImpl));
@@ -328,7 +328,7 @@ Result Shape::strokeColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const 
 
 Result Shape::stroke(unique_ptr<Fill> f) noexcept
 {
-    return pImpl->strokeFill(move(f));
+    return pImpl->strokeFill(std::move(f));
 }
 
 

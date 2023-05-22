@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.db.column
 import android.provider.BaseColumns
 
 object PeersColumns : BaseColumns {
-    const val TABLENAME = "peersnew"
+    const val TABLENAME = "peers_of_dialogs"
     const val UNREAD = "unread"
     const val TITLE = "title"
     const val IN_READ = "in_read"

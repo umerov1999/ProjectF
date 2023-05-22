@@ -5,7 +5,7 @@ import dev.ragnarok.fenrir.db.PeerStateEntity
 import dev.ragnarok.fenrir.db.model.PeerPatch
 import dev.ragnarok.fenrir.db.model.entity.DialogDboEntity
 import dev.ragnarok.fenrir.db.model.entity.KeyboardEntity
-import dev.ragnarok.fenrir.db.model.entity.SimpleDialogEntity
+import dev.ragnarok.fenrir.db.model.entity.PeerDialogEntity
 import dev.ragnarok.fenrir.model.Chat
 import dev.ragnarok.fenrir.model.criteria.DialogsCriteria
 import dev.ragnarok.fenrir.util.Optional
@@ -19,8 +19,8 @@ interface IDialogsStorage : IStorage {
     fun observeUnreadDialogsCount(): Observable<Pair<Long, Int>>
     fun findPeerStates(accountId: Long, ids: Collection<Long>): Single<List<PeerStateEntity>>
     fun setUnreadDialogsCount(accountId: Long, unreadCount: Int)
-    fun findSimple(accountId: Long, peerId: Long): Single<Optional<SimpleDialogEntity>>
-    fun saveSimple(accountId: Long, entity: SimpleDialogEntity): Completable
+    fun findPeerDialog(accountId: Long, peerId: Long): Single<Optional<PeerDialogEntity>>
+    fun savePeerDialog(accountId: Long, entity: PeerDialogEntity): Completable
     fun updateDialogKeyboard(
         accountId: Long,
         peerId: Long,
