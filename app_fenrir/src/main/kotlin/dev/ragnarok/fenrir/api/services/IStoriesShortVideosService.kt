@@ -5,8 +5,8 @@ import dev.ragnarok.fenrir.api.model.VKApiNarratives
 import dev.ragnarok.fenrir.api.model.VKApiStory
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.ShortVideosResponse
+import dev.ragnarok.fenrir.api.model.response.StoriesResponse
 import dev.ragnarok.fenrir.api.model.response.StoryGetResponse
-import dev.ragnarok.fenrir.api.model.response.StoryResponse
 import dev.ragnarok.fenrir.api.model.response.ViewersListResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiStoryUploadServer
 import dev.ragnarok.fenrir.api.rest.IServiceRest
@@ -82,17 +82,17 @@ class IStoriesShortVideosService : IServiceRest() {
         )
     }
 
-    fun getStory(
+    fun getStories(
         owner_id: Long?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<StoryResponse>> {
+    ): Single<BaseResponse<StoriesResponse>> {
         return rest.request(
             "stories.get", form(
                 "owner_id" to owner_id,
                 "extended" to extended,
                 "fields" to fields
-            ), base(StoryResponse.serializer())
+            ), base(StoriesResponse.serializer())
         )
     }
 
@@ -124,13 +124,13 @@ class IStoriesShortVideosService : IServiceRest() {
         )
     }
 
-    fun searchStory(
+    fun searchStories(
         q: String?,
         mentioned_id: Long?,
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<StoryResponse>> {
+    ): Single<BaseResponse<StoriesResponse>> {
         return rest.request(
             "stories.search", form(
                 "q" to q,
@@ -138,7 +138,7 @@ class IStoriesShortVideosService : IServiceRest() {
                 "count" to count,
                 "extended" to extended,
                 "fields" to fields
-            ), base(StoryResponse.serializer())
+            ), base(StoriesResponse.serializer())
         )
     }
 

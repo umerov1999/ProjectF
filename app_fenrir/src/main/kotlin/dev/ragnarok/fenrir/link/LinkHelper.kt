@@ -13,6 +13,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.fave.FaveTabsFragment
 import dev.ragnarok.fenrir.fragment.photos.vkphotos.IVKPhotosView
@@ -23,6 +24,7 @@ import dev.ragnarok.fenrir.link.types.*
 import dev.ragnarok.fenrir.link.types.FaveLink
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService.Companion.startForPlayList
 import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceFactory.getArtistPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getAudiosInAlbumPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getAudiosPlace
@@ -349,6 +351,19 @@ object LinkHelper {
                     .subscribe({
                         startForPlayList(context, ArrayList(it), 0, false)
                         getPlayerPlace(Settings.get().accounts().current).tryOpenWith(context)
+                    }) { e -> createCustomToast(context).showToastThrowable(e) }
+            }
+
+            AbsLink.STORY -> {
+                val storyLink = link as StoryLink
+                InteractorFactory.createStoriesInteractor().getStoryById(
+                    accountId,
+                    listOf(AccessIdPair(storyLink.storyId, storyLink.ownerId, storyLink.access_key))
+                )
+                    .fromIOToMain()
+                    .subscribe({
+                        PlaceFactory.getHistoryVideoPreviewPlace(accountId, ArrayList(it), 0)
+                            .tryOpenWith(context)
                     }) { e -> createCustomToast(context).showToastThrowable(e) }
             }
 

@@ -19,8 +19,6 @@ package androidx.recyclerview.widget;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PointF;
-import android.os.Build;
-import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -29,10 +27,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.tracing.Trace;
 
 import java.util.List;
@@ -259,56 +254,6 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
             event.setFromIndex(findFirstVisibleItemPosition());
             event.setToIndex(findLastVisibleItemPosition());
         }
-    }
-
-    @Override
-    public void onInitializeAccessibilityNodeInfo(@NonNull RecyclerView.Recycler recycler,
-            @NonNull RecyclerView.State state, @NonNull AccessibilityNodeInfoCompat info) {
-        super.onInitializeAccessibilityNodeInfo(recycler, state, info);
-        // TODO(b/251823537)
-        if (mRecyclerView.mAdapter != null && mRecyclerView.mAdapter.getItemCount() > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                info.addAction(AccessibilityActionCompat.ACTION_SCROLL_TO_POSITION);
-            }
-        }
-    }
-
-    @Override
-    boolean performAccessibilityAction(int action, @Nullable Bundle args) {
-        if (super.performAccessibilityAction(action, args)) {
-            return true;
-        }
-
-        if (action == android.R.id.accessibilityActionScrollToPosition && args != null) {
-            int position = -1;
-
-            if (mOrientation == VERTICAL) {
-                final int rowArg = args.getInt(
-                        AccessibilityNodeInfoCompat.ACTION_ARGUMENT_ROW_INT, -1);
-                if (rowArg < 0) {
-                    return false;
-                }
-                position = Math.min(rowArg, getRowCountForAccessibility(mRecyclerView.mRecycler,
-                        mRecyclerView.mState) - 1);
-            } else { // horizontal
-                final int columnArg = args.getInt(
-                        AccessibilityNodeInfoCompat.ACTION_ARGUMENT_COLUMN_INT, -1);
-                if (columnArg < 0) {
-                    return false;
-                }
-                position = Math.min(columnArg,
-                        getColumnCountForAccessibility(mRecyclerView.mRecycler,
-                                mRecyclerView.mState) - 1);
-            }
-            if (position >= 0) {
-                // We want the target element to be the first on screen. That way, a
-                // screenreader like Talkback can directly focus on it as part of its default focus
-                // logic.
-                scrollToPositionWithOffset(position, 0);
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

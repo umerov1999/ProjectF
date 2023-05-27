@@ -749,7 +749,7 @@ class UserWallPresenter(
     }
 
     override fun searchStory(ByName: Boolean) {
-        appendDisposable(storiesInteractor.searchStory(
+        appendDisposable(storiesInteractor.searchStories(
             accountId,
             if (ByName) user.fullName else null,
             if (ByName) null else ownerId

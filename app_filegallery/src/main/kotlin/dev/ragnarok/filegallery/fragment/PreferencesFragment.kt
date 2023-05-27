@@ -799,6 +799,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                                 ".sstmp"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),
+                                ".SLOGAN"
+                            ).absolutePath || sel.absolutePath == File(
+                                Environment.getExternalStorageDirectory(),
+                                ".OplusOS"
+                            ).absolutePath || sel.absolutePath == File(
+                                Environment.getExternalStorageDirectory(),
                                 ".time"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),

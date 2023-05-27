@@ -472,7 +472,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         cacheCompositeDisposable.clear()
         requestWall(0)
         if (!Settings.get().other().isDisable_history) {
-            appendDisposable(storiesInteractor.getStory(
+            appendDisposable(storiesInteractor.getStories(
                 accountId,
                 if (accountId == ownerId) null else ownerId
             )
@@ -904,7 +904,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         storiesInteractor = InteractorFactory.createStoriesInteractor()
         loadWallCachedData()
         if (!Settings.get().other().isDisable_history) {
-            appendDisposable(storiesInteractor.getStory(
+            appendDisposable(storiesInteractor.getStories(
                 accountId,
                 if (accountId == ownerId) null else ownerId
             )

@@ -56,10 +56,15 @@ class FeedbackVKOfficialDtoAdapter :
             val dto = FeedbackVKOfficial()
             if (hasObject(root_item, "action")) {
                 val action_item = root_item["action"]?.jsonObject
-                if ("authorize" == optString(action_item, "type") || "custom" == optString(
+                if ("authorize" == optString(action_item, "type")) {
+                    dto.action = ActionBrowserURL(optString(action_item, "url"))
+                } else if ("custom" == optString(
                         action_item,
                         "type"
-                    ) && optString(root_item, "icon_type") == "friend_found"
+                    ) && optString(
+                        root_item,
+                        "icon_type"
+                    ) == "friend_found"
                 ) {
                     dto.action = ActionURL(optString(action_item, "url"))
                 } else if ("message_open" == optString(
@@ -181,6 +186,13 @@ class FeedbackVKOfficialDtoAdapter :
                         val imgh: ImageAdditional =
                             kJson.decodeFromJsonElement(ImageAdditional.serializer(), s)
                         dto.images?.add(imgh)
+                    }
+
+                    if (hasObject(additional_item, "action")) {
+                        val action_item = additional_item["action"]?.jsonObject
+                        if ("custom" == optString(action_item, "type")) {
+                            dto.images_action = ActionURL(optString(action_item, "url"))
+                        }
                     }
                 }
                 if ("photo" == optString(additional_item, "type")) {

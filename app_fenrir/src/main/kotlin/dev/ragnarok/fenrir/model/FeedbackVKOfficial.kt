@@ -19,6 +19,7 @@ class FeedbackVKOfficial {
     var hide_query: String? = null
     var time: Long = 0
     var images: ArrayList<ImageAdditional>? = null
+    var images_action: Action? = null
     var attachments: ArrayList<Photo>? = null
     var action: Action? = null
     fun getImage(prefSize: Int): ImageAdditional? {
@@ -36,12 +37,13 @@ class FeedbackVKOfficial {
         return result
     }
 
-    @IntDef(Action_Types.MESSAGE, Action_Types.URL)
+    @IntDef(Action_Types.MESSAGE, Action_Types.BROWSER_URL, Action_Types.URL)
     @Retention(AnnotationRetention.SOURCE)
     annotation class Action_Types {
         companion object {
             const val MESSAGE = 0
-            const val URL = 1
+            const val BROWSER_URL = 1
+            const val URL = 2
         }
     }
 
@@ -79,6 +81,19 @@ class FeedbackVKOfficial {
 
         override fun getActionType(): Int {
             return Action_Types.URL
+        }
+    }
+
+    @Keep
+    @Serializable
+    @SerialName("action_browser_url")
+    class ActionBrowserURL(private val url: String?) : Action() {
+        fun getUrl(): String? {
+            return url
+        }
+
+        override fun getActionType(): Int {
+            return Action_Types.BROWSER_URL
         }
     }
 

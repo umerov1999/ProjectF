@@ -41,6 +41,7 @@ object VKLinkParser {
         val PATTERN_PLAYLIST_ALT: Pattern =
             Pattern.compile("vk\\.com/.+(?:act=|z=)audio_playlist(-?\\d*)_(\\d*)(?:&access_hash=(\\w+))?")
         val PATTERN_DOC: Pattern = Pattern.compile("vk\\.com/doc(-?\\d*)_(\\d*)") //+
+        val PATTERN_STORY: Pattern = Pattern.compile("vk\\.com/story(-?\\d*)_(\\d*)") //+
         val PATTERN_TOPIC: Pattern = Pattern.compile("vk\\.com/topic-(\\d*)_(\\d*)") //+
         val PATTERN_FAVE: Pattern = Pattern.compile("vk\\.com/fave")
         val PATTERN_GROUP_ID: Pattern = Pattern.compile("vk\\.com/(club|event|public)(\\d+)$") //+
@@ -249,6 +250,10 @@ object VKLinkParser {
             return vkLink
         }
         vkLink = parseDoc(string)
+        if (vkLink != null) {
+            return vkLink
+        }
+        vkLink = parseStory(string)
         if (vkLink != null) {
             return vkLink
         }
@@ -652,6 +657,25 @@ object VKLinkParser {
                 return matcher.group(1)?.let {
                     matcher.group(2)?.let { it1 ->
                         DocLink(
+                            it.toLong(),
+                            it1.toInt(),
+                            parseAccessKey(string)
+                        )
+                    }
+                }
+            }
+        } catch (ignored: Exception) {
+        }
+        return null
+    }
+
+    private fun parseStory(string: String): AbsLink? {
+        val matcher = patterns.PATTERN_STORY.matcher(string)
+        try {
+            if (matcher.find()) {
+                return matcher.group(1)?.let {
+                    matcher.group(2)?.let { it1 ->
+                        StoryLink(
                             it.toLong(),
                             it1.toInt(),
                             parseAccessKey(string)

@@ -150,6 +150,7 @@ class LikeFCMMessage {
             .setSmallIcon(R.drawable.heart)
             .setContentTitle(context.getString(R.string.like_title))
             .setContentText(title)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(title))
             .setNumber(badge)
             .setAutoCancel(true)
         builder.priority = NotificationCompat.PRIORITY_HIGH

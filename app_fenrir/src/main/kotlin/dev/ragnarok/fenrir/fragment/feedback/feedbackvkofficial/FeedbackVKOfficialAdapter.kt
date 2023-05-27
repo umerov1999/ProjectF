@@ -231,9 +231,15 @@ class FeedbackVKOfficialAdapter(
         holder.time.text = AppTextUtils.getDateFromUnixTime(context, Page.time)
         val Img = Page.getImage(256)
         if (Img == null) {
+            holder.additional.setOnClickListener { }
             holder.additional.visibility = View.GONE
             with().cancelRequest(holder.additional)
         } else {
+            holder.additional.setOnClickListener {
+                Page.images_action.requireNonNull { sc ->
+                    clickListener?.openAction(sc)
+                }
+            }
             holder.additional.visibility = View.VISIBLE
             with()
                 .load(Img.url)
@@ -297,7 +303,7 @@ class FeedbackVKOfficialAdapter(
             }
         }
         Page.action.ifNonNull({
-            if (it.getActionType() == FeedbackVKOfficial.Action_Types.URL) {
+            if (it.getActionType() == FeedbackVKOfficial.Action_Types.URL || it.getActionType() == FeedbackVKOfficial.Action_Types.BROWSER_URL) {
                 holder.actionButton.setText(R.string.more_info)
             } else {
                 holder.actionButton.setText(R.string.open)

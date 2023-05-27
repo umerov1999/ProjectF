@@ -9,8 +9,8 @@ import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiNarratives
 import dev.ragnarok.fenrir.api.model.VKApiStory
 import dev.ragnarok.fenrir.api.model.response.ShortVideosResponse
+import dev.ragnarok.fenrir.api.model.response.StoriesResponse
 import dev.ragnarok.fenrir.api.model.response.StoryGetResponse
-import dev.ragnarok.fenrir.api.model.response.StoryResponse
 import dev.ragnarok.fenrir.api.model.response.ViewersListResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiStoryUploadServer
 import dev.ragnarok.fenrir.api.services.IStoriesShortVideosService
@@ -19,10 +19,14 @@ import io.reactivex.rxjava3.core.Single
 internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IStoriesShortVideosApi {
 
-    override fun getStory(owner_id: Long?, extended: Int?, fields: String?): Single<StoryResponse> {
+    override fun getStories(
+        owner_id: Long?,
+        extended: Int?,
+        fields: String?
+    ): Single<StoriesResponse> {
         return provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
-                service.getStory(owner_id, extended, fields)
+                service.getStories(owner_id, extended, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -67,16 +71,16 @@ internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider
             }
     }
 
-    override fun searchStory(
+    override fun searchStories(
         q: String?,
         mentioned_id: Long?,
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<StoryResponse> {
+    ): Single<StoriesResponse> {
         return provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
-                service.searchStory(q, mentioned_id, count, extended, fields)
+                service.searchStories(q, mentioned_id, count, extended, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }

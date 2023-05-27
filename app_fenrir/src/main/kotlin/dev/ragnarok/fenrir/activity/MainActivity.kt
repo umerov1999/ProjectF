@@ -691,7 +691,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
                                     2 -> {
                                         mCompositeDisposable.add(InteractorFactory.createStoriesInteractor()
-                                            .getStory(
+                                            .getStories(
                                                 Settings.get().accounts().current,
                                                 null
                                             )

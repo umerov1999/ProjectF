@@ -283,20 +283,9 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
      */
     private static final float FLING_DESTRETCH_FACTOR = 4f;
 
-    /**
-     * A {@link android.content.pm.PackageManager} feature specifying if a device's rotary encoder
-     * has low resolution. Low resolution rotary encoders produce small number of
-     * {@link MotionEvent}s per a 360 degree rotation, meaning that each {@link MotionEvent} has
-     * large scroll values, which make {@link #scrollBy(int, int)} calls feel broken (due to the
-     * fact that each event produces large scrolls, and scrolling with large pixels causes a visible
-     * jump that does not feel smooth). As such, we will try adjusting our handling of generic
-     * motion caused by such low resolution rotary encoders differently to make the scrolling
-     * experience smooth.
-     */
-    static final String LOW_RES_ROTARY_ENCODER_FEATURE = "android.hardware.rotaryencoder.lowres";
-
     static final boolean DISPATCH_TEMP_DETACH = false;
 
+    /** @hide */
     @RestrictTo(LIBRARY_GROUP_PREFIX)
     @IntDef({HORIZONTAL, VERTICAL})
     @Retention(RetentionPolicy.SOURCE)
@@ -696,12 +685,6 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
     private int mLastAutoMeasureNonExactMeasuredHeight = 0;
 
     /**
-     * Whether or not the device has {@link #LOW_RES_ROTARY_ENCODER_FEATURE}. Computed once and
-     * cached, since it's a static value that would not change on consecutive calls.
-     */
-    @VisibleForTesting boolean mLowResRotaryEncoderFeature;
-
-    /**
      * The callback to convert view info diffs into animations.
      */
     private final ViewInfoStore.ProcessCallback mViewInfoProcessCallback =
@@ -810,9 +793,6 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
                     horizontalThumbDrawable, horizontalTrackDrawable);
         }
         a.recycle();
-
-        mLowResRotaryEncoderFeature =
-                context.getPackageManager().hasSystemFeature(LOW_RES_ROTARY_ENCODER_FEATURE);
 
         // Create the layoutManager if specified.
         createLayoutManager(context, layoutManagerName, attrs, defStyleAttr, 0);
@@ -2184,12 +2164,6 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         if (getOverScrollMode() != View.OVER_SCROLL_NEVER) {
             if (ev != null && !MotionEventCompat.isFromSource(ev, InputDevice.SOURCE_MOUSE)) {
                 pullGlows(ev.getX(), unconsumedX, ev.getY(), unconsumedY);
-                // For rotary encoders, we release stretch EdgeEffects after they are pulled, to
-                // avoid the effects being stuck pulled.
-                if (Build.VERSION.SDK_INT >= 31
-                        && MotionEventCompat.isFromSource(ev, InputDevice.SOURCE_ROTARY_ENCODER)) {
-                    releaseGlows();
-                }
             }
             considerReleasingGlowsOnScroll(x, y);
         }
@@ -2284,7 +2258,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
 
     /**
      * <p>Compute the horizontal offset of the horizontal scrollbar's thumb within the horizontal
-     * range. This value is used to compute the position of the thumb within the scrollbar's track.
+     * range. This value is used to compute the length of the thumb within the scrollbar's track.
      * </p>
      *
      * <p>The range is expressed in arbitrary units that must be the same as the units used by
@@ -2345,7 +2319,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
      * {@link RecyclerView.LayoutManager#computeHorizontalScrollRange(RecyclerView.State)} in your
      * LayoutManager.</p>
      *
-     * @return The total horizontal range represented by the horizontal scrollbar
+     * @return The total horizontal range represented by the vertical scrollbar
      * @see RecyclerView.LayoutManager#computeHorizontalScrollRange(RecyclerView.State)
      */
     @Override
@@ -2358,7 +2332,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
 
     /**
      * <p>Compute the vertical offset of the vertical scrollbar's thumb within the vertical range.
-     * This value is used to compute the position of the thumb within the scrollbar's track. </p>
+     * This value is used to compute the length of the thumb within the scrollbar's track. </p>
      *
      * <p>The range is expressed in arbitrary units that must be the same as the units used by
      * {@link #computeVerticalScrollRange()} and {@link #computeVerticalScrollExtent()}.</p>
@@ -3960,8 +3934,6 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         if (mLayoutSuppressed) {
             return false;
         }
-
-        boolean useSmoothScroll = false;
         if (event.getAction() == MotionEvent.ACTION_SCROLL) {
             final float vScroll, hScroll;
             if ((event.getSource() & InputDeviceCompat.SOURCE_CLASS_POINTER) != 0) {
@@ -3991,25 +3963,14 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
                     vScroll = 0f;
                     hScroll = 0f;
                 }
-                // Use smooth scrolling for low resolution rotary encoders to avoid the visible
-                // pixel jumps that would be caused by doing regular scrolling.
-                useSmoothScroll = mLowResRotaryEncoderFeature;
             } else {
                 vScroll = 0f;
                 hScroll = 0f;
             }
 
-            int scaledVScroll = (int) (vScroll * mScaledVerticalScrollFactor);
-            int scaledHScroll = (int) (hScroll * mScaledHorizontalScrollFactor);
-            if (useSmoothScroll) {
-                OverScroller overScroller = mViewFlinger.mOverScroller;
-                // Account for any remaining scroll from a previous generic motion event.
-                scaledVScroll += overScroller.getFinalY() - overScroller.getCurrY();
-                scaledHScroll += overScroller.getFinalX() - overScroller.getCurrX();
-                smoothScrollBy(scaledHScroll, scaledVScroll, /* interpolator= */ null,
-                        UNDEFINED_DURATION, /* withNestedScrolling= */ true);
-            } else {
-                nestedScrollByInternal(scaledHScroll, scaledVScroll, event, TYPE_NON_TOUCH);
+            if (vScroll != 0 || hScroll != 0) {
+                nestedScrollByInternal((int) (hScroll * mScaledHorizontalScrollFactor),
+                        (int) (vScroll * mScaledVerticalScrollFactor), event, TYPE_NON_TOUCH);
             }
         }
         return false;
@@ -4976,7 +4937,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
     }
 
     @Override
-    public void draw(@NonNull Canvas c) {
+    public void draw(Canvas c) {
         super.draw(c);
 
         final int count = mItemDecorations.size();
@@ -5037,7 +4998,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
     }
 
     @Override
-    public void onDraw(@NonNull Canvas c) {
+    public void onDraw(Canvas c) {
         super.onDraw(c);
 
         final int count = mItemDecorations.size();
@@ -5577,7 +5538,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
     }
 
     @Override
-    public boolean drawChild(@NonNull Canvas canvas, View child, long drawingTime) {
+    public boolean drawChild(Canvas canvas, View child, long drawingTime) {
         return super.drawChild(canvas, child, drawingTime);
     }
 
@@ -11015,7 +10976,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
          * <p>Default implementation returns 0.</p>
          *
          * @param state Current State of RecyclerView where you can find total item count
-         * @return The total horizontal range represented by the horizontal scrollbar
+         * @return The total horizontal range represented by the vertical scrollbar
          * @see RecyclerView#computeHorizontalScrollRange()
          */
         public int computeHorizontalScrollRange(@NonNull State state) {
@@ -11299,12 +11260,6 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         public void onInitializeAccessibilityNodeInfoForItem(@NonNull Recycler recycler,
                 @NonNull State state, @NonNull View host,
                 @NonNull AccessibilityNodeInfoCompat info) {
-            int rowIndexGuess = canScrollVertically() ? getPosition(host) : 0;
-            int columnIndexGuess = canScrollHorizontally() ? getPosition(host) : 0;
-            final AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
-                    AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(rowIndexGuess, 1,
-                            columnIndexGuess, 1, false, false);
-            info.setCollectionItemInfo(itemInfo);
         }
 
         /**
@@ -11353,10 +11308,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
          * @return The number of rows in LayoutManager for accessibility.
          */
         public int getRowCountForAccessibility(@NonNull Recycler recycler, @NonNull State state) {
-            if (mRecyclerView == null || mRecyclerView.mAdapter == null) {
-                return 1;
-            }
-            return canScrollVertically() ? mRecyclerView.mAdapter.getItemCount() : 1;
+            return -1;
         }
 
         /**
@@ -11373,10 +11325,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
          */
         public int getColumnCountForAccessibility(@NonNull Recycler recycler,
                 @NonNull State state) {
-            if (mRecyclerView == null || mRecyclerView.mAdapter == null) {
-                return 1;
-            }
-            return canScrollHorizontally() ? mRecyclerView.mAdapter.getItemCount() : 1;
+            return -1;
         }
 
         /**
@@ -13298,6 +13247,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
     /**
      * This is public so that the CREATOR can be accessed on cold launch.
      *
+     * @hide
      */
     @RestrictTo(LIBRARY)
     public static class SavedState extends AbsSavedState {

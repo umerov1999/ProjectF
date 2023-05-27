@@ -573,7 +573,7 @@ class GroupWallPresenter(
     }
 
     override fun searchStory(ByName: Boolean) {
-        appendDisposable(storiesInteractor.searchStory(
+        appendDisposable(storiesInteractor.searchStories(
             accountId,
             if (ByName) community.fullName else null,
             if (ByName) null else ownerId

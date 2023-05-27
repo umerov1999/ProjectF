@@ -16,8 +16,8 @@ interface IStoriesShortVideosInteractor {
         offset: Int
     ): Single<List<Pair<Owner, Boolean>>>
 
-    fun searchStory(accountId: Long, q: String?, mentioned_id: Long?): Single<List<Story>>
-    fun getStory(accountId: Long, owner_id: Long?): Single<List<Story>>
+    fun searchStories(accountId: Long, q: String?, mentioned_id: Long?): Single<List<Story>>
+    fun getStories(accountId: Long, owner_id: Long?): Single<List<Story>>
     fun stories_delete(accountId: Long, owner_id: Long, story_id: Int): Single<Int>
     fun getNarratives(
         accountId: Long,

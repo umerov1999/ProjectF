@@ -6,8 +6,8 @@ import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiNarratives
 import dev.ragnarok.fenrir.api.model.VKApiStory
 import dev.ragnarok.fenrir.api.model.response.ShortVideosResponse
+import dev.ragnarok.fenrir.api.model.response.StoriesResponse
 import dev.ragnarok.fenrir.api.model.response.StoryGetResponse
-import dev.ragnarok.fenrir.api.model.response.StoryResponse
 import dev.ragnarok.fenrir.api.model.response.ViewersListResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiStoryUploadServer
 import io.reactivex.rxjava3.core.Single
@@ -40,7 +40,7 @@ interface IStoriesShortVideosApi {
     fun stories_save(upload_results: String?): Single<Items<VKApiStory>>
 
     @CheckResult
-    fun getStory(owner_id: Long?, extended: Int?, fields: String?): Single<StoryResponse>
+    fun getStories(owner_id: Long?, extended: Int?, fields: String?): Single<StoriesResponse>
 
     @CheckResult
     fun getNarratives(owner_id: Long, offset: Int?, count: Int?): Single<Items<VKApiNarratives>>
@@ -53,13 +53,13 @@ interface IStoriesShortVideosApi {
     ): Single<StoryGetResponse>
 
     @CheckResult
-    fun searchStory(
+    fun searchStories(
         q: String?,
         mentioned_id: Long?,
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<StoryResponse>
+    ): Single<StoriesResponse>
 
     @CheckResult
     fun getShortVideos(

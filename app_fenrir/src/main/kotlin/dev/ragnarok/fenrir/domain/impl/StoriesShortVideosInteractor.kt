@@ -121,10 +121,10 @@ class StoriesShortVideosInteractor(
             .stories().stories_delete(owner_id, story_id)
     }
 
-    override fun getStory(accountId: Long, owner_id: Long?): Single<List<Story>> {
+    override fun getStories(accountId: Long, owner_id: Long?): Single<List<Story>> {
         return networker.vkDefault(accountId)
             .stories()
-            .getStory(owner_id, 1, Fields.FIELDS_BASE_OWNER)
+            .getStories(owner_id, 1, Fields.FIELDS_BASE_OWNER)
             .flatMap { story ->
                 val dtos_multy = listEmptyIfNull(story.items)
                 val dtos: MutableList<VKApiStory> = ArrayList()
@@ -156,14 +156,14 @@ class StoriesShortVideosInteractor(
             }
     }
 
-    override fun searchStory(
+    override fun searchStories(
         accountId: Long,
         q: String?,
         mentioned_id: Long?
     ): Single<List<Story>> {
         return networker.vkDefault(accountId)
             .stories()
-            .searchStory(q, mentioned_id, 1000, 1, Fields.FIELDS_BASE_OWNER)
+            .searchStories(q, mentioned_id, 1000, 1, Fields.FIELDS_BASE_OWNER)
             .flatMap { story ->
                 val dtos_multy = listEmptyIfNull(story.items)
                 val dtos: MutableList<VKApiStory> = ArrayList()

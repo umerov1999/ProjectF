@@ -24,6 +24,7 @@ import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.FeedbackVKOfficial
+import dev.ragnarok.fenrir.model.FeedbackVKOfficial.ActionBrowserURL
 import dev.ragnarok.fenrir.model.FeedbackVKOfficial.ActionMessage
 import dev.ragnarok.fenrir.model.FeedbackVKOfficial.ActionURL
 import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
@@ -154,16 +155,32 @@ class FeedbackVKOfficialFragment :
     }
 
     override fun openAction(action: FeedbackVKOfficial.Action) {
-        if (action.getActionType() == FeedbackVKOfficial.Action_Types.URL) {
-            LinkHelper.openLinkInBrowser(requireActivity(), (action as ActionURL).getUrl())
-        } else if (action.getActionType() == FeedbackVKOfficial.Action_Types.MESSAGE) {
-            val msg = action as ActionMessage
-            getMessagesLookupPlace(
-                Settings.get().accounts().current,
-                msg.getPeerId(),
-                msg.getMessageId(),
-                null
-            ).tryOpenWith(requireActivity())
+        when (action.getActionType()) {
+            FeedbackVKOfficial.Action_Types.BROWSER_URL -> {
+                LinkHelper.openLinkInBrowser(
+                    requireActivity(),
+                    (action as ActionBrowserURL).getUrl()
+                )
+            }
+
+            FeedbackVKOfficial.Action_Types.URL -> {
+                LinkHelper.openUrl(
+                    requireActivity(),
+                    Settings.get().accounts().current,
+                    (action as ActionURL).getUrl(),
+                    false
+                )
+            }
+
+            FeedbackVKOfficial.Action_Types.MESSAGE -> {
+                val msg = action as ActionMessage
+                getMessagesLookupPlace(
+                    Settings.get().accounts().current,
+                    msg.getPeerId(),
+                    msg.getMessageId(),
+                    null
+                ).tryOpenWith(requireActivity())
+            }
         }
     }
 
