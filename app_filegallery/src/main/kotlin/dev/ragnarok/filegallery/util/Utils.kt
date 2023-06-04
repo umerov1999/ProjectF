@@ -191,7 +191,7 @@ object Utils {
 
     fun setColorFilter(view: ImageView?, @ColorInt color: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            view?.colorFilter = BlendModeColorFilter(color, BlendMode.MODULATE)
+            view?.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY)
         } else {
             view?.setColorFilter(color, PorterDuff.Mode.MULTIPLY)
         }
@@ -202,7 +202,7 @@ object Utils {
             return
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            view.colorFilter = BlendModeColorFilter(color, BlendMode.MODULATE)
+            view.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY)
         } else {
             view.setColorFilter(color, PorterDuff.Mode.MULTIPLY)
         }

@@ -82,7 +82,7 @@
                 android:src="@drawable/ucrop_rotate" />
 
             <TextView
-                android:id="@+id/text_view_rotate"
+                android:id="@+id/text_view_rotate_info"
                 style="@style/ucrop_TextViewWidget"
                 android:text="@string/ucrop_rotate" />
 
@@ -99,7 +99,7 @@
                 android:src="@drawable/ucrop_scale" />
 
             <TextView
-                android:id="@+id/text_view_scale"
+                android:id="@+id/text_view_scale_info"
                 style="@style/ucrop_TextViewWidget"
                 android:text="@string/ucrop_scale" />
 

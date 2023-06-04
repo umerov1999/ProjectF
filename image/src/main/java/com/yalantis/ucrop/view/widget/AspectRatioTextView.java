@@ -124,7 +124,7 @@ public class AspectRatioTextView extends AppCompatTextView {
 
         setTitle();
 
-        int activeColor = getResources().getColor(R.color.ucrop_color_widget_active);
+        int activeColor = ContextCompat.getColor(getContext(), R.color.ucrop_color_widget_active);
         applyActiveColor(activeColor);
 
         a.recycle();

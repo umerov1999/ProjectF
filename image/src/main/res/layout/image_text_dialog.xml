@@ -31,20 +31,26 @@
 
     </FrameLayout>
 
-    <EditText
-        android:id="@+id/et_text"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="22dp"
-        android:layout_weight="1"
-        android:background="@null"
-        android:gravity="top"
-        android:importantForAutofill="no"
-        android:inputType="textMultiLine"
-        android:padding="16dp"
-        android:textColor="@color/image_color_primary"
-        android:textSize="24sp"
-        tools:text="Sample" />
+        android:layout_weight="1">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:gravity="top"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:padding="16dp"
+            android:textColor="@color/image_color_primary"
+            android:textSize="24sp"
+            tools:text="Sample" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <include layout="@layout/image_color_layout" />
 

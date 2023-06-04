@@ -62,6 +62,7 @@ public class BitmapLoadTask {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @SuppressLint("CheckResult")
     public void execute() {
         doInBackground().compose(applySingleIOToMainSchedulers()).subscribe(this::onPostExecute, e -> onPostExecute(new BitmapWorkerResult((Exception) e)));
     }

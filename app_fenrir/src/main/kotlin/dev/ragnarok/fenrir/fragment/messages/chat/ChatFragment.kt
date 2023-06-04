@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.app.Dialog
 import android.content.*
+import android.graphics.Bitmap
 import android.net.*
 import android.os.Build
 import android.os.Bundle
@@ -1570,7 +1571,12 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                                 it,
                                 Uri.fromFile(File(requireActivity().externalCacheDir.toString() + File.separator + "scale.jpg"))
                             )
-                                .withAspectRatio(1f, 1f)
+                                .withOptions(
+                                    UCrop.Options().withAspectRatio(1f, 1f)
+                                        .setCompressionQuality(100)
+                                        .setCompressionFormat(Bitmap.CompressFormat.JPEG)
+                                        .setHideBottomControls(false)
+                                )
                                 .getIntent(requireActivity())
                         }
                     )

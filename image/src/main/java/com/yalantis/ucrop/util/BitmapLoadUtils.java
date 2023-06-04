@@ -1,15 +1,14 @@
 package com.yalantis.ucrop.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Point;
 import android.net.Uri;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -124,19 +123,13 @@ public class BitmapLoadUtils {
      *
      * @return - max bitmap size in pixels.
      */
-    public static int calculateMaxBitmapSize(@NonNull Context context) {
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display;
+    public static int calculateMaxBitmapSize() {
         int width, height;
-        Point size = new Point();
 
-        if (wm != null) {
-            display = wm.getDefaultDisplay();
-            display.getSize(size);
-        }
+        DisplayMetrics dm = Resources.getSystem().getDisplayMetrics();
 
-        width = size.x;
-        height = size.y;
+        width = dm.widthPixels;
+        height = dm.heightPixels;
 
         // Twice the device screen diagonal as default
         int maxBitmapSize = (int) Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));

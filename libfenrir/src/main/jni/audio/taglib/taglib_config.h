@@ -7,4 +7,6 @@
 
 /* Defined if your compiler supports some safer version of vsprintf */
 #define   HAVE_VSNPRINTF 1
+
+#define HAVE_ZLIB 1
 #endif

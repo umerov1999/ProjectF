@@ -41,7 +41,7 @@ buildscript {
     ext.tracingVersion = "1.2.0-rc01"
     ext.transitionVersion = "1.4.1"
     ext.vectordrawableVersion = "1.2.0-beta01"
-    ext.webkitVersion = "1.7.0-rc01"
+    ext.webkitVersion = "1.7.0"
     ext.workVersion = "2.8.1"
 
     //firebase libraries
@@ -57,7 +57,7 @@ buildscript {
     ext.autoValueVersion = "1.10.1"
 
     //common libraries
-    ext.kotlin_version = "1.8.21"
+    ext.kotlin_version = "1.9.0-Beta"
     ext.kotlin_coroutines = "1.7.1"
     ext.kotlin_serializer = "1.5.1"
     ext.okhttpLibraryVersion = "5.0.0-alpha.11"
@@ -66,7 +66,7 @@ buildscript {
     ext.guavaVersion = "32.0.0-android"
     ext.errorproneVersion = "2.15.0"
     ext.checkerCompatQualVersion = "2.5.5"
-    ext.checkerQualAndroidVersion = "3.34.0"
+    ext.checkerQualAndroidVersion = "3.35.0"
     ext.desugarLibraryVersion = "2.0.3"
 
     //APP_PROPS
@@ -91,7 +91,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.0.2"
+        classpath "com.android.tools.build:gradle:8.1.0-beta04"
         classpath "com.google.gms:google-services:4.3.15"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
@@ -106,6 +106,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }

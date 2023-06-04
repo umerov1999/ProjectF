@@ -16,7 +16,6 @@
     <color name="ucrop_color_black">#000</color>
     <color name="ucrop_color_blaze_orange">#673AB7</color>
     <color name="ucrop_color_ebony_clay">#20242F</color>
-    <color name="ucrop_color_heather">#B3BECE</color>
     <color name="ucrop_color_white">#FFF</color>
 
     <!--uCrop Activity-->
@@ -26,7 +25,6 @@
     <color name="ucrop_color_widget">@color/ucrop_color_black</color>
     <color name="ucrop_color_widget_active">@color/ucrop_color_white</color>
     <color name="ucrop_color_active_controls_color">@color/ucrop_color_blaze_orange</color>
-    <color name="ucrop_color_inactive_controls_color">@color/ucrop_color_heather</color>
     <color name="ucrop_color_widget_rotate_mid_line">@color/ucrop_color_blaze_orange</color>
     <color name="ucrop_color_widget_rotate_angle">@color/ucrop_color_ebony_clay</color>
     <color name="ucrop_color_active_aspect_ratio">@color/ucrop_color_blaze_orange</color>

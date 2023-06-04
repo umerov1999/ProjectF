@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.yalantis.ucrop.callback.OverlayViewChangeListener;
 import com.yalantis.ucrop.util.RectUtils;
@@ -436,12 +438,21 @@ public class OverlayView extends View {
      *
      * @param canvas - valid canvas object
      */
+    @SuppressWarnings("deprecation")
     protected void drawDimmedLayer(@NonNull Canvas canvas) {
         canvas.save();
         if (mCircleDimmedLayer) {
-            canvas.clipPath(mCircularPath, Region.Op.DIFFERENCE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                canvas.clipOutPath(mCircularPath);
+            } else {
+                canvas.clipPath(mCircularPath, Region.Op.DIFFERENCE);
+            }
         } else {
-            canvas.clipRect(mCropViewRect, Region.Op.DIFFERENCE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                canvas.clipOutRect(mCropViewRect);
+            } else {
+                canvas.clipRect(mCropViewRect, Region.Op.DIFFERENCE);
+            }
         }
         canvas.drawColor(mDimmedColor);
         canvas.restore();
@@ -458,6 +469,7 @@ public class OverlayView extends View {
      *
      * @param canvas - valid canvas object
      */
+    @SuppressWarnings("deprecation")
     protected void drawCropGrid(@NonNull Canvas canvas) {
         if (mShowCropGrid) {
             if (mGridPoints == null && !mCropViewRect.isEmpty()) {
@@ -494,11 +506,19 @@ public class OverlayView extends View {
 
             mTempRect.set(mCropViewRect);
             mTempRect.inset(mCropRectCornerTouchAreaLineLength, -mCropRectCornerTouchAreaLineLength);
-            canvas.clipRect(mTempRect, Region.Op.DIFFERENCE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                canvas.clipOutRect(mTempRect);
+            } else {
+                canvas.clipRect(mTempRect, Region.Op.DIFFERENCE);
+            }
 
             mTempRect.set(mCropViewRect);
             mTempRect.inset(-mCropRectCornerTouchAreaLineLength, mCropRectCornerTouchAreaLineLength);
-            canvas.clipRect(mTempRect, Region.Op.DIFFERENCE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                canvas.clipOutRect(mTempRect);
+            } else {
+                canvas.clipRect(mTempRect, Region.Op.DIFFERENCE);
+            }
 
             canvas.drawRect(mCropViewRect, mCropFrameCornersPaint);
 
@@ -513,7 +533,7 @@ public class OverlayView extends View {
     protected void processStyledAttributes(@NonNull TypedArray a) {
         mCircleDimmedLayer = a.getBoolean(R.styleable.ucrop_UCropView_ucrop_circle_dimmed_layer, DEFAULT_CIRCLE_DIMMED_LAYER);
         mDimmedColor = a.getColor(R.styleable.ucrop_UCropView_ucrop_dimmed_color,
-                getResources().getColor(R.color.ucrop_color_default_dimmed));
+                ContextCompat.getColor(getContext(), R.color.ucrop_color_default_dimmed));
         mDimmedStrokePaint.setColor(mDimmedColor);
         mDimmedStrokePaint.setStyle(Paint.Style.STROKE);
         mDimmedStrokePaint.setStrokeWidth(1);
@@ -532,7 +552,7 @@ public class OverlayView extends View {
         int cropFrameStrokeSize = a.getDimensionPixelSize(R.styleable.ucrop_UCropView_ucrop_frame_stroke_size,
                 getResources().getDimensionPixelSize(R.dimen.ucrop_default_crop_frame_stoke_width));
         int cropFrameColor = a.getColor(R.styleable.ucrop_UCropView_ucrop_frame_color,
-                getResources().getColor(R.color.ucrop_color_default_crop_frame));
+                ContextCompat.getColor(getContext(), R.color.ucrop_color_default_crop_frame));
         mCropFramePaint.setStrokeWidth(cropFrameStrokeSize);
         mCropFramePaint.setColor(cropFrameColor);
         mCropFramePaint.setStyle(Paint.Style.STROKE);
@@ -549,7 +569,7 @@ public class OverlayView extends View {
         int cropGridStrokeSize = a.getDimensionPixelSize(R.styleable.ucrop_UCropView_ucrop_grid_stroke_size,
                 getResources().getDimensionPixelSize(R.dimen.ucrop_default_crop_grid_stoke_width));
         int cropGridColor = a.getColor(R.styleable.ucrop_UCropView_ucrop_grid_color,
-                getResources().getColor(R.color.ucrop_color_default_crop_grid));
+                ContextCompat.getColor(getContext(), R.color.ucrop_color_default_crop_grid));
         mCropGridPaint.setStrokeWidth(cropGridStrokeSize);
         mCropGridPaint.setColor(cropGridColor);
 

@@ -507,7 +507,7 @@ public class IMGImage {
     }
 
     public int onDrawMosaicsPath(Canvas canvas) {
-        int layerCount = canvas.saveLayer(mFrame, null, Canvas.ALL_SAVE_FLAG);
+        int layerCount = canvas.saveLayer(mFrame, null);
 
         if (!isMosaicEmpty()) {
             canvas.save();

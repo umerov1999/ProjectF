@@ -20,6 +20,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -358,9 +360,10 @@ class ChildHelper {
         unhideViewInternal(view);
     }
 
+    @NonNull
     @Override
     public String toString() {
-        return mBucket.toString() + ", hidden list:" + mHiddenViews.size();
+        return mBucket + ", hidden list:" + mHiddenViews.size();
     }
 
     /**
@@ -503,10 +506,11 @@ class ChildHelper {
             }
         }
 
+        @NonNull
         @Override
         public String toString() {
             return mNext == null ? Long.toBinaryString(mData)
-                    : mNext.toString() + "xx" + Long.toBinaryString(mData);
+                    : mNext + "xx" + Long.toBinaryString(mData);
         }
     }
 

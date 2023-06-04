@@ -1,5 +1,6 @@
 package com.yalantis.ucrop.task;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -83,6 +84,7 @@ public class BitmapCropTask {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @SuppressLint("CheckResult")
     public void execute() {
         doInBackground().compose(applyCompletableIOToMainSchedulers())
                 .subscribe(() -> {

@@ -802,7 +802,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                                 ".SLOGAN"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),
-                                ".OplusOS"
+                                "OplusOS"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),
                                 ".time"

@@ -650,7 +650,7 @@ object NotificationHelper {
         return if (urit != null) Content(MimeType, urit) else null
     }
 
-    @SuppressLint("RestrictedApi")
+    @SuppressLint("RestrictedApi", "ReportShortcutUsage")
     private fun createNotificationShortcut(
         context: Context,
         builder: NotificationCompat.Builder,

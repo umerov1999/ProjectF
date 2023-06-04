@@ -18,8 +18,7 @@ import me.minetsh.imaging.view.IMGView;
  * Created by felix on 2017/12/5 下午3:08.
  */
 
-abstract class IMGEditBaseActivity extends AppCompatActivity implements View.OnClickListener,
-        IMGTextEditDialog.Callback, RadioGroup.OnCheckedChangeListener,
+abstract class IMGEditBaseActivity extends AppCompatActivity implements IMGTextEditDialog.Callback, RadioGroup.OnCheckedChangeListener,
         DialogInterface.OnShowListener, DialogInterface.OnDismissListener {
 
     public static final int OP_HIDE = -1;
@@ -61,34 +60,19 @@ abstract class IMGEditBaseActivity extends AppCompatActivity implements View.OnC
         mColorGroup.setOnCheckedChangeListener(this);
 
         mLayoutOpSub = findViewById(R.id.layout_op_sub);
-    }
 
-    @Override
-    public void onClick(View v) {
-        int vid = v.getId();
-        if (vid == R.id.rb_doodle) {
-            onModeClick(IMGMode.DOODLE);
-        } else if (vid == R.id.btn_text) {
-            onTextModeClick();
-        } else if (vid == R.id.rb_mosaic) {
-            onModeClick(IMGMode.MOSAIC);
-        } else if (vid == R.id.btn_clip) {
-            onModeClick(IMGMode.CLIP);
-        } else if (vid == R.id.btn_undo) {
-            onUndoClick();
-        } else if (vid == R.id.tv_done) {
-            onDoneClick();
-        } else if (vid == R.id.tv_cancel) {
-            onCancelClick();
-        } else if (vid == R.id.ib_clip_cancel) {
-            onCancelClipClick();
-        } else if (vid == R.id.ib_clip_done) {
-            onDoneClipClick();
-        } else if (vid == R.id.tv_clip_reset) {
-            onResetClipClick();
-        } else if (vid == R.id.ib_clip_rotate) {
-            onRotateClipClick();
-        }
+        findViewById(R.id.ib_clip_rotate).setOnClickListener(v -> onRotateClipClick());
+        findViewById(R.id.ib_clip_cancel).setOnClickListener(v -> onCancelClipClick());
+        findViewById(R.id.tv_clip_reset).setOnClickListener(v -> onResetClipClick());
+        findViewById(R.id.ib_clip_done).setOnClickListener(v -> onDoneClipClick());
+
+        findViewById(R.id.rb_doodle).setOnClickListener(v -> onModeClick(IMGMode.DOODLE));
+        findViewById(R.id.btn_text).setOnClickListener(v -> onTextModeClick());
+        findViewById(R.id.rb_mosaic).setOnClickListener(v -> onModeClick(IMGMode.MOSAIC));
+        findViewById(R.id.btn_clip).setOnClickListener(v -> onModeClick(IMGMode.CLIP));
+        findViewById(R.id.btn_undo).setOnClickListener(v -> onUndoClick());
+        findViewById(R.id.tv_done).setOnClickListener(v -> onDoneClick());
+        findViewById(R.id.tv_cancel).setOnClickListener(v -> onCancelClick());
     }
 
     public void updateModeUI() {

@@ -52,7 +52,7 @@ android {
         checkReleaseBuilds = true
     }
 
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).configureEach {
         options.compilerArgs << "-Xmaxwarns" << "1000" << "-Xmaxerrs" << "1000"
     }
 
@@ -76,7 +76,6 @@ android {
         release {
             minifyEnabled = false
             shrinkResources = false
-            zipAlignEnabled = true
         }
         debug {
             minifyEnabled = false
@@ -84,7 +83,7 @@ android {
         }
     }
 
-    flavorDimensions "type"
+    flavorDimensions.add("type")
     productFlavors {
         fenrir {
             applicationId = "dev.ragnarok.fenrir"

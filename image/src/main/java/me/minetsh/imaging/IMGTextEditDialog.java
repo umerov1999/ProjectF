@@ -8,8 +8,9 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.RadioGroup;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import me.minetsh.imaging.core.IMGText;
 import me.minetsh.imaging.view.IMGColorGroup;
@@ -23,7 +24,7 @@ public class IMGTextEditDialog extends Dialog implements View.OnClickListener,
 
     private static final String TAG = "IMGTextEditDialog";
     private final Callback mCallback;
-    private EditText mEditText;
+    private TextInputEditText mEditText;
     private IMGText mDefaultText;
 
     private IMGColorGroup mColorGroup;

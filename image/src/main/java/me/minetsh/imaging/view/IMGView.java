@@ -23,6 +23,8 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+
 import me.minetsh.imaging.core.IMGImage;
 import me.minetsh.imaging.core.IMGMode;
 import me.minetsh.imaging.core.IMGPath;
@@ -458,7 +460,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
     }
 
     @Override
-    public boolean onScale(ScaleGestureDetector detector) {
+    public boolean onScale(@NonNull ScaleGestureDetector detector) {
         if (mPointerCount > 1) {
             mImage.onScale(detector.getScaleFactor(),
                     getScrollX() + detector.getFocusX(),
@@ -470,7 +472,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
     }
 
     @Override
-    public boolean onScaleBegin(ScaleGestureDetector detector) {
+    public boolean onScaleBegin(@NonNull ScaleGestureDetector detector) {
         if (mPointerCount > 1) {
             mImage.onScaleBegin();
             return true;
@@ -479,7 +481,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
     }
 
     @Override
-    public void onScaleEnd(ScaleGestureDetector detector) {
+    public void onScaleEnd(@NonNull ScaleGestureDetector detector) {
         mImage.onScaleEnd();
     }
 
@@ -532,7 +534,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
     }
 
     @Override
-    public void onAnimationStart(Animator animation) {
+    public void onAnimationStart(@NonNull Animator animation) {
         if (DEBUG) {
             Log.d(TAG, "onAnimationStart");
         }
@@ -540,7 +542,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
     }
 
     @Override
-    public void onAnimationEnd(Animator animation) {
+    public void onAnimationEnd(@NonNull Animator animation) {
         if (DEBUG) {
             Log.d(TAG, "onAnimationEnd");
         }
@@ -550,7 +552,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
     }
 
     @Override
-    public void onAnimationCancel(Animator animation) {
+    public void onAnimationCancel(@NonNull Animator animation) {
         if (DEBUG) {
             Log.d(TAG, "onAnimationCancel");
         }
@@ -558,7 +560,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
     }
 
     @Override
-    public void onAnimationRepeat(Animator animation) {
+    public void onAnimationRepeat(@NonNull Animator animation) {
         // empty implementation.
     }
 
@@ -610,17 +612,17 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
     class MoveAdapter extends GestureDetector.SimpleOnGestureListener {
 
         @Override
-        public boolean onDown(MotionEvent e) {
+        public boolean onDown(@NonNull MotionEvent e) {
             return true;
         }
 
         @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        public boolean onScroll(@NonNull MotionEvent e1, @NonNull MotionEvent e2, float distanceX, float distanceY) {
             return IMGView.this.onScroll(distanceX, distanceY);
         }
 
         @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        public boolean onFling(@NonNull MotionEvent e1, @NonNull MotionEvent e2, float velocityX, float velocityY) {
             // TODO
             return super.onFling(e1, e2, velocityX, velocityY);
         }

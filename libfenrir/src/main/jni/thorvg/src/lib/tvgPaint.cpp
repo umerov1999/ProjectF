@@ -166,6 +166,7 @@ bool Paint::Impl::render(RenderMethod& renderer)
         Create a composition image. */
     if (compData && compData->method != CompositeMethod::ClipPath && !(compData->target->pImpl->ctxFlag & ContextFlag::FastTrack)) {
         auto region = smethod->bounds(renderer);
+        if (MASK_OPERATION(compData->method)) region.add(compData->target->pImpl->smethod->bounds(renderer));
         if (region.w == 0 || region.h == 0) return true;
         cmp = renderer.target(region, COMPOSITE_TO_COLORSPACE(renderer, compData->method));
         if (renderer.beginComposite(cmp, CompositeMethod::None, 255)) {
@@ -209,11 +210,18 @@ RenderData Paint::Impl::update(RenderMethod& renderer, const RenderTransform* pT
         auto tryFastTrack = false;
         if (target->identifier() == TVG_CLASS_ID_SHAPE) {
             if (method == CompositeMethod::ClipPath) tryFastTrack = true;
+            //OPTIMIZE HERE: Actually, this condition AlphaMask is useless. We can skip it?
             else if (method == CompositeMethod::AlphaMask) {
                 auto shape = static_cast<Shape*>(target);
                 uint8_t a;
                 shape->fillColor(nullptr, nullptr, nullptr, &a);
                 if (a == 255 && shape->opacity() == 255 && !shape->fill()) tryFastTrack = true;
+            //OPTIMIZE HERE: Actually, this condition InvAlphaMask is useless. We can skip it?
+            } else if (method == CompositeMethod::InvAlphaMask) {
+                auto shape = static_cast<Shape*>(target);
+                uint8_t a;
+                shape->fillColor(nullptr, nullptr, nullptr, &a);
+                if ((a == 0 || shape->opacity() == 0) && !shape->fill()) tryFastTrack = true;
             }
             if (tryFastTrack) {
                 RenderRegion viewport2;

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
 
 import java.io.FileNotFoundException;
@@ -33,6 +34,7 @@ public class IMGEditActivity extends IMGEditBaseActivity {
 
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public Bitmap getBitmap() {
         Intent intent = getIntent();
@@ -40,7 +42,12 @@ public class IMGEditActivity extends IMGEditBaseActivity {
             return null;
         }
 
-        Uri uri = intent.getParcelableExtra(EXTRA_IMAGE_URI);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            uri = intent.getParcelableExtra(EXTRA_IMAGE_URI, Uri.class);
+        } else {
+            uri = intent.getParcelableExtra(EXTRA_IMAGE_URI);
+        }
         if (uri == null) {
             return null;
         }
@@ -48,7 +55,7 @@ public class IMGEditActivity extends IMGEditBaseActivity {
         IMGDecoder decoder = null;
 
         String path = uri.getPath();
-        if (!TextUtils.isEmpty(path)) {
+        if (!TextUtils.isEmpty(path) && uri.getScheme() != null) {
             switch (uri.getScheme()) {
                 case "asset":
                     decoder = new IMGAssetFileDecoder(this, uri);

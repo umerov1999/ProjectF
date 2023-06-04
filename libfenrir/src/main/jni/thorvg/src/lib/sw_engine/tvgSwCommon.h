@@ -248,7 +248,8 @@ struct SwBlender
 
     SwAlpha alpha(CompositeMethod method)
     {
-        return alphas[(int)(method) - 2];      //0: None, 1: ClipPath
+        auto idx = (int)(method) - 2;       //0: None, 1: ClipPath
+        return alphas[idx > 3 ? 0 : idx];   //CompositeMethod has only four Matting methods.
     }
 };
 
@@ -287,15 +288,75 @@ static inline uint32_t ALPHA_BLEND(uint32_t c, uint32_t a)
             ((((c & 0x00ff00ff) * a + 0x00ff00ff) >> 8) & 0x00ff00ff));
 }
 
-static inline uint32_t INTERPOLATE(uint32_t a, uint32_t c0, uint32_t c1)
+static inline uint32_t INTERPOLATE(uint32_t s, uint32_t d, uint8_t a)
 {
-    return (((((((c0 >> 8) & 0xff00ff) - ((c1 >> 8) & 0xff00ff)) * a) + (c1 & 0xff00ff00)) & 0xff00ff00) + ((((((c0 & 0xff00ff) - (c1 & 0xff00ff)) * a) >> 8) + (c1 & 0xff00ff)) & 0xff00ff));
+    return (((((((s >> 8) & 0xff00ff) - ((d >> 8) & 0xff00ff)) * a) + (d & 0xff00ff00)) & 0xff00ff00) + ((((((s & 0xff00ff) - (d & 0xff00ff)) * a) >> 8) + (d & 0xff00ff)) & 0xff00ff));
+}
+
+static inline uint8_t INTERPOLATE8(uint8_t s, uint8_t d, uint8_t a)
+{
+    return ((s * a + 0xff) >> 8) + ((d * ~a + 0xff) >> 8);
 }
 
 static inline SwCoord HALF_STROKE(float width)
 {
     return TO_SWCOORD(width * 0.5f);
 }
+
+static inline uint8_t MULTIPLY(uint8_t c, uint8_t a)
+{
+    return ((c * a + 0xff) >> 8);
+}
+
+static inline uint8_t ALPHA(uint32_t c)
+{
+    return (c >> 24);
+}
+
+static inline uint8_t IALPHA(uint32_t c)
+{
+    return (~c >> 24);
+}
+
+
+typedef uint32_t(*SwBlendOp)(uint32_t s, uint32_t d, uint8_t a);            //src, dst, alpha
+
+static inline uint32_t opAlphaBlend(uint32_t s, uint32_t d, uint8_t a)
+{
+    auto t = ALPHA_BLEND(s, a);
+    return t + ALPHA_BLEND(d, IALPHA(t));
+}
+
+static inline uint32_t opBlend(uint32_t s, uint32_t d, TVG_UNUSED uint8_t a)
+{
+    return s + ALPHA_BLEND(d, IALPHA(s));
+}
+
+static inline uint32_t opAddMask(uint32_t s, uint32_t d, TVG_UNUSED uint8_t a)
+{
+    return opBlend(s, d, a);
+}
+
+static inline uint32_t opSubMask(uint32_t s, uint32_t d, TVG_UNUSED uint8_t a)
+{
+    return ALPHA_BLEND(d, IALPHA(s));
+}
+
+static inline uint32_t opIntMask(TVG_UNUSED uint32_t s, uint32_t d, uint8_t a)
+{
+   return ALPHA_BLEND(d, a);
+}
+
+static inline uint32_t opDifMask(uint32_t s, uint32_t d, TVG_UNUSED uint8_t a)
+{
+   return ALPHA_BLEND(s, IALPHA(d)) + ALPHA_BLEND(d, IALPHA(s));
+}
+
+static inline uint32_t opInterpolate(uint32_t s, uint32_t d, uint8_t a)
+{
+    return INTERPOLATE(s, d, a);
+}
+
 
 int64_t mathMultiply(int64_t a, int64_t b);
 int64_t mathDivide(int64_t a, int64_t b);
@@ -344,8 +405,10 @@ void imageFree(SwImage* image);
 bool fillGenColorTable(SwFill* fill, const Fill* fdata, const Matrix* transform, SwSurface* surface, uint32_t opacity, bool ctable);
 void fillReset(SwFill* fill);
 void fillFree(SwFill* fill);
-void fillFetchLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len);
-void fillFetchRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len);
+void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlendOp op, uint8_t a);                                         //blending ver.
+void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, uint8_t* cmp, SwAlpha alpha, uint8_t csize, uint8_t opacity);     //masking ver.
+void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlendOp op, uint8_t a);                                         //blending ver.
+void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, uint8_t* cmp, SwAlpha alpha, uint8_t csize, uint8_t opacity);     //masking ver.
 
 SwRleData* rleRender(SwRleData* rle, const SwOutline* outline, const SwBBox& renderRegion, bool antiAlias);
 SwRleData* rleRender(const SwBBox* bbox);

@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.util
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
@@ -216,6 +217,7 @@ object ShortcutUtils {
     }
 
 
+    @SuppressLint("ReportShortcutUsage")
     @TargetApi(Build.VERSION_CODES.N_MR1)
     fun addDynamicShortcut(context: Context, accountId: Long, peer: Peer): Completable {
         val app = context.applicationContext

@@ -77,7 +77,7 @@ public class TransformImageView extends AppCompatImageView {
 
     public int getMaxBitmapSize() {
         if (mMaxBitmapSize <= 0) {
-            mMaxBitmapSize = BitmapLoadUtils.calculateMaxBitmapSize(getContext());
+            mMaxBitmapSize = BitmapLoadUtils.calculateMaxBitmapSize();
         }
         return mMaxBitmapSize;
     }

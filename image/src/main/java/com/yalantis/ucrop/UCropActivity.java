@@ -7,6 +7,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -175,7 +176,7 @@ public class UCropActivity extends AppCompatActivity implements MenuProvider {
         Drawable menuItemCropIcon = ContextCompat.getDrawable(this, mToolbarCropDrawable);
         if (menuItemCropIcon != null) {
             menuItemCropIcon.mutate();
-            menuItemCropIcon.setColorFilter(mToolbarWidgetColor, PorterDuff.Mode.SRC_ATOP);
+            menuItemCropIcon.setColorFilter(new PorterDuffColorFilter(mToolbarWidgetColor, PorterDuff.Mode.SRC_ATOP));
             menuItemCrop.setIcon(menuItemCropIcon);
         }
     }
@@ -209,9 +210,17 @@ public class UCropActivity extends AppCompatActivity implements MenuProvider {
     /**
      * This method extracts all data from the incoming intent and setups views properly.
      */
+    @SuppressWarnings("deprecation")
     private void setImageData(@NonNull Intent intent) {
-        Uri inputUri = intent.getParcelableExtra(UCrop.EXTRA_INPUT_URI);
-        Uri outputUri = intent.getParcelableExtra(UCrop.EXTRA_OUTPUT_URI);
+        Uri inputUri;
+        Uri outputUri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            inputUri = intent.getParcelableExtra(UCrop.EXTRA_INPUT_URI, Uri.class);
+            outputUri = intent.getParcelableExtra(UCrop.EXTRA_OUTPUT_URI, Uri.class);
+        } else {
+            inputUri = intent.getParcelableExtra(UCrop.EXTRA_INPUT_URI);
+            outputUri = intent.getParcelableExtra(UCrop.EXTRA_OUTPUT_URI);
+        }
         processOptions(intent);
 
         if (inputUri != null && outputUri != null) {
@@ -362,7 +371,7 @@ public class UCropActivity extends AppCompatActivity implements MenuProvider {
 
         // Color buttons inside the Toolbar
         Drawable stateButtonDrawable = ContextCompat.getDrawable(this, mToolbarCancelDrawable).mutate();
-        stateButtonDrawable.setColorFilter(mToolbarWidgetColor, PorterDuff.Mode.SRC_ATOP);
+        stateButtonDrawable.setColorFilter(new PorterDuffColorFilter(mToolbarWidgetColor, PorterDuff.Mode.SRC_ATOP));
         toolbar.setNavigationIcon(stateButtonDrawable);
 
         setSupportActionBar(toolbar);
@@ -416,10 +425,15 @@ public class UCropActivity extends AppCompatActivity implements MenuProvider {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void setupAspectRatioWidget(@NonNull Intent intent) {
-
         int aspectRationSelectedByDefault = intent.getIntExtra(UCrop.Options.EXTRA_ASPECT_RATIO_SELECTED_BY_DEFAULT, 0);
-        ArrayList<AspectRatio> aspectRatioList = intent.getParcelableArrayListExtra(UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS);
+        ArrayList<AspectRatio> aspectRatioList;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            aspectRatioList = intent.getParcelableArrayListExtra(UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS, AspectRatio.class);
+        } else {
+            aspectRatioList = intent.getParcelableArrayListExtra(UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS);
+        }
 
         if (aspectRatioList == null || aspectRatioList.isEmpty()) {
             aspectRationSelectedByDefault = 2;
@@ -596,9 +610,9 @@ public class UCropActivity extends AppCompatActivity implements MenuProvider {
     private void changeSelectedTab(int stateViewId) {
         TransitionManager.beginDelayedTransition(findViewById(R.id.ucrop_photobox), mControlsTransition);
 
-        mWrapperStateScale.findViewById(R.id.text_view_scale).setVisibility(stateViewId == R.id.state_scale ? View.VISIBLE : View.GONE);
+        mWrapperStateScale.findViewById(R.id.text_view_scale_info).setVisibility(stateViewId == R.id.state_scale ? View.VISIBLE : View.GONE);
         mWrapperStateAspectRatio.findViewById(R.id.text_view_crop).setVisibility(stateViewId == R.id.state_aspect_ratio ? View.VISIBLE : View.GONE);
-        mWrapperStateRotate.findViewById(R.id.text_view_rotate).setVisibility(stateViewId == R.id.state_rotate ? View.VISIBLE : View.GONE);
+        mWrapperStateRotate.findViewById(R.id.text_view_rotate_info).setVisibility(stateViewId == R.id.state_rotate ? View.VISIBLE : View.GONE);
 
     }
 

@@ -36,6 +36,7 @@ import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.longpoll.LongpollInstance
 import dev.ragnarok.fenrir.model.Account
 import dev.ragnarok.fenrir.model.IOwnersBundle
+import dev.ragnarok.fenrir.model.MessageStatus
 import dev.ragnarok.fenrir.model.SaveAccount
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.criteria.DialogsCriteria
@@ -507,13 +508,19 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                             val dialogsJsonElem =
                                 i.jsonObject["conversation"]?.jsonArray ?: continue
                             if (!dialogsJsonElem.isEmpty()) {
-                                Includes.stores.dialogs().insertDialogs(
-                                    aid, kJson.decodeFromJsonElement(
-                                        ListSerializer(
-                                            DialogDboEntity.serializer()
-                                        ), dialogsJsonElem
-                                    ), true
-                                ).blockingAwait()
+                                val btmp = kJson.decodeFromJsonElement(
+                                    ListSerializer(
+                                        DialogDboEntity.serializer()
+                                    ), dialogsJsonElem
+                                )
+                                if (btmp.nonNullNoEmpty()) {
+                                    for (o in btmp) {
+                                        o.message?.setStatus(MessageStatus.SENT)
+                                    }
+                                    Includes.stores.dialogs().insertDialogs(
+                                        aid, btmp, true
+                                    ).blockingAwait()
+                                }
                             }
                         }
                     }

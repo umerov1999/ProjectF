@@ -92,7 +92,11 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                             to_up,
                             Uri.fromFile(File(requireActivity().externalCacheDir.toString() + File.separator + "scale.jpg"))
                         )
-                            .withAspectRatio(1f, 1f)
+                            .withOptions(
+                                UCrop.Options().withAspectRatio(1f, 1f).setCompressionQuality(100)
+                                    .setCompressionFormat(Bitmap.CompressFormat.JPEG)
+                                    .setHideBottomControls(false)
+                            )
                             .getIntent(requireActivity())
                     )
                 }

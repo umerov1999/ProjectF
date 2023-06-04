@@ -18,6 +18,7 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.media.session.MediaButtonReceiver
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -150,7 +151,12 @@ class MusicPlaybackService : Service() {
         filter.addAction(PREVIOUS_ACTION)
         filter.addAction(REPEAT_ACTION)
         filter.addAction(SHUFFLE_ACTION)
-        registerReceiver(mIntentReceiver, filter)
+        ContextCompat.registerReceiver(
+            this,
+            mIntentReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         // Initialize the delayed shutdown intent
         val shutdownIntent = Intent(this, MusicPlaybackService::class.java)

@@ -10,6 +10,7 @@ import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.os.RemoteException
+import androidx.core.content.ContextCompat
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.settings.Settings
@@ -56,7 +57,12 @@ object MusicPlaybackController {
         filter.addAction(MusicPlaybackService.META_CHANGED)
         filter.addAction(MusicPlaybackService.PREPARED)
         filter.addAction(MusicPlaybackService.QUEUE_CHANGED)
-        appContext.registerReceiver(receiver, filter)
+        ContextCompat.registerReceiver(
+            appContext,
+            receiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     fun bindToServiceWithoutStart(

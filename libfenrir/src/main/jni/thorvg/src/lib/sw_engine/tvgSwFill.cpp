@@ -80,7 +80,7 @@ static bool _updateColorTable(SwFill* fill, const Fill* fdata, const SwSurface* 
             auto dist = static_cast<int32_t>(255 * t);
             auto dist2 = 255 - dist;
 
-            auto color = INTERPOLATE(dist2, rgba, rgba2);
+            auto color = INTERPOLATE(rgba, rgba2, dist2);
             fill->ctable[i] = ALPHA_BLEND((color | 0xff000000), (color >> 24));
 
             ++i;
@@ -233,7 +233,7 @@ static inline uint32_t _pixel(const SwFill* fill, float pos)
 /* External Class Implementation                                        */
 /************************************************************************/
 
-void fillFetchRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len)
+void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, uint8_t* cmp, SwAlpha alpha, uint8_t csize, uint8_t opacity)
 {
     auto rx = (x + 0.5f) * fill->radial.a11 + (y + 0.5f) * fill->radial.a12 + fill->radial.shiftX;
     auto ry = (x + 0.5f) * fill->radial.a21 + (y + 0.5f) * fill->radial.a22 + fill->radial.shiftY;
@@ -244,16 +244,124 @@ void fillFetchRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, 
     auto detFirstDerivative = 2.0f * (fill->radial.a11 * rx + fill->radial.a21 * ry) + 0.5f * detSecondDerivative;
     auto det = rx * rx + ry * ry;
 
-    for (uint32_t i = 0 ; i < len ; ++i) {
-        *dst = _pixel(fill, sqrtf(det));
-        ++dst;
-        det += detFirstDerivative;
-        detFirstDerivative += detSecondDerivative;
+    if (opacity == 255) {
+        for (uint32_t i = 0 ; i < len ; ++i, ++dst, cmp += csize) {
+            *dst = opAlphaBlend(_pixel(fill, sqrtf(det)), *dst, alpha(cmp));
+            det += detFirstDerivative;
+            detFirstDerivative += detSecondDerivative;
+        }
+    } else {
+        for (uint32_t i = 0 ; i < len ; ++i, ++dst, cmp += csize) {
+            *dst = opAlphaBlend(_pixel(fill, sqrtf(det)), *dst, MULTIPLY(opacity, alpha(cmp)));
+            det += detFirstDerivative;
+            detFirstDerivative += detSecondDerivative;
+        }
     }
 }
 
 
-void fillFetchLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len)
+void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlendOp op, uint8_t a)
+{
+    auto rx = (x + 0.5f) * fill->radial.a11 + (y + 0.5f) * fill->radial.a12 + fill->radial.shiftX;
+    auto ry = (x + 0.5f) * fill->radial.a21 + (y + 0.5f) * fill->radial.a22 + fill->radial.shiftY;
+
+    // detSecondDerivative = d(detFirstDerivative)/dx = d( d(det)/dx )/dx
+    auto detSecondDerivative = fill->radial.detSecDeriv;
+    // detFirstDerivative = d(det)/dx
+    auto detFirstDerivative = 2.0f * (fill->radial.a11 * rx + fill->radial.a21 * ry) + 0.5f * detSecondDerivative;
+    auto det = rx * rx + ry * ry;
+
+    if (op) {
+        for (uint32_t i = 0 ; i < len ; ++i, ++dst) {
+            *dst = op(_pixel(fill, sqrtf(det)), *dst, a);
+            det += detFirstDerivative;
+            detFirstDerivative += detSecondDerivative;
+        }
+    } else {
+        for (uint32_t i = 0 ; i < len ; ++i, ++dst) {
+            *dst = _pixel(fill, sqrtf(det));
+            det += detFirstDerivative;
+            detFirstDerivative += detSecondDerivative;
+        }
+    }
+}
+
+
+void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, uint8_t* cmp, SwAlpha alpha, uint8_t csize, uint8_t opacity)
+{
+    //Rotation
+    float rx = x + 0.5f;
+    float ry = y + 0.5f;
+    float t = (fill->linear.dx * rx + fill->linear.dy * ry + fill->linear.offset) * (GRADIENT_STOP_SIZE - 1);
+    float inc = (fill->linear.dx) * (GRADIENT_STOP_SIZE - 1);
+
+    if (opacity == 255) {
+        if (mathZero(inc)) {
+            auto color = _fixedPixel(fill, static_cast<int32_t>(t * FIXPT_SIZE));
+            for (uint32_t i = 0; i < len; ++i, ++dst, cmp += csize) {
+                *dst = opAlphaBlend(color, *dst, alpha(cmp));
+            }
+            return;
+        }
+
+        auto vMax = static_cast<float>(INT32_MAX >> (FIXPT_BITS + 1));
+        auto vMin = -vMax;
+        auto v = t + (inc * len);
+
+        //we can use fixed point math
+        if (v < vMax && v > vMin) {
+            auto t2 = static_cast<int32_t>(t * FIXPT_SIZE);
+            auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
+            for (uint32_t j = 0; j < len; ++j, ++dst, cmp += csize) {
+                *dst = opAlphaBlend(_fixedPixel(fill, t2), *dst, alpha(cmp));
+                t2 += inc2;
+            }
+        //we have to fallback to float math
+        } else {
+            uint32_t counter = 0;
+            while (counter++ < len) {
+                *dst = opAlphaBlend(_pixel(fill, t / GRADIENT_STOP_SIZE), *dst, alpha(cmp));
+                ++dst;
+                t += inc;
+                cmp += csize;
+            }
+        }
+    } else {
+        if (mathZero(inc)) {
+            auto color = _fixedPixel(fill, static_cast<int32_t>(t * FIXPT_SIZE));
+            for (uint32_t i = 0; i < len; ++i, ++dst, cmp += csize) {
+                *dst = opAlphaBlend(color, *dst, MULTIPLY(alpha(cmp), opacity));
+            }
+            return;
+        }
+
+        auto vMax = static_cast<float>(INT32_MAX >> (FIXPT_BITS + 1));
+        auto vMin = -vMax;
+        auto v = t + (inc * len);
+
+        //we can use fixed point math
+        if (v < vMax && v > vMin) {
+            auto t2 = static_cast<int32_t>(t * FIXPT_SIZE);
+            auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
+            for (uint32_t j = 0; j < len; ++j, ++dst, cmp += csize) {
+                *dst = opAlphaBlend(_fixedPixel(fill, t2), *dst, MULTIPLY(alpha(cmp), opacity));
+                t2 += inc2;
+            }
+        //we have to fallback to float math
+        } else {
+            uint32_t counter = 0;
+            while (counter++ < len) {
+                *dst = opAlphaBlend(_pixel(fill, t / GRADIENT_STOP_SIZE), *dst, MULTIPLY(opacity, alpha(cmp)));
+                ++dst;
+                t += inc;
+                cmp += csize;
+            }
+        }
+    }
+}
+
+
+void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlendOp op, uint8_t a)
 {
     //Rotation
     float rx = x + 0.5f;
@@ -263,7 +371,13 @@ void fillFetchLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, 
 
     if (mathZero(inc)) {
         auto color = _fixedPixel(fill, static_cast<int32_t>(t * FIXPT_SIZE));
-        rasterRGBA32(dst, color, 0, len);
+        if (op) {
+            for (uint32_t i = 0; i < len; ++i, ++dst) {
+                *dst = op(color, *dst, a);
+            }
+        } else {
+            rasterRGBA32(dst, color, 0, len);
+        }
         return;
     }
 
@@ -271,22 +385,41 @@ void fillFetchLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, 
     auto vMin = -vMax;
     auto v = t + (inc * len);
 
-    //we can use fixed point math
-    if (v < vMax && v > vMin) {
-        auto t2 = static_cast<int32_t>(t * FIXPT_SIZE);
-        auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
-        for (uint32_t j = 0; j < len; ++j) {
-            *dst = _fixedPixel(fill, t2);
-            ++dst;
-            t2 += inc2;
+    if (op) {
+        //we can use fixed point math
+        if (v < vMax && v > vMin) {
+            auto t2 = static_cast<int32_t>(t * FIXPT_SIZE);
+            auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
+            for (uint32_t j = 0; j < len; ++j, ++dst) {
+                *dst = op(_fixedPixel(fill, t2), *dst, a);
+                t2 += inc2;
+            }
+        //we have to fallback to float math
+        } else {
+            uint32_t counter = 0;
+            while (counter++ < len) {
+                *dst = op(_pixel(fill, t / GRADIENT_STOP_SIZE), *dst, a);
+                ++dst;
+                t += inc;
+            }
         }
-    //we have to fallback to float math
     } else {
-        uint32_t counter = 0;
-        while (counter++ < len) {
-            *dst = _pixel(fill, t / GRADIENT_STOP_SIZE);
-            ++dst;
-            t += inc;
+        //we can use fixed point math
+        if (v < vMax && v > vMin) {
+            auto t2 = static_cast<int32_t>(t * FIXPT_SIZE);
+            auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
+            for (uint32_t j = 0; j < len; ++j, ++dst) {
+                *dst = _fixedPixel(fill, t2);
+                t2 += inc2;
+            }
+        //we have to fallback to float math
+        } else {
+            uint32_t counter = 0;
+            while (counter++ < len) {
+                *dst = _pixel(fill, t / GRADIENT_STOP_SIZE);
+                ++dst;
+                t += inc;
+            }
         }
     }
 }

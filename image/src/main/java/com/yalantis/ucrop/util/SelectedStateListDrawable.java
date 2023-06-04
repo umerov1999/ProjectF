@@ -1,6 +1,7 @@
 package com.yalantis.ucrop.util;
 
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 
@@ -27,7 +28,7 @@ public class SelectedStateListDrawable extends StateListDrawable {
             }
         }
         if (isStatePressedInArray) {
-            setColorFilter(mSelectionColor, PorterDuff.Mode.SRC_ATOP);
+            setColorFilter(new PorterDuffColorFilter(mSelectionColor, PorterDuff.Mode.SRC_ATOP));
         } else {
             clearColorFilter();
         }
