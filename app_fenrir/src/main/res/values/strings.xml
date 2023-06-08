@@ -319,7 +319,7 @@
     <string name="attachment_link">Link</string>
     <string name="user_type_message">typing message</string>
     <string name="user_type_voice">typing voice</string>
-    <string name="many_users_typed">%1$s and %2$d persons</string>
+    <string name="many_users_typed">%1$s and %2$d</string>
 
     <string name="load_more">Load more</string>
     <string name="last_seen_sex_man">was: %1$s</string>
@@ -1744,7 +1744,7 @@
     <string name="do_auto_play_video">Auto select video quality</string>
     <string name="video_not_have_link">Video has no link</string>
     <string name="change_upload_size">Show picture sending quality settings</string>
-    <string name="wall_themed">Wall decoration for pagans</string>
+    <string name="wall_themed">Pagan decoration</string>
     <string name="runes_show">Show runes</string>
     <string name="pagan_symbol">Symbol</string>
     <string name="photo_settings">Viewing photos</string>
@@ -1959,4 +1959,5 @@
     <string name="account_not_registered">Account not registered!</string>
     <string name="disable_unvote">Disable unvote</string>
     <string name="empty_background">Empty Background</string>
+    <string name="remember">Remember</string>
 </resources>

@@ -39,6 +39,17 @@ object ThemesController {
             R.style.App_DayNight_ColdGreen_MD1
         ),
         ThemeValue(
+            "coffee_pistachio",
+            "#9B5D56",
+            "#8EBD9D",
+            "#E0BCA0",
+            "#BEDAC3",
+            "Coffee Pistachio",
+            R.style.App_DayNight_CoffeePistachio,
+            R.style.App_DayNight_CoffeePistachio_Amoled,
+            R.style.App_DayNight_CoffeePistachio_MD1
+        ),
+        ThemeValue(
             "ice",
             "#448AFF",
             "#1E88E5",

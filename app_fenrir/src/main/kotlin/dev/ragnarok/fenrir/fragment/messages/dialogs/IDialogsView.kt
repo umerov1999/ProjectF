@@ -31,6 +31,7 @@ interface IDialogsView : IMvpView, IErrorView, IToastView {
     fun setCreateGroupChatButtonVisible(visible: Boolean)
     fun notifyHasAttachments(has: Boolean)
     fun updateAccountIdNoRefresh(accountId: Long)
+    fun showDialogSendHelper()
 
     interface IContextView {
         fun setCanDelete(can: Boolean)

@@ -226,6 +226,21 @@
         <item name="colorSecondaryContainer">#444930</item>
     </style>
 
+    <style name="App.DayNight.CoffeePistachio" parent="App.DayNight">
+        <item name="colorPrimary">#E0BCA0</item>
+        <item name="colorControlNormal">#C7C7B8</item>
+        <item name="colorSecondary">#BEDAC3</item>
+        <item name="icon_color_active">#AA448AFF</item>
+        <item name="icon_color_inactive">#AAFF0000</item>
+        <item name="colorOnPrimary">#20140B</item>
+        <item name="colorOnPrimaryContainer">#D2CFCD</item>
+        <item name="colorPrimaryContainer">#32251B</item>
+        <item name="colorPrimaryInverse">#493A31</item>
+        <item name="colorOnSecondary">#0C0E0C</item>
+        <item name="colorOnSecondaryContainer">#E0E3E1</item>
+        <item name="colorSecondaryContainer">#191A19</item>
+    </style>
+
     <style name="App.DayNight.ColdGold" parent="App.DayNight">
         <item name="colorPrimary">#9BA0FC</item>
         <item name="colorControlNormal">#9BA0FC</item>
@@ -627,6 +642,22 @@
     </style>
 
     <style name="App.DayNight.ColdGreen.Amoled" parent="App.DayNight.ColdGreen">
+        <item name="dividerColor">#151515</item>
+        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
+        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
+        <item name="chat_background_cookies">@drawable/cookies_black</item>
+        <item name="chat_background_lines">@drawable/lines_black</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="colorBackgroundFloating">@android:color/black</item>
+        <item name="colorOnBackground">#000000</item>
+        <item name="colorSurface">#F20B0B0B</item>
+        <item name="message_bubble_color">#0B0B0B</item>
+        <item name="sticker_hint_color">#DD0B0B0B</item>
+        <item name="messages_background_color">#000000</item>
+    </style>
+
+    <style name="App.DayNight.CoffeePistachio.Amoled" parent="App.DayNight.CoffeePistachio">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
         <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>

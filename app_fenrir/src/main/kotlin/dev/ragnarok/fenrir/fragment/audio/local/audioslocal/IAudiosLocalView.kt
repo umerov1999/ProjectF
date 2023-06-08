@@ -19,4 +19,6 @@ interface IAudiosLocalView : IMvpView, IErrorView, IToastView {
     fun displayUploads(data: List<Upload>)
     fun displayRefreshing(refreshing: Boolean)
     fun checkPermission()
+
+    fun goToLocalAudioAlbums(selectedId: Int)
 }

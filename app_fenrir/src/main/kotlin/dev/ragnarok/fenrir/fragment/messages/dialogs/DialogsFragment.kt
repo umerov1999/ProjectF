@@ -234,9 +234,6 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                     )
                 }
             }).attachToRecyclerView(mRecyclerView)
-            if (needHelp(HelperSimple.DIALOG_SEND_HELPER, 3)) {
-                showSnackbar(R.string.dialog_send_helper, true)
-            }
         }
     }
 
@@ -412,6 +409,10 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
             ?.setAction(R.string.button_yes) {
                 presenter?.fireRefresh()
             }?.show()
+    }
+
+    override fun showDialogSendHelper() {
+        showSnackbar(R.string.dialog_send_helper, true)
     }
 
     override fun onAvatarClick(dialog: Dialog) {

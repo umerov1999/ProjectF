@@ -44,6 +44,7 @@ object Constants {
     const val UPLOAD_TIMEOUT = 3600L
     const val DOWNLOAD_TIMEOUT = 3600L
     const val GIF_TIMEOUT = 5L
-    const val LONGPOLL_TIMEOUT = 25L
+    const val LONGPOLL_TIMEOUT = 45L
+    const val LONGPOLL_WAIT = 25L
     const val PICASSO_TIMEOUT = 15L
 }

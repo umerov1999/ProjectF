@@ -1505,7 +1505,7 @@
     <string name="do_auto_play_video">Аўтавыбар якасці відэа</string>
     <string name="video_not_have_link">У відэа няма спасылкі</string>
     <string name="change_upload_size">Налады якасці адпраўкі фота</string>
-    <string name="wall_themed">Афармленне сцяны для язычнікаў</string>
+    <string name="wall_themed">Паганскае афармленне</string>
     <string name="runes_show">Паказваць руны</string>
     <string name="pagan_symbol">Сімвал</string>
     <string name="photo_settings">Прагляд фота</string>
@@ -1720,4 +1720,5 @@
     <string name="account_not_registered">Акаўнт не зарэгістраваны!</string>
     <string name="disable_unvote">Забараніць адмену голасу</string>
     <string name="empty_background">Пусты фон</string>
+    <string name="remember">Запомніць</string>
 </resources>

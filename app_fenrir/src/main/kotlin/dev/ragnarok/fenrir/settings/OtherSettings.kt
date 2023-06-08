@@ -507,6 +507,19 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         set(disabled) {
             getPreferences(app).edit().putBoolean("disable_likes", disabled).apply()
         }
+    override var isRememberLocalAudioAlbum: Boolean
+        get() = getPreferences(app).getBoolean("remember_local_audio_album", false)
+        set(remember) {
+            if (!remember) {
+                getPreferences(app).edit().remove("current_local_audio_album").apply()
+            }
+            getPreferences(app).edit().putBoolean("remember_local_audio_album", remember).apply()
+        }
+    override var currentLocalAudioAlbum: Int
+        get() = getPreferences(app).getInt("current_local_audio_album", 0)
+        set(current) {
+            getPreferences(app).edit().putInt("current_local_audio_album", current).apply()
+        }
     override var isDisable_notifications: Boolean
         get() = getPreferences(app).getBoolean("disable_notifications", false)
         set(disabled) {

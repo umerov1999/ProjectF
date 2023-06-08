@@ -166,6 +166,7 @@ class SettingsBackup {
         var owner_changes_monitor_uids: Set<String>? = null
         var current_parser: String? = null
         var audio_catalog_v2_enable: Boolean? = null
+        var remember_local_audio_album: Boolean? = null
         var navigation_menu_order: String? = null
         var side_navigation_menu_order: String? = null
     }

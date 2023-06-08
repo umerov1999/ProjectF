@@ -153,6 +153,19 @@
         <item name="colorSecondaryContainer">#E1E6C3</item>
     </style>
 
+    <style name="App.DayNight.CoffeePistachio" parent="App.DayNight">
+        <item name="colorPrimary">#9B5D56</item>
+        <item name="colorControlNormal">#46483B</item>
+        <item name="colorSecondary">#8EBD9D</item>
+        <item name="colorOnPrimary">#F6F6F6</item>
+        <item name="colorOnPrimaryContainer">#1E0803</item>
+        <item name="colorPrimaryContainer">#E5E3E3</item>
+        <item name="colorPrimaryInverse">#D8CECC</item>
+        <item name="colorOnSecondary">#FEFFFF</item>
+        <item name="colorOnSecondaryContainer">#0D110E</item>
+        <item name="colorSecondaryContainer">#E8ECE9</item>
+    </style>
+
     <style name="App.DayNight.ColdGold" parent="App.DayNight">
         <item name="colorPrimary">#7478BC</item>
         <item name="colorControlNormal">#7478BC</item>
@@ -466,6 +479,8 @@
 
     <style name="App.DayNight.ColdGreen.Amoled" parent="App.DayNight.ColdGreen" />
 
+    <style name="App.DayNight.CoffeePistachio.Amoled" parent="App.DayNight.CoffeePistachio" />
+
     <style name="App.DayNight.ColdGold.Amoled" parent="App.DayNight.ColdGold" />
 
     <style name="App.DayNight.BlueYellow.Amoled" parent="App.DayNight.BlueYellow" />
@@ -547,6 +562,11 @@
     </style>
 
     <style name="App.DayNight.ColdGreen.MD1" parent="App.DayNight.ColdGreen">
+        <item name="materialCardStyle">@style/CardViewMD</item>
+        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
+    </style>
+
+    <style name="App.DayNight.CoffeePistachio.MD1" parent="App.DayNight.CoffeePistachio">
         <item name="materialCardStyle">@style/CardViewMD</item>
         <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
     </style>

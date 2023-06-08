@@ -14,7 +14,7 @@ buildscript {
 
     //androidx libraries
     ext.activityVersion = "1.7.2"
-    ext.annotationVersion = "1.6.0"
+    ext.annotationVersion = "1.7.0-alpha02"
     ext.appcompatVersion = "1.6.1"
     ext.biometricVersion = "1.2.0-alpha05"
     ext.browserVersion = "1.5.0"
@@ -24,17 +24,17 @@ buildscript {
     ext.concurentVersion = "1.2.0-alpha01"
     ext.constraintlayoutVersion = "2.2.0-alpha10"
     ext.coordinatorlayoutVersion = "1.2.0"
-    ext.coreVersion = "1.11.0-beta01"
+    ext.coreVersion = "1.11.0-beta02"
     ext.customviewVersion = "1.2.0-alpha02"
     ext.customviewPoolingcontainerVersion = "1.0.0"
     ext.drawerlayoutVersion = "1.2.0"
     ext.dynamicanimationVersion = "1.1.0-alpha03"
     ext.exifinterfaceVersion = "1.3.6"
-    ext.fragmentVersion = "1.6.0-rc01"
+    ext.fragmentVersion = "1.6.0"
     ext.lifecycleVersion = "2.6.1"
     ext.loaderVersion = "1.1.0"
     ext.mediaVersion = "1.7.0-alpha01"
-    ext.media3Version = "1.1.0-alpha01"
+    ext.media3Version = "1.1.0-beta01"
     ext.recyclerviewVersion = "1.3.1-rc01"
     ext.savedStateVersion = "1.2.1"
     ext.swiperefreshlayoutVersion = "1.2.0-alpha01"
@@ -42,7 +42,7 @@ buildscript {
     ext.transitionVersion = "1.4.1"
     ext.vectordrawableVersion = "1.2.0-beta01"
     ext.webkitVersion = "1.7.0"
-    ext.workVersion = "2.8.1"
+    ext.workVersion = "2.9.0-alpha01"
 
     //firebase libraries
     ext.firebaseDatatransportVersion = "18.1.8"

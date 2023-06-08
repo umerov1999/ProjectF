@@ -42,6 +42,9 @@ class StickersInteractor(private val networker: INetworker, private val storage:
                             it
                         )
                     }).setActive(true).setPurchased(true)
+                if (items.items.isNullOrEmpty()) {
+                    Settings.get().other().del_last_sticker_sets_custom_sync(accountId)
+                }
                 storage.storeStickerSetsCustom(accountId, listOf(temp))
             }
     }
@@ -56,6 +59,9 @@ class StickersInteractor(private val networker: INetworker, private val storage:
                     list.reverse()
                 }
                 val ret = mapAllMutable(list) { mapStickerSet(it) }
+                if (list.isEmpty()) {
+                    Settings.get().other().del_last_sticker_sets_sync(accountId)
+                }
                 storage.storeStickerSets(accountId, ret)
             }
     }
@@ -80,6 +86,9 @@ class StickersInteractor(private val networker: INetworker, private val storage:
                         }
                     }
                     temp.add(StickersKeywordsEntity(stickersKeywords, userStickers))
+                }
+                if (list.isEmpty()) {
+                    Settings.get().other().del_last_sticker_keywords_sync(accountId)
                 }
                 storage.storeKeyWords(accountId, temp)
             }

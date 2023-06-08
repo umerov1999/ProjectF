@@ -45,6 +45,16 @@
         app:layout_scrollFlags="scroll|enterAlways|snap"
         app:search_source_id="11" />
 
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/remember_audio_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:checked="false"
+        android:text="@string/remember" />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

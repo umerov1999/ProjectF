@@ -93,7 +93,7 @@ internal class UserLongpoll(
                     "https://$server",
                     key,
                     ts ?: return,
-                    Constants.LONGPOLL_TIMEOUT,
+                    Constants.LONGPOLL_WAIT,
                     MODE,
                     V
                 )

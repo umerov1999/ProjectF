@@ -23,6 +23,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AssertUtils.assertPositive
+import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.empty
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
@@ -58,7 +59,8 @@ class DialogsPresenter(
     private var endOfContent = false
     private var netLoadingNow = false
     private var cacheNowLoading = false
-    private var needAskWhenGuiReady = false
+    private var needAskReloadDialogsWhenGuiReady = false
+    private var needShowDialogSendHelperWhenGuiReady = false
     override fun saveState(outState: Bundle) {
         super.saveState(outState)
         outState.putLong(SAVE_DIALOGS_OWNER_ID, dialogsOwnerId)
@@ -70,9 +72,14 @@ class DialogsPresenter(
 
         // only for user dialogs
         viewHost.setCreateGroupChatButtonVisible(dialogsOwnerId > 0)
-        if (needAskWhenGuiReady) {
+        if (needAskReloadDialogsWhenGuiReady) {
             viewHost.askToReload()
-            needAskWhenGuiReady = false
+            needAskReloadDialogsWhenGuiReady = false
+        }
+
+        if (needShowDialogSendHelperWhenGuiReady) {
+            viewHost.showDialogSendHelper()
+            needShowDialogSendHelperWhenGuiReady = false
         }
     }
 
@@ -279,13 +286,22 @@ class DialogsPresenter(
         safeNotifyDataSetChanged()
         resolveRefreshingView()
         view?.notifyHasAttachments(models != null)
+
+        if (models != null && HelperSimple.needHelp(HelperSimple.DIALOG_SEND_HELPER, 3)) {
+            if (view == null) {
+                needShowDialogSendHelperWhenGuiReady = true
+            } else {
+                view?.showDialogSendHelper()
+            }
+        }
+
         if (Settings.get().other().isNot_update_dialogs || isHiddenCurrent) {
             if (!isHiddenCurrent) {
                 receiveStickers()
             }
             if (needReloadDialogs(accountId)) {
                 if (view == null) {
-                    needAskWhenGuiReady = true
+                    needAskReloadDialogsWhenGuiReady = true
                 } else {
                     view?.askToReload()
                 }

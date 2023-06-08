@@ -143,10 +143,10 @@ class LocalPhotosFragment : BaseMvpFragment<LocalPhotosPresenter, ILocalPhotosVi
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<LocalPhotosPresenter> {
         return object : IPresenterFactory<LocalPhotosPresenter> {
             override fun create(): LocalPhotosPresenter {
-                val maxSelectionItemCount1 =
+                val maxSelectionItemCount =
                     requireArguments().getInt(EXTRA_MAX_SELECTION_COUNT, 10)
                 val album: LocalImageAlbum? = requireArguments().getParcelableCompat(Extra.ALBUM)
-                return LocalPhotosPresenter(album, maxSelectionItemCount1, saveInstanceState)
+                return LocalPhotosPresenter(album, maxSelectionItemCount, saveInstanceState)
             }
         }
     }

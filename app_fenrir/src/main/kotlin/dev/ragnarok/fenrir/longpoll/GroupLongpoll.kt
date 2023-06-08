@@ -65,7 +65,7 @@ internal class GroupLongpoll(
         if (validServer) {
             compositeDisposable.add(
                 networker.longpoll()
-                    .getGroupUpdates(server ?: return, key, ts, Constants.LONGPOLL_TIMEOUT)
+                    .getGroupUpdates(server ?: return, key, ts, Constants.LONGPOLL_WAIT)
                     .fromIOToMain()
                     .subscribe({ updates -> onUpdates(updates) }) { throwable ->
                         onUpdatesGetError(

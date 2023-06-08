@@ -123,6 +123,8 @@ interface ISettings {
         val isRunes_show: Boolean
         val musicLifecycle: Int
         val fFmpegPlugin: Int
+        var isRememberLocalAudioAlbum: Boolean
+        var currentLocalAudioAlbum: Int
         fun videoExt(): Set<String>
         fun photoExt(): Set<String>
         fun audioExt(): Set<String>

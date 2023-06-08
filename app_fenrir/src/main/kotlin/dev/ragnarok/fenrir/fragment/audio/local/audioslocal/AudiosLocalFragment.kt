@@ -66,17 +66,7 @@ class AudiosLocalFragment : BaseMvpFragment<AudiosLocalPresenter, IAudiosLocalVi
         searchView.setQuery("", true)
         searchView.setOnAdditionalButtonClickListener(object : OnAdditionalButtonClickListener {
             override fun onAdditionalButtonClick() {
-                LocalAudioAlbumsFragment.newInstance(
-                    object : LocalAudioAlbumsFragment.Listener {
-                        override fun onSelected(bucket_id: Int) {
-                            presenter?.fireBucketSelected(
-                                bucket_id
-                            )
-                        }
-
-                    }).show(
-                    childFragmentManager, "audio_albums_local"
-                )
+                presenter?.fireLocalAudioAlbums()
             }
 
         })
@@ -153,6 +143,23 @@ class AudiosLocalFragment : BaseMvpFragment<AudiosLocalPresenter, IAudiosLocalVi
         } else {
             presenter?.firePrepared()
         }
+    }
+
+    override fun goToLocalAudioAlbums(selectedId: Int) {
+        LocalAudioAlbumsFragment.newInstance(selectedId,
+            object : LocalAudioAlbumsFragment.Listener {
+                override fun onSelected(bucket_id: Int) {
+                    if (Settings.get().other().isRememberLocalAudioAlbum) {
+                        Settings.get().other().currentLocalAudioAlbum = bucket_id
+                    }
+                    presenter?.fireBucketSelected(
+                        bucket_id
+                    )
+                }
+
+            }).show(
+            childFragmentManager, "audio_albums_local"
+        )
     }
 
     override fun setUploadDataVisible(visible: Boolean) {

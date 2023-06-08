@@ -1507,7 +1507,7 @@
     <string name="do_auto_play_video">Автовыбор качества видео</string>
     <string name="video_not_have_link">У видео нет ссылки</string>
     <string name="change_upload_size">Настройки качества отправки фото</string>
-    <string name="wall_themed">Оформление стены для язычников</string>
+    <string name="wall_themed">Языческое оформление</string>
     <string name="runes_show">Показывать руны</string>
     <string name="pagan_symbol">Символ</string>
     <string name="photo_settings">Просмотр фото</string>
@@ -1722,4 +1722,5 @@
     <string name="account_not_registered">Аккаунт не зарегистрирован!</string>
     <string name="disable_unvote">Запретить отмену голоса</string>
     <string name="empty_background">Пустой фон</string>
+    <string name="remember">Запомнить</string>
 </resources>

@@ -9,28 +9,30 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.materialswitch.MaterialSwitch
+import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpBottomSheetDialogFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.photos.localimagealbums.LocalPhotoAlbumsAdapter
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.LocalImageAlbum
-import dev.ragnarok.fenrir.picasso.Content_Local
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.view.MySearchView
 
 class LocalAudioAlbumsFragment :
     BaseMvpBottomSheetDialogFragment<LocalAudioAlbumsPresenter, ILocalAudioAlbumsView>(),
-    LocalPhotoAlbumsAdapter.ClickListener, SwipeRefreshLayout.OnRefreshListener,
+    LocalAudioAlbumsAdapter.ClickListener, SwipeRefreshLayout.OnRefreshListener,
     ILocalAudioAlbumsView {
     private val requestReadPermission =
         requestPermissionsAbs(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             lazyPresenter {
-                fireReadExternalStoregePermissionResolved()
+                fireReadExternalStoragePermissionResolved()
             }
         }
     private var mRecyclerView: RecyclerView? = null
-    private var mAlbumsAdapter: LocalPhotoAlbumsAdapter? = null
+    private var mAlbumsAdapter: LocalAudioAlbumsAdapter? = null
     private var listener: Listener? = null
     override fun onCreateDialog(savedInstanceState: Bundle?): BottomSheetDialog {
         val dialog = BottomSheetDialog(requireActivity(), theme)
@@ -47,6 +49,11 @@ class LocalAudioAlbumsFragment :
     ): View? {
         val view = inflater.inflate(R.layout.fragment_local_albums_audio, container, false)
         val mySearchView: MySearchView = view.findViewById(R.id.searchview)
+        val mRememberAudioAlbum: MaterialSwitch = view.findViewById(R.id.remember_audio_album)
+        mRememberAudioAlbum.isChecked = Settings.get().other().isRememberLocalAudioAlbum
+        mRememberAudioAlbum.setOnClickListener {
+            Settings.get().other().isRememberLocalAudioAlbum = mRememberAudioAlbum.isChecked
+        }
         mySearchView.setRightButtonVisibility(false)
         mySearchView.setLeftIcon(R.drawable.magnify)
         mySearchView.setOnQueryTextListener(object : MySearchView.OnQueryTextListener {
@@ -73,7 +80,7 @@ class LocalAudioAlbumsFragment :
         mRecyclerView?.layoutManager = manager
         mRecyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(LocalPhotoAlbumsAdapter.PICASSO_TAG))
         mAlbumsAdapter =
-            LocalPhotoAlbumsAdapter(requireActivity(), emptyList(), Content_Local.AUDIO)
+            LocalAudioAlbumsAdapter(requireActivity(), emptyList())
         mAlbumsAdapter?.setClickListener(this)
         mRecyclerView?.adapter = mAlbumsAdapter
         return view
@@ -108,10 +115,17 @@ class LocalAudioAlbumsFragment :
         requestReadPermission.launch()
     }
 
+    override fun updateCurrentId(currentId: Int) {
+        mAlbumsAdapter?.updateCurrentId(currentId)
+    }
+
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<LocalAudioAlbumsPresenter> {
         return object : IPresenterFactory<LocalAudioAlbumsPresenter> {
             override fun create(): LocalAudioAlbumsPresenter {
+                val selectedId =
+                    requireArguments().getInt(Extra.ALBUM_ID, 0)
                 return LocalAudioAlbumsPresenter(
+                    selectedId,
                     saveInstanceState
                 )
             }
@@ -123,9 +137,12 @@ class LocalAudioAlbumsFragment :
     }
 
     companion object {
+        fun newInstance(selectedId: Int, listener: Listener?): LocalAudioAlbumsFragment {
+            val args = Bundle()
+            args.putInt(Extra.ALBUM_ID, selectedId)
 
-        fun newInstance(listener: Listener?): LocalAudioAlbumsFragment {
             val fragment = LocalAudioAlbumsFragment()
+            fragment.arguments = args
             fragment.listener = listener
             return fragment
         }

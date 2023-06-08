@@ -10,7 +10,7 @@ import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.PersistentLogger
 import java.util.Locale
 
-class LocalAudioAlbumsPresenter(savedInstanceState: Bundle?) :
+class LocalAudioAlbumsPresenter(private val currentId: Int, savedInstanceState: Bundle?) :
     RxSupportPresenter<ILocalAudioAlbumsView>(savedInstanceState) {
     private val mLocalImageAlbums: MutableList<LocalImageAlbum>
     private val mLocalImageAlbums_Search: MutableList<LocalImageAlbum>
@@ -46,6 +46,7 @@ class LocalAudioAlbumsPresenter(savedInstanceState: Bundle?) :
 
     override fun onGuiCreated(viewHost: ILocalAudioAlbumsView) {
         super.onGuiCreated(viewHost)
+        viewHost.updateCurrentId(currentId)
         if (!hasReadStoragePermission(applicationContext)) {
             if (!permissionRequestedOnce) {
                 permissionRequestedOnce = true
@@ -129,7 +130,7 @@ class LocalAudioAlbumsPresenter(savedInstanceState: Bundle?) :
         view?.openAlbum(album)
     }
 
-    fun fireReadExternalStoregePermissionResolved() {
+    fun fireReadExternalStoragePermissionResolved() {
         if (hasReadStoragePermission(applicationContext)) {
             loadData()
         }

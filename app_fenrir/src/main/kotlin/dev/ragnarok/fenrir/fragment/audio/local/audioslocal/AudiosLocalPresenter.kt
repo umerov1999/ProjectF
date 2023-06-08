@@ -43,7 +43,7 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private var query: String? = null
     private var errorPermissions = false
     private var doAudioLoadTabs = false
-    private var bucket_id = 0
+    private var bucket_id: Int
     fun fireBucketSelected(bucket_id: Int) {
         this.bucket_id = bucket_id
         fireRefresh()
@@ -74,6 +74,10 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
             .observeOn(provideMainThreadScheduler())
             .subscribe { updates -> onProgressUpdates(updates) })
         fireRefresh()
+    }
+
+    fun fireLocalAudioAlbums() {
+        view?.goToLocalAudioAlbums(bucket_id)
     }
 
     fun setLoadingNow(loadingNow: Boolean) {
@@ -364,5 +368,11 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
         uploadsData = ArrayList(0)
         audios = ArrayList()
         origin_audios = ArrayList()
+
+        bucket_id = if (Settings.get().other().isRememberLocalAudioAlbum) {
+            Settings.get().other().currentLocalAudioAlbum
+        } else {
+            0
+        }
     }
 }

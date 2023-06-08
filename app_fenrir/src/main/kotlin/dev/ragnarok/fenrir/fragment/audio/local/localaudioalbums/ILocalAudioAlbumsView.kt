@@ -10,4 +10,6 @@ interface ILocalAudioAlbumsView : IMvpView {
     fun openAlbum(album: LocalImageAlbum)
     fun notifyDataChanged()
     fun requestReadExternalStoragePermission()
+
+    fun updateCurrentId(currentId: Int)
 }
