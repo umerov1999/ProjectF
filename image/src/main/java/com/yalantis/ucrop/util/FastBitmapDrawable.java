@@ -49,15 +49,18 @@ public class FastBitmapDrawable extends Drawable {
         mPaint.setColorFilter(cf);
     }
 
+    @Deprecated
     @Override
     public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
     }
 
+    @Override
     public void setFilterBitmap(boolean filterBitmap) {
         mPaint.setFilterBitmap(filterBitmap);
     }
 
+    @Override
     public int getAlpha() {
         return mAlpha;
     }

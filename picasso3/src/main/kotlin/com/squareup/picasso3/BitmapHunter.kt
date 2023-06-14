@@ -113,6 +113,9 @@ internal open class BitmapHunter(
                 request = data,
                 callback = object : RequestHandler.Callback {
                     override fun onSuccess(result: RequestHandler.Result?) {
+                        if (result is Bitmap) {
+                            result.bitmap = BitmapSafeResize.checkBitmap(result.bitmap)
+                        }
                         resultReference.set(result)
                         latch.countDown()
                     }
@@ -139,7 +142,6 @@ internal open class BitmapHunter(
         }
 
         val result = resultReference.get() as? Bitmap ?: return null
-        result.bitmap = BitmapSafeResize.checkBitmap(result.bitmap)
         val bitmap = result.bitmap
         if (picasso.isLoggingEnabled) {
             log(OWNER_HUNTER, VERB_DECODED, data.logId())

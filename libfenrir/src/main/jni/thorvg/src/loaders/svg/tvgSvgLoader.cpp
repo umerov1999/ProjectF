@@ -986,6 +986,22 @@ static void _handleStrokeLineJoinAttr(TVG_UNUSED SvgLoaderData* loader, SvgNode*
     node->style->stroke.join = _toLineJoin(value);
 }
 
+static void _handleStrokeMiterlimitAttr(SvgLoaderData* loader, SvgNode* node, const char* value)
+{
+    char* end = nullptr;
+    const float miterlimit = svgUtilStrtof(value, &end);
+
+    // https://www.w3.org/TR/SVG2/painting.html#LineJoin
+    // - A negative value for stroke-miterlimit must be treated as an illegal value.
+    if (miterlimit < 0.0f) {
+        TVGERR("SVG", "A stroke-miterlimit change (%f <- %f) with a negative value is omitted.",
+            node->style->stroke.miterlimit, miterlimit);
+        return;
+    }
+
+    node->style->stroke.flags = (node->style->stroke.flags | SvgStrokeFlags::Miterlimit);
+    node->style->stroke.miterlimit = miterlimit;
+}
 
 static void _handleFillRuleAttr(TVG_UNUSED SvgLoaderData* loader, SvgNode* node, const char* value)
 {
@@ -1102,6 +1118,7 @@ static constexpr struct
     STYLE_DEF(stroke, Stroke, SvgStyleFlags::Stroke),
     STYLE_DEF(stroke-width, StrokeWidth, SvgStyleFlags::StrokeWidth),
     STYLE_DEF(stroke-linejoin, StrokeLineJoin, SvgStyleFlags::StrokeLineJoin),
+    STYLE_DEF(stroke-miterlimit, StrokeMiterlimit, SvgStyleFlags::StrokeMiterlimit),
     STYLE_DEF(stroke-linecap, StrokeLineCap, SvgStyleFlags::StrokeLineCap),
     STYLE_DEF(stroke-opacity, StrokeOpacity, SvgStyleFlags::StrokeOpacity),
     STYLE_DEF(stroke-dasharray, StrokeDashArray, SvgStyleFlags::StrokeDashArray),
@@ -1310,6 +1327,7 @@ static SvgNode* _createNode(SvgNode* parent, SvgNodeType type)
     node->style->stroke.cap = StrokeCap::Butt;
     //Default line join is miter
     node->style->stroke.join = StrokeJoin::Miter;
+    node->style->stroke.miterlimit = 4.0f;
     node->style->stroke.scale = 1.0;
 
     node->style->paintOrder = _toPaintOrder("fill stroke");
@@ -2788,6 +2806,9 @@ static void _styleInherit(SvgStyleProperty* child, const SvgStyleProperty* paren
     if (!(child->stroke.flags & SvgStrokeFlags::Join)) {
         child->stroke.join = parent->stroke.join;
     }
+    if (!(child->stroke.flags & SvgStrokeFlags::Miterlimit)) {
+        child->stroke.miterlimit = parent->stroke.miterlimit;
+    }
 }
 
 
@@ -2850,6 +2871,10 @@ static void _styleCopy(SvgStyleProperty* to, const SvgStyleProperty* from)
     }
     if (from->stroke.flags & SvgStrokeFlags::Join) {
         to->stroke.join = from->stroke.join;
+    }
+
+    if (from->stroke.flags & SvgStrokeFlags::Miterlimit) {
+        to->stroke.miterlimit = from->stroke.miterlimit;
     }
 }
 

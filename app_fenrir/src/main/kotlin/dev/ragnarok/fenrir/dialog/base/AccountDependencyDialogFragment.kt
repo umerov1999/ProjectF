@@ -116,10 +116,10 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
         getVideoPreviewPlace(accountId, video).tryOpenWith(requireActivity())
     }
 
-    override fun onAudioPlay(position: Int, audios: ArrayList<Audio>) {
+    override fun onAudioPlay(position: Int, audios: ArrayList<Audio>, holderPosition: Int?) {
         startForPlayList(requireActivity(), audios, position, false)
         if (!Settings.get().other().isShow_mini_player) getPlayerPlace(
-            Settings.get().accounts().current
+            accountId
         ).tryOpenWith(requireActivity())
     }
 

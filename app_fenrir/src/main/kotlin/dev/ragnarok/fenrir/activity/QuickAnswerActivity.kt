@@ -174,7 +174,11 @@ class QuickAnswerActivity : AppCompatActivity() {
                 AttachmentsViewBinder(this, object : OnAttachmentsActionCallback {
                     override fun onPollOpen(poll: Poll) {}
                     override fun onVideoPlay(video: Video) {}
-                    override fun onAudioPlay(position: Int, audios: ArrayList<Audio>) {
+                    override fun onAudioPlay(
+                        position: Int,
+                        audios: ArrayList<Audio>,
+                        holderPosition: Int?
+                    ) {
                         startForPlayList(this@QuickAnswerActivity, audios, position, false)
                     }
 
@@ -245,7 +249,7 @@ class QuickAnswerActivity : AppCompatActivity() {
                 attachmentsHolder,
                 true,
                 msg.getObjectId(),
-                msg.peerId
+                msg.peerId, null
             )
             attachmentsViewBinder.displayForwards(msg.fwd, forwardMessagesRoot, true)
         }

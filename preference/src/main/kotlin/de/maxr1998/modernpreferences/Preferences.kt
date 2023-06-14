@@ -28,6 +28,8 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.core.content.edit
 import androidx.core.view.isVisible
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
+import com.google.android.material.snackbar.Snackbar
 import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
 import de.maxr1998.modernpreferences.helpers.DependencyManager
 import de.maxr1998.modernpreferences.helpers.KEY_ROOT_SCREEN
@@ -55,6 +57,15 @@ abstract class AbstractPreference internal constructor(val key: String) {
     @DrawableRes
     var iconRes: Int = DEFAULT_RES_ID
     var icon: Drawable? = null
+
+    fun getTittle(context: Context): String {
+        if (title.isNotEmpty()) {
+            return title.toString()
+        } else if (titleRes != DEFAULT_RES_ID) {
+            return context.getString(titleRes)
+        }
+        return key
+    }
 
     fun icon(@DrawableRes res: Int) {
         iconRes = res
@@ -216,6 +227,9 @@ open class Preference(key: String) : AbstractPreference(key) {
     var parent: PreferenceScreen? = null
         private set
 
+    var inSearchParentStory: String? = null
+        private set
+
     var screenPosition: Int = 0
         private set
 
@@ -370,9 +384,29 @@ open class Preference(key: String) : AbstractPreference(key) {
         return ret
     }
 
+    fun makeInSearchParentStoryFrom(context: Context, pref: Preference) {
+        val list = ArrayList<String>()
+        var prScreen = pref.parent
+        while (prScreen != null && prScreen.key != "root" && prScreen.key != "found_result") {
+            list.add(prScreen.getTittle(context))
+            prScreen = prScreen.parent
+        }
+        list.reverse()
+        val res = StringBuilder()
+        for (i in list) {
+            res.append(i).append(" -> ")
+        }
+        res.append(pref.getTittle(context))
+        inSearchParentStory = res.toString()
+    }
+
     open fun onClick(holder: PreferencesAdapter.ViewHolder) {}
 
     open fun onLongClick(holder: PreferencesAdapter.ViewHolder): Boolean {
+        if (inSearchParentStory != null) {
+            Snackbar.make(holder.itemView, inSearchParentStory.orEmpty(), LENGTH_LONG).show()
+            return true
+        }
         return false
     }
 

@@ -32,7 +32,7 @@ namespace tvg
 using RenderData = void*;
 using pixel_t = uint32_t;
 
-enum RenderUpdateFlag {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, All = 255};
+enum RenderUpdateFlag : uint8_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, All = 255};
 
 struct Surface;
 
@@ -139,6 +139,7 @@ struct RenderStroke
     uint32_t dashCnt = 0;
     StrokeCap cap = StrokeCap::Square;
     StrokeJoin join = StrokeJoin::Bevel;
+    float miterlimit = 4.0f;
     bool strokeFirst = false;
 
     ~RenderStroke()
@@ -224,6 +225,13 @@ struct RenderShape
     {
         if (!stroke) return StrokeJoin::Bevel;
         return stroke->join;
+    }
+
+    float strokeMiterlimit() const
+    {
+        if (!stroke) return 4.0f;
+
+        return stroke->miterlimit;;
     }
 };
 

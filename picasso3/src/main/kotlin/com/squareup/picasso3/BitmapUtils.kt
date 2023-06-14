@@ -21,6 +21,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.os.Build
 import android.os.Build.VERSION
 import android.util.TypedValue
 import androidx.annotation.DrawableRes
@@ -97,7 +98,7 @@ object BitmapUtils {
         val exceptionCatchingSource = ExceptionCatchingSource(source)
         val bufferedSource = exceptionCatchingSource.buffer()
         val bitmap =
-            if (VERSION.SDK_INT >= 28)
+            if (VERSION.SDK_INT >= Build.VERSION_CODES.P)
                 decodeStreamP(request, bufferedSource)
             else
                 decodeStreamPreP(request, bufferedSource)
@@ -105,7 +106,7 @@ object BitmapUtils {
         return bitmap
     }
 
-    @RequiresApi(28)
+    @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("Override")
     private fun decodeStreamP(request: Request, bufferedSource: BufferedSource): Bitmap {
         val imageSource = ImageDecoder.createSource(ByteBuffer.wrap(bufferedSource.readByteArray()))
@@ -142,14 +143,14 @@ object BitmapUtils {
     fun decodeResource(context: Context, request: Request): Bitmap {
         val resources = Utils.getResources(context, request)
         val id = Utils.getResourceId(resources, request)
-        return if (VERSION.SDK_INT >= 28) {
+        return if (VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             decodeResourceP(resources, id, request)
         } else {
             decodeResourcePreP(resources, id, request)
         }
     }
 
-    @RequiresApi(28)
+    @RequiresApi(Build.VERSION_CODES.P)
     private fun decodeResourceP(
         resources: Resources,
         @DrawableRes id: Int,
@@ -172,7 +173,7 @@ object BitmapUtils {
         return BitmapFactory.decodeResource(resources, id, options)
     }
 
-    @RequiresApi(28)
+    @RequiresApi(Build.VERSION_CODES.P)
     private fun decodeImageSource(imageSource: ImageDecoder.Source, request: Request): Bitmap {
         return ImageDecoder.decodeBitmap(imageSource) { imageDecoder, imageInfo, _ ->
             imageDecoder.allocator = when {
@@ -247,7 +248,7 @@ object BitmapUtils {
         return file != null && file.toString().endsWith(".xml")
     }
 
-    internal class ExceptionCatchingSource(delegate: Source) : ForwardingSource(delegate) {
+    class ExceptionCatchingSource(delegate: Source) : ForwardingSource(delegate) {
         var thrownException: IOException? = null
 
         override fun read(sink: Buffer, byteCount: Long): Long {

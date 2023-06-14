@@ -47,7 +47,7 @@ class PostImage(val attachment: AbsModel, val type: Int) {
 
             TYPE_GIF -> {
                 val document = attachment as Document
-                return document.getPreviewWithSize(PhotoSize.Q, false)
+                return document.getPreviewWithSize(photoPreviewSize, false)
             }
         }
         throw UnsupportedOperationException()

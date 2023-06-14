@@ -68,7 +68,8 @@ class AttachmentsViewBinder(
         containers: AttachmentsHolder,
         postsAsLinks: Boolean,
         messageId: Int?,
-        peerId: Long?
+        peerId: Long?,
+        holderPosition: Int?
     ) {
         if (attachments == null) {
             safeSetVisibitity(containers.vgAudios, View.GONE)
@@ -84,7 +85,11 @@ class AttachmentsViewBinder(
             containers.vgAudios?.dispose()
         } else {
             displayArticles(attachments.articles, containers.vgArticles)
-            containers.vgAudios?.displayAudios(attachments.audios, mAttachmentsActionCallback)
+            containers.vgAudios?.displayAudios(
+                attachments.audios,
+                mAttachmentsActionCallback,
+                holderPosition
+            )
             displayVoiceMessages(
                 attachments.voiceMessages,
                 containers.voiceMessageRoot,
@@ -400,7 +405,14 @@ class AttachmentsViewBinder(
                 ) View.VISIBLE else View.GONE
                 check.ownerName.text = copy.authorName
                 check.buttonDots.tag = copy
-                displayAttachments(copy.attachments, check.attachmentsHolder, false, null, null)
+                displayAttachments(
+                    copy.attachments,
+                    check.attachmentsHolder,
+                    false,
+                    null,
+                    null,
+                    null
+                )
             } else {
                 postViewGroup.visibility = View.GONE
             }
@@ -537,7 +549,8 @@ class AttachmentsViewBinder(
                     attachmentContainers,
                     postsAsLinks,
                     message.getObjectId(),
-                    message.peerId
+                    message.peerId,
+                    null
                 )
             } else {
                 itemView.visibility = View.GONE
@@ -566,7 +579,6 @@ class AttachmentsViewBinder(
                 val tvDetails = itemView.findViewById<TextView>(R.id.item_document_ext_size)
                 val tvPostText: EmojiconTextView = itemView.findViewById(R.id.item_message_text)
                 val ivPhotoT: ShapeableImageView = itemView.findViewById(R.id.item_document_image)
-                val ivGraffiti = itemView.findViewById<ImageView>(R.id.item_document_graffiti)
                 val ivPhoto_Post = itemView.findViewById<ImageView>(R.id.item_post_avatar_image)
                 val ivType = itemView.findViewById<ImageView>(R.id.item_document_type)
                 val tvShowMore = itemView.findViewById<TextView>(R.id.item_post_show_more)
@@ -650,7 +662,6 @@ class AttachmentsViewBinder(
                 attachmentsRoot.visibility = View.GONE
                 itemView.setOnClickListener { openDocLink(doc) }
                 ivPhoto_Post.visibility = View.GONE
-                ivGraffiti.visibility = View.GONE
                 when (doc.type) {
                     AttachmentsTypes.DOC -> if (imageUrl != null) {
                         ivType.visibility = View.GONE
@@ -666,8 +677,8 @@ class AttachmentsViewBinder(
                         ivPhotoT.visibility = View.GONE
                         if (imageUrl != null) {
                             ivType.visibility = View.GONE
-                            ivGraffiti.visibility = View.VISIBLE
-                            displayAvatar(ivGraffiti, null, imageUrl, Constants.PICASSO_TAG)
+                            ivPhotoT.visibility = View.VISIBLE
+                            displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
                         } else {
                             ivType.visibility = View.VISIBLE
                             ivType.setImageResource(R.drawable.counter)
@@ -772,7 +783,7 @@ class AttachmentsViewBinder(
                             post.attachments,
                             attachmentsHolder,
                             false,
-                            null, null
+                            null, null, null
                         )
                     }
 
@@ -799,7 +810,7 @@ class AttachmentsViewBinder(
                             comment.attachments,
                             attachmentsHolder,
                             false,
-                            null, null
+                            null, null, null
                         )
                     }
 
@@ -1023,7 +1034,7 @@ class AttachmentsViewBinder(
     interface OnAttachmentsActionCallback {
         fun onPollOpen(poll: Poll)
         fun onVideoPlay(video: Video)
-        fun onAudioPlay(position: Int, audios: ArrayList<Audio>)
+        fun onAudioPlay(position: Int, audios: ArrayList<Audio>, holderPosition: Int?)
         fun onForwardMessagesOpen(messages: ArrayList<Message>)
         fun onOpenOwner(ownerId: Long)
         fun onGoToMessagesLookup(message: Message)

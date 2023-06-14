@@ -155,7 +155,8 @@ class MessagesAdapter(
                 holder.attachmentsHolder,
                 true,
                 message.getObjectId(),
-                message.peerId
+                message.peerId,
+                getItemRawPosition(holder.bindingAdapterPosition)
             )
             attachmentsViewBinder.displayForwards(message.fwd, holder.forwardMessagesRoot, true)
         }
@@ -396,7 +397,8 @@ class MessagesAdapter(
                 holder.attachmentsHolder,
                 true,
                 message.getObjectId(),
-                message.peerId
+                message.peerId,
+                getItemRawPosition(holder.bindingAdapterPosition)
             )
             attachmentsViewBinder.displayForwards(message.fwd, holder.forwardMessagesRoot, true)
         }
@@ -450,7 +452,8 @@ class MessagesAdapter(
             holder.mAttachmentsHolder,
             true,
             message.getObjectId(),
-            message.peerId
+            message.peerId,
+            getItemRawPosition(holder.bindingAdapterPosition)
         )
     }
 

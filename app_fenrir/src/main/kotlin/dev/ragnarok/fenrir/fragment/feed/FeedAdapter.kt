@@ -53,7 +53,7 @@ class FeedAdapter(
             item.attachments,
             viewHolder.attachmentsHolder,
             false,
-            null, null
+            null, null, null
         )
         attachmentsViewBinder.displayCopyHistory(
             item.getCopyHistory(),

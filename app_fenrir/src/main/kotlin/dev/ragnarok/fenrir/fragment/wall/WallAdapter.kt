@@ -102,7 +102,7 @@ class WallAdapter(
             post.attachments,
             holder.attachmentContainers,
             false,
-            null, null
+            null, null, getItemRawPosition(holder.bindingAdapterPosition)
         )
         attachmentsViewBinder.displayCopyHistory(
             post.getCopyHierarchy(),

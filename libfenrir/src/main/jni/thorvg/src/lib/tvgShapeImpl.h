@@ -34,8 +34,8 @@ struct Shape::Impl
 {
     RenderShape rs;                     //shape data
     RenderData rd = nullptr;            //engine data
-    uint32_t flag = RenderUpdateFlag::None;
     Shape* shape;
+    uint8_t flag = RenderUpdateFlag::None;
     uint8_t opacity;                    //for composition
     bool needComp;                      //composite or not
 
@@ -240,6 +240,15 @@ struct Shape::Impl
     {
         if (!rs.stroke) rs.stroke = new RenderStroke();
         rs.stroke->join = join;
+        flag |= RenderUpdateFlag::Stroke;
+
+        return true;
+    }
+
+    bool strokeMiterlimit(float miterlimit)
+    {
+        if (!rs.stroke) rs.stroke = new RenderStroke();
+        rs.stroke->miterlimit = miterlimit;
         flag |= RenderUpdateFlag::Stroke;
 
         return true;

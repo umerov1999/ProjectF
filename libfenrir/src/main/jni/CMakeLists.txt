@@ -168,6 +168,7 @@ add_library(libyuv STATIC
         animation/libyuv/source/scale_neon64.cc
         animation/libyuv/source/scale_neon.cc
         animation/libyuv/source/scale_rgb.cc
+        animation/libyuv/source/scale_rvv.cc
         animation/libyuv/source/scale_uv.cc
         animation/libyuv/source/video_common.cc)
 target_compile_options(libyuv PRIVATE

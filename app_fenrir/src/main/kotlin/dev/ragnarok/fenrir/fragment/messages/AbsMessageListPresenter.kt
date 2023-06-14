@@ -13,9 +13,11 @@ import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.media.voice.IVoicePlayer
 import dev.ragnarok.fenrir.media.voice.IVoicePlayer.IPlayerStatusListener
+import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.LastReadId
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.VoiceMessage
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Lookup
 import dev.ragnarok.fenrir.util.Utils
@@ -280,6 +282,48 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
     private fun createVoicePlayer() {
         mVoicePlayer = voicePlayerFactory.createPlayer()
         mVoicePlayer?.setCallback(this)
+    }
+
+    private fun checkForwardedMessageForAudio(
+        toFirst: Boolean,
+        position: Int,
+        audiosList: ArrayList<Audio>,
+        message: Message
+    ): Int {
+        var tmpPosition = position
+        message.attachments?.audios.nonNullNoEmpty {
+            if (toFirst) {
+                tmpPosition += it.size
+                audiosList.addAll(0, it)
+            } else {
+                audiosList.addAll(it)
+            }
+        }
+        message.fwd?.nonNullNoEmpty {
+            for (i in it) {
+                tmpPosition = checkForwardedMessageForAudio(toFirst, position, audiosList, i)
+            }
+        }
+        return tmpPosition
+    }
+
+    fun fireAudioPlayClick(position: Int, audiosList: ArrayList<Audio>, holderPosition: Int?) {
+        if (holderPosition == null) {
+            view?.playAudioList(accountId, position, audiosList)
+            return
+        }
+        var tmpPos = position
+        val comboAudios = ArrayList<Audio>()
+        comboAudios.addAll(audiosList)
+        for (i in (holderPosition + 1)..<data.size.coerceAtMost(100)) {
+            tmpPos = checkForwardedMessageForAudio(true, tmpPos, comboAudios, data[i])
+        }
+        if (holderPosition - 1 >= 0) {
+            for (i in (holderPosition - 1) downTo 0) {
+                tmpPos = checkForwardedMessageForAudio(false, tmpPos, comboAudios, data[i])
+            }
+        }
+        view?.playAudioList(accountId, tmpPos, comboAudios)
     }
 
     init {

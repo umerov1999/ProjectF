@@ -18,6 +18,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <list>
 
 #ifdef TVG_API
     #undef TVG_API
@@ -108,6 +109,7 @@ enum class Result
     Unknown                ///< The value returned in all other cases.
 };
 
+
 /**
  * @brief Enumeration specifying the values of the path commands accepted by TVG.
  *
@@ -122,6 +124,7 @@ enum class PathCommand
     CubicTo    ///< Draws a cubic Bezier curve from the current point to the given point using two given control points and sets a new value of the current point. This command expects 3 points: the 1st control-point, the 2nd control-point, the end-point of the curve.
 };
 
+
 /**
  * @brief Enumeration determining the ending type of a stroke in the open sub-paths.
  */
@@ -131,6 +134,7 @@ enum class StrokeCap
     Round,      ///< The stroke is extended in both end-points of a sub-path by a half circle, with a radius equal to the half of a stroke width. For zero length sub-paths a full circle is rendered.
     Butt        ///< The stroke ends exactly at each of the two end-points of a sub-path. For zero length sub-paths no stroke is rendered.
 };
+
 
 /**
  * @brief Enumeration determining the style used at the corners of joined stroked path segments.
@@ -142,6 +146,7 @@ enum class StrokeJoin
     Miter      ///< The outer corner of the joined path segments is spiked. The spike is created by extension beyond the join point of the outer edges of the stroke until they intersect. In case the extension goes beyond the limit, the join style is converted to the Bevel style.
 };
 
+
 /**
  * @brief Enumeration specifying how to fill the area outside the gradient bounds.
  */
@@ -151,6 +156,7 @@ enum class FillSpread
     Reflect, ///< The gradient pattern is reflected outside the gradient area until the expected region is filled.
     Repeat   ///< The gradient pattern is repeated continuously beyond the gradient area until the expected region is filled.
 };
+
 
 /**
  * @brief Enumeration specifying the algorithm used to establish which parts of the shape are treated as the inside of the shape.
@@ -165,27 +171,22 @@ enum class FillRule
 /**
  * @brief Enumeration indicating the method used in the composition of two objects - the target and the source.
  *
- * In the case of Mask composition, you need to perform bit operations on two options - Mask Alpha and Mask Operation.
- * Mask Alpha specifies the origin of the alpha channel, while Mask Operation specifies the masking operation.
- * @code paint->composite(tvg::CompositeMethod::AlphaMask + tvg::CompositeMethod::AddMaskOp); @endcode
+ * Notation: S(Source), T(Target), SA(Source Alpha), TA(Target Alpha)
  *
- * @note If you don't specify the mask alpha, @c AlphaMask will be used.
- * @note If you don't specify the mask method, @c AddMaskOp will be used.
- * @warning Composition does not support multiple choices for both Mask Alpha and Mask Operation.
  * @see Paint::composite()
  */
 enum class CompositeMethod
 {
     None = 0,           ///< No composition is applied.
     ClipPath,           ///< The intersection of the source and the target is determined and only the resulting pixels from the source are rendered.
-    AlphaMask,          ///< Mask Alpha: Use the compositing target's pixels as an alpha value.
-    InvAlphaMask,       ///< Mask Alpha: Use the complement to the compositing target's pixels as an alpha.
-    LumaMask,           ///< Mask Alpha: Use the grayscale (0.2125R + 0.7154G + 0.0721*B) of the compositing target's pixels. @since 0.9
-    InvLumaMask,        ///< Mask Alpha: Use the grayscale (0.2125R + 0.7154G + 0.0721*B) of the complement to the compositing target's pixels. @BETA_API
-    AddMask,            ///< Mask Operation: Combines the source and target pixels using Mask Alpha. @BETA_API
-    SubtractMask,       ///< Mask Operation: Subtracts the target color from the source color while considering their respective Mask Alpha. @BETA_API
-    IntersectMask,      ///< Mask Operation: Computes the result by taking the minimum value between the Mask Alpha and the target alpha and multiplies it with the source color. @BETA_API
-    DifferenceMask      ///< Mask Operation: Calculates the absolute difference between the source color and the target color multiplied by the complement of the Mask Alpha. @BETA_API
+    AlphaMask,          ///< Alpha Masking using the compositing target's pixels as an alpha value.
+    InvAlphaMask,       ///< Alpha Masking using the complement to the compositing target's pixels as an alpha value.
+    LumaMask,           ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the compositing target's pixels. @since 0.9
+    InvLumaMask,        ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the complement to the compositing target's pixels. @BETA_API
+    AddMask,            ///< Combines the target and source objects pixels using target alpha. (T * TA) + (S * (1 - TA)) @BETA_API
+    SubtractMask,       ///< Subtracts the source color from the target color while considering their respective target alpha. (T * TA) - (S * (1 - TA)) @BETA_API
+    IntersectMask,      ///< Computes the result by taking the minimum value between the target alpha and the source alpha and multiplies it with the target color. (T * min(TA, SA)) @BETA_API
+    DifferenceMask      ///< Calculates the absolute difference between the target color and the source color multiplied by the complement of the target alpha. abs(T - S * (1 - TA)) @BETA_API
 };
 
 
@@ -548,14 +549,25 @@ public:
      *
      * @return Result::Success when succeed.
      */
-    Result reserve(uint32_t n) noexcept;
+    TVG_DEPRECATED Result reserve(uint32_t n) noexcept;
+
+    /**
+     * @brief Returns the list of the paints that currently held by the Canvas.
+     *
+     * This function provides the list of paint nodes, allowing users a direct opportunity to modify the scene tree.
+     *
+     * @warning  Please avoid accessing the paints during Canvas update/draw. You can access them after calling sync().
+     * @see Canvas::sync()
+     *
+     * @BETA_API
+     */
+    std::list<Paint*>& paints() noexcept;
 
     /**
      * @brief Passes drawing elements to the Canvas using Paint objects.
      *
      * Only pushed paints in the canvas will be drawing targets.
      * They are retained by the canvas until you call Canvas::clear().
-     * If you know the number of the pushed objects in advance, please call Canvas::reserve().
      *
      * @param[in] paint A Paint object to be drawn.
      *
@@ -564,7 +576,7 @@ public:
      * @retval Result::InsufficientCondition An internal error.
      *
      * @note The rendering order of the paints is the same as the order as they were pushed into the canvas. Consider sorting the paints before pushing them if you intend to use layering.
-     * @see Canvas::reserve()
+     * @see Canvas::paints()
      * @see Canvas::clear()
      */
     virtual Result push(std::unique_ptr<Paint> paint) noexcept;
@@ -578,6 +590,8 @@ public:
      * @return Result::Success when succeed, Result::InsufficientCondition otherwise.
      *
      * @warning If you don't free the paints they become dangled. They are supposed to be reused, otherwise you are responsible for their lives. Thus please use the @p free argument only when you know how it works, otherwise it's not recommended.
+     * @see Canvas::push()
+     * @see Canvas::paints()
      */
     virtual Result clear(bool free = true) noexcept;
 
@@ -852,7 +866,7 @@ public:
      *
      * @note For @p rx and @p ry greater than or equal to the half of @p w and the half of @p h, respectively, the shape become an ellipse.
      */
-    Result appendRect(float x, float y, float w, float h, float rx, float ry) noexcept;
+    Result appendRect(float x, float y, float w, float h, float rx = 0, float ry = 0) noexcept;
 
     /**
      * @brief Appends an ellipse to the path.
@@ -975,6 +989,18 @@ public:
      * @return Result::Success when succeed, Result::FailedAllocation otherwise.
      */
     Result stroke(StrokeJoin join) noexcept;
+
+
+    /**
+     * @brief Sets the stroke miterlimit.
+     *
+     * @param[in] miterlimit The miterlimit imposes a limit on the extent of the stroke join, when the @c StrokeJoin::Miter join style is set. The default value is 4.
+     *
+     * @return Result::Success when succeed, Result::NonSupport unsupported value, Result::FailedAllocation otherwise.
+     * 
+     * @BETA_API
+     */
+    Result strokeMiterlimit(float miterlimit) noexcept;
 
     /**
      * @brief Sets the solid color for all of the figures from the path.
@@ -1120,6 +1146,15 @@ public:
      * @return The join style value of the stroke.
      */
     StrokeJoin strokeJoin() const noexcept;
+
+    /**
+     * @brief Gets the stroke miterlimit.
+     *
+     * @return The stroke miterlimit value when succeed, 4 if no stroke was set.
+     *
+     * @BETA_API
+     */
+    float strokeMiterlimit() const noexcept;
 
     /**
      * @brief Creates a new Shape object.
@@ -1329,14 +1364,14 @@ public:
      *
      * Only the paints pushed into the scene will be the drawn targets.
      * The paints are retained by the scene until Scene::clear() is called.
-     * If you know the number of the pushed objects in advance, please call Scene::reserve().
      *
      * @param[in] paint A Paint object to be drawn.
      *
      * @return Result::Success when succeed, Result::MemoryCorruption otherwise.
      *
      * @note The rendering order of the paints is the same as the order as they were pushed. Consider sorting the paints before pushing them if you intend to use layering.
-     * @see Scene::reserve()
+     * @see Scene::paints()
+     * @see Scene::clear()
      */
     Result push(std::unique_ptr<Paint> paint) noexcept;
 
@@ -1350,7 +1385,21 @@ public:
      *
      * @return Result::Success when succeed, Result::FailedAllocation otherwise.
      */
-    Result reserve(uint32_t size) noexcept;
+    TVG_DEPRECATED Result reserve(uint32_t size) noexcept;
+
+    /**
+     * @brief Returns the list of the paints that currently held by the Scene.
+     *
+     * This function provides the list of paint nodes, allowing users a direct opportunity to modify the scene tree.
+     *
+     * @warning  Please avoid accessing the paints during Scene update/draw. You can access them after calling Canvas::sync().
+     * @see Canvas::sync()
+     * @see Scene::push()
+     * @see Scene::clear()
+     *
+     * @BETA_API
+     */
+    std::list<Paint*>& paints() noexcept;
 
     /**
      * @brief Sets the total number of the paints pushed into the scene to be zero.
@@ -1695,17 +1744,6 @@ template<typename T>
 std::unique_ptr<T> cast(Fill* fill)
 {
     return std::unique_ptr<T>(static_cast<T*>(fill));
-}
-
-
-/**
- * @brief The operator() function is the OR function used to combine Mask Alpha & Mask Operation
- *
- * @BETA_API
- */
-constexpr CompositeMethod operator+(CompositeMethod a, CompositeMethod b)
-{
-    return CompositeMethod(int(a) | int(b));
 }
 
 

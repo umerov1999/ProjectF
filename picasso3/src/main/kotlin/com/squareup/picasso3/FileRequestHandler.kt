@@ -18,6 +18,7 @@ package com.squareup.picasso3
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import androidx.exifinterface.media.ExifInterface
 import com.squareup.picasso3.BitmapUtils.decodeStream
 import com.squareup.picasso3.Picasso.LoadedFrom.DISK
@@ -52,6 +53,9 @@ internal class FileRequestHandler(context: Context) : ContentStreamRequestHandle
     }
 
     override fun getExifOrientation(uri: Uri): Int {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return 0
+        }
         val path = uri.path ?: throw FileNotFoundException("path == null, uri: $uri")
         return ExifInterface(path).getAttributeInt(
             ExifInterface.TAG_ORIENTATION,

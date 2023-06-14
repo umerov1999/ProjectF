@@ -18,6 +18,7 @@ package com.squareup.picasso3
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import androidx.exifinterface.media.ExifInterface
 import androidx.exifinterface.media.ExifInterface.ORIENTATION_NORMAL
 import androidx.exifinterface.media.ExifInterface.TAG_ORIENTATION
@@ -59,6 +60,9 @@ internal open class ContentStreamRequestHandler(val context: Context) : RequestH
     }
 
     protected open fun getExifOrientation(uri: Uri): Int {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return 0
+        }
         val contentResolver = context.contentResolver
         contentResolver.openInputStream(uri)?.use { input ->
             return ExifInterface(input).getAttributeInt(TAG_ORIENTATION, ORIENTATION_NORMAL)

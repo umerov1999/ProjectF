@@ -766,6 +766,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         }
     }
 
+    override fun onAudioPlay(position: Int, audios: ArrayList<Audio>, holderPosition: Int?) {
+        presenter?.fireAudioPlayClick(position, audios, holderPosition)
+    }
+
     override fun goToUnreadMessages(
         accountId: Long,
         messageId: Int,

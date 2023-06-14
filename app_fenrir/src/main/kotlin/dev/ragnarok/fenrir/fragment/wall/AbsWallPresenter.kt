@@ -895,6 +895,48 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         resolveUploadDataVisibility()
     }
 
+    private fun checkPostsForAudio(
+        toFirst: Boolean,
+        position: Int,
+        audiosList: ArrayList<Audio>,
+        post: Post
+    ): Int {
+        var tmpPosition = position
+        post.attachments?.audios.nonNullNoEmpty {
+            if (toFirst) {
+                tmpPosition += it.size
+                audiosList.addAll(0, it)
+            } else {
+                audiosList.addAll(it)
+            }
+        }
+        post.getCopyHierarchy()?.nonNullNoEmpty {
+            for (i in it) {
+                tmpPosition = checkPostsForAudio(toFirst, position, audiosList, i)
+            }
+        }
+        return tmpPosition
+    }
+
+    fun fireAudioPlayClick(position: Int, audiosList: ArrayList<Audio>, holderPosition: Int?) {
+        if (holderPosition == null) {
+            view?.playAudioList(accountId, position, audiosList)
+            return
+        }
+        var tmpPos = position
+        val comboAudios = ArrayList<Audio>()
+        comboAudios.addAll(audiosList)
+        for (i in (holderPosition + 1)..<wall.size.coerceAtMost(100)) {
+            tmpPos = checkPostsForAudio(false, tmpPos, comboAudios, wall[i])
+        }
+        if (holderPosition - 1 >= 0) {
+            for (i in (holderPosition - 1) downTo 0) {
+                tmpPos = checkPostsForAudio(true, tmpPos, comboAudios, wall[i])
+            }
+        }
+        view?.playAudioList(accountId, tmpPos, comboAudios)
+    }
+
     init {
         wall = ArrayList()
         stories = ArrayList()

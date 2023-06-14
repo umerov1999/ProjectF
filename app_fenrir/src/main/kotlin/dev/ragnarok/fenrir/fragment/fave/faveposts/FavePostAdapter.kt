@@ -65,7 +65,7 @@ class FavePostAdapter(
             holder.attachmentContainers,
             false,
             null,
-            null
+            null, null
         )
         attachmentsViewBinder.displayCopyHistory(
             post.getCopyHierarchy(),

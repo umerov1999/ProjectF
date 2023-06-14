@@ -633,10 +633,10 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         }
     override val rendering_mode: Int
         get() = try {
-            getPreferences(app).getString("rendering_bitmap_mode", "2")!!
+            getPreferences(app).getString("rendering_bitmap_mode", "0")!!
                 .trim { it <= ' ' }.toInt()
         } catch (e: Exception) {
-            2
+            0
         }
     override val endListAnimation: Int
         get() = try {

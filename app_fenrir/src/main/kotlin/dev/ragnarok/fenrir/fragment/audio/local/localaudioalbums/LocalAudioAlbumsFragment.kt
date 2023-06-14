@@ -17,6 +17,7 @@ import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.photos.localimagealbums.LocalPhotoAlbumsAdapter
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.LocalImageAlbum
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.view.MySearchView
@@ -34,6 +35,7 @@ class LocalAudioAlbumsFragment :
     private var mRecyclerView: RecyclerView? = null
     private var mAlbumsAdapter: LocalAudioAlbumsAdapter? = null
     private var listener: Listener? = null
+    private var manager: RecyclerView.LayoutManager? = null
     override fun onCreateDialog(savedInstanceState: Bundle?): BottomSheetDialog {
         val dialog = BottomSheetDialog(requireActivity(), theme)
         val behavior = dialog.behavior
@@ -74,8 +76,7 @@ class LocalAudioAlbumsFragment :
             }
         })
         val columnCount = resources.getInteger(R.integer.photos_albums_column_count)
-        val manager: RecyclerView.LayoutManager =
-            StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL)
+        manager = StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL)
         mRecyclerView = view.findViewById(R.id.recycler_view)
         mRecyclerView?.layoutManager = manager
         mRecyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(LocalPhotoAlbumsAdapter.PICASSO_TAG))
@@ -109,6 +110,8 @@ class LocalAudioAlbumsFragment :
 
     override fun notifyDataChanged() {
         mAlbumsAdapter?.notifyDataSetChanged()
+        val pos = mAlbumsAdapter?.getFirstWithCurrentId().orZero()
+        manager?.scrollToPosition(pos)
     }
 
     override fun requestReadExternalStoragePermission() {

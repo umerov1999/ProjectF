@@ -55,19 +55,18 @@
                 android:visibility="gone"
                 app:tint="@color/white" />
 
-            <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+            <ImageView
                 android:id="@+id/item_blacklisted"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_gravity="end|bottom"
                 android:layout_marginStart="4dp"
                 android:layout_marginBottom="4dp"
                 android:contentDescription="@null"
-                android:visibility="gone"
-                app:loopAnimation="true"
-                tools:src="@drawable/audio_died" />
+                android:src="@drawable/audio_died"
+                android:visibility="gone" />
 
-            <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+            <ImageView
                 android:id="@+id/item_monitor"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -75,8 +74,8 @@
                 android:layout_marginTop="6dp"
                 android:layout_marginEnd="6dp"
                 android:contentDescription="@null"
-                android:visibility="gone"
-                app:loopAnimation="true" />
+                android:src="@drawable/eye"
+                android:visibility="gone" />
         </FrameLayout>
 
         <LinearLayout

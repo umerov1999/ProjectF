@@ -18,7 +18,7 @@ class PicassoLocalRequestHandler : RequestHandler() {
             if (target == null) {
                 callback.onError(Throwable("Picasso Thumb Not Support"))
             } else {
-                callback.onSuccess(Result.Bitmap(target, Picasso.LoadedFrom.DISK, 0))
+                callback.onSuccess(Result.Bitmap(target, Picasso.LoadedFrom.DISK))
             }
         } else {
             val contentId = requestUri.lastPathSegment?.toLong()
@@ -46,7 +46,7 @@ class PicassoLocalRequestHandler : RequestHandler() {
                 callback.onError(Throwable("Picasso Thumb Not Support"))
                 return
             }
-            callback.onSuccess(Result.Bitmap(target, Picasso.LoadedFrom.DISK, 0))
+            callback.onSuccess(Result.Bitmap(target, Picasso.LoadedFrom.DISK))
         }
     }
 }

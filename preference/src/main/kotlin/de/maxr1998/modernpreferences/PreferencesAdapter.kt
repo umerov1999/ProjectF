@@ -37,10 +37,8 @@ import androidx.core.content.res.use
 import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
 import de.maxr1998.modernpreferences.helpers.categoryHeader
-import de.maxr1998.modernpreferences.helpers.onLongClick
 import de.maxr1998.modernpreferences.preferences.AccentButtonPreference
 import de.maxr1998.modernpreferences.preferences.CategoryHeader
 import de.maxr1998.modernpreferences.preferences.CollapsePreference
@@ -144,27 +142,9 @@ class PreferencesAdapter @VisibleForTesting constructor(
             }
         } else {
             if (prefNameHas(context, query, preference)) {
-                if (view == null || preference.longClickListener != null) {
-                    found.addPreferenceItem(preference.makeCopyForFind())
-                } else {
-                    val ref = preference.makeCopyForFind()
-                    val title = preference.parent?.title
-                    val titleRes = preference.parent?.titleRes ?: DEFAULT_RES_ID
-                    if (!title.isNullOrEmpty()) {
-                        ref.onLongClick {
-                            Snackbar.make(view, title, Snackbar.LENGTH_LONG)
-                                .show()
-                            true
-                        }
-                    } else if (titleRes != DEFAULT_RES_ID) {
-                        ref.onLongClick {
-                            Snackbar.make(view, titleRes, Snackbar.LENGTH_LONG)
-                                .show()
-                            true
-                        }
-                    }
-                    found.addPreferenceItem(ref)
-                }
+                val tmp = preference.makeCopyForFind()
+                tmp.makeInSearchParentStoryFrom(context, preference)
+                found.addPreferenceItem(tmp)
             }
         }
     }
@@ -328,7 +308,10 @@ class PreferencesAdapter @VisibleForTesting constructor(
         pref.bindViews(holder)
 
         // Category header and seek bar shouldn't be clickable
-        if (pref is CategoryHeader || pref is SeekBarPreference) return
+        if (pref is CategoryHeader || pref is SeekBarPreference) {
+            holder.itemView.setOnClickListener(null)
+            holder.itemView.setOnLongClickListener(null)
+        }
 
         holder.itemView.setOnClickListener {
             if (pref is PreferenceScreen) {

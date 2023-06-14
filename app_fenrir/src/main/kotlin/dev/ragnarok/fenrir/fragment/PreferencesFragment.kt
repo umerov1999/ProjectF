@@ -1668,11 +1668,11 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 selItems(R.array.array_rendering_mode_names, R.array.array_rendering_mode_items),
                 parentFragmentManager
             ) {
-                initialSelection = "2"
+                initialSelection = "0"
                 titleRes = R.string.rendering_mode
                 visible = Utils.hasPie()
                 onSelectionChange { it ->
-                    var sz = 2
+                    var sz = 0
                     try {
                         sz = it.trim { it <= ' ' }.toInt()
                     } catch (ignored: NumberFormatException) {
@@ -2570,8 +2570,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     progress: Int,
                     fromUser: Boolean
                 ) {
-                    textVerticalSensitive.text =
-                        getString(R.string.slidr_sensitive, progress)
+                    if (fromUser && progress < 20) {
+                        verticalSensitive.progress = 20
+                        textVerticalSensitive.text = getString(R.string.slidr_sensitive, 20)
+                    } else {
+                        textVerticalSensitive.text = getString(R.string.slidr_sensitive, progress)
+                    }
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -2584,8 +2588,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     progress: Int,
                     fromUser: Boolean
                 ) {
-                    textHorizontalSensitive.text =
-                        getString(R.string.slidr_sensitive, progress)
+                    if (fromUser && progress < 20) {
+                        horizontalSensitive.progress = 20
+                        textHorizontalSensitive.text = getString(R.string.slidr_sensitive, 20)
+                    } else {
+                        textHorizontalSensitive.text = getString(R.string.slidr_sensitive, progress)
+                    }
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -2598,8 +2606,14 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     progress: Int,
                     fromUser: Boolean
                 ) {
-                    textVerticalVelocityThreshold.text =
-                        getString(R.string.slidr_velocity_threshold, progress)
+                    if (fromUser && progress < 4) {
+                        verticalVelocityThreshold.progress = 4
+                        textVerticalVelocityThreshold.text =
+                            getString(R.string.slidr_velocity_threshold, 4)
+                    } else {
+                        textVerticalVelocityThreshold.text =
+                            getString(R.string.slidr_velocity_threshold, progress)
+                    }
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -2612,8 +2626,14 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     progress: Int,
                     fromUser: Boolean
                 ) {
-                    textHorizontalVelocityThreshold.text =
-                        getString(R.string.slidr_velocity_threshold, progress)
+                    if (fromUser && progress < 4) {
+                        horizontalVelocityThreshold.progress = 4
+                        textHorizontalVelocityThreshold.text =
+                            getString(R.string.slidr_velocity_threshold, 4)
+                    } else {
+                        textHorizontalVelocityThreshold.text =
+                            getString(R.string.slidr_velocity_threshold, progress)
+                    }
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -2626,8 +2646,14 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     progress: Int,
                     fromUser: Boolean
                 ) {
-                    textVerticalDistanceThreshold.text =
-                        getString(R.string.slidr_distance_threshold, progress)
+                    if (fromUser && progress < 4) {
+                        verticalDistanceThreshold.progress = 4
+                        textVerticalDistanceThreshold.text =
+                            getString(R.string.slidr_distance_threshold, 4)
+                    } else {
+                        textVerticalDistanceThreshold.text =
+                            getString(R.string.slidr_distance_threshold, progress)
+                    }
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -2640,8 +2666,14 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     progress: Int,
                     fromUser: Boolean
                 ) {
-                    textHorizontalDistanceThreshold.text =
-                        getString(R.string.slidr_distance_threshold, progress)
+                    if (fromUser && progress < 4) {
+                        horizontalDistanceThreshold.progress = 4
+                        textHorizontalDistanceThreshold.text =
+                            getString(R.string.slidr_distance_threshold, 4)
+                    } else {
+                        textHorizontalDistanceThreshold.text =
+                            getString(R.string.slidr_distance_threshold, progress)
+                    }
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
@@ -2696,8 +2728,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 .setNegativeButton(R.string.button_cancel, null)
                 .setNeutralButton(R.string.set_default) { _: DialogInterface?, _: Int ->
                     Settings.get()
-                        .other().slidrSettings =
-                        SlidrSettings().set_default()
+                        .other().slidrSettings = SlidrSettings().set_default()
                     parentFragmentManager.setFragmentResult(
                         PreferencesExtra.RECREATE_ACTIVITY_REQUEST,
                         Bundle()

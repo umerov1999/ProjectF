@@ -21,15 +21,12 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.CurrentTheme
-import dev.ragnarok.fenrir.settings.CurrentTheme.getColorPrimary
-import dev.ragnarok.fenrir.settings.CurrentTheme.getColorSecondary
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
 import dev.ragnarok.fenrir.view.AspectRatioImageView
 import dev.ragnarok.fenrir.view.OnlineView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 
 class FavePagesAdapter(private var data: List<FavePage>, private val context: Context) :
     RecyclerView.Adapter<FavePagesAdapter.Holder>() {
@@ -67,21 +64,8 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
                 .isOwnerInChangesMonitor(favePage.owner?.ownerId ?: favePage.getOwnerObjectId())
         ) {
             holder.ivMonitor.visibility = View.VISIBLE
-            holder.ivMonitor.fromRes(
-                dev.ragnarok.fenrir_common.R.raw.eye,
-                Utils.dp(24f),
-                Utils.dp(24f),
-                intArrayOf(
-                    0x333333,
-                    Color.parseColor("#ffffff"),
-                    0x777777,
-                    Color.parseColor("#000000")
-                )
-            )
-            holder.ivMonitor.playAnimation()
         } else {
             holder.ivMonitor.visibility = View.GONE
-            holder.ivMonitor.clearAnimationDrawable()
         }
         holder.blacklisted.clearColorFilter()
         if (favePage.type == FavePageType.USER) {
@@ -96,35 +80,14 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
             holder.ivOnline.visibility = View.VISIBLE
             if (user?.blacklisted == true) {
                 holder.blacklisted.visibility = View.VISIBLE
-                if (Utils.hasMarshmallow() && FenrirNative.isNativeLoaded) {
-                    holder.blacklisted.fromRes(
-                        dev.ragnarok.fenrir_common.R.raw.skull,
-                        Utils.dp(48f),
-                        Utils.dp(48f),
-                        null
-                    )
-                    holder.blacklisted.playAnimation()
-                } else {
-                    holder.blacklisted.setImageResource(R.drawable.audio_died)
-                    holder.blacklisted.setColorFilter(Color.parseColor("#AAFF0000"))
-                }
+                holder.blacklisted.setImageResource(R.drawable.audio_died)
+                Utils.setColorFilter(holder.blacklisted, Color.parseColor("#ff0000"))
             } else if (user?.isFriend == true && Utils.hasMarshmallow() && FenrirNative.isNativeLoaded) {
                 holder.blacklisted.visibility = View.VISIBLE
-                holder.blacklisted.fromRes(
-                    dev.ragnarok.fenrir_common.R.raw.is_friend,
-                    Utils.dp(48f),
-                    Utils.dp(48f),
-                    intArrayOf(
-                        0x000000,
-                        getColorPrimary(context),
-                        0xffffff,
-                        getColorSecondary(context)
-                    )
-                )
-                holder.blacklisted.playAnimation()
+                holder.blacklisted.setImageResource(R.drawable.is_friend)
+                holder.blacklisted.clearColorFilter()
             } else {
                 holder.blacklisted.visibility = View.GONE
-                holder.blacklisted.clearAnimationDrawable()
             }
 
             val onlineIcon = getOnlineIcon(
@@ -160,22 +123,11 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
             holder.name.setTextColor(Utils.getVerifiedColor(context, false))
             holder.ivOnline.visibility = View.GONE
             if (group?.isBlacklisted == true) {
+                holder.blacklisted.setImageResource(R.drawable.audio_died)
                 holder.blacklisted.visibility = View.VISIBLE
-                if (Utils.hasMarshmallow() && FenrirNative.isNativeLoaded) {
-                    holder.blacklisted.fromRes(
-                        dev.ragnarok.fenrir_common.R.raw.skull,
-                        Utils.dp(48f),
-                        Utils.dp(48f),
-                        null
-                    )
-                    holder.blacklisted.playAnimation()
-                } else {
-                    holder.blacklisted.setImageResource(R.drawable.audio_died)
-                    holder.blacklisted.setColorFilter(Color.parseColor("#AAFF0000"))
-                }
+                Utils.setColorFilter(holder.blacklisted, Color.parseColor("#ff0000"))
             } else {
                 holder.blacklisted.visibility = View.GONE
-                holder.blacklisted.clearAnimationDrawable()
             }
         }
         addSelectionProfileSupport(context, holder.avatar_root, favePage)
@@ -223,12 +175,12 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
         OnCreateContextMenuListener {
         val avatar_root: ViewGroup
         val avatar: AspectRatioImageView
-        val blacklisted: RLottieImageView
+        val blacklisted: ImageView
         val name: TextView
         val description: TextView
         val ivOnline: OnlineView
         val ivVerified: ImageView
-        val ivMonitor: RLottieImageView
+        val ivMonitor: ImageView
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
             val position = recyclerView?.getChildAdapterPosition(v) ?: 0
             val favePage = data[position]

@@ -63,7 +63,7 @@ buildscript {
     ext.okhttpLibraryVersion = "5.0.0-alpha.11"
     ext.okioVersion = "3.3.0"
     ext.rxJavaVersion = "3.1.6"
-    ext.guavaVersion = "32.0.0-android"
+    ext.guavaVersion = "32.0.1-android"
     ext.errorproneVersion = "2.15.0"
     ext.checkerCompatQualVersion = "2.5.5"
     ext.checkerQualAndroidVersion = "3.35.0"
@@ -91,7 +91,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.1.0-beta04"
+        classpath "com.android.tools.build:gradle:8.1.0-beta05"
         classpath "com.google.gms:google-services:4.3.15"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"

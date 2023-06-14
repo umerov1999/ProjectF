@@ -69,7 +69,7 @@ class DocLink(val attachment: AbsModel) {
                         val sizes = link.photo?.sizes
                         return sizes?.getUrlForSize(
                             Settings.get().main().prefPreviewImageSize,
-                            true
+                            false
                         )
                     }
                     return null

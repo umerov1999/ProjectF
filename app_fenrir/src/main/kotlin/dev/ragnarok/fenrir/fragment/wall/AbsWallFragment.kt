@@ -358,6 +358,9 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         return root
     }
 
+    override fun onAudioPlay(position: Int, audios: ArrayList<Audio>, holderPosition: Int?) {
+        presenter?.fireAudioPlayClick(position, audios, holderPosition)
+    }
 
     override fun onAvatarClick(ownerId: Long) {
         super.onOwnerClick(ownerId)

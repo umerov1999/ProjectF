@@ -30,6 +30,19 @@ class LocalAudioAlbumsAdapter(
         notifyDataSetChanged()
     }
 
+    fun getFirstWithCurrentId(): Int {
+        var ret = 0
+        var iter = 0
+        for (i in data) {
+            if (i.getId() == currentId) {
+                ret = iter
+                break
+            }
+            iter++
+        }
+        return ret
+    }
+
     fun updateCurrentId(currentId: Int) {
         this.currentId = currentId
         notifyDataSetChanged()

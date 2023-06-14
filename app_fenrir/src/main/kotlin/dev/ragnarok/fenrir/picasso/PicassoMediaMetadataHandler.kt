@@ -35,6 +35,6 @@ class PicassoMediaMetadataHandler : RequestHandler() {
             callback.onError(Throwable("Picasso Thumb Not Support"))
             return
         }
-        callback.onSuccess(Result.Bitmap(target, Picasso.LoadedFrom.DISK, 0))
+        callback.onSuccess(Result.Bitmap(target, Picasso.LoadedFrom.DISK))
     }
 }

@@ -78,6 +78,7 @@ class AudioContainer : LinearLayout {
     private var audioListDisposable = Disposable.disposed()
     private var audios: List<Audio> = emptyList()
     private var currAudio = currentAudio
+    private var holderPosition: Int? = null
     private val isAudio_round_icon: Boolean =
         if (isInEditMode) true else Settings.get().main().isAudio_round_icon
 
@@ -379,7 +380,11 @@ class AudioContainer : LinearLayout {
                 override fun onModalOptionSelected(option: Option) {
                     when (option.id) {
                         AudioOption.play_item_audio -> {
-                            mAttachmentsActionCallback?.onAudioPlay(position, audios)
+                            mAttachmentsActionCallback?.onAudioPlay(
+                                position,
+                                audios,
+                                holderPosition
+                            )
                             getPlayerPlace(Settings.get().accounts().current).tryOpenWith(
                                 context
                             )
@@ -575,13 +580,14 @@ class AudioContainer : LinearLayout {
             }
         } else {
             updateAudioStatus(holder, audio)
-            mAttachmentsActionCallback?.onAudioPlay(position, audios)
+            mAttachmentsActionCallback?.onAudioPlay(position, audios, holderPosition)
         }
     }
 
     fun displayAudios(
         audios: ArrayList<Audio>?,
-        mAttachmentsActionCallback: OnAttachmentsActionCallback?
+        mAttachmentsActionCallback: OnAttachmentsActionCallback?,
+        holderPosition: Int?
     ) {
         if (audios.isNullOrEmpty()) {
             visibility = View.GONE
@@ -590,6 +596,7 @@ class AudioContainer : LinearLayout {
         }
         visibility = View.VISIBLE
         this.audios = audios
+        this.holderPosition = holderPosition
         val i = audios.size - childCount
         for (j in 0 until i) {
             val itemView = LayoutInflater.from(context).inflate(R.layout.item_audio, this, false)

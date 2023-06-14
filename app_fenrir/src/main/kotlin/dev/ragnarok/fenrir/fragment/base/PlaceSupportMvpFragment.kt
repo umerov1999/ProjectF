@@ -110,7 +110,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
         presenter?.fireVideoClick(video)
     }
 
-    override fun onAudioPlay(position: Int, audios: ArrayList<Audio>) {
+    override fun onAudioPlay(position: Int, audios: ArrayList<Audio>, holderPosition: Int?) {
         presenter?.fireAudioPlayClick(position, audios)
     }
 
