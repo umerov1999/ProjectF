@@ -35,7 +35,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
-import androidx.annotation.VisibleForTesting;
 import androidx.camera.core.ExperimentalGetImage;
 import androidx.camera.core.ImageInfo;
 import androidx.camera.core.ImageProxy;
@@ -51,7 +50,6 @@ import java.nio.ByteBuffer;
  * <p> This class is backed by a single {@link ByteBuffer}. The bytes are stored following the
  * {@link Bitmap.Config#ARGB_8888}.
  *
- * @hide
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -91,8 +89,7 @@ public final class RgbaImageProxy implements ImageProxy {
      *
      * <p>The {@link Bitmap} must be {@link Bitmap.Config#ARGB_8888}.
      */
-    @VisibleForTesting
-    RgbaImageProxy(@NonNull Bitmap bitmap, @NonNull Rect cropRect, int rotationDegrees,
+    public RgbaImageProxy(@NonNull Bitmap bitmap, @NonNull Rect cropRect, int rotationDegrees,
             @NonNull Matrix sensorToBuffer, long timestamp) {
         this(createDirectByteBuffer(bitmap),
                 DEFAULT_RGBA_PIXEL_STRIDE,

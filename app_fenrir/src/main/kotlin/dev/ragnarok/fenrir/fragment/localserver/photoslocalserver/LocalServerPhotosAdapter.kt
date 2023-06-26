@@ -11,6 +11,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.AppTextUtils
@@ -57,11 +58,18 @@ class LocalServerPhotosAdapter(private val mContext: Context, private var data: 
                 viewHolder.current.clearAnimationDrawable()
             }
         }
-        with()
-            .load(photo.getUrlForSize(PhotoSize.X, false))
-            .tag(Constants.PICASSO_TAG)
-            .placeholder(R.drawable.background_gray)
-            .into(viewHolder.photoImageView)
+        val targetUrl = photo.getUrlForSize(PhotoSize.X, false)
+        viewHolder.photoImageView.visibility =
+            if (targetUrl.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
+        if (targetUrl.nonNullNoEmpty()) {
+            with()
+                .load(targetUrl)
+                .tag(Constants.PICASSO_TAG)
+                .placeholder(R.drawable.background_gray)
+                .into(viewHolder.photoImageView)
+        } else {
+            with().cancelRequest(viewHolder.photoImageView)
+        }
         viewHolder.photoImageView.setOnClickListener {
             photoSelectionListener?.onPhotoClicked(viewHolder.bindingAdapterPosition, photo)
         }

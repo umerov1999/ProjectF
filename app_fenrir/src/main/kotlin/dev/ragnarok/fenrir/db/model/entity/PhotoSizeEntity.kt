@@ -20,7 +20,14 @@ class PhotoSizeEntity {
 
     var p: Size? = null
         private set
+
     var q: Size? = null
+        private set
+
+    var k: Size? = null
+        private set
+
+    var l: Size? = null
         private set
 
     var r: Size? = null
@@ -47,6 +54,16 @@ class PhotoSizeEntity {
 
     fun setX(x: Size?): PhotoSizeEntity {
         this.x = x
+        return this
+    }
+
+    fun setK(k: Size?): PhotoSizeEntity {
+        this.k = k
+        return this
+    }
+
+    fun setL(l: Size?): PhotoSizeEntity {
+        this.l = l
         return this
     }
 

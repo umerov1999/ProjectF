@@ -16,13 +16,25 @@
 
 package androidx.camera.core.processing;
 
-import static androidx.core.util.Preconditions.checkState;
+import static androidx.camera.core.impl.utils.futures.Futures.immediateFailedFuture;
 
+import static java.util.Objects.requireNonNull;
+
+import android.os.Build;
+
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+import androidx.camera.core.CameraEffect;
+import androidx.camera.core.Logger;
+import androidx.camera.core.ProcessingException;
 import androidx.camera.core.SurfaceOutput;
 import androidx.camera.core.SurfaceProcessor;
 import androidx.camera.core.SurfaceRequest;
+import androidx.core.util.Consumer;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.Executor;
 
@@ -33,20 +45,22 @@ import java.util.concurrent.Executor;
  * makes sure that CameraX always invoke the {@link SurfaceProcessor} on the correct
  * {@link Executor}.
  */
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class SurfaceProcessorWithExecutor implements SurfaceProcessorInternal {
+
+    private static final String TAG = "SurfaceProcessor";
 
     @NonNull
     private final SurfaceProcessor mSurfaceProcessor;
     @NonNull
     private final Executor mExecutor;
+    @NonNull
+    private final Consumer<Throwable> mErrorListener;
 
-    public SurfaceProcessorWithExecutor(
-            @NonNull SurfaceProcessor surfaceProcessor,
-            @NonNull Executor executor) {
-        checkState(!(surfaceProcessor instanceof SurfaceProcessorInternal),
-                "SurfaceProcessorInternal should always be thread safe. Do not wrap.");
-        mSurfaceProcessor = surfaceProcessor;
-        mExecutor = executor;
+    public SurfaceProcessorWithExecutor(@NonNull CameraEffect cameraEffect) {
+        mSurfaceProcessor = requireNonNull(cameraEffect.getSurfaceProcessor());
+        mExecutor = cameraEffect.getExecutor();
+        mErrorListener = cameraEffect.getErrorListener();
     }
 
     @NonNull
@@ -63,12 +77,35 @@ public class SurfaceProcessorWithExecutor implements SurfaceProcessorInternal {
 
     @Override
     public void onInputSurface(@NonNull SurfaceRequest request) {
-        mExecutor.execute(() -> mSurfaceProcessor.onInputSurface(request));
+        mExecutor.execute(() -> {
+            try {
+                mSurfaceProcessor.onInputSurface(request);
+            } catch (ProcessingException e) {
+                Logger.e(TAG, "Failed to setup SurfaceProcessor input.", e);
+                mErrorListener.accept(e);
+            }
+        });
     }
 
     @Override
     public void onOutputSurface(@NonNull SurfaceOutput surfaceOutput) {
-        mExecutor.execute(() -> mSurfaceProcessor.onOutputSurface(surfaceOutput));
+        mExecutor.execute(() -> {
+            try {
+                mSurfaceProcessor.onOutputSurface(surfaceOutput);
+            } catch (ProcessingException e) {
+                Logger.e(TAG, "Failed to setup SurfaceProcessor output.", e);
+                mErrorListener.accept(e);
+            }
+        });
+    }
+
+    @NonNull
+    @Override
+    public ListenableFuture<Void> snapshot(
+            @IntRange(from = 0, to = 100) int jpegQuality,
+            @IntRange(from = 0, to = 359) int rotationDegrees) {
+        return immediateFailedFuture(
+                new Exception("Snapshot not supported by external SurfaceProcessor"));
     }
 
     @Override

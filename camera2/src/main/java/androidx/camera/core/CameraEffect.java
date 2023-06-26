@@ -15,48 +15,90 @@
  */
 package androidx.camera.core;
 
-import static androidx.core.util.Preconditions.checkState;
+import static androidx.camera.core.impl.ImageFormatConstants.INTERNAL_DEFINED_IMAGE_FORMAT_PRIVATE;
+import static androidx.camera.core.processing.TargetUtils.checkSupportedTargets;
+import static androidx.core.util.Preconditions.checkArgument;
 
-import android.os.Build;
+import android.graphics.ImageFormat;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
+import androidx.camera.core.processing.SurfaceProcessorInternal;
+import androidx.camera.core.processing.SurfaceProcessorWithExecutor;
+import androidx.core.util.Consumer;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 /**
- * A CameraX post-processing effects.
+ * An effect for one or multiple camera outputs.
  *
- * <p>A {@link CameraEffect} class contains two types of information, the processor and the
- * configuration.
+ * <p>This API allows the implementer to inject code into CameraX pipeline and apply visual
+ * effects, such as a portrait effect. The {@link CameraEffect} class contains two types of
+ * information, the processor and the configuration.
  * <ul>
- * <li> The processor is an implementation of a CameraX interface e.g. {@link SurfaceProcessor}.
- * It consumes original camera frames from CameraX, applies the effect, and returns the processed
- * frames back to CameraX.
- * <li> The configuration provides information on how the processor should be injected into the
- * CameraX pipeline. For example, the target {@link UseCase}s where the effect should be applied.
+ * <li>The processor is an implementation of either {@link SurfaceProcessor} or
+ * {@link ImageProcessor}. It consumes original camera frames from CameraX, applies the effect,
+ * and returns the processed frames back to CameraX.
+ * <li>The configuration provides information on how the processor should be injected into the
+ * pipeline. For example, the target {@link UseCase}s where the effect should be applied. It may
+ * also contain information about camera configuration. For example, the exposure level.
  * </ul>
  *
- * @hide
+ * <p>If CameraX fails to send frames to the {@link CameraEffect}, the error will be
+ * delivered to the app via error callbacks such as
+ * {@link ImageCapture.OnImageCapturedCallback#onError}. If {@link CameraEffect} fails to
+ * process and return the frames, for example, unable to allocate the resources for image
+ * processing, it must throw {@link Throwable} in the processor implementation. The
+ * {@link Throwable} will be caught and forwarded to the app via error callbacks. Please see the
+ * Javadoc of the processor interfaces for details.
+ *
+ * <p>Extend this class to create specific effects. The {@link Executor} provided in the
+ * constructors will be used by CameraX to call the processors.
+ *
+ * <p>Code sample for a portrait effect that targets the {@link Preview} {@link UseCase}:
+ *
+ * <pre><code>
+ * class PortraitPreviewEffect extends CameraEffect {
+ *     PortraitPreviewEffect() {
+ *         super(PREVIEW, getExecutor(), getSurfaceProcessor());
+ *     }
+ *
+ *     private static Executor getExecutor() {
+ *         // Returns an executor for calling the SurfaceProcessor
+ *     }
+ *
+ *     private static SurfaceProcessor getSurfaceProcessor() {
+ *         // Return a SurfaceProcessor implementation that applies a portrait effect.
+ *     }
+ * }
+ * </code></pre>
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class CameraEffect {
+@RequiresApi(21)
+public abstract class CameraEffect {
 
     /**
      * Bitmask options for the effect targets.
-     *
-     * @hide
      */
     @Retention(RetentionPolicy.SOURCE)
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @IntDef(flag = true, value = {PREVIEW, VIDEO_CAPTURE, IMAGE_CAPTURE})
     public @interface Targets {
+    }
+
+    /**
+     * Bitmask options for the effect targets.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @IntDef(flag = true, value = {INTERNAL_DEFINED_IMAGE_FORMAT_PRIVATE, ImageFormat.JPEG})
+    public @interface Formats {
     }
 
     /**
@@ -74,43 +116,85 @@ public class CameraEffect {
      */
     public static final int IMAGE_CAPTURE = 1 << 2;
 
+    // Allowed targets for SurfaceProcessor
+    private static final List<Integer> SURFACE_PROCESSOR_TARGETS = Arrays.asList(
+            PREVIEW,
+            VIDEO_CAPTURE,
+            PREVIEW | VIDEO_CAPTURE,
+            PREVIEW | VIDEO_CAPTURE | IMAGE_CAPTURE);
+
     @Targets
     private final int mTargets;
     @NonNull
-    private final Executor mProcessorExecutor;
+    private final Executor mExecutor;
     @Nullable
     private final SurfaceProcessor mSurfaceProcessor;
     @Nullable
     private final ImageProcessor mImageProcessor;
+    @NonNull
+    private final Consumer<Throwable> mErrorListener;
 
     /**
-     * @param targets           the target {@link UseCase} to which this effect should be applied.
-     * @param processorExecutor the {@link Executor} on which the processor will be invoked.
-     * @param imageProcessor    a {@link ImageProcessor} implementation.
+     * @param targets        the target {@link UseCase} to which this effect should be applied.
+     *                       Currently, {@link ImageProcessor} can only target
+     *                       {@link #IMAGE_CAPTURE}. Targeting other {@link UseCase} will throw
+     *                       {@link IllegalArgumentException}.
+     * @param executor       the {@link Executor} on which the {@param imageProcessor} and
+     *                       {@param errorListener} will be invoked.
+     * @param imageProcessor a {@link ImageProcessor} implementation. Once the effect is active,
+     *                       CameraX will send frames to the {@link ImageProcessor} on the
+     *                       {@param executor}, and deliver the processed frames to the app.
+     * @param errorListener  invoked if the effect runs into unrecoverable errors. This is
+     *                       invoked on the provided {@param executor}.
      */
     protected CameraEffect(
             @Targets int targets,
-            @NonNull Executor processorExecutor,
-            @NonNull ImageProcessor imageProcessor) {
+            @NonNull Executor executor,
+            @NonNull ImageProcessor imageProcessor,
+            @NonNull Consumer<Throwable> errorListener) {
+        checkArgument(targets == IMAGE_CAPTURE,
+                "Currently ImageProcessor can only target IMAGE_CAPTURE.");
         mTargets = targets;
-        mProcessorExecutor = processorExecutor;
+        mExecutor = executor;
         mSurfaceProcessor = null;
         mImageProcessor = imageProcessor;
+        mErrorListener = errorListener;
     }
 
     /**
-     * @param targets           the target {@link UseCase} to which this effect should be applied.
-     * @param processorExecutor the {@link Executor} on which the processor will be invoked.
-     * @param surfaceProcessor  a {@link SurfaceProcessor} implementation.
+     * @param targets          the target {@link UseCase} to which this effect should be applied.
+     *                         Currently {@link SurfaceProcessor} can target the following
+     *                         combinations:
+     *                         <ul>
+     *                         <li>{@link #PREVIEW}
+     *                         <li>{@link #PREVIEW} | {@link #VIDEO_CAPTURE}
+     *                         <li>{@link #PREVIEW} | {@link #VIDEO_CAPTURE} |
+     *                         {@link #IMAGE_CAPTURE}
+     *                         </ul>
+     *                         Targeting other {@link UseCase} combinations will throw
+     *                         {@link IllegalArgumentException}.
+     * @param executor         the {@link Executor} on which the {@param imageProcessor} and
+     *                         {@param errorListener} will be invoked.
+     * @param surfaceProcessor a {@link SurfaceProcessor} implementation. Once the effect is
+     *                         active, CameraX will send frames to the {@link SurfaceProcessor}
+     *                         on the {@param executor}, and deliver the processed frames to the
+     *                         app.
+     * @param errorListener    invoked if the effect runs into unrecoverable errors. The
+     *                         {@link Throwable} will be the error thrown by this
+     *                         {@link CameraEffect}. For example, {@link ProcessingException}.
+     *                         This is invoked on the provided {@param executor}.
      */
     protected CameraEffect(
             @Targets int targets,
-            @NonNull Executor processorExecutor,
-            @NonNull SurfaceProcessor surfaceProcessor) {
+            @NonNull Executor executor,
+            @NonNull SurfaceProcessor surfaceProcessor,
+            @NonNull Consumer<Throwable> errorListener) {
+        checkSupportedTargets(SURFACE_PROCESSOR_TARGETS, targets);
         mTargets = targets;
-        mProcessorExecutor = processorExecutor;
+        mExecutor = executor;
         mSurfaceProcessor = surfaceProcessor;
         mImageProcessor = null;
+        mErrorListener = errorListener;
     }
 
     /**
@@ -122,19 +206,28 @@ public class CameraEffect {
     }
 
     /**
-     * Gets the {@link Executor} for calling processors.
+     * Gets the {@link Executor} associated with this effect.
      *
-     * <p>This method returns the value set via {@link Builder#setSurfaceProcessor}.
+     * <p>This method returns the value set in the constructor.
      */
     @NonNull
-    public Executor getProcessorExecutor() {
-        return mProcessorExecutor;
+    public Executor getExecutor() {
+        return mExecutor;
+    }
+
+    /**
+     * Gets the Error listener associated with this effect.
+     *
+     * <p>This method returns the value set in the constructor. The {@link Throwable} will be the
+     * error thrown by this {@link CameraEffect}. For example, {@link ProcessingException}.
+     */
+    @NonNull
+    public Consumer<Throwable> getErrorListener() {
+        return mErrorListener;
     }
 
     /**
      * Gets the {@link SurfaceProcessor} associated with this effect.
-     *
-     * <p>This method returns the value set via {@link Builder#setSurfaceProcessor}.
      */
     @Nullable
     public SurfaceProcessor getSurfaceProcessor() {
@@ -143,95 +236,24 @@ public class CameraEffect {
 
     /**
      * Gets the {@link ImageProcessor} associated with this effect.
-     *
-     * <p>This method returns the value set via {@link Builder#setImageProcessor}.
      */
     @Nullable
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public ImageProcessor getImageProcessor() {
         return mImageProcessor;
     }
 
+    // --- Internal methods ---
+
     /**
-     * Builder class for {@link CameraEffect}.
+     * Creates a {@link SurfaceProcessorInternal} instance.
+     *
+     * <p>Throws {@link IllegalArgumentException} if the effect does not contain a
+     * {@link SurfaceProcessor}.
      */
-    public static class Builder {
-        @Targets
-        private final int mTargets;
-        @Nullable
-        private Executor mProcessorExecutor;
-        @Nullable
-        private SurfaceProcessor mSurfaceProcessor;
-        @Nullable
-        private ImageProcessor mImageProcessor;
-
-        /**
-         * @param targets the target {@link UseCase} of the Effect. e.g. if the
-         *                value is {@link #PREVIEW}, CameraX will apply the effect to
-         *                {@link Preview}.
-         */
-        public Builder(@Targets int targets) {
-            mTargets = targets;
-        }
-
-        /**
-         * Sets a {@link SurfaceProcessor} for the effect.
-         *
-         * <p>Once the effect is active, CameraX will send original camera frames to the
-         * {@link SurfaceProcessor} on the {@link Executor}, and deliver the processed output
-         * frames to the app.
-         *
-         * <p>Only one processor can be set via {@code #setImageProcessor()} /
-         * {@code #setSurfaceProcessor}, or the {@link #build()} call will throw error.
-         *
-         * @param executor  on which the {@link SurfaceProcessor} will be invoked.
-         * @param processor the post processor to be injected into CameraX pipeline.
-         */
-        @NonNull
-        public Builder setSurfaceProcessor(@NonNull Executor executor,
-                @NonNull SurfaceProcessor processor) {
-            mProcessorExecutor = executor;
-            mSurfaceProcessor = processor;
-            return this;
-        }
-
-        /**
-         * Sets a {@link ImageProcessor} for the effect.
-         *
-         * <p>Once the effect is active, CameraX will send original camera frames to the
-         * {@link ImageProcessor} on the {@link Executor}, and deliver the processed output
-         * frames to the app.
-         *
-         * <p>Only one processor can be set via {@code #setImageProcessor()} /
-         * {@code #setSurfaceProcessor}, or the {@link #build()} call will throw error.
-         *
-         * @param executor  on which the {@link ImageProcessor} will be invoked.
-         * @param processor the post processor to be injected into CameraX pipeline.
-         */
-        @NonNull
-        public Builder setImageProcessor(@NonNull Executor executor,
-                @NonNull ImageProcessor processor) {
-            mProcessorExecutor = executor;
-            mImageProcessor = processor;
-            return this;
-        }
-
-        /**
-         * Builds a {@link CameraEffect} instance.
-         *
-         * <p>CameraX supports a selected set of configuration/processor combinations. This method
-         * throws a {@link UnsupportedOperationException} if the current combination is not
-         * supported.
-         */
-        @NonNull
-        public CameraEffect build() {
-            checkState(mProcessorExecutor != null, "Must have a executor");
-            checkState(mImageProcessor != null ^ mSurfaceProcessor != null,
-                    "Must have one and only one processor");
-            if (mSurfaceProcessor != null) {
-                return new CameraEffect(mTargets, mProcessorExecutor, mSurfaceProcessor);
-            } else {
-                return new CameraEffect(mTargets, mProcessorExecutor, mImageProcessor);
-            }
-        }
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @NonNull
+    public SurfaceProcessorInternal createSurfaceProcessorInternal() {
+        return new SurfaceProcessorWithExecutor(this);
     }
 }

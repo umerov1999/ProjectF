@@ -58,7 +58,7 @@
                 android:layout_marginStart="2dp"
                 android:layout_toEndOf="@id/vk_photo_item_like"
                 android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                android:textColor="@android:color/white"
+                android:textColor="#ffffff"
                 tools:text="4000" />
 
             <TextView
@@ -68,7 +68,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                android:textColor="@android:color/white"
+                android:textColor="#ffffff"
                 tools:text="1.5K" />
 
             <ImageView

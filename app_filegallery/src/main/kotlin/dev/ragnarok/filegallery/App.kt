@@ -9,6 +9,7 @@ import dev.ragnarok.filegallery.activity.crash.CrashUtils
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.settings.Settings
+import dev.ragnarok.filegallery.util.Camera2ImageProcessingUtil
 import dev.ragnarok.filegallery.util.ErrorLocalizer
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.existfile.FileExistJVM

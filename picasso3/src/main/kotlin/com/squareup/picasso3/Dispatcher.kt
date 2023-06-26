@@ -17,17 +17,14 @@ package com.squareup.picasso3
 
 import android.Manifest.permission.ACCESS_NETWORK_STATE
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.net.ConnectivityManager
-import android.net.ConnectivityManager.CONNECTIVITY_ACTION
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.*
-import android.os.Process.THREAD_PRIORITY_BACKGROUND
+import android.os.Build
+import android.os.Handler
+import androidx.annotation.CallSuper
 import com.squareup.picasso3.BitmapHunter.Companion.forRequest
 import com.squareup.picasso3.MemoryPolicy.Companion.shouldWriteToMemoryCache
 import com.squareup.picasso3.NetworkPolicy.NO_CACHE
@@ -42,15 +39,14 @@ import com.squareup.picasso3.Utils.VERB_IGNORED
 import com.squareup.picasso3.Utils.VERB_PAUSED
 import com.squareup.picasso3.Utils.VERB_REPLAYING
 import com.squareup.picasso3.Utils.VERB_RETRYING
-import com.squareup.picasso3.Utils.flushStackLocalLeaks
 import com.squareup.picasso3.Utils.getLogIdsForHunter
 import com.squareup.picasso3.Utils.hasPermission
 import com.squareup.picasso3.Utils.log
 import java.util.WeakHashMap
 import java.util.concurrent.ExecutorService
 
-internal class Dispatcher internal constructor(
-    private val context: Context,
+internal abstract class Dispatcher internal constructor(
+    context: Context,
     @get:JvmName("-service") internal val service: ExecutorService,
     private val mainThreadHandler: Handler,
     private val cache: PlatformLruCache
@@ -67,38 +63,39 @@ internal class Dispatcher internal constructor(
     @get:JvmName("-pausedTags")
     internal val pausedTags = mutableSetOf<Any>()
 
-    @get:JvmName("-receiver")
-    internal val receiver: NetworkBroadcastReceiver?
+    private var scansNetworkChanges: Boolean = false
 
-    @get:JvmName("-receiverPostM")
-    internal val receiverPostM: NetworkBroadcastReceiverPostM?
+    private val connectivityManager: ConnectivityManager? = if (hasPermission(
+            context,
+            ACCESS_NETWORK_STATE
+        )
+    ) context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager? else null
 
-    private val dispatcherThread: DispatcherThread
-    private val handler: Handler
-    internal val scansNetworkChanges: Boolean
+    private var networkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            dispatchNetworkStateChange(true)
+        }
 
-    init {
-        dispatcherThread = DispatcherThread()
-        dispatcherThread.start()
-        val dispatcherThreadLooper = dispatcherThread.looper
-        flushStackLocalLeaks(dispatcherThreadLooper)
-        handler = DispatcherHandler(dispatcherThreadLooper, this)
-        scansNetworkChanges = hasPermission(context, ACCESS_NETWORK_STATE)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            receiver = NetworkBroadcastReceiver(this)
-            receiver?.register()
-            receiverPostM = null
-        } else {
-            receiver = null
-            receiverPostM = NetworkBroadcastReceiverPostM(this)
-            receiverPostM?.register()
+        override fun onLost(network: Network) {
+            dispatchNetworkStateChange(false)
+        }
+    }
+
+    protected fun registerNetworkCallback() {
+        scansNetworkChanges = connectivityManager != null
+
+        if (scansNetworkChanges) {
+            connectivityManager?.registerNetworkCallback(
+                NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                    .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                    .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET).build(),
+                networkCallback
+            )
         }
     }
 
     @Suppress("DEPRECATION")
-    internal fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+    private fun isNetworkAvailable(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val nw = connectivityManager?.activeNetwork ?: return false
             val actNw = connectivityManager.getNetworkCapabilities(nw)
@@ -110,51 +107,33 @@ internal class Dispatcher internal constructor(
         }
     }
 
-    fun shutdown() {
+    protected fun finalize() {
+        shutdown()
+    }
+
+    @CallSuper
+    open fun shutdown() {
         // Shutdown the thread pool only if it is the one created by Picasso.
         (service as? PicassoExecutorService)?.shutdown()
-        dispatcherThread.quit()
         // Unregister network broadcast receiver on the main thread.
-        Picasso.HANDLER.post {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                receiver?.unregister()
-            } else {
-                receiverPostM?.unregister()
-            }
-        }
+        connectivityManager?.unregisterNetworkCallback(networkCallback)
     }
 
-    fun dispatchSubmit(action: Action) {
-        handler.sendMessage(handler.obtainMessage(REQUEST_SUBMIT, action))
-    }
+    abstract fun dispatchSubmit(action: Action)
 
-    fun dispatchCancel(action: Action) {
-        handler.sendMessage(handler.obtainMessage(REQUEST_CANCEL, action))
-    }
+    abstract fun dispatchCancel(action: Action)
 
-    fun dispatchPauseTag(tag: Any) {
-        handler.sendMessage(handler.obtainMessage(TAG_PAUSE, tag))
-    }
+    abstract fun dispatchPauseTag(tag: Any)
 
-    fun dispatchResumeTag(tag: Any) {
-        handler.sendMessage(handler.obtainMessage(TAG_RESUME, tag))
-    }
+    abstract fun dispatchResumeTag(tag: Any)
 
-    fun dispatchComplete(hunter: BitmapHunter) {
-        handler.sendMessage(handler.obtainMessage(HUNTER_COMPLETE, hunter))
-    }
+    abstract fun dispatchComplete(hunter: BitmapHunter)
 
-    fun dispatchRetry(hunter: BitmapHunter) {
-        handler.sendMessageDelayed(handler.obtainMessage(HUNTER_RETRY, hunter), RETRY_DELAY)
-    }
+    abstract fun dispatchRetry(hunter: BitmapHunter)
 
-    fun dispatchFailed(hunter: BitmapHunter) {
-        handler.sendMessage(handler.obtainMessage(HUNTER_DECODE_FAILED, hunter))
-    }
+    abstract fun dispatchFailed(hunter: BitmapHunter)
 
-    fun dispatchNetworkStateChange(hasNetwork: Boolean) {
-        handler.sendMessage(handler.obtainMessage(NETWORK_STATE_CHANGE, hasNetwork))
-    }
+    abstract fun dispatchNetworkStateChange(hasNetwork: Boolean)
 
     fun performSubmit(action: Action, dismissFailed: Boolean = true) {
         if (action.tag in pausedTags) {
@@ -335,7 +314,8 @@ internal class Dispatcher internal constructor(
             performError(hunter)
             return
         }
-        if (hunter.shouldRetry(!scansNetworkChanges || isNetworkAvailable(context))) {
+
+        if (hunter.shouldRetry(scansNetworkChanges && isNetworkAvailable())) {
             if (hunter.picasso.isLoggingEnabled) {
                 log(
                     owner = OWNER_DISPATCHER,
@@ -449,144 +429,9 @@ internal class Dispatcher internal constructor(
         }
     }
 
-    private class DispatcherHandler(
-        looper: Looper,
-        private val dispatcher: Dispatcher
-    ) : Handler(looper) {
-        override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                REQUEST_SUBMIT -> {
-                    val action = msg.obj as Action
-                    dispatcher.performSubmit(action)
-                }
-
-                REQUEST_CANCEL -> {
-                    val action = msg.obj as Action
-                    dispatcher.performCancel(action)
-                }
-
-                TAG_PAUSE -> {
-                    val tag = msg.obj
-                    dispatcher.performPauseTag(tag)
-                }
-
-                TAG_RESUME -> {
-                    val tag = msg.obj
-                    dispatcher.performResumeTag(tag)
-                }
-
-                HUNTER_COMPLETE -> {
-                    val hunter = msg.obj as BitmapHunter
-                    dispatcher.performComplete(hunter)
-                }
-
-                HUNTER_RETRY -> {
-                    val hunter = msg.obj as BitmapHunter
-                    dispatcher.performRetry(hunter)
-                }
-
-                HUNTER_DECODE_FAILED -> {
-                    val hunter = msg.obj as BitmapHunter
-                    dispatcher.performError(hunter)
-                }
-
-                NETWORK_STATE_CHANGE -> {
-                    val hasNetwork = msg.obj as Boolean
-                    dispatcher.performNetworkStateChange(hasNetwork)
-                }
-
-                else -> {
-                    Picasso.HANDLER.post {
-                        throw AssertionError("Unknown handler message received: ${msg.what}")
-                    }
-                }
-            }
-        }
-    }
-
-    internal class DispatcherThread : HandlerThread(
-        Utils.THREAD_PREFIX + DISPATCHER_THREAD_NAME,
-        THREAD_PRIORITY_BACKGROUND
-    )
-
-    inner class NetworkBroadcastReceiverPostM(private val dispatcher: Dispatcher) {
-        private var connectivityManager: ConnectivityManager? = null
-        private var networkCallback: ConnectivityManager.NetworkCallback? = null
-        fun register() {
-            if (!dispatcher.scansNetworkChanges) {
-                return
-            }
-            connectivityManager =
-                dispatcher.context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
-            if (connectivityManager != null) {
-                networkCallback = object : ConnectivityManager.NetworkCallback() {
-                    override fun onAvailable(network: Network) {
-                        dispatcher.dispatchNetworkStateChange(isNetworkAvailable(dispatcher.context))
-                    }
-
-                    override fun onLost(network: Network) {
-                        dispatcher.dispatchNetworkStateChange(isNetworkAvailable(dispatcher.context))
-                    }
-                }
-                val networkRequest =
-                    NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                        .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-                        .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
-                connectivityManager?.registerNetworkCallback(
-                    networkRequest.build(),
-                    networkCallback!!
-                )
-            }
-        }
-
-        fun unregister() {
-            networkCallback?.let {
-                connectivityManager?.unregisterNetworkCallback(it)
-            }
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    inner class NetworkBroadcastReceiver(
-        private val dispatcher: Dispatcher
-    ) : BroadcastReceiver() {
-        fun register() {
-            if (dispatcher.scansNetworkChanges) {
-                val filter = IntentFilter()
-                filter.addAction(CONNECTIVITY_ACTION)
-                dispatcher.context.registerReceiver(this, filter)
-            }
-        }
-
-        fun unregister() {
-            dispatcher.context.unregisterReceiver(this)
-        }
-
-        @SuppressLint("MissingPermission")
-        override fun onReceive(context: Context, intent: Intent?) {
-            // On some versions of Android this may be called with a null Intent,
-            // also without extras (getExtras() == null), in such case we use defaults.
-            if (intent == null) {
-                return
-            }
-            val action = intent.action
-            if (CONNECTIVITY_ACTION == action) {
-                dispatcher.dispatchNetworkStateChange(isNetworkAvailable(context))
-            }
-        }
-    }
-
     internal companion object {
-        private const val RETRY_DELAY = 500L
-        private const val REQUEST_SUBMIT = 1
-        private const val REQUEST_CANCEL = 2
-        const val HUNTER_COMPLETE = 4
-        private const val HUNTER_RETRY = 5
-        private const val HUNTER_DECODE_FAILED = 6
-        const val NETWORK_STATE_CHANGE = 9
-        private const val TAG_PAUSE = 10
-        private const val TAG_RESUME = 11
-        const val REQUEST_BATCH_RESUME = 12
-        private const val DISPATCHER_THREAD_NAME = "Dispatcher"
+        const val HUNTER_COMPLETE = 1
+        const val NETWORK_STATE_CHANGE = 2
+        const val REQUEST_BATCH_RESUME = 3
     }
 }

@@ -97,6 +97,13 @@ object AppPerms {
         ) == PermissionChecker.PERMISSION_GRANTED
     }
 
+    fun hasAccessNetworkStatePermission(context: Context): Boolean {
+        return if (!Utils.hasMarshmallow()) true else PermissionChecker.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_NETWORK_STATE
+        ) == PermissionChecker.PERMISSION_GRANTED
+    }
+
     inline fun <reified T : Fragment> T.requestPermissionsAbs(
         permissions: Array<String>,
         crossinline granted: () -> Unit

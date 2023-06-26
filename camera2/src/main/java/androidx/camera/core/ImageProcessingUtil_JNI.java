@@ -1,5 +1,6 @@
 package androidx.camera.core;
 
+import android.graphics.Bitmap;
 import android.view.Surface;
 
 import androidx.annotation.NonNull;
@@ -9,6 +10,25 @@ import androidx.camera.core.impl.ImageOutputConfig;
 import java.nio.ByteBuffer;
 
 public interface ImageProcessingUtil_JNI {
+    int nativeConvertAndroid420ToBitmap(
+            @NonNull ByteBuffer srcByteBufferY,
+            int srcStrideY,
+            @NonNull ByteBuffer srcByteBufferU,
+            int srcStrideU,
+            @NonNull ByteBuffer srcByteBufferV,
+            int srcStrideV,
+            int srcPixelStrideY,
+            int srcPixelStrideUV,
+            @NonNull Bitmap bitmap,
+            int bitmapStride,
+            int width,
+            int height);
+
+    int nativeCopyBetweenByteBufferAndBitmap(@NonNull Bitmap bitmap,
+                                             @NonNull ByteBuffer byteBuffer,
+                                             int sourceStride, int destinationStride, int width, int height,
+                                             boolean isCopyBufferToBitmap);
+
     int nativeWriteJpegToSurface(@NonNull byte[] jpegArray,
                                  @NonNull Surface surface);
 

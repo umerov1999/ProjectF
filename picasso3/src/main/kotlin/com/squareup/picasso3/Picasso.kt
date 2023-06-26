@@ -55,7 +55,7 @@ import java.util.concurrent.ExecutorService
 /**
  * Image downloading, transformation, and caching manager.
  *
- * Use [PicassoProvider.get] for a global singleton instance
+ * Use PicassoProvider.get for a global singleton instance
  * or construct your own instance with [Picasso.Builder].
  */
 class Picasso internal constructor(
@@ -648,7 +648,7 @@ class Picasso internal constructor(
                 service = PicassoExecutorService()
             }
 
-            val dispatcher = Dispatcher(context, service!!, HANDLER, cache!!)
+            val dispatcher = HandlerDispatcher(context, service!!, HANDLER, cache!!)
 
             return Picasso(
                 context, dispatcher, callFactory!!, unsharedCache, cache!!, listener,

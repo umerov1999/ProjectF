@@ -17,6 +17,7 @@
 package androidx.camera.core.imagecapture;
 
 import static androidx.camera.core.CaptureBundles.singleDefaultCaptureBundle;
+import static androidx.camera.core.impl.ImageCaptureConfig.OPTION_BUFFER_FORMAT;
 import static androidx.camera.core.impl.utils.Threads.checkMainThread;
 import static androidx.camera.core.impl.utils.TransformUtils.hasCropping;
 
@@ -29,10 +30,14 @@ import android.util.Size;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+import androidx.camera.core.CameraEffect;
 import androidx.camera.core.ForwardingImageProxy;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.MetadataImageReader;
 import androidx.camera.core.impl.CaptureBundle;
 import androidx.camera.core.impl.CaptureConfig;
 import androidx.camera.core.impl.CaptureStage;
@@ -40,7 +45,10 @@ import androidx.camera.core.impl.ImageCaptureConfig;
 import androidx.camera.core.impl.SessionConfig;
 import androidx.camera.core.impl.utils.executor.CameraXExecutors;
 import androidx.camera.core.internal.compat.workaround.ExifRotationAvailability;
+import androidx.camera.core.processing.InternalImageProcessor;
 import androidx.core.util.Pair;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,9 +86,20 @@ public class ImagePipeline {
     // ===== public methods =====
 
     @MainThread
+    @VisibleForTesting
     public ImagePipeline(
             @NonNull ImageCaptureConfig useCaseConfig,
             @NonNull Size cameraSurfaceSize) {
+        this(useCaseConfig, cameraSurfaceSize, /*cameraEffect=*/ null,
+                /*isVirtualCamera=*/ false);
+    }
+
+    @MainThread
+    public ImagePipeline(
+            @NonNull ImageCaptureConfig useCaseConfig,
+            @NonNull Size cameraSurfaceSize,
+            @Nullable CameraEffect cameraEffect,
+            boolean isVirtualCamera) {
         checkMainThread();
         mUseCaseConfig = useCaseConfig;
         mCaptureConfig = CaptureConfig.Builder.createFrom(useCaseConfig).build();
@@ -89,10 +108,16 @@ public class ImagePipeline {
         mCaptureNode = new CaptureNode();
         mBundlingNode = new SingleBundlingNode();
         mProcessingNode = new ProcessingNode(
-                requireNonNull(mUseCaseConfig.getIoExecutor(CameraXExecutors.ioExecutor())));
+                requireNonNull(mUseCaseConfig.getIoExecutor(CameraXExecutors.ioExecutor())),
+                cameraEffect != null ? new InternalImageProcessor(cameraEffect) : null);
 
         // Connect nodes
-        mPipelineIn = CaptureNode.In.of(cameraSurfaceSize, mUseCaseConfig.getInputFormat());
+        mPipelineIn = CaptureNode.In.of(
+                cameraSurfaceSize,
+                mUseCaseConfig.getInputFormat(),
+                getOutputFormat(),
+                isVirtualCamera,
+                mUseCaseConfig.getImageReaderProxyProvider());
         CaptureNode.Out captureOut = mCaptureNode.transform(mPipelineIn);
         ProcessingNode.In processingIn = mBundlingNode.transform(captureOut);
         mProcessingNode.transform(processingIn);
@@ -102,8 +127,9 @@ public class ImagePipeline {
      * Creates a {@link SessionConfig.Builder} for configuring camera.
      */
     @NonNull
-    public SessionConfig.Builder createSessionConfigBuilder() {
-        SessionConfig.Builder builder = SessionConfig.Builder.createFrom(mUseCaseConfig);
+    public SessionConfig.Builder createSessionConfigBuilder(@NonNull Size resolution) {
+        SessionConfig.Builder builder = SessionConfig.Builder.createFrom(mUseCaseConfig,
+                resolution);
         builder.addNonRepeatingSurface(mPipelineIn.getSurface());
         return builder;
     }
@@ -133,6 +159,7 @@ public class ImagePipeline {
 
     /**
      * Sets a listener for close calls on this image.
+     *
      * @param listener to set
      */
     @MainThread
@@ -151,12 +178,16 @@ public class ImagePipeline {
      * <p>{@link ImagePipeline} creates two requests from {@link TakePictureRequest}: 1) a
      * request sent for post-processing pipeline and 2) a request for camera. The camera request
      * is returned to the caller, and the post-processing request is handled by this class.
+     *
+     * @param captureFuture used to monitor the events when the request is terminated due to
+     *                      capture failure or abortion.
      */
     @MainThread
     @NonNull
     Pair<CameraRequest, ProcessingRequest> createRequests(
             @NonNull TakePictureRequest takePictureRequest,
-            @NonNull TakePictureCallback takePictureCallback) {
+            @NonNull TakePictureCallback takePictureCallback,
+            @NonNull ListenableFuture<Void> captureFuture) {
         checkMainThread();
         CaptureBundle captureBundle = createCaptureBundle();
         return new Pair<>(
@@ -167,16 +198,33 @@ public class ImagePipeline {
                 createProcessingRequest(
                         captureBundle,
                         takePictureRequest,
-                        takePictureCallback));
+                        takePictureCallback,
+                        captureFuture));
     }
 
     @MainThread
-    void postProcess(@NonNull ProcessingRequest request) {
+    void submitProcessingRequest(@NonNull ProcessingRequest request) {
         checkMainThread();
         mPipelineIn.getRequestEdge().accept(request);
     }
 
+    @MainThread
+    void notifyCaptureError(@NonNull ImageCaptureException e) {
+        checkMainThread();
+        mPipelineIn.getErrorEdge().accept(e);
+    }
+
     // ===== private methods =====
+
+    private int getOutputFormat() {
+        Integer bufferFormat = mUseCaseConfig.retrieveOption(OPTION_BUFFER_FORMAT, null);
+        // Return the buffer format if it is set.
+        if (bufferFormat != null) {
+            return bufferFormat;
+        }
+        // By default, use JPEG format.
+        return ImageFormat.JPEG;
+    }
 
     @NonNull
     private CaptureBundle createCaptureBundle() {
@@ -187,7 +235,8 @@ public class ImagePipeline {
     private ProcessingRequest createProcessingRequest(
             @NonNull CaptureBundle captureBundle,
             @NonNull TakePictureRequest takePictureRequest,
-            @NonNull TakePictureCallback takePictureCallback) {
+            @NonNull TakePictureCallback takePictureCallback,
+            @NonNull ListenableFuture<Void> captureFuture) {
         return new ProcessingRequest(
                 captureBundle,
                 takePictureRequest.getOutputFileOptions(),
@@ -195,7 +244,8 @@ public class ImagePipeline {
                 takePictureRequest.getRotationDegrees(),
                 takePictureRequest.getJpegQuality(),
                 takePictureRequest.getSensorToBufferTransform(),
-                takePictureCallback);
+                takePictureCallback,
+                captureFuture);
     }
 
     private CameraRequest createCameraRequest(
@@ -216,7 +266,7 @@ public class ImagePipeline {
 
             // Only sets the JPEG rotation and quality for JPEG format. Some devices do not
             // handle these configs for non-JPEG images. See b/204375890.
-            if (mPipelineIn.getFormat() == ImageFormat.JPEG) {
+            if (mPipelineIn.getInputFormat() == ImageFormat.JPEG) {
                 if (EXIF_ROTATION_AVAILABILITY.isRotationOptionSupported()) {
                     builder.addImplementationOption(CaptureConfig.OPTION_ROTATION,
                             takePictureRequest.getRotationDegrees());
@@ -270,4 +320,19 @@ public class ImagePipeline {
         return mCaptureNode;
     }
 
+    @NonNull
+    @VisibleForTesting
+    ProcessingNode getProcessingNode() {
+        return mProcessingNode;
+    }
+
+
+    /**
+     * Returns true if the image reader is a {@link MetadataImageReader}.
+     */
+    @VisibleForTesting
+    public boolean expectsMetadata() {
+        return mCaptureNode.getSafeCloseImageReaderProxy().getImageReaderProxy()
+                instanceof MetadataImageReader;
+    }
 }

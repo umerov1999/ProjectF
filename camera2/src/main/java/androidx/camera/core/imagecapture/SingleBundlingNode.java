@@ -25,8 +25,12 @@ import android.os.Build;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.camera.core.ImageProxy;
+import androidx.camera.core.impl.utils.executor.CameraXExecutors;
+import androidx.camera.core.impl.utils.futures.FutureCallback;
+import androidx.camera.core.impl.utils.futures.Futures;
 
 /**
  * Matches {@link ProcessingRequest} with a single {@link ImageProxy}.
@@ -37,7 +41,7 @@ import androidx.camera.core.ImageProxy;
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 class SingleBundlingNode implements BundlingNode {
 
-    private ProcessingRequest mPendingRequest;
+    ProcessingRequest mPendingRequest;
     private ProcessingNode.In mOutputEdge;
 
     @NonNull
@@ -47,7 +51,8 @@ class SingleBundlingNode implements BundlingNode {
         captureNodeOut.getImageEdge().setListener(this::matchImageWithRequest);
         captureNodeOut.getRequestEdge().setListener(this::trackIncomingRequest);
         // Set up output edge.
-        mOutputEdge = ProcessingNode.In.of(captureNodeOut.getFormat());
+        mOutputEdge = ProcessingNode.In.of(captureNodeOut.getInputFormat(),
+                captureNodeOut.getOutputFormat());
         return mOutputEdge;
     }
 
@@ -64,6 +69,21 @@ class SingleBundlingNode implements BundlingNode {
         checkState(mPendingRequest == null,
                 "Already has an existing request.");
         mPendingRequest = request;
+
+        Futures.addCallback(request.getCaptureFuture(), new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(@Nullable Void result) {
+                // Do nothing
+            }
+
+            @Override
+            public void onFailure(@NonNull Throwable t) {
+                checkMainThread();
+                if (request == mPendingRequest) {
+                    mPendingRequest = null;
+                }
+            }
+        }, CameraXExecutors.directExecutor());
     }
 
     @MainThread
@@ -75,8 +95,7 @@ class SingleBundlingNode implements BundlingNode {
                         mPendingRequest.getTagBundleKey()));
         checkState(stageId == mPendingRequest.getStageIds().get(0));
 
-        mOutputEdge.getEdge().accept(
-                ProcessingNode.InputPacket.of(mPendingRequest, imageProxy));
+        mOutputEdge.getEdge().accept(ProcessingNode.InputPacket.of(mPendingRequest, imageProxy));
         mPendingRequest = null;
     }
 }

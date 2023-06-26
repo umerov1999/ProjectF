@@ -52,7 +52,7 @@ class AttachmentsViewBinder(
         PhotosViewHelper(mContext, attachmentsActionCallback)
     private val mAvatarTransformation: Transformation = CurrentTheme.createTransformationForAvatar()
     private val mActiveWaveFormColor: Int
-    private val mNoactiveWaveFormColor: Int
+    private val mNoActiveWaveFormColor: Int
     private val mVoiceSharedHolders: SharedHolders<VoiceHolder> = SharedHolders(true)
     private val mAttachmentsActionCallback: OnAttachmentsActionCallback?
     private val isNightSticker: Boolean
@@ -75,6 +75,7 @@ class AttachmentsViewBinder(
             safeSetVisibitity(containers.vgAudios, View.GONE)
             safeSetVisibitity(containers.vgVideos, View.GONE)
             safeSetVisibitity(containers.vgArticles, View.GONE)
+            safeSetVisibitity(containers.vgBigLinks, View.GONE)
             safeSetVisibitity(containers.vgDocs, View.GONE)
             safeSetVisibitity(containers.vgPhotos, View.GONE)
             safeSetVisibitity(containers.vgPosts, View.GONE)
@@ -85,6 +86,7 @@ class AttachmentsViewBinder(
             containers.vgAudios?.dispose()
         } else {
             displayArticles(attachments.articles, containers.vgArticles)
+            displayBigLinks(attachments.getBigLinks(), containers.vgBigLinks)
             containers.vgAudios?.displayAudios(
                 attachments.audios,
                 mAttachmentsActionCallback,
@@ -540,6 +542,7 @@ class AttachmentsViewBinder(
                     .setVgVideos(itemView.findViewById(R.id.video_attachments))
                     .setVgDocs(itemView.findViewById(R.id.docs_attachments))
                     .setVgArticles(itemView.findViewById(R.id.articles_attachments))
+                    .setVgBigLinks(itemView.findViewById(R.id.biglinks_attachments))
                     .setVgPhotos(itemView.findViewById(R.id.photo_attachments))
                     .setVgPosts(itemView.findViewById(R.id.posts_attachments))
                     .setVgStickers(itemView.findViewById(R.id.stickers_attachments))
@@ -656,6 +659,7 @@ class AttachmentsViewBinder(
                     .setVgVideos(attachmentsRoot.findViewById(R.id.video_attachments))
                     .setVgDocs(attachmentsRoot.findViewById(R.id.docs_attachments))
                     .setVgArticles(attachmentsRoot.findViewById(R.id.articles_attachments))
+                    .setVgBigLinks(attachmentsRoot.findViewById(R.id.biglinks_attachments))
                     .setVgPhotos(attachmentsRoot.findViewById(R.id.photo_attachments))
                     .setVgPosts(attachmentsRoot.findViewById(R.id.posts_attachments))
                     .setVoiceMessageRoot(attachmentsRoot.findViewById(R.id.voice_message_attachments))
@@ -878,6 +882,82 @@ class AttachmentsViewBinder(
         }
     }
 
+    private fun displayBigLinks(bigLinks: List<Link>?, root: ViewGroup?) {
+        if (bigLinks.isNullOrEmpty() || root == null) {
+            root?.visibility = View.GONE
+            return
+        }
+        root.visibility = View.VISIBLE
+        val i = bigLinks.size - root.childCount
+        for (j in 0 until i) {
+            root.addView(LayoutInflater.from(mContext).inflate(R.layout.item_big_link, root, false))
+        }
+        for (g in 0 until root.childCount) {
+            val itemView = root.getChildAt(g) as ViewGroup? ?: continue
+            if (g < bigLinks.size) {
+                val bigLink = bigLinks[g]
+                itemView.visibility = View.VISIBLE
+                itemView.tag = null
+                val ivPhoto = itemView.findViewById<ImageView>(R.id.item_big_link_image)
+                val ivTitle = itemView.findViewById<TextView>(R.id.item_big_link_title)
+                val ivCaption = itemView.findViewById<TextView>(R.id.item_big_link_caption)
+                val ivUrl = itemView.findViewById<TextView>(R.id.item_big_link_url)
+                val ivButton = itemView.findViewById<Button>(R.id.item_big_link_open)
+                if (bigLink.url.nonNullNoEmpty()) {
+                    ivButton.visibility = View.VISIBLE
+                    ivButton.setOnClickListener {
+                        bigLink.url.nonNullNoEmpty {
+                            mAttachmentsActionCallback?.onLinkOpen(bigLink)
+                        }
+                    }
+                } else {
+                    ivButton.visibility = View.GONE
+                }
+                var photo_url: String? = null
+                if (bigLink.photo != null) {
+                    photo_url = bigLink.photo?.getUrlForSize(
+                        PhotoSize.L,
+                        false
+                    )
+                }
+                if (photo_url != null) {
+                    ivPhoto.visibility = View.VISIBLE
+                    displayAvatar(ivPhoto, null, photo_url, Constants.PICASSO_TAG)
+                    ivPhoto.setOnLongClickListener {
+                        bigLink.photo?.let {
+                            val op = it
+                            if (op.sizes?.getL()?.url.nonNullNoEmpty()) {
+                                op.sizes?.setY(op.sizes?.getL())
+                                op.sizes?.setW(op.sizes?.getL())
+                            } else {
+                                op.sizes?.setY(op.sizes?.getK())
+                                op.sizes?.setW(op.sizes?.getK())
+                            }
+                            val temp = ArrayList(listOf(op))
+                            mAttachmentsActionCallback?.onPhotosOpen(temp, 0, false)
+                        }
+                        true
+                    }
+                } else ivPhoto.visibility = View.GONE
+                if (bigLink.title != null) {
+                    ivTitle.visibility = View.VISIBLE
+                    ivTitle.text = bigLink.title
+                } else ivTitle.visibility = View.GONE
+                if (bigLink.url != null) {
+                    ivUrl.visibility = View.VISIBLE
+                    ivUrl.text = bigLink.url
+                } else ivUrl.visibility = View.GONE
+                if (bigLink.caption != null) {
+                    ivCaption.visibility = View.VISIBLE
+                    ivCaption.text = bigLink.caption
+                } else ivCaption.visibility = View.GONE
+            } else {
+                itemView.visibility = View.GONE
+                itemView.tag = null
+            }
+        }
+    }
+
     private fun displayArticles(articles: List<Article>?, root: ViewGroup?) {
         if (articles.isNullOrEmpty() || root == null) {
             root?.visibility = View.GONE
@@ -901,7 +981,7 @@ class AttachmentsViewBinder(
                 val btFave = itemView.findViewById<ImageView>(R.id.item_article_to_fave)
                 val btShare = itemView.findViewById<ImageView>(R.id.item_article_share)
                 val ivButton = itemView.findViewById<Button>(R.id.item_article_read)
-                if (article.uRL != null) {
+                if (article.uRL.nonNullNoEmpty()) {
                     btFave.visibility = View.VISIBLE
                     btFave.setImageResource(if (article.isFavorite) R.drawable.favorite else R.drawable.star)
                     btFave.setOnClickListener {
@@ -1109,7 +1189,7 @@ class AttachmentsViewBinder(
 
         init {
             mWaveFormView.setActiveColor(mActiveWaveFormColor)
-            mWaveFormView.setNoactiveColor(mNoactiveWaveFormColor)
+            mWaveFormView.setNoactiveColor(mNoActiveWaveFormColor)
             mWaveFormView.setSectionCount(if (Utils.isLandscape(itemView.context)) 128 else 64)
             mWaveFormView.tag = generateHolderId()
             mButtonPlay = itemView.findViewById(R.id.item_voice_button_play)
@@ -1137,7 +1217,7 @@ class AttachmentsViewBinder(
     init {
         mAttachmentsActionCallback = attachmentsActionCallback
         mActiveWaveFormColor = CurrentTheme.getColorPrimary(mContext)
-        mNoactiveWaveFormColor = Utils.adjustAlpha(mActiveWaveFormColor, 0.5f)
+        mNoActiveWaveFormColor = Utils.adjustAlpha(mActiveWaveFormColor, 0.5f)
         isNightSticker =
             Settings.get().ui().isStickers_by_theme && Settings.get().ui().isDarkModeEnabled(
                 mContext

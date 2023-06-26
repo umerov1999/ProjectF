@@ -24,6 +24,8 @@ class AttachmentsHolder {
         private set
     var vgFriends: ViewGroup? = null
         private set
+    var vgBigLinks: ViewGroup? = null
+        private set
 
     fun setVgAudios(vgAudios: AudioContainer?): AttachmentsHolder {
         this.vgAudios = vgAudios
@@ -70,8 +72,12 @@ class AttachmentsHolder {
         return this
     }
 
-    companion object {
+    fun setVgBigLinks(vgBigLinks: ViewGroup?): AttachmentsHolder {
+        this.vgBigLinks = vgBigLinks
+        return this
+    }
 
+    companion object {
         fun forCopyPost(container: ViewGroup): AttachmentsHolder {
             val containers = AttachmentsHolder()
             containers.setVgStickers(container.findViewById(R.id.copy_history_stickers_attachments))
@@ -80,9 +86,9 @@ class AttachmentsHolder {
                 .setVgVideos(container.findViewById(R.id.copy_history_video_attachments))
                 .setVgDocs(container.findViewById(R.id.copy_history_docs_attachments))
                 .setVgArticles(container.findViewById(R.id.copy_history_articles_attachments))
+                .setVgBigLinks(container.findViewById(R.id.copy_history_biglinks_attachments))
             return containers
         }
-
 
         fun forPost(container: ViewGroup): AttachmentsHolder {
             val containers = AttachmentsHolder()
@@ -94,9 +100,9 @@ class AttachmentsHolder {
                 .setVgDocs(container.findViewById(R.id.post_docs_attachments))
                 .setVgFriends(container.findViewById(R.id.post_friends_attachments))
                 .setVgArticles(container.findViewById(R.id.post_articles_attachments))
+                .setVgBigLinks(container.findViewById(R.id.post_biglinks_attachments))
             return containers
         }
-
 
         fun forComment(container: ViewGroup): AttachmentsHolder {
             val containers = AttachmentsHolder()
@@ -106,6 +112,7 @@ class AttachmentsHolder {
                 .setVgVideos(container.findViewById(R.id.comments_video_attachments))
                 .setVgDocs(container.findViewById(R.id.comments_docs_attachments))
                 .setVgArticles(container.findViewById(R.id.comments_articles_attachments))
+                .setVgBigLinks(container.findViewById(R.id.comments_biglinks_attachments))
             return containers
         }
 
@@ -117,6 +124,7 @@ class AttachmentsHolder {
                 .setVgVideos(container.findViewById(R.id.feedback_video_attachments))
                 .setVgDocs(container.findViewById(R.id.feedback_docs_attachments))
                 .setVgArticles(container.findViewById(R.id.feedback_articles_attachments))
+                .setVgBigLinks(container.findViewById(R.id.feedback_biglinks_attachments))
             return containers
         }
     }

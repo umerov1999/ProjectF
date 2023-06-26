@@ -49,6 +49,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
         holder.description.text = video.description
         holder.videoLenght.text = Utils.BytesToSize(video.duration)
         val photoUrl = video.image
+        holder.image.visibility = if (photoUrl.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
         if (photoUrl.nonNullNoEmpty()) {
             with()
                 .load(photoUrl)

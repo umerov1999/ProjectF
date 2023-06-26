@@ -20,4 +20,5 @@
     <string name="ucrop_rotate">Паварот</string>
     <string name="ucrop_scale">Павелічэнне</string>
     <string name="ucrop_crop">Абрэзаць</string>
+    <string name="ucrop_hundred_percent">100\%</string>
 </resources>

@@ -33,7 +33,7 @@
 #define FIXPT_SIZE (1<<FIXPT_BITS)
 
 
-static bool _updateColorTable(SwFill* fill, const Fill* fdata, const SwSurface* surface, uint32_t opacity)
+static bool _updateColorTable(SwFill* fill, const Fill* fdata, const SwSurface* surface, uint8_t opacity)
 {
     if (!fill->ctable) {
         fill->ctable = static_cast<uint32_t*>(malloc(GRADIENT_STOP_SIZE * sizeof(uint32_t)));
@@ -46,13 +46,13 @@ static bool _updateColorTable(SwFill* fill, const Fill* fdata, const SwSurface* 
 
     auto pColors = colors;
 
-    auto a = (pColors->a * opacity) / 255;
+    auto a = MULTIPLY(pColors->a, opacity);
     if (a < 255) fill->translucent = true;
 
     auto r = pColors->r;
     auto g = pColors->g;
     auto b = pColors->b;
-    auto rgba = surface->blender.join(r, g, b, a);
+    auto rgba = surface->join(r, g, b, a);
 
     auto inc = 1.0f / static_cast<float>(GRADIENT_STOP_SIZE);
     auto pos = 1.5f * inc;
@@ -70,10 +70,10 @@ static bool _updateColorTable(SwFill* fill, const Fill* fdata, const SwSurface* 
         auto curr = colors + j;
         auto next = curr + 1;
         auto delta = 1.0f / (next->offset - curr->offset);
-        auto a2 = (next->a * opacity) / 255;
+        auto a2 = MULTIPLY(next->a, opacity);
         if (!fill->translucent && a2 < 255) fill->translucent = true;
 
-        auto rgba2 = surface->blender.join(next->r, next->g, next->b, a2);
+        auto rgba2 = surface->join(next->r, next->g, next->b, a2);
 
         while (pos < next->offset && i < GRADIENT_STOP_SIZE) {
             auto t = (pos - curr->offset) * delta;
@@ -246,13 +246,13 @@ void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
 
     if (opacity == 255) {
         for (uint32_t i = 0 ; i < len ; ++i, ++dst, cmp += csize) {
-            *dst = opAlphaBlend(_pixel(fill, sqrtf(det)), *dst, alpha(cmp));
+            *dst = opBlendNormal(_pixel(fill, sqrtf(det)), *dst, alpha(cmp));
             det += detFirstDerivative;
             detFirstDerivative += detSecondDerivative;
         }
     } else {
         for (uint32_t i = 0 ; i < len ; ++i, ++dst, cmp += csize) {
-            *dst = opAlphaBlend(_pixel(fill, sqrtf(det)), *dst, MULTIPLY(opacity, alpha(cmp)));
+            *dst = opBlendNormal(_pixel(fill, sqrtf(det)), *dst, MULTIPLY(opacity, alpha(cmp)));
             det += detFirstDerivative;
             detFirstDerivative += detSecondDerivative;
         }
@@ -260,7 +260,7 @@ void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
 }
 
 
-void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlendOp op, uint8_t a)
+void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlender op, uint8_t a)
 {
     auto rx = (x + 0.5f) * fill->radial.a11 + (y + 0.5f) * fill->radial.a12 + fill->radial.shiftX;
     auto ry = (x + 0.5f) * fill->radial.a21 + (y + 0.5f) * fill->radial.a22 + fill->radial.shiftY;
@@ -279,6 +279,36 @@ void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
 }
 
 
+void fillRadial(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlender op, SwBlender op2, uint8_t a)
+{
+    auto rx = (x + 0.5f) * fill->radial.a11 + (y + 0.5f) * fill->radial.a12 + fill->radial.shiftX;
+    auto ry = (x + 0.5f) * fill->radial.a21 + (y + 0.5f) * fill->radial.a22 + fill->radial.shiftY;
+
+    // detSecondDerivative = d(detFirstDerivative)/dx = d( d(det)/dx )/dx
+    auto detSecondDerivative = fill->radial.detSecDeriv;
+    // detFirstDerivative = d(det)/dx
+    auto detFirstDerivative = 2.0f * (fill->radial.a11 * rx + fill->radial.a21 * ry) + 0.5f * detSecondDerivative;
+    auto det = rx * rx + ry * ry;
+
+    if (a == 255) {
+        for (uint32_t i = 0 ; i < len ; ++i, ++dst) {
+            auto tmp = op(_pixel(fill, sqrtf(det)), *dst, 255);
+            *dst = op2(tmp, *dst, 255);
+            det += detFirstDerivative;
+            detFirstDerivative += detSecondDerivative;
+        }
+    } else {
+        for (uint32_t i = 0 ; i < len ; ++i, ++dst) {
+            auto tmp = op(_pixel(fill, sqrtf(det)), *dst, 255);
+            auto tmp2 = op2(tmp, *dst, 255);
+            *dst = INTERPOLATE(tmp2, *dst, a);
+            det += detFirstDerivative;
+            detFirstDerivative += detSecondDerivative;
+        }
+    }
+}
+
+
 void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, uint8_t* cmp, SwAlpha alpha, uint8_t csize, uint8_t opacity)
 {
     //Rotation
@@ -291,7 +321,7 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
         if (mathZero(inc)) {
             auto color = _fixedPixel(fill, static_cast<int32_t>(t * FIXPT_SIZE));
             for (uint32_t i = 0; i < len; ++i, ++dst, cmp += csize) {
-                *dst = opAlphaBlend(color, *dst, alpha(cmp));
+                *dst = opBlendNormal(color, *dst, alpha(cmp));
             }
             return;
         }
@@ -305,14 +335,14 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
             auto t2 = static_cast<int32_t>(t * FIXPT_SIZE);
             auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
             for (uint32_t j = 0; j < len; ++j, ++dst, cmp += csize) {
-                *dst = opAlphaBlend(_fixedPixel(fill, t2), *dst, alpha(cmp));
+                *dst = opBlendNormal(_fixedPixel(fill, t2), *dst, alpha(cmp));
                 t2 += inc2;
             }
         //we have to fallback to float math
         } else {
             uint32_t counter = 0;
             while (counter++ < len) {
-                *dst = opAlphaBlend(_pixel(fill, t / GRADIENT_STOP_SIZE), *dst, alpha(cmp));
+                *dst = opBlendNormal(_pixel(fill, t / GRADIENT_STOP_SIZE), *dst, alpha(cmp));
                 ++dst;
                 t += inc;
                 cmp += csize;
@@ -322,7 +352,7 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
         if (mathZero(inc)) {
             auto color = _fixedPixel(fill, static_cast<int32_t>(t * FIXPT_SIZE));
             for (uint32_t i = 0; i < len; ++i, ++dst, cmp += csize) {
-                *dst = opAlphaBlend(color, *dst, MULTIPLY(alpha(cmp), opacity));
+                *dst = opBlendNormal(color, *dst, MULTIPLY(alpha(cmp), opacity));
             }
             return;
         }
@@ -336,14 +366,14 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
             auto t2 = static_cast<int32_t>(t * FIXPT_SIZE);
             auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
             for (uint32_t j = 0; j < len; ++j, ++dst, cmp += csize) {
-                *dst = opAlphaBlend(_fixedPixel(fill, t2), *dst, MULTIPLY(alpha(cmp), opacity));
+                *dst = opBlendNormal(_fixedPixel(fill, t2), *dst, MULTIPLY(alpha(cmp), opacity));
                 t2 += inc2;
             }
         //we have to fallback to float math
         } else {
             uint32_t counter = 0;
             while (counter++ < len) {
-                *dst = opAlphaBlend(_pixel(fill, t / GRADIENT_STOP_SIZE), *dst, MULTIPLY(opacity, alpha(cmp)));
+                *dst = opBlendNormal(_pixel(fill, t / GRADIENT_STOP_SIZE), *dst, MULTIPLY(opacity, alpha(cmp)));
                 ++dst;
                 t += inc;
                 cmp += csize;
@@ -353,7 +383,7 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
 }
 
 
-void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlendOp op, uint8_t a)
+void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlender op, uint8_t a)
 {
     //Rotation
     float rx = x + 0.5f;
@@ -363,12 +393,8 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
 
     if (mathZero(inc)) {
         auto color = _fixedPixel(fill, static_cast<int32_t>(t * FIXPT_SIZE));
-        if (op) {
-            for (uint32_t i = 0; i < len; ++i, ++dst) {
-                *dst = op(color, *dst, a);
-            }
-        } else {
-            rasterRGBA32(dst, color, 0, len);
+        for (uint32_t i = 0; i < len; ++i, ++dst) {
+            *dst = op(color, *dst, a);
         }
         return;
     }
@@ -397,7 +423,82 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
 }
 
 
-bool fillGenColorTable(SwFill* fill, const Fill* fdata, const Matrix* transform, SwSurface* surface, uint32_t opacity, bool ctable)
+void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint32_t len, SwBlender op, SwBlender op2, uint8_t a)
+{
+    //Rotation
+    float rx = x + 0.5f;
+    float ry = y + 0.5f;
+    float t = (fill->linear.dx * rx + fill->linear.dy * ry + fill->linear.offset) * (GRADIENT_STOP_SIZE - 1);
+    float inc = (fill->linear.dx) * (GRADIENT_STOP_SIZE - 1);
+
+    if (mathZero(inc)) {
+        auto color = _fixedPixel(fill, static_cast<int32_t>(t * FIXPT_SIZE));
+        if (a == 255) {
+            for (uint32_t i = 0; i < len; ++i, ++dst) {
+                auto tmp = op(color, *dst, a);
+                *dst = op2(tmp, *dst, 255);
+            }
+        } else {
+            for (uint32_t i = 0; i < len; ++i, ++dst) {
+                auto tmp = op(color, *dst, a);
+                auto tmp2 = op2(tmp, *dst, 255);
+                *dst = INTERPOLATE(tmp2, *dst, a);
+            }
+        }
+        return;
+    }
+
+    auto vMax = static_cast<float>(INT32_MAX >> (FIXPT_BITS + 1));
+    auto vMin = -vMax;
+    auto v = t + (inc * len);
+
+    if (a == 255) {
+        //we can use fixed point math
+        if (v < vMax && v > vMin) {
+            auto t2 = static_cast<int32_t>(t * FIXPT_SIZE);
+            auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
+            for (uint32_t j = 0; j < len; ++j, ++dst) {
+                auto tmp = op(_fixedPixel(fill, t2), *dst, 255);
+                *dst = op2(tmp, *dst, 255);
+                t2 += inc2;
+            }
+        //we have to fallback to float math
+        } else {
+            uint32_t counter = 0;
+            while (counter++ < len) {
+                auto tmp = op(_pixel(fill, t / GRADIENT_STOP_SIZE), *dst, 255);
+                *dst = op2(tmp, *dst, 255);
+                ++dst;
+                t += inc;
+            }
+        }
+    } else {
+        //we can use fixed point math
+        if (v < vMax && v > vMin) {
+            auto t2 = static_cast<int32_t>(t * FIXPT_SIZE);
+            auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
+            for (uint32_t j = 0; j < len; ++j, ++dst) {
+                auto tmp = op(_fixedPixel(fill, t2), *dst, 255);
+                auto tmp2 = op2(tmp, *dst, 255);
+                *dst = INTERPOLATE(tmp2, *dst, a);
+                t2 += inc2;
+            }
+        //we have to fallback to float math
+        } else {
+            uint32_t counter = 0;
+            while (counter++ < len) {
+                auto tmp = op(_pixel(fill, t / GRADIENT_STOP_SIZE), *dst, 255);
+                auto tmp2 = op2(tmp, *dst, 255);
+                *dst = INTERPOLATE(tmp2, *dst, a);
+                ++dst;
+                t += inc;
+            }
+        }
+    }
+}
+
+
+bool fillGenColorTable(SwFill* fill, const Fill* fdata, const Matrix* transform, SwSurface* surface, uint8_t opacity, bool ctable)
 {
     if (!fill) return false;
 

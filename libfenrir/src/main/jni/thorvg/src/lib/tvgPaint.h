@@ -43,7 +43,7 @@ namespace tvg
         virtual ~StrategyMethod() {}
 
         virtual bool dispose(RenderMethod& renderer) = 0;
-        virtual void* update(RenderMethod& renderer, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag pFlag, bool clipper) = 0;   //Return engine data if it has.
+        virtual void* update(RenderMethod& renderer, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag pFlag, bool clipper) = 0;   //Return engine data if it has.
         virtual bool render(RenderMethod& renderer) = 0;
         virtual bool bounds(float* x, float* y, float* w, float* h) = 0;
         virtual RenderRegion bounds(RenderMethod& renderer) const = 0;
@@ -63,6 +63,7 @@ namespace tvg
         StrategyMethod* smethod = nullptr;
         RenderTransform* rTransform = nullptr;
         Composite* compData = nullptr;
+        BlendMethod blendMethod = BlendMethod::Normal;              //uint8_t
         uint8_t renderFlag = RenderUpdateFlag::None;
         uint8_t ctxFlag = ContextFlag::Invalid;
         uint8_t id;
@@ -147,7 +148,7 @@ namespace tvg
         bool scale(float factor);
         bool translate(float x, float y);
         bool bounds(float* x, float* y, float* w, float* h, bool transformed);
-        RenderData update(RenderMethod& renderer, const RenderTransform* pTransform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag pFlag, bool clipper = false);
+        RenderData update(RenderMethod& renderer, const RenderTransform* pTransform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag pFlag, bool clipper = false);
         bool render(RenderMethod& renderer);
         Paint* duplicate();
     };
@@ -176,9 +177,9 @@ namespace tvg
             return inst->dispose(renderer);
         }
 
-        RenderData update(RenderMethod& renderer, const RenderTransform* transform, uint32_t opacity, Array<RenderData>& clips, RenderUpdateFlag renderFlag, bool clipper) override
+        RenderData update(RenderMethod& renderer, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag renderFlag, bool clipper) override
         {
-            return inst->update(renderer, transform, opacity, clips, renderFlag, clipper);
+            return inst->update(renderer, transform, clips, opacity, renderFlag, clipper);
         }
 
         bool render(RenderMethod& renderer) override

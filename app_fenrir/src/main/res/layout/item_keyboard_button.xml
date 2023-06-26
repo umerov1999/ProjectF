@@ -9,7 +9,7 @@
     android:ellipsize="end"
     android:maxLines="1"
     android:stateListAnimator="@animator/clicked"
-    android:textColor="#fff"
+    android:textColor="#ffffff"
     android:textSize="12sp"
     app:backgroundTint="#5181B8"
     tools:text="test" />

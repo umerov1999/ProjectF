@@ -35,6 +35,8 @@ class VideoAlbumsNewAdapter(private val context: Context, private var data: List
                 .load(photoUrl)
                 .tag(PICASSO_TAG)
                 .into(holder.ivPhoto)
+        } else {
+            with().cancelRequest(holder.ivPhoto)
         }
         holder.itemView.setOnClickListener {
             listener?.onClick(item)

@@ -117,7 +117,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
-                android:backgroundTint="#FFFFFF"
+                android:backgroundTint="#ffffff"
                 android:stateListAnimator="@animator/clicked"
                 android:text="@string/marketer"
                 android:textColor="@android:color/black"

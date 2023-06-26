@@ -68,9 +68,14 @@ struct Array
         return reserve(count + size);
     }
 
-    T* ptr()
+    T* end() const
     {
         return data + count;
+    }
+
+    T* last() const
+    {
+        return data + count - 1;
     }
 
     void pop()

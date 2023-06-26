@@ -6,6 +6,8 @@
 #include <cinttypes>
 #include <cstdlib>
 
+#include <android/bitmap.h>
+
 #include "libyuv/convert_argb.h"
 #include "libyuv/rotate_argb.h"
 #include "libyuv/convert.h"
@@ -83,8 +85,60 @@ static int Android420ToABGR(const uint8_t *src_y,
                                   height);
 }
 
-
 extern "C" {
+JNIEXPORT jint
+Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeCopyBetweenByteBufferAndBitmap(
+        JNIEnv *env,
+        jobject,
+        jobject bitmap,
+        jobject converted_buffer,
+        int src_stride_argb,
+        int dst_stride_argb,
+        int width,
+        int height,
+        jboolean isCopyBufferToBitmap
+) {
+    void *bitmapAddress = nullptr;
+    int copyResult;
+
+
+    // get bitmap address
+    int lockResult = AndroidBitmap_lockPixels(env, bitmap, &bitmapAddress);
+    if (lockResult != 0) {
+        return -1;
+    }
+
+    // get buffer address
+    auto *bufferAddress = static_cast<uint8_t *>(
+            env->GetDirectBufferAddress(converted_buffer));
+
+    // copy from buffer to bitmap
+    if (isCopyBufferToBitmap) {
+        copyResult = libyuv::ARGBCopy(bufferAddress, src_stride_argb,
+                                      reinterpret_cast<uint8_t *> (bitmapAddress), dst_stride_argb,
+                                      width, height);
+    }
+
+        // copy from bitmap to buffer
+    else {
+        copyResult = libyuv::ARGBCopy(reinterpret_cast<uint8_t *> (bitmapAddress), src_stride_argb,
+                                      bufferAddress, dst_stride_argb, width, height);
+    }
+
+    // check value of copy
+    if (copyResult != 0) {
+        return -1;
+    }
+
+    // balance call to AndroidBitmap_lockPixels
+    int unlockResult = AndroidBitmap_unlockPixels(env, bitmap);
+    if (unlockResult != 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeShiftPixel(
         JNIEnv *env,
         jobject,
@@ -238,7 +292,7 @@ Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid42
     uint8_t *dst_ptr = has_rotation ? converted_buffer_ptr : buffer_ptr;
     int dst_stride_y = has_rotation ? (width * 4) : (buffer.stride * 4);
 
-    int result = 0;
+    int result;
     // Apply workaround for one pixel shift issue by checking offset.
     if (start_offset_y > 0 || start_offset_u > 0 || start_offset_v > 0) {
 
@@ -330,6 +384,67 @@ Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid42
     return result;
 }
 
+JNIEXPORT jint
+Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid420ToBitmap(
+        JNIEnv *env,
+        jobject,
+        jobject src_y,
+        jint src_stride_y,
+        jobject src_u,
+        jint src_stride_u,
+        jobject src_v,
+        jint src_stride_v,
+        jint src_pixel_stride_y,
+        jint src_pixel_stride_uv,
+        jobject bitmap,
+        jint bitmap_stride,
+        jint width,
+        jint height) {
+
+    void *bitmapAddress = nullptr;
+
+    // get bitmap address
+    int lockResult = AndroidBitmap_lockPixels(env, bitmap, &bitmapAddress);
+    if (lockResult != 0) {
+        return -1;
+    }
+
+    auto *src_y_ptr =
+            static_cast<uint8_t *>(env->GetDirectBufferAddress(src_y));
+    auto *src_u_ptr =
+            static_cast<uint8_t *>(env->GetDirectBufferAddress(src_u));
+    auto *src_v_ptr =
+            static_cast<uint8_t *>(env->GetDirectBufferAddress(src_v));
+
+    int dst_stride_y = bitmap_stride;
+
+    int result = Android420ToABGR(
+            src_y_ptr,
+            src_stride_y,
+            src_u_ptr,
+            src_stride_u,
+            src_v_ptr,
+            src_stride_v,
+            src_pixel_stride_uv,
+            reinterpret_cast<uint8_t *> (bitmapAddress),
+            dst_stride_y,
+            /* is_full_swing = */true,
+            width,
+            height);
+
+    if (result != 0) {
+        return -1;
+    }
+
+    // balance call to AndroidBitmap_lockPixels
+    int unlockResult = AndroidBitmap_unlockPixels(env, bitmap);
+    if (unlockResult != 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeRotateYUV(
         JNIEnv *env,
         jobject,
@@ -393,7 +508,7 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeR
     int rotated_halfwidth = flip_wh ? halfheight : halfwidth;
     int rotated_halfheight = flip_wh ? halfwidth : halfheight;
 
-    int result = 0;
+    int result;
     const ptrdiff_t vu_off = src_v_ptr - src_u_ptr;
 
     if (src_pixel_stride_uv == 1) {

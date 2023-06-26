@@ -135,6 +135,7 @@ class QuickAnswerActivity : AppCompatActivity() {
             .setVgVideos(attachmentsRoot.findViewById(R.id.video_attachments))
             .setVgDocs(attachmentsRoot.findViewById(R.id.docs_attachments))
             .setVgArticles(attachmentsRoot.findViewById(R.id.articles_attachments))
+            .setVgBigLinks(attachmentsRoot.findViewById(R.id.biglinks_attachments))
             .setVgPhotos(attachmentsRoot.findViewById(R.id.photo_attachments))
             .setVgPosts(attachmentsRoot.findViewById(R.id.posts_attachments))
             .setVoiceMessageRoot(attachmentsRoot.findViewById(R.id.voice_message_attachments))

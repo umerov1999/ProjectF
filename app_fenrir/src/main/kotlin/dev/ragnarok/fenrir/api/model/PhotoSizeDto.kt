@@ -82,6 +82,16 @@ class PhotoSizeDto {
          * и справа изображения с максимальной шириной 510px и соотношением сторон 3:2
          */
         const val R = "r"
+
+        /**
+         * Для ссылок 240x537
+         */
+        const val K = "k"
+
+        /**
+         * Для ссылок 480x1074
+         */
+        const val L = "l"
     }
 
     companion object {

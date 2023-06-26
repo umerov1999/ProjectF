@@ -21,7 +21,7 @@
             android:paddingStart="4dp"
             android:paddingTop="4dp"
             android:paddingEnd="4dip"
-            android:textColor="@android:color/white"
+            android:textColor="#ffffff"
             android:textSize="@dimen/font_size_subtitle"
             android:textStyle="bold" />
 
@@ -34,7 +34,7 @@
             android:paddingStart="4dip"
             android:paddingTop="4dp"
             android:paddingEnd="4dp"
-            android:textColor="@android:color/white"
+            android:textColor="#ffffff"
             android:textSize="@dimen/font_size_subtitle"
             android:textStyle="bold" />
 
@@ -133,7 +133,7 @@
             android:gravity="center"
             android:padding="3dp"
             android:text="@string/comments"
-            android:textColor="#fff"
+            android:textColor="#ffffff"
             android:textSize="10sp"
             app:drawableTopCompat="@drawable/comment"
             tools:ignore="SmallSp" />
@@ -156,7 +156,7 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:text="@string/popup"
-                android:textColor="#fff"
+                android:textColor="#ffffff"
                 android:textSize="10sp"
                 app:drawableTopCompat="@drawable/ic_picture_in_picture"
                 tools:ignore="SmallSp" />
@@ -172,7 +172,7 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:text="@string/rotate_video"
-                android:textColor="#fff"
+                android:textColor="#ffffff"
                 android:textSize="10sp"
                 app:drawableTopCompat="@drawable/ic_switch"
                 tools:ignore="SmallSp" />

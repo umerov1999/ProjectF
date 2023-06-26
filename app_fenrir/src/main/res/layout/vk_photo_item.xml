@@ -64,7 +64,7 @@
                 android:id="@+id/item_photo_index"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
+                android:textColor="#ffffff"
                 android:textSize="@dimen/font_size_big_title"
                 tools:text="1" />
 
@@ -85,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textColor="@android:color/white"
+                android:textColor="#ffffff"
                 android:textSize="@dimen/font_size_additional"
                 android:textStyle="bold"
                 tools:text="1.5K" />

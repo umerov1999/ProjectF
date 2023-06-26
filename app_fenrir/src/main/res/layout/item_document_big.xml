@@ -22,7 +22,7 @@
         android:paddingEnd="4dp"
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-        android:textColor="@android:color/white"
+        android:textColor="#ffffff"
         android:textSize="13sp"
         tools:text="EXT" />
 

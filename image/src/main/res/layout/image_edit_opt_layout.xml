@@ -139,7 +139,7 @@
             android:layout_height="wrap_content"
             android:button="@drawable/image_btn_doodle"
             android:gravity="center"
-            android:textColor="#FFF" />
+            android:textColor="#ffffff" />
 
         <Space
             android:layout_width="@dimen/image_mode_space"
@@ -153,7 +153,7 @@
             android:contentDescription="@string/image_text"
             android:gravity="center"
             android:src="@drawable/image_btn_text"
-            android:textColor="#FFF" />
+            android:textColor="#ffffff" />
 
         <Space
             android:layout_width="@dimen/image_mode_space"
@@ -165,7 +165,7 @@
             android:layout_height="wrap_content"
             android:button="@drawable/image_btn_mosaic"
             android:gravity="center"
-            android:textColor="#FFF" />
+            android:textColor="#ffffff" />
 
         <Space
             android:layout_width="@dimen/image_mode_space"
@@ -179,7 +179,7 @@
             android:contentDescription="@string/image_clip"
             android:gravity="center"
             android:src="@drawable/image_btn_clip"
-            android:textColor="#FFF" />
+            android:textColor="#ffffff" />
 
     </RadioGroup>
 

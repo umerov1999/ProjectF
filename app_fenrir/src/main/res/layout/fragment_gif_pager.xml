@@ -30,7 +30,7 @@
             android:focusable="true"
             app:active_background_color="?attr/icon_color_active"
             app:always_counter="false"
-            app:noactive_icon_color="#fff" />
+            app:noactive_icon_color="#ffffff" />
 
         <dev.ragnarok.fenrir.view.CircleCounterButton
             android:id="@+id/button_download"
@@ -42,7 +42,7 @@
             app:active_background_color="?attr/icon_color_active"
             app:always_counter="false"
             app:button_icon="@drawable/download"
-            app:noactive_icon_color="#fff" />
+            app:noactive_icon_color="#ffffff" />
 
         <dev.ragnarok.fenrir.view.CircleCounterButton
             android:id="@+id/button_share"
@@ -53,7 +53,7 @@
             app:active_background_color="?attr/icon_color_active"
             app:always_counter="false"
             app:button_icon="@drawable/ic_outline_share"
-            app:noactive_icon_color="#fff" />
+            app:noactive_icon_color="#ffffff" />
 
     </LinearLayout>
 

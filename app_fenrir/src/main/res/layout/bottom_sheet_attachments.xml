@@ -111,7 +111,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@null"
             android:padding="12dp"
-            android:src="@drawable/ic_arrow_down_vector"
+            android:src="@drawable/ic_arrow_down"
             app:tint="?android:textColorPrimary" />
 
         <com.google.android.material.button.MaterialButton

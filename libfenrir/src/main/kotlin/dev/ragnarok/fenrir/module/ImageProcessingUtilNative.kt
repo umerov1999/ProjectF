@@ -1,9 +1,57 @@
 package dev.ragnarok.fenrir.module
 
+import android.graphics.Bitmap
 import android.view.Surface
 import java.nio.ByteBuffer
 
 object ImageProcessingUtilNative {
+    fun copyBetweenByteBufferAndBitmap(
+        bitmap: Bitmap,
+        byteBuffer: ByteBuffer,
+        sourceStride: Int, destinationStride: Int, width: Int, height: Int,
+        isCopyBufferToBitmap: Boolean
+    ): Int {
+        return nativeCopyBetweenByteBufferAndBitmap(
+            bitmap,
+            byteBuffer,
+            sourceStride,
+            destinationStride,
+            width,
+            height,
+            isCopyBufferToBitmap
+        )
+    }
+
+    fun convertAndroid420ToBitmap(
+        srcByteBufferY: ByteBuffer,
+        srcStrideY: Int,
+        srcByteBufferU: ByteBuffer,
+        srcStrideU: Int,
+        srcByteBufferV: ByteBuffer,
+        srcStrideV: Int,
+        srcPixelStrideY: Int,
+        srcPixelStrideUV: Int,
+        bitmap: Bitmap,
+        bitmapStride: Int,
+        width: Int,
+        height: Int
+    ): Int {
+        return nativeConvertAndroid420ToBitmap(
+            srcByteBufferY,
+            srcStrideY,
+            srcByteBufferU,
+            srcStrideU,
+            srcByteBufferV,
+            srcStrideV,
+            srcPixelStrideY,
+            srcPixelStrideUV,
+            bitmap,
+            bitmapStride,
+            width,
+            height
+        )
+    }
+
     fun writeJpegToSurface(
         jpegArray: ByteArray,
         surface: Surface
@@ -131,6 +179,13 @@ object ImageProcessingUtilNative {
         )
     }
 
+    private external fun nativeCopyBetweenByteBufferAndBitmap(
+        bitmap: Bitmap,
+        byteBuffer: ByteBuffer,
+        sourceStride: Int, destinationStride: Int, width: Int, height: Int,
+        isCopyBufferToBitmap: Boolean
+    ): Int
+
     private external fun nativeWriteJpegToSurface(
         jpegArray: ByteArray,
         surface: Surface
@@ -153,6 +208,21 @@ object ImageProcessingUtilNative {
         startOffsetU: Int,
         startOffsetV: Int,
         rotationDegrees: Int
+    ): Int
+
+    private external fun nativeConvertAndroid420ToBitmap(
+        srcByteBufferY: ByteBuffer,
+        srcStrideY: Int,
+        srcByteBufferU: ByteBuffer,
+        srcStrideU: Int,
+        srcByteBufferV: ByteBuffer,
+        srcStrideV: Int,
+        srcPixelStrideY: Int,
+        srcPixelStrideUV: Int,
+        bitmap: Bitmap,
+        bitmapStride: Int,
+        width: Int,
+        height: Int
     ): Int
 
     private external fun nativeShiftPixel(

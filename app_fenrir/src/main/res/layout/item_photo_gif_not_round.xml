@@ -41,6 +41,6 @@
         android:paddingEnd="4dp"
         android:paddingBottom="2dp"
         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-        android:textColor="@android:color/white"
+        android:textColor="#ffffff"
         android:textStyle="bold" />
 </FrameLayout>

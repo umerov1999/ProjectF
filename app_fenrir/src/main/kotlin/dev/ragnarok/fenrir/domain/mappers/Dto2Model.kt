@@ -625,6 +625,8 @@ object Dto2Model {
                     PhotoSizeDto.Type.P -> sizes.setP(dto2model(dto))
                     PhotoSizeDto.Type.Q -> sizes.setQ(dto2model(dto))
                     PhotoSizeDto.Type.R -> sizes.setR(dto2model(dto))
+                    PhotoSizeDto.Type.K -> sizes.setK(dto2model(dto))
+                    PhotoSizeDto.Type.L -> sizes.setL(dto2model(dto))
                 }
             }
         }

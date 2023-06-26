@@ -47,12 +47,12 @@
                 android:visibility="gone"
                 app:active="true"
                 app:active_background_color="?attr/icon_color_active"
-                app:active_icon_color="#fff"
+                app:active_icon_color="#ffffff"
                 app:always_counter="true"
                 app:button_icon="@drawable/person"
                 app:noactive_background_color="#45dcdcdc"
-                app:noactive_icon_color="#fff"
-                app:text_color="#fff" />
+                app:noactive_icon_color="#ffffff"
+                app:text_color="#ffffff" />
 
             <dev.ragnarok.fenrir.view.CircleCounterButton
                 android:id="@+id/like_button"
@@ -61,12 +61,12 @@
                 android:layout_weight="25"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:active_background_color="?attr/icon_color_active"
-                app:active_icon_color="#fff"
+                app:active_icon_color="#ffffff"
                 app:always_counter="true"
                 app:button_icon="@drawable/heart"
                 app:noactive_background_color="#45dcdcdc"
-                app:noactive_icon_color="#fff"
-                app:text_color="#fff" />
+                app:noactive_icon_color="#ffffff"
+                app:text_color="#ffffff" />
 
             <dev.ragnarok.fenrir.view.CircleCounterButton
                 android:id="@+id/comments_button"
@@ -78,8 +78,8 @@
                 app:active_icon_color="#ffffff"
                 app:button_icon="@drawable/comment"
                 app:noactive_background_color="#45dcdcdc"
-                app:noactive_icon_color="#fff"
-                app:text_color="#fff" />
+                app:noactive_icon_color="#ffffff"
+                app:text_color="#ffffff" />
 
             <dev.ragnarok.fenrir.view.CircleCounterButton
                 android:id="@+id/share_button"
@@ -91,7 +91,7 @@
                 app:active_icon_color="#ffffff"
                 app:button_icon="@drawable/ic_outline_share"
                 app:noactive_background_color="#45dcdcdc"
-                app:noactive_icon_color="#fff" />
+                app:noactive_icon_color="#ffffff" />
 
         </LinearLayout>
 

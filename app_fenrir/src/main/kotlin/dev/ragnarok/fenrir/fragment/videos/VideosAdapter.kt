@@ -28,6 +28,7 @@ class VideosAdapter(private val context: Context, private var data: List<Video>)
         holder.title.text = video.title
         holder.videoLenght.text = AppTextUtils.getDurationString(video.duration)
         val photoUrl = video.image
+        holder.image.visibility = if (photoUrl.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
         if (photoUrl.nonNullNoEmpty()) {
             with()
                 .load(photoUrl)

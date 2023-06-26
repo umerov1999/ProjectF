@@ -77,13 +77,13 @@
                     android:contentDescription="@null"
                     android:src="@drawable/star"
                     android:stateListAnimator="@animator/clicked"
-                    app:tint="#fff" />
+                    app:tint="#ffffff" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/item_article_read"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="#FFFFFF"
+                    android:backgroundTint="#ffffff"
                     android:text="@string/read_article"
                     android:textColor="@android:color/black"
                     app:icon="@drawable/view"
@@ -98,7 +98,7 @@
                     android:contentDescription="@null"
                     android:src="@drawable/share"
                     android:stateListAnimator="@animator/clicked"
-                    app:tint="#fff" />
+                    app:tint="#ffffff" />
             </LinearLayout>
         </LinearLayout>
 
@@ -107,7 +107,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/item_article_content"
+            android:ellipsize="end"
             android:gravity="center_horizontal"
+            android:maxLines="5"
             android:padding="8dp"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             tools:text="Take Me To Church - Hozier Cover Sofia Karlberg" />

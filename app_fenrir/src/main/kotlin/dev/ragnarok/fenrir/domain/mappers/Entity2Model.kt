@@ -1191,6 +1191,8 @@ object Entity2Model {
             .setY(entity2modelNullable(dbo.y))
             .setZ(entity2modelNullable(dbo.z))
             .setW(entity2modelNullable(dbo.w))
+            .setK(entity2modelNullable(dbo.k))
+            .setL(entity2modelNullable(dbo.l))
     }
 
 

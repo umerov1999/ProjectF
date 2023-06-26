@@ -580,6 +580,24 @@ class Attachments : Parcelable, Cloneable {
             return result
         }
 
+    private fun needShowBigLinks(): Boolean {
+        return links.nonNullNoEmpty() && articles.isNullOrEmpty() && photos.isNullOrEmpty() && videos.isNullOrEmpty() && polls.isNullOrEmpty()
+    }
+
+    fun getBigLinks(): ArrayList<Link>? {
+        return if (needShowBigLinks()) {
+            val result = ArrayList<Link>()
+            for (link in links.orEmpty()) {
+                if (link.photo?.sizes?.getL()?.url.nonNullNoEmpty() || link.photo?.sizes?.getK()?.url.nonNullNoEmpty()) {
+                    result.add(link)
+                }
+            }
+            if (result.isEmpty()) {
+                null
+            } else result
+        } else null
+    }
+
     fun getDocLinks(postsAsLink: Boolean, excludeGifWithImages: Boolean): ArrayList<DocLink> {
         val result = ArrayList<DocLink>()
         if (docs != null) {
@@ -597,7 +615,13 @@ class Attachments : Parcelable, Cloneable {
         }
         if (links != null) {
             for (link in links.orEmpty()) {
-                result.add(DocLink(link))
+                if (needShowBigLinks()) {
+                    if (link.photo?.sizes?.getL()?.url.isNullOrEmpty() && link.photo?.sizes?.getK()?.url.isNullOrEmpty()) {
+                        result.add(DocLink(link))
+                    }
+                } else {
+                    result.add(DocLink(link))
+                }
             }
         }
         if (polls != null) {

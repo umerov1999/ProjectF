@@ -19,6 +19,7 @@ package androidx.camera.core;
 import static androidx.camera.core.ImageProcessingUtil.Result.ERROR_CONVERSION;
 import static androidx.camera.core.ImageProcessingUtil.Result.SUCCESS;
 
+import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.media.Image;
 import android.media.ImageWriter;
@@ -34,6 +35,7 @@ import androidx.annotation.RestrictTo;
 import androidx.camera.core.impl.ImageOutputConfig;
 import androidx.camera.core.impl.ImageReaderProxy;
 import androidx.camera.core.internal.compat.ImageWriterCompat;
+import androidx.camera.core.internal.utils.ImageUtil;
 import androidx.core.util.Preconditions;
 
 import java.nio.ByteBuffer;
@@ -42,7 +44,6 @@ import java.util.Locale;
 /**
  * Utility class to convert an {@link Image} from YUV to RGB.
  *
- * @hide
  */
 @RequiresApi(21) // TODO(b/200306659): Remove and replace with annotation on package-info.java
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -93,6 +94,79 @@ public final class ImageProcessingUtil {
             Logger.e(TAG, "Failed to get acquire JPEG image.");
         }
         return imageProxy;
+    }
+
+
+    /**
+     * Copies information from a given Bitmap to the address of the ByteBuffer
+     *
+     * @param bitmap            source bitmap
+     * @param byteBuffer        destination ByteBuffer
+     * @param bufferStride      the stride of the ByteBuffer
+     */
+    public static void copyBitmapToByteBuffer(@NonNull Bitmap bitmap,
+            @NonNull ByteBuffer byteBuffer, int bufferStride) {
+        int bitmapStride = bitmap.getRowBytes();
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        jcall_util.nativeCopyBetweenByteBufferAndBitmap(bitmap, byteBuffer, bitmapStride, bufferStride, width,
+                height, false);
+    }
+
+    /**
+     * Copies information from a ByteBuffer to the address of the Bitmap
+     *
+     * @param bitmap            destination Bitmap
+     * @param byteBuffer        source ByteBuffer
+     * @param bufferStride      the stride of the ByteBuffer
+     *
+     */
+    public static void copyByteBufferToBitmap(@NonNull Bitmap bitmap,
+            @NonNull ByteBuffer byteBuffer, int bufferStride) {
+        int bitmapStride = bitmap.getRowBytes();
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        jcall_util.nativeCopyBetweenByteBufferAndBitmap(bitmap, byteBuffer, bufferStride, bitmapStride, width,
+                height, true);
+    }
+
+    /**
+     * Writes a JPEG bytes data as an Image into the Surface. Returns true if it succeeds and false
+     * otherwise.
+     */
+    public static boolean writeJpegBytesToSurface(
+            @NonNull Surface surface,
+            @NonNull byte[] jpegBytes) {
+        Preconditions.checkNotNull(jpegBytes);
+        Preconditions.checkNotNull(surface);
+
+        if (jcall_util.nativeWriteJpegToSurface(jpegBytes, surface) != 0) {
+            Logger.e(TAG, "Failed to enqueue JPEG image.");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Convert a YUV_420_888 ImageProxy to a JPEG bytes data as an Image into the Surface.
+     *
+     * <p>Returns true if it succeeds and false otherwise.
+     */
+    public static boolean convertYuvToJpegBytesIntoSurface(
+            @NonNull ImageProxy imageProxy,
+            @IntRange(from = 1, to = 100) int jpegQuality,
+            @ImageOutputConfig.RotationDegreesValue int rotationDegrees,
+            @NonNull Surface outputSurface) {
+        try {
+            byte[] jpegBytes =
+                    ImageUtil.yuvImageToJpegByteArray(
+                            imageProxy, null, jpegQuality, rotationDegrees);
+            return writeJpegBytesToSurface(outputSurface,
+                    jpegBytes);
+        } catch (ImageUtil.CodecFailedException e) {
+            Logger.e(TAG, "Failed to encode YUV to JPEG", e);
+            return false;
+        }
     }
 
     /**
@@ -164,6 +238,55 @@ public final class ImageProcessingUtil {
             }
         });
         return wrappedRgbImageProxy;
+    }
+
+    /**
+     * Converts image proxy in YUV to {@link Bitmap}.
+     *
+     * <p> Different from {@link ImageProcessingUtil#convertYUVToRGB(
+     * ImageProxy, ImageReaderProxy, ByteBuffer, int, boolean)}, this function converts to
+     * {@link Bitmap} in RGBA directly. If input format is invalid,
+     * {@link IllegalArgumentException} will be thrown. If the conversion to bitmap failed,
+     * {@link UnsupportedOperationException} will be thrown.
+     *
+     * @param imageProxy input image proxy in YUV.
+     * @return bitmap output bitmap in RGBA.
+     */
+    @NonNull
+    public static Bitmap convertYUVToBitmap(@NonNull ImageProxy imageProxy) {
+        if (imageProxy.getFormat() != ImageFormat.YUV_420_888) {
+            throw new IllegalArgumentException("Input image format must be YUV_420_888");
+        }
+
+        int imageWidth = imageProxy.getWidth();
+        int imageHeight = imageProxy.getHeight();
+        int srcStrideY = imageProxy.getPlanes()[0].getRowStride();
+        int srcStrideU = imageProxy.getPlanes()[1].getRowStride();
+        int srcStrideV = imageProxy.getPlanes()[2].getRowStride();
+        int srcPixelStrideY = imageProxy.getPlanes()[0].getPixelStride();
+        int srcPixelStrideUV = imageProxy.getPlanes()[1].getPixelStride();
+
+        Bitmap bitmap = Bitmap.createBitmap(imageProxy.getWidth(),
+                imageProxy.getHeight(), Bitmap.Config.ARGB_8888);
+        int bitmapStride = bitmap.getRowBytes();
+
+        int result = jcall_util.nativeConvertAndroid420ToBitmap(
+                imageProxy.getPlanes()[0].getBuffer(),
+                srcStrideY,
+                imageProxy.getPlanes()[1].getBuffer(),
+                srcStrideU,
+                imageProxy.getPlanes()[2].getBuffer(),
+                srcStrideV,
+                srcPixelStrideY,
+                srcPixelStrideUV,
+                bitmap,
+                bitmapStride,
+                imageWidth,
+                imageHeight);
+        if (result != 0) {
+            throw new UnsupportedOperationException("YUV to RGB conversion failed");
+        }
+        return bitmap;
     }
 
     /**

@@ -12,7 +12,9 @@ import androidx.annotation.IntDef
     PhotoSize.O,
     PhotoSize.P,
     PhotoSize.Q,
-    PhotoSize.R
+    PhotoSize.R,
+    PhotoSize.K,
+    PhotoSize.L
 )
 @Retention(
     AnnotationRetention.SOURCE
@@ -80,5 +82,15 @@ annotation class PhotoSize {
          * и справа изображения с максимальной шириной 510px и соотношением сторон 3:2
          */
         const val R = 10
+
+        /**
+         * Для ссылок 240x537
+         */
+        const val K = 11
+
+        /**
+         * Для ссылок 480x1074
+         */
+        const val L = 12
     }
 }

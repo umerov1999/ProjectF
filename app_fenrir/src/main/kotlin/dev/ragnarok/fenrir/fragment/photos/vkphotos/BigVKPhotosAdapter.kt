@@ -137,6 +137,8 @@ class BigVKPhotosAdapter(
         holder.setSelected(photoWrapper.isSelected)
         holder.resolveIndexText(photoWrapper)
         val targetUrl = photo.getUrlForSize(PhotoSize.Q, false)
+        holder.photoImageView.visibility =
+            if (targetUrl.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
         if (targetUrl.nonNullNoEmpty()) {
             with()
                 .load(targetUrl)

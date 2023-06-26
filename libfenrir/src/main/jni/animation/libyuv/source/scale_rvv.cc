@@ -18,8 +18,8 @@
 #include "libyuv/row.h"
 #include "libyuv/scale_row.h"
 
-// This module is for gcc/clang rvv.
-#if !defined(LIBYUV_DISABLE_RVV) && defined(__riscv_vector)
+// This module is for clang rvv. GCC hasn't supported segment load & store.
+#if !defined(LIBYUV_DISABLE_RVV) && defined(__riscv_vector) && defined(__clang__)
 #include <riscv_vector.h>
 
 #ifdef __cplusplus
@@ -51,11 +51,9 @@ void ScaleARGBRowDown2_RVV(const uint8_t* src_argb,
   const uint64_t* src = (const uint64_t*)(src_argb);
   uint32_t* dst = (uint32_t*)(dst_argb);
   do {
-    vuint64m8_t v_data;
-    vuint32m4_t v_dst;
     size_t vl = __riscv_vsetvl_e64m8(w);
-    v_data = __riscv_vle64_v_u64m8(src, vl);
-    v_dst = __riscv_vnsrl_wx_u32m4(v_data, 32, vl);
+    vuint64m8_t v_data = __riscv_vle64_v_u64m8(src, vl);
+    vuint32m4_t v_dst = __riscv_vnsrl_wx_u32m4(v_data, 32, vl);
     __riscv_vse32_v_u32m4(dst, v_dst, vl);
     w -= vl;
     src += vl;
@@ -75,7 +73,6 @@ void ScaleARGBRowDown2Linear_RVV(const uint8_t* src_argb,
   asm volatile("csrwi vxrm, 0");
   do {
     vuint8m4_t v_odd, v_even, v_dst;
-    vuint16m8_t v_sum;
     vuint32m4_t v_odd_32, v_even_32;
     size_t vl = __riscv_vsetvl_e32m4(w);
     __riscv_vlseg2e32_v_u32m4(&v_even_32, &v_odd_32, src, vl);
@@ -134,9 +131,8 @@ void ScaleARGBRowDownEven_RVV(const uint8_t* src_argb,
   uint32_t* dst = (uint32_t*)(dst_argb);
   const int stride_byte = src_stepx * 4;
   do {
-    vuint32m8_t v_row;
     size_t vl = __riscv_vsetvl_e32m8(w);
-    v_row = __riscv_vlse32_v_u32m8(src, stride_byte, vl);
+    vuint32m8_t v_row = __riscv_vlse32_v_u32m8(src, stride_byte, vl);
     __riscv_vse32_v_u32m8(dst, v_row, vl);
     w -= vl;
     src += vl * src_stepx;
@@ -499,7 +495,7 @@ void ScaleUVRowDown2Linear_RVV(const uint8_t* src_uv,
     vuint8m4_t v_u0v0, v_u1v1, v_avg;
     vuint16m4_t v_u0v0_16, v_u1v1_16;
     size_t vl = __riscv_vsetvl_e16m4(w);
-    vlseg2e16_v_u16m4(&v_u0v0_16, &v_u1v1_16, src, vl);
+    __riscv_vlseg2e16_v_u16m4(&v_u0v0_16, &v_u1v1_16, src, vl);
     v_u0v0 = __riscv_vreinterpret_v_u16m4_u8m4(v_u0v0_16);
     v_u1v1 = __riscv_vreinterpret_v_u16m4_u8m4(v_u1v1_16);
     // Use round-to-nearest-up mode for averaging add
@@ -603,4 +599,4 @@ void ScaleUVRowDownEven_RVV(const uint8_t* src_uv,
 }  // namespace libyuv
 #endif
 
-#endif  // !defined(LIBYUV_DISABLE_RVV) && defined(__riscv_vector)
+#endif  // !defined(LIBYUV_DISABLE_RVV) && defined(__riscv_vector) && defined(__clang__)

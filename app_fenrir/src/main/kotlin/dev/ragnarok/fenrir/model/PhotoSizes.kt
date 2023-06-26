@@ -19,6 +19,8 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
     private var p: Size? = null
     private var q: Size? = null
     private var r: Size? = null
+    private var k: Size? = null
+    private var l: Size? = null
     private var y: Size? = null
     private var z: Size? = null
     private var w: Size? = null
@@ -35,6 +37,8 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         y = parcel.readParcelable(Size.NativeCreator)
         z = parcel.readParcelable(Size.NativeCreator)
         w = parcel.readParcelable(Size.NativeCreator)
+        k = parcel.readParcelable(Size.NativeCreator)
+        l = parcel.readParcelable(Size.NativeCreator)
     }
 
     internal constructor(parcel: Parcel) {
@@ -48,6 +52,8 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         y = parcel.readTypedObjectCompat(Size.CREATOR)
         z = parcel.readTypedObjectCompat(Size.CREATOR)
         w = parcel.readTypedObjectCompat(Size.CREATOR)
+        k = parcel.readTypedObjectCompat(Size.CREATOR)
+        l = parcel.readTypedObjectCompat(Size.CREATOR)
     }
 
     fun getS(): Size? {
@@ -140,6 +146,24 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
+    fun getK(): Size? {
+        return k
+    }
+
+    fun setK(k: Size?): PhotoSizes {
+        this.k = k
+        return this
+    }
+
+    fun getL(): Size? {
+        return l
+    }
+
+    fun setL(l: Size?): PhotoSizes {
+        this.l = l
+        return this
+    }
+
     fun getMaxSize(excludeNonAspectRatio: Boolean): Size? {
         return if (excludeNonAspectRatio) firstNonNull(
             w,
@@ -204,6 +228,23 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
                 s
             ) else firstNonNull(w, z, y, r, q, p, o, x, m, s)
 
+            PhotoSize.K -> if (excludeNonAspectRatio) firstNonNull(
+                k,
+                y,
+                x,
+                m,
+                s
+            ) else firstNonNull(k, y, r, q, p, o, x, m, s)
+
+            PhotoSize.L -> if (excludeNonAspectRatio) firstNonNull(
+                l,
+                k,
+                y,
+                x,
+                m,
+                s
+            ) else firstNonNull(l, k, y, r, q, p, o, x, m, s)
+
             else -> throw IllegalArgumentException("Invalid max photo size: $max")
         }
     }
@@ -228,14 +269,12 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         parcel.writeTypedObjectCompat(y, i)
         parcel.writeTypedObjectCompat(z, i)
         parcel.writeTypedObjectCompat(w, i)
+        parcel.writeTypedObjectCompat(k, i)
+        parcel.writeTypedObjectCompat(l, i)
     }
 
     fun isEmpty(): Boolean {
-        return firstNonNull(s, m, x, o, p, q, r, y, z, w) == null
-    }
-
-    fun notEmpty(): Boolean {
-        return firstNonNull(s, m, x, o, p, q, r, y, z, w) != null
+        return firstNonNull(s, m, x, o, p, q, r, y, z, w, k, l) == null
     }
 
     override fun writeToParcelNative(dest: ParcelNative) {
@@ -249,6 +288,8 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         dest.writeParcelable(y)
         dest.writeParcelable(z)
         dest.writeParcelable(w)
+        dest.writeParcelable(k)
+        dest.writeParcelable(l)
     }
 
     @Keep

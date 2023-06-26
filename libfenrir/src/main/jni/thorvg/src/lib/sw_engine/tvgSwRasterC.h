@@ -68,13 +68,13 @@ static bool inline cRasterTranslucentRle(SwSurface* surface, const SwRleData* rl
 
     //32bit channels
     if (surface->channelSize == sizeof(uint32_t)) {
-        auto color = surface->blender.join(r, g, b, a);
+        auto color = surface->join(r, g, b, a);
         uint32_t src;
         for (uint32_t i = 0; i < rle->size; ++i, ++span) {
             auto dst = &surface->buf32[span->y * surface->stride + span->x];
             if (span->coverage < 255) src = ALPHA_BLEND(color, span->coverage);
             else src = color;
-            auto ialpha = IALPHA(src);
+            auto ialpha = IA(src);
             for (uint32_t x = 0; x < span->len; ++x, ++dst) {
                 *dst = src + ALPHA_BLEND(*dst, ialpha);
             }
@@ -103,9 +103,9 @@ static bool inline cRasterTranslucentRect(SwSurface* surface, const SwBBox& regi
 
     //32bits channels
     if (surface->channelSize == sizeof(uint32_t)) {
-        auto color = surface->blender.join(r, g, b, a);
+        auto color = surface->join(r, g, b, 255);
         auto buffer = surface->buf32 + (region.min.y * surface->stride) + region.min.x;
-        auto ialpha = IALPHA(color);
+        auto ialpha = 255 - a;
         for (uint32_t y = 0; y < h; ++y) {
             auto dst = &buffer[y * surface->stride];
             for (uint32_t x = 0; x < w; ++x, ++dst) {

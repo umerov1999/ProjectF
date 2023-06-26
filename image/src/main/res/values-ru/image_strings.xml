@@ -20,4 +20,5 @@
     <string name="ucrop_rotate">Поворот</string>
     <string name="ucrop_scale">Увеличение</string>
     <string name="ucrop_crop">Обрезать</string>
+    <string name="ucrop_hundred_percent">100\%</string>
 </resources>

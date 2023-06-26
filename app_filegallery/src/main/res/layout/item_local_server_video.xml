@@ -39,7 +39,7 @@
                 android:gravity="center"
                 android:padding="4dp"
                 android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                android:textColor="@android:color/white"
+                android:textColor="#ffffff"
                 tools:text="25,4 MB" />
 
         </FrameLayout>

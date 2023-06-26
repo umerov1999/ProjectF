@@ -31,7 +31,7 @@ static inline uint8x8_t ALPHA_BLEND(uint8x8_t c, uint8x8_t a)
 }
 
 
-static void neonRasterRGBA32(uint32_t *dst, uint32_t val, uint32_t offset, int32_t len)
+static void neonRasterPixel32(uint32_t *dst, uint32_t val, uint32_t offset, int32_t len)
 {
     uint32_t iterations = len / 4;
     uint32_t neonFilled = iterations * 4;
@@ -56,7 +56,7 @@ static bool neonRasterTranslucentRle(SwSurface* surface, const SwRleData* rle, u
         return false;
     }
 
-    auto color = surface->blender.join(r, g, b, a);
+    auto color = surface->join(r, g, b, a);
     auto span = rle->spans;
     uint32_t src;
     uint8x8_t *vDst = nullptr;
@@ -67,7 +67,7 @@ static bool neonRasterTranslucentRle(SwSurface* surface, const SwRleData* rle, u
         else src = color;
 
         auto dst = &surface->buf32[span->y * surface->stride + span->x];
-        auto ialpha = IALPHA(src);
+        auto ialpha = IA(src);
 
         if ((((size_t) dst) & 0x7) != 0) {
             //fill not aligned byte
@@ -101,11 +101,11 @@ static bool neonRasterTranslucentRect(SwSurface* surface, const SwBBox& region, 
         return false;
     }
 
-    auto color = surface->blender.join(r, g, b, a);
+    auto color = surface->join(r, g, b, a);
     auto buffer = surface->buf32 + (region.min.y * surface->stride) + region.min.x;
     auto h = static_cast<uint32_t>(region.max.y - region.min.y);
     auto w = static_cast<uint32_t>(region.max.x - region.min.x);
-    auto ialpha = IALPHA(color);
+    auto ialpha = 255 - a;
 
     auto vColor = vdup_n_u32(color);
     auto vIalpha = vdup_n_u8((uint8_t) ialpha);

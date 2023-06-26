@@ -803,5 +803,7 @@ object Model2Entity {
             .setY(model2entityNullable(sizes.getY()))
             .setZ(model2entityNullable(sizes.getZ()))
             .setW(model2entityNullable(sizes.getW()))
+            .setK(model2entityNullable(sizes.getK()))
+            .setL(model2entityNullable(sizes.getL()))
     }
 }

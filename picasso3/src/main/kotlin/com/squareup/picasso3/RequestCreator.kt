@@ -251,8 +251,8 @@ class RequestCreator internal constructor(
     /**
      * Attempt to decode the image using the specified config.
      *
-     * Note: This value may be ignored by [BitmapFactory]. See
-     * [its documentation][BitmapFactory.Options.inPreferredConfig] for more details.
+     * Note: This value may be ignored by BitmapFactory. See
+     * [its documentation] BitmapFactory.Options.inPreferredConfig for more details.
      */
     fun config(config: Bitmap.Config): RequestCreator {
         data.config(config)
@@ -273,8 +273,8 @@ class RequestCreator internal constructor(
      *
      *
      * This will affect the order in which the requests execute but does not guarantee it.
-     * By default, all requests have [Priority.NORMAL] priority, except for
-     * [fetch] requests, which have [Priority.LOW] priority by default.
+     * By default, all requests have Priority.NORMAL priority, except for
+     * [fetch] requests, which have Priority.LOW priority by default.
      */
     fun priority(priority: Picasso.Priority): RequestCreator {
         data.priority(priority)

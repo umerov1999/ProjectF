@@ -57,7 +57,7 @@
     </string-array>
 
     <!-- Google Play-->
-    <string name="developer">Developer: Umerov Artyom</string>
+    <string name="developer">Developer: Umerov Artem</string>
     <string name="first_pagan">First pagan</string>
     <string name="repo">Repository: https://github.com/umerov1999/ProjectF</string>
     <string name="repo_local_server">Repository: https://github.com/umerov1999/FenrirMediaServer/releases</string>

@@ -157,14 +157,14 @@ object CurrentTheme {
     }
 
     fun getColorToast(context: Context): Int {
-        return getColorFromAttrs(R.attr.toast_background, context, "#FFFFFF")
+        return getColorFromAttrs(R.attr.toast_background, context, "#ffffff")
     }
 
     fun getColorWhiteContrastFix(context: Context): Int {
         return getColorFromAttrs(
             dev.ragnarok.fenrir_common.R.attr.white_color_contrast_fix,
             context,
-            "#FFFFFF"
+            "#ffffff"
         )
     }
 

@@ -11,6 +11,7 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoSize
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 
 class VKPhotoAlbumsAdapter(private val context: Context, private var data: List<PhotoAlbum>) :
@@ -24,8 +25,8 @@ class VKPhotoAlbumsAdapter(private val context: Context, private var data: List<
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val photoAlbum = data[position]
-        if (photoAlbum.getSizes()?.notEmpty() == true) {
-            val thumb = photoAlbum.getSizes()?.getUrlForSize(PhotoSize.Y, false)
+        val thumb = photoAlbum.getSizes()?.getUrlForSize(PhotoSize.Y, false)
+        if (thumb.nonNullNoEmpty()) {
             with()
                 .load(thumb)
                 .tag(Constants.PICASSO_TAG)

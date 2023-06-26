@@ -53,6 +53,12 @@
         android:orientation="vertical" />
 
     <LinearLayout
+        android:id="@+id/biglinks_attachments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <LinearLayout
         android:id="@+id/forward_messages"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -10,6 +10,7 @@ import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.model.Photo
+import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorPrimary
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorSecondary
@@ -57,11 +58,18 @@ class LocalServerPhotosAdapter(private val mContext: Context, private var data: 
                 viewHolder.current.clearAnimationDrawable()
             }
         }
-        with()
-            .load(photo.preview_url)
-            .tag(Constants.PICASSO_TAG)
-            .placeholder(R.drawable.background_gray)
-            .into(viewHolder.photoImageView)
+        val targetUrl = photo.preview_url
+        viewHolder.photoImageView.visibility =
+            if (targetUrl.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
+        if (targetUrl.nonNullNoEmpty()) {
+            with()
+                .load(targetUrl)
+                .tag(Constants.PICASSO_TAG)
+                .placeholder(R.drawable.background_gray)
+                .into(viewHolder.photoImageView)
+        } else {
+            with().cancelRequest(viewHolder.photoImageView)
+        }
         viewHolder.photoImageView.setOnClickListener {
             photoSelectionListener?.onPhotoClicked(viewHolder.bindingAdapterPosition, photo)
         }

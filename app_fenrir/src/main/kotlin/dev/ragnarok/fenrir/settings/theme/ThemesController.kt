@@ -162,7 +162,7 @@ object ThemesController {
             "contrast",
             "#000000",
             "#444444",
-            "#FFFFFF",
+            "#ffffff",
             "#777777",
             "Contrast",
             R.style.App_DayNight_Contrast,

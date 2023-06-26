@@ -81,14 +81,26 @@ class JpegBytes2Disk implements Operation<JpegBytes2Disk.In, ImageCapture.Output
             File appProvidedFile = options.getFile();
             if (appProvidedFile != null) {
                 // For saving-to-file case, write to the target folder and rename for better
-                // performance.
+                // performance. The file extensions must be the same as app provided to avoid the
+                // directory access problem.
                 return new File(appProvidedFile.getParent(),
-                        TEMP_FILE_PREFIX + UUID.randomUUID().toString() + TEMP_FILE_SUFFIX);
+                        TEMP_FILE_PREFIX + UUID.randomUUID().toString()
+                                + getFileExtensionWithDot(appProvidedFile));
             } else {
                 return File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX);
             }
         } catch (IOException e) {
             throw new ImageCaptureException(ERROR_FILE_IO, "Failed to create temp file.", e);
+        }
+    }
+
+    private static String getFileExtensionWithDot(File file) {
+        String fileName = file.getName();
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex >= 0) {
+            return fileName.substring(dotIndex);
+        } else {
+            return "";
         }
     }
 
@@ -174,18 +186,21 @@ class JpegBytes2Disk implements Operation<JpegBytes2Disk.In, ImageCapture.Output
                 ? new ContentValues(options.getContentValues())
                 : new ContentValues();
         setContentValuePendingFlag(values, PENDING);
-        Uri uri = contentResolver.insert(options.getSaveCollection(), values);
-        if (uri == null) {
-            throw new ImageCaptureException(
-                    ERROR_FILE_IO, "Failed to insert a MediaStore URI.", null);
-        }
+        Uri uri = null;
         try {
+            uri = contentResolver.insert(options.getSaveCollection(), values);
+            if (uri == null) {
+                throw new ImageCaptureException(
+                        ERROR_FILE_IO, "Failed to insert a MediaStore URI.", null);
+            }
             copyTempFileToUri(file, uri, contentResolver);
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             throw new ImageCaptureException(
                     ERROR_FILE_IO, "Failed to write to MediaStore URI: " + uri, e);
         } finally {
-            updateUriPendingStatus(uri, contentResolver, NOT_PENDING);
+            if (uri != null) {
+                updateUriPendingStatus(uri, contentResolver, NOT_PENDING);
+            }
         }
         return uri;
     }
