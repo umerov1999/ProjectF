@@ -45,7 +45,6 @@ class App : Application() {
         } else {
             MusicPlaybackController.tracksExist = FileExistJVM()
         }
-        MusicPlaybackController.registerBroadcast(this)
         Utils.isCompressIncomingTraffic = Settings.get().main().isCompress_incoming_traffic
         Utils.currentParser = Settings.get().main().currentParser
         PicassoInstance.init(this)

@@ -1,13 +1,17 @@
 package dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders
 
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewStub
+import android.widget.ImageView
 import android.widget.TextView
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2Block
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2Button
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.util.Utils
 
 class HeaderViewHolder(itemView: View) : IViewHolder(itemView) {
@@ -15,11 +19,17 @@ class HeaderViewHolder(itemView: View) : IViewHolder(itemView) {
     private var badge: TextView? = null
     private val button: CatalogHeaderButton
     private val badgeStub: ViewStub?
+    private val extension: ViewGroup
+    private val top_title_icon: ImageView
+    private val top_title: TextView
 
     init {
         title = itemView.findViewById(R.id.title)
         button = itemView.findViewById(R.id.button)
         badgeStub = itemView.findViewById(R.id.badgeStub)
+        extension = itemView.findViewById(R.id.extension)
+        top_title_icon = itemView.findViewById(R.id.top_title_icon)
+        top_title = itemView.findViewById(R.id.top_title)
     }
 
     override fun bind(position: Int, itemDataHolder: AbsModel) {
@@ -28,6 +38,7 @@ class HeaderViewHolder(itemView: View) : IViewHolder(itemView) {
             button.visibility = View.GONE
             badgeStub?.visibility = View.GONE
             itemView.layoutParams.height = Utils.dp(1f)
+            extension.visibility = View.GONE
             return
         }
         var s = 0
@@ -95,10 +106,33 @@ class HeaderViewHolder(itemView: View) : IViewHolder(itemView) {
             }
             s++
         }
-        if (s == 3) {
-            itemView.layoutParams.height = Utils.dp(1f)
+        if (catalogLayout.topTittleIcon.isNullOrEmpty() && catalogLayout.topTittleText.isNullOrEmpty()) {
+            if (extension.visibility != View.GONE) {
+                extension.visibility = View.GONE
+            }
+            if (s >= 3) {
+                itemView.layoutParams.height = Utils.dp(1f)
+            } else {
+                itemView.layoutParams.height = Utils.dp(48f)
+            }
         } else {
-            itemView.layoutParams.height = Utils.dp(48f)
+            if (extension.visibility != View.VISIBLE) {
+                extension.visibility = View.VISIBLE
+            }
+            top_title.text = catalogLayout.topTittleText
+
+            top_title_icon.visibility =
+                if (catalogLayout.topTittleIcon.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
+            if (catalogLayout.topTittleIcon.nonNullNoEmpty()) {
+                PicassoInstance.with()
+                    .load(catalogLayout.topTittleIcon)
+                    .tag(Constants.PICASSO_TAG)
+                    .placeholder(R.drawable.background_gray)
+                    .into(top_title_icon)
+            } else {
+                PicassoInstance.with().cancelRequest(top_title_icon)
+            }
+            itemView.layoutParams.height = Utils.dp(65f)
         }
     }
 

@@ -63,7 +63,7 @@ class WallPostQueryAttachmentsFragment :
                 return false
             }
         })
-        val recyclerView: RecyclerView = root.findViewById(android.R.id.list)
+        val recyclerView: RecyclerView = root.findViewById(R.id.content_list)
         recyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, false)
         recyclerView.addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))

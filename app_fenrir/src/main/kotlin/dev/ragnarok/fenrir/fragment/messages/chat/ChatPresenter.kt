@@ -1008,7 +1008,7 @@ class ChatPresenter(
             draftMessageText,
             outConfig.getModels(),
             isGroupChat
-        ) // TODO: 15.08.2017
+        )
     }
 
     private fun canSendNormalMessage(): Boolean {
@@ -1330,7 +1330,7 @@ class ChatPresenter(
         toolbarSubtitleHandler.restoreToolbarWithDelay()
     }
 
-    fun ResolveWritingInfo(context: Context, writeText: WriteText) {
+    fun resolveWritingInfo(context: Context, writeText: WriteText) {
         appendDisposable(
             OwnerInfo.getRx(context, accountId, writeText.getFrom_ids()[0])
                 .fromIOToMain()
@@ -1918,7 +1918,7 @@ class ChatPresenter(
         PlaceFactory.getShortLinks(accountId).tryOpenWith(context)
     }
 
-    fun fireShow_Profile() {
+    fun fireShowProfile() {
         view?.showUserWall(accountId, peerId)
     }
 
@@ -1953,11 +1953,11 @@ class ChatPresenter(
     }
 
     fun fireDialogAttachmentsClick() {
-        view?.goToConversationAttachments(accountId, peerId) // TODO: 15.08.2017
+        view?.goToConversationAttachments(accountId, peerId)
     }
 
     fun fireSearchClick() {
-        view?.goToSearchMessage(accountId, peer) // TODO: 15.08.2017
+        view?.goToSearchMessage(accountId, peer)
     }
 
     fun fireImageUploadSizeSelected(streams: List<Uri>, size: Int) {
@@ -2074,7 +2074,7 @@ class ChatPresenter(
     }
 
     fun fireForwardToAnotherClick(messages: ArrayList<Message>) {
-        view?.forwardMessagesToAnotherConversation(messages, messagesOwnerId) // TODO: 15.08.2017
+        view?.forwardMessagesToAnotherConversation(messages, messagesOwnerId)
     }
 
     public override fun onActionModeForwardClick() {
@@ -2153,12 +2153,12 @@ class ChatPresenter(
                 .getKeys(messagesOwnerId, peerId)
                 .fromIOToMain()
                 .subscribe(
-                    { aesKeyPairs -> fireEncriptionEnableClick(policy, aesKeyPairs) },
+                    { aesKeyPairs -> fireEncryptionEnableClick(policy, aesKeyPairs) },
                     { logThrowable("ChatPresenter", it) })
         )
     }
 
-    private fun fireEncriptionEnableClick(@KeyLocationPolicy policy: Int, pairs: List<AesKeyPair>) {
+    private fun fireEncryptionEnableClick(@KeyLocationPolicy policy: Int, pairs: List<AesKeyPair>) {
         if (pairs.isEmpty()) {
             view?.displayInitiateKeyExchangeQuestion(policy)
         } else {
@@ -2167,7 +2167,7 @@ class ChatPresenter(
         }
     }
 
-    fun fireIniciateKeyExchangeClick(@KeyLocationPolicy policy: Int) {
+    fun fireInitiateKeyExchangeClick(@KeyLocationPolicy policy: Int) {
         KeyExchangeService.iniciateKeyExchangeSession(App.instance, messagesOwnerId, peerId, policy)
     }
 
@@ -2450,14 +2450,14 @@ class ChatPresenter(
         view?.showChatMembers(accountId, Peer.toChatId(peerId))
     }
 
-    fun fireLongAvatarClick(Id: Long) {
-        if (Id > 0) {
-            netLoadingDisposable = Repository.owners.getFullUserInfo(accountId, Id, MODE_NET)
+    fun fireLongAvatarClick(uId: Long) {
+        if (uId > 0) {
+            netLoadingDisposable = Repository.owners.getFullUserInfo(accountId, uId, MODE_NET)
                 .fromIOToMain()
                 .subscribe({ info ->
                     run {
                         val Dmn: String = if (info.first?.domain == null)
-                            "@id$Id,"
+                            "@id$uId,"
                         else
                             "@" + info.first.domain + ","
                         view?.appendMessageText(Dmn)

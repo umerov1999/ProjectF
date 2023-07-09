@@ -145,7 +145,7 @@ struct RenderStroke
     ~RenderStroke()
     {
         free(dashPattern);
-        if (fill) delete(fill);
+        delete(fill);
     }
 };
 
@@ -153,13 +153,8 @@ struct RenderShape
 {
     struct
     {
-        PathCommand* cmds = nullptr;
-        uint32_t cmdCnt = 0;
-        uint32_t reservedCmdCnt = 0;
-
-        Point *pts = nullptr;
-        uint32_t ptsCnt = 0;
-        uint32_t reservedPtsCnt = 0;
+        Array<PathCommand> cmds;
+        Array<Point> pts;
     } path;
 
     Fill *fill = nullptr;
@@ -169,11 +164,8 @@ struct RenderShape
 
     ~RenderShape()
     {
-        free(path.cmds);
-        free(path.pts);
-
-        if (fill) delete(fill);
-        if (stroke) delete(stroke);
+        delete(fill);
+        delete(stroke);
     }
 
     void fillColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
@@ -315,6 +307,12 @@ static inline ColorSpace COMPOSITE_TO_COLORSPACE(RenderMethod& renderer, Composi
             return ColorSpace::Unsupported;
     }
 }
+
+static inline uint8_t MULTIPLY(uint8_t c, uint8_t a)
+{
+    return (((c) * (a) + 0xff) >> 8);
+}
+
 
 }
 

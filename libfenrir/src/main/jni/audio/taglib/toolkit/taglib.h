@@ -28,8 +28,8 @@
 
 #include "taglib_config.h"
 
-#define TAGLIB_MAJOR_VERSION 1
-#define TAGLIB_MINOR_VERSION 13
+#define TAGLIB_MAJOR_VERSION 2
+#define TAGLIB_MINOR_VERSION 0
 #define TAGLIB_PATCH_VERSION 0
 
 #if (defined(_MSC_VER) && _MSC_VER >= 1600)
@@ -43,9 +43,13 @@
 #elif defined(__GNUC__) || defined(__clang__)
 #define TAGLIB_DEPRECATED __attribute__((deprecated))
 #elif defined(_MSC_VER)
-#define TAGLIB_DEPRECATED
+#define TAGLIB_DEPRECATED __declspec(deprecated)
 #else
 #define TAGLIB_DEPRECATED
+#endif
+
+#ifndef _WIN32
+#include <sys/types.h>
 #endif
 
 #include <string>
@@ -72,6 +76,14 @@ namespace TagLib {
   typedef unsigned int       uint;
   typedef unsigned long      ulong;
   typedef unsigned long long ulonglong;
+
+  // Offset or length type for I/O streams.
+  // In Win32, always 64bit. Otherwise, equivalent to off_t.
+#ifdef _WIN32
+  typedef long long offset_t;
+#else
+  typedef off_t     offset_t;
+#endif
 
   /*!
    * Unfortunately std::wstring isn't defined on some systems, (i.e. GCC < 3)

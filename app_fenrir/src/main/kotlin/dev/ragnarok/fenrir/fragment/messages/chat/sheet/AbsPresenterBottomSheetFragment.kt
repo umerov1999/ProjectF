@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.messages.chat.sheet
 
 import android.os.Bundle
 import android.view.View
-import androidx.loader.app.LoaderManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dev.ragnarok.fenrir.fragment.base.compat.ViewHostDelegate
 import dev.ragnarok.fenrir.fragment.base.compat.ViewHostDelegate.IFactoryProvider
@@ -15,10 +14,9 @@ abstract class AbsPresenterBottomSheetFragment<P : IPresenter<V>, V : IMvpView> 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         delegate.onCreate(
-            requireActivity(),
             presenterViewHost,
             this,
-            LoaderManager.getInstance(this),
+            this,
             savedInstanceState
         )
     }
@@ -59,7 +57,7 @@ abstract class AbsPresenterBottomSheetFragment<P : IPresenter<V>, V : IMvpView> 
 
     // Override in case of fragment not implementing IPresenter<View> interface
     @Suppress("UNCHECKED_CAST")
-    protected val presenterViewHost: V
+    private val presenterViewHost: V
         get() = this as V
     protected val presenter: P?
         get() = delegate.presenter

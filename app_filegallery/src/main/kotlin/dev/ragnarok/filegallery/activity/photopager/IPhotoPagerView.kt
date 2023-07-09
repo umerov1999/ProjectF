@@ -8,7 +8,7 @@ import dev.ragnarok.filegallery.model.Video
 
 interface IPhotoPagerView : IMvpView, IErrorView, IToastView {
     fun displayPhotos(photos: List<Photo>, initialIndex: Int)
-    fun setToolbarTitle(title: String?)
+    fun setToolbarTitle(currentIndex: Int, count: Int)
     fun setToolbarSubtitle(subtitle: String?)
     fun displayPhotoListLoading(loading: Boolean)
     fun setButtonsBarVisible(visible: Boolean)
@@ -19,4 +19,6 @@ interface IPhotoPagerView : IMvpView, IErrorView, IToastView {
     fun returnFileInfo(path: String)
     fun displayVideo(video: Video)
     fun setupOptionMenu(isLocal: Boolean)
+
+    fun downloadPhoto(url: String, dir: String, file: String)
 }

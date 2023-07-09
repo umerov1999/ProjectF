@@ -18,8 +18,8 @@ import io.reactivex.rxjava3.disposables.Disposable
 
 abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
     AbsPresenter<V>(savedInstanceState) {
-    private var instanceId = 0
-    private val compositeDisposable = CompositeDisposable()
+    protected var instanceId = 0L
+    protected val compositeDisposable = CompositeDisposable()
     private var viewCreationCount = 0
 
     public override fun onGuiCreated(viewHost: V) {
@@ -29,7 +29,7 @@ abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
 
     override fun saveState(outState: Bundle) {
         super.saveState(outState)
-        outState.putInt(SAVE_INSTANCE_ID, instanceId)
+        outState.putLong(SAVE_INSTANCE_ID, instanceId)
     }
 
     override fun onDestroyed() {
@@ -73,7 +73,7 @@ abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
 
     init {
         savedInstanceState?.let {
-            instanceId = savedInstanceState.getInt(SAVE_INSTANCE_ID)
+            instanceId = savedInstanceState.getLong(SAVE_INSTANCE_ID)
             instancesCounter.fireExists(javaClass, instanceId)
         } ?: run { instanceId = instancesCounter.incrementAndGet(javaClass) }
     }

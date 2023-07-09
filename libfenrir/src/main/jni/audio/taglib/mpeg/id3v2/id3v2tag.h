@@ -146,7 +146,7 @@ namespace TagLib {
        *
        * \see FrameFactory
        */
-      Tag(File *file, long tagOffset,
+      Tag(File *file, offset_t tagOffset,
           const FrameFactory *factory = FrameFactory::instance());
 
       /*!
@@ -184,16 +184,6 @@ namespace TagLib {
        * extended header.
        */
       ExtendedHeader *extendedHeader() const;
-
-      /*!
-       * Returns a pointer to the tag's footer or null if there is no footer.
-       *
-       * \deprecated I don't see any reason to keep this around since there's
-       * nothing useful to be retrieved from the footer, but well, again, I'm
-       * prone to change my mind, so this gets to stay around until near a
-       * release.
-       */
-      TAGLIB_DEPRECATED Footer *footer() const;
 
       /*!
        * Returns a reference to the frame list map.  This is an FrameListMap of
@@ -336,11 +326,6 @@ namespace TagLib {
        * Render the tag back to binary data, suitable to be written to disk.
        */
       ByteVector render() const;
-
-      /*!
-       * \deprecated Use render(Version) const.
-       */
-      TAGLIB_DEPRECATED ByteVector render(int version) const;
 
       /*!
        * Render the tag back to binary data, suitable to be written to disk.

@@ -27,14 +27,12 @@ import dev.ragnarok.filegallery.settings.CurrentTheme.getColorPrimary
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorSecondary
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.util.AssertUtils
-import dev.ragnarok.filegallery.util.DownloadWorkUtils.doDownloadPhoto
 import dev.ragnarok.filegallery.util.Utils
 import java.io.File
 import java.util.Calendar
 
 open class PhotoPagerPresenter internal constructor(
     initialData: ArrayList<Photo>,
-    private val context: Context,
     savedInstanceState: Bundle?
 ) : RxSupportPresenter<IPhotoPagerView>(savedInstanceState) {
     protected var mPhotos: ArrayList<Photo> = initialData
@@ -92,8 +90,7 @@ open class PhotoPagerPresenter internal constructor(
 
     private fun resolveToolbarTitleSubtitleView() {
         if (!hasPhotos()) return
-        val title = context.getString(R.string.image_number, currentIndex + 1, count())
-        view?.setToolbarTitle(title)
+        view?.setToolbarTitle(currentIndex + 1, count())
         view?.setToolbarSubtitle(current.text)
     }
 
@@ -240,8 +237,7 @@ open class PhotoPagerPresenter internal constructor(
             dir = dir_final
         }
         photo.photo_url?.let {
-            doDownloadPhoto(
-                context,
+            view?.downloadPhoto(
                 it,
                 dir.absolutePath,
                 (if (Prefix != null) Prefix + "_" else "") + photo.ownerId + "_" + photo.id

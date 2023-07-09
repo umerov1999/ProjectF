@@ -38,7 +38,6 @@ import dev.ragnarok.fenrir.link.types.DomainLink
 import dev.ragnarok.fenrir.link.types.PageLink
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.Settings
@@ -188,46 +187,44 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                     )
                 )
                 menus.show(
-                    requireActivity().supportFragmentManager,
-                    "left_options",
-                    object : ModalBottomSheetDialogFragment.Listener {
-                        override fun onModalOptionSelected(option: Option) {
-                            if (option.id == R.id.button_ok) {
-                                val urlObj = URL(imageUrl)
-                                val urlPath: String = urlObj.path
-                                var fileName = urlPath.substring(urlPath.lastIndexOf('/') + 1)
-                                if (fileName.lastIndexOf('.') != -1) {
-                                    fileName = fileName.substring(0, fileName.lastIndexOf('.'))
-                                }
-
-                                typeRes ?: return
-                                owner ?: return
-                                typeRes += ("_$fileName")
-                                val dir = File(Settings.get().other().photoDir)
-                                if (!dir.isDirectory) {
-                                    val created = dir.mkdirs()
-                                    if (!created) {
-                                        CustomToast.createCustomToast(requireActivity())
-                                            .showToastError("Can't create directory $dir")
-                                        return
-                                    }
-                                } else dir.setLastModified(Calendar.getInstance().time.time)
-                                downloadResult(
-                                    DownloadWorkUtils.makeLegalFilename(
-                                        (DownloadWorkUtils.fixStart(owner) ?: typeRes),
-                                        null
-                                    ), dir, imageUrl, typeRes
-                                )
-                            } else if (option.id == R.id.button_cancel) {
-                                val clipboard =
-                                    requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-                                val clip = ClipData.newPlainText("response", imageUrl)
-                                clipboard?.setPrimaryClip(clip)
-                                CustomToast.createCustomToast(context)
-                                    .showToast(R.string.copied_to_clipboard)
-                            }
+                    childFragmentManager,
+                    "left_options"
+                ) { _, option ->
+                    if (option.id == R.id.button_ok) {
+                        val urlObj = URL(imageUrl)
+                        val urlPath: String = urlObj.path
+                        var fileName = urlPath.substring(urlPath.lastIndexOf('/') + 1)
+                        if (fileName.lastIndexOf('.') != -1) {
+                            fileName = fileName.substring(0, fileName.lastIndexOf('.'))
                         }
-                    })
+
+                        typeRes ?: return@show
+                        owner ?: return@show
+                        typeRes += ("_$fileName")
+                        val dir = File(Settings.get().other().photoDir)
+                        if (!dir.isDirectory) {
+                            val created = dir.mkdirs()
+                            if (!created) {
+                                CustomToast.createCustomToast(requireActivity())
+                                    .showToastError("Can't create directory $dir")
+                                return@show
+                            }
+                        } else dir.setLastModified(Calendar.getInstance().time.time)
+                        downloadResult(
+                            DownloadWorkUtils.makeLegalFilename(
+                                (DownloadWorkUtils.fixStart(owner) ?: typeRes),
+                                null
+                            ), dir, imageUrl, typeRes
+                        )
+                    } else if (option.id == R.id.button_cancel) {
+                        val clipboard =
+                            requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                        val clip = ClipData.newPlainText("response", imageUrl)
+                        clipboard?.setPrimaryClip(clip)
+                        CustomToast.createCustomToast(context)
+                            .showToast(R.string.copied_to_clipboard)
+                    }
+                }
             }
         }
     }

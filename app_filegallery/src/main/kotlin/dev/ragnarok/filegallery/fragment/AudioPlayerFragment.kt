@@ -352,18 +352,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         // Refresh the current time
         val next = refreshCurrentTime()
         queueNextRefresh(next)
-        MusicPlaybackController.notifyForegroundStateChanged(
-            requireActivity(),
-            MusicPlaybackController.isPlaying
-        )
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun onStop() {
-        super.onStop()
-        MusicPlaybackController.notifyForegroundStateChanged(requireActivity(), false)
     }
 
     /**

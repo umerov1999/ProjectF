@@ -113,9 +113,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-android-extensions-runtime:$kotlin_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines")
     compileOnly("org.jetbrains.kotlin:kotlin-annotations-jvm:$kotlin_version")
+    implementation("com.google.guava:guava:$guavaVersion")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:$desugarLibraryVersion")
     implementation("androidx.core:core-ktx:$coreVersion")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-common:$lifecycleVersion")
     implementation("androidx.annotation:annotation:$annotationVersion")
     //implementation("androidx.recyclerview:recyclerview:$recyclerviewVersion")
@@ -153,9 +155,7 @@ dependencies {
     implementation("androidx.activity:activity-ktx:$activityVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
     implementation("androidx.work:work-runtime-ktx:$workVersion")
-    implementation("com.google.guava:guava:$guavaVersion")
     implementation("androidx.drawerlayout:drawerlayout:$drawerlayoutVersion")
-    implementation("androidx.loader:loader:$loaderVersion")
     implementation("androidx.collection:collection-ktx:$collectionVersion")
     implementation("androidx.savedstate:savedstate-ktx:$savedStateVersion")
     implementation("androidx.cardview:cardview:$cardviewVersion")
@@ -166,5 +166,11 @@ dependencies {
     //implementation("androidx.camera:camera-camera2:$cameraVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlin_serializer")
     implementation("com.google.errorprone:error_prone_annotations:${errorproneVersion}")
+
+    modules {
+        module("com.google.guava:listenablefuture") {
+            replacedBy("com.google.guava:guava", "listenablefuture is part of guava")
+        }
+    }
 }
 apply plugin: "com.google.gms.google-services"

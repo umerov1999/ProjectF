@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.fragment.base.core
 import android.os.Bundle
 import androidx.annotation.CallSuper
 import java.lang.ref.WeakReference
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresenter<V> {
 
@@ -25,7 +25,8 @@ abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresen
     val guiIsResumed: Boolean
         get() = isGuiResumed
 
-    var id: Int
+    var id: Long
+        private set
 
     private var isDestroyed: Boolean = false
 
@@ -45,7 +46,7 @@ abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresen
 
     init {
         if (savedInstanceState != null) {
-            id = savedInstanceState.getInt(SAVE_ID)
+            id = savedInstanceState.getLong(SAVE_ID)
             if (id >= IDGEN.get()) {
                 IDGEN.set(id + 1)
             }
@@ -82,6 +83,10 @@ abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresen
     @CallSuper
     protected open fun onGuiPaused() {
 
+    }
+
+    override fun getPresenterId(): Long {
+        return id
     }
 
     override fun destroy() {
@@ -126,11 +131,15 @@ abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresen
 
     @CallSuper
     override fun saveState(outState: Bundle) {
-        outState.putInt(SAVE_ID, id)
+        outState.putLong(SAVE_ID, id)
     }
 
     companion object {
-        private val IDGEN = AtomicInteger()
+        private val IDGEN = AtomicLong()
         private const val SAVE_ID = "save_presenter_id"
+
+        fun extractIdPresenter(savedInstanceState: Bundle?): Long {
+            return savedInstanceState?.getLong(SAVE_ID, -1) ?: -1
+        }
     }
 }

@@ -1,11 +1,13 @@
 package dev.ragnarok.filegallery.util
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Environment
+import android.os.PowerManager
 import android.os.Process
 import android.provider.Settings
 import android.widget.Toast
@@ -17,13 +19,35 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.util.toast.CustomToast
 
 object AppPerms {
+    @SuppressLint("BatteryLife")
+    fun ignoreBattery(context: Context) {
+        if (!Utils.hasMarshmallow()) {
+            return
+        }
+        if (!HelperSimple.needHelp(HelperSimple.BATTERY_OPTIMIZATION, 1)) {
+            return
+        }
+        try {
+            val packageName = context.packageName
+            val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
+            pm ?: return
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                intent.data = Uri.parse("package:$packageName")
+                //intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                context.startActivity(intent)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     fun hasReadWriteStoragePermission(context: Context): Boolean {
         if (!Utils.hasMarshmallow()) return true
         if (Utils.hasScopedStorage()) {
             if (!Environment.isExternalStorageManager()) {
                 val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                val uri = Uri.fromParts("package", context.packageName, null)
-                intent.data = uri
+                intent.data = Uri.parse("package:${context.packageName}")
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 context.startActivity(intent)
                 Process.killProcess(Process.myPid())

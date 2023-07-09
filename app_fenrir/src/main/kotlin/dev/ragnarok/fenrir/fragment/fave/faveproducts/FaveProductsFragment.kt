@@ -31,7 +31,7 @@ class FaveProductsFragment : BaseMvpFragment<FaveProductsPresenter, IFaveProduct
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_fave_products, container, false)
-        val recyclerView: RecyclerView = root.findViewById(android.R.id.list)
+        val recyclerView: RecyclerView = root.findViewById(R.id.content_list)
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener(this)
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)

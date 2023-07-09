@@ -101,19 +101,19 @@ abstract class BaseMvpBottomSheetDialogFragment<P : AbsPresenter<V>, V : IMvpVie
 
     companion object {
         const val EXTRA_HIDE_TOOLBAR = "extra_hide_toolbar"
-        protected fun safelySetChecked(button: CompoundButton?, checked: Boolean) {
+        fun safelySetChecked(button: CompoundButton?, checked: Boolean) {
             button?.isChecked = checked
         }
 
-        protected fun safelySetText(target: TextView?, text: String?) {
+        fun safelySetText(target: TextView?, text: String?) {
             target?.text = text
         }
 
-        protected fun safelySetText(target: TextView?, @StringRes text: Int) {
+        fun safelySetText(target: TextView?, @StringRes text: Int) {
             target?.setText(text)
         }
 
-        protected fun safelySetVisibleOrGone(target: View?, visible: Boolean) {
+        fun safelySetVisibleOrGone(target: View?, visible: Boolean) {
             target?.visibility = if (visible) View.VISIBLE else View.GONE
         }
     }

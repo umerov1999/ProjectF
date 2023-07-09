@@ -7,6 +7,7 @@ import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2ArtistItem
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2Block
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2Link
+import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2RecommendationPlaylist
 import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.upload.Upload
@@ -25,7 +26,7 @@ class ParcelableModelWrapper : Parcelable {
                     return arrayOfNulls(size)
                 }
             }
-        private val TYPES: ArrayMap<Int, (parcel: Parcel) -> AbsModel?> = ArrayMap(45)
+        private val TYPES: ArrayMap<Int, (parcel: Parcel) -> AbsModel?> = ArrayMap(46)
 
         fun wrap(model: AbsModel): ParcelableModelWrapper {
             return ParcelableModelWrapper(model)
@@ -134,6 +135,8 @@ class ParcelableModelWrapper : Parcelable {
                 { it.readTypedObjectCompat(CatalogV2Block.CREATOR) }
             TYPES[AbsModelType.MODEL_CATALOG_V2_LINK] =
                 { it.readTypedObjectCompat(CatalogV2Link.CREATOR) }
+            TYPES[AbsModelType.MODEL_CATALOG_V2_RECOMMENDATION_PLAYLIST] =
+                { it.readTypedObjectCompat(CatalogV2RecommendationPlaylist.CREATOR) }
         }
     }
 

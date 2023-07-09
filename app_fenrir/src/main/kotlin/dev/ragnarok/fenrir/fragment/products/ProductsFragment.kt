@@ -34,7 +34,7 @@ class ProductsFragment : BaseMvpFragment<ProductsPresenter, IProductsView>(), IP
     ): View? {
         val root = inflater.inflate(R.layout.fragment_products, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
-        val recyclerView: RecyclerView = root.findViewById(android.R.id.list)
+        val recyclerView: RecyclerView = root.findViewById(R.id.content_list)
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener(this)
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)

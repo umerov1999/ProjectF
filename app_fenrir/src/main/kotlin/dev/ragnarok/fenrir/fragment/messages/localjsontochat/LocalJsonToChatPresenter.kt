@@ -17,7 +17,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class LocalJsonToChatPresenter(
     accountId: Long,
-    private val context: Context,
+    context: Context,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<ILocalJsonToChatView>(accountId, savedInstanceState) {
     private val mPost: ArrayList<Message> = ArrayList()
@@ -138,7 +138,7 @@ class LocalJsonToChatPresenter(
         return isMy
     }
 
-    private fun loadActualData() {
+    private fun loadActualData(context: Context) {
         showEmpty = false
         resolveEmptyView()
         isLoading = true
@@ -206,6 +206,6 @@ class LocalJsonToChatPresenter(
         AttachmentType = 0
         isMy = false
         peer = Peer(0)
-        loadActualData()
+        loadActualData(context)
     }
 }

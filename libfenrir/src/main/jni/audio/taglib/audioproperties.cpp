@@ -23,24 +23,9 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <tbytevector.h>
-
-#include "apeproperties.h"
-#include "mpegproperties.h"
-
 #include "audioproperties.h"
 
 using namespace TagLib;
-
-// This macro is a workaround for the fact that we can't add virtual functions.
-// Should be true virtual functions in taglib2.
-
-#define VIRTUAL_FUNCTION_WORKAROUND(function_name, default_value)               \
-  if(dynamic_cast<const APE::Properties*>(this))                                \
-    return dynamic_cast<const APE::Properties*>(this)->function_name();         \
-  if(dynamic_cast<const MPEG::Properties*>(this))                               \
-    return dynamic_cast<const MPEG::Properties*>(this)->function_name();        \
-  return (default_value);
 
 class AudioProperties::AudioPropertiesPrivate
 {
@@ -56,14 +41,29 @@ AudioProperties::~AudioProperties()
 
 }
 
+int AudioProperties::length() const
+{
+  return lengthInSeconds();
+}
+
 int AudioProperties::lengthInSeconds() const
 {
-  VIRTUAL_FUNCTION_WORKAROUND(lengthInSeconds, 0)
+  return lengthInMilliseconds() / 1000;
 }
 
 int AudioProperties::lengthInMilliseconds() const
 {
-  VIRTUAL_FUNCTION_WORKAROUND(lengthInMilliseconds, 0)
+  return 0;
+}
+
+int AudioProperties::bitrate() const
+{
+  return 0;
+}
+
+int AudioProperties::sampleRate() const
+{
+  return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

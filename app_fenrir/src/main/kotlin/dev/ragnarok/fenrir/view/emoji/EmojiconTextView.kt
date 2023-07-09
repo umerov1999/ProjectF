@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.EmojiconHandler.addEmojis
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.settings.AppPrefs
 import dev.ragnarok.fenrir.settings.Settings
@@ -207,57 +206,55 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                         menus.columns(1)
                         menus.show(
                             (context as FragmentActivity).supportFragmentManager,
-                            "url_options",
-                            object : ModalBottomSheetDialogFragment.Listener {
-                                override fun onModalOptionSelected(option: Option) {
-                                    when (option.id) {
-                                        1 -> {
-                                            val intent = Intent()
-                                            intent.data = Uri.parse(url)
-                                            intent.action = Intent.ACTION_VIEW
-                                            intent.component = ComponentName(
-                                                AppPrefs.revanced?.first.orEmpty(),
-                                                AppPrefs.revanced?.second.orEmpty()
-                                            )
-                                            context.startActivity(intent)
-                                        }
+                            "url_options"
+                        ) { _, option ->
+                            when (option.id) {
+                                1 -> {
+                                    val intent = Intent()
+                                    intent.data = Uri.parse(url)
+                                    intent.action = Intent.ACTION_VIEW
+                                    intent.component = ComponentName(
+                                        AppPrefs.revanced?.first.orEmpty(),
+                                        AppPrefs.revanced?.second.orEmpty()
+                                    )
+                                    context.startActivity(intent)
+                                }
 
-                                        2 -> {
-                                            if (AppPrefs.isNewPipeInstalled(context)) {
-                                                val intent = Intent()
-                                                intent.data = Uri.parse(url)
-                                                intent.action = Intent.ACTION_VIEW
-                                                intent.component = ComponentName(
-                                                    "org.schabi.newpipe",
-                                                    "org.schabi.newpipe.RouterActivity"
-                                                )
-                                                context.startActivity(intent)
-                                            } else {
-                                                LinkHelper.openLinkInBrowser(
-                                                    context,
-                                                    "https://github.com/TeamNewPipe/NewPipe/releases"
-                                                )
-                                            }
-                                        }
-
-                                        3 -> {
-                                            val intent = Intent()
-                                            intent.data = Uri.parse(url)
-                                            intent.action = Intent.ACTION_VIEW
-                                            intent.component = ComponentName(
-                                                "com.google.android.youtube",
-                                                "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
-                                            )
-                                            context.startActivity(intent)
-                                        }
-
-                                        4 -> {
-                                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                            context.startActivity(intent)
-                                        }
+                                2 -> {
+                                    if (AppPrefs.isNewPipeInstalled(context)) {
+                                        val intent = Intent()
+                                        intent.data = Uri.parse(url)
+                                        intent.action = Intent.ACTION_VIEW
+                                        intent.component = ComponentName(
+                                            "org.schabi.newpipe",
+                                            "org.schabi.newpipe.RouterActivity"
+                                        )
+                                        context.startActivity(intent)
+                                    } else {
+                                        LinkHelper.openLinkInBrowser(
+                                            context,
+                                            "https://github.com/TeamNewPipe/NewPipe/releases"
+                                        )
                                     }
                                 }
-                            })
+
+                                3 -> {
+                                    val intent = Intent()
+                                    intent.data = Uri.parse(url)
+                                    intent.action = Intent.ACTION_VIEW
+                                    intent.component = ComponentName(
+                                        "com.google.android.youtube",
+                                        "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
+                                    )
+                                    context.startActivity(intent)
+                                }
+
+                                4 -> {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                    context.startActivity(intent)
+                                }
+                            }
+                        }
                     } else {
                         LinkHelper.openLinkInBrowser(context, url)
                     }

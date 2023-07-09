@@ -39,5 +39,6 @@ interface IAudioPlayerService {
     int getAudioSessionId();
     int getBufferPercent();
     long getBufferPosition();
+    void doNotDestroyWhenActivityRecreated();
 }
 

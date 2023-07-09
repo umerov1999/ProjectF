@@ -1,11 +1,15 @@
 package dev.ragnarok.fenrir.fragment.base.compat
 
-import android.content.Context
 import android.os.Bundle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
+import dev.ragnarok.fenrir.fragment.base.core.AbsPresenter
 import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 import dev.ragnarok.fenrir.fragment.base.core.IPresenter
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import java.lang.ref.WeakReference
+import java.util.Collections
 
 class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
 
@@ -19,14 +23,11 @@ class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
 
     private val onReceivePresenterActions = ArrayList<P.() -> Unit>()
 
-    @Volatile
-    private var app: Context? = null
-
+    @Suppress("UNCHECKED_CAST")
     fun onCreate(
-        context: Context,
         view: V,
         factoryProvider: IFactoryProvider<P, V>,
-        loaderManager: androidx.loader.app.LoaderManager,
+        viewModelOwner: ViewModelStoreOwner,
         savedInstanceState: Bundle?
     ) {
         this.viewReference = WeakReference(view)
@@ -35,30 +36,12 @@ class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
             this.lastKnownPresenterState = savedInstanceState.getBundle(SAVE_PRESENTER_STATE)
         }
 
-        app = context.applicationContext
-        val loader = loaderManager.initLoader(
-            LOADER_ID,
-            lastKnownPresenterState,
-            object : androidx.loader.app.LoaderManager.LoaderCallbacks<P> {
-                override fun onCreateLoader(
-                    id: Int,
-                    args: Bundle?
-                ): androidx.loader.content.Loader<P> {
-                    return SimplePresenterLoader(app!!, factoryProvider.getPresenterFactory(args))
-                }
+        val loader = ViewModelProvider(
+            viewModelOwner,
+            factoryPresenterLoader
+        )["fenrirPresenters", PresenterLoader::class.java] as PresenterLoader<P, V>
 
-                override fun onLoadFinished(loader: androidx.loader.content.Loader<P>, data: P) {
-
-                }
-
-                override fun onLoaderReset(loader: androidx.loader.content.Loader<P>) {
-                    presenter = null
-                }
-            })
-
-        @Suppress("UNCHECKED_CAST")
-        @SuppressWarnings("unchecked")
-        presenter = (loader as SimplePresenterLoader<P, V>).get()
+        presenter = loader.make(lastKnownPresenterState, factoryProvider)
         presenter?.run {
             attachViewHost(view)
             for (action in onReceivePresenterActions) {
@@ -114,8 +97,35 @@ class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
         fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<P>
     }
 
+    internal class PresenterLoader<P : IPresenter<V>, V : IMvpView> : ViewModel() {
+        val list: MutableMap<Long, P> = Collections.synchronizedMap(HashMap<Long, P>(1))
+
+        fun make(savedInstanceState: Bundle?, factory: IFactoryProvider<P, V>): P {
+            var presenter: P? = list[AbsPresenter.extractIdPresenter(savedInstanceState)]
+            if (presenter == null) {
+                presenter = factory.getPresenterFactory(savedInstanceState).create()
+                list[presenter.getPresenterId()] = presenter
+            }
+            return presenter
+        }
+
+        override fun onCleared() {
+            for (i in list) {
+                i.value.destroy()
+            }
+            list.clear()
+            super.onCleared()
+        }
+    }
+
+    private val factoryPresenterLoader = object : ViewModelProvider.Factory {
+        @Suppress("unchecked_cast")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return PresenterLoader<P, V>() as T
+        }
+    }
+
     companion object {
         private const val SAVE_PRESENTER_STATE = "save-presenter-state"
-        private const val LOADER_ID = 101
     }
 }

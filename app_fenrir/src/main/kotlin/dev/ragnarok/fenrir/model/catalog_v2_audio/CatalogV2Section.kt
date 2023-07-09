@@ -12,8 +12,11 @@ import kotlin.math.abs
 class CatalogV2Section : Parcelable {
     var blocks: List<AbsModel>? = null
         private set
+
+    /*
     var buttons: List<CatalogV2Button>? = null
         private set
+     */
     var id: String? = null
         private set
     var title: String? = null
@@ -26,12 +29,11 @@ class CatalogV2Section : Parcelable {
         private set
 
     private inline fun <reified T : AbsModel, reified S : IIdComparable> parseAllItemsByIds(
-        block: CatalogV2Block,
         list: List<S>?,
         keys: List<String>?,
         transform: (S) -> T
-    ) {
-        keys ?: return
+    ): ArrayList<T>? {
+        keys ?: return null
         val ret = ArrayList<T>()
         for (i in list.orEmpty()) {
             for (s in keys) {
@@ -41,6 +43,19 @@ class CatalogV2Section : Parcelable {
             }
         }
         if (ret.isEmpty()) {
+            return null
+        }
+        return ret
+    }
+
+    private inline fun <reified T : AbsModel, reified S : IIdComparable> insertAllItemsByIds(
+        block: CatalogV2Block,
+        list: List<S>?,
+        keys: List<String>?,
+        transform: (S) -> T
+    ) {
+        val ret = parseAllItemsByIds(list, keys, transform)
+        if (ret.isNullOrEmpty()) {
             return
         }
         block.items ?: run { block.items = ArrayList() }
@@ -50,16 +65,15 @@ class CatalogV2Section : Parcelable {
     private fun parsePlaylistCover(object_v: VKApiCatalogV2SectionResponse) {
         for (m in object_v.playlists.orEmpty()) {
             if (m.thumb_image.isNullOrEmpty()) {
-                var fuser = false
-                for (d in object_v.profiles.orEmpty()) {
-                    if (d.id == m.owner_id) {
-                        m.thumb_image =
-                            Utils.firstNonEmptyString(d.photo_200, d.photo_100, d.photo_50)
-                        fuser = true
-                        break
+                if (m.owner_id >= 0) {
+                    for (d in object_v.profiles.orEmpty()) {
+                        if (d.id == m.owner_id) {
+                            m.thumb_image =
+                                Utils.firstNonEmptyString(d.photo_200, d.photo_100, d.photo_50)
+                            break
+                        }
                     }
-                }
-                if (!fuser) {
+                } else {
                     for (d in object_v.groups.orEmpty()) {
                         if (d.id == abs(m.owner_id)) {
                             m.thumb_image =
@@ -78,33 +92,36 @@ class CatalogV2Section : Parcelable {
             for ((ss, i) in obj.withIndex()) {
                 val s = CatalogV2Block(i)
                 if (i.data_type == "music_recommended_playlists") {
-                    parsePlaylistCover(object_v)
-                    parseAllItemsByIds(s, object_v.playlists, i.playlists_ids) {
-                        Dto2Model.transform(it)
-                    }
-                    if (s.items.isNullOrEmpty()) {
-                        parseAllItemsByIds(s, object_v.audios, i.audios_ids) {
-                            Dto2Model.transform(it)
+                    insertAllItemsByIds(s, object_v.recommended_playlists, i.playlists_ids) {
+                        CatalogV2RecommendationPlaylist(
+                            it,
+                            object_v.profiles,
+                            object_v.groups,
+                            object_v.playlists
+                        ) { op ->
+                            parseAllItemsByIds(object_v.audios, op) { ist ->
+                                Dto2Model.transform(ist)
+                            }
                         }
                     }
                 } else {
-                    parseAllItemsByIds(s, object_v.audios, i.audios_ids) {
+                    insertAllItemsByIds(s, object_v.audios, i.audios_ids) {
                         Dto2Model.transform(it)
                     }
                     parsePlaylistCover(object_v)
-                    parseAllItemsByIds(s, object_v.playlists, i.playlists_ids) {
+                    insertAllItemsByIds(s, object_v.playlists, i.playlists_ids) {
                         Dto2Model.transform(it)
                     }
-                    parseAllItemsByIds(s, object_v.artists, i.artists_ids) {
+                    insertAllItemsByIds(s, object_v.artists, i.artists_ids) {
                         CatalogV2ArtistItem(it)
                     }
-                    parseAllItemsByIds(s, object_v.links, i.links_ids) {
+                    insertAllItemsByIds(s, object_v.links, i.links_ids) {
                         CatalogV2Link(it).setParentLayout(i.layout?.name)
                     }
-                    parseAllItemsByIds(s, object_v.artist_videos, i.artist_videos_ids) {
+                    insertAllItemsByIds(s, object_v.artist_videos, i.artist_videos_ids) {
                         Dto2Model.transform(it)
                     }
-                    parseAllItemsByIds(s, object_v.videos, i.videos_ids) {
+                    insertAllItemsByIds(s, object_v.videos, i.videos_ids) {
                         Dto2Model.transform(it)
                     }
                 }
@@ -120,6 +137,7 @@ class CatalogV2Section : Parcelable {
             }
             op
         }
+        /*
         buttons = object_v.section?.buttons?.let {
             val op = ArrayList<CatalogV2Button>(it.size)
             for (i in it) {
@@ -127,6 +145,7 @@ class CatalogV2Section : Parcelable {
             }
             op
         }
+         */
         id = object_v.section?.id
         title = object_v.section?.title
         url = object_v.section?.url
@@ -135,7 +154,7 @@ class CatalogV2Section : Parcelable {
 
     constructor(parcel: Parcel) {
         blocks = parcel.createTypedArrayList(CatalogV2Block)
-        buttons = parcel.createTypedArrayList(CatalogV2Button)
+        //buttons = parcel.createTypedArrayList(CatalogV2Button)
         id = parcel.readString()
         title = parcel.readString()
         url = parcel.readString()
@@ -145,7 +164,7 @@ class CatalogV2Section : Parcelable {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeTypedList(blocks)
-        parcel.writeTypedList(buttons)
+        //parcel.writeTypedList(buttons)
         parcel.writeString(id)
         parcel.writeString(title)
         parcel.writeString(url)

@@ -43,8 +43,7 @@ class CommentsPresenter(
     private var authorId: Long,
     commented: Commented,
     focusToComment: Int?,
-    context: Context,
-    CommentThread: Int?,
+    commentThread: Int?,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<ICommentsView>(
     authorId, savedInstanceState
@@ -55,7 +54,6 @@ class CommentsPresenter(
     private val stickersInteractor: IStickersInteractor
     private val data: MutableList<Comment>
     private val CommentThread: Int?
-    private val context: Context
     private val stickersWordsDisplayDisposable = DisposableHolder<Void>()
     private val actualLoadingDisposable = CompositeDisposable()
     private val deepLookingHolder = DisposableHolder<Void>()
@@ -658,7 +656,7 @@ class CommentsPresenter(
         }
     }
 
-    fun fireReport(comment: Comment) {
+    fun fireReport(context: Context, comment: Comment) {
         val items = arrayOf<CharSequence>(
             "Спам",
             "Детская порнография",
@@ -700,7 +698,7 @@ class CommentsPresenter(
         )
     }
 
-    fun fireReplyToChat(comment: Comment) {
+    fun fireReplyToChat(context: Context, comment: Comment) {
         startForSendAttachments(
             context, authorId, WallReply().buildFromComment(
                 comment, commented
@@ -1166,9 +1164,8 @@ class CommentsPresenter(
         stickersInteractor = InteractorFactory.createStickersInteractor()
         this.commented = commented
         this.focusToComment = focusToComment
-        this.context = context
         directionDesc = Settings.get().other().isCommentsDesc
-        this.CommentThread = CommentThread
+        this.CommentThread = commentThread
         data = ArrayList()
         val attachmentsRepository = attachmentsRepository
         appendDisposable(attachmentsRepository
@@ -1189,7 +1186,7 @@ class CommentsPresenter(
             .subscribe({ update -> onCommentMinorUpdate(update) }) { it.printStackTrace() })
         restoreDraftCommentSync()
         loadAuthorData()
-        if (focusToComment == null && CommentThread == null) {
+        if (focusToComment == null && commentThread == null) {
             // если надо сфокусироваться на каком-то комментарии - не грузим из кэша
             loadCachedData()
         } else {

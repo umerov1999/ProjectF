@@ -31,7 +31,6 @@ import dev.ragnarok.fenrir.media.music.MusicPlaybackController.playerStatus
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.stop
 import dev.ragnarok.fenrir.media.music.PlayerStatus
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.menu.options.AudioLocalOption
@@ -251,65 +250,63 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
         menus.columns(2)
         menus.show(
             (mContext as FragmentActivity).supportFragmentManager,
-            "audio_options",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    when (option.id) {
-                        AudioLocalOption.upload_item_audio -> {
-                            mClickListener?.onUpload(position, audio)
-                        }
+            "audio_options"
+        ) { _, option ->
+            when (option.id) {
+                AudioLocalOption.upload_item_audio -> {
+                    mClickListener?.onUpload(position, audio)
+                }
 
-                        AudioLocalOption.play_via_local_server -> {
-                            mClickListener?.onRemotePlay(position, audio)
-                        }
+                AudioLocalOption.play_via_local_server -> {
+                    mClickListener?.onRemotePlay(position, audio)
+                }
 
-                        AudioLocalOption.play_item_audio -> {
-                            mClickListener?.onClick(position, audio)
-                            if (Settings.get().other().isShow_mini_player) getPlayerPlace(
-                                Settings.get().accounts().current
-                            ).tryOpenWith(mContext)
-                        }
+                AudioLocalOption.play_item_audio -> {
+                    mClickListener?.onClick(position, audio)
+                    if (Settings.get().other().isShow_mini_player) getPlayerPlace(
+                        Settings.get().accounts().current
+                    ).tryOpenWith(mContext)
+                }
 
-                        AudioLocalOption.play_item_after_current_audio -> playAfterCurrent(
-                            audio
-                        )
+                AudioLocalOption.play_item_after_current_audio -> playAfterCurrent(
+                    audio
+                )
 
-                        AudioLocalOption.bitrate_item_audio -> getLocalBitrate(audio.url)
-                        AudioLocalOption.strip_metadata_item_audio -> {
-                            audio.url?.let { it ->
-                                audioListDisposable = stripMetadata(it).fromIOToMain().subscribe(
-                                    {
-                                        CustomSnackbars.createCustomSnackbars(view)
-                                            ?.setDurationSnack(Snackbar.LENGTH_LONG)
-                                            ?.coloredSnack(
-                                                R.string.success,
-                                                Color.parseColor("#AA48BE2D")
-                                            )
-                                            ?.show()
-                                    },
-                                    { createCustomToast(mContext).showToastError(it.localizedMessage) }
-                                )
-                            }
-                        }
-
-                        AudioLocalOption.delete_item_audio -> try {
-                            if (mContext.getContentResolver()
-                                    .delete(Uri.parse(audio.url), null, null) == 1
-                            ) {
+                AudioLocalOption.bitrate_item_audio -> getLocalBitrate(audio.url)
+                AudioLocalOption.strip_metadata_item_audio -> {
+                    audio.url?.let { it ->
+                        audioListDisposable = stripMetadata(it).fromIOToMain().subscribe(
+                            {
                                 CustomSnackbars.createCustomSnackbars(view)
                                     ?.setDurationSnack(Snackbar.LENGTH_LONG)
-                                    ?.coloredSnack(R.string.success, Color.parseColor("#AA48BE2D"))
+                                    ?.coloredSnack(
+                                        R.string.success,
+                                        Color.parseColor("#AA48BE2D")
+                                    )
                                     ?.show()
-                                mClickListener?.onDelete(position)
-                            }
-                        } catch (e: Exception) {
-                            createCustomToast(mContext).showToastError(e.localizedMessage)
-                        }
-
-                        else -> {}
+                            },
+                            { createCustomToast(mContext).showToastError(it.localizedMessage) }
+                        )
                     }
                 }
-            })
+
+                AudioLocalOption.delete_item_audio -> try {
+                    if (mContext.getContentResolver()
+                            .delete(Uri.parse(audio.url), null, null) == 1
+                    ) {
+                        CustomSnackbars.createCustomSnackbars(view)
+                            ?.setDurationSnack(Snackbar.LENGTH_LONG)
+                            ?.coloredSnack(R.string.success, Color.parseColor("#AA48BE2D"))
+                            ?.show()
+                        mClickListener?.onDelete(position)
+                    }
+                } catch (e: Exception) {
+                    createCustomToast(mContext).showToastError(e.localizedMessage)
+                }
+
+                else -> {}
+            }
+        }
     }
 
     private fun doPlay(position: Int, audio: Audio) {

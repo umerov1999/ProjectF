@@ -26,7 +26,6 @@ import dev.ragnarok.fenrir.fragment.comments.CommentsAdapter.OnCommentActionList
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.menu.options.CommentsPhotoOption
@@ -52,7 +51,7 @@ class PhotoAllCommentFragment :
     ): View? {
         val root = inflater.inflate(R.layout.fragment_photo_all_comment, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
-        recyclerView = root.findViewById(android.R.id.list)
+        recyclerView = root.findViewById(R.id.content_list)
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener(this)
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
@@ -261,51 +260,49 @@ class PhotoAllCommentFragment :
             )
         )
         menus.show(
-            requireActivity().supportFragmentManager,
-            "comments_photo_options",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    when (option.id) {
-                        CommentsPhotoOption.go_to_photo_item_comment ->
-                            presenter?.fireGoPhotoClick(
-                                comment
-                            )
+            childFragmentManager,
+            "comments_photo_options"
+        ) { _, option ->
+            when (option.id) {
+                CommentsPhotoOption.go_to_photo_item_comment ->
+                    presenter?.fireGoPhotoClick(
+                        comment
+                    )
 
-                        CommentsPhotoOption.copy_item_comment -> {
-                            val clipboard = requireActivity()
-                                .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-                            val clip = ClipData.newPlainText("comment", comment.text)
-                            clipboard?.setPrimaryClip(clip)
-                            createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
-                                .showToast(R.string.copied_to_clipboard)
-                        }
-
-                        CommentsPhotoOption.report_item_comment -> presenter?.fireReport(
-                            comment,
-                            requireActivity()
-                        )
-
-                        CommentsPhotoOption.like_item_comment -> presenter?.fireCommentLikeClick(
-                            comment,
-                            true
-                        )
-
-                        CommentsPhotoOption.dislike_item_comment -> presenter?.fireCommentLikeClick(
-                            comment,
-                            false
-                        )
-
-                        CommentsPhotoOption.who_like_item_comment -> presenter?.fireWhoLikesClick(
-                            comment
-                        )
-
-                        CommentsPhotoOption.send_to_friend_item_comment -> presenter?.fireReplyToChat(
-                            comment,
-                            requireActivity()
-                        )
-                    }
+                CommentsPhotoOption.copy_item_comment -> {
+                    val clipboard = requireActivity()
+                        .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                    val clip = ClipData.newPlainText("comment", comment.text)
+                    clipboard?.setPrimaryClip(clip)
+                    createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
+                        .showToast(R.string.copied_to_clipboard)
                 }
-            })
+
+                CommentsPhotoOption.report_item_comment -> presenter?.fireReport(
+                    comment,
+                    requireActivity()
+                )
+
+                CommentsPhotoOption.like_item_comment -> presenter?.fireCommentLikeClick(
+                    comment,
+                    true
+                )
+
+                CommentsPhotoOption.dislike_item_comment -> presenter?.fireCommentLikeClick(
+                    comment,
+                    false
+                )
+
+                CommentsPhotoOption.who_like_item_comment -> presenter?.fireWhoLikesClick(
+                    comment
+                )
+
+                CommentsPhotoOption.send_to_friend_item_comment -> presenter?.fireReplyToChat(
+                    comment,
+                    requireActivity()
+                )
+            }
+        }
     }
 
     override fun onHashTagClicked(hashTag: String) {

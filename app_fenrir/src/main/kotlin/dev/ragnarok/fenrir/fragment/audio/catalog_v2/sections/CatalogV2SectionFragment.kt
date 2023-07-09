@@ -174,12 +174,17 @@ class CatalogV2SectionFragment :
     override fun updateLayoutManager(type: String) {
         recyclerView?.let {
             it.layoutManager = when (type) {
-                "music_playlists", "music_recommended_playlists", "links" -> {
+                "links" -> {
                     val columnCount = resources.getInteger(R.integer.photos_column_count)
                     GridLayoutManager(requireActivity(), columnCount)
                 }
 
-                "videos", "artist_videos" -> {
+                "music_recommended_playlists" -> {
+                    val columnCount = resources.getInteger(R.integer.articles_column_count)
+                    GridLayoutManager(requireActivity(), columnCount)
+                }
+
+                "music_playlists", "videos", "artist_videos" -> {
                     val columnCount = resources.getInteger(R.integer.videos_column_count)
                     GridLayoutManager(requireActivity(), columnCount)
                 }

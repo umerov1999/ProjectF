@@ -44,7 +44,7 @@ class WallSearchCommentsAttachmentsFragment :
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
         mEmpty = root.findViewById(R.id.empty)
         mLoadMore = root.findViewById(R.id.goto_button)
-        recyclerView = root.findViewById(android.R.id.list)
+        recyclerView = root.findViewById(R.id.content_list)
         recyclerView?.layoutManager = LinearLayoutManager(
             requireActivity(),
             RecyclerView.VERTICAL,

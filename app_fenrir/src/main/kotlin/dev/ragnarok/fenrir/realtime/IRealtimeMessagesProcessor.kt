@@ -10,7 +10,7 @@ interface IRealtimeMessagesProcessor {
 
     @Throws(QueueContainsException::class)
     fun process(accountId: Long, messageId: Int, ignoreIfExists: Boolean): Int
-    fun registerNotificationsInterceptor(interceptorId: Int, aidPeerPair: Pair<Long, Long>)
-    fun unregisterNotificationsInterceptor(interceptorId: Int)
+    fun registerNotificationsInterceptor(interceptorId: Long, aidPeerPair: Pair<Long, Long>)
+    fun unregisterNotificationsInterceptor(interceptorId: Long)
     fun isNotificationIntercepted(accountId: Long, peerId: Long): Boolean
 }

@@ -7,7 +7,6 @@ import dev.ragnarok.fenrir.fragment.absownerslist.AbsOwnersListFragment
 import dev.ragnarok.fenrir.fragment.absownerslist.ISimpleOwnersView
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Owner
 
@@ -41,14 +40,12 @@ class FeedBannedFragment : AbsOwnersListFragment<FeedBannedPresenter, ISimpleOwn
         menus.columns(1)
         menus.show(
             requireActivity().supportFragmentManager,
-            "ban_options",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    if (option.id == 1) {
-                        presenter?.fireRemove(owner)
-                    }
-                }
-            })
+            "ban_options"
+        ) { _, option ->
+            if (option.id == 1) {
+                presenter?.fireRemove(owner)
+            }
+        }
         return true
     }
 

@@ -63,7 +63,7 @@ namespace
       int offset = 0;
       int end = 0;
 
-      while(s.length() > (unsigned int)offset && s[offset] == '(' &&
+      while(static_cast<int>(s.length()) > offset && s[offset] == '(' &&
             (end = s.find(")", offset + 1)) > offset) {
         // "(12)Genre"
         const String genreCode = s.substr(offset + 1, end - 1);
@@ -115,23 +115,6 @@ FrameFactory *FrameFactory::instance()
   return &factory;
 }
 
-Frame *FrameFactory::createFrame(const ByteVector &data, bool synchSafeInts) const
-{
-  return createFrame(data, static_cast<unsigned int>(synchSafeInts ? 4 : 3));
-}
-
-Frame *FrameFactory::createFrame(const ByteVector &data, unsigned int version) const
-{
-  Header tagHeader;
-  tagHeader.setMajorVersion(version);
-  return createFrame(data, &tagHeader);
-}
-
-Frame *FrameFactory::createFrame(const ByteVector &origData, Header *tagHeader) const
-{
-    return createFrame(origData, const_cast<const Header *>(tagHeader));
-}
-
 Frame *FrameFactory::createFrame(const ByteVector &origData, const Header *tagHeader) const
 {
   ByteVector data = origData;
@@ -171,9 +154,9 @@ Frame *FrameFactory::createFrame(const ByteVector &origData, const Header *tagHe
   if(version > 3 && (tagHeader->unsynchronisation() || header->unsynchronisation())) {
     // Data lengths are not part of the encoded data, but since they are synch-safe
     // integers they will be never actually encoded.
-    ByteVector frameData = data.mid(Frame::Header::size(version), header->frameSize());
+    ByteVector frameData = data.mid(header->size(), header->frameSize());
     frameData = SynchData::decode(frameData);
-    data = data.mid(0, Frame::Header::size(version)) + frameData;
+    data = data.mid(0, header->size()) + frameData;
   }
 
   // TagLib doesn't mess with encrypted frames, so just treat them

@@ -11,7 +11,6 @@ import android.util.LongSparseArray
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.activity.KeyExchangeCommitActivity.Companion.createIntent
 import dev.ragnarok.fenrir.api.Apis.get
@@ -222,15 +221,6 @@ class KeyExchangeService : Service() {
         }
         val session = mCurrentActiveSessions[message.sessionId]
         finishSessionByOpponentFail(session, message)
-    }
-
-    private fun sendSessionStateChangeBroadcast(session: KeyExchangeSession) {
-        val intent = Intent(WHAT_SESSION_STATE_CHANGED)
-        intent.putExtra(Extra.ACCOUNT_ID, session.accountId)
-        intent.putExtra(Extra.PEER_ID, session.peerId)
-        intent.putExtra(Extra.SESSION_ID, session.id)
-        intent.putExtra(Extra.STATUS, session.localSessionState)
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
     private fun notifyOpponentAboutSessionFail(
@@ -720,7 +710,6 @@ class KeyExchangeService : Service() {
             "fireSessionStateChanged, id: " + session.id + ", state: " + session.localSessionState
         )
         refreshSessionNotification(session)
-        sendSessionStateChangeBroadcast(session)
     }
 
     private fun onMessageSent(message: ExchangeMessage, id: Int) {
@@ -737,7 +726,6 @@ class KeyExchangeService : Service() {
     companion object {
         const val ACTION_APPLY_EXHANGE = "ACTION_APPLY_EXHANGE"
         const val ACTION_DECLINE = "ACTION_DECLINE"
-        const val WHAT_SESSION_STATE_CHANGED = "WHAT_SESSION_STATE_CHANGED"
         private val TAG = KeyExchangeService::class.java.simpleName
         private const val EXTRA_KEY_LOCATION_POLICY = "key_location_policy"
         private const val ACTION_PROCESS_MESSAGE = "ACTION_PROCESS_MESSAGE"

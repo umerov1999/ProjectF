@@ -340,10 +340,22 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         SelectionUtils.addSelectionProfileSupport(getContext(), mHeaderHolder.avatarRoot, user);
     }*/
 
-    override fun showRegistrationDate(date: String) {
+    override fun showRegistrationDate(
+        @StringRes info: Int,
+        registered: String?,
+        auth: String?,
+        changes: String?
+    ) {
         MaterialAlertDialogBuilder(requireActivity())
             .setIcon(R.drawable.dir_person)
-            .setMessage(date)
+            .setMessage(
+                getString(
+                    info,
+                    registered,
+                    auth,
+                    changes
+                )
+            )
             .setTitle(getString(R.string.registration_date))
             .setCancelable(true)
             .show()
@@ -415,7 +427,6 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                     accountId,
                     ownerId,
                     wrapper?.get() as User?,
-                    requireActivity(),
                     saveInstanceState
                 )
             }
@@ -599,7 +610,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         }
         if (!view.isMy) {
             menu.add(R.string.report).setOnMenuItemClickListener {
-                presenter?.fireReport()
+                presenter?.fireReport(requireActivity())
                 true
             }
             if (!view.isBlacklistedByMe) {

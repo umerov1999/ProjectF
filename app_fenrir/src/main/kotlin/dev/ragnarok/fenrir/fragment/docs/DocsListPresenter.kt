@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import androidx.fragment.app.FragmentActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
@@ -16,15 +15,12 @@ import dev.ragnarok.fenrir.domain.IDocsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.DocFilter
 import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.LocalPhoto
-import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.model.menu.options.DocsOption
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.place.PlaceUtil.goToPostCreation
@@ -110,103 +106,54 @@ class DocsListPresenter(
         }
     }
 
-    fun fireMenuClick(context: Context, index: Int, doc: Document) {
-        val menus = ModalBottomSheetDialogFragment.Builder()
-        menus.add(
-            OptionRequest(
-                DocsOption.open_item_doc,
-                context.getString(R.string.open),
-                R.drawable.view,
-                true
-            )
-        )
-        menus.add(
-            OptionRequest(
-                DocsOption.share_item_doc,
-                context.getString(R.string.share),
-                R.drawable.share,
-                true
-            )
-        )
-        menus.add(
-            OptionRequest(
-                DocsOption.go_to_owner_doc,
-                context.getString(R.string.goto_user),
-                R.drawable.person,
-                false
-            )
-        )
-        if (isMy) {
-            menus.add(
-                OptionRequest(
-                    DocsOption.delete_item_doc,
-                    context.getString(R.string.delete),
-                    R.drawable.ic_outline_delete,
-                    true
+    fun onMenuSelect(context: Context, index: Int, doc: Document, option: Option) {
+        when (option.id) {
+            DocsOption.open_item_doc -> fireDocClick(doc)
+            DocsOption.share_item_doc -> share(context, doc)
+            DocsOption.add_item_doc -> {
+                val docsInteractor = InteractorFactory.createDocsInteractor()
+                val accessKey = doc.accessKey
+                appendDisposable(docsInteractor.add(
+                    accountId,
+                    doc.id,
+                    doc.ownerId,
+                    accessKey
                 )
-            )
-        } else {
-            menus.add(
-                OptionRequest(
-                    DocsOption.add_item_doc,
-                    context.getString(R.string.action_add),
-                    R.drawable.plus,
-                    true
-                )
-            )
-        }
-        menus.header(doc.title, R.drawable.book, doc.getPreviewWithSize(PhotoSize.X, true))
-        menus.columns(2)
-        menus.show(
-            (context as FragmentActivity).supportFragmentManager,
-            "docs_options",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    when (option.id) {
-                        DocsOption.open_item_doc -> fireDocClick(doc)
-                        DocsOption.share_item_doc -> share(context, doc)
-                        DocsOption.add_item_doc -> {
-                            val docsInteractor = InteractorFactory.createDocsInteractor()
-                            val accessKey = doc.accessKey
-                            appendDisposable(docsInteractor.add(
-                                accountId,
-                                doc.id,
-                                doc.ownerId,
-                                accessKey
-                            )
-                                .fromIOToMain()
-                                .subscribe({
-                                    createCustomToast(context).setDuration(
-                                        Toast.LENGTH_LONG
-                                    ).showToastSuccessBottom(R.string.added)
-                                }) { t ->
-                                    showError(getCauseIfRuntime(t))
-                                })
-                        }
+                    .fromIOToMain()
+                    .subscribe({
+                        createCustomToast(context).setDuration(
+                            Toast.LENGTH_LONG
+                        ).showToastSuccessBottom(R.string.added)
+                    }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
+            }
 
-                        DocsOption.delete_item_doc -> MaterialAlertDialogBuilder(context)
-                            .setTitle(R.string.remove_confirm)
-                            .setMessage(R.string.doc_remove_confirm_message)
-                            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
-                                doRemove(
-                                    doc,
-                                    index
-                                )
-                            }
-                            .setNegativeButton(R.string.cancel, null)
-                            .show()
-
-                        DocsOption.go_to_owner_doc -> getOwnerWallPlace(
-                            accountId,
-                            doc.ownerId,
-                            null
-                        ).tryOpenWith(context)
-                    }
+            DocsOption.delete_item_doc -> MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.remove_confirm)
+                .setMessage(R.string.doc_remove_confirm_message)
+                .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                    doRemove(
+                        doc,
+                        index
+                    )
                 }
-            })
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+
+            DocsOption.go_to_owner_doc -> getOwnerWallPlace(
+                accountId,
+                doc.ownerId,
+                null
+            ).tryOpenWith(context)
+        }
     }
 
-    internal fun doRemove(doc: Document, index: Int) {
+    fun fireMenuClick(index: Int, doc: Document) {
+        view?.onMenuClick(index, doc, isMy)
+    }
+
+    private fun doRemove(doc: Document, index: Int) {
         appendDisposable(docsInteractor.delete(accountId, doc.id, doc.ownerId)
             .fromIOToMain()
             .subscribe({

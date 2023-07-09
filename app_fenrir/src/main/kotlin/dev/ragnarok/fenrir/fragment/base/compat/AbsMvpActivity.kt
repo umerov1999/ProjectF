@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.base.compat
 
 import android.os.Bundle
-import androidx.loader.app.LoaderManager
 import dev.ragnarok.fenrir.activity.NoMainActivity
 import dev.ragnarok.fenrir.fragment.base.core.*
 
@@ -17,10 +16,9 @@ abstract class AbsMvpActivity<P : IPresenter<V>, V : IMvpView> : NoMainActivity(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         delegate.onCreate(
-            this,
             getViewHost(),
             this,
-            LoaderManager.getInstance(this),
+            this,
             savedInstanceState
         )
     }

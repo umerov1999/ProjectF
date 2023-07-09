@@ -31,7 +31,6 @@ class MessageAttachmentsPresenter(
     private val accountId: Long,
     private val messageOwnerId: Long,
     private val messageId: Int,
-    private val context: Context,
     bundle: ModelsBundle?,
     private val isGroupChat: Boolean,
     savedInstanceState: Bundle?
@@ -194,13 +193,14 @@ class MessageAttachmentsPresenter(
     }
 
     fun firePhotosSelected(
+        context: Context,
         photos: ArrayList<Photo>?,
         localPhotos: ArrayList<LocalPhoto>?,
         file: String?,
         video: LocalVideo?
     ) {
         when {
-            file.nonNullNoEmpty() -> doUploadFile(file)
+            file.nonNullNoEmpty() -> doUploadFile(context, file)
             photos.nonNullNoEmpty() -> {
                 fireAttachmentsSelected(photos)
             }
@@ -215,7 +215,7 @@ class MessageAttachmentsPresenter(
         }
     }
 
-    private fun doUploadFile(file: String) {
+    private fun doUploadFile(context: Context, file: String) {
         for (i in Settings.get().other().photoExt()) {
             if (file.endsWith(i, true)) {
                 val size = Settings.get()

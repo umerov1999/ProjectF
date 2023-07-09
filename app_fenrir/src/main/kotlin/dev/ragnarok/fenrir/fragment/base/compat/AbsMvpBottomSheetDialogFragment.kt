@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.base.compat
 
 import android.os.Bundle
 import android.view.View
-import androidx.loader.app.LoaderManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 import dev.ragnarok.fenrir.fragment.base.core.IPresenter
@@ -18,10 +17,9 @@ abstract class AbsMvpBottomSheetDialogFragment<P : IPresenter<V>, V : IMvpView> 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         delegate.onCreate(
-            requireActivity(),
             getViewHost(),
             this,
-            LoaderManager.getInstance(this),
+            this,
             savedInstanceState
         )
     }

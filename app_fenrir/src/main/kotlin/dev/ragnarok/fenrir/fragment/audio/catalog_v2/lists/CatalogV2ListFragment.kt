@@ -41,6 +41,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
@@ -70,6 +71,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
         if (isMain() || requireArguments().getString(Extra.ARTIST).nonNullNoEmpty()) {
             requireActivity().addMenuProvider(this, viewLifecycleOwner)
         }
+        AppPerms.ignoreBattery(requireActivity())
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {

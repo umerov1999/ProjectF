@@ -47,8 +47,6 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <!--app:layout_anchor="@android:id/list"-->
-    <!--app:layout_anchorGravity="bottom|right|end"-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fragment_chat_users_add"
         android:layout_width="wrap_content"

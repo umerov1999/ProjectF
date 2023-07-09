@@ -143,7 +143,6 @@ import dev.ragnarok.fenrir.media.music.MusicPlaybackController.unbindFromService
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService.Companion.startForPlayList
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.*
 import dev.ragnarok.fenrir.model.drawer.AbsMenuItem
@@ -298,7 +297,6 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         keyboardHide()
     }
     private var mAudioPlayServiceToken: ServiceToken? = null
-    private var isActivityDestroyed = false
 
     /**
      * First - DrawerItem, second - Clear back stack before adding
@@ -351,7 +349,6 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         Utils.registerColorsThorVG(this)
 
         super.onCreate(savedInstanceState)
-        isActivityDestroyed = false
         isZoomPhoto = Settings.get().other().isDo_zoom_photo
         mCompositeDisposable.add(
             Settings.get()
@@ -582,7 +579,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     private fun bindToAudioPlayService() {
-        if (!isActivityDestroyed && mAudioPlayServiceToken == null) {
+        if (mAudioPlayServiceToken == null) {
             mAudioPlayServiceToken = bindToServiceWithoutStart(this, this)
         }
     }
@@ -654,87 +651,85 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     )
                     menus.show(
                         supportFragmentManager,
-                        "left_options",
-                        object : ModalBottomSheetDialogFragment.Listener {
-                            override fun onModalOptionSelected(option: Option) {
-                                when (option.id) {
-                                    0 -> {
-                                        mCompositeDisposable.add(InteractorFactory.createAccountInteractor()
-                                            .setOffline(
-                                                Settings.get().accounts().current
-                                            )
-                                            .fromIOToMain()
-                                            .subscribe({ onSetOffline(it) }) {
-                                                onSetOffline(
-                                                    false
-                                                )
-                                            })
-                                    }
+                        "main_activity_options"
+                    ) { _, option ->
+                        when (option.id) {
+                            0 -> {
+                                mCompositeDisposable.add(InteractorFactory.createAccountInteractor()
+                                    .setOffline(
+                                        Settings.get().accounts().current
+                                    )
+                                    .fromIOToMain()
+                                    .subscribe({ onSetOffline(it) }) {
+                                        onSetOffline(
+                                            false
+                                        )
+                                    })
+                            }
 
-                                    1 -> {
-                                        val clipBoard =
-                                            getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
-                                        if (clipBoard != null && clipBoard.primaryClip != null && (clipBoard.primaryClip?.itemCount
-                                                ?: 0) > 0 && (clipBoard.primaryClip
-                                                ?: return).getItemAt(0).text != null
-                                        ) {
-                                            val temp =
-                                                clipBoard.primaryClip?.getItemAt(0)?.text.toString()
-                                            LinkHelper.openUrl(
-                                                this@MainActivity,
-                                                mAccountId,
-                                                temp,
-                                                false
-                                            )
-                                        }
-                                    }
-
-                                    2 -> {
-                                        mCompositeDisposable.add(InteractorFactory.createStoriesInteractor()
-                                            .getStories(
-                                                Settings.get().accounts().current,
-                                                null
-                                            )
-                                            .fromIOToMain()
-                                            .subscribe({
-                                                if (it.isEmpty()) {
-                                                    createCustomToast(this@MainActivity).showToastError(
-                                                        R.string.list_is_empty
-                                                    )
-                                                }
-                                                PlaceFactory.getHistoryVideoPreviewPlace(
-                                                    mAccountId,
-                                                    ArrayList(it),
-                                                    0
-                                                ).tryOpenWith(this@MainActivity)
-                                            }) {
-                                                createCustomToast(this@MainActivity).showToastThrowable(
-                                                    it
-                                                )
-                                            })
-                                    }
-
-                                    3 -> {
-                                        PlaceFactory.getShortVideoPlace(mAccountId, null)
-                                            .tryOpenWith(this@MainActivity)
-                                    }
-
-                                    4 -> {
-                                        PlaceFactory.getPreferencesPlace(mAccountId)
-                                            .tryOpenWith(this@MainActivity)
-                                    }
-
-                                    5 -> {
-                                        val intent =
-                                            Intent(
-                                                this@MainActivity,
-                                                CameraScanActivity::class.java
-                                            )
-                                        requestQRScan.launch(intent)
-                                    }
+                            1 -> {
+                                val clipBoard =
+                                    getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
+                                if (clipBoard != null && clipBoard.primaryClip != null && (clipBoard.primaryClip?.itemCount
+                                        ?: 0) > 0 && (clipBoard.primaryClip
+                                        ?: return@show).getItemAt(0).text != null
+                                ) {
+                                    val temp =
+                                        clipBoard.primaryClip?.getItemAt(0)?.text.toString()
+                                    LinkHelper.openUrl(
+                                        this@MainActivity,
+                                        mAccountId,
+                                        temp,
+                                        false
+                                    )
                                 }
                             }
-                        })
+
+                            2 -> {
+                                mCompositeDisposable.add(InteractorFactory.createStoriesInteractor()
+                                    .getStories(
+                                        Settings.get().accounts().current,
+                                        null
+                                    )
+                                    .fromIOToMain()
+                                    .subscribe({
+                                        if (it.isEmpty()) {
+                                            createCustomToast(this@MainActivity).showToastError(
+                                                R.string.list_is_empty
+                                            )
+                                        }
+                                        PlaceFactory.getHistoryVideoPreviewPlace(
+                                            mAccountId,
+                                            ArrayList(it),
+                                            0
+                                        ).tryOpenWith(this@MainActivity)
+                                    }) {
+                                        createCustomToast(this@MainActivity).showToastThrowable(
+                                            it
+                                        )
+                                    })
+                            }
+
+                            3 -> {
+                                PlaceFactory.getShortVideoPlace(mAccountId, null)
+                                    .tryOpenWith(this@MainActivity)
+                            }
+
+                            4 -> {
+                                PlaceFactory.getPreferencesPlace(mAccountId)
+                                    .tryOpenWith(this@MainActivity)
+                            }
+
+                            5 -> {
+                                val intent =
+                                    Intent(
+                                        this@MainActivity,
+                                        CameraScanActivity::class.java
+                                    )
+                                requestQRScan.launch(intent)
+                            }
+                        }
+                    }
                 }
             } else {
                 mToolbar?.setNavigationIcon(R.drawable.arrow_left)
@@ -1030,13 +1025,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     private fun clearBackStack() {
-        val manager = supportFragmentManager
-        /*if (manager.getBackStackEntryCount() > 0) {
-            FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
-            manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        }*/manager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-
-        // TODO: 13.12.2017 Exception java.lang.IllegalStateException:Can not perform this action after onSaveInstanceState
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         Logger.d(TAG, "Back stack was cleared")
     }
 
@@ -1161,16 +1150,17 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
     override fun onDestroy() {
         mCompositeDisposable.dispose()
-        isActivityDestroyed = true
         supportFragmentManager.removeOnBackStackChangedListener(mOnBackStackChangedListener)
 
-        //if(!bNoDestroyServiceAudio)
         unbindFromAudioPlayService()
         super.onDestroy()
     }
 
     private fun unbindFromAudioPlayService() {
         if (mAudioPlayServiceToken != null) {
+            if (isChangingConfigurations) {
+                MusicPlaybackController.doNotDestroyWhenActivityRecreated()
+            }
             unbindFromService(mAudioPlayServiceToken)
             mAudioPlayServiceToken = null
         }
@@ -1769,7 +1759,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     override fun onServiceDisconnected(name: ComponentName) {
-        if (isActivityDestroyed) return
+        if (mAudioPlayServiceToken == null) return
         if (name.className == MusicPlaybackService::class.java.name) {
             Logger.d(TAG, "Disconnected from MusicPlaybackService")
             mAudioPlayServiceToken = null

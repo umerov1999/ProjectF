@@ -312,7 +312,6 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
                     accountId,
                     ownerId,
                     wrapper?.get() as Community?,
-                    requireActivity(),
                     saveInstanceState
                 )
             }

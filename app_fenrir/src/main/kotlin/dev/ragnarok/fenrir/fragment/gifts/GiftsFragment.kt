@@ -34,7 +34,7 @@ class GiftsFragment : BaseMvpFragment<GiftsPresenter, IGiftsView>(), IGiftsView,
     ): View? {
         val root = inflater.inflate(R.layout.fragment_gifts, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
-        val recyclerView: RecyclerView = root.findViewById(android.R.id.list)
+        val recyclerView: RecyclerView = root.findViewById(R.id.content_list)
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener(this)
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)

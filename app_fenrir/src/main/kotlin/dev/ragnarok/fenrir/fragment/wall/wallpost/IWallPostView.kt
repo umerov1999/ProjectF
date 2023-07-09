@@ -28,6 +28,8 @@ interface IWallPostView : IAttachmentsPlacesView, IMvpView, IErrorView,
     fun displayDeleteOrRestoreComplete(deleted: Boolean)
     fun goToNewsSearch(accountId: Long, hashTag: String?)
     fun doPostExport(accountId: Long, post: Post)
+
+    fun invalidateMenu()
     interface IOptionView {
         fun setCanDelete(can: Boolean)
         fun setCanRestore(can: Boolean)

@@ -35,7 +35,7 @@ class NarrativesFragment : BaseMvpFragment<NarrativesPresenter, INarrativesView>
     ): View? {
         val root = inflater.inflate(R.layout.fragment_narratives, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
-        val recyclerView: RecyclerView = root.findViewById(android.R.id.list)
+        val recyclerView: RecyclerView = root.findViewById(R.id.content_list)
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener(this)
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
@@ -107,7 +107,6 @@ class NarrativesFragment : BaseMvpFragment<NarrativesPresenter, INarrativesView>
                         Extra.ACCOUNT_ID
                     ),
                     requireArguments().getLong(Extra.OWNER_ID),
-                    requireActivity(),
                     saveInstanceState
                 )
             }

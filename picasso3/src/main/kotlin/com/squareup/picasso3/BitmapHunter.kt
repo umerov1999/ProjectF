@@ -19,7 +19,6 @@ import com.squareup.picasso3.MemoryPolicy.Companion.shouldReadFromMemoryCache
 import com.squareup.picasso3.Picasso.LoadedFrom
 import com.squareup.picasso3.RequestHandler.Result.Bitmap
 import com.squareup.picasso3.Utils.OWNER_HUNTER
-import com.squareup.picasso3.Utils.THREAD_IDLE_NAME
 import com.squareup.picasso3.Utils.THREAD_PREFIX
 import com.squareup.picasso3.Utils.VERB_DECODED
 import com.squareup.picasso3.Utils.VERB_EXECUTING
@@ -28,6 +27,7 @@ import com.squareup.picasso3.Utils.VERB_REMOVED
 import com.squareup.picasso3.Utils.VERB_TRANSFORMED
 import com.squareup.picasso3.Utils.getLogIdsForHunter
 import com.squareup.picasso3.Utils.log
+import kotlinx.coroutines.Job
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.util.concurrent.CountDownLatch
@@ -54,17 +54,21 @@ internal open class BitmapHunter(
         private set
 
     var future: Future<*>? = null
+
+    var job: Job? = null
+
     var result: RequestHandler.Result? = null
         private set
     var exception: Exception? = null
         private set
 
     val isCancelled: Boolean
-        get() = future?.isCancelled ?: false
+        get() = future?.isCancelled ?: job?.isCancelled ?: false
 
     override fun run() {
+        val originalName = Thread.currentThread().name
         try {
-            updateThreadName(data)
+            Thread.currentThread().name = getName()
 
             if (picasso.isLoggingEnabled) {
                 log(OWNER_HUNTER, VERB_EXECUTING, getLogIdsForHunter(this))
@@ -83,9 +87,16 @@ internal open class BitmapHunter(
             exception = e
             dispatcher.dispatchFailed(this)
         } finally {
-            Thread.currentThread().name = THREAD_IDLE_NAME
+            Thread.currentThread().name = originalName
         }
     }
+
+    fun getName() = NAME_BUILDER.get()!!.also {
+        val name = data.name
+        it.ensureCapacity(THREAD_PREFIX.length + name.length)
+        it.replace(THREAD_PREFIX.length, it.length, name)
+    }.toString()
+
 
     fun hunt(): Bitmap? {
         if (shouldReadFromMemoryCache(data.memoryPolicy)) {
@@ -220,7 +231,7 @@ internal open class BitmapHunter(
     }
 
     fun cancel(): Boolean =
-        action == null && actions.isNullOrEmpty() && future?.cancel(false) ?: false
+        action == null && actions.isNullOrEmpty() && future?.cancel(false) ?: job?.let { it.cancel(); true } ?: false
 
     fun shouldRetry(networkAvailable: Boolean): Boolean {
         val hasRetries = retryCount > 0
@@ -290,16 +301,6 @@ internal open class BitmapHunter(
             }
 
             return BitmapHunter(picasso, dispatcher, cache, action, ERRORING_HANDLER)
-        }
-
-        fun updateThreadName(data: Request) {
-            val name = data.name
-            val builder = NAME_BUILDER.get()!!.also {
-                it.ensureCapacity(THREAD_PREFIX.length + name.length)
-                it.replace(THREAD_PREFIX.length, it.length, name)
-            }
-
-            Thread.currentThread().name = builder.toString()
         }
 
         fun applyTransformations(

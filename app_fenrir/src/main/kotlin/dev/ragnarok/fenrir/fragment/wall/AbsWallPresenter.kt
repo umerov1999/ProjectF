@@ -644,7 +644,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         )
     }
 
-    abstract fun fireAddToShortcutClick()
+    abstract fun fireAddToShortcutClick(context: Context)
     private val isCommunity: Boolean
         get() = ownerId < 0
 

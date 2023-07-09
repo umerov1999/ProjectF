@@ -31,7 +31,7 @@ abstract class AbsChatAttachmentsFragment<T, P : BaseChatAttachmentsPresenter<T,
     ): View? {
         val root = inflater.inflate(R.layout.fragment_photos, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
-        mRecyclerView = root.findViewById(android.R.id.list)
+        mRecyclerView = root.findViewById(R.id.content_list)
         mEmpty = root.findViewById(R.id.empty)
         val manager = createLayoutManager()
         mRecyclerView?.layoutManager = manager

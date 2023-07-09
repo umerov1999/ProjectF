@@ -13,7 +13,7 @@ interface IPhotoPagerView : IMvpView, IErrorView, IToastView {
     fun setupShareButton(visible: Boolean, reposts: Int)
     fun setupCommentsButton(visible: Boolean, count: Int)
     fun displayPhotos(photos: List<Photo>, initialIndex: Int)
-    fun setToolbarTitle(title: String?)
+    fun setToolbarTitle(currentIndex: Int, count: Int)
     fun setToolbarSubtitle(subtitle: String?)
     fun sharePhoto(accountId: Long, photo: Photo)
     fun postToMyWall(photo: Photo, accountId: Long)

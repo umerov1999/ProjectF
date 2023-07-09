@@ -36,7 +36,6 @@ import dev.ragnarok.fenrir.media.music.MusicPlaybackController.playerStatus
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.stop
 import dev.ragnarok.fenrir.media.music.PlayerStatus
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.menu.options.AudioLocalServerOption
@@ -226,157 +225,155 @@ class AudioLocalServerRecyclerAdapter(
         menus.columns(2)
         menus.show(
             (mContext as FragmentActivity).supportFragmentManager,
-            "audio_options",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    when (option.id) {
-                        AudioLocalServerOption.save_item_audio -> {
-                            if (!hasReadWriteStoragePermission(mContext)) {
-                                mClickListener?.onRequestWritePermissions()
-                                return
-                            }
-                            audio.downloadIndicator = 1
+            "audio_options"
+        ) { _, option ->
+            when (option.id) {
+                AudioLocalServerOption.save_item_audio -> {
+                    if (!hasReadWriteStoragePermission(mContext)) {
+                        mClickListener?.onRequestWritePermissions()
+                        return@show
+                    }
+                    audio.downloadIndicator = 1
+                    updateDownloadState(holder, audio)
+                    val ret = doDownloadAudio(
+                        mContext,
+                        audio,
+                        Settings.get().accounts().current,
+                        Force = false,
+                        isLocal = true
+                    )
+                    when (ret) {
+                        0 -> createCustomToast(mContext).showToastBottom(R.string.saved_audio)
+                        1, 2 -> {
+                            CustomSnackbars.createCustomSnackbars(view)
+                                ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
+                                ?.themedSnack(if (ret == 1) R.string.audio_force_download else R.string.audio_force_download_pc)
+                                ?.setAction(
+                                    R.string.button_yes
+                                ) {
+                                    doDownloadAudio(
+                                        mContext,
+                                        audio,
+                                        Settings.get().accounts().current,
+                                        Force = true,
+                                        isLocal = true
+                                    )
+                                }
+                                ?.show()
+                        }
+
+                        else -> {
+                            audio.downloadIndicator = 0
                             updateDownloadState(holder, audio)
-                            val ret = doDownloadAudio(
-                                mContext,
-                                audio,
-                                Settings.get().accounts().current,
-                                Force = false,
-                                isLocal = true
-                            )
-                            when (ret) {
-                                0 -> createCustomToast(mContext).showToastBottom(R.string.saved_audio)
-                                1, 2 -> {
-                                    CustomSnackbars.createCustomSnackbars(view)
-                                        ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
-                                        ?.themedSnack(if (ret == 1) R.string.audio_force_download else R.string.audio_force_download_pc)
-                                        ?.setAction(
-                                            R.string.button_yes
-                                        ) {
-                                            doDownloadAudio(
-                                                mContext,
-                                                audio,
-                                                Settings.get().accounts().current,
-                                                Force = true,
-                                                isLocal = true
-                                            )
-                                        }
-                                        ?.show()
-                                }
-
-                                else -> {
-                                    audio.downloadIndicator = 0
-                                    updateDownloadState(holder, audio)
-                                    createCustomToast(mContext).showToastBottom(R.string.error_audio)
-                                }
-                            }
+                            createCustomToast(mContext).showToastBottom(R.string.error_audio)
                         }
-
-                        AudioLocalServerOption.play_item_audio -> {
-                            mClickListener?.onClick(position, audio)
-                            if (Settings.get().other().isShow_mini_player) getPlayerPlace(
-                                Settings.get().accounts().current
-                            ).tryOpenWith(mContext)
-                        }
-
-                        AudioLocalServerOption.play_item_after_current_audio -> playAfterCurrent(
-                            audio
-                        )
-
-                        AudioLocalServerOption.bitrate_item_audio -> getBitrate(
-                            audio.url,
-                            audio.duration
-                        )
-
-                        AudioLocalServerOption.update_time_item_audio -> {
-                            val hash = VKLinkParser.parseLocalServerURL(audio.url)
-                            if (hash.isNullOrEmpty()) {
-                                return
-                            }
-                            audioListDisposable =
-                                mAudioInteractor.update_time(hash).fromIOToMain().subscribe(
-                                    { createCustomToast(mContext).showToast(R.string.success) }) { t ->
-                                    createCustomToast(mContext).showToastThrowable(t)
-                                }
-                        }
-
-                        AudioLocalServerOption.edit_item_audio -> {
-                            val hash2 = VKLinkParser.parseLocalServerURL(audio.url)
-                            if (hash2.isNullOrEmpty()) {
-                                return
-                            }
-                            audioListDisposable =
-                                mAudioInteractor.get_file_name(hash2).fromIOToMain().subscribe(
-                                    { t: String? ->
-                                        val root =
-                                            View.inflate(mContext, R.layout.entry_file_name, null)
-                                        (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).setText(
-                                            t
-                                        )
-                                        MaterialAlertDialogBuilder(mContext)
-                                            .setTitle(R.string.change_name)
-                                            .setCancelable(true)
-                                            .setView(root)
-                                            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
-                                                audioListDisposable =
-                                                    mAudioInteractor.update_file_name(
-                                                        hash2,
-                                                        (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).text.toString()
-                                                            .trim { it <= ' ' })
-                                                        .fromIOToMain()
-                                                        .subscribe({
-                                                            createCustomToast(mContext).showToast(
-                                                                R.string.success
-                                                            )
-                                                        }) { o ->
-                                                            createCustomToast(mContext).showToastThrowable(
-                                                                o
-                                                            )
-                                                        }
-                                            }
-                                            .setNegativeButton(R.string.button_cancel, null)
-                                            .show()
-                                    }) { t ->
-                                    createCustomToast(mContext).showToastThrowable(t)
-                                }
-                        }
-
-                        AudioLocalServerOption.delete_item_audio -> MaterialAlertDialogBuilder(
-                            mContext
-                        )
-                            .setMessage(R.string.do_delete)
-                            .setTitle(R.string.confirmation)
-                            .setCancelable(true)
-                            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
-                                val hash1 = VKLinkParser.parseLocalServerURL(audio.url)
-                                if (hash1.isNullOrEmpty()) {
-                                    return@setPositiveButton
-                                }
-                                audioListDisposable =
-                                    mAudioInteractor.delete_media(hash1).fromIOToMain().subscribe(
-                                        { createCustomToast(mContext).showToast(R.string.success) }) { o ->
-                                        createCustomToast(mContext).showToastThrowable(o)
-                                    }
-                            }
-                            .setNegativeButton(R.string.button_cancel, null)
-                            .show()
-
-                        AudioLocalServerOption.upload_item_audio -> {
-                            val hash1 = VKLinkParser.parseLocalServerURL(audio.url)
-                            if (hash1.isNullOrEmpty()) {
-                                return
-                            }
-                            audioListDisposable =
-                                mAudioInteractor.uploadAudio(hash1).fromIOToMain().subscribe(
-                                    { createCustomToast(mContext).showToast(R.string.success) }) { o ->
-                                    createCustomToast(mContext).showToastThrowable(o)
-                                }
-                        }
-
-                        else -> {}
                     }
                 }
-            })
+
+                AudioLocalServerOption.play_item_audio -> {
+                    mClickListener?.onClick(position, audio)
+                    if (Settings.get().other().isShow_mini_player) getPlayerPlace(
+                        Settings.get().accounts().current
+                    ).tryOpenWith(mContext)
+                }
+
+                AudioLocalServerOption.play_item_after_current_audio -> playAfterCurrent(
+                    audio
+                )
+
+                AudioLocalServerOption.bitrate_item_audio -> getBitrate(
+                    audio.url,
+                    audio.duration
+                )
+
+                AudioLocalServerOption.update_time_item_audio -> {
+                    val hash = VKLinkParser.parseLocalServerURL(audio.url)
+                    if (hash.isNullOrEmpty()) {
+                        return@show
+                    }
+                    audioListDisposable =
+                        mAudioInteractor.update_time(hash).fromIOToMain().subscribe(
+                            { createCustomToast(mContext).showToast(R.string.success) }) { t ->
+                            createCustomToast(mContext).showToastThrowable(t)
+                        }
+                }
+
+                AudioLocalServerOption.edit_item_audio -> {
+                    val hash2 = VKLinkParser.parseLocalServerURL(audio.url)
+                    if (hash2.isNullOrEmpty()) {
+                        return@show
+                    }
+                    audioListDisposable =
+                        mAudioInteractor.get_file_name(hash2).fromIOToMain().subscribe(
+                            { t: String? ->
+                                val root =
+                                    View.inflate(mContext, R.layout.entry_file_name, null)
+                                (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).setText(
+                                    t
+                                )
+                                MaterialAlertDialogBuilder(mContext)
+                                    .setTitle(R.string.change_name)
+                                    .setCancelable(true)
+                                    .setView(root)
+                                    .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                                        audioListDisposable =
+                                            mAudioInteractor.update_file_name(
+                                                hash2,
+                                                (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).text.toString()
+                                                    .trim { it <= ' ' })
+                                                .fromIOToMain()
+                                                .subscribe({
+                                                    createCustomToast(mContext).showToast(
+                                                        R.string.success
+                                                    )
+                                                }) { o ->
+                                                    createCustomToast(mContext).showToastThrowable(
+                                                        o
+                                                    )
+                                                }
+                                    }
+                                    .setNegativeButton(R.string.button_cancel, null)
+                                    .show()
+                            }) { t ->
+                            createCustomToast(mContext).showToastThrowable(t)
+                        }
+                }
+
+                AudioLocalServerOption.delete_item_audio -> MaterialAlertDialogBuilder(
+                    mContext
+                )
+                    .setMessage(R.string.do_delete)
+                    .setTitle(R.string.confirmation)
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                        val hash1 = VKLinkParser.parseLocalServerURL(audio.url)
+                        if (hash1.isNullOrEmpty()) {
+                            return@setPositiveButton
+                        }
+                        audioListDisposable =
+                            mAudioInteractor.delete_media(hash1).fromIOToMain().subscribe(
+                                { createCustomToast(mContext).showToast(R.string.success) }) { o ->
+                                createCustomToast(mContext).showToastThrowable(o)
+                            }
+                    }
+                    .setNegativeButton(R.string.button_cancel, null)
+                    .show()
+
+                AudioLocalServerOption.upload_item_audio -> {
+                    val hash1 = VKLinkParser.parseLocalServerURL(audio.url)
+                    if (hash1.isNullOrEmpty()) {
+                        return@show
+                    }
+                    audioListDisposable =
+                        mAudioInteractor.uploadAudio(hash1).fromIOToMain().subscribe(
+                            { createCustomToast(mContext).showToast(R.string.success) }) { o ->
+                            createCustomToast(mContext).showToastThrowable(o)
+                        }
+                }
+
+                else -> {}
+            }
+        }
     }
 
     private fun doPlay(position: Int, audio: Audio) {

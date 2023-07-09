@@ -41,6 +41,7 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils
+import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
@@ -139,16 +140,6 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         } else {
             mHelper?.visibility = View.GONE
         }
-        mViewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                playDispose.dispose()
-                playDispose = Observable.just(Object())
-                    .delay(400, TimeUnit.MILLISECONDS)
-                    .toMainThread()
-                    .subscribe { presenter?.firePageSelected(position) }
-            }
-        })
         mDownload = findViewById(R.id.button_download)
         mShare = findViewById(R.id.button_share)
         mShare?.setOnClickListener { presenter?.fireShareButtonClick() }
@@ -224,6 +215,10 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
             ILikesInteractor.FILTER_LIKES
         )
             .tryOpenWith(this)
+    }
+
+    override fun downloadVideo(video: Video, url: String, Res: String) {
+        DownloadWorkUtils.doDownloadVideo(this, video, url, Res)
     }
 
     override fun displayListLoading(loading: Boolean) {
@@ -390,16 +385,28 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
                 return ShortVideoPagerPresenter(
                     aid,
                     ownerId,
-                    this@ShortVideoPagerActivity,
                     saveInstanceState
                 )
             }
         }
 
+    private val pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
+            playDispose.dispose()
+            playDispose = Observable.just(Object())
+                .delay(400, TimeUnit.MILLISECONDS)
+                .toMainThread()
+                .subscribe { presenter?.firePageSelected(position) }
+        }
+    }
+
     override fun displayData(pageCount: Int, selectedIndex: Int) {
+        mViewPager?.unregisterOnPageChangeCallback(pageChangeListener)
         mAdapter = Adapter(pageCount)
         mViewPager?.adapter = mAdapter
         mViewPager?.setCurrentItem(selectedIndex, false)
+        mViewPager?.registerOnPageChangeCallback(pageChangeListener)
     }
 
     override fun setAspectRatioAt(position: Int, w: Int, h: Int) {

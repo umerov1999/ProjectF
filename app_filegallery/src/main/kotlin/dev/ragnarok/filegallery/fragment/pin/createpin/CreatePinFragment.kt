@@ -62,7 +62,7 @@ class CreatePinFragment : BaseMvpFragment<CreatePinPresenter, ICreatePinView>(),
     override fun sendSuccessAndClose(values: IntArray) {
         val data = Intent()
         data.putExtra(EXTRA_PIN_VALUE, values)
-        if (requireActivity().intent != null && requireActivity().intent.extras != null && requireActivity().intent.extras?.containsKey(
+        if (requireActivity().intent?.extras?.containsKey(
                 EXTRA_PREF_KEY
             ) == true
         ) {

@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.fragment.wall.userwall
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import dev.ragnarok.fenrir.fragment.base.core.IProgressView
 import dev.ragnarok.fenrir.fragment.wall.IWallView
 import dev.ragnarok.fenrir.model.FriendsCounters
@@ -44,6 +45,12 @@ interface IUserWallView : IWallView, IProgressView {
     fun invalidateOptionsMenu()
     fun displayBaseUserInfo(user: User)
     fun openUserDetails(accountId: Long, user: User, details: UserDetails)
-    fun showRegistrationDate(date: String)
+    fun showRegistrationDate(
+        @StringRes info: Int,
+        registered: String?,
+        auth: String?,
+        changes: String?
+    )
+
     fun displayUserCover(blacklisted: Boolean, resource: String?, supportOpen: Boolean)
 }

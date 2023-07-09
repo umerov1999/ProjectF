@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.activity.photopager
 
-import android.content.Context
 import android.os.Bundle
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.db.serialize.Serializers
@@ -31,9 +30,8 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
         photos: ArrayList<Photo>,
         readOnly: Boolean,
         invertPhotoRev: Boolean,
-        context: Context,
         savedInstanceState: Bundle?
-    ) : super(ArrayList<Photo>(0), accountId, readOnly, context, savedInstanceState) {
+    ) : super(ArrayList<Photo>(0), accountId, readOnly, savedInstanceState) {
         localServerInteractor = InteractorFactory.createLocalServerInteractor()
         mOwnerId = ownerId
         mAlbumId = albumId
@@ -55,9 +53,8 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
         source: TmpSource,
         readOnly: Boolean,
         invertPhotoRev: Boolean,
-        context: Context,
         savedInstanceState: Bundle?
-    ) : super(ArrayList<Photo>(0), accountId, readOnly, context, savedInstanceState) {
+    ) : super(ArrayList<Photo>(0), accountId, readOnly, savedInstanceState) {
         localServerInteractor = InteractorFactory.createLocalServerInteractor()
         mOwnerId = ownerId
         mAlbumId = albumId

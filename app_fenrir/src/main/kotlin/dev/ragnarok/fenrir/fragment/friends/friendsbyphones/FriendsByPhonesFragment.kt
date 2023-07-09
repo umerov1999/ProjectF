@@ -242,7 +242,7 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
         return object : IPresenterFactory<FriendsByPhonesPresenter> {
             override fun create(): FriendsByPhonesPresenter {
                 val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                return FriendsByPhonesPresenter(accountId, requireActivity(), saveInstanceState)
+                return FriendsByPhonesPresenter(accountId, saveInstanceState)
             }
         }
     }

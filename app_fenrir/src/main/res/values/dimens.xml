@@ -57,6 +57,7 @@
     <dimen name="font_size_subtitle">15sp</dimen>
     <dimen name="font_size_additional">12sp</dimen>
 
+    <dimen name="avatar_size_very_big">130dp</dimen>
     <dimen name="avatar_size_big">100dp</dimen>
     <dimen name="avatar_size_chat">60dp</dimen>
     <dimen name="avatar_size_usual">48dp</dimen>

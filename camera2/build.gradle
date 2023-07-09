@@ -30,6 +30,7 @@ dependencies {
     compileOnly("org.checkerframework:checker-compat-qual:$checkerCompatQualVersion")
     compileOnly("org.checkerframework:checker-qual-android:$checkerQualAndroidVersion")
     compileOnly("com.google.auto.value:auto-value-annotations:$autoValueVersion")
+    implementation("com.google.guava:guava:$guavaVersion")
     implementation("androidx.annotation:annotation:$annotationVersion")
     implementation("androidx.appcompat:appcompat:$appcompatVersion")
     implementation("androidx.core:core:$coreVersion")
@@ -39,7 +40,12 @@ dependencies {
     implementation("androidx.tracing:tracing:$tracingVersion")
     implementation("com.google.errorprone:error_prone_annotations:${errorproneVersion}")
     implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
-    implementation("com.google.guava:guava:$guavaVersion")
     implementation("androidx.concurrent:concurrent-futures:$concurentVersion")
     annotationProcessor("com.google.auto.value:auto-value:$autoValueVersion")
+
+    modules {
+        module("com.google.guava:listenablefuture") {
+            replacedBy("com.google.guava:guava", "listenablefuture is part of guava")
+        }
+    }
 }

@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.VKLinkParser
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.menu.options.VideoLocalServerOption
@@ -112,118 +111,115 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
             menus.columns(2)
             menus.show(
                 (context as FragmentActivity).supportFragmentManager,
-                "server_video_options",
-                object : ModalBottomSheetDialogFragment.Listener {
-                    override fun onModalOptionSelected(option: Option) {
-                        when (option.id) {
-                            VideoLocalServerOption.save_item_video -> {
-                                if (!hasReadWriteStoragePermission(context)) {
-                                    videoOnClickListener?.onRequestWritePermissions()
-                                    return
-                                }
-                                video.mp4link720?.let { it1 ->
-                                    doDownloadVideo(
-                                        context, video,
-                                        it1, "Local"
+                "server_video_options"
+            ) { _, option ->
+                when (option.id) {
+                    VideoLocalServerOption.save_item_video -> {
+                        if (!hasReadWriteStoragePermission(context)) {
+                            videoOnClickListener?.onRequestWritePermissions()
+                            return@show
+                        }
+                        video.mp4link720?.let { it1 ->
+                            doDownloadVideo(
+                                context, video,
+                                it1, "Local"
+                            )
+                        }
+                    }
+
+                    VideoLocalServerOption.play_item_video -> {
+                        videoOnClickListener?.onVideoClick(
+                            holder.bindingAdapterPosition,
+                            video
+                        )
+                    }
+
+                    VideoLocalServerOption.update_time_item_video -> {
+                        val hash = VKLinkParser.parseLocalServerURL(video.mp4link720)
+                        if (hash.isNullOrEmpty()) {
+                            return@show
+                        }
+                        listDisposable =
+                            mVideoInteractor.update_time(hash).fromIOToMain().subscribe(
+                                {
+                                    createCustomToast(
+                                        context
+                                    ).showToast(R.string.success)
+                                }) { t ->
+                                createCustomToast(context).showToastThrowable(t)
+                            }
+                    }
+
+                    VideoLocalServerOption.edit_item_video -> {
+                        val hash2 = VKLinkParser.parseLocalServerURL(video.mp4link720)
+                        if (hash2.isNullOrEmpty()) {
+                            return@show
+                        }
+                        listDisposable =
+                            mVideoInteractor.get_file_name(hash2).fromIOToMain().subscribe(
+                                { t: String? ->
+                                    val root = View.inflate(
+                                        context, R.layout.entry_file_name, null
                                     )
-                                }
+                                    (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).setText(
+                                        t
+                                    )
+                                    MaterialAlertDialogBuilder(context)
+                                        .setTitle(R.string.change_name)
+                                        .setCancelable(true)
+                                        .setView(root)
+                                        .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                                            listDisposable =
+                                                mVideoInteractor.update_file_name(
+                                                    hash2,
+                                                    (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).text.toString()
+                                                        .trim { it <= ' ' })
+                                                    .fromIOToMain()
+                                                    .subscribe({
+                                                        createCustomToast(
+                                                            context
+                                                        ).showToast(R.string.success)
+                                                    }) { o ->
+                                                        createCustomToast(context).showToastThrowable(
+                                                            o
+                                                        )
+                                                    }
+                                        }
+                                        .setNegativeButton(R.string.button_cancel, null)
+                                        .show()
+                                }) { t ->
+                                createCustomToast(context).showToastThrowable(t)
                             }
+                    }
 
-                            VideoLocalServerOption.play_item_video -> {
-                                videoOnClickListener?.onVideoClick(
-                                    holder.bindingAdapterPosition,
-                                    video
-                                )
+                    VideoLocalServerOption.delete_item_video -> MaterialAlertDialogBuilder(
+                        context
+                    )
+                        .setMessage(R.string.do_delete)
+                        .setTitle(R.string.confirmation)
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                            val hash1 = VKLinkParser.parseLocalServerURL(video.mp4link720)
+                            if (hash1.isNullOrEmpty()) {
+                                return@setPositiveButton
                             }
-
-                            VideoLocalServerOption.update_time_item_video -> {
-                                val hash = VKLinkParser.parseLocalServerURL(video.mp4link720)
-                                if (hash.isNullOrEmpty()) {
-                                    return
-                                }
-                                listDisposable =
-                                    mVideoInteractor.update_time(hash).fromIOToMain().subscribe(
+                            listDisposable =
+                                mVideoInteractor.delete_media(hash1).fromIOToMain()
+                                    .subscribe(
                                         {
                                             createCustomToast(
                                                 context
                                             ).showToast(R.string.success)
-                                        }) { t ->
-                                        createCustomToast(context).showToastThrowable(t)
+                                        }) { o ->
+                                        createCustomToast(context).showToastThrowable(o)
                                     }
-                            }
-
-                            VideoLocalServerOption.edit_item_video -> {
-                                val hash2 = VKLinkParser.parseLocalServerURL(video.mp4link720)
-                                if (hash2.isNullOrEmpty()) {
-                                    return
-                                }
-                                listDisposable =
-                                    mVideoInteractor.get_file_name(hash2).fromIOToMain().subscribe(
-                                        { t: String? ->
-                                            val root = View.inflate(
-                                                context, R.layout.entry_file_name, null
-                                            )
-                                            (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).setText(
-                                                t
-                                            )
-                                            MaterialAlertDialogBuilder(context)
-                                                .setTitle(R.string.change_name)
-                                                .setCancelable(true)
-                                                .setView(root)
-                                                .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
-                                                    listDisposable =
-                                                        mVideoInteractor.update_file_name(
-                                                            hash2,
-                                                            (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).text.toString()
-                                                                .trim { it <= ' ' })
-                                                            .fromIOToMain()
-                                                            .subscribe({
-                                                                createCustomToast(
-                                                                    context
-                                                                ).showToast(R.string.success)
-                                                            }) { o ->
-                                                                createCustomToast(context).showToastThrowable(
-                                                                    o
-                                                                )
-                                                            }
-                                                }
-                                                .setNegativeButton(R.string.button_cancel, null)
-                                                .show()
-                                        }) { t ->
-                                        createCustomToast(context).showToastThrowable(t)
-                                    }
-                            }
-
-                            VideoLocalServerOption.delete_item_video -> MaterialAlertDialogBuilder(
-                                context
-                            )
-                                .setMessage(R.string.do_delete)
-                                .setTitle(R.string.confirmation)
-                                .setCancelable(true)
-                                .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
-                                    val hash1 = VKLinkParser.parseLocalServerURL(video.mp4link720)
-                                    if (hash1.isNullOrEmpty()) {
-                                        return@setPositiveButton
-                                    }
-                                    listDisposable =
-                                        mVideoInteractor.delete_media(hash1).fromIOToMain()
-                                            .subscribe(
-                                                {
-                                                    createCustomToast(
-                                                        context
-                                                    ).showToast(R.string.success)
-                                                }) { o ->
-                                                createCustomToast(context).showToastThrowable(o)
-                                            }
-                                }
-                                .setNegativeButton(R.string.button_cancel, null)
-                                .show()
-
-                            else -> {}
                         }
-                    }
+                        .setNegativeButton(R.string.button_cancel, null)
+                        .show()
 
-                })
+                    else -> {}
+                }
+            }
             true
         }
     }

@@ -10,4 +10,7 @@ class VKApiCatalogV2Layout {
 
     @SerialName("title")
     var title: String? = null
+
+    @SerialName("top_title")
+    var top_title: VKApiCatalogV2TopTitle? = null
 }

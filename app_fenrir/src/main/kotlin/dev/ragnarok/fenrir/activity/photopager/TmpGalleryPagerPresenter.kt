@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.activity.photopager
 
-import android.content.Context
 import android.os.Bundle
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.db.serialize.Serializers
@@ -12,17 +11,17 @@ import dev.ragnarok.fenrir.util.PersistentLogger
 
 class TmpGalleryPagerPresenter : PhotoPagerPresenter {
     constructor(
-        accountId: Long, source: TmpSource, index: Int, context: Context,
+        accountId: Long, source: TmpSource, index: Int,
         savedInstanceState: Bundle?
-    ) : super(ArrayList<Photo>(0), accountId, false, context, savedInstanceState) {
+    ) : super(ArrayList<Photo>(0), accountId, false, savedInstanceState) {
         currentIndex = index
         loadDataFromDatabase(source)
     }
 
     constructor(
-        accountId: Long, source: Long, index: Int, context: Context,
+        accountId: Long, source: Long, index: Int,
         savedInstanceState: Bundle?
-    ) : super(ArrayList<Photo>(0), accountId, false, context, savedInstanceState) {
+    ) : super(ArrayList<Photo>(0), accountId, false, savedInstanceState) {
         currentIndex = index
         changeLoadingNowState(true)
         onInitialLoadingFinished(

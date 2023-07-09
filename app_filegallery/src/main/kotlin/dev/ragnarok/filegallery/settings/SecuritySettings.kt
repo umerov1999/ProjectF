@@ -28,11 +28,12 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         }
     override val pinEnterHistory: List<Long>
         get() = mPinEnterHistory
-    override val isUsePinForEntrance: Boolean
-        get() = hasPinHash() && getPreferences(mApplication).getBoolean(
-            KEY_USE_PIN_FOR_ENTRANCE,
-            false
-        )
+
+    override var isUsePinForEntrance: Boolean
+        get() = hasPinHash() && getPreferences(mApplication)
+            .getBoolean(KEY_USE_PIN_FOR_ENTRANCE, false)
+        set(value) = getPreferences(mApplication).edit().putBoolean(KEY_USE_PIN_FOR_ENTRANCE, value)
+            .apply()
 
     private fun storePinHistory() {
         val target: MutableSet<String> = HashSet(mPinEnterHistory.size)
@@ -64,8 +65,10 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         return pinHistoryDepth
     }
 
-    override val isEntranceByFingerprintAllowed: Boolean
+    override var isEntranceByFingerprintAllowed: Boolean
         get() = getPreferences(mApplication).getBoolean("allow_fingerprint", false)
+        set(value) = getPreferences(mApplication).edit().putBoolean("allow_fingerprint", value)
+            .apply()
 
     override fun updateLastPinTime() {
         getPreferences(mApplication).edit().putLong(LAST_PIN_ENTERED, System.currentTimeMillis())

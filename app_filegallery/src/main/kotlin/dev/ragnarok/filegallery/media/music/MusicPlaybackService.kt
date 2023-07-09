@@ -80,6 +80,7 @@ class MusicPlaybackService : Service() {
     override fun onBind(intent: Intent): IBinder {
         if (Constants.IS_DEBUG) Logger.d(TAG, "Service bound, intent = $intent")
         cancelShutdown()
+        mAnyActivityInForeground = false
         return mBinder
     }
 
@@ -125,6 +126,7 @@ class MusicPlaybackService : Service() {
 
     override fun onRebind(intent: Intent) {
         cancelShutdown()
+        mAnyActivityInForeground = false
     }
 
     override fun onCreate() {
@@ -155,7 +157,7 @@ class MusicPlaybackService : Service() {
             this,
             mIntentReceiver,
             filter,
-            ContextCompat.RECEIVER_NOT_EXPORTED
+            ContextCompat.RECEIVER_EXPORTED
         )
 
         // Initialize the delayed shutdown intent
@@ -254,10 +256,6 @@ class MusicPlaybackService : Service() {
         if (Constants.IS_DEBUG) Logger.d(TAG, "Got new intent $intent, startId = $startId")
         if (intent != null) {
             val action = intent.action
-            if (intent.hasExtra(NOW_IN_FOREGROUND)) {
-                mAnyActivityInForeground = intent.getBooleanExtra(NOW_IN_FOREGROUND, false)
-                updateNotification()
-            }
             if (SHUTDOWN == action) {
                 mShutdownScheduled = false
                 releaseServiceUiAndStop()
@@ -272,14 +270,12 @@ class MusicPlaybackService : Service() {
 
     @Suppress("DEPRECATION")
     internal fun releaseServiceUiAndStop() {
-        if (isPlaying) {
+        if (isPlaying || mAnyActivityInForeground) {
             return
         }
         if (Constants.IS_DEBUG) Logger.d(TAG, "Nothing is playing anymore, releasing notification")
         mNotificationHelper?.killNotification()
-        if (!mAnyActivityInForeground) {
-            stopSelf()
-        }
+        stopSelf()
     }
 
     internal fun handleCommandIntent(intent: Intent) {
@@ -447,7 +443,7 @@ class MusicPlaybackService : Service() {
         if (what == POSITION_CHANGED) {
             return
         }
-        sendBroadcast(Intent(what))
+        MusicPlaybackController.publishFromServiceState(what)
         if (what == PLAYSTATE_CHANGED) {
             mNotificationHelper?.updatePlayState(isPlaying)
         }
@@ -566,6 +562,12 @@ class MusicPlaybackService : Service() {
         get() {
             synchronized(this) { return mPlayer?.bufferPercent ?: 0 }
         }
+
+    fun doNotDestroyWhenActivityRecreated() {
+        synchronized(this) {
+            mAnyActivityInForeground = true
+        }
+    }
 
     val bufferPos: Long
         get() {
@@ -1242,6 +1244,9 @@ class MusicPlaybackService : Service() {
             return mService.get()?.bufferPos ?: 0
         }
 
+        override fun doNotDestroyWhenActivityRecreated() {
+            mService.get()?.doNotDestroyWhenActivityRecreated()
+        }
     }
 
     companion object {
@@ -1263,11 +1268,6 @@ class MusicPlaybackService : Service() {
         const val REPEAT_ACTION = "dev.ragnarok.filegallery.player.repeat"
         const val SHUFFLE_ACTION = "dev.ragnarok.filegallery.player.shuffle"
 
-        /**
-         * Called to update the service about the foreground state of Apollo's activities
-         */
-        const val FOREGROUND_STATE_CHANGED = "dev.ragnarok.filegallery.player.fgstatechanged"
-        const val NOW_IN_FOREGROUND = "nowinforeground"
         const val REFRESH = "dev.ragnarok.filegallery.player.refresh"
 
         /**

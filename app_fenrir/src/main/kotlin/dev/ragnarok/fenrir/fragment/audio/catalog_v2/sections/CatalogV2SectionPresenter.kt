@@ -12,6 +12,7 @@ import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.AudioPlaylist
 import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2Block
+import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2RecommendationPlaylist
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2Section
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
@@ -82,6 +83,20 @@ class CatalogV2SectionPresenter(
                         continue
                     }
                     val sd = getAudioPos(u.items, audio)
+                    if (sd >= 0) {
+                        i.setScroll()
+                        view?.notifyDataChanged(
+                            pos, 1
+                        )
+                        return pos
+                    }
+                    continue
+                } else if (i.getModelType() == AbsModelType.MODEL_CATALOG_V2_RECOMMENDATION_PLAYLIST) {
+                    val u = i as CatalogV2RecommendationPlaylist
+                    if (u.getAudios().isNullOrEmpty()) {
+                        continue
+                    }
+                    val sd = getAudioPos(u.getAudiosModels(), audio)
                     if (sd >= 0) {
                         i.setScroll()
                         view?.notifyDataChanged(

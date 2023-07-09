@@ -18,7 +18,8 @@
 #include "libyuv/row.h"
 
 // This module is for clang rvv. GCC hasn't supported segment load & store.
-#if !defined(LIBYUV_DISABLE_RVV) && defined(__riscv_vector) && defined(__clang__)
+#if !defined(LIBYUV_DISABLE_RVV) && defined(__riscv_vector) && \
+    defined(__clang__)
 #include <assert.h>
 #include <riscv_vector.h>
 
@@ -961,7 +962,7 @@ void ARGBExtractAlphaRow_RVV(const uint8_t* src_argb,
   do {
     size_t vl = __riscv_vsetvl_e8m2(w);
     vuint8m2_t v_b, v_g, v_r, v_a;
-    __riscv_vlseg4e8_v_u8m2(&v_r, &v_g, &v_b, &v_a, src_argb, vl);
+    __riscv_vlseg4e8_v_u8m2(&v_b, &v_g, &v_r, &v_a, src_argb, vl);
     __riscv_vse8_v_u8m2(dst_a, v_a, vl);
     w -= vl;
     src_argb += vl * 4;
@@ -988,4 +989,5 @@ void ARGBCopyYToAlphaRow_RVV(const uint8_t* src, uint8_t* dst, int width) {
 }  // namespace libyuv
 #endif
 
-#endif  // !defined(LIBYUV_DISABLE_RVV) && defined(__riscv_vector) && defined(__clang__)
+#endif  // !defined(LIBYUV_DISABLE_RVV) && defined(__riscv_vector) &&
+        // defined(__clang__)

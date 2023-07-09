@@ -200,7 +200,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
             }
 
             R.id.report -> {
-                presenter?.fireReport()
+                presenter?.fireReport(requireActivity())
                 return true
             }
 
@@ -519,7 +519,6 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                     requireArguments().getLong(Extra.OWNER_ID),
                     requireArguments().getParcelableCompat(Extra.POST),
                     wrapper?.get(),
-                    requireActivity(),
                     saveInstanceState
                 )
             }
@@ -535,6 +534,10 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
 
     override fun doPostExport(accountId: Long, post: Post) {
         PostDownload(requireActivity()).doDownloadAsHTML(accountId, post)
+    }
+
+    override fun invalidateMenu() {
+        requireActivity().invalidateOptionsMenu()
     }
 
     override fun onHashTagClicked(hashTag: String) {

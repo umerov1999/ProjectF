@@ -1,18 +1,13 @@
 package dev.ragnarok.fenrir.fragment.photos.createphotoalbum
 
-import android.content.Context
 import android.os.Bundle
-import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes.networkInterfaces
 import dev.ragnarok.fenrir.api.interfaces.INetworker
-import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fragment.photos.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoAlbumEditor
 import dev.ragnarok.fenrir.orZero
-import dev.ragnarok.fenrir.place.PlaceFactory.getVKPhotosAlbumPlace
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStepsHost
 import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStepsHost.PhotoAlbumState
@@ -22,7 +17,6 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
     private val networker: INetworker
     private val editing: Boolean
     private val ownerId: Long
-    private val context: Context
     private val editor: PhotoAlbumEditor
     private var album: PhotoAlbum? = null
     private var stepsHost: CreatePhotoAlbumStepsHost? = null
@@ -30,14 +24,12 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
     constructor(
         accountId: Long,
         ownerId: Long,
-        context: Context,
         savedInstanceState: Bundle?
     ) : super(accountId, savedInstanceState) {
         networker = networkInterfaces
         this.ownerId = ownerId
         editor = PhotoAlbumEditor.create()
         editing = false
-        this.context = context
         init(savedInstanceState)
     }
 
@@ -45,7 +37,6 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
         accountId: Long,
         album: PhotoAlbum,
         editor: PhotoAlbumEditor,
-        context: Context,
         savedInstanceState: Bundle?
     ) : super(accountId, savedInstanceState) {
         networker = networkInterfaces
@@ -53,7 +44,6 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
         ownerId = album.ownerId
         this.editor = editor
         editing = true
-        this.context = context
         init(savedInstanceState)
     }
 
@@ -127,7 +117,7 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
                     null, uploadsByAdminsOnly, commentsDisabled
                 )
                     .fromIOToMain()
-                    .subscribe({ t: Boolean? -> goToEditedAlbum(album, t) }) { l ->
+                    .subscribe({ t: Boolean? -> view?.goToEditedAlbum(accountId, album, t) }) { l ->
                         showError(
                             getCauseIfRuntime(l)
                         )
@@ -145,29 +135,10 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
                 commentsDisabled
             )
                 .fromIOToMain()
-                .subscribe({ album -> goToAlbum(album) }) { t ->
+                .subscribe({ album -> view?.goToAlbum(accountId, album) }) { t ->
                     showError(getCauseIfRuntime(t))
                 })
         }
-    }
-
-    private fun goToAlbum(album: VKApiPhotoAlbum) {
-        getVKPhotosAlbumPlace(
-            accountId, album.owner_id, album.id,
-            IVKPhotosView.ACTION_SHOW_PHOTOS
-        )
-            .withParcelableExtra(Extra.ALBUM, PhotoAlbum(album.id, album.owner_id))
-            .tryOpenWith(context)
-    }
-
-    private fun goToEditedAlbum(album: PhotoAlbum?, ret: Boolean?) {
-        if (ret == null || !ret) return
-        getVKPhotosAlbumPlace(
-            accountId, (album ?: return).ownerId, album.getObjectId(),
-            IVKPhotosView.ACTION_SHOW_PHOTOS
-        )
-            .withParcelableExtra(Extra.ALBUM, album)
-            .tryOpenWith(context)
     }
 
     fun fireBackButtonClick(): Boolean {

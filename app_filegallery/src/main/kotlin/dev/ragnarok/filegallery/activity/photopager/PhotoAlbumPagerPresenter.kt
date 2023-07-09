@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.activity.photopager
 
-import android.content.Context
 import android.os.Bundle
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
@@ -12,9 +11,9 @@ import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.util.Utils
 
 class PhotoAlbumPagerPresenter(
-    index: Int, source: Long, invertPhotoRev: Boolean, context: Context,
+    index: Int, source: Long, invertPhotoRev: Boolean,
     savedInstanceState: Bundle?
-) : PhotoPagerPresenter(ArrayList(0), context, savedInstanceState) {
+) : PhotoPagerPresenter(ArrayList(0), savedInstanceState) {
     private val photosInteractor: ILocalServerApi = networkInterfaces.localServerApi()
     private val invertPhotoRev: Boolean
     private var canLoad: Boolean

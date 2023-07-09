@@ -26,7 +26,6 @@ import dev.ragnarok.fenrir.model.PostFilter
 import dev.ragnarok.fenrir.model.Token
 import dev.ragnarok.fenrir.model.criteria.WallCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import dev.ragnarok.fenrir.place.PlaceFactory.getMentionsPlace
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.ISettings.IAccountsSettings
 import dev.ragnarok.fenrir.util.ShortcutUtils.createWallShortcutRx
@@ -39,7 +38,6 @@ class GroupWallPresenter(
     accountId: Long,
     ownerId: Long,
     pCommunity: Community?,
-    private val context: Context,
     savedInstanceState: Bundle?
 ) : AbsWallPresenter<IGroupWallView>(accountId, ownerId, savedInstanceState) {
     private var community: Community
@@ -529,7 +527,7 @@ class GroupWallPresenter(
     }
 
     fun fireMentions() {
-        getMentionsPlace(accountId, ownerId).tryOpenWith(context)
+        view?.goMentions(accountId, ownerId)
     }
 
     override fun onRefresh() {
@@ -553,7 +551,7 @@ class GroupWallPresenter(
         )
     }
 
-    override fun fireAddToShortcutClick() {
+    override fun fireAddToShortcutClick(context: Context) {
         appendDisposable(
             createWallShortcutRx(
                 context,

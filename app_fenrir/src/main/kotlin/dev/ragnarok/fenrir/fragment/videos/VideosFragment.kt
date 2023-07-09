@@ -409,10 +409,10 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         menus.header(video.title, R.drawable.video, video.image)
         menus.columns(2)
         menus.show(
-            requireActivity().supportFragmentManager,
+            childFragmentManager,
             "video_options"
-        ) {
-            when (it.id) {
+        ) { _, option ->
+            when (option.id) {
                 R.id.action_copy_url -> {
                     val clipboard =
                         requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
@@ -436,7 +436,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
 
                 else -> {
                     presenter?.fireVideoOption(
-                        it.id,
+                        option.id,
                         video,
                         position,
                         requireActivity()

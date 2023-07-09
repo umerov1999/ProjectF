@@ -12,12 +12,15 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.hideSoftKeyboard
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
+import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
+import dev.ragnarok.fenrir.fragment.photos.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoAlbumEditor
+import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.view.steppers.base.AbsStepHolder
 import dev.ragnarok.fenrir.view.steppers.base.AbsSteppersVerticalAdapter
 import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStep1Holder
@@ -42,6 +45,25 @@ class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditP
         mRecyclerView = root.findViewById(R.id.recycleView)
         mRecyclerView?.layoutManager = LinearLayoutManager(requireActivity())
         return root
+    }
+
+    override fun goToAlbum(accountId: Long, album: VKApiPhotoAlbum) {
+        PlaceFactory.getVKPhotosAlbumPlace(
+            accountId, album.owner_id, album.id,
+            IVKPhotosView.ACTION_SHOW_PHOTOS
+        )
+            .withParcelableExtra(Extra.ALBUM, PhotoAlbum(album.id, album.owner_id))
+            .tryOpenWith(requireActivity())
+    }
+
+    override fun goToEditedAlbum(accountId: Long, album: PhotoAlbum?, ret: Boolean?) {
+        if (ret == null || !ret) return
+        PlaceFactory.getVKPhotosAlbumPlace(
+            accountId, (album ?: return).ownerId, album.getObjectId(),
+            IVKPhotosView.ACTION_SHOW_PHOTOS
+        )
+            .withParcelableExtra(Extra.ALBUM, album)
+            .tryOpenWith(requireActivity())
     }
 
     override fun updateStepView(step: Int) {
@@ -149,7 +171,6 @@ class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditP
                         accountId,
                         abum,
                         editor,
-                        requireActivity(),
                         saveInstanceState
                     )
                 } else {
@@ -157,7 +178,6 @@ class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditP
                     return EditPhotoAlbumPresenter(
                         accountId,
                         ownerId,
-                        requireActivity(),
                         saveInstanceState
                     )
                 }

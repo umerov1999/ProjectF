@@ -1,9 +1,12 @@
 package dev.ragnarok.fenrir.activity
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Bundle
+import android.os.IBinder
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
@@ -26,19 +29,57 @@ import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.getParcelableExtraCompat
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
+import dev.ragnarok.fenrir.media.music.MusicPlaybackController
+import dev.ragnarok.fenrir.media.music.MusicPlaybackService
 import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
 
-class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable {
+class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable, ServiceConnection {
     //resolveToolbarNavigationIcon();
     private val mOnBackStackChangedListener =
         FragmentManager.OnBackStackChangedListener { keyboardHide() }
+
+    private var mAudioPlayServiceToken: MusicPlaybackController.ServiceToken? = null
+
+    private fun bindToAudioPlayService() {
+        if (mAudioPlayServiceToken == null) {
+            mAudioPlayServiceToken = MusicPlaybackController.bindToServiceWithoutStart(this, this)
+        }
+    }
+
+    private fun unbindFromAudioPlayService() {
+        if (mAudioPlayServiceToken != null) {
+            if (isChangingConfigurations) {
+                MusicPlaybackController.doNotDestroyWhenActivityRecreated()
+            }
+            MusicPlaybackController.unbindFromService(mAudioPlayServiceToken)
+            mAudioPlayServiceToken = null
+        }
+    }
+
+    private val TAG = "ChatActivityBubbles_LOG"
+
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+        if (name.className == MusicPlaybackService::class.java.name) {
+            Logger.d(TAG, "Connected to MusicPlaybackService")
+        }
+    }
+
+    override fun onServiceDisconnected(name: ComponentName) {
+        if (mAudioPlayServiceToken == null) return
+        if (name.className == MusicPlaybackService::class.java.name) {
+            Logger.d(TAG, "Disconnected from MusicPlaybackService")
+            mAudioPlayServiceToken = null
+            bindToAudioPlayService()
+        }
+    }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +97,8 @@ class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable {
             handleIntent(intent)
             supportFragmentManager.addOnBackStackChangedListener(mOnBackStackChangedListener)
         }
+
+        bindToAudioPlayService()
     }
 
     private fun handleIntent(intent: Intent?) {
@@ -180,6 +223,7 @@ class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable {
         NotificationHelper.resetBubbleOpened(this, true)
         supportFragmentManager.removeOnBackStackChangedListener(mOnBackStackChangedListener)
         ViewUtils.keyboardHide(this)
+        unbindFromAudioPlayService()
         super.onDestroy()
     }
 

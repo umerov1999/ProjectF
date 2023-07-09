@@ -26,10 +26,8 @@ import dev.ragnarok.fenrir.picasso.transforms.PolyTransformation
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.Utils
 
-class ModalBottomSheetDialogFragment(listener: Listener) : BottomSheetDialogFragment() {
-
+class ModalBottomSheetDialogFragment : BottomSheetDialogFragment() {
     companion object {
-
         private const val KEY_EXCLUDES = "excludes"
         private const val KEY_OPTIONS = "options"
         private const val KEY_COLUMNS = "columns"
@@ -38,10 +36,11 @@ class ModalBottomSheetDialogFragment(listener: Listener) : BottomSheetDialogFrag
         private const val KEY_IMAGE_URL = "url"
 
         internal fun newInstance(
-            listener: Listener,
+            listener: Listener?,
             builder: Builder
         ): ModalBottomSheetDialogFragment {
-            val fragment = ModalBottomSheetDialogFragment(listener)
+            val fragment = ModalBottomSheetDialogFragment()
+            fragment.listener = listener
             val args = Bundle()
             args.putParcelableArrayList(KEY_OPTIONS, builder.options)
             args.putInt(KEY_COLUMNS, builder.columns)
@@ -72,14 +71,15 @@ class ModalBottomSheetDialogFragment(listener: Listener) : BottomSheetDialogFrag
 
     override fun onPause() {
         super.onPause()
-        dismiss()
+        if (bindHost() == null) {
+            dismiss()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         list = view.findViewById(R.id.list)
-        val arguments = arguments
-            ?: throw IllegalStateException("You need to create this via the builder")
+        val arguments = checkArguments()
 
         val optionHolders =
             arguments.getParcelableArrayListCompat<OptionHolder>(KEY_OPTIONS) ?: return
@@ -106,7 +106,7 @@ class ModalBottomSheetDialogFragment(listener: Listener) : BottomSheetDialogFrag
         }
 
         adapter = Adapter {
-            listener?.onModalOptionSelected(it)
+            listener?.onModalOptionSelected(this@ModalBottomSheetDialogFragment.tag, it)
             dismissAllowingStateLoss()
         }
         adapter.header = arguments.getString(KEY_HEADER)
@@ -132,6 +132,9 @@ class ModalBottomSheetDialogFragment(listener: Listener) : BottomSheetDialogFrag
         }
 
         adapter.set(finalOptions)
+        if (listener == null) {
+            listener = bindHost()
+        }
     }
 
     @SuppressLint("RestrictedApi")
@@ -140,9 +143,32 @@ class ModalBottomSheetDialogFragment(listener: Listener) : BottomSheetDialogFrag
         menuInflater.inflate(menuRes, menu)
         for (i in 0 until menu.size()) {
             val item = menu.getItem(i)
-            val option = Option(item.itemId, item.title as String, item.icon, false)
+            val option = Option(
+                item.itemId,
+                if (item.title == null) "" else item.title.toString(),
+                item.icon,
+                false
+            )
             options.add(option)
         }
+    }
+
+    private fun bindHost(): Listener? {
+        if (parentFragment != null) {
+            if (parentFragment is Listener) {
+                return parentFragment as Listener
+            }
+        }
+        if (context is Listener) {
+            return context as Listener
+        }
+        return null
+    }
+
+    private fun checkArguments(): Bundle {
+        return arguments
+            ?: throw IllegalStateException("You need to create this via the builder")
+
     }
 
     /**
@@ -201,7 +227,7 @@ class ModalBottomSheetDialogFragment(listener: Listener) : BottomSheetDialogFrag
         /**
          * Build the [ModalBottomSheetDialogFragment]. You still need to call [ModalBottomSheetDialogFragment.show] when you want it to show
          */
-        fun build(listener: Listener): ModalBottomSheetDialogFragment {
+        fun build(listener: Listener?): ModalBottomSheetDialogFragment {
             return newInstance(listener, this)
         }
 
@@ -218,14 +244,23 @@ class ModalBottomSheetDialogFragment(listener: Listener) : BottomSheetDialogFrag
             return dialog
         }
 
+        fun show(
+            fragmentManager: FragmentManager,
+            tag: String
+        ): ModalBottomSheetDialogFragment {
+            val dialog = build(null)
+            dialog.show(fragmentManager, tag)
+            return dialog
+        }
+
         inline fun show(
             fragmentManager: FragmentManager,
             tag: String,
-            crossinline granted: (Option) -> Unit
+            crossinline granted: (String?, Option) -> Unit
         ): ModalBottomSheetDialogFragment {
             val dialog = build(object : Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    granted.invoke(option)
+                override fun onModalOptionSelected(tag: String?, option: Option) {
+                    granted.invoke(tag, option)
                 }
             })
             dialog.show(fragmentManager, tag)
@@ -240,7 +275,7 @@ class ModalBottomSheetDialogFragment(listener: Listener) : BottomSheetDialogFrag
         /**
          * A modal option has been selected
          */
-        fun onModalOptionSelected(option: Option)
+        fun onModalOptionSelected(tag: String?, option: Option)
     }
 
     internal class Adapter(private val callback: (option: Option) -> Unit) :
@@ -366,9 +401,4 @@ class ModalBottomSheetDialogFragment(listener: Listener) : BottomSheetDialogFrag
             }
         }
     }
-
-    init {
-        this.listener = listener
-    }
-
 }

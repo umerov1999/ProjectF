@@ -30,4 +30,6 @@ interface IShortVideoPagerView : IMvpView, IErrorView, IToastView {
     fun displayCommentCount(count: Int)
     fun showComments(accountId: Long, commented: Commented)
     fun goToLikes(accountId: Long, type: String, ownerId: Long, id: Int)
+
+    fun downloadVideo(video: Video, url: String, Res: String)
 }

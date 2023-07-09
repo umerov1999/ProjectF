@@ -38,7 +38,6 @@ import io.reactivex.rxjava3.disposables.Disposable
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-
 class FileManagerSelectFragment :
     BaseMvpFragment<FileManagerSelectPresenter, IFileManagerSelectView>(),
     IFileManagerSelectView, FileManagerSelectAdapter.ClickListener, BackPressCallback {

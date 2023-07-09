@@ -81,7 +81,7 @@ interface ISettings {
     interface ISecuritySettings {
         fun isPinValid(values: IntArray): Boolean
         fun setPin(pin: IntArray?)
-        val isEntranceByFingerprintAllowed: Boolean
+        var isEntranceByFingerprintAllowed: Boolean
 
         fun firePinAttemptNow()
         fun clearPinHistory()
@@ -89,6 +89,6 @@ interface ISettings {
         fun hasPinHash(): Boolean
         fun pinHistoryDepthValue(): Int
         fun updateLastPinTime()
-        val isUsePinForEntrance: Boolean
+        var isUsePinForEntrance: Boolean
     }
 }

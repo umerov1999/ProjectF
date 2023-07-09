@@ -66,45 +66,19 @@ namespace TagLib {
     {
     public:
       static FrameFactory *instance();
-      /*!
-       * Create a frame based on \a data.  \a synchSafeInts should only be set
-       * false if we are parsing an old tag (v2.3 or older) that does not support
-       * synchsafe ints.
-       *
-       * \deprecated Please use the method below that accepts a ID3v2::Header
-       * instance in new code.
-       */
-      TAGLIB_DEPRECATED Frame *createFrame(const ByteVector &data, bool synchSafeInts) const;
 
-      /*!
-       * Create a frame based on \a data.  \a version should indicate the ID3v2
-       * version of the tag.  As ID3v2.4 is the most current version of the
-       * standard 4 is the default.
-       *
-       * \deprecated Please use the method below that accepts a ID3v2::Header
-       * instance in new code.
-       */
-      TAGLIB_DEPRECATED Frame *createFrame(const ByteVector &data, unsigned int version = 4) const;
-
-      /*!
-       * \deprecated Use createFrame(const ByteVector &, const Header *) const.
-       */
-      // BIC: remove
-      Frame *createFrame(const ByteVector &data, Header *tagHeader) const;
       /*!
        * Create a frame based on \a data.  \a tagHeader should be a valid
        * ID3v2::Header instance.
        */
-      // BIC: make virtual
-      Frame *createFrame(const ByteVector &data, const Header *tagHeader) const;
+      virtual Frame *createFrame(const ByteVector &data, const Header *tagHeader) const;
 
       /*!
        * After a tag has been read, this tries to rebuild some of them
        * information, most notably the recording date, from frames that
        * have been deprecated and can't be upgraded directly.
        */
-      // BIC: Make virtual
-      void rebuildAggregateFrames(ID3v2::Tag *tag) const;
+      virtual void rebuildAggregateFrames(ID3v2::Tag *tag) const;
 
       /*!
        * Returns the default text encoding for text frames.  If setTextEncoding()

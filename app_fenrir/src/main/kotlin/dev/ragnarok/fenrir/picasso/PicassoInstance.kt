@@ -104,6 +104,7 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
             .addRequestHandler(PicassoMediaMetadataHandler())
             .addRequestHandler(PicassoFileManagerHandler(app))
             .addRequestHandler(PicassoFullLocalRequestHandler(app))
+            .dispatchers()
             .build()
     }
 

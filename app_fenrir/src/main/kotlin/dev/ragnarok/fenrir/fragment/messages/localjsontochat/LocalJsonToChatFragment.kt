@@ -26,7 +26,6 @@ import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter.OnMessageActio
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Keyboard
 import dev.ragnarok.fenrir.model.Message
@@ -79,7 +78,7 @@ class LocalJsonToChatFragment :
         Avatar = root.findViewById(R.id.toolbar_avatar)
         EmptyAvatar = root.findViewById(R.id.empty_avatar_text)
 
-        recyclerView = root.findViewById(android.R.id.list)
+        recyclerView = root.findViewById(R.id.content_list)
         recyclerView?.layoutManager =
             LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, true)
         recyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))
@@ -188,13 +187,10 @@ class LocalJsonToChatFragment :
             )
         )
 
-        menus.show(childFragmentManager, "json_attachments_select",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    presenter?.uAttachmentType = option.id
-                    presenter?.updateMessages(false)
-                }
-            })
+        menus.show(childFragmentManager, "json_attachments_select") { _, option ->
+            presenter?.uAttachmentType = option.id
+            presenter?.updateMessages(false)
+        }
     }
 
     override fun scroll_pos(pos: Int) {

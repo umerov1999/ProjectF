@@ -84,16 +84,6 @@ MPEG::Properties::~Properties()
   delete d;
 }
 
-int MPEG::Properties::length() const
-{
-  return lengthInSeconds();
-}
-
-int MPEG::Properties::lengthInSeconds() const
-{
-  return d->length / 1000;
-}
-
 int MPEG::Properties::lengthInMilliseconds() const
 {
   return d->length;
@@ -157,7 +147,7 @@ void MPEG::Properties::read(File *file)
 {
   // Only the first valid frame is required if we have a VBR header.
 
-  const long firstFrameOffset = file->firstFrameOffset();
+  const offset_t firstFrameOffset = file->firstFrameOffset();
   if(firstFrameOffset < 0) {
     debug("MPEG::Properties::read() -- Could not find an MPEG frame in the stream.");
     return;
@@ -197,14 +187,14 @@ void MPEG::Properties::read(File *file)
 
     // Look for the last MPEG audio frame to calculate the stream length.
 
-    const long lastFrameOffset = file->lastFrameOffset();
+    const offset_t lastFrameOffset = file->lastFrameOffset();
     if(lastFrameOffset < 0) {
       debug("MPEG::Properties::read() -- Could not find an MPEG frame in the stream.");
     }
     else
     {
       const Header lastHeader(file, lastFrameOffset, false);
-      const long streamLength = lastFrameOffset - firstFrameOffset + lastHeader.frameLength();
+      const offset_t streamLength = lastFrameOffset - firstFrameOffset + lastHeader.frameLength();
       if (streamLength > 0)
         d->length = static_cast<int>(streamLength * 8.0 / d->bitrate + 0.5);
     }

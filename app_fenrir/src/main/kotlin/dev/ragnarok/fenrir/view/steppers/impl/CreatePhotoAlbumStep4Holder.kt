@@ -25,7 +25,6 @@ class CreatePhotoAlbumStep4Holder(parent: ViewGroup, private val mActionListener
 
     override fun bindViews(host: CreatePhotoAlbumStepsHost) {
         mRootView?.isEnabled = host.isPrivacySettingsEnable
-        // TODO: 16-May-16 Сделать неактивным, если альбом в группе
         val context = mPrivacyCommentAllowed?.context
         val text = context?.let { host.state.privacyComment?.createAllowedString(it) }
         mPrivacyCommentAllowed?.text = text

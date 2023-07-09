@@ -72,16 +72,14 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
                         context.resources.getString(R.string.next),
                         retreivePlaybackActions(ACTION_NEXT)
                     )
+                ).addAction(
+                    NotificationCompat.Action(
+                        R.drawable.close,
+                        context.resources.getString(R.string.close),
+                        retreivePlaybackActions(SWIPE_DISMISS_ACTION)
+                    )
                 )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            mNotificationBuilder?.addAction(
-                NotificationCompat.Action(
-                    R.drawable.close,
-                    context.resources.getString(R.string.close),
-                    retreivePlaybackActions(SWIPE_DISMISS_ACTION)
-                )
-            )
-        } else {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             mNotificationBuilder?.setDeleteIntent(retreivePlaybackActions(SWIPE_DISMISS_ACTION))
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)

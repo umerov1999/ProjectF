@@ -245,7 +245,7 @@ RenderData Paint::Impl::update(RenderMethod& renderer, const RenderTransform* pT
     RenderData rd = nullptr;
     auto newFlag = static_cast<RenderUpdateFlag>(pFlag | renderFlag);
     renderFlag = RenderUpdateFlag::None;
-    opacity = ((opacity * this->opacity + 0xff) >> 8);      //opacity = (opacity * this->opacity) / 255;
+    opacity = MULTIPLY(opacity, this->opacity);
 
     if (rTransform && pTransform) {
         RenderTransform outTransform(pTransform, rTransform);
@@ -380,7 +380,7 @@ Result Paint::composite(std::unique_ptr<Paint> target, CompositeMethod method) n
 {
     auto p = target.release();
     if (pImpl->composite(this, p, method)) return Result::Success;
-    if (p) delete(p);
+    delete(p);
     return Result::InvalidArguments;
 }
 

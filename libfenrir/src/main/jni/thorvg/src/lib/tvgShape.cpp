@@ -59,7 +59,10 @@ uint32_t Shape::identifier() noexcept
 
 Result Shape::reset() noexcept
 {
-    pImpl->reset();
+    pImpl->rs.path.cmds.clear();
+    pImpl->rs.path.pts.clear();
+
+    pImpl->flag = RenderUpdateFlag::Path;
 
     return Result::Success;
 }
@@ -69,9 +72,8 @@ uint32_t Shape::pathCommands(const PathCommand** cmds) const noexcept
 {
     if (!cmds) return 0;
 
-    *cmds = pImpl->rs.path.cmds;
-
-    return pImpl->rs.path.cmdCnt;
+    *cmds = pImpl->rs.path.cmds.data;
+    return pImpl->rs.path.cmds.count;
 }
 
 
@@ -79,9 +81,8 @@ uint32_t Shape::pathCoords(const Point** pts) const noexcept
 {
     if (!pts) return 0;
 
-    *pts = pImpl->rs.path.pts;
-
-    return pImpl->rs.path.ptsCnt;
+    *pts = pImpl->rs.path.pts.data;
+    return pImpl->rs.path.pts.count;
 }
 
 
@@ -244,17 +245,19 @@ Result Shape::appendRect(float x, float y, float w, float h, float rx, float ry)
 
 Result Shape::fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a) noexcept
 {
-    pImpl->rs.color[0] = r;
-    pImpl->rs.color[1] = g;
-    pImpl->rs.color[2] = b;
-    pImpl->rs.color[3] = a;
-    pImpl->flag |= RenderUpdateFlag::Color;
-
     if (pImpl->rs.fill) {
         delete(pImpl->rs.fill);
         pImpl->rs.fill = nullptr;
         pImpl->flag |= RenderUpdateFlag::Gradient;
     }
+
+    if (r == pImpl->rs.color[0] && g == pImpl->rs.color[1] && b == pImpl->rs.color[2] && a == pImpl->rs.color[3]) return Result::Success;
+
+    pImpl->rs.color[0] = r;
+    pImpl->rs.color[1] = g;
+    pImpl->rs.color[2] = b;
+    pImpl->rs.color[3] = a;
+    pImpl->flag |= RenderUpdateFlag::Color;
 
     return Result::Success;
 }

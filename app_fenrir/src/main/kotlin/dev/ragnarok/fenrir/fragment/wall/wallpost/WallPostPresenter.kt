@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.wall.wallpost
 
-import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
@@ -33,7 +32,7 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 
 class WallPostPresenter(
     accountId: Long, private val postId: Int, private val ownerId: Long, post: Post?,
-    owner: Owner?, private val context: Context, savedInstanceState: Bundle?
+    owner: Owner?, savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<IWallPostView>(accountId, savedInstanceState) {
     private val wallInteractor: IWallsRepository = walls
     private val ownersRepository: IOwnersRepository = owners
@@ -301,7 +300,7 @@ class WallPostPresenter(
         post?.let {
             it.setFavorite((!it.isFavorite))
         }
-        (context as Activity).invalidateOptionsMenu()
+        view?.invalidateMenu()
         view?.showSuccessToast()
     }
 
@@ -365,7 +364,7 @@ class WallPostPresenter(
         post?.let { view?.doPostExport(accountId, it) }
     }
 
-    fun fireReport() {
+    fun fireReport(context: Context) {
         val items = arrayOf<CharSequence>(
             "Спам",
             "Детская порнография",

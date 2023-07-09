@@ -60,7 +60,6 @@ class App : Application() {
         Utils.isCompressIncomingTraffic = Settings.get().other().isCompress_incoming_traffic
         Utils.isCompressOutgoingTraffic = Settings.get().other().isCompress_outgoing_traffic
         Utils.currentParser = Settings.get().other().currentParser
-        MusicPlaybackController.registerBroadcast(this)
         PicassoInstance.init(this, Includes.proxySettings)
         if (Settings.get().other().isKeepLongpoll) {
             KeepLongpollService.start(this)

@@ -38,7 +38,7 @@ class OwnerArticlesFragment : BaseMvpFragment<OwnerArticlesPresenter, IOwnerArti
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_owner_articles, container, false)
-        val recyclerView: RecyclerView = root.findViewById(android.R.id.list)
+        val recyclerView: RecyclerView = root.findViewById(R.id.content_list)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener(this)

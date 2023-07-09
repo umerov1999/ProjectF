@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.activity.photopager
 
-import android.content.Context
 import android.os.Bundle
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AccessIdPair
@@ -9,8 +8,8 @@ import dev.ragnarok.fenrir.util.Utils
 
 class SimplePhotoPresenter(
     photos: ArrayList<Photo>, index: Int, needToRefreshData: Boolean,
-    accountId: Long, context: Context, savedInstanceState: Bundle?
-) : PhotoPagerPresenter(photos, accountId, !needToRefreshData, context, savedInstanceState) {
+    accountId: Long, savedInstanceState: Bundle?
+) : PhotoPagerPresenter(photos, accountId, !needToRefreshData, savedInstanceState) {
     private var mDataRefreshSuccessfull = false
     private fun refreshData() {
         val ids = ArrayList<AccessIdPair>(mPhotos.size)

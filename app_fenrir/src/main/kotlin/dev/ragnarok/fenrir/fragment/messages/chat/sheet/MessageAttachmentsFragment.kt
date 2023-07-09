@@ -94,7 +94,7 @@ class MessageAttachmentsFragment :
                 val file = result.data?.getStringExtra(Extra.PATH)
                 val video: LocalVideo? = result.data?.getParcelableExtraCompat(Extra.VIDEO)
                 lazyPresenter {
-                    firePhotosSelected(vkphotos, localPhotos, file, video)
+                    firePhotosSelected(requireActivity(), vkphotos, localPhotos, file, video)
                 }
             }
         }
@@ -190,7 +190,6 @@ class MessageAttachmentsFragment :
                     accountId,
                     messageOwnerId,
                     messageId,
-                    requireActivity(),
                     bundle,
                     isGroupChat,
                     saveInstanceState

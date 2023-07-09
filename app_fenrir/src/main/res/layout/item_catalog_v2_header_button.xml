@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="48sp"
-    android:fontFamily="sans-serif-medium"
     android:gravity="center"
     android:includeFontPadding="false"
     android:paddingHorizontal="12sp"
+    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
     android:textColor="?attr/colorPrimary"
     android:textSize="17sp"
     tools:text="Button" />

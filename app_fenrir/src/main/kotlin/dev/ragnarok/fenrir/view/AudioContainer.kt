@@ -41,7 +41,6 @@ import dev.ragnarok.fenrir.media.music.MusicPlaybackController.playerStatus
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.stop
 import dev.ragnarok.fenrir.media.music.PlayerStatus
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.menu.options.AudioOption
@@ -375,192 +374,190 @@ class AudioContainer : LinearLayout {
         menus.columns(2)
         menus.show(
             (context as FragmentActivity).supportFragmentManager,
-            "audio_options",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    when (option.id) {
-                        AudioOption.play_item_audio -> {
-                            mAttachmentsActionCallback?.onAudioPlay(
-                                position,
-                                audios,
-                                holderPosition
-                            )
-                            getPlayerPlace(Settings.get().accounts().current).tryOpenWith(
-                                context
-                            )
-                        }
+            "audio_options"
+        ) { _, option ->
+            when (option.id) {
+                AudioOption.play_item_audio -> {
+                    mAttachmentsActionCallback?.onAudioPlay(
+                        position,
+                        audios,
+                        holderPosition
+                    )
+                    getPlayerPlace(Settings.get().accounts().current).tryOpenWith(
+                        context
+                    )
+                }
 
-                        AudioOption.play_item_after_current_audio -> playAfterCurrent(audio)
-                        AudioOption.share_button -> startForSendAttachments(
-                            context,
-                            Settings.get().accounts().current,
-                            audio
-                        )
+                AudioOption.play_item_after_current_audio -> playAfterCurrent(audio)
+                AudioOption.share_button -> startForSendAttachments(
+                    context,
+                    Settings.get().accounts().current,
+                    audio
+                )
 
-                        AudioOption.search_by_artist -> getSingleTabSearchPlace(
-                            Settings.get().accounts().current,
-                            SearchContentType.AUDIOS,
-                            AudioSearchCriteria(
-                                audio.artist,
-                                by_artist = true,
-                                in_main_page = false
-                            )
-                        ).tryOpenWith(
-                            context
-                        )
+                AudioOption.search_by_artist -> getSingleTabSearchPlace(
+                    Settings.get().accounts().current,
+                    SearchContentType.AUDIOS,
+                    AudioSearchCriteria(
+                        audio.artist,
+                        by_artist = true,
+                        in_main_page = false
+                    )
+                ).tryOpenWith(
+                    context
+                )
 
-                        AudioOption.get_lyrics_menu -> get_lyrics(audio)
-                        AudioOption.get_recommendation_by_audio -> SearchByAudioPlace(
-                            Settings.get().accounts().current, audio.ownerId, audio.id
-                        ).tryOpenWith(
-                            context
-                        )
+                AudioOption.get_lyrics_menu -> get_lyrics(audio)
+                AudioOption.get_recommendation_by_audio -> SearchByAudioPlace(
+                    Settings.get().accounts().current, audio.ownerId, audio.id
+                ).tryOpenWith(
+                    context
+                )
 
-                        AudioOption.open_album -> getAudiosInAlbumPlace(
-                            Settings.get().accounts().current,
-                            audio.album_owner_id,
-                            audio.albumId,
-                            audio.album_access_key
-                        ).tryOpenWith(
-                            context
-                        )
+                AudioOption.open_album -> getAudiosInAlbumPlace(
+                    Settings.get().accounts().current,
+                    audio.album_owner_id,
+                    audio.albumId,
+                    audio.album_access_key
+                ).tryOpenWith(
+                    context
+                )
 
-                        AudioOption.copy_url -> {
-                            val clipboard =
-                                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-                            val clip = ClipData.newPlainText("response", audio.url)
-                            clipboard?.setPrimaryClip(clip)
-                            createCustomToast(context).showToast(R.string.copied)
-                        }
+                AudioOption.copy_url -> {
+                    val clipboard =
+                        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                    val clip = ClipData.newPlainText("response", audio.url)
+                    clipboard?.setPrimaryClip(clip)
+                    createCustomToast(context).showToast(R.string.copied)
+                }
 
-                        AudioOption.add_item_audio -> {
-                            val myAudio = audio.ownerId == Settings.get().accounts().current
-                            if (myAudio) {
-                                deleteTrack(Settings.get().accounts().current, audio)
-                            } else {
-                                addTrack(Settings.get().accounts().current, audio)
-                            }
-                        }
+                AudioOption.add_item_audio -> {
+                    val myAudio = audio.ownerId == Settings.get().accounts().current
+                    if (myAudio) {
+                        deleteTrack(Settings.get().accounts().current, audio)
+                    } else {
+                        addTrack(Settings.get().accounts().current, audio)
+                    }
+                }
 
-                        AudioOption.add_and_download_button -> {
-                            if (audio.ownerId != Settings.get().accounts().current) {
-                                addTrack(Settings.get().accounts().current, audio)
-                            }
-                            if (!hasReadWriteStoragePermission(context)) {
-                                mAttachmentsActionCallback?.onRequestWritePermissions()
-                                return
-                            }
-                            audio.downloadIndicator = 1
-                            updateDownloadState(holder, audio)
-                            val ret = doDownloadAudio(
-                                context,
-                                audio,
-                                Settings.get().accounts().current,
-                                Force = false,
-                                isLocal = false
-                            )
-                            when (ret) {
-                                0 -> createCustomToast(context).showToastBottom(R.string.saved_audio)
-                                1, 2 -> {
-                                    CustomSnackbars.createCustomSnackbars(view)
-                                        ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
-                                        ?.themedSnack(
-                                            if (ret == 1) R.string.audio_force_download else R.string.audio_force_download_pc
-                                        )
-                                        ?.setAction(
-                                            R.string.button_yes
-                                        ) {
-                                            doDownloadAudio(
-                                                context,
-                                                audio,
-                                                Settings.get().accounts().current,
-                                                Force = true,
-                                                isLocal = false
-                                            )
-                                        }
-                                        ?.show()
-                                }
-
-                                else -> {
-                                    audio.downloadIndicator = 0
-                                    updateDownloadState(holder, audio)
-                                    createCustomToast(context).showToastBottom(R.string.error_audio)
-                                }
-                            }
-                        }
-
-                        AudioOption.save_item_audio -> {
-                            if (!hasReadWriteStoragePermission(context)) {
-                                mAttachmentsActionCallback?.onRequestWritePermissions()
-                                return
-                            }
-                            audio.downloadIndicator = 1
-                            updateDownloadState(holder, audio)
-                            val ret = doDownloadAudio(
-                                context,
-                                audio,
-                                Settings.get().accounts().current,
-                                Force = false,
-                                isLocal = false
-                            )
-                            when (ret) {
-                                0 -> createCustomToast(context).showToastBottom(R.string.saved_audio)
-                                1, 2 -> {
-                                    CustomSnackbars.createCustomSnackbars(view)
-                                        ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
-                                        ?.themedSnack(
-                                            if (ret == 1) R.string.audio_force_download else R.string.audio_force_download_pc
-                                        )
-                                        ?.setAction(
-                                            R.string.button_yes
-                                        ) {
-                                            doDownloadAudio(
-                                                context,
-                                                audio,
-                                                Settings.get().accounts().current,
-                                                Force = true,
-                                                isLocal = false
-                                            )
-                                        }
-                                        ?.show()
-                                }
-
-                                else -> {
-                                    audio.downloadIndicator = 0
-                                    updateDownloadState(holder, audio)
-                                    createCustomToast(context).showToastBottom(R.string.error_audio)
-                                }
-                            }
-                        }
-
-                        AudioOption.bitrate_item_audio -> getMp3AndBitrate(
-                            Settings.get().accounts().current, audio
-                        )
-
-                        AudioOption.goto_artist -> {
-                            val artists = Utils.getArrayFromHash(audio.main_artists)
-                            if (audio.main_artists?.keys?.size.orZero() > 1) {
-                                MaterialAlertDialogBuilder(context)
-                                    .setItems(artists[1]) { _: DialogInterface?, which: Int ->
-                                        getArtistPlace(
-                                            Settings.get().accounts().current,
-                                            artists[0][which]
-                                        ).tryOpenWith(
-                                            context
-                                        )
-                                    }.show()
-                            } else {
-                                getArtistPlace(
-                                    Settings.get().accounts().current,
-                                    artists[0][0]
-                                ).tryOpenWith(
-                                    context
+                AudioOption.add_and_download_button -> {
+                    if (audio.ownerId != Settings.get().accounts().current) {
+                        addTrack(Settings.get().accounts().current, audio)
+                    }
+                    if (!hasReadWriteStoragePermission(context)) {
+                        mAttachmentsActionCallback?.onRequestWritePermissions()
+                        return@show
+                    }
+                    audio.downloadIndicator = 1
+                    updateDownloadState(holder, audio)
+                    val ret = doDownloadAudio(
+                        context,
+                        audio,
+                        Settings.get().accounts().current,
+                        Force = false,
+                        isLocal = false
+                    )
+                    when (ret) {
+                        0 -> createCustomToast(context).showToastBottom(R.string.saved_audio)
+                        1, 2 -> {
+                            CustomSnackbars.createCustomSnackbars(view)
+                                ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
+                                ?.themedSnack(
+                                    if (ret == 1) R.string.audio_force_download else R.string.audio_force_download_pc
                                 )
-                            }
+                                ?.setAction(
+                                    R.string.button_yes
+                                ) {
+                                    doDownloadAudio(
+                                        context,
+                                        audio,
+                                        Settings.get().accounts().current,
+                                        Force = true,
+                                        isLocal = false
+                                    )
+                                }
+                                ?.show()
+                        }
+
+                        else -> {
+                            audio.downloadIndicator = 0
+                            updateDownloadState(holder, audio)
+                            createCustomToast(context).showToastBottom(R.string.error_audio)
                         }
                     }
                 }
-            })
+
+                AudioOption.save_item_audio -> {
+                    if (!hasReadWriteStoragePermission(context)) {
+                        mAttachmentsActionCallback?.onRequestWritePermissions()
+                        return@show
+                    }
+                    audio.downloadIndicator = 1
+                    updateDownloadState(holder, audio)
+                    val ret = doDownloadAudio(
+                        context,
+                        audio,
+                        Settings.get().accounts().current,
+                        Force = false,
+                        isLocal = false
+                    )
+                    when (ret) {
+                        0 -> createCustomToast(context).showToastBottom(R.string.saved_audio)
+                        1, 2 -> {
+                            CustomSnackbars.createCustomSnackbars(view)
+                                ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
+                                ?.themedSnack(
+                                    if (ret == 1) R.string.audio_force_download else R.string.audio_force_download_pc
+                                )
+                                ?.setAction(
+                                    R.string.button_yes
+                                ) {
+                                    doDownloadAudio(
+                                        context,
+                                        audio,
+                                        Settings.get().accounts().current,
+                                        Force = true,
+                                        isLocal = false
+                                    )
+                                }
+                                ?.show()
+                        }
+
+                        else -> {
+                            audio.downloadIndicator = 0
+                            updateDownloadState(holder, audio)
+                            createCustomToast(context).showToastBottom(R.string.error_audio)
+                        }
+                    }
+                }
+
+                AudioOption.bitrate_item_audio -> getMp3AndBitrate(
+                    Settings.get().accounts().current, audio
+                )
+
+                AudioOption.goto_artist -> {
+                    val artists = Utils.getArrayFromHash(audio.main_artists)
+                    if (audio.main_artists?.keys?.size.orZero() > 1) {
+                        MaterialAlertDialogBuilder(context)
+                            .setItems(artists[1]) { _: DialogInterface?, which: Int ->
+                                getArtistPlace(
+                                    Settings.get().accounts().current,
+                                    artists[0][which]
+                                ).tryOpenWith(
+                                    context
+                                )
+                            }.show()
+                    } else {
+                        getArtistPlace(
+                            Settings.get().accounts().current,
+                            artists[0][0]
+                        ).tryOpenWith(
+                            context
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun doPlay(

@@ -12,6 +12,9 @@ class VKApiCatalogV2SectionResponse {
     @SerialName("playlists")
     var playlists: List<VKApiAudioPlaylist>? = null
 
+    @SerialName("recommended_playlists")
+    var recommended_playlists: List<VKApiCatalogV2RecommendedPlaylist>? = null
+
     @SerialName("artists")
     var artists: List<VKApiCatalogV2ArtistItem>? = null
 

@@ -56,7 +56,6 @@ open class PhotoPagerPresenter internal constructor(
     protected var mPhotos: ArrayList<Photo>,
     accountId: Long,
     private val read_only: Boolean,
-    private val context: Context,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IPhotoPagerView>(accountId, savedInstanceState) {
     protected val photosInteractor: IPhotosInteractor = InteractorFactory.createPhotosInteractor()
@@ -188,8 +187,7 @@ open class PhotoPagerPresenter internal constructor(
 
     private fun resolveToolbarTitleSubtitleView() {
         if (!hasPhotos()) return
-        val title = context.getString(R.string.image_number, currentIndex + 1, count())
-        view?.setToolbarTitle(title)
+        view?.setToolbarTitle(currentIndex + 1, count())
         view?.setToolbarSubtitle(current.text)
     }
 
@@ -202,7 +200,12 @@ open class PhotoPagerPresenter internal constructor(
         view?.let { resolveOptionMenu(it) }
     }
 
-    private fun showPhotoInfo(photo: Photo, album: PhotoAlbum?, bundle: IOwnersBundle?) {
+    private fun showPhotoInfo(
+        context: Context,
+        photo: Photo,
+        album: PhotoAlbum?,
+        bundle: IOwnersBundle?
+    ) {
         if (photo.albumId == -311) {
             return
         }
@@ -253,7 +256,7 @@ open class PhotoPagerPresenter internal constructor(
             .show()
     }
 
-    private fun getOwnerForPhoto(photo: Photo, album: PhotoAlbum?) {
+    private fun getOwnerForPhoto(context: Context, photo: Photo, album: PhotoAlbum?) {
         appendDisposable(
             owners.findBaseOwnersDataAsBundle(
                 accountId, setOf(photo.ownerId), IOwnersRepository.MODE_ANY
@@ -261,23 +264,25 @@ open class PhotoPagerPresenter internal constructor(
                 .fromIOToMain()
                 .subscribe({
                     showPhotoInfo(
+                        context,
                         photo,
                         album,
                         it
                     )
-                }) { showPhotoInfo(photo, album, null) })
+                }) { showPhotoInfo(context, photo, album, null) })
     }
 
-    fun fireInfoButtonClick() {
+    fun fireInfoButtonClick(context: Context) {
         val photo = current
         appendDisposable(photosInteractor.getAlbumById(accountId, photo.ownerId, photo.albumId)
             .fromIOToMain()
             .subscribe({
                 getOwnerForPhoto(
+                    context,
                     photo,
                     it
                 )
-            }) { getOwnerForPhoto(photo, null) })
+            }) { getOwnerForPhoto(context, photo, null) })
     }
 
     fun fireShareButtonClick() {
@@ -390,15 +395,15 @@ open class PhotoPagerPresenter internal constructor(
         }
     }
 
-    fun fireSaveOnDriveClick() {
+    fun fireSaveOnDriveClick(context: Context) {
         if (!AppPerms.hasReadWriteStoragePermission(instance)) {
             view?.requestWriteToExternalStoragePermission()
             return
         }
-        doSaveOnDrive()
+        doSaveOnDrive(context)
     }
 
-    private fun doSaveOnDrive() {
+    private fun doSaveOnDrive(context: Context) {
         val dir = File(Settings.get().other().photoDir)
         if (!dir.isDirectory) {
             val created = dir.mkdirs()
@@ -414,18 +419,19 @@ open class PhotoPagerPresenter internal constructor(
             if (ndx != -1) {
                 path = path?.substring(0, ndx)
             }
-            downloadResult(fixStart(path), dir, photo)
+            downloadResult(context, fixStart(path), dir, photo)
         } else {
             appendDisposable(OwnerInfo.getRx(context, accountId, photo.ownerId)
                 .fromIOToMain()
                 .subscribe({
                     downloadResult(
+                        context,
                         makeLegalFilename(
                             fixStart(it.owner.fullName) ?: ("id" + photo.ownerId),
                             null
                         ), dir, photo
                     )
-                }) { downloadResult(null, dir, photo) })
+                }) { downloadResult(context, null, dir, photo) })
         }
     }
 
@@ -433,7 +439,7 @@ open class PhotoPagerPresenter internal constructor(
         return if (owner_id < 0) "club" + abs(owner_id) else "id$owner_id"
     }
 
-    private fun downloadResult(Prefix: String?, dirL: File, photo: Photo) {
+    private fun downloadResult(context: Context, Prefix: String?, dirL: File, photo: Photo) {
         var dir = dirL
         if (Prefix != null && Settings.get().other().isPhoto_to_user_dir) {
             val dir_final = File(dir.absolutePath + "/" + Prefix)
@@ -525,9 +531,9 @@ open class PhotoPagerPresenter internal constructor(
         delete()
     }
 
-    fun fireWriteExternalStoragePermissionResolved() {
+    fun fireWriteExternalStoragePermissionResolved(context: Context) {
         if (AppPerms.hasReadWriteStoragePermission(instance)) {
-            doSaveOnDrive()
+            doSaveOnDrive(context)
         }
     }
 
@@ -580,7 +586,7 @@ open class PhotoPagerPresenter internal constructor(
         )
     }
 
-    private fun showWithUserDialog(photo: Photo) {
+    private fun showWithUserDialog(context: Context, photo: Photo) {
         photo.setShowPhotoTags(true)
         view?.rebindPhotoAtPartial(currentIndex)
         val buttons: MutableList<FunctionSource> = ArrayList(photo.photoTags?.size.orZero())
@@ -641,7 +647,7 @@ open class PhotoPagerPresenter internal constructor(
         }
     }
 
-    fun fireWithUserLongClick() {
+    fun fireWithUserLongClick(context: Context) {
         val photo = current
         if (photo.photoTags.isNullOrEmpty()) {
             appendDisposable(
@@ -650,7 +656,7 @@ open class PhotoPagerPresenter internal constructor(
                     .fromIOToMain()
                     .subscribe({
                         photo.setPhotoTags(it)
-                        showWithUserDialog(photo)
+                        showWithUserDialog(context, photo)
                     }) { throwable ->
                         view?.let {
                             showError(
@@ -660,7 +666,7 @@ open class PhotoPagerPresenter internal constructor(
                         }
                     })
         } else {
-            showWithUserDialog(photo)
+            showWithUserDialog(context, photo)
         }
     }
 

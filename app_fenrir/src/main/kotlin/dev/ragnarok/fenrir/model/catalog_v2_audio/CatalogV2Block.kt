@@ -47,8 +47,8 @@ class CatalogV2Block : AbsModel {
         list: List<S>?,
         keys: List<String>?,
         transform: (S) -> T
-    ) {
-        keys ?: return
+    ): ArrayList<T>? {
+        keys ?: return null
         val ret = ArrayList<T>()
         for (i in list.orEmpty()) {
             for (s in keys) {
@@ -58,6 +58,18 @@ class CatalogV2Block : AbsModel {
             }
         }
         if (ret.isEmpty()) {
+            return null
+        }
+        return ret
+    }
+
+    private inline fun <reified T : AbsModel, reified S : IIdComparable> insertAllItemsByIds(
+        list: List<S>?,
+        keys: List<String>?,
+        transform: (S) -> T
+    ) {
+        val ret = parseAllItemsByIds(list, keys, transform)
+        if (ret.isNullOrEmpty()) {
             return
         }
         items ?: run { items = ArrayList() }
@@ -90,16 +102,15 @@ class CatalogV2Block : AbsModel {
     private fun parsePlaylistCover(object_v: VKApiCatalogV2BlockResponse) {
         for (m in object_v.playlists.orEmpty()) {
             if (m.thumb_image.isNullOrEmpty()) {
-                var fuser = false
-                for (d in object_v.profiles.orEmpty()) {
-                    if (d.id == m.owner_id) {
-                        m.thumb_image =
-                            Utils.firstNonEmptyString(d.photo_200, d.photo_100, d.photo_50)
-                        fuser = true
-                        break
+                if (m.owner_id >= 0) {
+                    for (d in object_v.profiles.orEmpty()) {
+                        if (d.id == m.owner_id) {
+                            m.thumb_image =
+                                Utils.firstNonEmptyString(d.photo_200, d.photo_100, d.photo_50)
+                            break
+                        }
                     }
-                }
-                if (!fuser) {
+                } else {
                     for (d in object_v.groups.orEmpty()) {
                         if (d.id == abs(m.owner_id)) {
                             m.thumb_image =
@@ -131,33 +142,36 @@ class CatalogV2Block : AbsModel {
         badge = pobj.badge?.let { CatalogV2Badge(it) }
 
         if (data_type == "music_recommended_playlists") {
-            parsePlaylistCover(object_v)
-            parseAllItemsByIds(object_v.playlists, pobj.playlists_ids) {
-                Dto2Model.transform(it)
-            }
-            if (items.isNullOrEmpty()) {
-                parseAllItemsByIds(object_v.audios, pobj.audios_ids) {
-                    Dto2Model.transform(it)
+            insertAllItemsByIds(object_v.recommended_playlists, pobj.playlists_ids) {
+                CatalogV2RecommendationPlaylist(
+                    it,
+                    object_v.profiles,
+                    object_v.groups,
+                    object_v.playlists
+                ) { op ->
+                    parseAllItemsByIds(object_v.audios, op) { ist ->
+                        Dto2Model.transform(ist)
+                    }
                 }
             }
         } else {
-            parseAllItemsByIds(object_v.audios, pobj.audios_ids) {
+            insertAllItemsByIds(object_v.audios, pobj.audios_ids) {
                 Dto2Model.transform(it)
             }
             parsePlaylistCover(object_v)
-            parseAllItemsByIds(object_v.playlists, pobj.playlists_ids) {
+            insertAllItemsByIds(object_v.playlists, pobj.playlists_ids) {
                 Dto2Model.transform(it)
             }
-            parseAllItemsByIds(object_v.artists, pobj.artists_ids) {
+            insertAllItemsByIds(object_v.artists, pobj.artists_ids) {
                 CatalogV2ArtistItem(it)
             }
-            parseAllItemsByIds(object_v.links, pobj.links_ids) {
+            insertAllItemsByIds(object_v.links, pobj.links_ids) {
                 CatalogV2Link(it).setParentLayout(layout.name)
             }
-            parseAllItemsByIds(object_v.artist_videos, pobj.artist_videos_ids) {
+            insertAllItemsByIds(object_v.artist_videos, pobj.artist_videos_ids) {
                 Dto2Model.transform(it)
             }
-            parseAllItemsByIds(object_v.videos, pobj.videos_ids) {
+            insertAllItemsByIds(object_v.videos, pobj.videos_ids) {
                 Dto2Model.transform(it)
             }
         }

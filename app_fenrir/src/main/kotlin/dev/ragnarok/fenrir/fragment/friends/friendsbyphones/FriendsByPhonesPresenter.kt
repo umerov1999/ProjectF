@@ -22,13 +22,12 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.Locale
 
-class FriendsByPhonesPresenter(accountId: Long, context: Context, savedInstanceState: Bundle?) :
+class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFriendsByPhonesView>(accountId, savedInstanceState) {
     private val data: MutableList<ContactConversation>
     private val dataSearch: MutableList<ContactConversation>
     private val accountsInteractor: IAccountsInteractor =
         InteractorFactory.createAccountInteractor()
-    private val context: Context
     private var netLoadingNow = false
     private var query: String? = null
     private fun resolveRefreshingView() {
@@ -193,7 +192,6 @@ class FriendsByPhonesPresenter(accountId: Long, context: Context, savedInstanceS
     init {
         data = ArrayList()
         dataSearch = ArrayList()
-        this.context = context
         requestActualData()
     }
 }

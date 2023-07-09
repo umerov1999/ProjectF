@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.narratives
 
-import android.content.Context
 import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IStoriesShortVideosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
@@ -13,7 +12,6 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 class NarrativesPresenter(
     accountId: Long,
     private val owner_id: Long,
-    private val context: Context,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<INarrativesView>(accountId, savedInstanceState) {
     private val storiesInteractor: IStoriesShortVideosInteractor =

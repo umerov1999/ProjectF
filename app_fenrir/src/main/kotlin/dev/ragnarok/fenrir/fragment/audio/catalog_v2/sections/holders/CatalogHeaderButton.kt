@@ -45,19 +45,21 @@ class CatalogHeaderButton @JvmOverloads constructor(context: Context, attrs: Att
                 }
                 simpleText?.text = catalogAction.title
                 simpleText?.setOnClickListener {
-                    if (catalogAction.action?.type == "open_url") {
-                        LinkHelper.openUrl(
-                            context as Activity,
-                            Settings.get().accounts().current,
-                            catalogAction.action?.url,
-                            false
-                        )
-                    } else {
-                        catalogAction.section_id?.let { it1 ->
-                            PlaceFactory.getCatalogV2AudioSectionPlace(
+                    if (context is Activity) {
+                        if (catalogAction.action?.type == "open_url") {
+                            LinkHelper.openUrl(
+                                context as Activity,
                                 Settings.get().accounts().current,
-                                it1
-                            ).tryOpenWith(context)
+                                catalogAction.action?.url,
+                                false
+                            )
+                        } else {
+                            catalogAction.section_id?.let { it1 ->
+                                PlaceFactory.getCatalogV2AudioSectionPlace(
+                                    Settings.get().accounts().current,
+                                    it1
+                                ).tryOpenWith(context)
+                            }
                         }
                     }
                 }

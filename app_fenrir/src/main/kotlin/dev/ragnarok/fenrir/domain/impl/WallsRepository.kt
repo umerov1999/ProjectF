@@ -138,7 +138,6 @@ class WallsRepository(
                 .delete("post", ownerId, postId, null)
         }
         return single.flatMap { count ->
-            // TODO: 05.09.2017 Сохранение лайков в таблице новостей надо ?
             val update = PostUpdate(accountId, postId, ownerId).withLikes(count, add)
             applyPatch(update).andThen(Single.just(count))
         }

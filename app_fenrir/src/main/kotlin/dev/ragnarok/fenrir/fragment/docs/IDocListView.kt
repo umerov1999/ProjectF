@@ -26,4 +26,6 @@ interface IDocListView : IMvpView, IErrorView {
     fun displayFilterData(filters: MutableList<DocFilter>)
     fun notifyFiltersChanged()
     fun setAdapterType(imagesOnly: Boolean)
+
+    fun onMenuClick(index: Int, doc: Document, isMy: Boolean)
 }

@@ -13,6 +13,7 @@ object HelperSimple {
     const val HIDDEN_DIALOGS = "hidden_dialogs"
     const val MONITOR_CHANGES = "monitor_changes"
     const val NOTIFICATION_PERMISSION = "notification_permission"
+    const val BATTERY_OPTIMIZATION = "battery_optimization"
     fun needHelp(key: String, count: Int): Boolean {
         val app = Includes.provideApplicationContext()
         val ret = PreferenceScreen.getPreferences(app).getInt(key, 0)

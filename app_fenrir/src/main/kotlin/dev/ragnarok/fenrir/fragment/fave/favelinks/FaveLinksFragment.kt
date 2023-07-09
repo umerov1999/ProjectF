@@ -31,7 +31,7 @@ class FaveLinksFragment : BaseMvpFragment<FaveLinksPresenter, IFaveLinksView>(),
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_fave_links, container, false)
-        val recyclerView: RecyclerView = root.findViewById(android.R.id.list)
+        val recyclerView: RecyclerView = root.findViewById(R.id.content_list)
         mEmpty = root.findViewById(R.id.empty)
         val manager = LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, false)
         recyclerView.layoutManager = manager

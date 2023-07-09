@@ -21,8 +21,8 @@
 
         <ImageView
             android:id="@+id/item_thumb"
-            android:layout_width="@dimen/avatar_size_big"
-            android:layout_height="@dimen/avatar_size_big"
+            android:layout_width="@dimen/avatar_size_very_big"
+            android:layout_height="@dimen/avatar_size_very_big"
             android:contentDescription="@null"
             android:scaleType="centerCrop" />
 
@@ -39,8 +39,10 @@
                 android:layout_gravity="center"
                 android:ellipsize="end"
                 android:gravity="center"
+                android:includeFontPadding="false"
                 android:lines="2"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:maxLines="2"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                 android:textColor="?colorPrimary"
                 android:textSize="14sp"
                 tools:text="Name" />
@@ -51,6 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:ellipsize="end"
+                android:includeFontPadding="false"
                 android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                 android:textSize="12sp"
@@ -62,6 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="2dp"
+                android:includeFontPadding="false"
                 android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                 tools:text="year" />

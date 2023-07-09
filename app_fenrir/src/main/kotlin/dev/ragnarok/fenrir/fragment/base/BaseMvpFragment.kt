@@ -130,21 +130,17 @@ abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragme
     companion object {
         const val EXTRA_HIDE_TOOLBAR = "extra_hide_toolbar"
 
-
         fun safelySetChecked(button: CompoundButton?, checked: Boolean) {
             button?.isChecked = checked
         }
-
 
         fun safelySetText(target: TextView?, text: String?) {
             target?.text = text
         }
 
-
         fun safelySetText(target: TextView?, @StringRes text: Int) {
             target?.setText(text)
         }
-
 
         fun safelySetVisibleOrGone(target: ViewGroup?, visible: Boolean) {
             target?.visibility = if (visible) View.VISIBLE else View.GONE

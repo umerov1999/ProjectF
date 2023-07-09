@@ -47,7 +47,8 @@ import androidx.annotation.IntDef
     AbsModelType.MODEL_UPLOAD,
     AbsModelType.MODEL_GEO,
     AbsModelType.MODEL_CATALOG_V2_BLOCK,
-    AbsModelType.MODEL_CATALOG_V2_LINK
+    AbsModelType.MODEL_CATALOG_V2_LINK,
+    AbsModelType.MODEL_CATALOG_V2_RECOMMENDATION_PLAYLIST
 )
 @Retention(
     AnnotationRetention.SOURCE
@@ -99,5 +100,6 @@ annotation class AbsModelType {
         const val MODEL_GEO = 42
         const val MODEL_CATALOG_V2_BLOCK = 43
         const val MODEL_CATALOG_V2_LINK = 44
+        const val MODEL_CATALOG_V2_RECOMMENDATION_PLAYLIST = 45
     }
 }

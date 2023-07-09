@@ -73,6 +73,7 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
             .client(builder.build())
             .withCacheSize(calculateMemoryCacheSize(app))
             .addRequestHandler(PicassoFileManagerHandler(app))
+            .dispatchers()
             .build()
     }
 

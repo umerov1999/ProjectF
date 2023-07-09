@@ -27,7 +27,6 @@ import dev.ragnarok.fenrir.fragment.search.peoplesearch.PeopleAdapter
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.DeltaOwner
 import dev.ragnarok.fenrir.model.Owner
@@ -220,19 +219,17 @@ class CommunityMembersFragment :
         }
         menus.columns(1)
         menus.show(
-            requireActivity().supportFragmentManager,
-            "community_members_options",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    when (option.id) {
-                        1 -> presenter?.fireFilter(null)
-                        2 -> presenter?.fireFilter("friends")
-                        3 -> presenter?.fireFilter("unsure")
-                        4 -> presenter?.fireFilter("donut")
-                        5 -> presenter?.fireFilter("managers")
-                    }
-                }
-            })
+            childFragmentManager,
+            "community_members_options"
+        ) { _, option ->
+            when (option.id) {
+                1 -> presenter?.fireFilter(null)
+                2 -> presenter?.fireFilter("friends")
+                3 -> presenter?.fireFilter("unsure")
+                4 -> presenter?.fireFilter("donut")
+                5 -> presenter?.fireFilter("managers")
+            }
+        }
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunityMembersPresenter> {

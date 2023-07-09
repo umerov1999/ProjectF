@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.fragment.wall.AbsWallPresenter
 import dev.ragnarok.fenrir.fragment.wall.IWallView
 import dev.ragnarok.fenrir.model.*
 import dev.ragnarok.fenrir.model.criteria.WallCriteria
-import dev.ragnarok.fenrir.place.PlaceFactory.getMentionsPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.*
 import dev.ragnarok.fenrir.util.ShortcutUtils.createWallShortcutRx
@@ -39,7 +38,6 @@ class UserWallPresenter(
     accountId: Long,
     ownerId: Long,
     owner: User?,
-    private val context: Context,
     savedInstanceState: Bundle?
 ) : AbsWallPresenter<IUserWallView>(accountId, ownerId, savedInstanceState) {
     private val filters: MutableList<PostFilter>
@@ -568,7 +566,7 @@ class UserWallPresenter(
     }
 
     fun fireMentions() {
-        getMentionsPlace(accountId, ownerId).tryOpenWith(context)
+        view?.goMentions(accountId, ownerId)
     }
 
     override fun fireOptionViewCreated(view: IWallView.IOptionView) {
@@ -590,7 +588,14 @@ class UserWallPresenter(
         } else null
     }
 
-    private fun getRegistrationDate(owner_id: Long): Single<String> {
+    private class RegistrationResult(
+        @StringRes var info: Int,
+        var registered: String?,
+        var auth: String?,
+        var changes: String?
+    )
+
+    private fun getRegistrationDate(owner_id: Long): Single<RegistrationResult> {
         return Single.create { emitter ->
             val builder: OkHttpClient.Builder = OkHttpClient.Builder()
                 .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
@@ -662,7 +667,7 @@ class UserWallPresenter(
                             }
                         }
                         emitter.onSuccess(
-                            context.getString(
+                            RegistrationResult(
                                 R.string.registration_date_info,
                                 registered,
                                 auth,
@@ -684,12 +689,12 @@ class UserWallPresenter(
         appendDisposable(
             getRegistrationDate(ownerId).fromIOToMain()
                 .subscribe({
-                    view?.showRegistrationDate(it)
+                    view?.showRegistrationDate(it.info, it.registered, it.auth, it.changes)
                 }, { showError(it) })
         )
     }
 
-    fun fireReport() {
+    fun fireReport(context: Context) {
         val values = arrayOf<CharSequence>("porn", "spam", "insult", "advertisement")
         val items = arrayOf<CharSequence>(
             "Порнография",
@@ -729,7 +734,7 @@ class UserWallPresenter(
         )
     }
 
-    override fun fireAddToShortcutClick() {
+    override fun fireAddToShortcutClick(context: Context) {
         appendDisposable(
             createWallShortcutRx(
                 context,

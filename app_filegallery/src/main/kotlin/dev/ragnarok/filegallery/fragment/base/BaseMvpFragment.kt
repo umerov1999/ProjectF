@@ -2,6 +2,7 @@ package dev.ragnarok.filegallery.fragment.base
 
 import android.graphics.Color
 import android.view.View
+import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.TextView
 import androidx.annotation.StringRes
@@ -33,7 +34,9 @@ abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragme
     }
 
     override fun showError(errorText: String?) {
-        customToast?.showToastError(errorText)
+        if (isAdded) {
+            customToast?.showToastError(errorText)
+        }
     }
 
     override fun showThrowable(throwable: Throwable?) {
@@ -104,19 +107,24 @@ abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragme
 
     companion object {
         const val EXTRA_HIDE_TOOLBAR = "extra_hide_toolbar"
-        protected fun safelySetChecked(button: CompoundButton?, checked: Boolean) {
+
+        fun safelySetChecked(button: CompoundButton?, checked: Boolean) {
             button?.isChecked = checked
         }
 
-        protected fun safelySetText(target: TextView?, text: String?) {
+        fun safelySetText(target: TextView?, text: String?) {
             target?.text = text
         }
 
-        protected fun safelySetText(target: TextView?, @StringRes text: Int) {
+        fun safelySetText(target: TextView?, @StringRes text: Int) {
             target?.setText(text)
         }
 
-        protected fun safelySetVisibleOrGone(target: View?, visible: Boolean) {
+        fun safelySetVisibleOrGone(target: ViewGroup?, visible: Boolean) {
+            target?.visibility = if (visible) View.VISIBLE else View.GONE
+        }
+
+        fun safelySetVisibleOrGoneView(target: View?, visible: Boolean) {
             target?.visibility = if (visible) View.VISIBLE else View.GONE
         }
     }

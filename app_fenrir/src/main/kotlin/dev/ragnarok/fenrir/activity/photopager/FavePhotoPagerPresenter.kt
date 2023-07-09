@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.activity.photopager
 
-import android.content.Context
 import android.os.Bundle
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AccessIdPair
@@ -11,9 +10,8 @@ class FavePhotoPagerPresenter(
     photos: ArrayList<Photo>,
     index: Int,
     accountId: Long,
-    context: Context,
     savedInstanceState: Bundle?
-) : PhotoPagerPresenter(photos, accountId, false, context, savedInstanceState) {
+) : PhotoPagerPresenter(photos, accountId, false, savedInstanceState) {
     private val mUpdated: BooleanArray = BooleanArray(photos.size)
     private val refreshing: BooleanArray = BooleanArray(photos.size)
     override fun close() {

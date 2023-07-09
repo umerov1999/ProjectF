@@ -88,7 +88,7 @@ public:
   const FrameFactory *factory;
 
   File *file;
-  long tagOffset;
+  offset_t tagOffset;
 
   Header header;
   ExtendedHeader *extendedHeader;
@@ -125,7 +125,7 @@ ID3v2::Tag::Tag() :
   d->factory = FrameFactory::instance();
 }
 
-ID3v2::Tag::Tag(File *file, long tagOffset, const FrameFactory *factory) :
+ID3v2::Tag::Tag(File *file, offset_t tagOffset, const FrameFactory *factory) :
   d(new TagPrivate())
 {
   d->factory = factory;
@@ -338,11 +338,6 @@ Header *ID3v2::Tag::header() const
 ExtendedHeader *ID3v2::Tag::extendedHeader() const
 {
   return d->extendedHeader;
-}
-
-Footer *ID3v2::Tag::footer() const
-{
-  return d->footer;
 }
 
 const FrameListMap &ID3v2::Tag::frameListMap() const
@@ -624,11 +619,6 @@ void ID3v2::Tag::downgradeFrames(FrameList *frames, FrameList *newFrames) const
   }
 }
 
-ByteVector ID3v2::Tag::render(int version) const
-{
-  return render(version == 3 ? v3 : v4);
-}
-
 ByteVector ID3v2::Tag::render(Version version) const
 {
   // We need to render the "tag data" first so that we have to correct size to
@@ -666,7 +656,7 @@ ByteVector ID3v2::Tag::render(Version version) const
     }
     if(!(*it)->header()->tagAlterPreservation()) {
       const ByteVector frameData = (*it)->render();
-      if(frameData.size() == Frame::headerSize((*it)->header()->version())) {
+      if(frameData.size() == (*it)->headerSize()) {
         debug("An empty ID3v2 frame \'"
           + String((*it)->header()->frameID()) + "\' has been discarded");
         continue;
@@ -686,9 +676,9 @@ ByteVector ID3v2::Tag::render(Version version) const
   else {
     // Padding won't increase beyond 1% of the file size or 1MB.
 
-    long threshold = d->file ? d->file->length() / 100 : 0;
-    threshold = std::max(threshold, MinPaddingSize);
-    threshold = std::min(threshold, MaxPaddingSize);
+    offset_t threshold = d->file ? d->file->length() / 100 : 0;
+    threshold = std::max<offset_t>(threshold, MinPaddingSize);
+    threshold = std::min<offset_t>(threshold, MaxPaddingSize);
 
     if(paddingSize > threshold)
       paddingSize = MinPaddingSize;
@@ -799,7 +789,7 @@ void ID3v2::Tag::parse(const ByteVector &origData)
   // Make sure that there is at least enough room in the remaining frame data for
   // a frame header.
 
-  while(frameDataPosition < frameDataLength - Frame::headerSize(d->header.majorVersion())) {
+  while(frameDataPosition < frameDataLength - d->header.size()) {
 
     // If the next data is position is 0, assume that we've hit the padding
     // portion of the frame data.
@@ -825,7 +815,7 @@ void ID3v2::Tag::parse(const ByteVector &origData)
       return;
     }
 
-    frameDataPosition += frame->size() + Frame::headerSize(d->header.majorVersion());
+    frameDataPosition += frame->size() + frame->headerSize();
     addFrame(frame);
   }
 

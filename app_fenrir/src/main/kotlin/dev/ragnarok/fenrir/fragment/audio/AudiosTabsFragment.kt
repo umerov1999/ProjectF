@@ -29,6 +29,7 @@ import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getAudiosTabsSearchPlace
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Utils.createPageTransform
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
@@ -86,6 +87,7 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
                     VKApiAudio.Genre.getTitleByGenre(requireActivity(), fid)
             }
         }.attach()
+        AppPerms.ignoreBattery(requireActivity())
     }
 
     internal fun CreateAudiosFragment(option_menu: Int): Fragment {

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="48sp">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonNext"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="48sp"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:paddingHorizontal="12sp"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+        android:textSize="17sp"
+        app:icon="@drawable/ic_chevron_24"
+        app:iconGravity="textEnd"
+        app:iconSize="24dp"
+        tools:text="Button" />
+</FrameLayout>

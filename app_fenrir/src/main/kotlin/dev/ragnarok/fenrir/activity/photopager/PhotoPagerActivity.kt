@@ -209,7 +209,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     ) {
-        lazyPresenter { fireWriteExternalStoragePermissionResolved() }
+        lazyPresenter { fireWriteExternalStoragePermissionResolved(this@PhotoPagerActivity) }
     }
 
     private var mViewPager: ViewPager2? = null
@@ -294,27 +294,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 Settings.get().main().viewpager_page_transform
             )
         )
-        mViewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                presenter?.firePageSelected(position)
-
-                if (bShowPhotosLine) {
-                    val currentSelected = mAdapterRecycler.getSelectedItem()
-                    if (currentSelected != position) {
-                        mAdapterRecycler.selectPosition(position)
-                        if (currentSelected < position) {
-                            mPreviewsRecycler?.scrollToPosition(position)
-                        } else {
-                            if (position == 0) {
-                                mPreviewsRecycler?.scrollToPosition(position)
-                            } else
-                                mPreviewsRecycler?.scrollToPosition(position)
-                        }
-                    }
-                }
-            }
-        })
         mButtonLike = findViewById(R.id.like_button)
         mButtonLike?.setOnClickListener { presenter?.fireLikeClick() }
         mButtonLike?.setOnLongClickListener {
@@ -324,7 +303,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         mButtonWithUser = findViewById(R.id.with_user_button)
         mButtonWithUser?.setOnClickListener { presenter?.fireWithUserClick() }
         mButtonWithUser?.setOnLongClickListener {
-            presenter?.fireWithUserLongClick()
+            presenter?.fireWithUserLongClick(this)
             true
         }
         mButtonComments = findViewById(R.id.comments_button)
@@ -380,13 +359,13 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         when (menuItem.itemId) {
             R.id.photo_size -> onPhotoSizeClicked()
             R.id.save_on_drive -> {
-                presenter?.fireSaveOnDriveClick()
+                presenter?.fireSaveOnDriveClick(this)
                 return true
             }
 
             R.id.save_yourself -> presenter?.fireSaveYourselfClick()
             R.id.action_delete -> presenter?.fireDeleteClick()
-            R.id.info -> presenter?.fireInfoButtonClick()
+            R.id.info -> presenter?.fireInfoButtonClick(this)
             R.id.detect_qr -> presenter?.fireDetectQRClick(this)
         }
         return false
@@ -451,7 +430,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             index,
                             needUpdate,
                             aid,
-                            this@PhotoPagerActivity,
                             saveInstanceState
                         )
                     }
@@ -472,7 +450,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             source,
                             readOnly,
                             invert,
-                            this@PhotoPagerActivity,
                             saveInstanceState
                         )
                     }
@@ -504,7 +481,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             photos_album,
                             readOnly,
                             invert,
-                            this@PhotoPagerActivity,
                             saveInstanceState
                         )
                     }
@@ -517,7 +493,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             favePhotos,
                             findex,
                             aid,
-                            this@PhotoPagerActivity,
                             saveInstanceState
                         )
                     }
@@ -532,7 +507,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                                 aid,
                                 source,
                                 requireArguments().getInt(Extra.INDEX),
-                                this@PhotoPagerActivity,
                                 saveInstanceState
                             )
                         } else {
@@ -542,7 +516,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                                 aid,
                                 source,
                                 requireArguments().getInt(Extra.INDEX),
-                                this@PhotoPagerActivity,
                                 saveInstanceState
                             )
                         }
@@ -574,6 +547,21 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         mButtonComments?.count = count
     }
 
+    private val pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
+            presenter?.firePageSelected(position)
+
+            if (bShowPhotosLine && mAdapterRecycler.getSize() > 1) {
+                val currentSelected = mAdapterRecycler.getSelectedItem()
+                if (currentSelected != position) {
+                    mAdapterRecycler.selectPosition(position)
+                    mPreviewsRecycler?.scrollToPosition(position)
+                }
+            }
+        }
+    }
+
     override fun displayPhotos(photos: List<Photo>, initialIndex: Int) {
         if (bShowPhotosLine) {
             if (photos.size <= 1) {
@@ -583,11 +571,14 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 mAdapterRecycler.setData(photos)
                 mAdapterRecycler.notifyDataSetChanged()
                 mAdapterRecycler.selectPosition(initialIndex)
+                mPreviewsRecycler?.scrollToPosition(initialIndex)
             }
         }
+        mViewPager?.unregisterOnPageChangeCallback(pageChangeListener)
         mPagerAdapter = Adapter(photos)
         mViewPager?.adapter = mPagerAdapter
         mViewPager?.setCurrentItem(initialIndex, false)
+        mViewPager?.registerOnPageChangeCallback(pageChangeListener)
     }
 
     override fun sharePhoto(accountId: Long, photo: Photo) {
@@ -682,6 +673,10 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
 
     override fun setToolbarVisible(visible: Boolean) {
         mToolbar?.visibility = if (visible) View.VISIBLE else View.GONE
+    }
+
+    override fun setToolbarTitle(currentIndex: Int, count: Int) {
+        supportActionBar?.title = getString(R.string.image_number, currentIndex, count)
     }
 
     override fun rebindPhotoAtPartial(position: Int) {
@@ -982,7 +977,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             )
             ret.photo.setOnLongClickListener {
                 if (Settings.get().other().isDownload_photo_tap) {
-                    presenter?.fireSaveOnDriveClick()
+                    presenter?.fireSaveOnDriveClick(this@PhotoPagerActivity)
                 } else if (ret.photo.drawable is Rotatable) {
                     var rot = (ret.photo.drawable as Rotatable).getRotation() + 45
                     if (rot >= 360f) {

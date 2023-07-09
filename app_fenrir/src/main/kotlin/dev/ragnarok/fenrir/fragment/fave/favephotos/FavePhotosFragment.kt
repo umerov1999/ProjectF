@@ -49,7 +49,7 @@ class FavePhotosFragment : BaseMvpFragment<FavePhotosPresenter, IFavePhotosView>
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_fave_photos, container, false)
-        recyclerView = root.findViewById(android.R.id.list)
+        recyclerView = root.findViewById(R.id.content_list)
         mEmpty = root.findViewById(R.id.empty)
         val columns = resources.getInteger(R.integer.photos_column_count)
         val gridLayoutManager = GridLayoutManager(requireActivity(), columns)

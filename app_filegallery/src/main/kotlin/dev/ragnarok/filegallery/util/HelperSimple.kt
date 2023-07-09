@@ -5,6 +5,7 @@ import dev.ragnarok.filegallery.Includes
 
 object HelperSimple {
     const val NOTIFICATION_PERMISSION = "notification_permission"
+    const val BATTERY_OPTIMIZATION = "battery_optimization"
     fun needHelp(key: String, count: Int): Boolean {
         val app = Includes.provideApplicationContext()
         val ret = PreferenceScreen.getPreferences(app).getInt(key, 0)

@@ -6,6 +6,7 @@ import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 import dev.ragnarok.fenrir.fragment.base.core.IToastView
 import dev.ragnarok.fenrir.media.story.IStoryPlayer
 import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.Video
 
 interface IStoryPagerView : IMvpView, IErrorView, IToastView {
     fun displayData(pageCount: Int, selectedIndex: Int)
@@ -18,4 +19,7 @@ interface IStoryPagerView : IMvpView, IErrorView, IToastView {
     fun configHolder(adapterPosition: Int, progress: Boolean, aspectRatioW: Int, aspectRatioH: Int)
     fun onNext()
     fun requestWriteExternalStoragePermission()
+
+    fun downloadPhoto(url: String, dir: String, file: String)
+    fun downloadVideo(video: Video, url: String, Res: String)
 }

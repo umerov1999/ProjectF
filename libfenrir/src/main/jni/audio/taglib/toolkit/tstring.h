@@ -323,24 +323,8 @@ namespace TagLib {
 
     /*!
      * Returns true if the string is empty.
-     *
-     * \see isNull()
      */
     bool isEmpty() const;
-
-    /*!
-     * Returns true if this string is null -- i.e. it is a copy of the
-     * String::null string.
-     *
-     * \note A string can be empty and not null.  So do not use this method to
-     * check if the string is empty.
-     *
-     * \see isEmpty()
-     *
-     * \deprecated Use isEmpty(), do not differentiate between null and empty.
-     */
-     // BIC: remove
-    TAGLIB_DEPRECATED bool isNull() const;
 
     /*!
      * Returns a ByteVector containing the string's data.  If \a t is Latin1 or
@@ -357,20 +341,11 @@ namespace TagLib {
     /*!
      * Convert the string to an integer.
      *
-     * Returns the integer if the conversion was successful or 0 if the
-     * string does not represent a number.
-     */
-    // BIC: merge with the method below
-    int toInt() const;
-
-    /*!
-     * Convert the string to an integer.
-     *
      * If the conversion was successful, it sets the value of \a *ok to
      * true and returns the integer. Otherwise it sets \a *ok to false
      * and the result is undefined.
      */
-    int toInt(bool *ok) const;
+    int toInt(bool *ok = 0) const;
 
     /*!
      * Returns a string with the leading and trailing whitespace stripped.
@@ -516,17 +491,6 @@ namespace TagLib {
      */
     bool operator<(const String &s) const;
 
-    /*!
-     * A null string provided for convenience.
-     *
-     * \warning Do not modify this variable.  It will mess up the internal state
-     * of TagLib.
-     *
-     * \deprecated Use String().
-     */
-     // BIC: remove
-    TAGLIB_DEPRECATED static String null;
-
   protected:
     /*!
      * If this String is being shared via implicit sharing, do a deep copy of the
@@ -536,13 +500,6 @@ namespace TagLib {
     void detach();
 
   private:
-    /*!
-     * \deprecated This variable is no longer used, but NEVER remove this. It
-     * may lead to a linkage error.
-     */
-     // BIC: remove
-    TAGLIB_DEPRECATED static const Type WCharByteOrder;
-
     class StringPrivate;
     StringPrivate *d;
   };

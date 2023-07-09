@@ -12,4 +12,6 @@ interface IPresenter<V : IMvpView> {
     fun detachViewHost()
     fun createView(view: V)
     fun destroyView()
+
+    fun getPresenterId(): Long
 }

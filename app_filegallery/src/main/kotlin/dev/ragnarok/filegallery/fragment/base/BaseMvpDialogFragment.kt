@@ -22,7 +22,9 @@ abstract class BaseMvpDialogFragment<P : AbsPresenter<V>, V : IMvpView> :
     AbsMvpDialogFragment<P, V>(), IMvpView, IErrorView, IToastView {
 
     override fun showError(errorText: String?) {
-        customToast?.showToastError(errorText)
+        if (isAdded) {
+            customToast?.showToastError(errorText)
+        }
     }
 
     override fun showError(@StringRes titleTes: Int, vararg params: Any?) {

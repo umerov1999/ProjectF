@@ -49,7 +49,6 @@ import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController.ServiceToken
 import dev.ragnarok.filegallery.media.music.MusicPlaybackService
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.filegallery.model.SectionItem
 import dev.ragnarok.filegallery.nonNullNoEmpty
@@ -88,7 +87,6 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
     private var mViewFragment: FragmentContainerView? = null
     private var mLastBackPressedTime: Long = 0
     private val DOUBLE_BACK_PRESSED_TIMEOUT = 2000
-    private var mDestroyed = false
     private var mAudioPlayServiceToken: ServiceToken? = null
     private val TAG = "MainActivity_LOG"
     private val mCompositeDisposable = CompositeDisposable()
@@ -137,7 +135,6 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         setTheme(currentStyle())
         Utils.prepareDensity(this)
         super.onCreate(savedInstanceState)
-        mDestroyed = false
 
         savedInstanceState ?: run {
             if (Settings.get().security().isUsePinForEntrance && Settings.get().security()
@@ -274,36 +271,34 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                 )
                 menus.show(
                     supportFragmentManager,
-                    "left_options",
-                    object : ModalBottomSheetDialogFragment.Listener {
-                        override fun onModalOptionSelected(option: Option) {
-                            when {
-                                option.id == 0 -> {
-                                    if (Settings.get().main()
-                                            .getNightMode() == AppCompatDelegate.MODE_NIGHT_YES || Settings.get()
-                                            .main()
-                                            .getNightMode() == AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY || Settings.get()
-                                            .main()
-                                            .getNightMode() == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                                    ) {
-                                        Settings.get().main()
-                                            .switchNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                                    } else {
-                                        Settings.get().main()
-                                            .switchNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                                    }
-                                }
-
-                                option.id == 1 && FenrirNative.isNativeLoaded -> {
-                                    val intent =
-                                        Intent(this@MainActivity, CameraScanActivity::class.java)
-                                    requestQRScan.launch(intent)
-                                }
+                    "left_options"
+                ) { _, option ->
+                    when {
+                        option.id == 0 -> {
+                            if (Settings.get().main()
+                                    .getNightMode() == AppCompatDelegate.MODE_NIGHT_YES || Settings.get()
+                                    .main()
+                                    .getNightMode() == AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY || Settings.get()
+                                    .main()
+                                    .getNightMode() == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                            ) {
+                                Settings.get().main()
+                                    .switchNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                            } else {
+                                Settings.get().main()
+                                    .switchNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                             }
                         }
-                    })
+
+                        option.id == 1 && FenrirNative.isNativeLoaded -> {
+                            val intent =
+                                Intent(this@MainActivity, CameraScanActivity::class.java)
+                            requestQRScan.launch(intent)
+                        }
+                    }
+                }
             }
         }
     }
@@ -394,6 +389,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                 requestReadWritePermission.launch()
                 return
             }
+            AppPerms.ignoreBattery(this)
             if (Intent.ACTION_GET_CONTENT.contentEquals(action, true)) {
                 isSelected = true
                 openNavigationPage(
@@ -501,30 +497,29 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
     }
 
     private fun bindToAudioPlayService() {
-        if (!isActivityDestroyed() && mAudioPlayServiceToken == null) {
+        if (mAudioPlayServiceToken == null) {
             mAudioPlayServiceToken = MusicPlaybackController.bindToServiceWithoutStart(this, this)
         }
     }
 
     override fun onDestroy() {
         mCompositeDisposable.dispose()
-        mDestroyed = true
         supportFragmentManager.removeOnBackStackChangedListener(mOnBackStackChangedListener)
 
-        //if(!bNoDestroyServiceAudio)
-        unbindFromAudioPlayService()
+        if (!isChangingConfigurations) {
+            unbindFromAudioPlayService()
+        }
         super.onDestroy()
     }
 
     private fun unbindFromAudioPlayService() {
         if (mAudioPlayServiceToken != null) {
+            if (isChangingConfigurations) {
+                MusicPlaybackController.doNotDestroyWhenActivityRecreated()
+            }
             MusicPlaybackController.unbindFromService(mAudioPlayServiceToken)
             mAudioPlayServiceToken = null
         }
-    }
-
-    private fun isActivityDestroyed(): Boolean {
-        return mDestroyed
     }
 
     private fun clearBackStack() {
@@ -632,7 +627,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
-        if (isActivityDestroyed()) return
+        if (mAudioPlayServiceToken == null) return
 
         if (name?.className.equals(MusicPlaybackService::class.java.name)) {
             Logger.d(TAG, "Disconnected from MusicPlaybackService")

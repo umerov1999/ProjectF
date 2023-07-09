@@ -93,7 +93,7 @@ namespace TagLib {
        *
        * \note In the current implementation, \a propertiesStyle is ignored.
        */
-      // BIC: merge with the above constructor
+      // BIC: merge with the above constructor, kept for source compatibility
       File(FileName file, ID3v2::FrameFactory *frameFactory,
            bool readProperties = true,
            Properties::ReadStyle propertiesStyle = Properties::Average);
@@ -183,35 +183,6 @@ namespace TagLib {
 
       /*!
        * Save the file.  This will attempt to save all of the tag types that are
-       * specified by OR-ing together TagTypes values.  The save() method above
-       * uses AllTags.  This returns true if saving was successful.
-       *
-       * This strips all tags not included in the mask, but does not modify them
-       * in memory, so later calls to save() which make use of these tags will
-       * remain valid.  This also strips empty tags.
-       */
-      bool save(int tags);
-
-      /*!
-       * \deprecated Use save(int, StripTags, ID3v2::Version, DuplicateTags).
-       */
-      // BIC: combine with the above method
-      TAGLIB_DEPRECATED bool save(int tags, bool stripOthers);
-
-      /*!
-       * \deprecated Use save(int, StripTags, ID3v2::Version, DuplicateTags).
-       */
-      // BIC: combine with the above method
-      TAGLIB_DEPRECATED bool save(int tags, bool stripOthers, int id3v2Version);
-
-      /*!
-       * \deprecated Use save(int, StripTags, ID3v2::Version, DuplicateTags).
-       */
-      // BIC: combine with the above method
-      TAGLIB_DEPRECATED bool save(int tags, bool stripOthers, int id3v2Version, bool duplicateTags);
-
-      /*!
-       * Save the file.  This will attempt to save all of the tag types that are
        * specified by OR-ing together TagTypes values.
        *
        * \a strip can be set to strip all tags except those in \a tags.  Those
@@ -223,7 +194,7 @@ namespace TagLib {
        * If \a duplicate is set to DuplicateTags and at least one tag -- ID3v1
        * or ID3v2 -- exists this will duplicate its content into the other tag.
        */
-      bool save(int tags, StripTags strip,
+      bool save(int tags, StripTags strip = StripOthers,
                 ID3v2::Version version = ID3v2::v4,
                 DuplicateTags duplicate = Duplicate);
 
@@ -289,57 +260,34 @@ namespace TagLib {
        * file.  By default it strips all tags.  It returns true if the tags are
        * successfully stripped.
        *
-       * This is equivalent to strip(tags, true)
-       *
-       * \note This will also invalidate pointers to the ID3 and APE tags
-       * as their memory will be freed.
-       *
-       * \note This will update the file immediately.
-       */
-      bool strip(int tags = AllTags);
-
-      /*!
-       * This will strip the tags that match the OR-ed together TagTypes from the
-       * file.  By default it strips all tags.  It returns true if the tags are
-       * successfully stripped.
-       *
        * If \a freeMemory is true the ID3 and APE tags will be deleted and
        * pointers to them will be invalidated.
        *
        * \note This will update the file immediately.
        */
-      // BIC: merge with the method above
-      bool strip(int tags, bool freeMemory);
-
-      /*!
-       * Set the ID3v2::FrameFactory to something other than the default.
-       *
-       * \see ID3v2FrameFactory
-       * \deprecated This value should be passed in via the constructor.
-       */
-      TAGLIB_DEPRECATED void setID3v2FrameFactory(const ID3v2::FrameFactory *factory);
+      bool strip(int tags = AllTags, bool freeMemory = true);
 
       /*!
        * Returns the position in the file of the first MPEG frame.
        */
-      long firstFrameOffset();
+      offset_t firstFrameOffset();
 
       /*!
        * Returns the position in the file of the next MPEG frame,
        * using the current position as start
        */
-      long nextFrameOffset(long position);
+      offset_t nextFrameOffset(offset_t position);
 
       /*!
        * Returns the position in the file of the previous MPEG frame,
        * using the current position as start
        */
-      long previousFrameOffset(long position);
+      offset_t previousFrameOffset(offset_t position);
 
       /*!
        * Returns the position in the file of the last MPEG frame.
        */
-      long lastFrameOffset();
+      offset_t lastFrameOffset();
 
       /*!
        * Returns whether or not the file on disk actually has an ID3v1 tag.
@@ -376,7 +324,7 @@ namespace TagLib {
       File &operator=(const File &);
 
       void read(bool readProperties);
-      long findID3v2();
+      offset_t findID3v2();
 
       class FilePrivate;
       FilePrivate *d;

@@ -89,7 +89,7 @@ class CommunitiesFragment : BaseMvpFragment<CommunitiesPresenter, ICommunitiesVi
         super.onResume()
         Settings.get().ui().notifyPlaceResumed(Place.COMMUNITIES)
         setToolbarTitle(this, R.string.groups)
-        setToolbarSubtitle(this, null) // TODO: 04.10.2017
+        setToolbarSubtitle(this, null)
         ActivityFeatures.Builder()
             .begin()
             .setHideNavigationMenu(false)

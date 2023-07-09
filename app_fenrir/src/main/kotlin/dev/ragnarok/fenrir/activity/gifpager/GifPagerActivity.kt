@@ -68,14 +68,6 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
                 Settings.get().main().viewpager_page_transform
             )
         )
-        mViewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                presenter?.selectPage(
-                    position
-                )
-            }
-        })
         attach(
             this,
             SlidrConfig.Builder().setAlphaForView(false).fromUnColoredToColoredStatusBar(true)
@@ -232,11 +224,22 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
         }
     }
 
+    private val pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
+            presenter?.selectPage(
+                position
+            )
+        }
+    }
+
     override fun displayData(mDocuments: List<Document>, selectedIndex: Int) {
         if (mViewPager != null) {
+            mViewPager?.unregisterOnPageChangeCallback(pageChangeListener)
             val adapter = Adapter(mDocuments)
             mViewPager?.adapter = adapter
             mViewPager?.setCurrentItem(selectedIndex, false)
+            mViewPager?.registerOnPageChangeCallback(pageChangeListener)
         }
     }
 

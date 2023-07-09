@@ -2,7 +2,6 @@ package dev.ragnarok.filegallery.fragment.base.compat
 
 import android.os.Bundle
 import android.view.View
-import androidx.loader.app.LoaderManager
 import dev.ragnarok.filegallery.fragment.base.core.IMvpView
 import dev.ragnarok.filegallery.fragment.base.core.IPresenter
 
@@ -17,10 +16,9 @@ abstract class AbsMvpDialogFragment<P : IPresenter<V>, V : IMvpView> :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         delegate.onCreate(
-            requireActivity(),
             getViewHost(),
             this,
-            LoaderManager.getInstance(this),
+            this,
             savedInstanceState
         )
     }

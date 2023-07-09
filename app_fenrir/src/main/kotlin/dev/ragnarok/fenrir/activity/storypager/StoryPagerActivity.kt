@@ -38,6 +38,7 @@ import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.media.story.IStoryPlayer
 import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
@@ -49,6 +50,7 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils
+import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
@@ -134,16 +136,6 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         } else {
             mHelper?.visibility = View.GONE
         }
-        mViewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                playDispose.dispose()
-                playDispose = Observable.just(Object())
-                    .delay(400, TimeUnit.MILLISECONDS)
-                    .toMainThread()
-                    .subscribe { presenter?.firePageSelected(position) }
-            }
-        })
         mDownload = findViewById(R.id.button_download)
         mShare = findViewById(R.id.button_share)
         mShare?.setOnClickListener { presenter?.fireShareButtonClick() }
@@ -259,6 +251,14 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         requestWritePermission.launch()
     }
 
+    override fun downloadPhoto(url: String, dir: String, file: String) {
+        DownloadWorkUtils.doDownloadPhoto(this, url, dir, file)
+    }
+
+    override fun downloadVideo(video: Video, url: String, Res: String) {
+        DownloadWorkUtils.doDownloadVideo(this, video, url, Res)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean("mFullscreen", mFullscreen)
@@ -308,16 +308,28 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                     aid,
                     stories,
                     index,
-                    this@StoryPagerActivity,
                     saveInstanceState
                 )
             }
         }
 
+    private val pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
+            playDispose.dispose()
+            playDispose = Observable.just(Object())
+                .delay(400, TimeUnit.MILLISECONDS)
+                .toMainThread()
+                .subscribe { presenter?.firePageSelected(position) }
+        }
+    }
+
     override fun displayData(pageCount: Int, selectedIndex: Int) {
+        mViewPager?.unregisterOnPageChangeCallback(pageChangeListener)
         val adapter = Adapter(pageCount)
         mViewPager?.adapter = adapter
         mViewPager?.setCurrentItem(selectedIndex, false)
+        mViewPager?.registerOnPageChangeCallback(pageChangeListener)
     }
 
     override fun setAspectRatioAt(position: Int, w: Int, h: Int) {

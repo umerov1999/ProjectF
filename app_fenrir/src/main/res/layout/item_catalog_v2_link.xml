@@ -22,8 +22,8 @@
 
         <ImageView
             android:id="@+id/item_link_pic"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:contentDescription="@null"
             android:scaleType="centerCrop" />
 
@@ -33,7 +33,9 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:gravity="center"
+            android:includeFontPadding="false"
             android:lines="2"
+            android:maxLines="2"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textSize="12sp"
             tools:text="Name" />
@@ -44,6 +46,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:gravity="center"
+            android:includeFontPadding="false"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textSize="12sp"

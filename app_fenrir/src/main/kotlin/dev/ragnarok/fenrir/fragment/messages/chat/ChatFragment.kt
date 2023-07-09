@@ -53,7 +53,6 @@ import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.link.internal.TopicLink
 import dev.ragnarok.fenrir.listener.*
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.*
 import dev.ragnarok.fenrir.model.selection.*
@@ -401,7 +400,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         writingMsg?.setText(if (writeText.isText) R.string.user_type_message else R.string.user_type_voice)
         writingMsgType?.setImageResource(if (writeText.isText) R.drawable.pencil else R.drawable.voice)
         writingMsgAva?.setImageResource(R.drawable.background_gray_round)
-        presenter?.ResolveWritingInfo(requireActivity(), writeText)
+        presenter?.resolveWritingInfo(requireActivity(), writeText)
     }
 
     @SuppressLint("SetTextI18n")
@@ -1540,15 +1539,12 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             add(OptionRequest(6, getString(R.string.search), R.drawable.magnify, true))
         }
 
-        menus.show(childFragmentManager, "attachments_select",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    showConversationAttachments(accountId, peerId, types[option.id])
-                }
-            })
+        menus.show(childFragmentManager, "attachments_select") { _, option ->
+            showConversationAttachments(accountId, peerId, types[option.id])
+        }
     }
 
-    internal fun showConversationAttachments(accountId: Long, peerId: Long, type: String) {
+    private fun showConversationAttachments(accountId: Long, peerId: Long, type: String) {
         PlaceFactory.getConversationAttachmentsPlace(accountId, peerId, type)
             .tryOpenWith(requireActivity())
     }
@@ -1691,7 +1687,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             .setTitle(R.string.key_exchange)
             .setMessage(R.string.you_dont_have_encryption_keys_stored_initiate_key_exchange)
             .setPositiveButton(R.string.button_ok) { _, _ ->
-                presenter?.fireIniciateKeyExchangeClick(
+                presenter?.fireInitiateKeyExchangeClick(
                     keyStoragePolicy
                 )
             }
@@ -1855,7 +1851,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             }
 
             R.id.show_profile -> {
-                presenter?.fireShow_Profile()
+                presenter?.fireShowProfile()
                 return true
             }
 

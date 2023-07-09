@@ -1,8 +1,6 @@
 package dev.ragnarok.fenrir.fragment.products.productalbums
 
-import android.content.Context
 import android.os.Bundle
-import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
@@ -13,7 +11,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 class ProductAlbumsPresenter(
     accountId: Long,
     private val owner_id: Long,
-    private val context: Context,
+    private val allProductString: String?,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IProductAlbumsView>(accountId, savedInstanceState) {
     private val ownerInteractor: IOwnersRepository = owners
@@ -63,7 +61,7 @@ class ProductAlbumsPresenter(
         netLoadingNow = false
         if (offset == 0) {
             mMarkets.clear()
-            mMarkets.add(MarketAlbum(0, owner_id).setTitle(context.getString(R.string.markets_all)))
+            mMarkets.add(MarketAlbum(0, owner_id).setTitle(allProductString))
             mMarkets.addAll(markets)
             view?.notifyDataSetChanged()
         } else {

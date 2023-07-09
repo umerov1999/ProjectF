@@ -25,7 +25,6 @@ import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.PlayerStatus
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileItem
@@ -329,69 +328,68 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
             t.thumb_image
         )
         menus.columns(2)
-        menus.show((context as FragmentActivity).supportFragmentManager, "audio_options",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    when (option.id) {
-                        AudioLocalOption.play_via_local_server -> {
-                            clickListener?.onRemotePlay(audio)
-                        }
-
-                        AudioLocalOption.add_dir_tag_item -> {
-                            clickListener?.onDirTag(audio)
-                        }
-
-                        AudioLocalOption.delete_item -> {
-                            clickListener?.onDelete(audio)
-                        }
-
-                        AudioLocalOption.play_item_audio -> {
-                            clickListener?.onClick(position, audio)
-                            if (Settings.get().main().isShow_mini_player()) getPlayerPlace(
-                            ).tryOpenWith(context)
-                        }
-
-                        AudioLocalOption.play_item_after_current_audio -> MusicPlaybackController.playAfterCurrent(
-                            t
-                        )
-
-                        AudioLocalOption.bitrate_item_audio -> getLocalBitrate(t.url)
-                        AudioLocalOption.open_with_item -> {
-                            val intent_open = Intent(Intent.ACTION_VIEW)
-                            intent_open.setDataAndType(
-                                FileProvider.getUriForFile(
-                                    context,
-                                    Constants.FILE_PROVIDER_AUTHORITY,
-                                    File(audio.file_path ?: return)
-                                ), MimeTypeMap.getSingleton()
-                                    .getMimeTypeFromExtension(File(audio.file_path).extension)
-                            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            context.startActivity(intent_open)
-                        }
-
-                        AudioLocalOption.share_item -> {
-                            val intent_send = Intent(Intent.ACTION_SEND)
-                            intent_send.type = MimeTypeMap.getSingleton()
-                                .getMimeTypeFromExtension(File(audio.file_path ?: return).extension)
-                            intent_send.putExtra(
-                                Intent.EXTRA_STREAM, FileProvider.getUriForFile(
-                                    context,
-                                    Constants.FILE_PROVIDER_AUTHORITY,
-                                    File(audio.file_path)
-                                )
-                            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            context.startActivity(intent_send)
-                        }
-
-                        AudioLocalOption.update_file_time_item -> {
-                            clickListener?.onUpdateTimeFile(audio)
-                        }
-
-                        else -> {}
-                    }
+        menus.show(
+            (context as FragmentActivity).supportFragmentManager,
+            "audio_options"
+        ) { _, option ->
+            when (option.id) {
+                AudioLocalOption.play_via_local_server -> {
+                    clickListener?.onRemotePlay(audio)
                 }
 
-            })
+                AudioLocalOption.add_dir_tag_item -> {
+                    clickListener?.onDirTag(audio)
+                }
+
+                AudioLocalOption.delete_item -> {
+                    clickListener?.onDelete(audio)
+                }
+
+                AudioLocalOption.play_item_audio -> {
+                    clickListener?.onClick(position, audio)
+                    if (Settings.get().main().isShow_mini_player()) getPlayerPlace(
+                    ).tryOpenWith(context)
+                }
+
+                AudioLocalOption.play_item_after_current_audio -> MusicPlaybackController.playAfterCurrent(
+                    t
+                )
+
+                AudioLocalOption.bitrate_item_audio -> getLocalBitrate(t.url)
+                AudioLocalOption.open_with_item -> {
+                    val intent_open = Intent(Intent.ACTION_VIEW)
+                    intent_open.setDataAndType(
+                        FileProvider.getUriForFile(
+                            context,
+                            Constants.FILE_PROVIDER_AUTHORITY,
+                            File(audio.file_path ?: return@show)
+                        ), MimeTypeMap.getSingleton()
+                            .getMimeTypeFromExtension(File(audio.file_path).extension)
+                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    context.startActivity(intent_open)
+                }
+
+                AudioLocalOption.share_item -> {
+                    val intent_send = Intent(Intent.ACTION_SEND)
+                    intent_send.type = MimeTypeMap.getSingleton()
+                        .getMimeTypeFromExtension(File(audio.file_path ?: return@show).extension)
+                    intent_send.putExtra(
+                        Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+                            context,
+                            Constants.FILE_PROVIDER_AUTHORITY,
+                            File(audio.file_path)
+                        )
+                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    context.startActivity(intent_send)
+                }
+
+                AudioLocalOption.update_file_time_item -> {
+                    clickListener?.onUpdateTimeFile(audio)
+                }
+
+                else -> {}
+            }
+        }
     }
 
     private fun onBindAudioHolder(holder: AudioHolder, position: Int) {
@@ -504,54 +502,53 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
             "thumb_file://" + file.file_path
         )
         menus.columns(2)
-        menus.show((context as FragmentActivity).supportFragmentManager, "file_options",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    when (option.id) {
-                        AudioLocalOption.add_dir_tag_item -> {
-                            clickListener?.onDirTag(file)
-                        }
-
-                        AudioLocalOption.delete_item -> {
-                            clickListener?.onDelete(file)
-                        }
-
-                        AudioLocalOption.open_with_item -> {
-                            val intent_open = Intent(Intent.ACTION_VIEW)
-                            intent_open.setDataAndType(
-                                FileProvider.getUriForFile(
-                                    context,
-                                    Constants.FILE_PROVIDER_AUTHORITY,
-                                    File(file.file_path ?: return)
-                                ), MimeTypeMap.getSingleton()
-                                    .getMimeTypeFromExtension(File(file.file_path).extension)
-                            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            context.startActivity(intent_open)
-                        }
-
-                        AudioLocalOption.share_item -> {
-                            val intent_send = Intent(Intent.ACTION_SEND)
-                            intent_send.type = MimeTypeMap.getSingleton()
-                                .getMimeTypeFromExtension(File(file.file_path ?: return).extension)
-                            intent_send.putExtra(
-                                Intent.EXTRA_STREAM, FileProvider.getUriForFile(
-                                    context,
-                                    Constants.FILE_PROVIDER_AUTHORITY,
-                                    File(file.file_path)
-                                )
-                            ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            context.startActivity(intent_send)
-                        }
-
-                        AudioLocalOption.update_file_time_item -> {
-                            clickListener?.onUpdateTimeFile(file)
-                        }
-
-                        else -> {}
-                    }
+        menus.show(
+            (context as FragmentActivity).supportFragmentManager,
+            "file_options"
+        ) { _, option ->
+            when (option.id) {
+                AudioLocalOption.add_dir_tag_item -> {
+                    clickListener?.onDirTag(file)
                 }
 
-            })
+                AudioLocalOption.delete_item -> {
+                    clickListener?.onDelete(file)
+                }
+
+                AudioLocalOption.open_with_item -> {
+                    val intent_open = Intent(Intent.ACTION_VIEW)
+                    intent_open.setDataAndType(
+                        FileProvider.getUriForFile(
+                            context,
+                            Constants.FILE_PROVIDER_AUTHORITY,
+                            File(file.file_path ?: return@show)
+                        ), MimeTypeMap.getSingleton()
+                            .getMimeTypeFromExtension(File(file.file_path).extension)
+                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    context.startActivity(intent_open)
+                }
+
+                AudioLocalOption.share_item -> {
+                    val intent_send = Intent(Intent.ACTION_SEND)
+                    intent_send.type = MimeTypeMap.getSingleton()
+                        .getMimeTypeFromExtension(File(file.file_path ?: return@show).extension)
+                    intent_send.putExtra(
+                        Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+                            context,
+                            Constants.FILE_PROVIDER_AUTHORITY,
+                            File(file.file_path)
+                        )
+                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    context.startActivity(intent_send)
+                }
+
+                AudioLocalOption.update_file_time_item -> {
+                    clickListener?.onUpdateTimeFile(file)
+                }
+
+                else -> {}
+            }
+        }
     }
 
     private fun doFolderMenu(file: FileItem) {
@@ -583,27 +580,26 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
             )
         )
         menus.columns(1)
-        menus.show((context as FragmentActivity).supportFragmentManager, "folder_options",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    when (option.id) {
-                        AudioLocalOption.fix_dir_time_item -> {
-                            clickListener?.onFixDir(file)
-                        }
-
-                        AudioLocalOption.add_dir_tag_item -> {
-                            clickListener?.onDirTag(file)
-                        }
-
-                        AudioLocalOption.delete_item -> {
-                            clickListener?.onDelete(file)
-                        }
-
-                        else -> {}
-                    }
+        menus.show(
+            (context as FragmentActivity).supportFragmentManager,
+            "folder_options"
+        ) { _, option ->
+            when (option.id) {
+                AudioLocalOption.fix_dir_time_item -> {
+                    clickListener?.onFixDir(file)
                 }
 
-            })
+                AudioLocalOption.add_dir_tag_item -> {
+                    clickListener?.onDirTag(file)
+                }
+
+                AudioLocalOption.delete_item -> {
+                    clickListener?.onDelete(file)
+                }
+
+                else -> {}
+            }
+        }
     }
 
     private fun onBindFileHolder(holder: FileHolder, position: Int) {

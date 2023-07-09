@@ -37,8 +37,6 @@
 
     </LinearLayout>
 
-    <!--app:layout_anchor="@android:id/list"-->
-    <!--app:layout_anchorGravity="bottom|right|end"-->
     <dev.ragnarok.fenrir.view.UpEditFab
         android:id="@+id/fragment_user_profile_fab"
         style="@style/Widget.Material3.FloatingActionButton.Small.Surface"

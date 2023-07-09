@@ -9,7 +9,6 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -19,6 +18,7 @@ import dev.ragnarok.filegallery.activity.slidr.Slidr
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrConfig
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrListener
 import dev.ragnarok.filegallery.settings.CurrentTheme
+import dev.ragnarok.filegallery.util.toast.CustomToast
 
 class DefaultErrorActivity : AppCompatActivity() {
     @SuppressLint("PrivateResource")
@@ -84,11 +84,8 @@ class DefaultErrorActivity : AppCompatActivity() {
                 errorInformation
             )
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(
-                this,
-                R.string.crash_error_activity_error_details_copied,
-                Toast.LENGTH_SHORT
-            ).show()
+            CustomToast.createCustomToast(this, null)
+                ?.showToastInfo(R.string.crash_error_activity_error_details_copied)
         }
     }
 }

@@ -353,8 +353,7 @@ struct SvgPathNode
 
 struct SvgPolygonNode
 {
-    int pointsCount;
-    float* points;
+    Array<float> pts;
 };
 
 struct SvgClipNode
@@ -542,7 +541,7 @@ struct SvgNodeIdPair
 
 struct SvgLoaderData
 {
-    Array<SvgNode*> stack = {nullptr, 0, 0};
+    Array<SvgNode*> stack;
     SvgNode* doc = nullptr;
     SvgNode* def = nullptr;
     SvgNode* cssStyle = nullptr;

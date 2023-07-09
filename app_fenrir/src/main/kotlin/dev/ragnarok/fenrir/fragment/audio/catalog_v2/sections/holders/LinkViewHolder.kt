@@ -50,8 +50,8 @@ class LinkViewHolder(itemView: View) : IViewHolder(itemView) {
                 ivImage.setImageResource(R.drawable.ic_avatar_unknown)
             }
         } else {
-            ivImage.layoutParams.width = Utils.dp(100f)
-            ivImage.layoutParams.height = Utils.dp(100f)
+            ivImage.layoutParams.width = Utils.dp(80f)
+            ivImage.layoutParams.height = Utils.dp(80f)
             tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             tvDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             ivImage.imageTintList = null

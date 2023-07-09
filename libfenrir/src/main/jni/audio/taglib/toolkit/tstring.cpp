@@ -154,8 +154,6 @@ public:
   std::string cstring;
 };
 
-String String::null;
-
 ////////////////////////////////////////////////////////////////////////////////
 // public members
 ////////////////////////////////////////////////////////////////////////////////
@@ -405,11 +403,6 @@ bool String::isEmpty() const
   return d->data.empty();
 }
 
-bool String::isNull() const
-{
-  return d == null.d;
-}
-
 ByteVector String::data(Type t) const
 {
   switch(t)
@@ -487,11 +480,6 @@ ByteVector String::data(Type t) const
       return ByteVector();
     }
   }
-}
-
-int String::toInt() const
-{
-  return toInt(0);
 }
 
 int String::toInt(bool *ok) const
@@ -703,11 +691,6 @@ void String::detach()
     String(d->data.c_str()).swap(*this);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// private members
-////////////////////////////////////////////////////////////////////////////////
-
-const String::Type String::WCharByteOrder = wcharByteOrder();
 }  // namespace TagLib
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -740,4 +723,3 @@ std::ostream &operator<<(std::ostream &s, const TagLib::String &str)
   s << str.to8Bit();
   return s;
 }
-

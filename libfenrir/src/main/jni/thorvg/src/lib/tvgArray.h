@@ -35,6 +35,15 @@ struct Array
     uint32_t count = 0;
     uint32_t reserved = 0;
 
+    Array(){}
+
+    Array(const Array& rhs)
+    {
+        reserve(rhs.reserved);
+        count = rhs.count;
+        memcpy(data, rhs.data, sizeof(T) * count);
+    }
+
     void push(T element)
     {
         if (count + 1 > reserved) {
@@ -73,9 +82,14 @@ struct Array
         return data + count;
     }
 
-    T* last() const
+    T& last()
     {
-        return data + count - 1;
+        return data[count - 1];
+    }
+
+    T& first()
+    {
+        return data[0];
     }
 
     void pop()
@@ -106,7 +120,7 @@ struct Array
 
     ~Array()
     {
-        if (data) free(data);
+        free(data);
     }
 };
 

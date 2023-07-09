@@ -92,7 +92,11 @@ namespace TagLib {
     class TAGLIB_EXPORT FileTypeResolver
     {
     public:
-        virtual ~FileTypeResolver() = default;
+      /*!
+       * Destroys this FileTypeResolver instance.
+       */
+      virtual ~FileTypeResolver() = 0;
+
       /*!
        * This method must be overridden to provide an additional file type
        * resolver.  If the resolver is able to determine the file type it should
@@ -111,7 +115,11 @@ namespace TagLib {
     class TAGLIB_EXPORT StreamTypeResolver : public FileTypeResolver
     {
     public:
-        virtual ~StreamTypeResolver() = default;
+      /*!
+       * Destroys this StreamTypeResolver instance.
+       */
+      virtual ~StreamTypeResolver() = 0;
+
       virtual File *createFileFromStream(IOStream *stream,
                                bool readAudioProperties = true,
                                AudioProperties::ReadStyle
@@ -280,6 +288,7 @@ namespace TagLib {
      *
      * \deprecated Use FileRef(FileName, bool, AudioProperties::ReadStyle).
      */
+     // Kept because it is used for the C bindings
     static File *create(FileName fileName,
                         bool readAudioProperties = true,
                         AudioProperties::ReadStyle audioPropertiesStyle = AudioProperties::Average);

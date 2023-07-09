@@ -28,9 +28,13 @@ import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
+import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
+import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.DocFilter
 import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.model.LocalPhoto
+import dev.ragnarok.fenrir.model.PhotoSize
+import dev.ragnarok.fenrir.model.menu.options.DocsOption
 import dev.ragnarok.fenrir.model.selection.FileManagerSelectableSource
 import dev.ragnarok.fenrir.model.selection.LocalPhotosSelectableSource
 import dev.ragnarok.fenrir.model.selection.Sources
@@ -263,6 +267,61 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
         mImagesOnly = imagesOnly
     }
 
+    override fun onMenuClick(index: Int, doc: Document, isMy: Boolean) {
+        val menus = ModalBottomSheetDialogFragment.Builder()
+        menus.add(
+            OptionRequest(
+                DocsOption.open_item_doc,
+                getString(R.string.open),
+                R.drawable.view,
+                true
+            )
+        )
+        menus.add(
+            OptionRequest(
+                DocsOption.share_item_doc,
+                getString(R.string.share),
+                R.drawable.share,
+                true
+            )
+        )
+        menus.add(
+            OptionRequest(
+                DocsOption.go_to_owner_doc,
+                getString(R.string.goto_user),
+                R.drawable.person,
+                false
+            )
+        )
+        if (isMy) {
+            menus.add(
+                OptionRequest(
+                    DocsOption.delete_item_doc,
+                    getString(R.string.delete),
+                    R.drawable.ic_outline_delete,
+                    true
+                )
+            )
+        } else {
+            menus.add(
+                OptionRequest(
+                    DocsOption.add_item_doc,
+                    getString(R.string.action_add),
+                    R.drawable.plus,
+                    true
+                )
+            )
+        }
+        menus.header(doc.title, R.drawable.book, doc.getPreviewWithSize(PhotoSize.X, true))
+        menus.columns(2)
+        menus.show(
+            childFragmentManager,
+            "docs_options"
+        ) { _, option ->
+            presenter?.onMenuSelect(requireActivity(), index, doc, option)
+        }
+    }
+
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<DocsListPresenter> {
         return object : IPresenterFactory<DocsListPresenter> {
             override fun create(): DocsListPresenter {
@@ -303,7 +362,6 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
 
     override fun onDocLongClick(index: Int, doc: Document): Boolean {
         presenter?.fireMenuClick(
-            requireActivity(),
             index,
             doc
         )

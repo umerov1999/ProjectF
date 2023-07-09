@@ -48,6 +48,7 @@ import dev.ragnarok.filegallery.place.PlaceFactory
 import dev.ragnarok.filegallery.place.PlaceProvider
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
+import dev.ragnarok.filegallery.util.DownloadWorkUtils
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.rxutils.RxUtils
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
@@ -169,28 +170,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 Settings.get().main().getViewpager_page_transform()
             )
         )
-        mViewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                presenter?.firePageSelected(position)
 
-                if (bShowPhotosLine) {
-                    val currentSelected = mAdapterRecycler.getSelectedItem()
-                    if (currentSelected != position) {
-                        mAdapterRecycler.selectPosition(position)
-                        if (currentSelected < position) {
-                            mPreviewsRecycler?.scrollToPosition(position)
-                        } else {
-                            if (position == 0) {
-                                mPreviewsRecycler?.scrollToPosition(position)
-                            } else
-                                mPreviewsRecycler?.scrollToPosition(position)
-                        }
-                    }
-                }
-            }
-        })
-        addMenuProvider(this, this)
         if (bShowPhotosLine) {
             mPreviewsRecycler?.layoutManager =
                 LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -203,6 +183,8 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         } else {
             mPreviewsRecycler?.visibility = View.GONE
         }
+
+        addMenuProvider(this, this)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 presenter?.close()
@@ -303,7 +285,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             requireArguments().getInt(Extra.INDEX),
                             source,
                             requireArguments().getBoolean(Extra.INVERT),
-                            this@PhotoPagerActivity,
                             saveInstanceState
                         )
                     }
@@ -314,7 +295,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                         return TmpGalleryPagerPresenter(
                             source,
                             requireArguments().getInt(Extra.INDEX),
-                            this@PhotoPagerActivity,
                             saveInstanceState
                         )
                     }
@@ -322,6 +302,21 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 throw UnsupportedOperationException()
             }
         }
+
+    private val pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
+            presenter?.firePageSelected(position)
+
+            if (bShowPhotosLine && mAdapterRecycler.getSize() > 1) {
+                val currentSelected = mAdapterRecycler.getSelectedItem()
+                if (currentSelected != position) {
+                    mAdapterRecycler.selectPosition(position)
+                    mPreviewsRecycler?.scrollToPosition(position)
+                }
+            }
+        }
+    }
 
     override fun displayPhotos(photos: List<Photo>, initialIndex: Int) {
         if (bShowPhotosLine) {
@@ -332,11 +327,18 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 mAdapterRecycler.setData(photos)
                 mAdapterRecycler.notifyDataSetChanged()
                 mAdapterRecycler.selectPosition(initialIndex)
+                mPreviewsRecycler?.scrollToPosition(initialIndex)
             }
         }
+        mViewPager?.unregisterOnPageChangeCallback(pageChangeListener)
         mPagerAdapter = Adapter(photos)
         mViewPager?.adapter = mPagerAdapter
         mViewPager?.setCurrentItem(initialIndex, false)
+        mViewPager?.registerOnPageChangeCallback(pageChangeListener)
+    }
+
+    override fun setToolbarTitle(currentIndex: Int, count: Int) {
+        supportActionBar?.title = getString(R.string.image_number, currentIndex, count)
     }
 
     override fun displayPhotoListLoading(loading: Boolean) {
@@ -414,6 +416,10 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     override fun setupOptionMenu(isLocal: Boolean) {
         isLocalPhoto = isLocal
         this.invalidateOptionsMenu()
+    }
+
+    override fun downloadPhoto(url: String, dir: String, file: String) {
+        DownloadWorkUtils.doDownloadPhoto(this, url, dir, file)
     }
 
     @Suppress("DEPRECATION")

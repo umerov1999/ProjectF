@@ -45,7 +45,6 @@ import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.*
 import dev.ragnarok.fenrir.model.selection.FileManagerSelectableSource
@@ -415,16 +414,14 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         menus.add(OptionRequest(1, getString(R.string.posts_with_query), R.drawable.magnify, false))
         menus.show(
             childFragmentManager,
-            "attachments_select",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    getWallAttachmentsPlace(
-                        accountId,
-                        ownerId,
-                        types[option.id]
-                    ).tryOpenWith(requireActivity())
-                }
-            })
+            "attachments_select"
+        ) { _, option ->
+            getWallAttachmentsPlace(
+                accountId,
+                ownerId,
+                types[option.id]
+            ).tryOpenWith(requireActivity())
+        }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -484,7 +481,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
             }
 
             R.id.action_add_to_shortcut -> {
-                presenter?.fireAddToShortcutClick()
+                presenter?.fireAddToShortcutClick(requireActivity())
                 return true
             }
 
@@ -517,17 +514,19 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
                     )
                 )
                 menus.show(
-                    requireActivity().supportFragmentManager,
-                    "search_story_options",
-                    object : ModalBottomSheetDialogFragment.Listener {
-                        override fun onModalOptionSelected(option: Option) {
-                            if (menuItem.itemId == R.id.button_ok) {
-                                presenter?.searchStory(true)
-                            } else if (menuItem.itemId == R.id.button_cancel) {
-                                presenter?.searchStory(false)
-                            }
+                    childFragmentManager,
+                    "search_story_options"
+                ) { _, option ->
+                    when (option.id) {
+                        R.id.button_ok -> {
+                            presenter?.searchStory(true)
                         }
-                    })
+
+                        R.id.button_cancel -> {
+                            presenter?.searchStory(false)
+                        }
+                    }
+                }
                 return true
             }
 
@@ -730,6 +729,10 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
 
     override fun notifyUploadProgressChanged(position: Int, progress: Int, smoothly: Boolean) {
         mUploadAdapter?.changeUploadProgress(position, progress, smoothly)
+    }
+
+    override fun goMentions(accountId: Long, ownerId: Long) {
+        PlaceFactory.getMentionsPlace(accountId, ownerId).tryOpenWith(requireActivity())
     }
 
     protected class OptionView : IWallView.IOptionView {

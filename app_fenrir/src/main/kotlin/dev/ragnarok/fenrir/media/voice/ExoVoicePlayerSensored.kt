@@ -24,7 +24,6 @@ import dev.ragnarok.fenrir.media.exo.ExoUtil.pausePlayer
 import dev.ragnarok.fenrir.media.exo.ExoUtil.startPlayer
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.isPreparing
-import dev.ragnarok.fenrir.media.music.MusicPlaybackController.notifyForegroundStateChanged
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.playOrPause
 import dev.ragnarok.fenrir.media.voice.IVoicePlayer.IErrorListener
 import dev.ragnarok.fenrir.media.voice.IVoicePlayer.IPlayerStatusListener
@@ -78,7 +77,6 @@ class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePla
         try {
             Registered = true
             if (MusicPlaybackController.isPlaying || isPreparing) {
-                notifyForegroundStateChanged(app, true)
                 playOrPause()
                 HasPlaying = true
             }
@@ -104,7 +102,6 @@ class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePla
             app.unregisterReceiver(headset)
             if (HasPlaying) {
                 playOrPause()
-                notifyForegroundStateChanged(app, false)
             }
             HasPlaying = false
             if (ProximitRegistered) {

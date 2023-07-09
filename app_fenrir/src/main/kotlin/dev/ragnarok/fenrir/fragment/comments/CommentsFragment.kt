@@ -38,7 +38,6 @@ import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
-import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.Option
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.Commented
@@ -218,7 +217,6 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
                     accountId,
                     commented,
                     focusTo,
-                    requireActivity(),
                     ThreadComment,
                     saveInstanceState
                 )
@@ -571,60 +569,60 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
             )
         )
         menus.show(
-            requireActivity().supportFragmentManager,
-            "comments_options",
-            object : ModalBottomSheetDialogFragment.Listener {
-                override fun onModalOptionSelected(option: Option) {
-                    when (option.id) {
-                        CommentsOption.copy_item_comment -> {
-                            val clipboard = requireActivity()
-                                .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-                            val clip = ClipData.newPlainText("comment", comment.text)
-                            clipboard?.setPrimaryClip(clip)
-                            createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
-                                .showToast(R.string.copied_to_clipboard)
-                        }
-
-                        CommentsOption.reply_item_comment -> presenter?.fireReplyToCommentClick(
-                            comment
-                        )
-
-                        CommentsOption.report_item_comment -> presenter?.fireReport(
-                            comment
-                        )
-
-                        CommentsOption.delete_item_comment -> presenter?.fireCommentDeleteClick(
-                            comment
-                        )
-
-                        CommentsOption.edit_item_comment -> presenter?.fireCommentEditClick(
-                            comment
-                        )
-
-                        CommentsOption.block_author_item_comment -> presenter?.fireBanClick(
-                            comment
-                        )
-
-                        CommentsOption.like_item_comment -> presenter?.fireCommentLikeClick(
-                            comment,
-                            true
-                        )
-
-                        CommentsOption.dislike_item_comment -> presenter?.fireCommentLikeClick(
-                            comment,
-                            false
-                        )
-
-                        CommentsOption.who_like_item_comment -> presenter?.fireWhoLikesClick(
-                            comment
-                        )
-
-                        CommentsOption.send_to_friend_item_comment -> presenter?.fireReplyToChat(
-                            comment
-                        )
-                    }
+            childFragmentManager,
+            "comments_options"
+        ) { _, option ->
+            when (option.id) {
+                CommentsOption.copy_item_comment -> {
+                    val clipboard = requireActivity()
+                        .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                    val clip = ClipData.newPlainText("comment", comment.text)
+                    clipboard?.setPrimaryClip(clip)
+                    createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
+                        .showToast(R.string.copied_to_clipboard)
                 }
-            })
+
+                CommentsOption.reply_item_comment -> presenter?.fireReplyToCommentClick(
+                    comment
+                )
+
+                CommentsOption.report_item_comment -> presenter?.fireReport(
+                    requireActivity(),
+                    comment
+                )
+
+                CommentsOption.delete_item_comment -> presenter?.fireCommentDeleteClick(
+                    comment
+                )
+
+                CommentsOption.edit_item_comment -> presenter?.fireCommentEditClick(
+                    comment
+                )
+
+                CommentsOption.block_author_item_comment -> presenter?.fireBanClick(
+                    comment
+                )
+
+                CommentsOption.like_item_comment -> presenter?.fireCommentLikeClick(
+                    comment,
+                    true
+                )
+
+                CommentsOption.dislike_item_comment -> presenter?.fireCommentLikeClick(
+                    comment,
+                    false
+                )
+
+                CommentsOption.who_like_item_comment -> presenter?.fireWhoLikesClick(
+                    comment
+                )
+
+                CommentsOption.send_to_friend_item_comment -> presenter?.fireReplyToChat(
+                    requireActivity(),
+                    comment
+                )
+            }
+        }
     }
 
     override fun onHashTagClicked(hashTag: String) {

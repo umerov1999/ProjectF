@@ -208,7 +208,6 @@ class DocPreviewFragment : BaseFragment(), View.OnClickListener, MenuProvider {
 
     private fun onDocumentInfoGetError() {
         mLoadingNow = false
-        // TODO: 06.10.2017
     }
 
     private fun onDocumentInfoReceived(document: Document) {

@@ -26,13 +26,14 @@ import java.util.concurrent.ExecutorService
 
 internal class HandlerDispatcher internal constructor(
     context: Context,
-    service: ExecutorService,
+    @get:JvmName("-service") val service: ExecutorService,
     mainThreadHandler: Handler,
     cache: PlatformLruCache
-) : Dispatcher(context, service, mainThreadHandler, cache) {
+) : BaseDispatcher(context, mainThreadHandler, cache) {
 
     private val dispatcherThread: DispatcherThread
     private val handler: Handler
+    private val mainHandler: Handler
 
     init {
         dispatcherThread = DispatcherThread()
@@ -40,11 +41,15 @@ internal class HandlerDispatcher internal constructor(
         val dispatcherThreadLooper = dispatcherThread.looper
         flushStackLocalLeaks(dispatcherThreadLooper)
         handler = DispatcherHandler(dispatcherThreadLooper, this)
+        mainHandler = MainDispatcherHandler(mainThreadHandler.looper, this)
+
         registerNetworkCallback()
     }
 
     override fun shutdown() {
         super.shutdown()
+        // Shutdown the thread pool only if it is the one created by Picasso.
+        (service as? PicassoExecutorService)?.shutdown()
 
         dispatcherThread.quit()
     }
@@ -81,9 +86,28 @@ internal class HandlerDispatcher internal constructor(
         handler.sendMessage(handler.obtainMessage(NETWORK_STATE_CHANGE, hasNetwork))
     }
 
+    override fun dispatchSubmit(hunter: BitmapHunter) {
+        hunter.future = service.submit(hunter)
+    }
+
+    override fun dispatchCompleteMain(hunter: BitmapHunter) {
+        val message = mainHandler.obtainMessage(HUNTER_COMPLETE, hunter)
+        if (hunter.priority == Picasso.Priority.HIGH) {
+            mainHandler.sendMessageAtFrontOfQueue(message)
+        } else {
+            mainHandler.sendMessage(message)
+        }
+    }
+
+    override fun dispatchBatchResumeMain(batch: MutableList<Action>) {
+        mainHandler.sendMessage(mainHandler.obtainMessage(REQUEST_BATCH_RESUME, batch))
+    }
+
+    override fun isShutdown() = service.isShutdown
+
     private class DispatcherHandler(
         looper: Looper,
-        private val dispatcher: Dispatcher
+        private val dispatcher: HandlerDispatcher
     ) : Handler(looper) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
@@ -128,10 +152,32 @@ internal class HandlerDispatcher internal constructor(
                 }
 
                 else -> {
-                    Picasso.HANDLER.post {
+                    dispatcher.mainHandler.post {
                         throw AssertionError("Unknown handler message received: ${msg.what}")
                     }
                 }
+            }
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private class MainDispatcherHandler(
+        looper: Looper,
+        val dispatcher: HandlerDispatcher
+    ) : Handler(looper) {
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                HUNTER_COMPLETE -> {
+                    val hunter = msg.obj as BitmapHunter
+                    dispatcher.performCompleteMain(hunter)
+                }
+
+                REQUEST_BATCH_RESUME -> {
+                    val batch = msg.obj as List<Action>
+                    dispatcher.performBatchResumeMain(batch)
+                }
+
+                else -> throw AssertionError("Unknown handler message received: " + msg.what)
             }
         }
     }
@@ -143,12 +189,15 @@ internal class HandlerDispatcher internal constructor(
 
     internal companion object {
         private const val RETRY_DELAY = 500L
-        private const val REQUEST_SUBMIT = 4
-        private const val REQUEST_CANCEL = 5
-        private const val HUNTER_RETRY = 6
-        private const val HUNTER_DECODE_FAILED = 7
-        private const val TAG_PAUSE = 8
-        private const val TAG_RESUME = 9
+        private const val REQUEST_SUBMIT = 1
+        private const val REQUEST_CANCEL = 2
+        private const val HUNTER_COMPLETE = 3
+        private const val HUNTER_RETRY = 4
+        private const val HUNTER_DECODE_FAILED = 5
+        private const val NETWORK_STATE_CHANGE = 6
+        private const val TAG_PAUSE = 7
+        private const val TAG_RESUME = 8
+        private const val REQUEST_BATCH_RESUME = 9
         private const val DISPATCHER_THREAD_NAME = "Dispatcher"
     }
 }

@@ -57,12 +57,15 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     }
 
     private fun init() {
+        if (isInEditMode) {
+            return
+        }
         root = LayoutInflater.from(context).inflate(R.layout.mini_player, this)
         val play = root.findViewById<View>(R.id.item_audio_play)
         playCover = root.findViewById(R.id.item_audio_play_cover)
         visual = root.findViewById(R.id.item_audio_visual)
         root.visibility =
-            if (isInEditMode || MusicPlaybackController.miniPlayerVisibility) VISIBLE else GONE
+            if (MusicPlaybackController.miniPlayerVisibility) VISIBLE else GONE
         val mPClosePlay = root.findViewById<ImageButton>(R.id.close_player)
         mPClosePlay.setOnClickListener {
             MusicPlaybackController.closeMiniPlayer()
@@ -221,6 +224,9 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        if (isInEditMode) {
+            return
+        }
         receiveFullAudioInfo()
         mTimeHandler = TimeHandler(this)
         val next = refreshCurrentTime()
@@ -232,6 +238,9 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        if (isInEditMode) {
+            return
+        }
         mPlayerDisposable.dispose()
         mTimeHandler?.removeMessages(REFRESH_TIME)
         mTimeHandler = null

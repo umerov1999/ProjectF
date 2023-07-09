@@ -62,4 +62,5 @@ interface IWallView : IAttachmentsPlacesView, IMvpView, ISnackbarView,
     fun notifyUploadProgressChanged(position: Int, progress: Int, smoothly: Boolean)
     fun setUploadDataVisible(visible: Boolean)
     fun displayUploads(data: List<Upload>)
+    fun goMentions(accountId: Long, ownerId: Long)
 }
