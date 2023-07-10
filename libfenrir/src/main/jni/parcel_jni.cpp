@@ -127,6 +127,13 @@ public:
         return parcel->flags;
     }
 
+    static void forceDestroy(Parcel *parcel) {
+        if (parcel == nullptr) {
+            return;
+        }
+        parcel->parcels.clear();
+    }
+
     static void putBoolean(Parcel *parcel, int8_t value) {
         if (parcel == nullptr) {
             return;
@@ -334,6 +341,17 @@ private:
 extern "C" JNIEXPORT jlong
 Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_init(JNIEnv *, jobject, jint flags) {
     return (jlong) (intptr_t) new Parcel(flags);
+}
+
+extern "C" JNIEXPORT void
+Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_forceDestroy(JNIEnv *, jobject,
+                                                                 jlong parcel_native) {
+    if (!parcel_native) {
+        return;
+    }
+    auto *parcel = (Parcel *) (intptr_t) parcel_native;
+    Parcel::forceDestroy(parcel);
+    delete parcel;
 }
 
 extern "C" JNIEXPORT jint

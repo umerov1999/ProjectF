@@ -454,7 +454,43 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                         )
                     }
 
-                    Place.VK_PHOTO_ALBUM_GALLERY, Place.VK_PHOTO_ALBUM_GALLERY_NATIVE -> {
+                    Place.VK_PHOTO_ALBUM_GALLERY_NATIVE -> {
+                        val indexx = requireArguments().getInt(Extra.INDEX)
+                        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+                        val albumId = requireArguments().getInt(Extra.ALBUM_ID)
+                        val readOnly = requireArguments().getBoolean(Extra.READONLY)
+                        val invert = requireArguments().getBoolean(Extra.INVERT)
+                        val nativePointer = requireArguments().getLong(
+                            EXTRA_PHOTOS
+                        )
+                        requireArguments().putLong(EXTRA_PHOTOS, 0)
+                        if (FenrirNative.isNativeLoaded && Settings.get()
+                                .other().isNative_parcel_photo
+                        ) {
+                            return PhotoAlbumPagerPresenter(
+                                indexx,
+                                aid,
+                                ownerId,
+                                albumId,
+                                nativePointer,
+                                readOnly,
+                                invert,
+                                saveInstanceState
+                            )
+                        }
+                        return PhotoAlbumPagerPresenter(
+                            indexx,
+                            aid,
+                            ownerId,
+                            albumId,
+                            ArrayList(),
+                            readOnly,
+                            invert,
+                            saveInstanceState
+                        )
+                    }
+
+                    Place.VK_PHOTO_ALBUM_GALLERY -> {
                         val indexx = requireArguments().getInt(Extra.INDEX)
                         val ownerId = requireArguments().getLong(Extra.OWNER_ID)
                         val albumId = requireArguments().getInt(Extra.ALBUM_ID)

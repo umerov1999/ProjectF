@@ -153,6 +153,9 @@ class NewsfeedCommentsAdapter(
                 .load(photoUrl)
                 .into(holder.image)
         }
+        holder.image.setOnClickListener {
+            actionListener?.onPhotoBodyClick(photo)
+        }
     }
 
     private fun bindVideo(holder: VideoHolder, position: Int) {
@@ -176,6 +179,9 @@ class NewsfeedCommentsAdapter(
         } else {
             with()
                 .cancelRequest(holder.image)
+        }
+        holder.image.setOnClickListener {
+            actionListener?.onVideoBodyClick(video)
         }
         holder.duration.text = AppTextUtils.getDurationString(video.duration)
         holder.ownerName.text = owner.fullName
@@ -344,6 +350,8 @@ class NewsfeedCommentsAdapter(
     interface ActionListener {
         fun onPostBodyClick(comment: NewsfeedComment)
         fun onCommentBodyClick(comment: NewsfeedComment)
+        fun onPhotoBodyClick(photo: Photo)
+        fun onVideoBodyClick(video: Video)
     }
 
     private class TopicHolder(itemView: View) : AbsHolder(itemView) {

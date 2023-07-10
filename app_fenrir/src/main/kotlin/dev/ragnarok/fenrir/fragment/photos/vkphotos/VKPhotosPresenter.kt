@@ -41,6 +41,8 @@ import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.getSelected
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class VKPhotosPresenter(
@@ -323,15 +325,29 @@ class VKPhotosPresenter(
     }
 
     fun updateInfo(position: Int, ptr: Long) {
-        val p = ParcelNative.fromNative(ptr).readParcelableList(Photo.NativeCreator) ?: return
-        photos.clear()
-        photos.addAll(wrappersOf(p))
-        photos[position].current = true
-        MusicPlaybackController.tracksExist.markExistPhotos(photos)
-        view?.let {
-            it.notifyDataSetChanged()
-            it.scrollTo(position)
-        }
+        setRequestNow(true)
+        appendDisposable(
+            Single.create { v: SingleEmitter<List<SelectablePhotoWrapper>> ->
+                val st = wrappersOf(
+                    ParcelNative.fromNative(ptr).readParcelableArrayList(Photo.NativeCreator)
+                        ?: return@create
+                )
+                MusicPlaybackController.tracksExist.markExistPhotos(st)
+                v.onSuccess(
+                    st
+                )
+            }.fromIOToMain()
+                .subscribe({
+                    setRequestNow(false)
+                    photos.clear()
+                    photos.addAll(it)
+                    photos[position].current = true
+
+                    view?.let { op ->
+                        op.notifyDataSetChanged()
+                        op.scrollTo(position)
+                    }
+                }) { obj -> obj.printStackTrace() })
     }
 
     private fun onInitialDataReceived(data: Pair<List<Photo>, List<Upload>>) {
@@ -477,24 +493,37 @@ class VKPhotosPresenter(
                     )
                 }) { obj -> obj.printStackTrace() })
         } else {
-            val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
-            mem.writeInt(photos.size)
-            for (i in photos.indices) {
-                val photo = photos[i]
-                mem.writeParcelable(photo.photo)
-                if (!trig && photo.photo.getObjectId() == wrapper.photo.getObjectId() && photo.photo.ownerId == wrapper.photo.ownerId) {
-                    Index = i
-                    trig = true
-                }
-            }
-            val finalIndex = Index
-            view?.displayGalleryUnSafe(
-                accountId,
-                albumId,
-                ownerId,
-                mem.nativePointer,
-                finalIndex
-            )
+            appendDisposable(
+                Single.create { v: SingleEmitter<Pair<Long, Int>> ->
+                    val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
+                    mem.writeInt(photos.size)
+                    for (i in photos.indices) {
+                        if (v.isDisposed) {
+                            mem.forceDestroy()
+                            return@create
+                        }
+                        val photo = photos[i]
+                        mem.writeParcelable(photo.photo)
+                        if (!trig && photo.photo.getObjectId() == wrapper.photo.getObjectId() && photo.photo.ownerId == wrapper.photo.ownerId) {
+                            Index = i
+                            trig = true
+                        }
+                    }
+                    if (v.isDisposed) {
+                        mem.forceDestroy()
+                    } else {
+                        v.onSuccess(Pair(mem.nativePointer, Index))
+                    }
+                }.fromIOToMain()
+                    .subscribe({
+                        view?.displayGalleryUnSafe(
+                            accountId,
+                            albumId,
+                            ownerId,
+                            it.first,
+                            it.second
+                        )
+                    }) { obj -> obj.printStackTrace() })
         }
     }
 

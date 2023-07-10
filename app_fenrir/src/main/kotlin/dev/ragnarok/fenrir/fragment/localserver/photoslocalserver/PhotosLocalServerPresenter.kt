@@ -15,8 +15,10 @@ import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.FindAt
+import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
@@ -185,12 +187,25 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun updateInfo(position: Int, ptr: Long) {
-        val p = ParcelNative.fromNative(ptr).readParcelableList(Photo.NativeCreator) ?: return
-        photos.clear()
-        photos.addAll(p)
-        view?.scrollTo(
-            position
-        )
+        actualDataLoading = true
+        resolveRefreshingView()
+        appendDisposable(
+            Single.create { v: SingleEmitter<List<Photo>> ->
+                val p = ParcelNative.fromNative(ptr).readParcelableList(Photo.NativeCreator)
+                    ?: return@create
+                v.onSuccess(
+                    p
+                )
+            }.fromIOToMain()
+                .subscribe({
+                    actualDataLoading = false
+                    resolveRefreshingView()
+                    photos.clear()
+                    photos.addAll(it)
+                    view?.scrollTo(
+                        position
+                    )
+                }) { obj -> obj.printStackTrace() })
     }
 
     fun firePhotoClick(wrapper: Photo) {
@@ -227,25 +242,38 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
                     )
                 }) { obj -> obj.printStackTrace() })
         } else {
-            val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
-            mem.writeInt(photos.size)
-            for (i in photos.indices) {
-                val photo = photos[i]
-                mem.writeParcelable(photo)
-                if (!trig && photo.getObjectId() == wrapper.getObjectId() && photo.ownerId == wrapper.ownerId) {
-                    Index = i
-                    trig = true
-                }
-            }
-            val finalIndex = Index
-            view?.displayGalleryUnSafe(
-                accountId,
-                -311,
-                accountId,
-                mem.nativePointer,
-                finalIndex,
-                reverse
-            )
+            appendDisposable(
+                Single.create { v: SingleEmitter<Pair<Long, Int>> ->
+                    val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
+                    mem.writeInt(photos.size)
+                    for (i in photos.indices) {
+                        if (v.isDisposed) {
+                            mem.forceDestroy()
+                            return@create
+                        }
+                        val photo = photos[i]
+                        mem.writeParcelable(photo)
+                        if (!trig && photo.getObjectId() == wrapper.getObjectId() && photo.ownerId == wrapper.ownerId) {
+                            Index = i
+                            trig = true
+                        }
+                    }
+                    if (v.isDisposed) {
+                        mem.forceDestroy()
+                    } else {
+                        v.onSuccess(Pair(mem.nativePointer, Index))
+                    }
+                }.fromIOToMain()
+                    .subscribe({
+                        view?.displayGalleryUnSafe(
+                            accountId,
+                            -311,
+                            accountId,
+                            it.first,
+                            it.second,
+                            reverse
+                        )
+                    }) { obj -> obj.printStackTrace() })
         }
     }
 

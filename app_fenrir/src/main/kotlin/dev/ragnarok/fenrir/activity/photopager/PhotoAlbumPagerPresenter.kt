@@ -14,6 +14,8 @@ import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.PersistentLogger
 import dev.ragnarok.fenrir.util.Utils
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
 
 class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
     private val localServerInteractor: ILocalServerInteractor
@@ -50,6 +52,25 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
         accountId: Long,
         ownerId: Long,
         albumId: Int,
+        parcelNative: Long,
+        readOnly: Boolean,
+        invertPhotoRev: Boolean,
+        savedInstanceState: Bundle?
+    ) : super(ArrayList<Photo>(0), accountId, readOnly, savedInstanceState) {
+        localServerInteractor = InteractorFactory.createLocalServerInteractor()
+        mOwnerId = ownerId
+        mAlbumId = albumId
+        canLoad = true
+        this.invertPhotoRev = invertPhotoRev
+        currentIndex = index
+        loadDataFromParcelNative(parcelNative)
+    }
+
+    constructor(
+        index: Int,
+        accountId: Long,
+        ownerId: Long,
+        albumId: Int,
         source: TmpSource,
         readOnly: Boolean,
         invertPhotoRev: Boolean,
@@ -62,6 +83,22 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
         this.invertPhotoRev = invertPhotoRev
         currentIndex = index
         loadDataFromDatabase(source)
+    }
+
+    private fun loadDataFromParcelNative(parcelNative: Long) {
+        changeLoadingNowState(true)
+        appendDisposable(
+            Single.create { v: SingleEmitter<ArrayList<Photo>> ->
+                v.onSuccess(
+                    ParcelNative.loadParcelableArrayList(
+                        parcelNative, Photo.NativeCreator, ParcelFlags.MUTABLE_LIST
+                    ) ?: ArrayList()
+                )
+            }
+                .fromIOToMain()
+                .subscribe({ onInitialLoadingFinished(it) }) {
+                    PersistentLogger.logThrowable("PhotoAlbumPagerPresenter", it)
+                })
     }
 
     private fun loadDataFromDatabase(source: TmpSource) {

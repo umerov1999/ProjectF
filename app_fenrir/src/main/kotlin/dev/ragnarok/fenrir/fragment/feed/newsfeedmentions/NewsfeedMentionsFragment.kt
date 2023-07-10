@@ -20,8 +20,11 @@ import dev.ragnarok.fenrir.fragment.feed.newsfeedcomments.INewsfeedCommentsView
 import dev.ragnarok.fenrir.fragment.feed.newsfeedcomments.NewsfeedCommentsAdapter
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.model.NewsfeedComment
+import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.place.Place
+import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.is600dp
 import dev.ragnarok.fenrir.util.Utils.isLandscape
@@ -115,6 +118,17 @@ class NewsfeedMentionsFragment :
         presenter?.fireCommentBodyClick(
             comment
         )
+    }
+
+    override fun onPhotoBodyClick(photo: Photo) {
+        val temp = ArrayList(listOf(photo))
+        PlaceFactory.getSimpleGalleryPlace(Settings.get().accounts().current, temp, 0, false)
+            .tryOpenWith(requireActivity())
+    }
+
+    override fun onVideoBodyClick(video: Video) {
+        PlaceFactory.getVideoPreviewPlace(Settings.get().accounts().current, video)
+            .tryOpenWith(requireActivity())
     }
 
     companion object {

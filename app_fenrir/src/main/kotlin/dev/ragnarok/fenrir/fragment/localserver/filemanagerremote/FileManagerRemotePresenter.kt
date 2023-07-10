@@ -11,10 +11,14 @@ import dev.ragnarok.fenrir.model.FileType
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoSizes
 import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Objects.safeEquals
+import dev.ragnarok.fenrir.util.Pair
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
 import java.util.Locale
 
 class FileManagerRemotePresenter(
@@ -126,32 +130,51 @@ class FileManagerRemotePresenter(
 
     fun onClickFile(item: FileRemote) {
         if (item.type == FileType.photo) {
-            val list = if (q == null) fileList else fileListSearch
-            var index = 0
-            var o = 0
-            val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
-            for (i in list) {
-                if (i.type != FileType.photo) {
-                    continue
-                }
-                if (i.id == item.id && i.owner_Id == item.owner_Id) {
-                    index = o
-                }
-                val photo = Photo()
-                photo.setId(i.id)
-                photo.setOwnerId(i.owner_Id)
-                photo.setAlbumId(-311)
-                photo.setDate(i.modification_time)
-                photo.setSizes(
-                    PhotoSizes().setW(PhotoSizes.Size(2080, 1080, i.url))
-                        .setS(PhotoSizes.Size(512, 512, i.preview_url))
-                )
-                photo.setText(i.file_name)
-                mem.writeParcelable(photo)
-                o++
+            if (!FenrirNative.isNativeLoaded) {
+                return
             }
-            mem.writeFirstInt(o)
-            view?.displayGalleryUnSafe(mem.nativePointer, index, false)
+            appendDisposable(
+                Single.create { v: SingleEmitter<Pair<Long, Int>> ->
+                    val list = if (q == null) fileList else fileListSearch
+                    var index = 0
+                    var o = 0
+                    val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
+                    for (i in list) {
+                        if (v.isDisposed) {
+                            mem.forceDestroy()
+                            return@create
+                        }
+                        if (i.type != FileType.photo) {
+                            continue
+                        }
+                        if (i.id == item.id && i.owner_Id == item.owner_Id) {
+                            index = o
+                        }
+                        val photo = Photo()
+                        photo.setId(i.id)
+                        photo.setOwnerId(i.owner_Id)
+                        photo.setAlbumId(-311)
+                        photo.setDate(i.modification_time)
+                        photo.setSizes(
+                            PhotoSizes().setW(PhotoSizes.Size(2080, 1080, i.url))
+                                .setS(PhotoSizes.Size(512, 512, i.preview_url))
+                        )
+                        photo.setText(i.file_name)
+                        mem.writeParcelable(photo)
+                        o++
+                    }
+                    mem.writeFirstInt(o)
+                    if (v.isDisposed) {
+                        mem.forceDestroy()
+                    } else {
+                        v.onSuccess(Pair(mem.nativePointer, index))
+                    }
+                }.fromIOToMain()
+                    .subscribe({
+                        view?.displayGalleryUnSafe(
+                            it.first, it.second, false
+                        )
+                    }) { obj -> obj.printStackTrace() })
         } else if (item.type == FileType.video) {
             val v = Video()
             v.setId(item.id)

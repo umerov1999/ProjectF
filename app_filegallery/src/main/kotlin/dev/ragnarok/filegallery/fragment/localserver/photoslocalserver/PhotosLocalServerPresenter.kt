@@ -12,6 +12,7 @@ import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.util.FindAt
 import dev.ragnarok.filegallery.util.Utils
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
@@ -185,12 +186,26 @@ class PhotosLocalServerPresenter(savedInstanceState: Bundle?) :
     }
 
     fun updateInfo(position: Int, ptr: Long) {
-        val p = ParcelNative.fromNative(ptr).readParcelableList(Photo.NativeCreator) ?: return
-        photos.clear()
-        photos.addAll(p)
-        view?.scrollTo(
-            position
-        )
+        actualDataLoading = true
+        resolveRefreshingView()
+
+        appendDisposable(
+            Single.create { v: SingleEmitter<List<Photo>> ->
+                val p = ParcelNative.fromNative(ptr).readParcelableList(Photo.NativeCreator)
+                    ?: return@create
+                v.onSuccess(
+                    p
+                )
+            }.fromIOToMain()
+                .subscribe({
+                    actualDataLoading = false
+                    resolveRefreshingView()
+                    photos.clear()
+                    photos.addAll(it)
+                    view?.scrollTo(
+                        position
+                    )
+                }) { obj -> obj.printStackTrace() })
     }
 
     fun firePhotoClick(wrapper: Photo) {

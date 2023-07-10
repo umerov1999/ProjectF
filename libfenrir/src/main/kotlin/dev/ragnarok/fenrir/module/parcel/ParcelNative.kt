@@ -14,6 +14,7 @@ class ParcelNative {
     private external fun putFloat(parcel: Long, value: Float)
     private external fun putDouble(parcel: Long, value: Double)
     private external fun putString(parcel: Long, value: String)
+    private external fun forceDestroy(parcel: Long)
     private external fun readBoolean(parcel: Long, listener: UpdatePointerListener): Boolean
     private external fun readByte(parcel: Long, listener: UpdatePointerListener): Byte
     private external fun readInt(parcel: Long, listener: UpdatePointerListener): Int
@@ -47,6 +48,11 @@ class ParcelNative {
             listFlags = ParcelFlags.MUTABLE_LIST
         }
         listFlags = getFlags(nativePointer)
+    }
+
+    fun forceDestroy() {
+        forceDestroy(nativePointer)
+        nativePointer = 0
     }
 
     fun writeString(value: String?): ParcelNative {
