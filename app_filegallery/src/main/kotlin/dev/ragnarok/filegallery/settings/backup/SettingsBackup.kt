@@ -55,7 +55,6 @@ class SettingsBackup {
         var enable_dirs_files_count: Boolean? = null
         var viewpager_page_transform: String? = null
         var player_cover_transform: String? = null
-        var ongoing_player_notification: Boolean? = null
         var open_folder_new_window: Boolean? = null
         var current_parser: String? = null
         var compress_incoming_traffic: Boolean? = null

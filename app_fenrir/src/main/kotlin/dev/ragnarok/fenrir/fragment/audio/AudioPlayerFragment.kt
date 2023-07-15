@@ -67,7 +67,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
-import java.lang.ref.WeakReference
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
@@ -105,7 +104,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     private var ivBackground: View? = null
 
     // Handler used to update the current time
-    private var mTimeHandler: TimeHandler? = null
+    private var mRefreshDisposable = Disposable.disposed()
     private var mStartSeekPos: Long = 0
     private var mLastSeekEventTime: Long = 0
     private var coverAdapter: CoverAdapter? = null
@@ -441,7 +440,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
 
         resolveAddButton()
 
-        mTimeHandler = TimeHandler(this)
         appendDisposable(MusicPlaybackController.observeServiceBinding()
             .toMainThread()
             .subscribe { onServiceBindEvent(it) })
@@ -670,8 +668,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     override fun onDestroy() {
         playDispose.dispose()
         mCompositeDisposable.dispose()
-        mTimeHandler?.removeMessages(REFRESH_TIME)
-        mTimeHandler = null
+        mRefreshDisposable.dispose()
         mBroadcastDisposable.dispose()
         PicassoInstance.with().cancelTag(PLAYER_TAG)
         super.onDestroy()
@@ -873,12 +870,14 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     /**
      * @param delay When to update
      */
-    internal fun queueNextRefresh(delay: Long) {
-        val message = mTimeHandler?.obtainMessage(REFRESH_TIME)
-        mTimeHandler?.removeMessages(REFRESH_TIME)
-        if (message != null) {
-            mTimeHandler?.sendMessageDelayed(message, delay)
-        }
+    private fun queueNextRefresh(delay: Long) {
+        mRefreshDisposable.dispose()
+        mRefreshDisposable = Observable.just(Any())
+            .delay(delay, TimeUnit.MILLISECONDS)
+            .toMainThread()
+            .subscribe {
+                queueNextRefresh(refreshCurrentTime())
+            }
     }
 
     private fun resolveControlViews() {
@@ -969,7 +968,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         mCurrentTime?.text = MusicPlaybackController.makeTimeString(requireActivity(), pos / 1000)
     }
 
-    internal fun refreshCurrentTime(): Long {
+    private fun refreshCurrentTime(): Long {
         if (!MusicPlaybackController.isInitialized) {
             mCurrentTime?.text = "--:--"
             mTotalTime?.text = "--:--"
@@ -1028,19 +1027,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         } catch (ignored: Exception) {
         }
         return 500
-    }
-
-    /**
-     * Used to update the current time string
-     */
-    private class TimeHandler(player: AudioPlayerFragment) : Handler(Looper.getMainLooper()) {
-        private val mAudioPlayer: WeakReference<AudioPlayerFragment> = WeakReference(player)
-        override fun handleMessage(msg: Message) {
-            if (msg.what == REFRESH_TIME) {
-                mAudioPlayer.get()?.let { it.queueNextRefresh(it.refreshCurrentTime()) }
-            }
-        }
-
     }
 
     private inner class CoverViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -1166,10 +1152,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     }
 
     companion object {
-        // Message to refresh the time
-        private const val REFRESH_TIME = 1
-
-
         fun buildArgs(accountId: Long): Bundle {
             val bundle = Bundle()
             bundle.putLong(Extra.ACCOUNT_ID, accountId)

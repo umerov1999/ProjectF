@@ -176,23 +176,6 @@ target_compile_options(libyuv PRIVATE
 target_include_directories(libyuv PRIVATE
         animation/libyuv/include)
 
-if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
-    set_target_properties(libyuv PROPERTIES
-            ANDROID_ARM_NEON FALSE
-            ANDROID_ARM_MODE arm)
-    target_compile_definitions(libyuv PRIVATE
-            ANDROID_ARM_NEON=false)
-    target_sources(libyuv PRIVATE
-            animation/libyuv/source/compare_neon.cc
-            animation/libyuv/source/rotate_neon.cc
-            animation/libyuv/source/row_neon.cc
-            animation/libyuv/source/scale_neon.cc)
-else ()
-    set_target_properties(libyuv PROPERTIES
-            ANDROID_ARM_NEON FALSE
-            ANDROID_ARM_MODE arm)
-endif ()
-
 add_library(opus STATIC
         audio/opus/libopus/src/opus.c
         audio/opus/libopus/src/opus_decoder.c

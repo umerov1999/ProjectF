@@ -141,7 +141,6 @@ interface ISettings {
         fun del_last_sticker_sets_sync(accountId: Long)
         fun del_last_sticker_sets_custom_sync(accountId: Long)
         fun del_last_sticker_keywords_sync(accountId: Long)
-        val isOngoing_player_notification: Boolean
         fun reloadOwnerChangesMonitor()
         fun isOwnerInChangesMonitor(ownerId: Long): Boolean
         fun putOwnerInChangesMonitor(ownerId: Long)

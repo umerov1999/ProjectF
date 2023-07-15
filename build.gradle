@@ -3,8 +3,8 @@ buildscript {
     ext.is_developer_build = true
 
     ext.appCompileSDK = 33
-    ext.appBuildTools = "33.0.2"
-    ext.appNdk = "25.2.9519653"
+    ext.appBuildTools = "34.0.0"
+    ext.appNdk = "26.0.10404224"
     ext.appMinSDK = is_developer_build ? 29 : 21
     ext.appTargetSDK = 31
     ext.appFenrirVersionCode = 999
@@ -60,7 +60,7 @@ buildscript {
     ext.kotlin_coroutines = "1.7.2"
     ext.kotlin_serializer = "1.5.1"
     ext.okhttpLibraryVersion = "5.0.0-alpha.11"
-    ext.okioVersion = "3.3.0"
+    ext.okioVersion = "3.4.0"
     ext.rxJavaVersion = "3.1.6"
     ext.guavaVersion = "32.1.1-android"
     ext.errorproneVersion = "2.15.0"

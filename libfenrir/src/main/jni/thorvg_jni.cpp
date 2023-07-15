@@ -9,13 +9,12 @@
 #include <thorvg.h>
 #include "fenrir_native.h"
 
-using namespace std;
 static pthread_mutex_t *lockMutex = nullptr;
-static std::map <string, uint32_t> customColorsTable;
+static std::map<std::string, uint32_t> customColorsTable;
 
 extern std::string doDecompressResource(size_t length, char *bytes, bool &orig);
 
-void getCustomColor(const string &name, uint8_t *r, uint8_t *g, uint8_t *b) {
+void getCustomColor(const std::string &name, uint8_t *r, uint8_t *g, uint8_t *b) {
     if (!lockMutex) {
         lockMutex = new pthread_mutex_t();
         pthread_mutex_init(lockMutex, nullptr);
@@ -23,9 +22,9 @@ void getCustomColor(const string &name, uint8_t *r, uint8_t *g, uint8_t *b) {
     pthread_mutex_lock(lockMutex);
     uint32_t clr = customColorsTable[name];
     pthread_mutex_unlock(lockMutex);
-    *r = (((uint8_t * )(&(clr)))[2]);
-    *g = (((uint8_t * )(&(clr)))[1]);
-    *b = (((uint8_t * )(&(clr)))[0]);
+    *r = (((uint8_t *) (&(clr)))[2]);
+    *g = (((uint8_t *) (&(clr)))[1]);
+    *b = (((uint8_t *) (&(clr)))[0]);
 }
 
 extern "C" JNIEXPORT void
@@ -42,7 +41,7 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_registerColorsNative(JNIEnv 
     }
     if (nameString != nullptr) {
         pthread_mutex_lock(lockMutex);
-        customColorsTable["[|" + string(nameString) + "|]"] = value;
+        customColorsTable["[|" + std::string(nameString) + "|]"] = value;
         pthread_mutex_unlock(lockMutex);
         env->ReleaseStringUTFChars(name, nameString);
     }
@@ -56,12 +55,12 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_createBitmapNative(JNIEnv *e
     if (!bitmap) {
         return;
     }
-    auto u = ((std::vector < char > *)(intptr_t)
-    res);
+    auto u = ((std::vector<char> *) (intptr_t)
+            res);
     //Canvas Engine
     tvg::CanvasEngine tvgEngine = tvg::CanvasEngine::Sw;
     //Threads Count
-    auto threads = thread::hardware_concurrency();
+    auto threads = std::thread::hardware_concurrency();
     //Initialize ThorVG Engine
     if (tvg::Initializer::init(tvgEngine, threads) != tvg::Result::Success) {
         return;
@@ -95,7 +94,7 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_createBitmapNative(JNIEnv *e
             return;
         }
 
-        canvas->push(move(picture));
+        canvas->push(std::move(picture));
         canvas->draw();
         canvas->sync();
         canvas->clear(true);

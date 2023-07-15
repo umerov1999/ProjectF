@@ -6,13 +6,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.media.audiofx.AudioEffect
+import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
-import android.os.SystemClock
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -51,16 +52,16 @@ import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.makeMediaItem
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.ref.WeakReference
+import java.util.concurrent.TimeUnit
 
 class MusicPlaybackService : Service() {
-    private val SHUTDOWN = "dev.ragnarok.fenrir.media.music.shutdown"
     private val mBinder: IBinder = ServiceStub(this)
     private var mPlayer: MultiPlayer? = null
-    private var mAlarmManager: AlarmManager? = null
-    private var mShutdownIntent: PendingIntent? = null
-    private var mShutdownScheduled = false
+    private var shutdownDelayedDisposable = Disposable.disposed()
     var isPlaying = false
         private set
 
@@ -84,6 +85,7 @@ class MusicPlaybackService : Service() {
     private var mMediaMetadataCompat: MediaMetadataCompat? = null
     private var inForeground: Boolean = false
     private var wakeLock: PowerManager.WakeLock? = null
+    private var mIntentReceiver: BroadcastReceiver? = null
     override fun onBind(intent: Intent): IBinder {
         if (Constants.IS_DEBUG) Logger.d(TAG, "Service bound, intent = $intent")
         cancelShutdown()
@@ -100,7 +102,15 @@ class MusicPlaybackService : Service() {
                 mManager.notify(id, notification)
                 return
             }
-            startForeground(id, notification)
+            if (Utils.hasQ()) {
+                startForeground(
+                    id,
+                    notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+                )
+            } else {
+                startForeground(id, notification)
+            }
             inForeground = true
         } catch (ignored: Exception) {
         }
@@ -109,6 +119,9 @@ class MusicPlaybackService : Service() {
     @SuppressLint("WrongConstant")
     @Suppress("deprecation")
     fun outForeground(removeNotification: Boolean) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !removeNotification) {
+            return
+        }
         inForeground = false
         if (Utils.hasNougat()) {
             stopForeground(if (removeNotification) STOP_FOREGROUND_REMOVE else 0)
@@ -126,8 +139,8 @@ class MusicPlaybackService : Service() {
             )
             return true
         }
-        stopSelf()
         Logger.d(TAG, "onUnbind, stopSelf(mServiceStartId)")
+        terminate()
         return true
     }
 
@@ -160,6 +173,12 @@ class MusicPlaybackService : Service() {
         filter.addAction(PREVIOUS_ACTION)
         filter.addAction(REPEAT_ACTION)
         filter.addAction(SHUFFLE_ACTION)
+
+        mIntentReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                handleCommandIntent(intent)
+            }
+        }
         ContextCompat.registerReceiver(
             this,
             mIntentReceiver,
@@ -167,19 +186,11 @@ class MusicPlaybackService : Service() {
             ContextCompat.RECEIVER_EXPORTED
         )
 
-        // Initialize the delayed shutdown intent
-        val shutdownIntent = Intent(this, MusicPlaybackService::class.java)
-        shutdownIntent.action = SHUTDOWN
-        mAlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager?
-        mShutdownIntent =
-            PendingIntent.getService(this, 0, shutdownIntent, Utils.makeMutablePendingIntent(0))
-
         // Listen for the idle state
         scheduleDelayedShutdown()
         notifyChange(META_CHANGED)
     }
 
-    @Suppress("DEPRECATION")
     private fun setUpRemoteControlClient() {
         mMediaSession =
             MediaSessionCompat(application, resources.getString(R.string.app_name), null, null)
@@ -231,7 +242,7 @@ class MusicPlaybackService : Service() {
                 super.onStop()
                 pause()
                 Logger.d(javaClass.simpleName, "Stopping services. onStop()")
-                stopSelf()
+                terminate()
             }
 
             override fun onSeekTo(pos: Long) {
@@ -240,20 +251,32 @@ class MusicPlaybackService : Service() {
             }
         }
 
-    @Suppress("DEPRECATION")
     override fun onDestroy() {
+        shutdownDelayedDisposable.dispose()
         wakeLock?.release()
+        wakeLock = null
         if (Constants.IS_DEBUG) Logger.d(TAG, "Destroying service")
-        super.onDestroy()
         val audioEffectsIntent = Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)
         audioEffectsIntent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId)
         audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
         sendBroadcast(audioEffectsIntent)
-        mShutdownIntent?.let { mAlarmManager?.cancel(it) }
         mPlayer?.release()
+        mPlayer = null
         mMediaSession?.release()
+        mMediaSession = null
+        mIntentReceiver?.let {
+            try {
+                unregisterReceiver(it)
+            } catch (e: Exception) {
+                if (Constants.IS_DEBUG) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        mIntentReceiver = null
         mNotificationHelper?.killNotification()
-        unregisterReceiver(mIntentReceiver)
+        mNotificationHelper = null
+        super.onDestroy()
     }
 
     /**
@@ -261,28 +284,26 @@ class MusicPlaybackService : Service() {
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (Constants.IS_DEBUG) Logger.d(TAG, "Got new intent $intent, startId = $startId")
-        if (intent != null) {
-            val action = intent.action
-            if (SHUTDOWN == action) {
-                mShutdownScheduled = false
-                releaseServiceUiAndStop()
-                return START_NOT_STICKY
-            }
-            handleCommandIntent(intent)
-            MediaButtonReceiver.handleIntent(mMediaSession, intent)
+        intent?.let {
+            handleCommandIntent(it)
+            MediaButtonReceiver.handleIntent(mMediaSession, it)
         }
         scheduleDelayedShutdown()
         return START_STICKY
     }
 
-    @Suppress("DEPRECATION")
+    internal fun terminate() {
+        if (!stopSelfResult(-1)) {
+            onDestroy()
+        }
+    }
+
     internal fun releaseServiceUiAndStop() {
         if (isPlaying || mAnyActivityInForeground) {
             return
         }
         if (Constants.IS_DEBUG) Logger.d(TAG, "Nothing is playing anymore, releasing notification")
-        mNotificationHelper?.killNotification()
-        stopSelf()
+        terminate()
     }
 
     internal fun handleCommandIntent(intent: Intent) {
@@ -293,7 +314,7 @@ class MusicPlaybackService : Service() {
             "handleCommandIntent: action = $action, command = $command"
         )
         if (SWIPE_DISMISS_ACTION == action) {
-            stopSelf()
+            terminate()
         }
         if (CMDNEXT == command || NEXT_ACTION == action) {
             mTransportController?.skipToNext()
@@ -354,25 +375,20 @@ class MusicPlaybackService : Service() {
     }
 
     private fun scheduleDelayedShutdown() {
+        shutdownDelayedDisposable.dispose()
         if (Constants.IS_DEBUG) Log.v(TAG, "Scheduling shutdown in $IDLE_DELAY ms")
-        mShutdownIntent?.let {
-            mAlarmManager?.set(
-                AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + IDLE_DELAY,
-                it
-            )
-        }
-        mShutdownScheduled = true
+        shutdownDelayedDisposable = Observable.just(Any())
+            .delay(IDLE_DELAY.toLong(), TimeUnit.MILLISECONDS)
+            .toMainThread()
+            .subscribe { terminate() }
     }
 
     private fun cancelShutdown() {
         if (Constants.IS_DEBUG) Logger.d(
             TAG,
-            "Cancelling delayed shutdown, scheduled = $mShutdownScheduled"
+            "Cancelling delayed shutdown"
         )
-        if (mShutdownScheduled) {
-            mShutdownIntent?.let { mAlarmManager?.cancel(it) }
-            mShutdownScheduled = false
-        }
+        shutdownDelayedDisposable.dispose()
     }
 
     /**
@@ -942,12 +958,6 @@ class MusicPlaybackService : Service() {
         notifyChange(REFRESH)
     }
 
-    private val mIntentReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            handleCommandIntent(intent)
-        }
-    }
-
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     private class MultiPlayer(service: MusicPlaybackService) {
         val mService: WeakReference<MusicPlaybackService> = WeakReference(service)
@@ -1146,7 +1156,7 @@ class MusicPlaybackService : Service() {
                         it.errorsCount++
                         if (it.errorsCount > 10) {
                             it.errorsCount = 0
-                            it.stopSelf()
+                            it.terminate()
                         } else {
                             val playbackPos = mCurrentMediaPlayer.currentPosition
                             it.playCurrentTrack(false)

@@ -543,8 +543,6 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         get() = getPreferences(app).getBoolean("recording_to_opus", false)
     override val isDisable_sensored_voice: Boolean
         get() = getPreferences(app).getBoolean("disable_sensored_voice", false)
-    override val isOngoing_player_notification: Boolean
-        get() = getPreferences(app).getBoolean("ongoing_player_notification", false)
     override var isInvertPhotoRev: Boolean
         get() = getPreferences(app).getBoolean("invert_photo_rev", false)
         set(rev) {

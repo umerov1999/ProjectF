@@ -287,9 +287,6 @@ internal class MainSettings(context: Context) : IMainSettings {
             .getStringSet("audio_ext", setOf("mp3", "ogg", "flac", "opus"))!!
     }
 
-    override val isOngoing_player_notification: Boolean
-        get() = getPreferences(app).getBoolean("ongoing_player_notification", false)
-
     @get:ParserType
     override val currentParser: Int
         get() = try {

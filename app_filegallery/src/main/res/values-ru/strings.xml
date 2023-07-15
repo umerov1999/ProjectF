@@ -232,7 +232,6 @@
     <string name="reboot_pc_linux">Перезапуск Linux</string>
     <string name="reset_settings">Сброс настроек</string>
     <string name="wrong_settings_format">Данный формат настроек не поддерживается!</string>
-    <string name="ongoing_player_notification">Непрерывное уведомление</string>
     <string name="files_uploading_notification_title">Загрузка файлов</string>
     <string name="play_remote">Играть через сервер</string>
     <string name="open_folder_new_window">Открывать директории в новом окне</string>

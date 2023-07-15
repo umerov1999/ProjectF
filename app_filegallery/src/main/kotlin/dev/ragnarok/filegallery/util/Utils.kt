@@ -90,6 +90,10 @@ object Utils {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
     }
 
+    fun hasQ(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+    }
+
     fun hasR(): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
     }

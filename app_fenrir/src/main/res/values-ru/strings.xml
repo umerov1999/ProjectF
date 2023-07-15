@@ -1677,7 +1677,6 @@
     <string name="reset_settings">Сброс настроек</string>
     <string name="wrong_settings_format">Данный формат настроек не поддерживается!</string>
     <string name="settings_for_another_client">Настройки для кейта не подходят для обычного клиента и наоборот!</string>
-    <string name="ongoing_player_notification">Непрерывное уведомление</string>
     <string name="group_members">Участники сообщества</string>
     <string name="donut">Доны</string>
     <string name="all">Все</string>

@@ -72,7 +72,6 @@ interface ISettings {
         fun getPlayer_cover_transform(): Int
         fun isDeleteDisabled(): Boolean
         val isValidate_tls: Boolean
-        val isOngoing_player_notification: Boolean
         val isCompress_incoming_traffic: Boolean
         val currentParser: Int
         val isLimitImage_cache: Int

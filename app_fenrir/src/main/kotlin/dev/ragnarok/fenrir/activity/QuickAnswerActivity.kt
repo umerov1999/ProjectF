@@ -58,6 +58,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemeOverlay
+import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.TextingNotifier
@@ -287,6 +288,7 @@ class QuickAnswerActivity : AppCompatActivity() {
         mLiveSubscription.add(
             Observable.just(Any())
                 .delay(1, TimeUnit.MINUTES)
+                .toMainThread()
                 .subscribe { finish() })
     }
 

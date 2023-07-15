@@ -232,7 +232,6 @@
     <string name="reboot_pc_linux">Перазапуск Linux</string>
     <string name="reset_settings">Скід настроек</string>
     <string name="wrong_settings_format">Гэты фармат налад не падтрымліваецца!</string>
-    <string name="ongoing_player_notification">Бесперапыннае апавяшчэнне</string>
     <string name="files_uploading_notification_title">Загрузка файлаў</string>
     <string name="play_remote">Гуляць праз сервер</string>
     <string name="open_folder_new_window">Адкрываць дырэкторыі ў новым акне</string>

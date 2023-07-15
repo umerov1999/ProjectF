@@ -1211,10 +1211,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
             }
 
-            switch("ongoing_player_notification") {
-                titleRes = R.string.ongoing_player_notification
-            }
-
             switch("force_cache") {
                 titleRes = R.string.force_cache
             }

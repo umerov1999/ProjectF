@@ -459,10 +459,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
             }
 
-            switch("ongoing_player_notification") {
-                titleRes = R.string.ongoing_player_notification
-            }
-
             switch("use_long_click_download") {
                 defaultValue = false
                 titleRes = R.string.use_long_click_download

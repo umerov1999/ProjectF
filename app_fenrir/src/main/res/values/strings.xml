@@ -1914,7 +1914,6 @@
     <string name="reset_settings">Reset Settings</string>
     <string name="wrong_settings_format">This setting format is not supported!</string>
     <string name="settings_for_another_client">The settings for a cat are not suitable for a regular client and vice versa!</string>
-    <string name="ongoing_player_notification">Continuous notification</string>
     <string name="group_members">Group Members</string>
     <string name="donut">Donut</string>
     <string name="all">All</string>

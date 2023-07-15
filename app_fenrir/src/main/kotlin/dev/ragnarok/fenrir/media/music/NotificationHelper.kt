@@ -15,14 +15,12 @@ import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels
-import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Utils
 
 class NotificationHelper(private val mService: MusicPlaybackService) {
     private val mNotificationManager: NotificationManager?
     private var mNotificationBuilder: NotificationCompat.Builder? = null
-    private val onGoing = Settings.get().other().isOngoing_player_notification
 
     @Suppress("DEPRECATION")
     fun buildNotification(
@@ -56,47 +54,42 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
                     NotificationCompat.Action(
                         R.drawable.skip_previous,
                         context.resources.getString(R.string.previous),
-                        retreivePlaybackActions(ACTION_PREV)
+                        retrievePlaybackActions(ACTION_PREV)
                     )
                 )
                 .addAction(
                     NotificationCompat.Action(
                         if (isPlaying) R.drawable.pause_notification else R.drawable.play_notification,
                         context.resources.getString(if (isPlaying) R.string.pause else R.string.play),
-                        retreivePlaybackActions(ACTION_PLAY_PAUSE)
+                        retrievePlaybackActions(ACTION_PLAY_PAUSE)
                     )
                 )
                 .addAction(
                     NotificationCompat.Action(
                         R.drawable.skip_next,
                         context.resources.getString(R.string.next),
-                        retreivePlaybackActions(ACTION_NEXT)
+                        retrievePlaybackActions(ACTION_NEXT)
                     )
                 ).addAction(
                     NotificationCompat.Action(
                         R.drawable.close,
                         context.resources.getString(R.string.close),
-                        retreivePlaybackActions(SWIPE_DISMISS_ACTION)
+                        retrievePlaybackActions(SWIPE_DISMISS_ACTION)
                     )
                 )
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            mNotificationBuilder?.setDeleteIntent(retreivePlaybackActions(SWIPE_DISMISS_ACTION))
+            mNotificationBuilder?.setDeleteIntent(retrievePlaybackActions(SWIPE_DISMISS_ACTION))
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             mNotificationBuilder?.priority = NotificationManager.IMPORTANCE_HIGH
         else
             mNotificationBuilder?.priority = Notification.PRIORITY_MAX
         if (isPlaying) {
-            if (onGoing) {
-                mNotificationBuilder?.setOngoing(true)
-            }
             mService.goForeground(
                 FENRIR_MUSIC_SERVICE,
                 mNotificationBuilder?.build(),
                 mNotificationManager
             )
-        } else if (onGoing) {
-            mNotificationBuilder?.setOngoing(false)
         }
     }
 
@@ -119,7 +112,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
             1, NotificationCompat.Action(
                 if (isPlaying) R.drawable.pause_notification else R.drawable.play_notification,
                 null,
-                retreivePlaybackActions(ACTION_PLAY_PAUSE)
+                retrievePlaybackActions(ACTION_PLAY_PAUSE)
             )
         )
         if (AppPerms.hasNotificationPermissionSimple(mService)) {
@@ -138,7 +131,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
         )
     }
 
-    private fun retreivePlaybackActions(which: Int): PendingIntent? {
+    private fun retrievePlaybackActions(which: Int): PendingIntent? {
         val action: Intent
         val pendingIntent: PendingIntent
         val serviceName = ComponentName(mService, MusicPlaybackService::class.java)

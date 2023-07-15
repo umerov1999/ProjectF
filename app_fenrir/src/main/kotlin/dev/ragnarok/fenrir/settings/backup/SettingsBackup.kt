@@ -162,7 +162,6 @@ class SettingsBackup {
         var hidden_peers: Set<String>? = null
         var notif_peer_uids: Set<String>? = null
         var user_name_changes_uids: Set<String>? = null
-        var ongoing_player_notification: Boolean? = null
         var owner_changes_monitor_uids: Set<String>? = null
         var current_parser: String? = null
         var audio_catalog_v2_enable: Boolean? = null
