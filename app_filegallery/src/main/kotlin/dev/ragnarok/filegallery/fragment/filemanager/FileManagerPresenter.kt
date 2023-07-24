@@ -60,14 +60,14 @@ class FileManagerPresenter(
         // Filters based on whether the file is hidden or not
         if (!sel.isDirectory && ret) {
             ret = false
-            for (i in Settings.get().main().photoExt()) {
+            for (i in Settings.get().main().photoExt) {
                 if (sel.extension.contains(i, true)) {
                     ret = true
                     break
                 }
             }
             if (!ret) {
-                for (i in Settings.get().main().audioExt()) {
+                for (i in Settings.get().main().audioExt) {
                     if (sel.extension.contains(i, true)) {
                         ret = true
                         break
@@ -75,7 +75,7 @@ class FileManagerPresenter(
                 }
             }
             if (!ret) {
-                for (i in Settings.get().main().videoExt()) {
+                for (i in Settings.get().main().videoExt) {
                     if (sel.extension.contains(i, true)) {
                         ret = true
                         break
@@ -329,7 +329,7 @@ class FileManagerPresenter(
     }
 
     private fun getFolderFilesCount(file: File): Long {
-        if (!Settings.get().main().isEnable_dirs_files_count()) {
+        if (!Settings.get().main().isEnable_dirs_files_count) {
             return -1
         }
         return file.listFiles()?.size?.toLong() ?: -1
@@ -672,17 +672,17 @@ class FileManagerPresenter(
         if (file.isDirectory) {
             return FileType.folder
         }
-        for (i in Settings.get().main().photoExt()) {
+        for (i in Settings.get().main().photoExt) {
             if (file.extension.contains(i, true)) {
                 return FileType.photo
             }
         }
-        for (i in Settings.get().main().videoExt()) {
+        for (i in Settings.get().main().videoExt) {
             if (file.extension.contains(i, true)) {
                 return FileType.video
             }
         }
-        for (i in Settings.get().main().audioExt()) {
+        for (i in Settings.get().main().audioExt) {
             if (file.extension.contains(i, true)) {
                 return FileType.audio
             }

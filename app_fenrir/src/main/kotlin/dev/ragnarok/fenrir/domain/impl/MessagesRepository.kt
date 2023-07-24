@@ -82,7 +82,7 @@ import dev.ragnarok.fenrir.util.VKOwnIds
 import dev.ragnarok.fenrir.util.WeakMainLooperHandler
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
-import dev.ragnarok.fenrir.util.serializeble.json.decodeFromStream
+import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
@@ -91,6 +91,8 @@ import io.reactivex.rxjava3.core.SingleTransformer
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.processors.PublishProcessor
 import io.reactivex.rxjava3.schedulers.Schedulers
+import okio.buffer
+import okio.source
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -548,7 +550,12 @@ class MessagesRepository(
                         it
                     )
                 }
-            val resp = b?.let { kJson.decodeFromStream(ChatJsonResponse.serializer(), it) }
+            val resp = b?.let {
+                kJson.decodeFromBufferedSource(
+                    ChatJsonResponse.serializer(),
+                    it.source().buffer()
+                )
+            }
             b?.close()
             if (resp == null || resp.page_title.isNullOrEmpty()) {
                 its.tryOnError(Throwable("parsing error"))
@@ -1780,7 +1787,7 @@ class MessagesRepository(
                 }, ignore())
         )
         compositeDisposable.add(
-            accountsSettings.observeRegistered()
+            accountsSettings.observeRegistered
                 .observeOn(provideMainThreadScheduler())
                 .subscribe({ onAccountsChanged() }, ignore())
         )

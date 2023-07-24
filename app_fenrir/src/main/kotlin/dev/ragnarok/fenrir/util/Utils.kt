@@ -81,7 +81,8 @@ import kotlin.math.roundToInt
 object Utils {
     private val reload_news: MutableList<Long> = LinkedList()
     private val reload_dialogs: MutableList<Long> = LinkedList()
-    private val cachedMyStickers: MutableList<LocalSticker> = ArrayList()
+    private val cachedMyStickers: MutableList<LocalSticker> = LinkedList()
+    private val registeredParcels: MutableSet<Long> = HashSet()
     var follower_kick_mode = false
     private val displaySize = Point()
     private var device_id: String? = null
@@ -97,6 +98,18 @@ object Utils {
 
     fun getCachedMyStickers(): MutableList<LocalSticker> {
         return cachedMyStickers
+    }
+
+    fun registerParcelNative(pointer: Long) {
+        registeredParcels.add(pointer)
+    }
+
+    fun unregisterParcelNative(pointer: Long) {
+        registeredParcels.remove(pointer)
+    }
+
+    fun isParcelNativeRegistered(pointer: Long): Boolean {
+        return registeredParcels.contains(pointer)
     }
 
     /*

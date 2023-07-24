@@ -59,13 +59,13 @@ class ProxyManagerPresenter(savedInstanceState: Bundle?) :
     }
 
     init {
-        appendDisposable(settings.observeAdding()
+        appendDisposable(settings.observeAdding
             .observeOn(provideMainThreadScheduler())
             .subscribe { onProxyAdded(it) })
-        appendDisposable(settings.observeRemoving()
+        appendDisposable(settings.observeRemoving
             .observeOn(provideMainThreadScheduler())
             .subscribe { onProxyDeleted(it) })
-        appendDisposable(settings.observeActive()
+        appendDisposable(settings.observeActive
             .observeOn(provideMainThreadScheduler())
             .subscribe { onActiveChanged(it.get()) })
     }

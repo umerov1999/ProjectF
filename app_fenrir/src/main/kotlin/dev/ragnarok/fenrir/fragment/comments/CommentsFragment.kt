@@ -683,7 +683,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
             }
 
             R.id.direction -> {
-                val decs = Settings.get().other().toggleCommentsDirection()
+                val decs = Settings.get().other().toggleCommentsDirection
                 menuItem.setIcon(getDirectionIcon(decs))
                 presenter?.fireDirectionChanged()
                 return true

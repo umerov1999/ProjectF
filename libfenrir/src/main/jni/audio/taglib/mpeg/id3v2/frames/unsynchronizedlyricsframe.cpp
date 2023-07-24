@@ -27,10 +27,10 @@
  ***************************************************************************/
 
 #include "unsynchronizedlyricsframe.h"
-#include <tbytevectorlist.h>
-#include <id3v2tag.h>
-#include <tdebug.h>
-#include <tpropertymap.h>
+#include "tbytevectorlist.h"
+#include "id3v2tag.h"
+#include "tdebug.h"
+#include "tpropertymap.h"
 
 using namespace TagLib;
 using namespace ID3v2;
@@ -127,14 +127,14 @@ PropertyMap UnsynchronizedLyricsFrame::asProperties() const
 
 UnsynchronizedLyricsFrame *UnsynchronizedLyricsFrame::findByDescription(const ID3v2::Tag *tag, const String &d) // static
 {
-  ID3v2::FrameList lyrics = tag->frameList("USLT");
+  const ID3v2::FrameList lyrics = tag->frameList("USLT");
 
-  for(ID3v2::FrameList::ConstIterator it = lyrics.begin(); it != lyrics.end(); ++it){
-    UnsynchronizedLyricsFrame *frame = dynamic_cast<UnsynchronizedLyricsFrame *>(*it);
+  for(auto it = lyrics.begin(); it != lyrics.end(); ++it){
+    auto frame = dynamic_cast<UnsynchronizedLyricsFrame *>(*it);
     if(frame && frame->description() == d)
       return frame;
   }
-  return 0;
+  return nullptr;
 }
 ////////////////////////////////////////////////////////////////////////////////
 // protected members

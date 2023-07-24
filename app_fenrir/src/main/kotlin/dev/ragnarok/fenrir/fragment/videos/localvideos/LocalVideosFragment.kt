@@ -69,7 +69,7 @@ class LocalVideosFragment : BaseMvpFragment<LocalVideosPresenter, ILocalVideosVi
         val manager: RecyclerView.LayoutManager = GridLayoutManager(requireActivity(), columnCount)
         mRecyclerView = view.findViewById(R.id.list)
         mRecyclerView?.layoutManager = manager
-        mRecyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(LocalPhotosAdapter.TAG))
+        PicassoPauseOnScrollListener.addListener(mRecyclerView, LocalPhotosAdapter.TAG)
         mEmptyTextView = view.findViewById(R.id.empty)
         fabAttach = view.findViewById(R.id.fr_video_gallery_attach)
         fabAttach?.setOnClickListener {

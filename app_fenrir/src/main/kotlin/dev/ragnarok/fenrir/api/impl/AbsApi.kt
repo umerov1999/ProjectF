@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.api.rest.IServiceRest
 import dev.ragnarok.fenrir.service.ApiErrorCodes
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.refresh.RefreshToken
-import dev.ragnarok.fenrir.util.serializeble.json.decodeFromStream
+import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
@@ -71,8 +71,8 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
             .map { response ->
                 val k = if (response.body.isMsgPack()) MsgPack().decodeFromOkioStream(
                     serializerType, response.body.source()
-                ) as BaseResponse<T> else kJson.decodeFromStream(
-                    serializerType, response.body.byteStream()
+                ) as BaseResponse<T> else kJson.decodeFromBufferedSource(
+                    serializerType, response.body.source()
                 ) as BaseResponse<T>
                 k.error?.let {
                     it.serializer = serializerType
@@ -129,7 +129,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                 if (it.body.isMsgPack()) MsgPack().decodeFromOkioStream(
                     VKResponse.serializer(),
                     it.body.source()
-                ) else kJson.decodeFromStream(VKResponse.serializer(), it.body.byteStream())
+                ) else kJson.decodeFromBufferedSource(VKResponse.serializer(), it.body.source())
             }
     }
 
@@ -222,7 +222,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                     var method = it["post_url"]
                     if ("empty" == method) {
                         method = "https://" + Settings.get()
-                            .other().get_Api_Domain() + "/method/" + it["method"]
+                            .other().apiDomain + "/method/" + it["method"]
                     }
                     return@Function rawVKRequest<T>(
                         method,
@@ -254,7 +254,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                     var method = it["post_url"]
                     if ("empty" == method) {
                         method = "https://" + Settings.get()
-                            .other().get_Api_Domain() + "/method/" + it["method"]
+                            .other().apiDomain + "/method/" + it["method"]
                     }
                     return@Function rawVKRequestOnly(method, params)
                         .map(checkResponseWithErrorHandling())

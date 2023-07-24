@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
@@ -83,7 +82,7 @@ class CatalogV2SectionFragment :
         recyclerView = root.findViewById(R.id.recycleView)
         recyclerView?.layoutManager = LinearLayoutManager(requireActivity())
         //recyclerView.setRecycledViewPool(CatalogV2SectionAdapter.poolCatalogV2Section)
-        recyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))
+        PicassoPauseOnScrollListener.addListener(recyclerView)
         recyclerView?.addOnScrollListener(object : EndlessRecyclerOnScrollListener(4, 1000) {
             override fun onScrollToLastElement() {
                 presenter?.onNext()

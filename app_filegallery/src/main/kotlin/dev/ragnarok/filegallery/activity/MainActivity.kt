@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
 import android.view.MenuItem
-import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -22,6 +21,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
 
         savedInstanceState ?: run {
             if (Settings.get().security().isUsePinForEntrance && Settings.get().security()
-                    .hasPinHash()
+                    .hasPinHash
             ) {
                 startEnterPinActivity()
             } else {
@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         supportFragmentManager.addOnBackStackChangedListener(mOnBackStackChangedListener)
         resolveToolbarNavigationIcon()
         savedInstanceState ?: run {
-            if (Settings.get().main().getLocalServer().enabled_audio_local_sync) {
+            if (Settings.get().main().localServer.enabled_audio_local_sync) {
                 mCompositeDisposable.add(MusicPlaybackController.tracksExist.findAllAudios(
                     this
                 )
@@ -162,7 +162,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                     .subscribe(
                         RxUtils.dummy()
                     ) { t: Throwable? ->
-                        if (Settings.get().main().isDeveloper_mode()) {
+                        if (Settings.get().main().isDeveloper_mode) {
                             createCustomToast(
                                 this,
                                 mViewFragment,
@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                 .subscribe(
                     RxUtils.dummy()
                 ) { t: Throwable? ->
-                    if (Settings.get().main().isDeveloper_mode()) {
+                    if (Settings.get().main().isDeveloper_mode) {
                         createCustomToast(this, mViewFragment, mBottomNavigation)
                             ?.showToastThrowable(t)
                     }
@@ -276,11 +276,11 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                     when {
                         option.id == 0 -> {
                             if (Settings.get().main()
-                                    .getNightMode() == AppCompatDelegate.MODE_NIGHT_YES || Settings.get()
+                                    .nightMode == AppCompatDelegate.MODE_NIGHT_YES || Settings.get()
                                     .main()
-                                    .getNightMode() == AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY || Settings.get()
+                                    .nightMode == AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY || Settings.get()
                                     .main()
-                                    .getNightMode() == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                                    .nightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                             ) {
                                 Settings.get().main()
                                     .switchNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -344,31 +344,17 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
         val statusbarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
         @ColorInt val navigationColor =
             if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor
-        if (Utils.hasMarshmallow()) {
-            var flags = window.decorView.systemUiVisibility
-            flags = if (invertIcons) {
-                flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            } else {
-                flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-            }
-            window.decorView.systemUiVisibility = flags
-        }
-        if (Utils.hasOreo()) {
-            var flags = window.decorView.systemUiVisibility
-            if (invertIcons) {
-                flags = flags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                w.decorView.systemUiVisibility = flags
-                w.navigationBarColor = Color.WHITE
-            } else {
-                flags = flags and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
-                w.decorView.systemUiVisibility = flags
-            }
+        val ins = WindowInsetsControllerCompat(w, w.decorView)
+        ins.isAppearanceLightStatusBars = invertIcons
+        ins.isAppearanceLightNavigationBars = invertIcons
+
+        if (!Utils.hasMarshmallow()) {
+            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         }
     }
 
@@ -553,7 +539,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
             }
 
             SectionItem.LOCAL_SERVER -> {
-                if (!Settings.get().main().getLocalServer().enabled) {
+                if (!Settings.get().main().localServer.enabled) {
                     createCustomToast(this, mViewFragment, mBottomNavigation)
                         ?.setDuration(Toast.LENGTH_SHORT)
                         ?.showToastError(R.string.local_server_need_enable)

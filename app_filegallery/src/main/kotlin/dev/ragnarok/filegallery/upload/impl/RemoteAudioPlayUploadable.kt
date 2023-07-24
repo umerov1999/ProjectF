@@ -25,7 +25,7 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
         listener: PercentagePublisher?
     ): Single<UploadResult<Audio>> {
         var inputStream: InputStream? = null
-        val local_settings = Settings.get().main().getLocalServer()
+        val local_settings = Settings.get().main().localServer
         return try {
             var server_url = firstNonEmptyString(
                 local_settings.url,

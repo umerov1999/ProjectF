@@ -696,7 +696,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     private fun doUploadStoryFile(context: Context, file: String) {
-        for (i in Settings.get().other().photoExt()) {
+        for (i in Settings.get().other().photoExt) {
             if (file.endsWith(i, true)) {
                 Uri.fromFile(
                     File(
@@ -706,7 +706,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
                 return
             }
         }
-        for (i in Settings.get().other().videoExt()) {
+        for (i in Settings.get().other().videoExt) {
             if (file.endsWith(i, true)) {
                 doUploadStoryFile(
                     file,

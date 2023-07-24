@@ -107,7 +107,7 @@ open class PhotoPagerPresenter internal constructor(
     }
 
     fun fireSaveOnDriveClick(): Boolean {
-        if (!get().main().isDownload_photo_tap()) {
+        if (!get().main().isDownload_photo_tap) {
             return true
         }
         if (current.isGif && current.photo_url != null && !current.photo_url!!.endsWith(
@@ -127,7 +127,7 @@ open class PhotoPagerPresenter internal constructor(
         if (current.inLocal()) {
             return true
         }
-        val dir = File(get().main().getPhotoDir())
+        val dir = File(get().main().photoDir)
         if (!dir.isDirectory) {
             val created = dir.mkdirs()
             if (!created) {
@@ -225,7 +225,7 @@ open class PhotoPagerPresenter internal constructor(
 
     private fun DownloadResult(Prefix: String?, diru: File, photo: Photo) {
         var dir = diru
-        if (Prefix != null && get().main().isPhoto_to_user_dir()) {
+        if (Prefix != null && get().main().isPhoto_to_user_dir) {
             val dir_final = File(dir.absolutePath + "/" + Prefix)
             if (!dir_final.isDirectory) {
                 val created = dir_final.mkdirs()

@@ -89,7 +89,7 @@ class PushRegistrationResolver(
                     completable = completable.andThen(register(current))
                 }
                 completable
-                    .doOnComplete { settings.pushSettings().savePushRegistations(target) }
+                    .doOnComplete { settings.pushSettings().savePushRegistrations(target) }
                     .doOnComplete { d(TAG, "Register success") }
                     .doOnError { throwable -> d(TAG, "Register error, t: $throwable") }
             }

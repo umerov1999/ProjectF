@@ -164,7 +164,7 @@ object MusicPlaybackController {
 
     val miniPlayerVisibility: Boolean
         get() {
-            if (!Settings.get().main().isShow_mini_player()) return false
+            if (!Settings.get().main().isShow_mini_player) return false
             try {
                 return mService?.miniplayerVisibility == true
             } catch (ignored: Exception) {

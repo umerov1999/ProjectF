@@ -13,7 +13,11 @@ class TmpGalleryPagerPresenter(
     savedInstanceState: Bundle?
 ) : PhotoPagerPresenter(ArrayList(0), savedInstanceState) {
     override fun close() {
-        view?.returnFileInfo(currentFile)
+        if (mPhotos.isEmpty()) {
+            view?.closeOnly()
+        } else {
+            view?.returnFileInfo(currentFile)
+        }
     }
 
     private fun onInitialLoadingFinished(photos: List<Photo>) {

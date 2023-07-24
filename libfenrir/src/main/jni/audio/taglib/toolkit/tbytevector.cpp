@@ -23,6 +23,8 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
+#include "tbytevector.h"
+
 #include <algorithm>
 #include <iostream>
 #include <limits>
@@ -30,12 +32,10 @@
 #include <cstdio>
 #include <cstring>
 
-#include <tstring.h>
-#include <tdebug.h>
-#include <trefcounter.h>
-#include <tutils.h>
-
-#include "tbytevector.h"
+#include "tstring.h"
+#include "tdebug.h"
+#include "trefcounter.h"
+#include "tutils.h"
 
 // This is a bit ugly to keep writing over and over again.
 
@@ -392,12 +392,12 @@ ByteVector &ByteVector::setData(const char *data)
 char *ByteVector::data()
 {
   detach();
-  return (size() > 0) ? (&(*d->data)[d->offset]) : 0;
+  return (size() > 0) ? (&(*d->data)[d->offset]) : nullptr;
 }
 
 const char *ByteVector::data() const
 {
-  return (size() > 0) ? (&(*d->data)[d->offset]) : 0;
+  return (size() > 0) ? (&(*d->data)[d->offset]) : nullptr;
 }
 
 ByteVector ByteVector::mid(unsigned int index, unsigned int length) const
@@ -467,7 +467,7 @@ ByteVector &ByteVector::replace(char oldByte, char newByte)
 {
   detach();
 
-  for(ByteVector::Iterator it = begin(); it != end(); ++it) {
+  for(auto it = begin(); it != end(); ++it) {
     if(*it == oldByte)
       *it = newByte;
   }
@@ -616,6 +616,11 @@ ByteVector::ConstIterator ByteVector::begin() const
   return d->data->begin() + d->offset;
 }
 
+ByteVector::ConstIterator ByteVector::cbegin() const
+{
+  return d->data->cbegin() + d->offset;
+}
+
 ByteVector::Iterator ByteVector::end()
 {
   detach();
@@ -625,6 +630,11 @@ ByteVector::Iterator ByteVector::end()
 ByteVector::ConstIterator ByteVector::end() const
 {
   return d->data->begin() + d->offset + d->length;
+}
+
+ByteVector::ConstIterator ByteVector::cend() const
+{
+  return d->data->cbegin() + d->offset + d->length;
 }
 
 ByteVector::ReverseIterator ByteVector::rbegin()
@@ -858,8 +868,8 @@ ByteVector ByteVector::fromBase64(const ByteVector & input)
 
   ByteVector output(len);
 
-  const unsigned char * src = reinterpret_cast<const unsigned char*>(input.data());
-  unsigned char *       dst = reinterpret_cast<unsigned char*>(output.data());
+  auto src = reinterpret_cast<const unsigned char*>(input.data());
+  auto dst = reinterpret_cast<unsigned char*>(output.data());
 
   while(4 <= len) {
 

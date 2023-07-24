@@ -24,10 +24,10 @@
  ***************************************************************************/
 
 #include "eventtimingcodesframe.h"
-#include <tbytevectorlist.h>
-#include <id3v2tag.h>
-#include <tdebug.h>
-#include <tpropertymap.h>
+#include "tbytevectorlist.h"
+#include "id3v2tag.h"
+#include "tdebug.h"
+#include "tpropertymap.h"
 
 using namespace TagLib;
 using namespace ID3v2;
@@ -109,7 +109,7 @@ void EventTimingCodesFrame::parseFields(const ByteVector &data)
   int pos = 1;
   d->synchedEvents.clear();
   while(pos + 4 < end) {
-    EventType type = static_cast<EventType>(static_cast<unsigned char>(data[pos++]));
+    auto type = static_cast<EventType>(static_cast<unsigned char>(data[pos++]));
     unsigned int time = data.toUInt(pos, true);
     pos += 4;
     d->synchedEvents.append(SynchedEvent(time, type));
@@ -121,9 +121,7 @@ ByteVector EventTimingCodesFrame::renderFields() const
   ByteVector v;
 
   v.append(static_cast<char>(d->timestampFormat));
-  for(SynchedEventList::ConstIterator it = d->synchedEvents.begin();
-      it != d->synchedEvents.end();
-      ++it) {
+  for(auto it = d->synchedEvents.cbegin(); it != d->synchedEvents.cend(); ++it) {
     const SynchedEvent &entry = *it;
     v.append(static_cast<char>(entry.type));
     v.append(ByteVector::fromUInt(entry.time));

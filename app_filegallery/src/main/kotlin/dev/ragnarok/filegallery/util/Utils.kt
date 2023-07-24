@@ -40,6 +40,7 @@ import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 object Utils {
+    private val registeredParcels: MutableSet<Long> = HashSet()
     var isCompressIncomingTraffic = true
     var currentParser = 0
     private val displaySize = Point()
@@ -48,6 +49,18 @@ object Utils {
 
     var shouldSelectPhoto = false
     val listSelected: ArrayList<String> = ArrayList()
+
+    fun registerParcelNative(pointer: Long) {
+        registeredParcels.add(pointer)
+    }
+
+    fun unregisterParcelNative(pointer: Long) {
+        registeredParcels.remove(pointer)
+    }
+
+    fun isParcelNativeRegistered(pointer: Long): Boolean {
+        return registeredParcels.contains(pointer)
+    }
 
     fun stringEmptyIfNull(orig: String?): String {
         return orig ?: ""
@@ -400,7 +413,7 @@ object Utils {
         get() = getLocaleSettings(get().main().language)
 
     fun updateActivityContext(base: Context): Context {
-        val size = get().main().getFontSize()
+        val size = get().main().fontSize
         @Lang val lang = get().main().language
         val locale = getLocaleSettings(lang)
         updateDateLang(locale)

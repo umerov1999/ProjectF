@@ -23,9 +23,9 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <taglib_config.h>
-
 #include "trefcounter.h"
+
+#include "taglib_config.h"
 
 #if defined(HAVE_GCC_ATOMIC)
 # define ATOMIC_INT int

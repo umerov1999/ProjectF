@@ -245,4 +245,5 @@
     <string name="start_select_mode">Режим выбора</string>
     <string name="end_select_mode">Завершить выбор</string>
     <string name="send_action">Отправить</string>
+    <string name="instant_photo_display">Мгновенный показ фото</string>
 </resources>

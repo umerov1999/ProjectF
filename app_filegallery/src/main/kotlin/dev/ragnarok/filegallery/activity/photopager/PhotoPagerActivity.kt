@@ -18,6 +18,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.core.view.MenuProvider
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -107,7 +108,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     private var mToolbar: Toolbar? = null
     private var mPreviewsRecycler: RecyclerView? = null
     private var mPagerAdapter: Adapter? = null
-    private val bShowPhotosLine = Settings.get().main().isShow_photos_line()
+    private val bShowPhotosLine = Settings.get().main().isShow_photos_line
     private val mAdapterRecycler = ImageListAdapter()
     private var isLocalPhoto = false
 
@@ -167,7 +168,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         mViewPager = findViewById(R.id.view_pager)
         mViewPager?.setPageTransformer(
             Utils.createPageTransform(
-                Settings.get().main().getViewpager_page_transform()
+                Settings.get().main().viewpager_page_transform
             )
         )
 
@@ -279,8 +280,12 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             override fun create(): PhotoPagerPresenter {
                 when (requireArguments().getInt(Extra.PLACE_TYPE)) {
                     Place.PHOTO_LOCAL_SERVER -> {
-                        val source: Long = requireArguments().getLong(EXTRA_PHOTOS)
+                        var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
                         requireArguments().putLong(EXTRA_PHOTOS, 0)
+                        if (!Utils.isParcelNativeRegistered(source)) {
+                            source = 0
+                        }
+                        Utils.unregisterParcelNative(source)
                         return PhotoAlbumPagerPresenter(
                             requireArguments().getInt(Extra.INDEX),
                             source,
@@ -290,8 +295,12 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     }
 
                     Place.PHOTO_LOCAL -> {
-                        val source: Long = requireArguments().getLong(EXTRA_PHOTOS)
+                        var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
                         requireArguments().putLong(EXTRA_PHOTOS, 0)
+                        if (!Utils.isParcelNativeRegistered(source)) {
+                            source = 0
+                        }
+                        Utils.unregisterParcelNative(source)
                         return TmpGalleryPagerPresenter(
                             source,
                             requireArguments().getInt(Extra.INDEX),
@@ -427,31 +436,17 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
         val statusbarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
         @ColorInt val navigationColor =
             if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor
-        if (Utils.hasMarshmallow()) {
-            var flags = window.decorView.systemUiVisibility
-            flags = if (invertIcons) {
-                flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            } else {
-                flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-            }
-            window.decorView.systemUiVisibility = flags
-        }
-        if (Utils.hasOreo()) {
-            var flags = window.decorView.systemUiVisibility
-            if (invertIcons) {
-                flags = flags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                w.decorView.systemUiVisibility = flags
-                w.navigationBarColor = Color.WHITE
-            } else {
-                flags = flags and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
-                w.decorView.systemUiVisibility = flags
-            }
+        val ins = WindowInsetsControllerCompat(w, w.decorView)
+        ins.isAppearanceLightStatusBars = invertIcons
+        ins.isAppearanceLightNavigationBars = invertIcons
+
+        if (!Utils.hasMarshmallow()) {
+            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         }
     }
 

@@ -13,11 +13,11 @@ interface ISettings {
     fun main(): IMainSettings
     fun security(): ISecuritySettings
     interface IMainSettings {
-        fun getFontSize(): Int
+        val fontSize: Int
 
         @ThemeOverlay
-        fun getThemeOverlay(): Int
-        fun getMainThemeKey(): String
+        val themeOverlay: Int
+        val mainThemeKey: String
         fun setMainTheme(key: String)
         fun switchNightMode(@AppCompatDelegate.NightMode key: Int)
         fun isDarkModeEnabled(context: Context): Boolean
@@ -26,51 +26,52 @@ interface ISettings {
         val language: Int
 
         @AppCompatDelegate.NightMode
-        fun getNightMode(): Int
-        fun isDeveloper_mode(): Boolean
+        val nightMode: Int
+        val isDeveloper_mode: Boolean
         val isOpen_folder_new_window: Boolean
-        fun isEnable_dirs_files_count(): Boolean
+        val isEnable_dirs_files_count: Boolean
 
-        fun getMusicDir(): String
-        fun getPhotoDir(): String
-        fun getVideoDir(): String
+        val musicDir: String
+        val photoDir: String
+        val videoDir: String
 
-        fun getLocalServer(): LocalServerSettings
+        val localServer: LocalServerSettings
         fun setLocalServer(settings: LocalServerSettings)
         fun updateLocalServer()
-        fun getPlayerCoverBackgroundSettings(): PlayerCoverBackgroundSettings
+        val playerCoverBackgroundSettings: PlayerCoverBackgroundSettings
         fun setPlayerCoverBackgroundSettings(settings: PlayerCoverBackgroundSettings)
-        fun getSlidrSettings(): SlidrSettings
+        val slidrSettings: SlidrSettings
         fun setSlidrSettings(settings: SlidrSettings)
-        fun getMusicLifecycle(): Int
+        val musicLifecycle: Int
 
-        fun getMaxBitmapResolution(): Int
-        fun getMaxThumbResolution(): Int
-        fun getRendering_mode(): Int
-        fun getFFmpegPlugin(): Int
+        val maxBitmapResolution: Int
+        val maxThumbResolution: Int
+        val rendering_mode: Int
+        val fFmpegPlugin: Int
 
-        fun isUse_internal_downloader(): Boolean
+        val isUse_internal_downloader: Boolean
 
-        fun isPlayer_Has_Background(): Boolean
-        fun isShow_mini_player(): Boolean
+        val isPlayer_Has_Background: Boolean
+        val isShow_mini_player: Boolean
 
-        fun observeLocalServer(): Observable<LocalServerSettings>
-        fun isShow_photos_line(): Boolean
-        fun isDownload_photo_tap(): Boolean
-        fun isAudio_round_icon(): Boolean
-        fun isPhoto_to_user_dir(): Boolean
-        fun isVideo_swipes(): Boolean
-        fun isVideo_controller_to_decor(): Boolean
-        fun isUse_stop_audio(): Boolean
-        fun isRevert_play_audio(): Boolean
+        val observeLocalServer: Observable<LocalServerSettings>
+        val isShow_photos_line: Boolean
+        val isInstant_photo_display: Boolean
+        val isDownload_photo_tap: Boolean
+        val isAudio_round_icon: Boolean
+        val isPhoto_to_user_dir: Boolean
+        val isVideo_swipes: Boolean
+        val isVideo_controller_to_decor: Boolean
+        val isUse_stop_audio: Boolean
+        val isRevert_play_audio: Boolean
 
-        fun videoExt(): Set<String>
-        fun photoExt(): Set<String>
-        fun audioExt(): Set<String>
+        val videoExt: Set<String>
+        val photoExt: Set<String>
+        val audioExt: Set<String>
 
-        fun getViewpager_page_transform(): Int
-        fun getPlayer_cover_transform(): Int
-        fun isDeleteDisabled(): Boolean
+        val viewpager_page_transform: Int
+        val player_cover_transform: Int
+        val isDeleteDisabled: Boolean
         val isValidate_tls: Boolean
         val isCompress_incoming_traffic: Boolean
         val currentParser: Int
@@ -85,8 +86,8 @@ interface ISettings {
         fun firePinAttemptNow()
         fun clearPinHistory()
         val pinEnterHistory: List<Long>
-        fun hasPinHash(): Boolean
-        fun pinHistoryDepthValue(): Int
+        val hasPinHash: Boolean
+        val pinHistoryDepthValue: Int
         fun updateLastPinTime()
         var isUsePinForEntrance: Boolean
     }

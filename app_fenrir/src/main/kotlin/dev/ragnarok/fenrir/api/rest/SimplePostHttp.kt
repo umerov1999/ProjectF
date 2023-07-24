@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.isJson
 import dev.ragnarok.fenrir.isMsgPack
 import dev.ragnarok.fenrir.kJson
-import dev.ragnarok.fenrir.util.serializeble.json.decodeFromStream
+import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Single
 import kotlinx.serialization.KSerializer
@@ -64,8 +64,8 @@ class SimplePostHttp(
                 } else {
                     val ret = if (response.body.isMsgPack()) MsgPack().decodeFromOkioStream(
                         VKUrlResponse.serializer(), response.body.source()
-                    ) else if (response.body.isJson()) kJson.decodeFromStream(
-                        VKUrlResponse.serializer(), response.body.byteStream()
+                    ) else if (response.body.isJson()) kJson.decodeFromBufferedSource(
+                        VKUrlResponse.serializer(), response.body.source()
                     ) else {
                         throw UnsupportedOperationException()
                     }
@@ -117,8 +117,8 @@ class SimplePostHttp(
                 } else {
                     val ret = if (response.body.isMsgPack()) MsgPack().decodeFromOkioStream(
                         serial, response.body.source()
-                    ) else kJson.decodeFromStream(
-                        serial, response.body.byteStream()
+                    ) else kJson.decodeFromBufferedSource(
+                        serial, response.body.source()
                     )
                     if (ret is VKResponse) {
                         ret.error?.let {

@@ -118,7 +118,7 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
         mDrawerItems?.addAll(generateNavDrawerItems())
         mCompositeDisposable.add(
             Settings.get().sideDrawerSettings()
-                .observeChanges()
+                .observeChanges
                 .observeOn(provideMainThreadScheduler())
                 .subscribe { refreshNavigationItems(it) })
         val inflater = LayoutInflater.from(context)

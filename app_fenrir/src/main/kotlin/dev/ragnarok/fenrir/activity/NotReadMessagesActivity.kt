@@ -3,10 +3,10 @@ package dev.ragnarok.fenrir.activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.ColorInt
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import dev.ragnarok.fenrir.Extra
@@ -184,31 +184,17 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
         val statusbarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
         @ColorInt val navigationColor =
             if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor
-        if (Utils.hasMarshmallow()) {
-            var flags = window.decorView.systemUiVisibility
-            flags = if (invertIcons) {
-                flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            } else {
-                flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-            }
-            window.decorView.systemUiVisibility = flags
-        }
-        if (Utils.hasOreo()) {
-            var flags = window.decorView.systemUiVisibility
-            if (invertIcons) {
-                flags = flags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                w.decorView.systemUiVisibility = flags
-                w.navigationBarColor = Color.WHITE
-            } else {
-                flags = flags and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
-                w.decorView.systemUiVisibility = flags
-            }
+        val ins = WindowInsetsControllerCompat(w, w.decorView)
+        ins.isAppearanceLightStatusBars = invertIcons
+        ins.isAppearanceLightNavigationBars = invertIcons
+
+        if (!Utils.hasMarshmallow()) {
+            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         }
     }
 

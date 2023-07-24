@@ -54,7 +54,7 @@ import dev.ragnarok.fenrir.util.serializeble.json.Json
 import dev.ragnarok.fenrir.util.serializeble.json.JsonArrayBuilder
 import dev.ragnarok.fenrir.util.serializeble.json.JsonObjectBuilder
 import dev.ragnarok.fenrir.util.serializeble.json.contentOrNull
-import dev.ragnarok.fenrir.util.serializeble.json.decodeFromStream
+import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import dev.ragnarok.fenrir.util.serializeble.json.intOrNull
 import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
 import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
@@ -71,8 +71,9 @@ import kotlinx.serialization.builtins.ListSerializer
 import okhttp3.FormBody
 import okhttp3.Request
 import okhttp3.Response
+import okio.buffer
+import okio.source
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 
 class AccountsPresenter(savedInstanceState: Bundle?) :
@@ -393,7 +394,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 path
             )
             if (file.exists()) {
-                val elem = kJson.parseToJsonElement(FileInputStream(file)).jsonObject
+                val elem = kJson.parseToJsonElement(file.source().buffer()).jsonObject
 
                 val exchangeToken = elem["exchange_token"]?.asPrimitiveSafe?.contentOrNull
                     ?: return
@@ -460,7 +461,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 path
             )
             if (file.exists()) {
-                val obj = kJson.parseToJsonElement(FileInputStream(file)).jsonObject
+                val obj = kJson.parseToJsonElement(file.source().buffer()).jsonObject
                 if (obj["app"]?.asJsonObjectSafe?.get("settings_format")?.asPrimitiveSafe?.intOrNull != Constants.EXPORT_SETTINGS_FORMAT) {
                     view?.customToast?.setDuration(Toast.LENGTH_LONG)
                         ?.showToastError(R.string.wrong_settings_format)
@@ -673,7 +674,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                         val request: Request = Request.Builder()
                             .url(
                                 "https://" + Settings.get().other()
-                                    .get_Api_Domain() + "/method/users.get"
+                                    .apiDomain + "/method/users.get"
                             )
                             .post(bodyBuilder.build())
                             .build()
@@ -694,7 +695,9 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 }
                 .map<BaseResponse<List<VKApiUser>>> {
                     if (it.body.isMsgPack()
-                    ) MsgPack.decodeFromOkioStream(it.body.source()) else kJson.decodeFromStream(it.body.byteStream())
+                    ) MsgPack.decodeFromOkioStream(it.body.source()) else kJson.decodeFromBufferedSource(
+                        it.body.source()
+                    )
                 }.map { it1 ->
                     it1.error.requireNonNull {
                         throw Exceptions.propagate(ApiException(it))

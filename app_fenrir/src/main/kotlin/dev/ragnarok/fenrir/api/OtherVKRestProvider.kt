@@ -64,7 +64,7 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
             ProxyUtil.applyProxyConfig(builder, proxySettings.activeProxy)
             HttpLoggerAndParser.adjust(builder)
             HttpLoggerAndParser.configureToIgnoreCertificates(builder)
-            SimplePostHttp("https://" + Settings.get().other().get_Auth_Domain(), builder)
+            SimplePostHttp("https://" + Settings.get().other().authDomain, builder)
         }
     }
 
@@ -88,7 +88,7 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
             HttpLoggerAndParser.adjust(builder)
             HttpLoggerAndParser.configureToIgnoreCertificates(builder)
             SimplePostHttp(
-                "https://" + Settings.get().other().get_Api_Domain() + "/method",
+                "https://" + Settings.get().other().apiDomain + "/method",
                 builder
             )
         }
@@ -148,7 +148,7 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
         HttpLoggerAndParser.adjust(builder)
         HttpLoggerAndParser.configureToIgnoreCertificates(builder)
         return SimplePostHttp(
-            "https://" + Settings.get().other().get_Api_Domain() + "/method",
+            "https://" + Settings.get().other().apiDomain + "/method",
             builder
         )
     }
@@ -180,7 +180,7 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
     }
 
     init {
-        proxySettings.observeActive()
+        proxySettings.observeActive
             .subscribe { onProxySettingsChanged() }
     }
 }

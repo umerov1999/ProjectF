@@ -19,7 +19,7 @@ class FileExistNative : AbsFileExist {
 
     override fun findAllAudios(context: Context): Completable {
         return if (!hasReadWriteStoragePermission(context)) Completable.complete() else Completable.create { t: CompletableEmitter ->
-            val temp = File(get().main().getMusicDir())
+            val temp = File(get().main().musicDir)
             if (!temp.exists()) {
                 t.onComplete()
                 return@create

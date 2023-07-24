@@ -39,7 +39,7 @@ class VideoAlbumsFragment : BaseMvpFragment<VideoAlbumsPresenter, IVideoAlbumsVi
         val columns = requireActivity().resources.getInteger(R.integer.videos_column_count)
         val manager = StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = manager
-        recyclerView.addOnScrollListener(PicassoPauseOnScrollListener(VideoAlbumsNewAdapter.PICASSO_TAG))
+        PicassoPauseOnScrollListener.addListener(recyclerView, VideoAlbumsNewAdapter.PICASSO_TAG)
         recyclerView.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {
             override fun onScrollToLastElement() {
                 presenter?.fireScrollToLast()

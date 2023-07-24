@@ -34,15 +34,9 @@ class Tag::TagPrivate
 
 };
 
-Tag::Tag()
-{
+Tag::Tag() = default;
 
-}
-
-Tag::~Tag()
-{
-
-}
+Tag::~Tag() = default;
 
 bool Tag::isEmpty() const
 {
@@ -141,7 +135,7 @@ PropertyMap Tag::setProperties(const PropertyMap &origProps)
 
   // for each tag that has been set above, remove the first entry in the corresponding
   // value list. The others will be returned as unsupported by this format.
-  for(StringList::ConstIterator it = oneValueSet.begin(); it != oneValueSet.end(); ++it) {
+  for(auto it = oneValueSet.cbegin(); it != oneValueSet.cend(); ++it) {
     if(properties[*it].size() == 1)
       properties.erase(*it);
     else

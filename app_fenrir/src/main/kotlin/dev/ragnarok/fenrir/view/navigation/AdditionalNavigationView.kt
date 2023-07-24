@@ -104,7 +104,7 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
         mDrawerItems?.addAll(generateNavDrawerItems())
         mCompositeDisposable.add(
             Settings.get().drawerSettings()
-                .observeChanges()
+                .observeChanges
                 .observeOn(provideMainThreadScheduler())
                 .subscribe { refreshNavigationItems(it) })
 

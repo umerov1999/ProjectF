@@ -191,7 +191,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
             titleRes = R.string.ask_for_pin_on_application_start_title
             onCheckedBeforeChange {
                 if (it) {
-                    if (!Settings.get().security().hasPinHash()) {
+                    if (!Settings.get().security().hasPinHash) {
                         startCreatePinActivity(this)
                         false
                     } else {

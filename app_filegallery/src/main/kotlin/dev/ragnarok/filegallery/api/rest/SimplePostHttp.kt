@@ -3,7 +3,7 @@ package dev.ragnarok.filegallery.api.rest
 import dev.ragnarok.filegallery.ifNonNull
 import dev.ragnarok.filegallery.isMsgPack
 import dev.ragnarok.filegallery.kJson
-import dev.ragnarok.filegallery.util.serializeble.json.decodeFromStream
+import dev.ragnarok.filegallery.util.serializeble.json.decodeFromBufferedSource
 import dev.ragnarok.filegallery.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Single
 import kotlinx.serialization.KSerializer
@@ -71,8 +71,8 @@ class SimplePostHttp(
                 } else {
                     val ret = if (response.body.isMsgPack()) MsgPack().decodeFromOkioStream(
                         serial, response.body.source()
-                    ) else kJson.decodeFromStream(
-                        serial, response.body.byteStream()
+                    ) else kJson.decodeFromBufferedSource(
+                        serial, response.body.source()
                     )
                     emitter.onSuccess(
                         ret

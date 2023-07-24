@@ -23,12 +23,13 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <tbytevectorlist.h>
-#include <id3v2tag.h>
-#include <tdebug.h>
-#include <tstringlist.h>
-
 #include "commentsframe.h"
+
+#include "tbytevectorlist.h"
+#include "id3v2tag.h"
+#include "tdebug.h"
+#include "tstringlist.h"
+
 #include "tpropertymap.h"
 
 using namespace TagLib;
@@ -125,18 +126,16 @@ PropertyMap CommentsFrame::asProperties() const
 
 CommentsFrame *CommentsFrame::findByDescription(const ID3v2::Tag *tag, const String &d) // static
 {
-  ID3v2::FrameList comments = tag->frameList("COMM");
+  const ID3v2::FrameList comments = tag->frameList("COMM");
 
-  for(ID3v2::FrameList::ConstIterator it = comments.begin();
-      it != comments.end();
-      ++it)
+  for(auto it = comments.begin(); it != comments.end(); ++it)
   {
-    CommentsFrame *frame = dynamic_cast<CommentsFrame *>(*it);
+    auto frame = dynamic_cast<CommentsFrame *>(*it);
     if(frame && frame->description() == d)
       return frame;
   }
 
-  return 0;
+  return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

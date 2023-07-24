@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.StringJsonLexer
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
-import java.io.InputStream
+import okio.BufferedSource
 
 /**
  * The main entry point to work with JSON serialization.
@@ -154,8 +154,8 @@ sealed class Json(
         return decodeFromString(JsonElementSerializer, string)
     }
 
-    fun parseToJsonElement(stream: InputStream): JsonElement {
-        return decodeFromStream(JsonElementSerializer, stream)
+    fun parseToJsonElement(source: BufferedSource): JsonElement {
+        return decodeFromBufferedSource(JsonElementSerializer, source)
     }
 
     fun printJsonElement(element: JsonElement): String {

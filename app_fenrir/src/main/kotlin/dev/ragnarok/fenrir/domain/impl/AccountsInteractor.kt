@@ -147,7 +147,7 @@ class AccountsInteractor(
     override fun getAll(refresh: Boolean): Single<List<Account>> {
         return Single.create { emitter: SingleEmitter<List<Account>> ->
             val tmpIds: Collection<Long> = settings.registered
-            val ids: Collection<Long> = if (!Settings.get().security().IsShow_hidden_accounts()) {
+            val ids: Collection<Long> = if (!Settings.get().security().IsShow_hidden_accounts) {
                 val lst = ArrayList<Long>()
                 for (i in tmpIds) {
                     if (!Utils.isHiddenAccount(i)) {

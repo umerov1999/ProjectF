@@ -64,14 +64,14 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
         // Filters based on whether the file is hidden or not
         if (ret) {
             ret = false
-            for (i in Settings.get().other().photoExt()) {
+            for (i in Settings.get().other().photoExt) {
                 if (sel.extension.contains(i, true)) {
                     ret = true
                     break
                 }
             }
             if (!ret) {
-                for (i in Settings.get().other().audioExt()) {
+                for (i in Settings.get().other().audioExt) {
                     if (sel.extension.contains(i, true)) {
                         ret = true
                         break
@@ -79,7 +79,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
                 }
             }
             if (!ret) {
-                for (i in Settings.get().other().videoExt()) {
+                for (i in Settings.get().other().videoExt) {
                     if (sel.extension.contains(i, true)) {
                         ret = true
                         break
@@ -177,7 +177,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
             return
         }
         when {
-            isExtension(requestUri.toString(), Settings.get().other().audioExt()) -> {
+            isExtension(requestUri.toString(), Settings.get().other().audioExt) -> {
                 var target = getMetadataAudioThumbnail(requestUri)
                 if (target == null) {
                     dir.createNewFile()
@@ -201,7 +201,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
 
             isExtension(
                 requestUri.toString(),
-                Settings.get().other().videoExt()
+                Settings.get().other().videoExt
             ) || requestUri.toString().endsWith("gif", true) -> {
                 var target =
                     if (FenrirNative.isNativeLoaded) AnimatedFileFrame.getThumbnail(requestUri.toFile().absoluteFile) else null
@@ -225,7 +225,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
                 return
             }
 
-            isExtension(requestUri.toString(), Settings.get().other().photoExt()) -> {
+            isExtension(requestUri.toString(), Settings.get().other().photoExt) -> {
                 val s = getSource(requestUri)
                 var target: Bitmap
                 try {

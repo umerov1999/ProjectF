@@ -271,7 +271,7 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
                     ) {
                         logger.log(Json {
                             prettyPrint = false
-                        }.printJsonElement(kJson.parseToJsonElement(buffer.clone().inputStream())))
+                        }.printJsonElement(kJson.parseToJsonElement(buffer.clone())))
                     }
                 } catch (ignored: Exception) {
                 }

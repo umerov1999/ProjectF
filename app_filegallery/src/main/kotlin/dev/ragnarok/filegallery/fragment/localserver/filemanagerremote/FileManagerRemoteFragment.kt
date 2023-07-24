@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
-import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.StubAnimatorListener
@@ -120,7 +119,7 @@ class FileManagerRemoteFragment :
         val columns = resources.getInteger(R.integer.files_column_count)
         mLayoutManager = StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
         mRecyclerView?.layoutManager = mLayoutManager
-        mRecyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))
+        PicassoPauseOnScrollListener.addListener(mRecyclerView)
         tvCurrentDir = root.findViewById(R.id.current_path)
         loading = root.findViewById(R.id.loading)
 
@@ -259,7 +258,7 @@ class FileManagerRemoteFragment :
 
     override fun startPlayAudios(audios: ArrayList<Audio>, position: Int) {
         MusicPlaybackService.startForPlayList(requireActivity(), audios, position, false)
-        if (!Settings.get().main().isShow_mini_player())
+        if (!Settings.get().main().isShow_mini_player)
             PlaceFactory.getPlayerPlace().tryOpenWith(requireActivity())
     }
 

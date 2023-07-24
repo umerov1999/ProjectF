@@ -65,7 +65,7 @@ class LocalServerTabsFragment : BaseFragment(), BackPressCallback {
         val viewPager: ViewPager2 = view.findViewById(R.id.fragment_tabs_pager)
         viewPager.setPageTransformer(
             Utils.createPageTransform(
-                Settings.get().main().getViewpager_page_transform()
+                Settings.get().main().viewpager_page_transform
             )
         )
         mPagerAdapter = Adapter(this)

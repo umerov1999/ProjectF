@@ -30,10 +30,9 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         )
     }
 
-    override fun IsShow_hidden_accounts(): Boolean {
-        return getPreferences(mApplication)
+    override val IsShow_hidden_accounts: Boolean
+        get() = getPreferences(mApplication)
             .getBoolean("show_hidden_accounts", true)
-    }
 
     private var pinHash: String?
         get() = mPinHash
@@ -95,24 +94,21 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         return mPrefs.getInt(encryptionKeyFor(accountId, peerId), KeyLocationPolicy.PERSIST)
     }
 
-    override fun hasPinHash(): Boolean {
-        return mPinHash.nonNullNoEmpty()
-    }
+    override val hasPinHash: Boolean
+        get() = mPinHash.nonNullNoEmpty()
 
-    override fun pinHistoryDepthValue(): Int {
-        return pinHistoryDepth
-    }
+    override val pinHistoryDepthValue: Int
+        get() = pinHistoryDepth
 
-    override fun needHideMessagesBodyForNotif(): Boolean {
-        return getPreferences(mApplication)
+    override val needHideMessagesBodyForNotif: Boolean
+        get() = getPreferences(mApplication)
             .getBoolean("hide_notif_message_body", false)
-    }
 
     override var isUsePinForSecurity: Boolean
-        get() = hasPinHash() && getPreferences(mApplication)
+        get() = hasPinHash && getPreferences(mApplication)
             .getBoolean(KEY_USE_PIN_FOR_SECURITY, false)
         set(value) = getPreferences(mApplication).edit()
-            .putBoolean(KEY_USE_PIN_FOR_SECURITY, value && hasPinHash())
+            .putBoolean(KEY_USE_PIN_FOR_SECURITY, value && hasPinHash)
             .apply()
 
     override var isEntranceByFingerprintAllowed: Boolean
@@ -121,7 +117,7 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
             .apply()
 
     override var isUsePinForEntrance: Boolean
-        get() = hasPinHash() && getPreferences(mApplication)
+        get() = hasPinHash && getPreferences(mApplication)
             .getBoolean(KEY_USE_PIN_FOR_ENTRANCE, false)
         set(value) = getPreferences(mApplication).edit().putBoolean(KEY_USE_PIN_FOR_ENTRANCE, value)
             .apply()
@@ -186,9 +182,8 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
             .apply()
     }
 
-    override fun hasHiddenDialogs(): Boolean {
-        return hiddenPeers.isNotEmpty()
-    }
+    override val hasHiddenDialogs: Boolean
+        get() = hiddenPeers.isNotEmpty()
 
     override fun isHiddenDialog(peerId: Long): Boolean {
         return hiddenPeers.contains(peerId.toString())

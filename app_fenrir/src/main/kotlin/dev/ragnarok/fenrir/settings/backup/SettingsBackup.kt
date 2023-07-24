@@ -130,6 +130,7 @@ class SettingsBackup {
         var show_mutual_count: Boolean? = null
         var do_zoom_photo: Boolean? = null
         var change_upload_size: Boolean? = null
+        var instant_photo_display: Boolean? = null
         var show_photos_line: Boolean? = null
         var show_photos_date: Boolean? = null
         var do_auto_play_video: Boolean? = null
@@ -195,7 +196,7 @@ class SettingsBackup {
             )
         )
         val user_names_pointers = HashMap<String, String>()
-        for ((key) in Settings.get().other().getUserNameChangesMap()) {
+        for ((key) in Settings.get().other().userNameChangesMap) {
             if (pref.contains(key)) {
                 user_names_pointers[key] = pref.getString(key, null) ?: continue
             }

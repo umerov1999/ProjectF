@@ -167,7 +167,7 @@ class FileManagerSelectPresenter(
     }
 
     private fun getFolderFilesCount(file: File): Long {
-        if (!Settings.get().other().isEnable_dirs_files_count()) {
+        if (!Settings.get().other().isEnable_dirs_files_count) {
             return -1
         }
         return file.listFiles()?.size?.toLong() ?: -1

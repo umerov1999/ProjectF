@@ -24,6 +24,7 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuProvider
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -46,8 +47,6 @@ import dev.ragnarok.fenrir.fragment.base.horizontal.ImageListAdapter
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.model.*
 import dev.ragnarok.fenrir.module.FenrirNative
-import dev.ragnarok.fenrir.module.parcel.ParcelFlags
-import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
@@ -125,14 +124,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             args.putInt(Extra.INDEX, position)
             args.putBoolean(Extra.READONLY, readOnly)
             args.putBoolean(Extra.INVERT, invert)
-            if (FenrirNative.isNativeLoaded && Settings.get().other().isNative_parcel_photo) {
-                args.putLong(
-                    EXTRA_PHOTOS,
-                    ParcelNative.createParcelableList(photos, ParcelFlags.NULL_LIST)
-                )
-            } else {
-                args.putParcelableArrayList(EXTRA_PHOTOS, photos)
-            }
+            args.putParcelableArrayList(EXTRA_PHOTOS, photos)
             return args
         }
 
@@ -153,6 +145,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             args.putBoolean(Extra.READONLY, readOnly)
             args.putBoolean(Extra.INVERT, invert)
             args.putLong(EXTRA_PHOTOS, parcelNativePointer)
+            Utils.registerParcelNative(parcelNativePointer)
             return args
         }
 
@@ -460,12 +453,16 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                         val albumId = requireArguments().getInt(Extra.ALBUM_ID)
                         val readOnly = requireArguments().getBoolean(Extra.READONLY)
                         val invert = requireArguments().getBoolean(Extra.INVERT)
-                        val nativePointer = requireArguments().getLong(
+                        var nativePointer = requireArguments().getLong(
                             EXTRA_PHOTOS
                         )
+                        if (!Utils.isParcelNativeRegistered(nativePointer)) {
+                            nativePointer = 0
+                        }
+                        Utils.unregisterParcelNative(nativePointer)
                         requireArguments().putLong(EXTRA_PHOTOS, 0)
                         if (FenrirNative.isNativeLoaded && Settings.get()
-                                .other().isNative_parcel_photo
+                                .other().isNative_parcel_photo && nativePointer != 0L
                         ) {
                             return PhotoAlbumPagerPresenter(
                                 indexx,
@@ -497,18 +494,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                         val readOnly = requireArguments().getBoolean(Extra.READONLY)
                         val invert = requireArguments().getBoolean(Extra.INVERT)
                         val photos_album: ArrayList<Photo> =
-                            if (FenrirNative.isNativeLoaded && Settings.get()
-                                    .other().isNative_parcel_photo
-                            ) ParcelNative.loadParcelableArrayList(
-                                requireArguments().getLong(
-                                    EXTRA_PHOTOS
-                                ), Photo.NativeCreator, ParcelFlags.MUTABLE_LIST
-                            )!! else requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
-                        if (FenrirNative.isNativeLoaded && Settings.get()
-                                .other().isNative_parcel_photo
-                        ) {
-                            requireArguments().putLong(EXTRA_PHOTOS, 0)
-                        }
+                            requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
                         return PhotoAlbumPagerPresenter(
                             indexx,
                             aid,
@@ -546,8 +532,12 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                                 saveInstanceState
                             )
                         } else {
-                            val source: Long = requireArguments().getLong(Extra.SOURCE)
+                            var source: Long = requireArguments().getLong(Extra.SOURCE)
                             requireArguments().putLong(Extra.SOURCE, 0)
+                            if (!Utils.isParcelNativeRegistered(source)) {
+                                source = 0
+                            }
+                            Utils.unregisterParcelNative(source)
                             return TmpGalleryPagerPresenter(
                                 aid,
                                 source,
@@ -758,31 +748,17 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
         val statusbarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
         @ColorInt val navigationColor =
             if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor
-        if (Utils.hasMarshmallow()) {
-            var flags = window.decorView.systemUiVisibility
-            flags = if (invertIcons) {
-                flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            } else {
-                flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-            }
-            window.decorView.systemUiVisibility = flags
-        }
-        if (Utils.hasOreo()) {
-            var flags = window.decorView.systemUiVisibility
-            if (invertIcons) {
-                flags = flags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                w.decorView.systemUiVisibility = flags
-                w.navigationBarColor = Color.WHITE
-            } else {
-                flags = flags and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
-                w.decorView.systemUiVisibility = flags
-            }
+        val ins = WindowInsetsControllerCompat(w, w.decorView)
+        ins.isAppearanceLightStatusBars = invertIcons
+        ins.isAppearanceLightNavigationBars = invertIcons
+
+        if (!Utils.hasMarshmallow()) {
+            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         }
     }
 

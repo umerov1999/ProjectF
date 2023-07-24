@@ -28,9 +28,9 @@ internal class OtherSettings(context: Context) : IOtherSettings {
     private val userNameChanges: MutableSet<String> = Collections.synchronizedSet(HashSet(1))
     private val types: MutableMap<String, String> = Collections.synchronizedMap(HashMap(1))
     private val ownerChangesMonitor: MutableSet<Long> = Collections.synchronizedSet(HashSet(1))
-    override fun getUserNameChangesMap(): Map<String, String> {
-        return HashMap(types)
-    }
+
+    override val userNameChangesMap: Map<String, String>
+        get() = HashMap(types)
 
     override fun isOwnerInChangesMonitor(ownerId: Long): Boolean {
         return ownerChangesMonitor.contains(ownerId)
@@ -163,14 +163,15 @@ internal class OtherSettings(context: Context) : IOtherSettings {
     override val isCommentsDesc: Boolean
         get() = getPreferences(app).getBoolean("comments_desc", true)
 
-    override fun toggleCommentsDirection(): Boolean {
-        val descNow = isCommentsDesc
-        getPreferences(app)
-            .edit()
-            .putBoolean("comments_desc", !descNow)
-            .apply()
-        return !descNow
-    }
+    override val toggleCommentsDirection: Boolean
+        get() {
+            val descNow = isCommentsDesc
+            getPreferences(app)
+                .edit()
+                .putBoolean("comments_desc", !descNow)
+                .apply()
+            return !descNow
+        }
 
     override val isKeepLongpoll: Boolean
         get() = getPreferences(app).getBoolean("keep_longpoll", false)
@@ -254,15 +255,13 @@ internal class OtherSettings(context: Context) : IOtherSettings {
     override val isNew_loading_dialog: Boolean
         get() = getPreferences(app).getBoolean("new_loading_dialog", true)
 
-    override fun get_Api_Domain(): String {
-        return getPreferences(app)
+    override val apiDomain: String
+        get() = getPreferences(app)
             .getString("vk_api_domain", "api.vk.com")!!.trim { it <= ' ' }
-    }
 
-    override fun get_Auth_Domain(): String {
-        return getPreferences(app)
+    override val authDomain: String
+        get() = getPreferences(app)
             .getString("vk_auth_domain", "oauth.vk.com")!!.trim { it <= ' ' }
-    }
 
     override val isDeveloper_mode: Boolean
         get() = getPreferences(app).getBoolean("developer_mode", Constants.forceDeveloperMode)
@@ -324,21 +323,17 @@ internal class OtherSettings(context: Context) : IOtherSettings {
     override val isEnable_show_recent_dialogs: Boolean
         get() = getPreferences(app).getBoolean("show_recent_dialogs", true)
 
-    override fun is_side_navigation(): Boolean {
-        return getPreferences(app).getBoolean("is_side_navigation", false)
-    }
+    override val is_side_navigation: Boolean
+        get() = getPreferences(app).getBoolean("is_side_navigation", false)
 
-    override fun is_side_no_stroke(): Boolean {
-        return getPreferences(app).getBoolean("is_side_no_stroke", false)
-    }
+    override val is_side_no_stroke: Boolean
+        get() = getPreferences(app).getBoolean("is_side_no_stroke", false)
 
-    override fun is_side_transition(): Boolean {
-        return getPreferences(app).getBoolean("is_side_transition", true)
-    }
+    override val is_side_transition: Boolean
+        get() = getPreferences(app).getBoolean("is_side_transition", true)
 
-    override fun get_last_audio_sync(): Long {
-        return getPreferences(app).getLong("last_audio_sync", -1)
-    }
+    override val last_audio_sync: Long
+        get() = getPreferences(app).getLong("last_audio_sync", -1)
 
     override fun set_last_audio_sync(time: Long) {
         getPreferences(app).edit().putLong("last_audio_sync", time).apply()
@@ -380,23 +375,24 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         getPreferences(app).edit().remove("last_sticker_keywords_sync_$accountId").apply()
     }
 
-    override fun is_notification_force_link(): Boolean {
-        return getPreferences(app).getBoolean("notification_force_link", false)
-    }
+    override val is_notification_force_link: Boolean
+        get() = getPreferences(app).getBoolean("notification_force_link", false)
 
     override val isEnable_show_audio_top: Boolean
         get() = getPreferences(app).getBoolean("show_audio_top", false)
     override val isUse_internal_downloader: Boolean
         get() = getPreferences(app).getBoolean("use_internal_downloader", true)
 
-    override fun appStoredVersionEqual(): Boolean {
-        val ret = getPreferences(app).getInt("app_stored_version", 0) == BuildConfig.VERSION_CODE
-        if (!ret) {
-            getPreferences(app).edit().putInt("app_stored_version", BuildConfig.VERSION_CODE)
-                .apply()
+    override val appStoredVersionEqual: Boolean
+        get() {
+            val ret =
+                getPreferences(app).getInt("app_stored_version", 0) == BuildConfig.VERSION_CODE
+            if (!ret) {
+                getPreferences(app).edit().putInt("app_stored_version", BuildConfig.VERSION_CODE)
+                    .apply()
+            }
+            return ret
         }
-        return ret
-    }
 
     @Suppress("DEPRECATION")
     override val musicDir: String
@@ -492,6 +488,8 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         get() = getPreferences(app).getBoolean("do_zoom_photo", true)
     override val isChange_upload_size: Boolean
         get() = getPreferences(app).getBoolean("change_upload_size", false)
+    override val isInstant_photo_display: Boolean
+        get() = getPreferences(app).getBoolean("instant_photo_display", false)
     override val isShow_photos_line: Boolean
         get() = getPreferences(app).getBoolean("show_photos_line", true)
     override val isShow_photos_date: Boolean
@@ -668,33 +666,28 @@ internal class OtherSettings(context: Context) : IOtherSettings {
         getPreferences(app).edit().putInt("custom_notification_channel", vl + 1).apply()
     }
 
-    override fun videoExt(): Set<String> {
-        return getPreferences(app)
+    override val videoExt: Set<String>
+        get() = getPreferences(app)
             .getStringSet("videos_ext", setOf("mp4", "avi", "mpeg"))!!
-    }
 
-    override fun photoExt(): Set<String> {
-        return getPreferences(app)
+    override val photoExt: Set<String>
+        get() = getPreferences(app)
             .getStringSet("photo_ext", setOf("gif", "jpg", "jpeg", "jpg", "webp", "png", "tiff"))!!
-    }
 
-    override fun audioExt(): Set<String> {
-        return getPreferences(app)
+    override val audioExt: Set<String>
+        get() = getPreferences(app)
             .getStringSet("audio_ext", setOf("mp3", "ogg", "flac", "opus"))!!
-    }
 
-    override fun getMaxThumbResolution(): Int {
-        return try {
+    override val maxThumbResolution: Int
+        get() = try {
             getPreferences(app).getString("max_thumb_resolution", "384")!!.trim()
                 .toInt()
         } catch (e: Exception) {
             384
         }
-    }
 
-    override fun isEnable_dirs_files_count(): Boolean {
-        return getPreferences(app).getBoolean("enable_dirs_files_count", true)
-    }
+    override val isEnable_dirs_files_count: Boolean
+        get() = getPreferences(app).getBoolean("enable_dirs_files_count", true)
 
     companion object {
         private const val KEY_JSON_STATE = "json_list_state"

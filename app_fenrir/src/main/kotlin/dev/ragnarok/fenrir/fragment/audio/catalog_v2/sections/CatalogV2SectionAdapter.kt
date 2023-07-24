@@ -251,7 +251,7 @@ class CatalogV2SectionAdapter(
                     throw UnsupportedOperationException()
                 }
             }
-            list.addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))
+            PicassoPauseOnScrollListener.addListener(list)
             list.updateUid(itemDataHolder.id?.let { it1 -> StringHash.calculateCRC32(it1) })
         }
 

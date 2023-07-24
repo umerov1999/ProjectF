@@ -23,9 +23,9 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <iostream>
-
 #include "id3v2synchdata.h"
+
+#include <iostream>
 
 using namespace TagLib;
 using namespace ID3v2;
@@ -83,8 +83,8 @@ ByteVector SynchData::decode(const ByteVector &data)
 
   ByteVector result(data.size());
 
-  ByteVector::ConstIterator src = data.begin();
-  ByteVector::Iterator dst = result.begin();
+  auto src = data.begin();
+  auto dst = result.begin();
 
   while(src < data.end() - 1) {
     *dst++ = *src++;

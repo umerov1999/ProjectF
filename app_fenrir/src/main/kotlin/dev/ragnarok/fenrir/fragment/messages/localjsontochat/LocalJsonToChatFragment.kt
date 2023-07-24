@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.StubAnimatorListener
@@ -81,7 +80,7 @@ class LocalJsonToChatFragment :
         recyclerView = root.findViewById(R.id.content_list)
         recyclerView?.layoutManager =
             LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, true)
-        recyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))
+        PicassoPauseOnScrollListener.addListener(recyclerView)
         mLoadingProgressBar = root.findViewById(R.id.loading_progress_bar)
         mAdapter = MessagesAdapter(requireActivity(), mutableListOf(), this, true)
         recyclerView?.adapter = mAdapter

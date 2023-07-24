@@ -113,13 +113,13 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
 
     private val transformCover: Transformation
         get() = if (Settings.get()
-                .main().isAudio_round_icon()
+                .main().isAudio_round_icon
         ) RoundTransformation() else PolyTransformation()
 
     @get:DrawableRes
     private val audioCoverSimple: Int
         get() = if (Settings.get()
-                .main().isAudio_round_icon()
+                .main().isAudio_round_icon
         ) R.drawable.audio_button else R.drawable.audio_button_material
 
     private fun updatePlaybackControls() {

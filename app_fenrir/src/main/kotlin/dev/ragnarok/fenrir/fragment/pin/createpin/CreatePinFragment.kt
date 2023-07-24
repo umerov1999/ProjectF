@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.annotation.StringRes
+import androidx.biometric.BiometricManager
 import com.google.android.material.materialswitch.MaterialSwitch
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
@@ -63,7 +64,13 @@ class CreatePinFragment : BaseMvpFragment<CreatePinPresenter, ICreatePinView>(),
                 EXTRA_PREF_KEY
             ) != true
         ) {
-            mAllowFingerprint?.visibility = View.VISIBLE
+            if (BiometricManager.from(requireActivity())
+                    .canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK) != BiometricManager.BIOMETRIC_SUCCESS
+            ) {
+                mAllowFingerprint?.visibility = View.GONE
+            } else {
+                mAllowFingerprint?.visibility = View.VISIBLE
+            }
             mPinCodeOnStart?.visibility = View.VISIBLE
             mDontAskEveryTime?.visibility = View.VISIBLE
             Settings.get().security().isUsePinForEntrance = false

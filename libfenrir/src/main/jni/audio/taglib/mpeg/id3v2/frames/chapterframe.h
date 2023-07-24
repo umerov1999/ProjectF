@@ -69,7 +69,7 @@ namespace TagLib {
       /*!
        * Destroys the frame.
        */
-      virtual ~ChapterFrame();
+      ~ChapterFrame() override;
 
       /*!
        * Returns the element ID of the frame. Element ID
@@ -218,9 +218,9 @@ namespace TagLib {
        */
       void removeEmbeddedFrames(const ByteVector &id);
 
-      virtual String toString() const;
+      String toString() const override;
 
-      virtual PropertyMap asProperties() const;
+      PropertyMap asProperties() const override;
 
       /*!
        * CHAP frames each have a unique element ID. This searches for a CHAP
@@ -232,13 +232,13 @@ namespace TagLib {
       static ChapterFrame *findByElementID(const Tag *tag, const ByteVector &eID);
 
     protected:
-      virtual void parseFields(const ByteVector &data);
-      virtual ByteVector renderFields() const;
+      void parseFields(const ByteVector &data) override;
+      ByteVector renderFields() const override;
 
     private:
       ChapterFrame(const ID3v2::Header *tagHeader, const ByteVector &data, Header *h);
-      ChapterFrame(const ChapterFrame &);
-      ChapterFrame &operator=(const ChapterFrame &);
+      ChapterFrame(const ChapterFrame &) = delete;
+      ChapterFrame &operator=(const ChapterFrame &) = delete;
 
       class ChapterFramePrivate;
       ChapterFramePrivate *d;

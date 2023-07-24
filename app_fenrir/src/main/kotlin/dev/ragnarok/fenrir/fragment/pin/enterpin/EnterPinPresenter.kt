@@ -67,7 +67,7 @@ class EnterPinPresenter(savedState: Bundle?) : RxSupportPresenter<IEnterPinView>
             val history = Settings.get()
                 .security()
                 .pinEnterHistory
-            if (history.size < Settings.get().security().pinHistoryDepthValue()) {
+            if (history.size < Settings.get().security().pinHistoryDepthValue) {
                 return 0
             }
             val howLongAgoWasFirstAttempt = System.currentTimeMillis() - history[0]

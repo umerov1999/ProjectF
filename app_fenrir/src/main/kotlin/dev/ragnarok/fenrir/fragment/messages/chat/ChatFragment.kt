@@ -310,7 +310,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             itemAnimator?.addDuration = 0
             itemAnimator?.moveDuration = 0
             itemAnimator?.removeDuration = 0
-            addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))
+            PicassoPauseOnScrollListener.addListener(this)
             addOnScrollListener(object : EndlessRecyclerOnScrollListener() {
                 override fun onScrollToLastElement() {
                     presenter?.fireScrollToEnd()
@@ -996,7 +996,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     }
 
     private fun onEditLocalFileSelected(file: String) {
-        for (i in Settings.get().other().photoExt()) {
+        for (i in Settings.get().other().photoExt) {
             if (file.endsWith(i, true)) {
                 when (val defaultSize = Settings.get().main().uploadImageSize) {
                     null -> {
@@ -1032,13 +1032,13 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 return
             }
         }
-        for (i in Settings.get().other().videoExt()) {
+        for (i in Settings.get().other().videoExt) {
             if (file.endsWith(i, true)) {
                 presenter?.fireFileVideoForUploadSelected(file)
                 return
             }
         }
-        for (i in Settings.get().other().audioExt()) {
+        for (i in Settings.get().other().audioExt) {
             if (file.endsWith(i, true)) {
                 presenter?.fireFileAudioForUploadSelected(file)
                 return

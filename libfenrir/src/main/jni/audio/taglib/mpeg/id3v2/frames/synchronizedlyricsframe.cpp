@@ -24,10 +24,10 @@
  ***************************************************************************/
 
 #include "synchronizedlyricsframe.h"
-#include <tbytevectorlist.h>
-#include <id3v2tag.h>
-#include <tdebug.h>
-#include <tpropertymap.h>
+#include "tbytevectorlist.h"
+#include "id3v2tag.h"
+#include "tdebug.h"
+#include "tpropertymap.h"
 
 using namespace TagLib;
 using namespace ID3v2;
@@ -206,8 +206,8 @@ ByteVector SynchronizedLyricsFrame::renderFields() const
   String::Type encoding = d->textEncoding;
 
   encoding = checkTextEncoding(d->description, encoding);
-  for(SynchedTextList::ConstIterator it = d->synchedText.begin();
-      it != d->synchedText.end();
+  for(auto it = d->synchedText.cbegin();
+      it != d->synchedText.cend();
       ++it) {
     encoding = checkTextEncoding(it->text, encoding);
   }
@@ -218,9 +218,7 @@ ByteVector SynchronizedLyricsFrame::renderFields() const
   v.append(static_cast<char>(d->type));
   v.append(d->description.data(encoding));
   v.append(textDelimiter(encoding));
-  for(SynchedTextList::ConstIterator it = d->synchedText.begin();
-      it != d->synchedText.end();
-      ++it) {
+  for(auto it = d->synchedText.cbegin(); it != d->synchedText.cend(); ++it) {
     const SynchedText &entry = *it;
     v.append(entry.text.data(encoding));
     v.append(textDelimiter(encoding));

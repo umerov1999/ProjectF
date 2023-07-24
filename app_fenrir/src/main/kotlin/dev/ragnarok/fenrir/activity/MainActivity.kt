@@ -18,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -306,11 +307,11 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     private var isZoomPhoto = false
     private val snowLayout: Int
         get() = if (Settings.get()
-                .other().is_side_navigation()
+                .other().is_side_navigation
         ) R.layout.activity_main_side_with_snow else R.layout.activity_main_with_snow
     private val normalLayout: Int
         get() = if (Settings.get()
-                .other().is_side_navigation()
+                .other().is_side_navigation
         ) R.layout.activity_main_side else R.layout.activity_main
 
     @MainActivityTransforms
@@ -353,12 +354,12 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         mCompositeDisposable.add(
             Settings.get()
                 .accounts()
-                .observeChanges()
+                .observeChanges
                 .observeOn(provideMainThreadScheduler())
                 .subscribe { onCurrentAccountChange(it) })
         mCompositeDisposable.add(
             proxySettings
-                .observeActive().observeOn(provideMainThreadScheduler())
+                .observeActive.observeOn(provideMainThreadScheduler())
                 .subscribe { stop() })
         mCompositeDisposable.add(Stores.instance
             .dialogs()
@@ -376,7 +377,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
         mViewFragment = findViewById(R.id.fragment)
         val anim: ObjectAnimator
-        if (mDrawerLayout != null && Settings.get().other().is_side_navigation()) {
+        if (mDrawerLayout != null && Settings.get().other().is_side_navigation) {
             navigationView?.setUp(mDrawerLayout)
             anim = ObjectAnimator.ofPropertyValuesHolder(
                 mViewFragment, PropertyValuesHolder.ofFloat(
@@ -448,7 +449,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                                 createCustomToast(this).showToastThrowable(t)
                             }
                         })
-                    Settings.get().other().get_last_audio_sync().let {
+                    Settings.get().other().last_audio_sync.let {
                         if (it > 0 && (System.currentTimeMillis() / 1000L) - it > 900) {
                             Settings.get().other().set_last_audio_sync(-1)
                             mCompositeDisposable.add(
@@ -458,7 +459,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             )
                         }
                     }
-                    Settings.get().other().appStoredVersionEqual()
+                    Settings.get().other().appStoredVersionEqual
                     if (Settings.get().other().isDelete_cache_images) {
                         cleanCache(this, false)
                     }
@@ -1277,31 +1278,17 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
         val statusbarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
         @ColorInt val navigationColor =
             if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor
-        if (Utils.hasMarshmallow()) {
-            var flags = window.decorView.systemUiVisibility
-            flags = if (invertIcons) {
-                flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            } else {
-                flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-            }
-            window.decorView.systemUiVisibility = flags
-        }
-        if (Utils.hasOreo()) {
-            var flags = window.decorView.systemUiVisibility
-            if (invertIcons) {
-                flags = flags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                w.decorView.systemUiVisibility = flags
-                w.navigationBarColor = Color.WHITE
-            } else {
-                flags = flags and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
-                w.decorView.systemUiVisibility = flags
-            }
+        val ins = WindowInsetsControllerCompat(w, w.decorView)
+        ins.isAppearanceLightStatusBars = invertIcons
+        ins.isAppearanceLightNavigationBars = invertIcons
+
+        if (!Utils.hasMarshmallow()) {
+            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         }
     }
 
@@ -1310,12 +1297,12 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             navigationView?.closeSheet()
             navigationView?.blockSheet()
             mBottomNavigationContainer?.visibility = View.GONE
-            if (Settings.get().other().is_side_navigation()) {
+            if (Settings.get().other().is_side_navigation) {
                 findViewById<MaterialCardView>(R.id.miniplayer_side_root)?.visibility = View.GONE
             }
         } else {
             mBottomNavigationContainer?.visibility = View.VISIBLE
-            if (Settings.get().other().is_side_navigation()) {
+            if (Settings.get().other().is_side_navigation) {
                 findViewById<MaterialCardView>(R.id.miniplayer_side_root)?.visibility = View.VISIBLE
             }
             navigationView?.unblockSheet()

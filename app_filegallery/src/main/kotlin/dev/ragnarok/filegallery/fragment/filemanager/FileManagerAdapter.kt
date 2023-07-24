@@ -294,7 +294,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                 false
             )
         )
-        if (Settings.get().main().getLocalServer().enabled) {
+        if (Settings.get().main().localServer.enabled) {
             menus.add(
                 OptionRequest(
                     AudioLocalOption.play_via_local_server,
@@ -347,7 +347,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
 
                 AudioLocalOption.play_item_audio -> {
                     clickListener?.onClick(position, audio)
-                    if (Settings.get().main().isShow_mini_player()) getPlayerPlace(
+                    if (Settings.get().main().isShow_mini_player) getPlayerPlace(
                     ).tryOpenWith(context)
                 }
 
@@ -436,7 +436,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
             t.setId(item.fileNameHash)
             t.setOwnerId(item.filePathHash)
             if (MusicPlaybackController.isNowPlayingOrPreparingOrPaused(t)) {
-                if (!Settings.get().main().isUse_stop_audio()) {
+                if (!Settings.get().main().isUse_stop_audio) {
                     MusicPlaybackController.playOrPause()
                 } else {
                     MusicPlaybackController.stop()

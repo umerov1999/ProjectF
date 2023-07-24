@@ -225,7 +225,7 @@ class RequestExecutePresenter(accountId: Long, savedInstanceState: Bundle?) :
             return if (responseBody.isMsgPack()) {
                 json.encodeToString(MsgPack.parseToJsonElement(responseBody.source()))
             } else {
-                json.encodeToString(json.parseToJsonElement(responseBody.byteStream()))
+                json.encodeToString(json.parseToJsonElement(responseBody.source()))
             }
         }
     }

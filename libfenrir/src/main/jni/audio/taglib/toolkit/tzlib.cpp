@@ -23,15 +23,15 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <taglib_config.h>
+#include "tzlib.h"
+
+#include "taglib_config.h"
 
 #ifdef HAVE_ZLIB
 # include <zlib.h>
-# include <tstring.h>
-# include <tdebug.h>
+# include "tstring.h"
+# include "tdebug.h"
 #endif
-
-#include "tzlib.h"
 
 using namespace TagLib;
 

@@ -245,4 +245,5 @@
     <string name="start_select_mode">Рэжым выбару</string>
     <string name="end_select_mode">Завяршыць выбар</string>
     <string name="send_action">Адправіць</string>
+    <string name="instant_photo_display">Імгненны паказ фота</string>
 </resources>

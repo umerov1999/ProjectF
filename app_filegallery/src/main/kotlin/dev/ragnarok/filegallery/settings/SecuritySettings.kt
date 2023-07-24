@@ -30,7 +30,7 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         get() = mPinEnterHistory
 
     override var isUsePinForEntrance: Boolean
-        get() = hasPinHash() && getPreferences(mApplication)
+        get() = hasPinHash && getPreferences(mApplication)
             .getBoolean(KEY_USE_PIN_FOR_ENTRANCE, false)
         set(value) = getPreferences(mApplication).edit().putBoolean(KEY_USE_PIN_FOR_ENTRANCE, value)
             .apply()
@@ -57,13 +57,11 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         storePinHistory()
     }
 
-    override fun hasPinHash(): Boolean {
-        return mPinHash.nonNullNoEmpty()
-    }
+    override val hasPinHash: Boolean
+        get() = mPinHash.nonNullNoEmpty()
 
-    override fun pinHistoryDepthValue(): Int {
-        return pinHistoryDepth
-    }
+    override val pinHistoryDepthValue: Int
+        get() = pinHistoryDepth
 
     override var isEntranceByFingerprintAllowed: Boolean
         get() = getPreferences(mApplication).getBoolean("allow_fingerprint", false)

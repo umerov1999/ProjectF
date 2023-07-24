@@ -20,7 +20,6 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.textfield.TextInputEditText
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
-import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
@@ -302,7 +301,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                 7 -> {
                     val recyclerView: RecyclerView =
                         holder.itemView.findViewById(R.id.grid_stickers)
-                    recyclerView.addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))
+                    PicassoPauseOnScrollListener.addListener(recyclerView)
                     val myStickersAdapter = MyStickersAdapter(holder.itemView.context)
                     myStickersAdapter.setMyStickerClickedListener(object :
                         OnMyStickerClickedListener {
@@ -320,7 +319,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                 else -> {
                     val recyclerView: RecyclerView =
                         holder.itemView.findViewById(R.id.grid_stickers)
-                    recyclerView.addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))
+                    PicassoPauseOnScrollListener.addListener(recyclerView)
                     val mAdaptert =
                         StickersAdapter(holder.itemView.context, stickersGridViews[position - 8])
                     mAdaptert.setStickerClickedListener(object : OnStickerClickedListener {

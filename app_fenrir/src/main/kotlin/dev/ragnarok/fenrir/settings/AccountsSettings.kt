@@ -30,13 +30,11 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         changesPublisher.onNext(this)
     }
 
-    override fun observeRegistered(): Flowable<IAccountsSettings> {
-        return changesPublisher.onBackpressureBuffer()
-    }
+    override val observeRegistered: Flowable<IAccountsSettings>
+        get() = changesPublisher.onBackpressureBuffer()
 
-    override fun observeChanges(): Flowable<Long> {
-        return currentPublisher.onBackpressureBuffer()
-    }
+    override val observeChanges: Flowable<Long>
+        get() = currentPublisher.onBackpressureBuffer()
 
     override val registered: List<Long>
         get() = ArrayList(accounts)

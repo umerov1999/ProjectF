@@ -71,7 +71,7 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
         mCompositeDisposable.add(
             Settings.get()
                 .accounts()
-                .observeChanges()
+                .observeChanges
                 .observeOn(provideMainThreadScheduler())
                 .subscribe { fireAccountChange(it) })
     }

@@ -42,7 +42,7 @@ class BirthDayPresenter(accountId: Long, private val ownerId: Long, savedInstanc
         }
         this.users.addAll(ks)
         view?.notifyDataSetChanged()
-        val ps = Calendar.getInstance().get(Calendar.MONTH)
+        val ps = Calendar.getInstance().get(Calendar.MONTH) + 1
         var pos = 0
         for ((tmpPos, i) in this.users.withIndex()) {
             if (i.month == ps) {

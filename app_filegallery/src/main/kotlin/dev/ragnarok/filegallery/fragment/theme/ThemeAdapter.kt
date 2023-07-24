@@ -189,7 +189,7 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
     }
 
     init {
-        currentId = get().main().getMainThemeKey()
+        currentId = get().main().mainThemeKey
         isDark = get().main().isDarkModeEnabled(context)
     }
 }

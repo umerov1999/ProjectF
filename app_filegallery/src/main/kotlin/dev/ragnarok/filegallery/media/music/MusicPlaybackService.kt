@@ -153,7 +153,7 @@ class MusicPlaybackService : Service() {
         mNotificationHelper = NotificationHelper(this)
         setUpRemoteControlClient()
 
-        IDLE_DELAY = Settings.get().main().getMusicLifecycle()
+        IDLE_DELAY = Settings.get().main().musicLifecycle
 
         mPlayer = MultiPlayer(this)
         val filter = IntentFilter()
@@ -955,7 +955,7 @@ class MusicPlaybackService : Service() {
         var mCurrentMediaPlayer: ExoPlayer = ExoPlayer.Builder(
             service, DefaultRenderersFactory(service)
                 .setExtensionRendererMode(
-                    when (Settings.get().main().getFFmpegPlugin()) {
+                    when (Settings.get().main().fFmpegPlugin) {
                         0 -> EXTENSION_RENDERER_MODE_OFF
                         1 -> EXTENSION_RENDERER_MODE_ON
                         2 -> EXTENSION_RENDERER_MODE_PREFER

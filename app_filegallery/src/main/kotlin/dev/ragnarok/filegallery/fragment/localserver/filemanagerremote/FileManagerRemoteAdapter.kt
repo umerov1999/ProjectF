@@ -392,7 +392,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
 
                 FileLocalServerOption.play_item_audio -> {
                     clickListener?.onClick(position, audio)
-                    if (Settings.get().main().isShow_mini_player()) getPlayerPlace(
+                    if (Settings.get().main().isShow_mini_player) getPlayerPlace(
                     ).tryOpenWith(context)
                 }
 
@@ -445,7 +445,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
             t.setId(item.id)
             t.setOwnerId(item.owner_Id)
             if (MusicPlaybackController.isNowPlayingOrPreparingOrPaused(t)) {
-                if (!Settings.get().main().isUse_stop_audio()) {
+                if (!Settings.get().main().isUse_stop_audio) {
                     MusicPlaybackController.playOrPause()
                 } else {
                     MusicPlaybackController.stop()

@@ -242,7 +242,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         ivCoverPager?.adapter = coverAdapter
         ivCoverPager?.setPageTransformer(
             Utils.createPageTransform(
-                Settings.get().main().getPlayer_cover_transform()
+                Settings.get().main().player_cover_transform
             )
         )
         ivCoverPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -399,7 +399,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         tvTitle?.text = audioTrack?.artist
         tvSubtitle?.text = audioTrack?.title
 
-        if (Settings.get().main().isPlayer_Has_Background()) {
+        if (Settings.get().main().isPlayer_Has_Background) {
             val coverUrl = audioTrack?.thumb_image
             if (coverUrl != null) {
                 PicassoInstance.with()
@@ -407,7 +407,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                     .tag(PLAYER_TAG)
                     .transform(
                         BlurTransformation(
-                            Settings.get().main().getPlayerCoverBackgroundSettings().blur.toFloat(),
+                            Settings.get().main().playerCoverBackgroundSettings.blur.toFloat(),
                             requireActivity()
                         )
                     )

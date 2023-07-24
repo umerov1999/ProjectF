@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
@@ -30,7 +29,7 @@ class ShortcutsViewFragment : BaseMvpFragment<ShortcutsViewPresenter, IShortcuts
         val columns = resources.getInteger(R.integer.photos_column_count)
         val gridLayoutManager = GridLayoutManager(requireActivity(), columns)
         recyclerView.layoutManager = gridLayoutManager
-        recyclerView.addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))
+        PicassoPauseOnScrollListener.addListener(recyclerView)
         mAdapter = ShortcutsListAdapter(emptyList())
         mAdapter?.setActionListener(this)
         recyclerView.adapter = mAdapter

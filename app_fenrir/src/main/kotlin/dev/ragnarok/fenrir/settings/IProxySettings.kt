@@ -7,9 +7,9 @@ import io.reactivex.rxjava3.core.Observable
 interface IProxySettings {
     fun put(address: String, port: Int)
     fun put(address: String, port: Int, username: String, pass: String)
-    fun observeAdding(): Observable<ProxyConfig>
-    fun observeRemoving(): Observable<ProxyConfig>
-    fun observeActive(): Observable<Optional<ProxyConfig>>
+    val observeAdding: Observable<ProxyConfig>
+    val observeRemoving: Observable<ProxyConfig>
+    val observeActive: Observable<Optional<ProxyConfig>>
     val all: MutableList<ProxyConfig>
     val activeProxy: ProxyConfig?
     fun setActive(config: ProxyConfig?)

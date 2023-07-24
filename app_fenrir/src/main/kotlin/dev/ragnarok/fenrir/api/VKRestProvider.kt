@@ -99,13 +99,13 @@ class VKRestProvider(
 
     private fun createDefaultVkApiRest(okHttpClient: OkHttpClient.Builder): SimplePostHttp {
         return SimplePostHttp(
-            "https://" + Settings.get().other().get_Api_Domain() + "/method",
+            "https://" + Settings.get().other().apiDomain + "/method",
             okHttpClient
         )
     }
 
     init {
-        proxyManager.observeActive()
+        proxyManager.observeActive
             .subscribe { onProxySettingsChanged() }
     }
 }

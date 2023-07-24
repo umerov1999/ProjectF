@@ -1959,4 +1959,5 @@
     <string name="disable_unvote">Disable unvote</string>
     <string name="empty_background">Empty Background</string>
     <string name="remember">Remember</string>
+    <string name="instant_photo_display">Instant photo display</string>
 </resources>

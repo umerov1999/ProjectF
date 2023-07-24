@@ -107,7 +107,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
 
     internal fun reconfigureOptionsHide(isShowHidden: Boolean) {
         mAdapter?.updateShowHidden(isShowHidden)
-        if (!Settings.get().security().hasHiddenDialogs()) {
+        if (!Settings.get().security().hasHiddenDialogs) {
             mFab?.setImageResource(R.drawable.pencil)
             Settings.get().security().showHiddenDialogs = false
             return
@@ -185,7 +185,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         }
         mFab?.setOnLongClickListener {
             if (!Settings.get().security().showHiddenDialogs && Settings.get().security()
-                    .hasHiddenDialogs()
+                    .hasHiddenDialogs
             ) {
                 onSecurityClick()
             }
@@ -194,7 +194,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         mFabScrollListener = mFab?.getRecyclerObserver(20)
         mRecyclerView = root.findViewById(R.id.recycleView)
         mRecyclerView?.layoutManager = LinearLayoutManager(requireActivity())
-        mRecyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(DialogsAdapter.PICASSO_TAG))
+        PicassoPauseOnScrollListener.addListener(mRecyclerView, DialogsAdapter.PICASSO_TAG)
         mRecyclerView?.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {
             override fun onScrollToLastElement() {
                 presenter?.fireScrollToEnd()

@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.settings.ISettings.IPushSettings
 
 internal class PushSettings(context: Context) : IPushSettings {
     private val app: Context = context.applicationContext
-    override fun savePushRegistations(data: Collection<VKPushRegistration>) {
+    override fun savePushRegistrations(data: Collection<VKPushRegistration>) {
         val target: MutableSet<String> = HashSet(data.size)
         for (registration in data) {
             target.add(kJson.encodeToString(VKPushRegistration.serializer(), registration))

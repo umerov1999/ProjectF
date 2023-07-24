@@ -27,7 +27,7 @@ class LocalServerRestProvider @SuppressLint("CheckResult") constructor(private v
     }
 
     private fun createLocalServerRest(): SimplePostHttp {
-        val localSettings = mainSettings.getLocalServer()
+        val localSettings = mainSettings.localServer
         val builder = OkHttpClient.Builder()
             .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
             .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
@@ -80,7 +80,7 @@ class LocalServerRestProvider @SuppressLint("CheckResult") constructor(private v
     }
 
     init {
-        mainSettings.observeLocalServer()
+        mainSettings.observeLocalServer
             .subscribe { onLocalServerSettingsChanged() }
     }
 }

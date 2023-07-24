@@ -39,7 +39,7 @@ class FileExistJVM : AbsFileExist {
             if (!setBusy(true)) {
                 return@create
             }
-            val temp = File(get().main().getMusicDir())
+            val temp = File(get().main().musicDir)
             if (!temp.exists()) {
                 setBusy(false)
                 t.onComplete()

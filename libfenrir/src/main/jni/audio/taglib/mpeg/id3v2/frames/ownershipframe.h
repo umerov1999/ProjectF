@@ -58,14 +58,14 @@ namespace TagLib {
       /*!
        * Destroys this OwnershipFrame instance.
        */
-      virtual ~OwnershipFrame();
+      ~OwnershipFrame() override;
 
       /*!
        * Returns the text of this popularimeter.
        *
        * \see text()
        */
-      virtual String toString() const;
+      String toString() const override;
 
       /*!
        * Returns the date purchased.
@@ -131,16 +131,16 @@ namespace TagLib {
     protected:
       // Reimplementations.
 
-      virtual void parseFields(const ByteVector &data);
-      virtual ByteVector renderFields() const;
+      void parseFields(const ByteVector &data) override;
+      ByteVector renderFields() const override;
 
     private:
       /*!
        * The constructor used by the FrameFactory.
        */
       OwnershipFrame(const ByteVector &data, Header *h);
-      OwnershipFrame(const OwnershipFrame &);
-      OwnershipFrame &operator=(const OwnershipFrame &);
+      OwnershipFrame(const OwnershipFrame &) = delete;
+      OwnershipFrame &operator=(const OwnershipFrame &) = delete;
 
       class OwnershipFramePrivate;
       OwnershipFramePrivate *d;

@@ -95,7 +95,7 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
         ProxyUtil.applyProxyConfig(builder, proxySettings.activeProxy)
         BitmapSafeResize.setMaxResolution(Settings.get().other().maxBitmapResolution)
         BitmapSafeResize.setHardwareRendering(Settings.get().other().rendering_mode)
-        CoverSafeResize.setMaxResolution(Settings.get().other().getMaxThumbResolution())
+        CoverSafeResize.setMaxResolution(Settings.get().other().maxThumbResolution)
         return Picasso.Builder(app)
             .defaultBitmapConfig(Bitmap.Config.ARGB_8888)
             .client(builder.build())
@@ -231,7 +231,7 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
     }
 
     init {
-        proxySettings.observeActive()
+        proxySettings.observeActive
             .subscribe { onProxyChanged() }
     }
 }

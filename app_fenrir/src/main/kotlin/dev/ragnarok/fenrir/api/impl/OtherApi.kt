@@ -29,7 +29,7 @@ class OtherApi(private val accountId: Long, private val provider: IVKRestProvide
                         val request: Request = Request.Builder()
                             .url(
                                 "https://" + Settings.get()
-                                    .other().get_Api_Domain() + "/method/" + method
+                                    .other().apiDomain + "/method/" + method
                             )
                             .post(bodyBuilder.build())
                             .build()

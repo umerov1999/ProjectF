@@ -44,7 +44,7 @@ class UploadRestProvider(private val mainSettings: ISettings.IMainSettings) : IU
     }
 
     private fun createUploadRest(): SimplePostHttp {
-        val localSettings = mainSettings.getLocalServer()
+        val localSettings = mainSettings.localServer
         val builder: OkHttpClient.Builder = OkHttpClient.Builder()
             .readTimeout(Constants.UPLOAD_TIMEOUT, TimeUnit.SECONDS)
             .connectTimeout(Constants.UPLOAD_TIMEOUT, TimeUnit.SECONDS)
@@ -84,7 +84,7 @@ class UploadRestProvider(private val mainSettings: ISettings.IMainSettings) : IU
     }
 
     init {
-        mainSettings.observeLocalServer()
+        mainSettings.observeLocalServer
             .subscribe { onLocalServerSettingsChanged() }
     }
 }

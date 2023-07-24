@@ -45,7 +45,7 @@ buildscript {
 
     //firebase libraries
     ext.firebaseDatatransportVersion = "18.1.8"
-    ext.firebaseMessagingVersion = "23.1.2"
+    ext.firebaseMessagingVersion = "23.2.0"
 
     //firebase common libraries
     ext.firebaseCommonVersion = "20.3.3"

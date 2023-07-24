@@ -2,9 +2,6 @@ package dev.ragnarok.fenrir.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.util.AttributeSet
 import android.util.Log
 import android.view.*
@@ -15,15 +12,19 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.media.MaterialPlayPauseFab
 import dev.ragnarok.fenrir.view.media.MediaActionDrawable
-import java.lang.ref.WeakReference
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
+import java.util.concurrent.TimeUnit
 
 class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     private val mContext: Context
     private val mUseFastForward: Boolean
-    private val mHandler: Handler = MessageHandler(this)
+    private var mRefreshDisposable = Disposable.disposed()
+    private var mHideDisposable = Disposable.disposed()
     private var mPlayer: MediaPlayerControl? = null
     private var mAnchor: ViewGroup? = null
     private var mRoot: View? = null
@@ -42,11 +43,11 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     private var mRewButton: ImageButton? = null
     private val mPauseListener = OnClickListener {
         doPauseResume()
-        show(sDefaultTimeout)
+        show()
     }
     private val mFullscreenListener = OnClickListener {
         doToggleFullscreen()
-        show(sDefaultTimeout)
+        show()
     }
 
     private val mRewListener = OnClickListener {
@@ -57,7 +58,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             mPlayer?.seekTo(pos)
         }
         setProgress()
-        show(sDefaultTimeout)
+        show()
     }
     private val mFfwdListener = OnClickListener {
         if (mPlayer == null) {
@@ -69,7 +70,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             mPlayer?.seekTo(pos)
         }
         setProgress()
-        show(sDefaultTimeout)
+        show()
     }
     private var mComment: TextView? = null
     private var mPopup: TextView? = null
@@ -200,18 +201,34 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             // the buttons.
         }
     }
-    /**
-     * Show the controller on screen. It will go away
-     * automatically after 'timeout' milliseconds of inactivity.
-     *
-     * the controller until hide() is called.
-     */
-    /**
-     * Show the controller on screen. It will go away
-     * automatically after 3 seconds of inactivity.
-     */
-    @JvmOverloads
-    fun show(timeout: Int = sDefaultTimeout) {
+
+    private fun queueNextRefresh(timeMs: Long) {
+        mRefreshDisposable.dispose()
+        mRefreshDisposable = Observable.just(Any())
+            .delay(timeMs, TimeUnit.MILLISECONDS)
+            .toMainThread()
+            .subscribe {
+                val pos = setProgress()
+                if (!mDragging && isShowing && mPlayer?.isPlaying == true) {
+                    queueNextRefresh(1000 - pos % 1000)
+                }
+            }
+    }
+
+    private fun queueHide() {
+        mHideDisposable.dispose()
+        mHideDisposable = Observable.just(Any())
+            .delay(15, TimeUnit.SECONDS)
+            .toMainThread()
+            .subscribe {
+                if (!mDragging && isShowing && mPlayer?.isPlaying == true) {
+                    mPlayer?.hideActionBar()
+                    hide()
+                }
+            }
+    }
+
+    fun show() {
         if (!isShowing && mAnchor != null) {
             setProgress()
             mPauseButton?.requestFocus()
@@ -225,16 +242,8 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             isShowing = true
         }
         updatePausePlay()
-
-        // cause the progress bar to be updated even if mShowing
-        // was already true.  This happens, for example, if we're
-        // paused with the progress bar showing the user hits play.
-        mHandler.sendEmptyMessage(SHOW_PROGRESS)
-        val msg = mHandler.obtainMessage(FADE_OUT)
-        if (timeout != 0) {
-            mHandler.removeMessages(FADE_OUT)
-            mHandler.sendMessageDelayed(msg, timeout.toLong())
-        }
+        queueNextRefresh(500)
+        queueHide()
     }
 
     /**
@@ -242,12 +251,22 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
      */
     fun hide() {
         try {
+            mHideDisposable.dispose()
+            mRefreshDisposable.dispose()
             mAnchor?.removeView(this)
-            mHandler.removeMessages(SHOW_PROGRESS)
-        } catch (ex: IllegalArgumentException) {
+        } catch (ex: Exception) {
             Log.w("MediaController", "already removed")
         }
         isShowing = false
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        if (isInEditMode) {
+            return
+        }
+        mHideDisposable.dispose()
+        mRefreshDisposable.dispose()
     }
 
     private fun stringForTime(timeMs: Long): String {
@@ -295,12 +314,12 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        show(sDefaultTimeout)
+        show()
         return true
     }
 
     override fun onTrackballEvent(ev: MotionEvent): Boolean {
-        show(sDefaultTimeout)
+        show()
         return false
     }
 
@@ -315,7 +334,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             KeyEvent.KEYCODE_HEADSETHOOK, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, KeyEvent.KEYCODE_SPACE -> {
                 if (uniqueDown) {
                     doPauseResume()
-                    show(sDefaultTimeout)
+                    show()
                     mPauseButton?.requestFocus()
                 }
                 return true
@@ -325,7 +344,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
                 if (uniqueDown && mPlayer?.isPlaying != true) {
                     mPlayer?.start()
                     updatePausePlay()
-                    show(sDefaultTimeout)
+                    show()
                 }
                 return true
             }
@@ -336,7 +355,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
                 if (uniqueDown && mPlayer?.isPlaying == true) {
                     mPlayer?.pause()
                     updatePausePlay()
-                    show(sDefaultTimeout)
+                    show()
                 }
                 return true
             }
@@ -354,7 +373,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             }
 
             else -> {
-                show(sDefaultTimeout)
+                show()
                 return super.dispatchKeyEvent(event)
             }
         }
@@ -459,36 +478,11 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         fun commentClick()
         fun toggleFullScreen()
         fun toPIPScreen()
-    }
-
-    private class MessageHandler(view: VideoControllerView) :
-        Handler(Looper.getMainLooper()) {
-        private val mView: WeakReference<VideoControllerView> = WeakReference(view)
-        override fun handleMessage(msg: Message) {
-            val view = mView.get()
-            if (view?.mPlayer == null) {
-                return
-            }
-            val pos: Long
-            when (msg.what) {
-                FADE_OUT -> view.hide()
-                SHOW_PROGRESS -> {
-                    pos = view.setProgress()
-                    if (!view.mDragging && view.isShowing && view.mPlayer?.isPlaying == true) {
-                        obtainMessage(SHOW_PROGRESS)
-                        sendMessageDelayed(obtainMessage(SHOW_PROGRESS), 1000 - pos % 1000)
-                    }
-                }
-            }
-        }
-
+        fun hideActionBar()
     }
 
     companion object {
         private const val TAG = "VideoControllerView"
-        private const val sDefaultTimeout = 0
-        private const val FADE_OUT = 1
-        private const val SHOW_PROGRESS = 2
     }
 
     override fun onSeekBarDrag(position: Long) {
@@ -497,23 +491,17 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         mDragging = false
         setProgress()
         updatePausePlay()
-        show(sDefaultTimeout)
-
-        // Ensure that progress is properly updated in the future,
-        // the call to show() does not guarantee this because it is a
-        // no-op if we are already showing.
-        mHandler.sendEmptyMessage(SHOW_PROGRESS)
+        show()
     }
 
     override fun onSeekBarMoving(position: Long) {
         mPlayer ?: return
         if (!mDragging) {
-            show(3600000)
             mDragging = true
-            mHandler.removeMessages(SHOW_PROGRESS)
+            mRefreshDisposable.dispose()
+            mHideDisposable.dispose()
         }
 
-        mPlayer?.seekTo(position)
         if (mCurrentTime != null) mCurrentTime?.text = stringForTime(position)
     }
 }

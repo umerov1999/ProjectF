@@ -6,7 +6,7 @@ import dev.ragnarok.filegallery.fragment.filemanager.FileManagerFragment
 import dev.ragnarok.filegallery.fragment.tagdir.TagDirFragment
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerFragment
 import dev.ragnarok.filegallery.model.Video
-
+import dev.ragnarok.filegallery.util.Utils
 
 object PlaceFactory {
     fun getFileManagerPlace(
@@ -39,6 +39,7 @@ object PlaceFactory {
     }
 
     fun getPhotoLocalServerPlace(photos: Long, position: Int, invert: Boolean): Place {
+        Utils.registerParcelNative(photos)
         return Place(Place.PHOTO_LOCAL_SERVER).setArguments(
             PhotoPagerActivity.buildArgsForAlbum(
                 photos,
@@ -49,6 +50,7 @@ object PlaceFactory {
     }
 
     fun getPhotoLocalPlace(photos: Long, position: Int, invert: Boolean): Place {
+        Utils.registerParcelNative(photos)
         return Place(Place.PHOTO_LOCAL).setArguments(
             PhotoPagerActivity.buildArgsForAlbum(
                 photos,

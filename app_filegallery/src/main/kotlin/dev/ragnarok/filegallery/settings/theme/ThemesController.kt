@@ -326,7 +326,7 @@ object ThemesController {
     )
 
     fun getCurrentTheme(): ThemeValue {
-        val key: String = Settings.get().main().getMainThemeKey()
+        val key: String = Settings.get().main().mainThemeKey
 
         if (key == "random") {
             return randomTheme
@@ -346,7 +346,7 @@ object ThemesController {
     @StyleRes
     fun currentStyle(): Int {
         val t = getCurrentTheme()
-        return when (Settings.get().main().getThemeOverlay()) {
+        return when (Settings.get().main().themeOverlay) {
             ThemeOverlay.AMOLED -> {
                 t.themeAmoledRes
             }

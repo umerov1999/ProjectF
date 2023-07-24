@@ -15,10 +15,11 @@ import dev.ragnarok.fenrir.model.ContactConversation
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.serializeble.json.Json
-import dev.ragnarok.fenrir.util.serializeble.json.decodeFromStream
+import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import kotlinx.serialization.builtins.ListSerializer
+import okio.buffer
+import okio.source
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.Locale
 
@@ -52,9 +53,9 @@ class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
         try {
             val file = File(path)
             if (file.exists()) {
-                val contacts: List<ContactConversation> = kJson.decodeFromStream(
+                val contacts: List<ContactConversation> = kJson.decodeFromBufferedSource(
                     ListSerializer(ContactConversation.serializer()),
-                    FileInputStream(file)
+                    file.source().buffer()
                 )
                 data.clear()
                 data.addAll(contacts)

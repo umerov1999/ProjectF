@@ -78,7 +78,7 @@ class LocalImageAlbumsFragment :
             StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL)
         mRecyclerView = view.findViewById(R.id.list)
         mRecyclerView?.layoutManager = manager
-        mRecyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(LocalPhotoAlbumsAdapter.PICASSO_TAG))
+        PicassoPauseOnScrollListener.addListener(mRecyclerView, LocalPhotoAlbumsAdapter.PICASSO_TAG)
         mAlbumsAdapter =
             LocalPhotoAlbumsAdapter(requireActivity(), emptyList(), Content_Local.PHOTO)
         mAlbumsAdapter?.setClickListener(this)

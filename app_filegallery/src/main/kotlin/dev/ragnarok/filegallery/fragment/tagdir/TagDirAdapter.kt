@@ -163,7 +163,7 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
             t.setId(item.fileNameHash)
             t.setOwnerId(item.filePathHash)
             if (MusicPlaybackController.isNowPlayingOrPreparingOrPaused(t)) {
-                if (!Settings.get().main().isUse_stop_audio()) {
+                if (!Settings.get().main().isUse_stop_audio) {
                     MusicPlaybackController.playOrPause()
                 } else {
                     MusicPlaybackController.stop()

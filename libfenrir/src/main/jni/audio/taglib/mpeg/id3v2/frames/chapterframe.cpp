@@ -23,12 +23,12 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <tbytevectorlist.h>
-#include <tpropertymap.h>
-#include <tdebug.h>
-#include <stdio.h>
-
 #include "chapterframe.h"
+
+#include "tbytevectorlist.h"
+#include "tpropertymap.h"
+#include "tdebug.h"
+#include <cstdio>
 
 using namespace TagLib;
 using namespace ID3v2;
@@ -37,7 +37,7 @@ class ChapterFrame::ChapterFramePrivate
 {
 public:
   ChapterFramePrivate() :
-    tagHeader(0),
+    tagHeader(nullptr),
     startTime(0),
     endTime(0),
     startOffset(0),
@@ -85,8 +85,7 @@ ChapterFrame::ChapterFrame(const ByteVector &elementID,
   d->startOffset = startOffset;
   d->endOffset = endOffset;
 
-  for(FrameList::ConstIterator it = embeddedFrames.begin();
-      it != embeddedFrames.end(); ++it)
+  for(auto it = embeddedFrames.begin(); it != embeddedFrames.end(); ++it)
     addEmbeddedFrame(*it);
 }
 
@@ -172,7 +171,7 @@ void ChapterFrame::addEmbeddedFrame(Frame *frame)
 void ChapterFrame::removeEmbeddedFrame(Frame *frame, bool del)
 {
   // remove the frame from the frame list
-  FrameList::Iterator it = d->embeddedFrameList.find(frame);
+  auto it = d->embeddedFrameList.find(frame);
   d->embeddedFrameList.erase(it);
 
   // ...and from the frame list map
@@ -186,8 +185,8 @@ void ChapterFrame::removeEmbeddedFrame(Frame *frame, bool del)
 
 void ChapterFrame::removeEmbeddedFrames(const ByteVector &id)
 {
-  FrameList l = d->embeddedFrameListMap[id];
-  for(FrameList::ConstIterator it = l.begin(); it != l.end(); ++it)
+  const FrameList l = d->embeddedFrameListMap[id];
+  for(auto it = l.begin(); it != l.end(); ++it)
     removeEmbeddedFrame(*it, true);
 }
 
@@ -205,8 +204,7 @@ String ChapterFrame::toString() const
 
   if(!d->embeddedFrameList.isEmpty()) {
     StringList frameIDs;
-    for(FrameList::ConstIterator it = d->embeddedFrameList.begin();
-        it != d->embeddedFrameList.end(); ++it)
+    for(auto it = d->embeddedFrameList.cbegin(); it != d->embeddedFrameList.cend(); ++it)
       frameIDs.append((*it)->frameID());
     s += ", sub-frames: [ " + frameIDs.toString(", ") + " ]";
   }
@@ -227,16 +225,16 @@ ChapterFrame *ChapterFrame::findByElementID(const ID3v2::Tag *tag, const ByteVec
 {
   ID3v2::FrameList comments = tag->frameList("CHAP");
 
-  for(ID3v2::FrameList::ConstIterator it = comments.begin();
-      it != comments.end();
+  for(auto it = comments.cbegin();
+      it != comments.cend();
       ++it)
   {
-    ChapterFrame *frame = dynamic_cast<ChapterFrame *>(*it);
+    auto frame = dynamic_cast<ChapterFrame *>(*it);
     if(frame && frame->elementID() == eID)
       return frame;
   }
 
-  return 0;
+  return nullptr;
 }
 
 void ChapterFrame::parseFields(const ByteVector &data)
@@ -293,8 +291,8 @@ ByteVector ChapterFrame::renderFields() const
   data.append(ByteVector::fromUInt(d->endTime, true));
   data.append(ByteVector::fromUInt(d->startOffset, true));
   data.append(ByteVector::fromUInt(d->endOffset, true));
-  FrameList l = d->embeddedFrameList;
-  for(FrameList::ConstIterator it = l.begin(); it != l.end(); ++it) {
+  const FrameList l = d->embeddedFrameList;
+  for(auto it = l.begin(); it != l.end(); ++it) {
     (*it)->header()->setVersion(header()->version());
     data.append((*it)->render());
   }

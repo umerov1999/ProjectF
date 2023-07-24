@@ -79,6 +79,12 @@ typename Map<Key, T>::ConstIterator Map<Key, T>::begin() const
 }
 
 template <class Key, class T>
+typename Map<Key, T>::ConstIterator Map<Key, T>::cbegin() const
+{
+  return d->map.cbegin();
+}
+
+template <class Key, class T>
 typename Map<Key, T>::Iterator Map<Key, T>::end()
 {
   detach();
@@ -89,6 +95,12 @@ template <class Key, class T>
 typename Map<Key, T>::ConstIterator Map<Key, T>::end() const
 {
   return d->map.end();
+}
+
+template <class Key, class T>
+typename Map<Key, T>::ConstIterator Map<Key, T>::cend() const
+{
+  return d->map.cend();
 }
 
 template <class Key, class T>
@@ -157,7 +169,7 @@ unsigned int Map<Key, T>::size() const
 template <class Key, class T>
 T Map<Key, T>::value(const Key &key, const T &defaultValue) const
 {
-  ConstIterator it = d->map.find(key);
+  auto it = d->map.find(key);
   return it != d->map.end() ? it->second : defaultValue;
 }
 

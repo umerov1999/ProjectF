@@ -23,10 +23,11 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <tdebug.h>
-#include <tfile.h>
-
 #include "id3v1tag.h"
+
+#include "tdebug.h"
+#include "tfile.h"
+
 #include "id3v1genres.h"
 
 using namespace TagLib;
@@ -42,7 +43,7 @@ class ID3v1::Tag::TagPrivate
 {
 public:
   TagPrivate() :
-    file(0),
+    file(nullptr),
     tagOffset(0),
     track(0),
     genre(255) {}
@@ -63,13 +64,9 @@ public:
 // StringHandler implementation
 ////////////////////////////////////////////////////////////////////////////////
 
-StringHandler::StringHandler()
-{
-}
+StringHandler::StringHandler() = default;
 
-StringHandler::~StringHandler()
-{
-}
+StringHandler::~StringHandler() = default;
 
 String ID3v1::StringHandler::parse(const ByteVector &data) const
 {

@@ -22,8 +22,8 @@ class App : Application() {
         sInstanse = this
 
         super.onCreate()
-        AppCompatDelegate.setDefaultNightMode(Settings.get().main().getNightMode())
-        if (Settings.get().main().isDeveloper_mode()) {
+        AppCompatDelegate.setDefaultNightMode(Settings.get().main().nightMode)
+        if (Settings.get().main().isDeveloper_mode) {
             CrashUtils.install(this)
         }
 
@@ -51,7 +51,7 @@ class App : Application() {
         RxJavaPlugins.setErrorHandler {
             it.printStackTrace()
             Handler(mainLooper).post {
-                if (Settings.get().main().isDeveloper_mode()) {
+                if (Settings.get().main().isDeveloper_mode) {
                     createCustomToast(this, null)?.showToastError(
                         ErrorLocalizer.localizeThrowable(
                             this,

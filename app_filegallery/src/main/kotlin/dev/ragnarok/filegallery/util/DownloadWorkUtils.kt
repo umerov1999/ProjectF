@@ -203,14 +203,14 @@ object DownloadWorkUtils {
             makeLegalFilename(
                 optString(video.title) +
                         " - " + video.ownerId + "_" + video.id + "_" + Res + "P", null
-            ), Settings.get().main().getVideoDir(), "mp4"
+            ), Settings.get().main().videoDir, "mp4"
         )
         CheckDirectory(result_filename.path)
         if (default_file_exist(context, result_filename)) {
             return
         }
         try {
-            if (!Settings.get().main().isUse_internal_downloader()) {
+            if (!Settings.get().main().isUse_internal_downloader) {
                 toExternalDownloader(context, url, result_filename)
             } else {
                 toDefaultInternalDownloader(context, url, result_filename)
@@ -228,7 +228,7 @@ object DownloadWorkUtils {
             return
         }
         try {
-            if (!Settings.get().main().isUse_internal_downloader()) {
+            if (!Settings.get().main().isUse_internal_downloader) {
                 toExternalDownloader(context, url, result_filename)
             } else {
                 toDefaultInternalDownloader(context, url, result_filename)
@@ -253,7 +253,7 @@ object DownloadWorkUtils {
 
         val result_filename = DownloadInfo(
             makeLegalFilename(audio.artist + " - " + audio.title, null),
-            Settings.get().main().getMusicDir(),
+            Settings.get().main().musicDir,
             "mp3"
         )
         CheckDirectory(result_filename.path)

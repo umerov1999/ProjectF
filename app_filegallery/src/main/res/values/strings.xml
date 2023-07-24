@@ -364,4 +364,5 @@
     <string name="start_select_mode">Select Mode</string>
     <string name="end_select_mode">End selection</string>
     <string name="send_action">Send</string>
+    <string name="instant_photo_display">Instant photo display</string>
 </resources>

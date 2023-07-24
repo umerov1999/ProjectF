@@ -228,7 +228,7 @@ class AudiosLocalServerPresenter(savedInstanceState: Bundle?) :
 
     fun playAudio(context: Context, position: Int) {
         startForPlayList(context, ArrayList(audios), position, false)
-        if (!get().main().isShow_mini_player()) getPlayerPlace().tryOpenWith(
+        if (!get().main().isShow_mini_player) getPlayerPlace().tryOpenWith(
             context
         )
     }

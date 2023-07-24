@@ -30,7 +30,7 @@ class AudioPlayerBackgroundDrawable(
     Animatable {
     private val startTimeMillis: Long = SystemClock.uptimeMillis()
     private val settings: PlayerCoverBackgroundSettings =
-        Settings.get().main().getPlayerCoverBackgroundSettings()
+        Settings.get().main().playerCoverBackgroundSettings
     private var animatingFade = true
     private var animating = false
     private var pAlpha = 0xCC
@@ -259,7 +259,7 @@ class AudioPlayerBackgroundDrawable(
         // Only accessed from main thread.
         private const val FADE_DURATION = 400f //ms
         fun setBitmap(target: View, bitmap: Bitmap, start: Boolean, @ColorInt surface: Int) {
-            val settings = Settings.get().main().getPlayerCoverBackgroundSettings()
+            val settings = Settings.get().main().playerCoverBackgroundSettings
             val drawable = AudioPlayerBackgroundDrawable(bitmap, surface)
             drawable.callback = target
             if (start && settings.enabled_rotation && settings.rotation_speed > 0) {

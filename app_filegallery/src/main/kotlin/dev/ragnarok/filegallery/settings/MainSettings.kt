@@ -20,26 +20,26 @@ internal class MainSettings(context: Context) : IMainSettings {
     private val app: Context = context.applicationContext
     private val localServerPublisher: PublishSubject<LocalServerSettings> = PublishSubject.create()
 
-    override fun getFontSize(): Int {
-        return getPreferences(app).getInt("font_size_int", 0)
-    }
+    override val fontSize: Int
+        get() = getPreferences(app).getInt("font_size_int", 0)
 
     override val isValidate_tls: Boolean
         get() = getPreferences(app).getBoolean("validate_tls", true)
 
-    @ThemeOverlay
-    override fun getThemeOverlay(): Int {
-        return try {
-            getPreferences(app).getString("theme_overlay", "0")!!.trim().toInt()
+    @get:ThemeOverlay
+    override val themeOverlay: Int
+        get() = try {
+            getPreferences(app).getString("theme_overlay", "0")?.trim { it <= ' ' }?.toInt()
+                ?: ThemeOverlay.OFF
         } catch (e: Exception) {
             ThemeOverlay.OFF
         }
-    }
 
-    override fun getMainThemeKey(): String {
-        val preferences = getPreferences(app)
-        return preferences.getString("app_theme", "cold")!!
-    }
+    override val mainThemeKey: String
+        get() {
+            val preferences = getPreferences(app)
+            return preferences.getString("app_theme", "cold")!!
+        }
 
     override fun setMainTheme(key: String) {
         val preferences = getPreferences(app)
@@ -57,71 +57,71 @@ internal class MainSettings(context: Context) : IMainSettings {
         return nightMode == Configuration.UI_MODE_NIGHT_YES
     }
 
-    @AppCompatDelegate.NightMode
-    override fun getNightMode(): Int {
-        return try {
+    @get:AppCompatDelegate.NightMode
+    override val nightMode: Int
+        get() = try {
             getPreferences(app)
                 .getString("night_switch", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM.toString())!!
-                .trim()
+                .trim { it <= ' ' }
                 .toInt()
         } catch (e: Exception) {
             AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
-    }
 
-    override fun isDeveloper_mode(): Boolean {
-        return getPreferences(app).getBoolean("developer_mode", forceDeveloperMode)
-    }
+    override val isDeveloper_mode: Boolean
+        get() = getPreferences(app).getBoolean("developer_mode", forceDeveloperMode)
 
-    override fun isEnable_dirs_files_count(): Boolean {
-        return getPreferences(app).getBoolean("enable_dirs_files_count", true)
-    }
+    override val isEnable_dirs_files_count: Boolean
+        get() = getPreferences(app).getBoolean("enable_dirs_files_count", true)
 
-    override fun isDeleteDisabled(): Boolean {
-        return getPreferences(app).getBoolean("delete_disabled", false)
-    }
+    override val isDeleteDisabled: Boolean
+        get() = getPreferences(app).getBoolean("delete_disabled", false)
 
     @Suppress("DEPRECATION")
-    override fun getMusicDir(): String {
-        var ret = getPreferences(app).getString("music_dir", null)
-        if (ret.isNullOrEmpty() || !File(ret).exists()) {
-            ret =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).absolutePath
-            getPreferences(app).edit().putString("music_dir", ret).apply()
+    override val musicDir: String
+        get() {
+            var ret = getPreferences(app).getString("music_dir", null)
+            if (ret.isNullOrEmpty() || !File(ret).exists()) {
+                ret =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).absolutePath
+                getPreferences(app).edit().putString("music_dir", ret).apply()
+            }
+            return ret!!
         }
-        return ret!!
-    }
 
     @Suppress("DEPRECATION")
-    override fun getPhotoDir(): String {
-        var ret = getPreferences(app).getString("photo_dir", null)
-        if (ret.isNullOrEmpty() || !File(ret).exists()) {
-            ret =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath + "/Fenrir"
-            getPreferences(app).edit().putString("photo_dir", ret).apply()
+    override val photoDir: String
+        get() {
+            var ret = getPreferences(app).getString("photo_dir", null)
+            if (ret.isNullOrEmpty() || !File(ret).exists()) {
+                ret =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath + "/Fenrir"
+                getPreferences(app).edit().putString("photo_dir", ret).apply()
+            }
+            return ret
         }
-        return ret
-    }
 
     @Suppress("DEPRECATION")
-    override fun getVideoDir(): String {
-        var ret = getPreferences(app).getString("video_dir", null)
-        if (ret.isNullOrEmpty() || !File(ret).exists()) {
-            ret =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).absolutePath + "/Fenrir"
-            getPreferences(app).edit().putString("video_dir", ret).apply()
+    override val videoDir: String
+        get() {
+            var ret = getPreferences(app).getString("video_dir", null)
+            if (ret.isNullOrEmpty() || !File(ret).exists()) {
+                ret =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).absolutePath + "/Fenrir"
+                getPreferences(app).edit().putString("video_dir", ret).apply()
+            }
+            return ret
         }
-        return ret
-    }
 
-    override fun getLocalServer(): LocalServerSettings {
-        val ret = getPreferences(app).getString("local_media_server", null)
-        return if (ret == null) {
-            LocalServerSettings()
-        } else {
-            kJson.decodeFromString(LocalServerSettings.serializer(), ret)
+    override val localServer: LocalServerSettings
+        get() {
+            val ret = getPreferences(app).getString("local_media_server", null)
+            return if (ret == null) {
+                LocalServerSettings()
+            } else {
+                kJson.decodeFromString(LocalServerSettings.serializer(), ret)
+            }
         }
-    }
 
     override fun setLocalServer(settings: LocalServerSettings) {
         getPreferences(app).edit()
@@ -133,18 +133,19 @@ internal class MainSettings(context: Context) : IMainSettings {
     }
 
     override fun updateLocalServer() {
-        localServerPublisher.onNext(getLocalServer())
+        localServerPublisher.onNext(localServer)
     }
 
-    override fun getPlayerCoverBackgroundSettings(): PlayerCoverBackgroundSettings {
-        val ret =
-            getPreferences(app).getString("player_background_settings_json", null)
-        return if (ret == null) {
-            PlayerCoverBackgroundSettings().set_default()
-        } else {
-            kJson.decodeFromString(PlayerCoverBackgroundSettings.serializer(), ret)
+    override val playerCoverBackgroundSettings: PlayerCoverBackgroundSettings
+        get() {
+            val ret =
+                getPreferences(app).getString("player_background_settings_json", null)
+            return if (ret == null) {
+                PlayerCoverBackgroundSettings().set_default()
+            } else {
+                kJson.decodeFromString(PlayerCoverBackgroundSettings.serializer(), ret)
+            }
         }
-    }
 
     override fun setPlayerCoverBackgroundSettings(settings: PlayerCoverBackgroundSettings) {
         getPreferences(app).edit()
@@ -154,14 +155,15 @@ internal class MainSettings(context: Context) : IMainSettings {
             ).apply()
     }
 
-    override fun getSlidrSettings(): SlidrSettings {
-        val ret = getPreferences(app).getString("slidr_settings_json", null)
-        return if (ret == null) {
-            SlidrSettings().set_default()
-        } else {
-            kJson.decodeFromString(SlidrSettings.serializer(), ret)
+    override val slidrSettings: SlidrSettings
+        get() {
+            val ret = getPreferences(app).getString("slidr_settings_json", null)
+            return if (ret == null) {
+                SlidrSettings().set_default()
+            } else {
+                kJson.decodeFromString(SlidrSettings.serializer(), ret)
+            }
         }
-    }
 
     override fun setSlidrSettings(settings: SlidrSettings) {
         getPreferences(app).edit()
@@ -171,121 +173,102 @@ internal class MainSettings(context: Context) : IMainSettings {
             ).apply()
     }
 
-    override fun getMusicLifecycle(): Int {
-        return try {
+    override val musicLifecycle: Int
+        get() = try {
             var v = getPreferences(app).getString(
-                "lifecycle_music_service",
-                Constants.AUDIO_PLAYER_SERVICE_IDLE.toString()
+                "lifecycle_music_service", Constants.AUDIO_PLAYER_SERVICE_IDLE.toString()
             )!!
-                .trim().toInt()
+                .trim { it <= ' ' }.toInt()
             if (v < 60000) {
-                getPreferences(app).edit()
-                    .putString("lifecycle_music_service", "60000").apply()
+                getPreferences(app).edit().putString("lifecycle_music_service", "60000").apply()
                 v = 60000
             }
             v
         } catch (e: Exception) {
             Constants.AUDIO_PLAYER_SERVICE_IDLE
         }
-    }
 
-    override fun getMaxBitmapResolution(): Int {
-        return try {
+    override val maxBitmapResolution: Int
+        get() = try {
             getPreferences(app).getString("max_bitmap_resolution", "4000")!!.trim()
                 .toInt()
         } catch (e: Exception) {
             4000
         }
-    }
 
-    override fun getMaxThumbResolution(): Int {
-        return try {
+    override val maxThumbResolution: Int
+        get() = try {
             getPreferences(app).getString("max_thumb_resolution", "384")!!.trim()
                 .toInt()
         } catch (e: Exception) {
             384
         }
-    }
 
-    override fun getRendering_mode(): Int {
-        return try {
+    override val rendering_mode: Int
+        get() = try {
             getPreferences(app).getString("rendering_bitmap_mode", "0")!!.trim().toInt()
         } catch (e: Exception) {
             0
         }
-    }
 
-    override fun getFFmpegPlugin(): Int {
-        return try {
+    override val fFmpegPlugin: Int
+        get() = try {
             getPreferences(app).getString("ffmpeg_audio_codecs", "1")!!.trim()
                 .toInt()
         } catch (e: Exception) {
             1
         }
-    }
 
-    override fun isPlayer_Has_Background(): Boolean {
-        return getPreferences(app).getBoolean("player_has_background", true)
-    }
+    override val isPlayer_Has_Background: Boolean
+        get() = getPreferences(app).getBoolean("player_has_background", true)
 
-    override fun isShow_mini_player(): Boolean {
-        return getPreferences(app).getBoolean("show_mini_player", true)
-    }
+    override val isShow_mini_player: Boolean
+        get() = getPreferences(app).getBoolean("show_mini_player", true)
 
-    override fun observeLocalServer(): Observable<LocalServerSettings> {
-        return localServerPublisher
-    }
+    override val observeLocalServer: Observable<LocalServerSettings>
+        get() = localServerPublisher
 
-    override fun isUse_internal_downloader(): Boolean {
-        return getPreferences(app).getBoolean("use_internal_downloader", true)
-    }
+    override val isUse_internal_downloader: Boolean
+        get() = getPreferences(app).getBoolean("use_internal_downloader", true)
 
-    override fun isShow_photos_line(): Boolean {
-        return getPreferences(app).getBoolean("show_photos_line", true)
-    }
+    override val isShow_photos_line: Boolean
+        get() = getPreferences(app).getBoolean("show_photos_line", true)
 
-    override fun isDownload_photo_tap(): Boolean {
-        return getPreferences(app).getBoolean("download_photo_tap", true)
-    }
+    override val isInstant_photo_display: Boolean
+        get() = getPreferences(app).getBoolean("instant_photo_display", false)
 
-    override fun isAudio_round_icon(): Boolean {
-        return getPreferences(app).getBoolean("audio_round_icon", true)
-    }
+    override val isDownload_photo_tap: Boolean
+        get() = getPreferences(app).getBoolean("download_photo_tap", true)
 
-    override fun isPhoto_to_user_dir(): Boolean {
-        return getPreferences(app).getBoolean("photo_to_user_dir", true)
-    }
+    override val isAudio_round_icon: Boolean
+        get() = getPreferences(app).getBoolean("audio_round_icon", true)
 
-    override fun isVideo_swipes(): Boolean {
-        return getPreferences(app).getBoolean("video_swipes", true)
-    }
+    override val isPhoto_to_user_dir: Boolean
+        get() = getPreferences(app).getBoolean("photo_to_user_dir", true)
 
-    override fun isVideo_controller_to_decor(): Boolean {
-        return getPreferences(app).getBoolean("video_controller_to_decor", false)
-    }
+    override val isVideo_swipes: Boolean
+        get() = getPreferences(app).getBoolean("video_swipes", true)
 
-    override fun isUse_stop_audio(): Boolean {
-        return getPreferences(app).getBoolean("use_stop_audio", false)
-    }
+    override val isVideo_controller_to_decor: Boolean
+        get() = getPreferences(app).getBoolean("video_controller_to_decor", false)
 
-    override fun isRevert_play_audio(): Boolean {
-        return getPreferences(app).getBoolean("revert_play_audio", false)
-    }
+    override val isUse_stop_audio: Boolean
+        get() = getPreferences(app).getBoolean("use_stop_audio", false)
 
-    override fun videoExt(): Set<String> {
-        return getPreferences(app)
+    override val isRevert_play_audio: Boolean
+        get() = getPreferences(app).getBoolean("revert_play_audio", false)
+
+    override val videoExt: Set<String>
+        get() = getPreferences(app)
             .getStringSet("videos_ext", setOf("mp4", "avi", "mpeg"))!!
-    }
 
-    override fun photoExt(): Set<String> {
-        return getPreferences(app)
+    override val photoExt: Set<String>
+        get() = getPreferences(app)
             .getStringSet("photo_ext", setOf("gif", "jpg", "jpeg", "jpg", "webp", "png", "tiff"))!!
-    }
 
-    override fun audioExt(): Set<String> {
-        return getPreferences(app)
+    override val audioExt: Set<String>
+        get() = getPreferences(app)
             .getStringSet("audio_ext", setOf("mp3", "ogg", "flac", "opus"))!!
-    }
 
     @get:ParserType
     override val currentParser: Int
@@ -299,30 +282,29 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val isCompress_incoming_traffic: Boolean
         get() = getPreferences(app).getBoolean("compress_incoming_traffic", true)
 
-    @Transformers_Types
-    override fun getViewpager_page_transform(): Int {
-        return try {
+    @get:Transformers_Types
+    override val viewpager_page_transform: Int
+        get() = try {
             getPreferences(app).getString(
                 "viewpager_page_transform",
-                java.lang.String.valueOf(Transformers_Types.OFF)
-            )!!.trim { it <= ' ' }.toInt()
+                Transformers_Types.OFF.toString()
+            )!!
+                .trim { it <= ' ' }.toInt()
         } catch (e: Exception) {
             Transformers_Types.OFF
         }
-    }
 
-    @Transformers_Types
-    override fun getPlayer_cover_transform(): Int {
-        return try {
+    @get:Transformers_Types
+    override val player_cover_transform: Int
+        get() = try {
             getPreferences(app).getString(
                 "player_cover_transform",
-                java.lang.String.valueOf(Transformers_Types.DEPTH_TRANSFORMER)
-            )!!.trim { it <= ' ' }
-                .toInt()
+                Transformers_Types.DEPTH_TRANSFORMER.toString()
+            )!!
+                .trim { it <= ' ' }.toInt()
         } catch (e: Exception) {
             Transformers_Types.DEPTH_TRANSFORMER
         }
-    }
 
     override val isLimitImage_cache: Int
         get() = try {

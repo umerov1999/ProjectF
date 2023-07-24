@@ -199,7 +199,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
                 titleRes = R.string.use_pin_for_security_title
                 onCheckedBeforeChange {
                     if (it) {
-                        if (!Settings.get().security().hasPinHash()) {
+                        if (!Settings.get().security().hasPinHash) {
                             startCreatePinActivity(this)
                             false
                         } else {

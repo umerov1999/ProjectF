@@ -50,8 +50,8 @@ interface ISettings {
         val isAd_block_story_news: Boolean
         val isBlock_news_by_words: Set<String>?
         val isNew_loading_dialog: Boolean
-        fun get_Api_Domain(): String
-        fun get_Auth_Domain(): String
+        val apiDomain: String
+        val authDomain: String
         val isUse_api_5_90_for_audio: Boolean
         val isDisable_history: Boolean
         val isShow_wall_cover: Boolean
@@ -62,7 +62,7 @@ interface ISettings {
         val isDisabledErrorFCM: Boolean
         val isSettings_no_push: Boolean
         val isCommentsDesc: Boolean
-        fun toggleCommentsDirection(): Boolean
+        val toggleCommentsDirection: Boolean
         val isInfo_reading: Boolean
         val isAuto_read: Boolean
         val isMarkListenedVoice: Boolean
@@ -79,10 +79,10 @@ interface ISettings {
         val isPlayer_Has_Background: Boolean
         val isShow_mini_player: Boolean
         val isEnable_show_recent_dialogs: Boolean
-        fun is_side_navigation(): Boolean
-        fun is_side_no_stroke(): Boolean
-        fun is_side_transition(): Boolean
-        fun is_notification_force_link(): Boolean
+        val is_side_navigation: Boolean
+        val is_side_no_stroke: Boolean
+        val is_side_transition: Boolean
+        val is_notification_force_link: Boolean
         val isEnable_show_audio_top: Boolean
         val isUse_internal_downloader: Boolean
         val isEnable_last_read: Boolean
@@ -109,6 +109,7 @@ interface ISettings {
         val isShow_mutual_count: Boolean
         val isDo_zoom_photo: Boolean
         val isChange_upload_size: Boolean
+        val isInstant_photo_display: Boolean
         val isShow_photos_line: Boolean
         val isShow_photos_date: Boolean
         var isDisable_likes: Boolean
@@ -125,12 +126,12 @@ interface ISettings {
         val fFmpegPlugin: Int
         var isRememberLocalAudioAlbum: Boolean
         var currentLocalAudioAlbum: Int
-        fun videoExt(): Set<String>
-        fun photoExt(): Set<String>
-        fun audioExt(): Set<String>
-        fun getMaxThumbResolution(): Int
-        fun isEnable_dirs_files_count(): Boolean
-        fun get_last_audio_sync(): Long
+        val videoExt: Set<String>
+        val photoExt: Set<String>
+        val audioExt: Set<String>
+        val maxThumbResolution: Int
+        val isEnable_dirs_files_count: Boolean
+        val last_audio_sync: Long
         fun set_last_audio_sync(time: Long)
         fun get_last_sticker_sets_sync(accountId: Long): Long
         fun set_last_sticker_sets_sync(accountId: Long, time: Long)
@@ -151,14 +152,14 @@ interface ISettings {
         val language: Int
         val rendering_mode: Int
         val endListAnimation: Int
-        fun appStoredVersionEqual(): Boolean
+        val appStoredVersionEqual: Boolean
         var localServer: LocalServerSettings
         var playerCoverBackgroundSettings: PlayerCoverBackgroundSettings
         var slidrSettings: SlidrSettings
         fun getUserNameChanges(userId: Long): String?
         fun setUserNameChanges(userId: Long, name: String?)
         fun reloadUserNameChangesSettings(onlyRoot: Boolean)
-        fun getUserNameChangesMap(): Map<String, String>
+        val userNameChangesMap: Map<String, String>
         val userNameChangesKeys: Set<String>
         val customChannelNotif: Int
         fun nextCustomChannelNotif()
@@ -167,8 +168,8 @@ interface ISettings {
     }
 
     interface IAccountsSettings {
-        fun observeChanges(): Flowable<Long>
-        fun observeRegistered(): Flowable<IAccountsSettings>
+        val observeChanges: Flowable<Long>
+        val observeRegistered: Flowable<IAccountsSettings>
         val registered: List<Long>
         var current: Long
         val currentAccessToken: String?
@@ -240,7 +241,7 @@ interface ISettings {
         val isLoad_history_notif: Boolean
         val isDont_write: Boolean
         val isOver_ten_attach: Boolean
-        fun cryptVersion(): Int
+        val cryptVersion: Int
     }
 
     interface INotificationSettings {
@@ -289,18 +290,18 @@ interface ISettings {
 
     interface IDrawerSettings {
         var categoriesOrder: List<DrawerCategory>
-        fun observeChanges(): Observable<List<DrawerCategory>>
+        val observeChanges: Observable<List<DrawerCategory>>
         fun reset()
     }
 
     interface ISideDrawerSettings {
         var categoriesOrder: List<DrawerCategory>
-        fun observeChanges(): Observable<List<DrawerCategory>>
+        val observeChanges: Observable<List<DrawerCategory>>
         fun reset()
     }
 
     interface IPushSettings {
-        fun savePushRegistations(data: Collection<VKPushRegistration>)
+        fun savePushRegistrations(data: Collection<VKPushRegistration>)
         val registrations: List<VKPushRegistration>
     }
 
@@ -321,17 +322,17 @@ interface ISettings {
         fun firePinAttemptNow()
         fun clearPinHistory()
         val pinEnterHistory: List<Long>
-        fun hasPinHash(): Boolean
-        fun pinHistoryDepthValue(): Int
-        fun needHideMessagesBodyForNotif(): Boolean
+        val hasPinHash: Boolean
+        val pinHistoryDepthValue: Int
+        val needHideMessagesBodyForNotif: Boolean
         fun addHiddenDialog(peerId: Long)
         fun removeHiddenDialog(peerId: Long)
-        fun hasHiddenDialogs(): Boolean
+        val hasHiddenDialogs: Boolean
         fun isHiddenDialog(peerId: Long): Boolean
         var showHiddenDialogs: Boolean
         fun reloadHiddenDialogSettings()
         fun updateLastPinTime()
-        fun IsShow_hidden_accounts(): Boolean
+        val IsShow_hidden_accounts: Boolean
     }
 
     interface IUISettings {

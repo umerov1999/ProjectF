@@ -234,7 +234,7 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             .current
         mAccountDisposable = Settings.get()
             .accounts()
-            .observeChanges()
+            .observeChanges
             .toMainThread()
             .subscribe { mAccountId = it }
         refreshCurrentTime()

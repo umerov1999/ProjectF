@@ -44,7 +44,7 @@ class VideoAlbumsByVideoFragment :
         val columns = requireActivity().resources.getInteger(R.integer.videos_column_count)
         val manager = StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = manager
-        recyclerView.addOnScrollListener(PicassoPauseOnScrollListener(VideoAlbumsNewAdapter.PICASSO_TAG))
+        PicassoPauseOnScrollListener.addListener(recyclerView, VideoAlbumsNewAdapter.PICASSO_TAG)
         mAdapter = VideoAlbumsNewAdapter(requireActivity(), emptyList())
         mAdapter?.setListener(this)
         recyclerView.adapter = mAdapter

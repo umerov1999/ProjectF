@@ -54,8 +54,12 @@ internal class InternalCoroutineDispatcher internal constructor(
 
     override fun shutdown() {
         super.shutdown()
-        channel.close()
-        scope.cancel()
+        try {
+            channel.cancel(null)
+            scope.cancel()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun dispatchSubmit(action: Action) {

@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.StubAnimatorListener
@@ -179,7 +178,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
         val columns = resources.getInteger(R.integer.files_column_count)
         mLayoutManager = StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
         mRecyclerView?.layoutManager = mLayoutManager
-        mRecyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))
+        PicassoPauseOnScrollListener.addListener(mRecyclerView)
         tvCurrentDir = root.findViewById(R.id.current_path)
         loading = root.findViewById(R.id.loading)
 
@@ -346,7 +345,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
     }
 
     override fun onDelete(item: FileItem) {
-        if (Settings.get().main().isDeleteDisabled()) {
+        if (Settings.get().main().isDeleteDisabled) {
             showMessage(R.string.delete_disabled)
             return
         }
@@ -354,7 +353,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
             .setMessage(requireActivity().getString(R.string.do_remove, item.file_name))
             .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
                 if (Settings.get().security().isUsePinForEntrance && Settings.get().security()
-                        .hasPinHash()
+                        .hasPinHash
                 ) {
                     startEnterPinActivity(item)
                 } else {
@@ -483,7 +482,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
 
     override fun startPlayAudios(audios: ArrayList<Audio>, position: Int) {
         MusicPlaybackService.startForPlayList(requireActivity(), audios, position, false)
-        if (!Settings.get().main().isShow_mini_player())
+        if (!Settings.get().main().isShow_mini_player)
             getPlayerPlace().tryOpenWith(requireActivity())
     }
 

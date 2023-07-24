@@ -153,6 +153,7 @@ object PlaceFactory {
 
 
     fun getTmpSourceGalleryPlace(accountId: Long, ptr: Long, index: Int): Place {
+        Utils.registerParcelNative(ptr)
         return Place(Place.VK_PHOTO_TMP_SOURCE)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withIntExtra(Extra.INDEX, index)

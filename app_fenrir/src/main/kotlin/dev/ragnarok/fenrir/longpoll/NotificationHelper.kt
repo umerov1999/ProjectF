@@ -319,7 +319,7 @@ object NotificationHelper {
     ) {
         val hideBody = Settings.get()
             .security()
-            .needHideMessagesBodyForNotif()
+            .needHideMessagesBodyForNotif
         val text = getMessageContent(hideBody, message, context)
         val nManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
@@ -514,7 +514,7 @@ object NotificationHelper {
         var title = pTitle
         val hideBody = Settings.get()
             .security()
-            .needHideMessagesBodyForNotif()
+            .needHideMessagesBodyForNotif
         val text =
             if (hideBody) context.getString(R.string.message_text_is_not_available) else body
         val nManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

@@ -38,17 +38,14 @@ class ProxySettingsImpl(context: Context) : IProxySettings {
         put(config)
     }
 
-    override fun observeAdding(): Observable<ProxyConfig> {
-        return addPublisher
-    }
+    override val observeAdding: Observable<ProxyConfig>
+        get() = addPublisher
 
-    override fun observeRemoving(): Observable<ProxyConfig> {
-        return deletePublisher
-    }
+    override val observeRemoving: Observable<ProxyConfig>
+        get() = deletePublisher
 
-    override fun observeActive(): Observable<Optional<ProxyConfig>> {
-        return activePublisher
-    }
+    override val observeActive: Observable<Optional<ProxyConfig>>
+        get() = activePublisher
 
     override val all: MutableList<ProxyConfig>
         get() {

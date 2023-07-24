@@ -23,8 +23,7 @@ object Version {
 
 
     val currentVersion: Int
-        get() = Settings.get().main().cryptVersion()
-
+        get() = Settings.get().main().cryptVersion
 
     fun ofCurrent(): Attrs {
         return of(currentVersion)

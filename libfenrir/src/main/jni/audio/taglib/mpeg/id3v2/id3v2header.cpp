@@ -23,13 +23,14 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
+#include "id3v2header.h"
+
 #include <iostream>
 #include <bitset>
 
-#include <tstring.h>
-#include <tdebug.h>
+#include "tstring.h"
+#include "tdebug.h"
 
-#include "id3v2header.h"
 #include "id3v2footer.h"
 #include "id3v2synchdata.h"
 
@@ -202,7 +203,7 @@ void Header::parse(const ByteVector &data)
   // note that we're doing things a little out of order here -- the size is
   // later in the bytestream than the version
 
-  ByteVector sizeData = data.mid(6, 4);
+  const ByteVector sizeData = data.mid(6, 4);
 
   if(sizeData.size() != 4) {
     d->tagSize = 0;
@@ -210,7 +211,7 @@ void Header::parse(const ByteVector &data)
     return;
   }
 
-  for(ByteVector::ConstIterator it = sizeData.begin(); it != sizeData.end(); it++) {
+  for(auto it = sizeData.begin(); it != sizeData.end(); it++) {
     if(static_cast<unsigned char>(*it) >= 128) {
       d->tagSize = 0;
       debug("TagLib::ID3v2::Header::parse() - One of the size bytes in the id3v2 header was greater than the allowed 128.");

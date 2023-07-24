@@ -46,9 +46,8 @@ internal class SideDrawerSettings(context: Context) : ISideDrawerSettings {
             publishSubject.onNext(list)
         }
 
-    override fun observeChanges(): Observable<List<DrawerCategory>> {
-        return publishSubject
-    }
+    override val observeChanges: Observable<List<DrawerCategory>>
+        get() = publishSubject
 
     override fun reset() {
         getPreferences(app).edit().remove(

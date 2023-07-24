@@ -23,9 +23,9 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <tagunion.h>
-#include <tstringlist.h>
-#include <tpropertymap.h>
+#include "tagunion.h"
+#include "tstringlist.h"
+#include "tpropertymap.h"
 
 #include "id3v1tag.h"
 #include "id3v2tag.h"
@@ -62,7 +62,7 @@ using namespace TagLib;
 class TagUnion::TagUnionPrivate
 {
 public:
-  TagUnionPrivate() : tags(3, static_cast<Tag *>(0))
+  TagUnionPrivate() : tags(3, static_cast<Tag *>(nullptr))
   {
 
   }

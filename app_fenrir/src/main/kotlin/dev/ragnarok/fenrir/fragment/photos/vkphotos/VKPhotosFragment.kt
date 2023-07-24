@@ -121,7 +121,7 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
         mRecyclerView = root.findViewById(R.id.list)
         mRecyclerView?.layoutManager = manager
-        mRecyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(TAG))
+        PicassoPauseOnScrollListener.addListener(mRecyclerView, TAG)
         mRecyclerView?.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {
             override fun onScrollToLastElement() {
                 presenter?.fireScrollToEnd()

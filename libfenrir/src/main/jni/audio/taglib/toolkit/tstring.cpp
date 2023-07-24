@@ -23,17 +23,17 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
+#include "tstring.h"
+
 #include <cerrno>
 #include <climits>
 
 #include <utf8.h>
 
-#include <tdebug.h>
-#include <tstringlist.h>
-#include <trefcounter.h>
-#include <tutils.h>
-
-#include "tstring.h"
+#include "tdebug.h"
+#include "tstringlist.h"
+#include "trefcounter.h"
+#include "tutils.h"
 
 namespace
 {
@@ -140,8 +140,7 @@ namespace TagLib {
 class String::StringPrivate : public RefCounter
 {
 public:
-  StringPrivate()
-    {}
+  StringPrivate() = default;
 
   /*!
    * Stores string in UTF-16. The byte order depends on the CPU endian.
@@ -309,6 +308,11 @@ String::ConstIterator String::begin() const
   return d->data.begin();
 }
 
+String::ConstIterator String::cbegin() const
+{
+  return d->data.cbegin();
+}
+
 String::Iterator String::end()
 {
   detach();
@@ -318,6 +322,11 @@ String::Iterator String::end()
 String::ConstIterator String::end() const
 {
   return d->data.end();
+}
+
+String::ConstIterator String::cend() const
+{
+  return d->data.cend();
 }
 
 int String::find(const String &s, int offset) const
@@ -422,7 +431,7 @@ ByteVector String::data(Type t) const
       ByteVector v(size() * 4, 0);
 
       try {
-        const ByteVector::Iterator dstEnd = utf8::utf16to8(begin(), end(), v.begin());
+        const auto dstEnd = utf8::utf16to8(begin(), end(), v.begin());
         v.resize(static_cast<unsigned int>(dstEnd - v.begin()));
       }
       catch(const utf8::exception &e) {

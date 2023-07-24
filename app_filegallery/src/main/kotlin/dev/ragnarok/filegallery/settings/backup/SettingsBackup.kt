@@ -30,6 +30,7 @@ class SettingsBackup {
         var video_swipes: Boolean? = null
         var download_photo_tap: Boolean? = null
         var show_photos_line: Boolean? = null
+        var instant_photo_display: Boolean? = null
         var audio_round_icon: Boolean? = null
         var use_long_click_download: Boolean? = null
         var revert_play_audio: Boolean? = null

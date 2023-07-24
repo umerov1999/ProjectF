@@ -41,7 +41,7 @@ class KeepLongpollService : Service() {
         )
         compositeDisposable.add(
             Settings.get().accounts()
-                .observeChanges()
+                .observeChanges
                 .observeOn(provideMainThreadScheduler())
                 .subscribe({ sendKeepAlive() }, ignore())
         )

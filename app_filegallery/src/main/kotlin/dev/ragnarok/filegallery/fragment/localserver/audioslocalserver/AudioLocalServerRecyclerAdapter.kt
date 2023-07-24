@@ -61,7 +61,7 @@ class AudioLocalServerRecyclerAdapter(
     private var mPlayerDisposable = Disposable.disposed()
     private var audioListDisposable = Disposable.disposed()
     private var currAudio: Audio?
-    private val isAudio_round_icon: Boolean = get().main().isAudio_round_icon()
+    private val isAudio_round_icon: Boolean = get().main().isAudio_round_icon
     fun setItems(data: List<Audio>) {
         this.data = data
         notifyDataSetChanged()
@@ -110,7 +110,7 @@ class AudioLocalServerRecyclerAdapter(
     @get:DrawableRes
     private val audioCoverSimple: Int
         get() = if (get().main()
-                .isAudio_round_icon()
+                .isAudio_round_icon
         ) R.drawable.audio_button else R.drawable.audio_button_material
 
     private val transformCover: Transformation by lazy {
@@ -246,7 +246,7 @@ class AudioLocalServerRecyclerAdapter(
                 AudioLocalServerOption.play_item_audio -> if (mClickListener != null) {
                     mClickListener?.onClick(position, audio)
                     if (get().main()
-                            .isShow_mini_player()
+                            .isShow_mini_player
                     ) getPlayerPlace().tryOpenWith(mContext)
                 }
 
@@ -360,7 +360,7 @@ class AudioLocalServerRecyclerAdapter(
 
     private fun doPlay(position: Int, audio: Audio) {
         if (MusicPlaybackController.isNowPlayingOrPreparingOrPaused(audio)) {
-            if (!get().main().isUse_stop_audio()) {
+            if (!get().main().isUse_stop_audio) {
                 MusicPlaybackController.playOrPause()
             } else {
                 MusicPlaybackController.stop()
@@ -411,7 +411,7 @@ class AudioLocalServerRecyclerAdapter(
             holder.play_cover.setImageResource(audioCoverSimple)
         }
         holder.play.setOnClickListener { v: View ->
-            if (get().main().isRevert_play_audio()) {
+            if (get().main().isRevert_play_audio) {
                 doMenu(holder, holder.bindingAdapterPosition, v, audio)
             } else {
                 doPlay(holder.bindingAdapterPosition, audio)
@@ -450,7 +450,7 @@ class AudioLocalServerRecyclerAdapter(
         holder.Track.setOnClickListener { view: View ->
             holder.cancelSelectionAnimation()
             holder.startSomeAnimation()
-            if (get().main().isRevert_play_audio()) {
+            if (get().main().isRevert_play_audio) {
                 doPlay(holder.bindingAdapterPosition, audio)
             } else {
                 doMenu(holder, holder.bindingAdapterPosition, view, audio)

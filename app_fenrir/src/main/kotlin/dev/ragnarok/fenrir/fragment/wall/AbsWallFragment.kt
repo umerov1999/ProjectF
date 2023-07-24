@@ -274,7 +274,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
                 recyclerView.scrollToPosition(0)
             }
         }
-        recyclerView.addOnScrollListener(PicassoPauseOnScrollListener(Constants.PICASSO_TAG))
+        PicassoPauseOnScrollListener.addListener(recyclerView)
         fabCreate?.getRecyclerObserver(7)?.let { recyclerView.addOnScrollListener(it) }
         recyclerView.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {
             override fun onScrollToLastElement() {

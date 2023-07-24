@@ -52,7 +52,7 @@ abstract class AccountDependencyPresenter<V>(
         appendDisposable(
             Settings.get()
                 .accounts()
-                .observeChanges()
+                .observeChanges
                 .toMainThread()
                 .subscribe { onAccountChange(it) })
     }

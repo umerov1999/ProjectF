@@ -23,9 +23,9 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <tbytevectorlist.h>
-#include <id3v2tag.h>
 #include "textidentificationframe.h"
+#include "tbytevectorlist.h"
+#include "id3v2tag.h"
 #include "tpropertymap.h"
 #include "id3v1genres.h"
 
@@ -60,9 +60,9 @@ TextIdentificationFrame::TextIdentificationFrame(const ByteVector &data) :
 
 TextIdentificationFrame *TextIdentificationFrame::createTIPLFrame(const PropertyMap &properties) // static
 {
-  TextIdentificationFrame *frame = new TextIdentificationFrame("TIPL");
+  auto frame = new TextIdentificationFrame("TIPL");
   StringList l;
-  for(PropertyMap::ConstIterator it = properties.begin(); it != properties.end(); ++it){
+  for(auto it = properties.begin(); it != properties.end(); ++it){
     const String role = involvedPeopleMap()[it->first];
     if(role.isEmpty()) // should not happen
       continue;
@@ -75,9 +75,9 @@ TextIdentificationFrame *TextIdentificationFrame::createTIPLFrame(const Property
 
 TextIdentificationFrame *TextIdentificationFrame::createTMCLFrame(const PropertyMap &properties) // static
 {
-  TextIdentificationFrame *frame = new TextIdentificationFrame("TMCL");
+  auto frame = new TextIdentificationFrame("TMCL");
   StringList l;
-  for(PropertyMap::ConstIterator it = properties.begin(); it != properties.end(); ++it){
+  for(auto it = properties.begin(); it != properties.end(); ++it){
     if(!it->first.startsWith(instrumentPrefix)) // should not happen
       continue;
     l.append(it->first.substr(instrumentPrefix.size()));
@@ -161,14 +161,14 @@ PropertyMap TextIdentificationFrame::asProperties() const
   if(tagName == "GENRE") {
     // Special case: Support ID3v1-style genre numbers. They are not officially supported in
     // ID3v2, however it seems that still a lot of programs use them.
-    for(StringList::Iterator it = values.begin(); it != values.end(); ++it) {
+    for(auto it = values.begin(); it != values.end(); ++it) {
       bool ok = false;
       int test = it->toInt(&ok); // test if the genre value is an integer
       if(ok)
         *it = ID3v1::genre(test);
     }
   } else if(tagName == "DATE") {
-    for(StringList::Iterator it = values.begin(); it != values.end(); ++it) {
+    for(auto it = values.begin(); it != values.end(); ++it) {
       // ID3v2 specifies ISO8601 timestamps which contain a 'T' as separator between date and time.
       // Since this is unusual in other formats, the T is removed.
       int tpos = it->find("T");
@@ -211,7 +211,7 @@ void TextIdentificationFrame::parseFields(const ByteVector &data)
   while(dataLength % byteAlign != 0)
     dataLength++;
 
-  ByteVectorList l = ByteVectorList::split(data.mid(1, dataLength), textDelimiter(d->textEncoding), byteAlign);
+  const ByteVectorList l = ByteVectorList::split(data.mid(1, dataLength), textDelimiter(d->textEncoding), byteAlign);
 
   d->fieldList.clear();
 
@@ -219,7 +219,7 @@ void TextIdentificationFrame::parseFields(const ByteVector &data)
   // type is the same specified for this frame
 
   unsigned short firstBom = 0;
-  for(ByteVectorList::ConstIterator it = l.begin(); it != l.end(); it++) {
+  for(auto it = l.begin(); it != l.end(); it++) {
     if(!it->isEmpty() || (it == l.begin() && frameID() == "TXXX")) {
       if(d->textEncoding == String::Latin1) {
         d->fieldList.append(Tag::latin1StringHandler()->parse(*it));
@@ -256,13 +256,13 @@ ByteVector TextIdentificationFrame::renderFields() const
 
   v.append(static_cast<char>(encoding));
 
-  for(StringList::ConstIterator it = d->fieldList.begin(); it != d->fieldList.end(); it++) {
+  for(auto it = d->fieldList.cbegin(); it != d->fieldList.cend(); it++) {
 
     // Since the field list is null delimited, if this is not the first
     // element in the list, append the appropriate delimiter for this
     // encoding.
 
-    if(it != d->fieldList.begin())
+    if(it != d->fieldList.cbegin())
       v.append(textDelimiter(encoding));
 
     v.append((*it).data(encoding));
@@ -290,8 +290,8 @@ PropertyMap TextIdentificationFrame::makeTIPLProperties() const
     map.unsupportedData().append(frameID());
     return map;
   }
-  StringList l = fieldList();
-  for(StringList::ConstIterator it = l.begin(); it != l.end(); ++it) {
+  const StringList l = fieldList();
+  for(auto it = l.begin(); it != l.end(); ++it) {
     bool found = false;
     for(size_t i = 0; i < involvedPeopleSize; ++i)
       if(*it == involvedPeople[i].first) {
@@ -317,8 +317,8 @@ PropertyMap TextIdentificationFrame::makeTMCLProperties() const
     map.unsupportedData().append(frameID());
     return map;
   }
-  StringList l = fieldList();
-  for(StringList::ConstIterator it = l.begin(); it != l.end(); ++it) {
+  const StringList l = fieldList();
+  for(auto it = l.begin(); it != l.end(); ++it) {
     String instrument = it->upper();
     if(instrument.isEmpty()) {
       // instrument is not a valid key -> frame unsupported
@@ -337,7 +337,7 @@ PropertyMap TextIdentificationFrame::makeTMCLProperties() const
 
 UserTextIdentificationFrame::UserTextIdentificationFrame(String::Type encoding) :
   TextIdentificationFrame("TXXX", encoding),
-  d(0)
+  d(nullptr)
 {
   StringList l;
   l.append(String());
@@ -354,7 +354,7 @@ UserTextIdentificationFrame::UserTextIdentificationFrame(const ByteVector &data)
 
 UserTextIdentificationFrame::UserTextIdentificationFrame(const String &description, const StringList &values, String::Type encoding) :
     TextIdentificationFrame("TXXX", encoding),
-    d(0)
+    d(nullptr)
 {
   setDescription(description);
   setText(values);
@@ -364,7 +364,7 @@ String UserTextIdentificationFrame::toString() const
 {
   // first entry is the description itself, drop from values list
   StringList l = fieldList();
-  for(StringList::Iterator it = l.begin(); it != l.end(); ++it) {
+  for(auto it = l.begin(); it != l.end(); ++it) {
     l.erase(it);
     break;
   }
@@ -417,8 +417,8 @@ PropertyMap UserTextIdentificationFrame::asProperties() const
 {
   PropertyMap map;
   String tagName = txxxToKey(description());
-  StringList v = fieldList();
-  for(StringList::ConstIterator it = v.begin(); it != v.end(); ++it)
+  const StringList v = fieldList();
+  for(auto it = v.begin(); it != v.end(); ++it)
     if(it != v.begin())
       map.insert(tagName, *it);
   return map;
@@ -427,13 +427,13 @@ PropertyMap UserTextIdentificationFrame::asProperties() const
 UserTextIdentificationFrame *UserTextIdentificationFrame::find(
   ID3v2::Tag *tag, const String &description) // static
 {
-  FrameList l = tag->frameList("TXXX");
-  for(FrameList::ConstIterator it = l.begin(); it != l.end(); ++it) {
-    UserTextIdentificationFrame *f = dynamic_cast<UserTextIdentificationFrame *>(*it);
+  const FrameList l = tag->frameList("TXXX");
+  for(auto it = l.begin(); it != l.end(); ++it) {
+    auto f = dynamic_cast<UserTextIdentificationFrame *>(*it);
     if(f && f->description() == description)
       return f;
   }
-  return 0;
+  return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

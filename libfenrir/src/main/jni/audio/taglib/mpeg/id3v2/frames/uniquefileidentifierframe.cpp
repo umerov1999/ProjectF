@@ -23,12 +23,13 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <tbytevectorlist.h>
-#include <tpropertymap.h>
-#include <tdebug.h>
+#include "uniquefileidentifierframe.h"
+
+#include "tbytevectorlist.h"
+#include "tpropertymap.h"
+#include "tdebug.h"
 
 #include "id3v2tag.h"
-#include "uniquefileidentifierframe.h"
 
 using namespace TagLib;
 using namespace ID3v2;
@@ -103,18 +104,16 @@ PropertyMap UniqueFileIdentifierFrame::asProperties() const
 
 UniqueFileIdentifierFrame *UniqueFileIdentifierFrame::findByOwner(const ID3v2::Tag *tag, const String &o) // static
 {
-  ID3v2::FrameList comments = tag->frameList("UFID");
+  const ID3v2::FrameList comments = tag->frameList("UFID");
 
-  for(ID3v2::FrameList::ConstIterator it = comments.begin();
-      it != comments.end();
-      ++it)
+  for(auto it = comments.begin(); it != comments.end(); ++it)
   {
-    UniqueFileIdentifierFrame *frame = dynamic_cast<UniqueFileIdentifierFrame *>(*it);
+    auto frame = dynamic_cast<UniqueFileIdentifierFrame *>(*it);
     if(frame && frame->owner() == o)
       return frame;
   }
 
-  return 0;
+  return nullptr;
 }
 
 void UniqueFileIdentifierFrame::parseFields(const ByteVector &data)

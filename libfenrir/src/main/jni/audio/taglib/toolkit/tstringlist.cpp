@@ -55,10 +55,7 @@ StringList StringList::split(const String &s, const String &pattern)
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-StringList::StringList()
-{
-
-}
+StringList::StringList() = default;
 
 StringList::StringList(const StringList &l) : List<String>(l)
 {
@@ -72,23 +69,20 @@ StringList::StringList(const String &s)
 
 StringList::StringList(const ByteVectorList &bl, String::Type t)
 {
-  ByteVectorList::ConstIterator i = bl.begin();
-  for(;i != bl.end(); i++) {
+  for(auto i = bl.begin(); i != bl.end(); i++) {
     append(String(*i, t));
   }
 }
 
 StringList::~StringList()
-{
-
-}
+= default;
 
 String StringList::toString(const String &separator) const
 {
   String s;
 
-  ConstIterator it = begin();
-  ConstIterator itEnd = end();
+  auto it = begin();
+  auto itEnd = end();
 
   while(it != itEnd) {
     s += *it;

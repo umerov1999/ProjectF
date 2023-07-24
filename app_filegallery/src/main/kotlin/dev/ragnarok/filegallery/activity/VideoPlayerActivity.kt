@@ -23,6 +23,9 @@ import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.customview.widget.ViewDragHelper
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.activity.slidr.Slidr
@@ -51,7 +54,7 @@ import dev.ragnarok.filegallery.view.VideoControllerView
 class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
     VideoControllerView.MediaPlayerControl, IVideoSizeChangeListener, AppStyleable {
     private var mDecorView: View? = null
-    private var mSpeed: ImageView? = null
+    private var mPlaySpeed: ImageView? = null
     private var mControllerView: VideoControllerView? = null
     private var mSurfaceView: ExpandableSurfaceView? = null
     private var mPlayer: IVideoPlayer? = null
@@ -124,7 +127,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         mControllerView = VideoControllerView(this)
         val surfaceContainer = findViewById<ViewGroup>(R.id.videoSurfaceContainer)
         mSurfaceView = findViewById(R.id.videoSurface)
-        if (get().main().isVideo_swipes()) {
+        if (get().main().isVideo_swipes) {
             Slidr.attach(
                 this,
                 SlidrConfig.Builder().setAlphaForView(false).fromUnColoredToColoredStatusBar(true)
@@ -183,20 +186,20 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         if (seekSave > 0) {
             mPlayer?.seekTo(seekSave)
         }
-        mSpeed = findViewById(R.id.toolbar_play_speed)
+        mPlaySpeed = findViewById(R.id.toolbar_play_speed)
         Utils.setTint(
-            mSpeed,
+            mPlaySpeed,
             if (mPlayer?.isPlaybackSpeed == true) getColorPrimary(this) else Color.parseColor("#ffffff")
         )
-        mSpeed?.setOnClickListener {
+        mPlaySpeed?.setOnClickListener {
             mPlayer?.togglePlaybackSpeed()
             Utils.setTint(
-                mSpeed,
+                mPlaySpeed,
                 if (mPlayer?.isPlaybackSpeed == true) getColorPrimary(this) else Color.parseColor("#ffffff")
             )
         }
         mControllerView?.setMediaPlayer(this)
-        if (get().main().isVideo_controller_to_decor()) {
+        if (get().main().isVideo_controller_to_decor) {
             mControllerView?.setAnchorView(mDecorView as ViewGroup?, true)
         } else {
             mControllerView?.setAnchorView(findViewById(R.id.panel), false)
@@ -217,26 +220,38 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         })
     }
 
-    @Suppress("DEPRECATION")
     private fun resolveControlsVisibility() {
         val actionBar = supportActionBar ?: return
         if (actionBar.isShowing) {
             actionBar.hide()
             mControllerView?.hide()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) mDecorView?.layoutParams =
-                WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES)
-            mDecorView?.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mDecorView?.layoutParams =
+                    WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES)
+            }
+
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            mDecorView?.let {
+                WindowInsetsControllerCompat(window, it).let { controller ->
+                    controller.hide(WindowInsetsCompat.Type.systemBars())
+                    controller.systemBarsBehavior =
+                        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            }
         } else {
             actionBar.show()
             mControllerView?.show()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) mDecorView?.layoutParams =
-                WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
-            mDecorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                mDecorView?.layoutParams =
+                    WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
+            }
+            WindowCompat.setDecorFitsSystemWindows(window, true)
+            mDecorView?.let {
+                WindowInsetsControllerCompat(
+                    window,
+                    it
+                ).show(WindowInsetsCompat.Type.systemBars())
+            }
         }
     }
 
@@ -245,7 +260,6 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         super.onDestroy()
     }
 
-    @Suppress("DEPRECATION")
     override fun onResume() {
         super.onResume()
         ActivityFeatures.Builder()
@@ -259,14 +273,19 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
             actionBar.hide()
             mControllerView?.hide()
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) mDecorView?.layoutParams =
-            WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES)
-        mDecorView?.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_IMMERSIVE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            mDecorView?.layoutParams =
+                WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES)
+        }
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        mDecorView?.let {
+            WindowInsetsControllerCompat(window, it).let { controller ->
+                controller.hide(WindowInsetsCompat.Type.systemBars())
+                controller.systemBarsBehavior =
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -398,6 +417,24 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         }
     }
 
+    override fun hideActionBar() {
+        val actionBar = supportActionBar ?: return
+        actionBar.hide()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            mDecorView?.layoutParams =
+                WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES)
+        }
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        mDecorView?.let {
+            WindowInsetsControllerCompat(window, it).let { controller ->
+                controller.hide(WindowInsetsCompat.Type.systemBars())
+                controller.systemBarsBehavior =
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        }
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -416,30 +453,17 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         val statusbarNonColored = getStatusBarNonColored(this)
         val statusbarColored = getStatusBarColor(this)
         val w = window
-        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
-        @ColorInt val navigationColor = if (colored) getNavigationBarColor(this) else Color.BLACK
+        @ColorInt val navigationColor =
+            if (colored) getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor
-        if (Utils.hasMarshmallow()) {
-            var flags = window.decorView.systemUiVisibility
-            flags = if (invertIcons) {
-                flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            } else {
-                flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-            }
-            window.decorView.systemUiVisibility = flags
-        }
-        if (Utils.hasOreo()) {
-            var flags = window.decorView.systemUiVisibility
-            if (invertIcons) {
-                flags = flags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                w.decorView.systemUiVisibility = flags
-                w.navigationBarColor = Color.WHITE
-            } else {
-                flags = flags and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
-                w.decorView.systemUiVisibility = flags
-            }
+        val ins = WindowInsetsControllerCompat(w, w.decorView)
+        ins.isAppearanceLightStatusBars = invertIcons
+        ins.isAppearanceLightNavigationBars = invertIcons
+
+        if (!Utils.hasMarshmallow()) {
+            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         }
     }
 
