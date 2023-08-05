@@ -111,20 +111,19 @@ internal class StringJsonLexer(override val source: String) : AbstractJsonLexer(
             .forEach(consumeChunk)
     }
 
-    override fun consumeLeadingMatchingValue(keyToMatch: String, isLenient: Boolean): String? {
+    override fun peekLeadingMatchingValue(keyToMatch: String, isLenient: Boolean): String? {
         val positionSnapshot = currentPosition
         try {
-            // Malformed JSON, bailout
-            if (consumeNextToken() != TC_BEGIN_OBJ) return null
-            val firstKey = if (isLenient) consumeKeyString() else consumeStringLenientNotNull()
-            if (firstKey == keyToMatch) {
-                if (consumeNextToken() != TC_COLON) return null
-                return if (isLenient) consumeString() else consumeStringLenientNotNull()
-            }
-            return null
+            if (consumeNextToken() != TC_BEGIN_OBJ) return null // Malformed JSON, bailout
+            val firstKey = peekString(isLenient)
+            if (firstKey != keyToMatch) return null
+            discardPeeked() // consume firstKey
+            if (consumeNextToken() != TC_COLON) return null
+            return peekString(isLenient)
         } finally {
             // Restore the position
             currentPosition = positionSnapshot
+            discardPeeked()
         }
     }
 }

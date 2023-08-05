@@ -4,6 +4,7 @@ import android.view.View
 import androidx.fragment.app.FragmentActivity
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.widget.SliderPanel.OnPanelSlideListener
+import dev.ragnarok.fenrir.util.Utils
 
 internal class FragmentPanelSlideListener(private val view: View, private val config: SlidrConfig) :
     OnPanelSlideListener {
@@ -20,8 +21,7 @@ internal class FragmentPanelSlideListener(private val view: View, private val co
         if (view.context is FragmentActivity) {
             val activity = view.context as FragmentActivity
             if (activity.supportFragmentManager.backStackEntryCount == 0) {
-                activity.finish()
-                activity.overridePendingTransition(0, 0)
+                Utils.finishActivityImmediate(activity)
             } else {
                 activity.supportFragmentManager.popBackStack()
             }

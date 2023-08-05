@@ -80,6 +80,16 @@ public class ViewUtils {
     getInputMethodManager(view).showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
   }
 
+  public static void requestFocusAndShowKeyboard(@NonNull final View view) {
+    requestFocusAndShowKeyboard(view, /* useWindowInsetsController= */ true);
+  }
+
+  public static void requestFocusAndShowKeyboard(
+      @NonNull final View view, boolean useWindowInsetsController) {
+    view.requestFocus();
+    view.post(() -> showKeyboard(view, useWindowInsetsController));
+  }
+
   public static void hideKeyboard(@NonNull View view) {
     hideKeyboard(view, /* useWindowInsetsController= */ true);
   }
@@ -122,6 +132,26 @@ public class ViewUtils {
   }
 
   @NonNull
+  public static Rect calculateOffsetRectFromBounds(@NonNull View view, @NonNull View offsetView) {
+    int[] offsetViewAbsolutePosition = new int[2];
+    offsetView.getLocationOnScreen(offsetViewAbsolutePosition);
+    int offsetViewAbsoluteLeft = offsetViewAbsolutePosition[0];
+    int offsetViewAbsoluteTop = offsetViewAbsolutePosition[1];
+
+    int[] viewAbsolutePosition = new int[2];
+    view.getLocationOnScreen(viewAbsolutePosition);
+    int viewAbsoluteLeft = viewAbsolutePosition[0];
+    int viewAbsoluteTop = viewAbsolutePosition[1];
+
+    int fromLeft = offsetViewAbsoluteLeft - viewAbsoluteLeft;
+    int fromTop = offsetViewAbsoluteTop - viewAbsoluteTop;
+    int fromRight = fromLeft + offsetView.getWidth();
+    int fromBottom = fromTop + offsetView.getHeight();
+
+    return new Rect(fromLeft, fromTop, fromRight, fromBottom);
+  }
+
+  @NonNull
   public static List<View> getChildren(@Nullable View view) {
     List<View> children = new ArrayList<>();
     if (view instanceof ViewGroup) {
@@ -159,20 +189,6 @@ public class ViewUtils {
   public static float dpToPx(@NonNull Context context, @Dimension(unit = Dimension.DP) int dp) {
     Resources r = context.getResources();
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
-  }
-
-  public static void requestFocusAndShowKeyboard(@NonNull final View view) {
-    view.requestFocus();
-    view.post(
-        new Runnable() {
-          @Override
-          public void run() {
-            InputMethodManager inputMethodManager =
-                (InputMethodManager)
-                    view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-          }
-        });
   }
 
   /**

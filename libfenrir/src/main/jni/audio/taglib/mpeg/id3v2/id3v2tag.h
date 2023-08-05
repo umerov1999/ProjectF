@@ -44,7 +44,6 @@ namespace TagLib {
 
     class Header;
     class ExtendedHeader;
-    class Footer;
 
     typedef List<Frame *> FrameList;
     typedef Map<ByteVector, FrameList> FrameListMap;
@@ -77,6 +76,10 @@ namespace TagLib {
        * \a data is an ISO-8859-1 (Latin1) character array.
        */
       virtual String parse(const ByteVector &data) const;
+
+    private:
+      class Latin1StringHandlerPrivate;
+      Latin1StringHandlerPrivate *d;
     };
 
     //! The main class in the ID3v2 implementation

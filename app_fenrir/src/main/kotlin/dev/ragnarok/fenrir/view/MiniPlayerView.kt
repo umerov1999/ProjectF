@@ -104,7 +104,7 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     private fun queueNextRefresh() {
         mRefreshDisposable.dispose()
         mRefreshDisposable = Observable.just(Any())
-            .delay(700, TimeUnit.MILLISECONDS)
+            .delay(500, TimeUnit.MILLISECONDS)
             .toMainThread()
             .subscribe {
                 refreshCurrentTime()

@@ -6,8 +6,10 @@
 
 package dev.ragnarok.fenrir.util.serializeble.json
 
+import dev.ragnarok.fenrir.util.serializeble.json.internal.JsonDecodingException
 import dev.ragnarok.fenrir.util.serializeble.json.internal.JsonEncodingException
 import dev.ragnarok.fenrir.util.serializeble.json.internal.SuppressAnimalSniffer
+import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.StringJsonLexer
 import dev.ragnarok.fenrir.util.serializeble.json.internal.printQuoted
 import dev.ragnarok.fenrir.util.serializeble.json.internal.toBooleanStrictOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -268,23 +270,36 @@ val JsonElement.jsonNull: JsonNull
  * Returns content of the current element as int
  * @throws NumberFormatException if current element is not a valid representation of number
  */
-val JsonPrimitive.int: Int get() = content.toInt()
+val JsonPrimitive.int: Int
+    get() {
+        val result = mapExceptions { StringJsonLexer(content).consumeNumericLiteral() }
+        if (result !in Int.MIN_VALUE..Int.MAX_VALUE) throw NumberFormatException("$content is not an Int")
+        return result.toInt()
+    }
 
 /**
  * Returns content of the current element as int or `null` if current element is not a valid representation of number
  */
-val JsonPrimitive.intOrNull: Int? get() = content.toIntOrNull()
+val JsonPrimitive.intOrNull: Int?
+    get() {
+        val result =
+            mapExceptionsToNull { StringJsonLexer(content).consumeNumericLiteral() } ?: return null
+        if (result !in Int.MIN_VALUE..Int.MAX_VALUE) return null
+        return result.toInt()
+    }
 
 /**
  * Returns content of current element as long
  * @throws NumberFormatException if current element is not a valid representation of number
  */
-val JsonPrimitive.long: Long get() = content.toLong()
+val JsonPrimitive.long: Long get() = mapExceptions { StringJsonLexer(content).consumeNumericLiteral() }
 
 /**
  * Returns content of current element as long or `null` if current element is not a valid representation of number
  */
-val JsonPrimitive.longOrNull: Long? get() = content.toLongOrNull()
+val JsonPrimitive.longOrNull: Long?
+    get() =
+        mapExceptionsToNull { StringJsonLexer(content).consumeNumericLiteral() }
 
 /**
  * Returns content of current element as double
@@ -328,6 +343,23 @@ val JsonPrimitive.contentOrNull: String? get() = if (this is JsonNull) null else
 
 private fun JsonElement.error(element: String): Nothing =
     throw IllegalArgumentException("Element ${this::class} is not a $element")
+
+
+private inline fun <T> mapExceptionsToNull(f: () -> T): T? {
+    return try {
+        f()
+    } catch (e: JsonDecodingException) {
+        null
+    }
+}
+
+private inline fun <T> mapExceptions(f: () -> T): T {
+    return try {
+        f()
+    } catch (e: JsonDecodingException) {
+        throw NumberFormatException(e.message)
+    }
+}
 
 @PublishedApi
 internal fun unexpectedJson(key: String, expected: String): Nothing =

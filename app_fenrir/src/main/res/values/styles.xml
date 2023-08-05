@@ -776,7 +776,7 @@
         <item name="cardElevation">1dp</item>
     </style>
 
-    <style name="Theme.BadgeStyle" parent="Widget.Material3.Badge">
+    <style name="Theme.BadgeStyle" parent="Widget.Material3.Badge.AdjustToBounds">
         <item name="backgroundColor">?colorPrimary</item>
         <item name="badgeTextColor">?colorOnPrimary</item>
     </style>

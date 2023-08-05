@@ -105,8 +105,7 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
                     }
 
                     override fun onSlideClosed(): Boolean {
-                        finish()
-                        overridePendingTransition(0, 0)
+                        Utils.finishActivityImmediate(this@GifPagerActivity)
                         return true
                     }
 

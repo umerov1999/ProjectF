@@ -629,6 +629,9 @@ public class FinderPatternFinder {
       }
     }
 
+    // A more up-to-date version would be "possibleCenters.sort(moduleComparator);"
+    // But we need this old syntax for android API 23 (Marshmallow) and below
+    // cf. https://github.com/zxing/zxing/issues/1358
     Collections.sort(possibleCenters, moduleComparator);
 
     double distortion = Double.MAX_VALUE;

@@ -70,6 +70,9 @@
     <item name="boxStrokeErrorColor">@color/mtrl_error</item>
     <item name="boxStrokeWidth">@dimen/mtrl_textinput_box_stroke_width_default</item>
     <item name="boxStrokeWidthFocused">@dimen/mtrl_textinput_box_stroke_width_focused</item>
+    <!-- By default the cursor color is controlled via ?attr/colorControlActivated. -->
+    <item name="cursorColor">@null</item>
+    <item name="cursorErrorColor">@color/mtrl_error</item>
 
     <item name="counterTextAppearance">?attr/textAppearanceCaption</item>
     <item name="counterOverflowTextAppearance">?attr/textAppearanceCaption</item>
@@ -356,6 +359,9 @@
     <item name="placeholderTextAppearance">@macro/m3_comp_outlined_text_field_input_text_type</item>
     <item name="prefixTextAppearance">?attr/textAppearanceTitleMedium</item>
     <item name="suffixTextAppearance">?attr/textAppearanceTitleMedium</item>
+    <!-- By default the cursor color is controlled via ?attr/colorControlActivated. -->
+    <item name="cursorColor">@null</item>
+    <item name="cursorErrorColor">@macro/m3_comp_outlined_text_field_error_outline_color</item>
     <item name="shapeAppearance">@macro/m3_comp_outlined_text_field_container_shape</item>
     <item name="shapeAppearanceOverlay">@null</item>
   </style>
@@ -398,16 +404,18 @@
     <item name="endIconTint">@color/m3_textfield_indicator_text_color</item>
     <item name="passwordToggleDrawable">@drawable/m3_password_eye</item>
 
-   <!-- Using outlined tokens with same values. -->
-    <item name="counterTextAppearance">@macro/m3_comp_outlined_text_field_supporting_text_type</item>
-    <item name="counterOverflowTextAppearance">@macro/m3_comp_outlined_text_field_supporting_text_type</item>
-    <item name="errorTextAppearance">@macro/m3_comp_outlined_text_field_supporting_text_type</item>
-    <item name="helperTextTextAppearance">@macro/m3_comp_outlined_text_field_supporting_text_type</item>
-    <item name="hintTextAppearance">@macro/m3_comp_outlined_text_field_supporting_text_type</item>
+    <item name="counterTextAppearance">@macro/m3_comp_filled_text_field_supporting_text_type</item>
+    <item name="counterOverflowTextAppearance">@macro/m3_comp_filled_text_field_supporting_text_type</item>
+    <item name="errorTextAppearance">@macro/m3_comp_filled_text_field_supporting_text_type</item>
+    <item name="helperTextTextAppearance">@macro/m3_comp_filled_text_field_supporting_text_type</item>
+    <item name="hintTextAppearance">@macro/m3_comp_filled_text_field_supporting_text_type</item>
    <!-- Using same token from input text text appearance. -->
     <item name="placeholderTextAppearance">@macro/m3_comp_filled_text_field_input_text_type</item>
     <item name="prefixTextAppearance">?attr/textAppearanceTitleMedium</item>
     <item name="suffixTextAppearance">?attr/textAppearanceTitleMedium</item>
+    <!-- By default the cursor color is controlled via ?attr/colorControlActivated. -->
+    <item name="cursorColor">@null</item>
+    <item name="cursorErrorColor">@macro/m3_comp_filled_text_field_error_active_indicator_color</item>
     <item name="shapeAppearance">@macro/m3_comp_filled_text_field_container_shape</item>
     <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Material3.Corner.Top</item>
   </style>

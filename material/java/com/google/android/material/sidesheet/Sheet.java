@@ -20,6 +20,7 @@ import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.RestrictTo;
+import com.google.android.material.motion.MaterialBackHandler;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -27,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
  * Interface for sheet constants and {@code IntDefs} to be shared between the different {@link
  * Sheet} implementations.
  */
-interface Sheet<C extends SheetCallback> {
+interface Sheet<C extends SheetCallback> extends MaterialBackHandler {
   /** The sheet is dragging. */
   int STATE_DRAGGING = 1;
 
@@ -71,6 +72,11 @@ interface Sheet<C extends SheetCallback> {
    * left.
    */
   int EDGE_RIGHT = 0;
+  /**
+   * The sheet is based on the left edge of the screen; it slides from the left edge towards the
+   * right.
+   */
+  int EDGE_LEFT = 1;
 
   /**
    * The edge of the screen that a sheet slides out of.
@@ -78,7 +84,7 @@ interface Sheet<C extends SheetCallback> {
    * @hide
    */
   @RestrictTo(LIBRARY_GROUP)
-  @IntDef({EDGE_RIGHT})
+  @IntDef({EDGE_RIGHT, EDGE_LEFT})
   @Retention(RetentionPolicy.SOURCE)
   @interface SheetEdge {}
 

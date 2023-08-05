@@ -740,6 +740,29 @@ object Utils {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     }
 
+    fun hasUpsideDownCake(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    }
+
+    @Suppress("deprecation")
+    fun finishActivityImmediate(activity: Activity) {
+        activity.finish()
+        if (!hasUpsideDownCake()) {
+            activity.overridePendingTransition(0, 0)
+        } else {
+            activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, 0, 0)
+        }
+    }
+
+    @Suppress("deprecation")
+    fun activityTransactionImmediate(activity: Activity) {
+        if (!hasUpsideDownCake()) {
+            activity.overridePendingTransition(0, 0)
+        } else {
+            activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, 0, 0)
+        }
+    }
+
     fun indexOf(data: List<Identificable>?, id: Int): Int {
         data ?: return -1
         for (i in data.indices) {

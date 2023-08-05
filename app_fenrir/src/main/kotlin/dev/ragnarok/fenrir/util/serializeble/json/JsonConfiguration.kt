@@ -9,7 +9,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
  * Can be used for debug purposes and for custom Json-specific serializers
  * via [JsonEncoder] and [JsonDecoder].
  *
- * Standalone configuration object is meaningless and can nor be used outside of the
+ * Standalone configuration object is meaningless and can nor be used outside the
  * [Json], neither new [Json] instance can be created from it.
  *
  * Detailed description of each property is available in [JsonBuilder] class.
@@ -28,6 +28,8 @@ class JsonConfiguration @OptIn(ExperimentalSerializationApi::class) internal con
     val allowSpecialFloatingPointValues: Boolean = false,
     val useAlternativeNames: Boolean = true,
     @ExperimentalSerializationApi val namingStrategy: JsonNamingStrategy? = null,
+    @ExperimentalSerializationApi
+    val decodeEnumsCaseInsensitive: Boolean = false
 ) {
 
     /** @suppress Dokka **/
@@ -37,6 +39,6 @@ class JsonConfiguration @OptIn(ExperimentalSerializationApi::class) internal con
                 "allowStructuredMapKeys=$allowStructuredMapKeys, prettyPrint=$prettyPrint, explicitNulls=$explicitNulls, " +
                 "prettyPrintIndent='$prettyPrintIndent', coerceInputValues=$coerceInputValues, useArrayPolymorphism=$useArrayPolymorphism, " +
                 "classDiscriminator='$classDiscriminator', allowSpecialFloatingPointValues=$allowSpecialFloatingPointValues, useAlternativeNames=$useAlternativeNames, " +
-                "namingStrategy=$namingStrategy)"
+                "namingStrategy=$namingStrategy, decodeEnumsCaseInsensitive=$decodeEnumsCaseInsensitive)"
     }
 }

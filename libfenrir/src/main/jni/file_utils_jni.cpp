@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <thread>
 #include <iostream>
 #include <list>
 #include <filesystem>
@@ -56,4 +57,9 @@ Java_dev_ragnarok_fenrir_module_FileUtils_listDirRecursiveNativePointer(JNIEnv *
     string v = dirString;
     env->ReleaseStringUTFChars(dir, dirString);
     listDirRecursive(env, v, nullptr, pointer);
+}
+
+extern "C" JNIEXPORT jint
+Java_dev_ragnarok_fenrir_module_FileUtils_getThreadsCountNative(JNIEnv *env, jobject) {
+    return std::thread::hardware_concurrency();
 }

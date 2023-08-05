@@ -2,7 +2,7 @@ buildscript {
     //APP
     ext.is_developer_build = true
 
-    ext.appCompileSDK = 33
+    ext.appCompileSDK = 34
     ext.appBuildTools = "34.0.0"
     ext.appNdk = "26.0.10404224"
     ext.appMinSDK = is_developer_build ? 29 : 21
@@ -13,35 +13,36 @@ buildscript {
     ext.appFileGalleryVersionName = "1.999"
 
     //androidx libraries
-    ext.activityVersion = "1.7.2"
-    ext.annotationVersion = "1.7.0-alpha02"
+    ext.activityVersion = "1.8.0-alpha06"
+    ext.annotationVersion = "1.7.0-alpha03"
     ext.appcompatVersion = "1.6.1"
     ext.biometricVersion = "1.2.0-alpha05"
-    ext.browserVersion = "1.5.0"
-    ext.cameraVersion = "1.3.0-beta01"
+    ext.browserVersion = "1.6.0-rc01"
+    ext.cameraVersion = "1.3.0-beta02"
     ext.cardviewVersion = "1.0.0"
     ext.collectionVersion = "1.3.0-alpha04"
     ext.concurentVersion = "1.2.0-alpha01"
-    ext.constraintlayoutVersion = "2.2.0-alpha10"
+    ext.constraintlayoutVersion = "2.2.0-alpha11"
     ext.coordinatorlayoutVersion = "1.2.0"
-    ext.coreVersion = "1.11.0-beta02"
+    ext.coreVersion = "1.12.0-beta01"
     ext.customviewVersion = "1.2.0-alpha02"
     ext.customviewPoolingcontainerVersion = "1.0.0"
     ext.drawerlayoutVersion = "1.2.0"
     ext.dynamicanimationVersion = "1.1.0-alpha03"
     ext.exifinterfaceVersion = "1.3.6"
-    ext.fragmentVersion = "1.6.0"
+    ext.fragmentVersion = "1.6.1"
     ext.lifecycleVersion = "2.6.1"
     ext.mediaVersion = "1.7.0-alpha01"
     ext.media3Version = "1.1.0"
-    ext.recyclerviewVersion = "1.3.1-rc01"
+    ext.recyclerviewVersion = "1.3.1"
+    ext.resourceInspectionAnnotation = "1.0.1"
     ext.savedStateVersion = "1.2.1"
     ext.swiperefreshlayoutVersion = "1.2.0-alpha01"
     ext.tracingVersion = "1.2.0-rc01"
     ext.transitionVersion = "1.4.1"
     ext.vectordrawableVersion = "1.2.0-beta01"
-    ext.webkitVersion = "1.7.0"
-    ext.workVersion = "2.9.0-alpha01"
+    ext.webkitVersion = "1.8.0-beta01"
+    ext.workVersion = "2.9.0-alpha02"
 
     //firebase libraries
     ext.firebaseDatatransportVersion = "18.1.8"
@@ -57,15 +58,15 @@ buildscript {
 
     //common libraries
     ext.kotlin_version = "1.9.0"
-    ext.kotlin_coroutines = "1.7.2"
-    ext.kotlin_serializer = "1.5.1"
+    ext.kotlin_coroutines = "1.7.3"
+    ext.kotlin_serializer = "1.6.0-RC"
     ext.okhttpLibraryVersion = "5.0.0-alpha.11"
-    ext.okioVersion = "3.4.0"
+    ext.okioVersion = "3.5.0"
     ext.rxJavaVersion = "3.1.6"
-    ext.guavaVersion = "32.1.1-android"
+    ext.guavaVersion = "32.1.2-android"
     ext.errorproneVersion = "2.15.0"
     ext.checkerCompatQualVersion = "2.5.5"
-    ext.checkerQualAndroidVersion = "3.36.0"
+    ext.checkerQualAndroidVersion = "3.37.0"
     ext.desugarLibraryVersion = "2.0.3"
 
     //APP_PROPS
@@ -90,7 +91,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.1.0-rc01"
+        classpath "com.android.tools.build:gradle:8.1.0"
         classpath "com.google.gms:google-services:4.3.15"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"

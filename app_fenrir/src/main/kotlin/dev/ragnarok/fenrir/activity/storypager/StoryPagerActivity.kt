@@ -181,8 +181,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                     }
 
                     override fun onSlideClosed(): Boolean {
-                        finish()
-                        overridePendingTransition(0, 0)
+                        Utils.finishActivityImmediate(this@StoryPagerActivity)
                         return true
                     }
 

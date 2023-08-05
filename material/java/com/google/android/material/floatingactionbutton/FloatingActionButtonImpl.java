@@ -372,6 +372,9 @@ class FloatingActionButtonImpl {
 
   void onElevationsChanged(
       float elevation, float hoveredFocusedTranslationZ, float pressedTranslationZ) {
+    // If there is currently a state animation, we want to end the animation by jumping
+    // the drawable to the current state before changing the elevation.
+    jumpDrawableToCurrentState();
     updatePadding();
     updateShapeElevation(elevation);
   }
@@ -739,14 +742,18 @@ class FloatingActionButtonImpl {
   }
 
   void getPadding(@NonNull Rect rect) {
-    final int minPadding = ensureMinTouchTargetSize
-        ? (minTouchTargetSize - view.getSizeDimension()) / 2
-        : 0;
-
+    final int touchTargetPadding = getTouchTargetPadding();
     final float maxShadowSize = shadowPaddingEnabled ? (getElevation() + pressedTranslationZ) : 0;
-    final int hPadding = Math.max(minPadding, (int) Math.ceil(maxShadowSize));
-    final int vPadding = Math.max(minPadding, (int) Math.ceil(maxShadowSize * SHADOW_MULTIPLIER));
+    final int hPadding = Math.max(touchTargetPadding, (int) Math.ceil(maxShadowSize));
+    final int vPadding = Math.max(
+        touchTargetPadding, (int) Math.ceil(maxShadowSize * SHADOW_MULTIPLIER));
     rect.set(hPadding, vPadding, hPadding, vPadding);
+  }
+
+  int getTouchTargetPadding() {
+    return ensureMinTouchTargetSize
+        ? Math.max((minTouchTargetSize - view.getSizeDimension()) / 2, 0)
+        : 0;
   }
 
   void onPaddingUpdated(@NonNull Rect padding) {

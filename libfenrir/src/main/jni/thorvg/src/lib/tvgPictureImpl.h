@@ -70,6 +70,7 @@ struct Picture::Impl
     Picture* picture = nullptr;
     bool resizing = false;
     bool needComp = false;            //need composition
+    bool animated = false;            //picture is belonged to Animation
 
     Impl(Picture* p) : picture(p)
     {
@@ -108,7 +109,8 @@ struct Picture::Impl
                     }
                     if (paint) return RenderUpdateFlag::None;
                 }
-            }
+            } else loader->sync();
+
             if (!surface) {
                 if ((surface = loader->bitmap().release())) {
                     loader->close();

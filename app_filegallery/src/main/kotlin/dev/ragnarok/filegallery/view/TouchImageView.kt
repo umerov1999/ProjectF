@@ -940,7 +940,7 @@ open class TouchImageView @JvmOverloads constructor(
         }
 
         override fun onFling(
-            e1: MotionEvent,
+            e1: MotionEvent?,
             e2: MotionEvent,
             velocityX: Float,
             velocityY: Float

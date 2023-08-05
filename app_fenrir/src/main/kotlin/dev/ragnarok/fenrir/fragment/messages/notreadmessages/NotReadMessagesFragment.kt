@@ -38,6 +38,7 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.SafeCallInt
 import dev.ragnarok.fenrir.util.Utils.createGradientChatImage
 import dev.ragnarok.fenrir.util.Utils.safeObjectCall
@@ -242,9 +243,10 @@ class NotReadMessagesFragment :
         intent.putExtra(Extra.INCOMING, incoming)
         intent.putExtra(Extra.OUTGOING, outgoing)
         requireActivity().setResult(Activity.RESULT_OK, intent)
-        requireActivity().finish()
         if (notAnim) {
-            requireActivity().overridePendingTransition(0, 0)
+            Utils.finishActivityImmediate(requireActivity())
+        } else {
+            requireActivity().finish()
         }
     }
 

@@ -47,6 +47,7 @@ add_library(thorvg STATIC
         thorvg/src/lib/sw_engine/tvgSwShape.cpp
         thorvg/src/lib/sw_engine/tvgSwStroke.cpp
         thorvg/src/lib/tvgAccessor.cpp
+        thorvg/src/lib/tvgAnimation.cpp
         thorvg/src/lib/tvgBezier.cpp
         thorvg/src/lib/tvgCanvas.cpp
         thorvg/src/lib/tvgFill.cpp

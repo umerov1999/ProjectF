@@ -193,7 +193,7 @@ public class UCropActivity extends AppCompatActivity implements MenuProvider {
             cropAndSaveImage();
             return true;
         } else if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
             return true;
         }
         return false;

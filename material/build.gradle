@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
 }
 
-//1.9.0
+//1.10.0-alpha05
 
 def srcDirs = [
         'com/google/android/material/animation',
@@ -118,5 +118,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime:$lifecycleVersion")
     implementation("androidx.drawerlayout:drawerlayout:$drawerlayoutVersion")
     implementation("com.google.errorprone:error_prone_annotations:${errorproneVersion}")
+    implementation("androidx.resourceinspection:resourceinspection-annotation:${resourceInspectionAnnotation}")
     implementation project(path: ":viewpager2")
 }

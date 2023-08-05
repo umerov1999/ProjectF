@@ -10,6 +10,7 @@ class MessagesReplyItemCallback(
 ) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
     private var invoked = false
+    private var lastInvoke = 0L
 
     override fun onMove(
         recyclerView: RecyclerView,
@@ -45,7 +46,11 @@ class MessagesReplyItemCallback(
             !invoked && dX < INVOKE_THRESHOLD_PX -> {
                 invoked = true
                 viewHolder.itemView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                swipe.onReplySwiped(viewHolder.bindingAdapterPosition)
+                val cur = System.currentTimeMillis()
+                if (cur - lastInvoke > INVOKE_TIMEOUT) {
+                    lastInvoke = cur
+                    swipe.onReplySwiped(viewHolder.bindingAdapterPosition)
+                }
             }
 
             dX == .0f -> {
@@ -62,5 +67,6 @@ class MessagesReplyItemCallback(
         private const val UNREACHABLE_VALUE = 100000f
         private const val SWIPE_LIMIT_FACTOR = 2
         private const val INVOKE_THRESHOLD_PX = -250f
+        private const val INVOKE_TIMEOUT = 400
     }
 }

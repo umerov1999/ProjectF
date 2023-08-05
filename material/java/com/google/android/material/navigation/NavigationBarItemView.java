@@ -87,6 +87,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   @Nullable Drawable itemBackground;
   private int itemPaddingTop;
   private int itemPaddingBottom;
+  private int activeIndicatorLabelPadding;
   private float shiftAmount;
   private float scaleUpFactor;
   private float scaleDownFactor;
@@ -101,6 +102,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   private final TextView smallLabel;
   private final TextView largeLabel;
   private int itemPosition = INVALID_ITEM_POSITION;
+  @StyleRes private int activeTextAppearance = 0;
 
   @Nullable private MenuItemImpl itemData;
 
@@ -145,6 +147,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
 
     itemPaddingTop = getResources().getDimensionPixelSize(getItemDefaultMarginResId());
     itemPaddingBottom = labelGroup.getPaddingBottom();
+    activeIndicatorLabelPadding = getResources().getDimensionPixelSize(R.dimen.m3_navigation_item_active_indicator_label_padding);
 
     // The labels used aren't always visible, so they are unreliable for accessibility. Instead,
     // the content description of the NavigationBarItemView should be used for accessibility.
@@ -189,6 +192,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   protected int getSuggestedMinimumHeight() {
     LayoutParams labelGroupParams = (LayoutParams) labelGroup.getLayoutParams();
     return getSuggestedIconHeight()
+        + (labelGroup.getVisibility() == VISIBLE ? activeIndicatorLabelPadding : 0)
         + labelGroupParams.topMargin
         + labelGroup.getMeasuredHeight()
         + labelGroupParams.bottomMargin;
@@ -635,10 +639,15 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   }
 
   public void setTextAppearanceActive(@StyleRes int activeTextAppearance) {
+    this.activeTextAppearance = activeTextAppearance;
     setTextAppearanceWithoutFontScaling(largeLabel, activeTextAppearance);
     calculateTextScaleFactors(smallLabel.getTextSize(), largeLabel.getTextSize());
+  }
+
+  public void setTextAppearanceActiveBoldEnabled(boolean isBold) {
+    setTextAppearanceActive(activeTextAppearance);
     // TODO(b/246765947): Use component tokens to control font weight
-    largeLabel.setTypeface(largeLabel.getTypeface(), Typeface.BOLD);
+    largeLabel.setTypeface(largeLabel.getTypeface(), isBold ? Typeface.BOLD : Typeface.NORMAL);
   }
 
   /**
@@ -698,7 +707,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
    * is created and set.
    */
   private void refreshItemBackground() {
-    Drawable iconContainerBackgroundDrawable = null;
+    Drawable iconContainerRippleDrawable = null;
     Drawable itemBackgroundDrawable = itemBackground;
     boolean defaultHighlightEnabled = true;
 
@@ -713,9 +722,9 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
         // Remove the default focus highlight that highlights the entire view and rely on the
         // active indicator ripple to communicate state.
         defaultHighlightEnabled = false;
-        // Set the icon container's background to a ripple masked by the active indicator's
+        // Set the icon container's foreground to a ripple masked by the active indicator's
         // drawable.
-        iconContainerBackgroundDrawable =
+        iconContainerRippleDrawable =
             new RippleDrawable(
                 RippleUtils.sanitizeRippleDrawableColor(itemRippleColor), null, maskDrawable);
       } else if (itemBackgroundDrawable == null) {
@@ -727,7 +736,9 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
     // Check that this item includes an icon container. If a NavigationBarView's subclass supplies
     // a custom item layout, this can be null.
     if (iconContainer != null) {
-      ViewCompat.setBackground(iconContainer, iconContainerBackgroundDrawable);
+      // Remove any padding to avoid the active indicator from from being clipped
+      iconContainer.setPadding(0, 0, 0, 0);
+      iconContainer.setForeground(iconContainerRippleDrawable);
     }
     ViewCompat.setBackground(this, itemBackgroundDrawable);
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
@@ -777,6 +788,14 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
     }
   }
 
+  /** Set the padding between the active indicator container and the item label. */
+  public void setActiveIndicatorLabelPadding(int activeIndicatorLabelPadding) {
+    if (this.activeIndicatorLabelPadding != activeIndicatorLabelPadding) {
+      this.activeIndicatorLabelPadding = activeIndicatorLabelPadding;
+      refreshChecked();
+    }
+  }
+
   /** Set whether or not this item should show an active indicator when checked. */
   public void setActiveIndicatorEnabled(boolean enabled) {
     this.activeIndicatorEnabled = enabled;
@@ -810,7 +829,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   private void updateActiveIndicatorLayoutParams(int availableWidth) {
     // Set width to the min of either the desired indicator width or the available width minus
     // a horizontal margin.
-    if (activeIndicatorView == null) {
+    if (activeIndicatorView == null || availableWidth <= 0) {
       return;
     }
 
@@ -975,16 +994,9 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   }
 
   private int getSuggestedIconHeight() {
-    int badgeHeight = 0;
-    if (badgeDrawable != null) {
-      badgeHeight = badgeDrawable.getMinimumHeight() / 2;
-    }
-
-    // Account for the fact that the badge may fit within the top margin. Bottom margin is ignored
-    // because the icon view will be aligned to the baseline of the label group. But give space for
-    // the badge at the bottom as well, so that icon does not move if badge gravity is changed.
     LayoutParams iconContainerParams = (LayoutParams) getIconOrContainer().getLayoutParams();
-    return max(badgeHeight, iconContainerParams.topMargin) + icon.getMeasuredWidth() + badgeHeight;
+    return iconContainerParams.topMargin
+        + getIconOrContainer().getMeasuredHeight();
   }
 
   /**

@@ -25,6 +25,7 @@
         <item>Flame</item>
         <item>Valkyrie 1</item>
         <item>Valkyrie 2</item>
+        <item>Fenrir 2</item>
         <item>[Random]</item>
     </string-array>
 
@@ -54,6 +55,7 @@
         <item>22</item>
         <item>23</item>
         <item>24</item>
+        <item>25</item>
     </string-array>
 
     <!-- Google Play-->

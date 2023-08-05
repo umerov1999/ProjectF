@@ -84,6 +84,8 @@
   <public name="endIconTintMode" type="attr"/>
   <public name="endIconMinSize" type="attr"/>
   <public name="endIconScaleType" type="attr" />
+  <public name="cursorColor" type="attr"/>
+  <public name="cursorErrorColor" type="attr"/>
   <!-- Deprecated. Use endIconMode instead. -->
   <public name="passwordToggleEnabled" type="attr"/>
   <!--Deprecated. Use endIconDrawable instead. -->
@@ -100,6 +102,7 @@
   <public name="simpleItems" type="attr"/>
   <public name="simpleItemSelectedColor" type="attr"/>
   <public name="simpleItemSelectedRippleColor" type="attr"/>
+  <public name="dropDownBackgroundTint" type="attr"/>
 
   <public name="Widget.Design.TextInputLayout" type="style"/>
   <public name="Widget.MaterialComponents.TextInputLayout.FilledBox" type="style"/>

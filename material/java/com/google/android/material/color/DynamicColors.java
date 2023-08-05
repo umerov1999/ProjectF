@@ -21,6 +21,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
@@ -31,7 +32,9 @@ import android.view.ContextThemeWrapper;
 import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StyleRes;
+import androidx.core.content.ContextCompat;
 import androidx.core.os.BuildCompat;
 import com.google.android.material.color.utilities.Hct;
 import com.google.android.material.color.utilities.SchemeContent;
@@ -39,12 +42,31 @@ import com.google.android.material.resources.MaterialAttributes;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /** Utility for applying dynamic colors to application/activities. */
 public class DynamicColors {
   private static final int[] DYNAMIC_COLOR_THEME_OVERLAY_ATTRIBUTE =
       new int[] {R.attr.dynamicColorThemeOverlay};
+
+  @RequiresApi(api = VERSION_CODES.S)
+  private static final int[] SYSTEM_NEUTRAL_PALETTE_RES_IDS =
+      new int[] {
+        android.R.color.system_neutral1_0,
+        android.R.color.system_neutral1_10,
+        android.R.color.system_neutral1_50,
+        android.R.color.system_neutral1_100,
+        android.R.color.system_neutral1_200,
+        android.R.color.system_neutral1_300,
+        android.R.color.system_neutral1_400,
+        android.R.color.system_neutral1_500,
+        android.R.color.system_neutral1_600,
+        android.R.color.system_neutral1_700,
+        android.R.color.system_neutral1_800,
+        android.R.color.system_neutral1_900,
+        android.R.color.system_neutral1_1000,
+      };
 
   private static final DeviceSupportCondition DEFAULT_DEVICE_SUPPORT_CONDITION =
       new DeviceSupportCondition() {
@@ -115,6 +137,7 @@ public class DynamicColors {
   }
 
   private static final int USE_DEFAULT_THEME_OVERLAY = 0;
+  private static final int UPDATED_NEUTRAL_PALETTE_CHROMA = 6;
 
   private DynamicColors() {}
 
@@ -282,24 +305,25 @@ public class DynamicColors {
       return;
     }
     // Set default theme overlay as 0, as it's not used in content-based dynamic colors.
-    int theme = 0;
+    int themeOverlayResourceId = 0;
     // Only retrieves the theme overlay if we're applying just dynamic colors.
     if (dynamicColorsOptions.getContentBasedSeedColor() == null) {
-      theme =
+      themeOverlayResourceId =
           dynamicColorsOptions.getThemeOverlay() == USE_DEFAULT_THEME_OVERLAY
               ? getDefaultThemeOverlay(activity)
               : dynamicColorsOptions.getThemeOverlay();
     }
 
-    if (dynamicColorsOptions.getPrecondition().shouldApplyDynamicColors(activity, theme)) {
+    if (dynamicColorsOptions
+        .getPrecondition()
+        .shouldApplyDynamicColors(activity, themeOverlayResourceId)) {
       // Applies content-based dynamic colors if content-based source is provided.
       if (dynamicColorsOptions.getContentBasedSeedColor() != null) {
         SchemeContent scheme =
             new SchemeContent(
                 Hct.fromInt(dynamicColorsOptions.getContentBasedSeedColor()),
-                !MaterialAttributes.resolveBoolean(
-                    activity, androidx.appcompat.R.attr.isLightTheme, /* defaultValue= */ true),
-                /* contrastLevel= */ 0);
+                !MaterialColors.isLightTheme(activity),
+                getSystemContrast(activity));
         ColorResourcesOverride resourcesOverride = ColorResourcesOverride.getInstance();
         if (resourcesOverride == null) {
           return;
@@ -310,8 +334,9 @@ public class DynamicColors {
             return;
           }
         }
-      } else {
-        ThemeUtils.applyThemeOverlay(activity, theme);
+      } else if (!maybeApplyThemeOverlayWithUpdatedNeutralChroma(
+          activity, themeOverlayResourceId)) {
+        ThemeUtils.applyThemeOverlay(activity, themeOverlayResourceId);
       }
       // Applies client's callback after content-based dynamic colors or just dynamic colors has
       // been applied.
@@ -346,13 +371,59 @@ public class DynamicColors {
   @NonNull
   public static Context wrapContextIfAvailable(
       @NonNull Context originalContext, @StyleRes int theme) {
+    return wrapContextIfAvailable(
+        originalContext, new DynamicColorsOptions.Builder().setThemeOverlay(theme).build());
+  }
+
+  /**
+   * Wraps the given context with the given theme overlay provided in {@link DynamicColorsOptions}.
+   * The returned context can be used to create views with dynamic color support.
+   *
+   * <p>If dynamic color support is not available, the original context will be returned.
+   *
+   * @param originalContext The original context.
+   * @param dynamicColorsOptions The dynamic colors options object that specifies the theme resource
+   *     ID, seed color for content-based dynamic colors.
+   */
+  @NonNull
+  public static Context wrapContextIfAvailable(
+      @NonNull Context originalContext, @NonNull DynamicColorsOptions dynamicColorsOptions) {
     if (!isDynamicColorAvailable()) {
       return originalContext;
     }
+    int theme = dynamicColorsOptions.getThemeOverlay();
     if (theme == USE_DEFAULT_THEME_OVERLAY) {
       theme = getDefaultThemeOverlay(originalContext);
     }
-    return theme == 0 ? originalContext : new ContextThemeWrapper(originalContext, theme);
+
+    if (theme == 0) {
+      return originalContext;
+    }
+
+    if (dynamicColorsOptions.getContentBasedSeedColor() != null) {
+      SchemeContent scheme =
+          new SchemeContent(
+              Hct.fromInt(dynamicColorsOptions.getContentBasedSeedColor()),
+              !MaterialColors.isLightTheme(originalContext),
+              getSystemContrast(originalContext));
+      ColorResourcesOverride resourcesOverride = ColorResourcesOverride.getInstance();
+      if (resourcesOverride != null) {
+        return resourcesOverride.wrapContextIfPossible(
+            originalContext,
+            MaterialColorUtilitiesHelper.createColorResourcesIdsToColorValues(scheme));
+      }
+    } else {
+      if (shouldOverrideNeutralChroma(originalContext)) {
+        ColorResourcesOverride resourcesOverride = ColorResourcesOverride.getInstance();
+        if (resourcesOverride != null) {
+          return resourcesOverride.wrapContextIfPossible(
+              originalContext,
+              createColorResourcesIdsToColorValuesWithUpdatedChroma(originalContext),
+              theme);
+        }
+      }
+    }
+    return new ContextThemeWrapper(originalContext, theme);
   }
 
   /** Returns {@code true} if dynamic colors are available on the current SDK level. */
@@ -366,9 +437,10 @@ public class DynamicColors {
       return true;
     }
     DeviceSupportCondition deviceSupportCondition =
-        DYNAMIC_COLOR_SUPPORTED_MANUFACTURERS.get(Build.MANUFACTURER.toLowerCase());
+        DYNAMIC_COLOR_SUPPORTED_MANUFACTURERS.get(Build.MANUFACTURER.toLowerCase(Locale.ROOT));
     if (deviceSupportCondition == null) {
-      deviceSupportCondition = DYNAMIC_COLOR_SUPPORTED_BRANDS.get(Build.BRAND.toLowerCase());
+      deviceSupportCondition =
+          DYNAMIC_COLOR_SUPPORTED_BRANDS.get(Build.BRAND.toLowerCase(Locale.ROOT));
     }
     return deviceSupportCondition != null && deviceSupportCondition.isSupported();
   }
@@ -379,6 +451,57 @@ public class DynamicColors {
     final int theme = dynamicColorAttributes.getResourceId(0, 0);
     dynamicColorAttributes.recycle();
     return theme;
+  }
+
+  @RequiresApi(api = VERSION_CODES.S)
+  private static Map<Integer, Integer> createColorResourcesIdsToColorValuesWithUpdatedChroma(
+      Context context) {
+    Map<Integer, Integer> colorResourcesIdsToColorValues = new HashMap<>();
+    for (int neutralResId : SYSTEM_NEUTRAL_PALETTE_RES_IDS) {
+      Hct colorHct = Hct.fromInt(ContextCompat.getColor(context, neutralResId));
+      colorHct.setChroma(UPDATED_NEUTRAL_PALETTE_CHROMA);
+      colorResourcesIdsToColorValues.put(neutralResId, colorHct.toInt());
+    }
+    return colorResourcesIdsToColorValues;
+  }
+
+  /**
+   * Applies the theme overlay to the context with an updated neutral palette with chroma 6, if
+   * possible. See {@link #shouldOverrideNeutralChroma(Context)} for when the neutral palettes
+   * should be updated.
+   *
+   * @return Whether the theme overlay is applied with updated neutral palettes successfully.
+   */
+  private static boolean maybeApplyThemeOverlayWithUpdatedNeutralChroma(
+      @NonNull Context context, int themeOverlayResourceId) {
+    if (shouldOverrideNeutralChroma(context)) {
+      ColorResourcesOverride resourcesOverride = ColorResourcesOverride.getInstance();
+      if (resourcesOverride != null) {
+        return resourcesOverride.applyIfPossible(
+            context,
+            createColorResourcesIdsToColorValuesWithUpdatedChroma(context),
+            themeOverlayResourceId);
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Checks whether the neutral palette should be overridden with chroma 6.
+   *
+   * @return True, if Android version is S or T and preUDynamicNeutralChromaUpdateEnabled is true in
+   *     current context.
+   */
+  @ChecksSdkIntAtLeast(api = VERSION_CODES.S)
+  private static boolean shouldOverrideNeutralChroma(@NonNull Context context) {
+    // TODO(b/272585197) Remove after tonal surface migration is complete.
+    boolean shouldUpdateNeutralChroma =
+        MaterialAttributes.resolveBoolean(
+            context, R.attr.preUDynamicNeutralChromaUpdateEnabled, /* defaultValue= */ false);
+    // Update neutral palette chroma from 4 to 6 for backward compatibility.
+    return VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE
+        && VERSION.SDK_INT >= VERSION_CODES.S
+        && shouldUpdateNeutralChroma;
   }
 
   /** The interface that provides a precondition to decide if dynamic colors should be applied. */
@@ -437,5 +560,12 @@ public class DynamicColors {
 
   private interface DeviceSupportCondition {
     boolean isSupported();
+  }
+
+  private static float getSystemContrast(Context context) {
+    UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+    return (uiModeManager == null || VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE)
+        ? 0
+        : uiModeManager.getContrast();
   }
 }

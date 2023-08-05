@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.module
 import androidx.annotation.Keep
 
 object FileUtils {
+    private external fun getThreadsCountNative(): Int
     private external fun listDirRecursiveNative(dir: String, listener: ListDirRecursive)
     private external fun listDirRecursiveNativePointer(dir: String, pointer: Long)
     private external fun audioTagStripNative(audio_file: String): Boolean
@@ -50,6 +51,9 @@ object FileUtils {
     fun listDirRecursive(dir: String, pointer: Long) {
         return listDirRecursiveNativePointer(dir, pointer)
     }
+
+    val threadsCount: Int
+        get() = getThreadsCountNative()
 
     @Keep
     interface ListDirRecursive {

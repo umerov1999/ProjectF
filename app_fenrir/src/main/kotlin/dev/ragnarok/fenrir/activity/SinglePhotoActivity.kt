@@ -113,8 +113,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                     }
 
                     override fun onSlideClosed(): Boolean {
-                        finish()
-                        overridePendingTransition(0, 0)
+                        Utils.finishActivityImmediate(this@SinglePhotoActivity)
                         return true
                     }
 

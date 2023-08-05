@@ -1,0 +1,103 @@
+/*
+ * Copyright 2023 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.google.android.material.carousel;
+
+import static com.google.android.material.carousel.CarouselStrategyHelper.createLeftAlignedKeylineState;
+import static com.google.android.material.carousel.CarouselStrategyHelper.getSmallSizeMax;
+import static com.google.android.material.carousel.CarouselStrategyHelper.getSmallSizeMin;
+import static com.google.android.material.carousel.CarouselStrategyHelper.maxValue;
+import static java.lang.Math.ceil;
+import static java.lang.Math.floor;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
+import androidx.recyclerview.widget.RecyclerView.LayoutParams;
+import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.core.math.MathUtils;
+
+/**
+ * A {@link CarouselStrategy} that knows how to size and fit one large item and one small item into
+ * a container to create a layout to browse one 'hero' item at a time with a preview item.
+ *
+ * <p>Note that this strategy resizes Carousel items to take up the full width or height of the
+ * Carousel, save room for the small item.
+ *
+ * <p>This class will automatically be reversed by {@link CarouselLayoutManager} if being laid out
+ * right-to-left and does not need to make any account for layout direction itself.
+ */
+public class HeroCarouselStrategy extends CarouselStrategy {
+
+  private static final int[] SMALL_COUNTS = new int[] {1};
+  private static final int[] MEDIUM_COUNTS = new int[] {0, 1};
+
+  @Override
+  @NonNull
+  KeylineState onFirstChildMeasuredWithMargins(@NonNull Carousel carousel, @NonNull View child) {
+    int availableSpace = carousel.getContainerHeight();
+    if (carousel.isHorizontal()) {
+      availableSpace = carousel.getContainerWidth();
+    }
+
+    LayoutParams childLayoutParams = (LayoutParams) child.getLayoutParams();
+    float childMargins = childLayoutParams.topMargin + childLayoutParams.bottomMargin;
+
+    float measuredChildSize = child.getMeasuredWidth() * 2;
+
+    if (carousel.isHorizontal()) {
+      childMargins = childLayoutParams.leftMargin + childLayoutParams.rightMargin;
+      measuredChildSize = child.getMeasuredHeight() * 2;
+    }
+
+    float smallChildSizeMin = getSmallSizeMin(child.getContext()) + childMargins;
+    float smallChildSizeMax = getSmallSizeMax(child.getContext()) + childMargins;
+
+    float targetLargeChildSize = min(measuredChildSize + childMargins, availableSpace);
+    // Ideally we would like to create a balanced arrangement where a small item is 1/3 the size of
+    // the large item. Clamp the small target size within our min-max range and as close to 1/3 of
+    // the target large item size as possible.
+    float targetSmallChildSize =
+        MathUtils.clamp(
+            measuredChildSize / 3F + childMargins,
+            getSmallSizeMin(child.getContext()) + childMargins,
+            getSmallSizeMax(child.getContext()) + childMargins);
+    float targetMediumChildSize = (targetLargeChildSize + targetSmallChildSize) / 2F;
+
+    // Find the minimum space left for large items after filling the carousel with the most
+    // permissible small items to determine a plausible minimum large count.
+    float minAvailableLargeSpace = availableSpace - (smallChildSizeMax * maxValue(SMALL_COUNTS));
+    int largeCountMin = (int) max(1, floor(minAvailableLargeSpace / targetLargeChildSize));
+    int largeCountMax = (int) ceil(availableSpace / targetLargeChildSize);
+    int[] largeCounts = new int[largeCountMax - largeCountMin + 1];
+    for (int i = 0; i < largeCounts.length; i++) {
+      largeCounts[i] = largeCountMin + i;
+    }
+    Arrangement arrangement = Arrangement.findLowestCostArrangement(
+        availableSpace,
+        targetSmallChildSize,
+        smallChildSizeMin,
+        smallChildSizeMax,
+        SMALL_COUNTS,
+        targetMediumChildSize,
+        MEDIUM_COUNTS,
+        targetLargeChildSize,
+        largeCounts);
+    return createLeftAlignedKeylineState(
+        child.getContext(), childMargins, availableSpace, arrangement);
+  }
+}
+

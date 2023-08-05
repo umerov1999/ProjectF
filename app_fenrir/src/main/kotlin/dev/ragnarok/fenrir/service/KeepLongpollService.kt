@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.service
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
@@ -16,6 +17,7 @@ import dev.ragnarok.fenrir.longpoll.LongpollInstance
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -118,7 +120,15 @@ class KeepLongpollService : Service() {
         War.addAction(action_stop)
         War.startScrollBottom = true
         builder.extend(War)
-        startForeground(FOREGROUND_SERVICE, builder.build())
+        if (Utils.hasUpsideDownCake()) {
+            startForeground(
+                FOREGROUND_SERVICE,
+                builder.build(),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            )
+        } else {
+            startForeground(FOREGROUND_SERVICE, builder.build())
+        }
     }
 
     companion object {

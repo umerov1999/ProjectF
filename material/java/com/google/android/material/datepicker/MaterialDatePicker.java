@@ -38,7 +38,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
@@ -52,11 +51,9 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
-import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.google.android.material.dialog.InsetDialogOnTouchListener;
 import com.google.android.material.internal.CheckableImageButton;
 import com.google.android.material.internal.EdgeToEdgeUtils;
@@ -190,6 +187,7 @@ public final class MaterialDatePicker<S> extends DialogFragment {
     bundle.putParcelable(DAY_VIEW_DECORATOR_KEY, dayViewDecorator);
     bundle.putInt(TITLE_TEXT_RES_ID_KEY, titleTextResId);
     bundle.putCharSequence(TITLE_TEXT_KEY, titleText);
+    bundle.putInt(INPUT_MODE_KEY, inputMode);
     bundle.putInt(POSITIVE_BUTTON_TEXT_RES_ID_KEY, positiveButtonTextResId);
     bundle.putCharSequence(POSITIVE_BUTTON_TEXT_KEY, positiveButtonText);
     bundle.putInt(NEGATIVE_BUTTON_TEXT_RES_ID_KEY, negativeButtonTextResId);
@@ -230,17 +228,26 @@ public final class MaterialDatePicker<S> extends DialogFragment {
     Dialog dialog = new Dialog(requireContext(), getThemeResId(requireContext()));
     Context context = dialog.getContext();
     fullscreen = isFullscreen(context);
-    int surfaceColor =
-        MaterialAttributes.resolveOrThrow(
-            context, R.attr.colorSurface, MaterialDatePicker.class.getCanonicalName());
     background =
         new MaterialShapeDrawable(
             context,
             null,
             R.attr.materialCalendarStyle,
             R.style.Widget_MaterialComponents_MaterialCalendar);
+
+    TypedArray a =
+        context.obtainStyledAttributes(
+            null,
+            R.styleable.MaterialCalendar,
+            R.attr.materialCalendarStyle,
+            R.style.Widget_MaterialComponents_MaterialCalendar);
+
+    int backgroundColor = a.getColor(R.styleable.MaterialCalendar_backgroundTint, 0);
+
+    a.recycle();
+
     background.initializeElevationOverlay(context);
-    background.setFillColor(ColorStateList.valueOf(surfaceColor));
+    background.setFillColor(ColorStateList.valueOf(backgroundColor));
     background.setElevation(ViewCompat.getElevation(dialog.getWindow().getDecorView()));
     return dialog;
   }
@@ -297,17 +304,6 @@ public final class MaterialDatePicker<S> extends DialogFragment {
               listener.onPositiveButtonClick(getSelection());
             }
             dismiss();
-          }
-        });
-    ViewCompat.setAccessibilityDelegate(
-        confirmButton,
-        new AccessibilityDelegateCompat() {
-          @Override
-          public void onInitializeAccessibilityNodeInfo(
-              @NonNull View host, @NonNull AccessibilityNodeInfoCompat info) {
-            super.onInitializeAccessibilityNodeInfo(host, info);
-            String contentDescription = getDateSelector().getError() + ", " + info.getText();
-            info.setContentDescription(contentDescription);
           }
         });
 
@@ -388,6 +384,12 @@ public final class MaterialDatePicker<S> extends DialogFragment {
     return getDateSelector().getSelection();
   }
 
+  /** Returns the current {@link InputMode}. */
+  @InputMode
+  public int getInputMode() {
+    return inputMode;
+  }
+
   private void enableEdgeToEdgeIfNeeded(Window window) {
     if (edgeToEdgeEnabled) {
       // Avoid enabling edge-to-edge multiple times.
@@ -419,10 +421,10 @@ public final class MaterialDatePicker<S> extends DialogFragment {
     edgeToEdgeEnabled = true;
   }
 
-  private void updateTitle(boolean textInputMode) {
+  private void updateTitle() {
     // Set up title text forcing single line for landscape text input mode due to space constraints.
     headerTitleTextView.setText(
-        textInputMode && isLandscape() ? singleLineTitleText : fullTitleText);
+        inputMode == INPUT_MODE_TEXT && isLandscape() ? singleLineTitleText : fullTitleText);
   }
 
   @VisibleForTesting
@@ -440,13 +442,13 @@ public final class MaterialDatePicker<S> extends DialogFragment {
     calendar =
         MaterialCalendar.newInstance(
             getDateSelector(), themeResId, calendarConstraints, dayViewDecorator);
-    boolean textInputMode = headerToggleButton.isChecked();
+
     pickerFragment =
-        textInputMode
+        inputMode == INPUT_MODE_TEXT
             ? MaterialTextInputPicker.newInstance(
                 getDateSelector(), themeResId, calendarConstraints)
             : calendar;
-    updateTitle(textInputMode);
+    updateTitle();
     updateHeader(getHeaderText());
 
     FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
@@ -478,22 +480,20 @@ public final class MaterialDatePicker<S> extends DialogFragment {
     ViewCompat.setAccessibilityDelegate(headerToggleButton, null);
     updateToggleContentDescription(headerToggleButton);
     headerToggleButton.setOnClickListener(
-        new OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            // Update confirm button in case in progress selection has been reset
-            confirmButton.setEnabled(getDateSelector().isSelectionComplete());
+        v -> {
+          // Update confirm button in case in progress selection has been reset
+          confirmButton.setEnabled(getDateSelector().isSelectionComplete());
 
-            headerToggleButton.toggle();
-            updateToggleContentDescription(headerToggleButton);
-            startPickerFragment();
-          }
+          headerToggleButton.toggle();
+          inputMode = (inputMode == INPUT_MODE_TEXT) ? INPUT_MODE_CALENDAR : INPUT_MODE_TEXT;
+          updateToggleContentDescription(headerToggleButton);
+          startPickerFragment();
         });
   }
 
   private void updateToggleContentDescription(@NonNull CheckableImageButton toggle) {
     String contentDescription =
-        headerToggleButton.isChecked()
+        inputMode == INPUT_MODE_TEXT
             ? toggle.getContext().getString(R.string.mtrl_picker_toggle_to_calendar_input_mode)
             : toggle.getContext().getString(R.string.mtrl_picker_toggle_to_text_input_mode);
     headerToggleButton.setContentDescription(contentDescription);

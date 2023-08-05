@@ -963,8 +963,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 )
                 startActivity(intent)
                 if (closeMain) {
-                    finish()
-                    overridePendingTransition(0, 0)
+                    Utils.finishActivityImmediate(this)
                 }
             } else if (Settings.get()
                     .ui().swipes_chat_mode == SwipesChatMode.SLIDR && getMainActivityTransform() != MainActivityTransforms.MAIN

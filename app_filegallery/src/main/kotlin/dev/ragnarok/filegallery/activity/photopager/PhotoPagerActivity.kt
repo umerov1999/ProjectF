@@ -387,8 +387,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     }
 
     override fun closeOnly() {
-        finish()
-        overridePendingTransition(0, 0)
+        Utils.finishActivityImmediate(this)
     }
 
     override fun returnInfo(position: Int, parcelNativePtr: Long) {
@@ -396,8 +395,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             RESULT_OK,
             Intent().putExtra(Extra.PTR, parcelNativePtr).putExtra(Extra.POSITION, position)
         )
-        finish()
-        overridePendingTransition(0, 0)
+        Utils.finishActivityImmediate(this)
     }
 
     override fun returnOnlyPos(position: Int) {
@@ -405,8 +403,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             RESULT_OK,
             Intent().putExtra(Extra.POSITION, position)
         )
-        finish()
-        overridePendingTransition(0, 0)
+        Utils.finishActivityImmediate(this)
     }
 
     override fun returnFileInfo(path: String) {
@@ -414,8 +411,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             RESULT_OK,
             Intent().putExtra(Extra.PATH, path)
         )
-        finish()
-        overridePendingTransition(0, 0)
+        Utils.finishActivityImmediate(this)
     }
 
     override fun displayVideo(video: Video) {

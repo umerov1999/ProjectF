@@ -57,9 +57,9 @@
 #endif
 
 #define _TVG_DECLARE_PRIVATE(A) \
-protected: \
     struct Impl; \
     Impl* pImpl; \
+protected: \
     A(const A&) = delete; \
     const A& operator=(const A&) = delete; \
     A()
@@ -68,25 +68,14 @@ protected: \
     A() = delete; \
     ~A() = delete
 
-#define _TVG_DECLARE_ACCESSOR() \
-    friend Canvas; \
-    friend Scene; \
-    friend Shape; \
-    friend Picture; \
-    friend Accessor; \
-    friend IteratorAccessor
-
+#define _TVG_DECLARE_ACCESSOR(A) \
+    friend A
 
 namespace tvg
 {
 
 class RenderMethod;
-class IteratorAccessor;
-class Scene;
-class Shape;
-class Picture;
-class Canvas;
-class Accessor;
+class Animation;
 
 /**
  * @defgroup ThorVG ThorVG
@@ -465,7 +454,6 @@ public:
      */
     uint32_t identifier() const noexcept;
 
-    _TVG_DECLARE_ACCESSOR();
     _TVG_DECLARE_PRIVATE(Paint);
 };
 
@@ -634,14 +622,16 @@ public:
     virtual Result push(std::unique_ptr<Paint> paint) noexcept;
 
     /**
-     * @brief Sets the total number of the paints pushed into the canvas to be zero.
-     * Depending on the value of the @p free argument, the paints are freed or not.
+     * @brief Clear the internal canvas resources that used for the drawing.
+     *
+     * This API sets the total number of paints pushed into the canvas to zero.
+     * Depending on the value of the @p free argument, the paints are either freed or retained.
+     * So if you need to update paint properties while maintaining the existing scene structure, you can set @p free = false.
      *
      * @param[in] free If @c true, the memory occupied by paints is deallocated, otherwise it is not.
      *
      * @return Result::Success when succeed, Result::InsufficientCondition otherwise.
      *
-     * @warning If you don't free the paints they become dangled. They are supposed to be reused, otherwise you are responsible for their lives. Thus please use the @p free argument only when you know how it works, otherwise it's not recommended.
      * @see Canvas::push()
      * @see Canvas::paints()
      */
@@ -830,7 +820,7 @@ public:
     /**
      * @brief Resets the properties of the shape path.
      *
-     * The color, the fill and the stroke properties are retained.
+     * The transformation matrix, the color, the fill and the stroke properties are retained.
      *
      * @return Result::Success when succeed.
      *
@@ -1231,10 +1221,11 @@ public:
 /**
  * @class Picture
  *
- * @brief A class representing an image read in one of the supported formats: raw, svg, png, jpg and etc.
+ * @brief A class representing an image read in one of the supported formats: raw, svg, png, jpg, lottie(json) and etc.
  * Besides the methods inherited from the Paint, it provides methods to load & draw images on the canvas.
  *
  * @note Supported formats are depended on the available TVG loaders.
+ * @note See Animation class if the picture data is animatable.
  */
 class TVG_API Picture final : public Paint
 {
@@ -1351,8 +1342,8 @@ public:
      * @param[in] triangles An array of Polygons(triangles) that make up the mesh, or null to remove the mesh.
      * @param[in] triangleCnt The number of Polygons(triangles) provided, or 0 to remove the mesh.
      *
-     * @return Result::Success When succeed.
-     * @return Result::Unknown If fails
+     * @retval Result::Success When succeed.
+     * @retval Result::Unknown If fails
      *
      * @note The Polygons are copied internally, so modifying them after calling Mesh::mesh has no affect.
      * @warning Please do not use it, this API is not official one. It could be modified in the next version.
@@ -1391,6 +1382,7 @@ public:
      */
     static uint32_t identifier() noexcept;
 
+    _TVG_DECLARE_ACCESSOR(Animation);
     _TVG_DECLARE_PRIVATE(Picture);
 };
 
@@ -1657,6 +1649,101 @@ public:
     static Result term(CanvasEngine engine) noexcept;
 
     _TVG_DISABLE_CTOR(Initializer);
+};
+
+
+/**
+ * @class Animation
+ *
+ * @brief The Animation class enables manipulation of animatable images.
+ *
+ * This class supports the display and control of animation frames.
+ *
+ * @BETA_API
+ */
+
+class TVG_API Animation
+{
+public:
+    ~Animation();
+
+    /**
+     * @brief Specifies the current frame in the animation.
+     *
+     * @param[in] no The index of the animation frame to be displayed. The index should be less than the totalFrame().
+     *
+     * @retval Result::Success Successfully set the frame.
+     * @retval Result::InsufficientCondition No animatable data loaded from the Picture.
+     * @retval Result::NonSupport The Picture data does not support animations.
+     *
+     * @see totalFrame()
+     *
+     * @BETA_API
+     */
+    Result frame(uint32_t no) noexcept;
+
+    /**
+     * @brief Retrieves a picture instance associated with this animation instance.
+     *
+     * This function provides access to the picture instance that can be used to load animation formats, such as Lottie(json).
+     * After setting up the picture, it can be pushed to the designated canvas, enabling control over animation frames
+     * with this Animation instance.
+     *
+     * @return A picture instance that is tied to this animation.
+     *
+     * @warning The picture instance is owned by Animation. It should not be deleted manually.
+     *
+     * @BETA_API
+     */
+    Picture* picture() const noexcept;
+
+    /**
+     * @brief Retrieves the current frame number of the animation.
+     *
+     * @return The current frame number of the animation, between 0 and totalFrame() - 1.
+     *
+     * @note If the Picture is not properly configured, this function will return 0.
+     *
+     * @see Animation::frame(uint32_t no)
+     * @see Animation::totalFrame()
+     *
+     * @BETA_API
+     */
+    uint32_t curFrame() const noexcept;
+
+    /**
+     * @brief Retrieves the total number of frames in the animation.
+     *
+     * @return The total number of frames in the animation.
+     *
+     * @note Frame numbering starts from 0.
+     * @note If the Picture is not properly configured, this function will return 0.
+     *
+     * @BETA_API
+     */
+    uint32_t totalFrame() const noexcept;
+
+    /**
+     * @brief Retrieves the duration of the animation in seconds.
+     *
+     * @return The duration of the animation in seconds.
+     *
+     * @note If the Picture is not properly configured, this function will return 0.
+     *
+     * @BETA_API
+     */
+    float duration() const noexcept;
+
+    /**
+     * @brief Creates a new Animation object.
+     *
+     * @return A new Animation object.
+     *
+     * @BETA_API
+     */
+    static std::unique_ptr<Animation> gen() noexcept;
+
+    _TVG_DECLARE_PRIVATE(Animation);
 };
 
 

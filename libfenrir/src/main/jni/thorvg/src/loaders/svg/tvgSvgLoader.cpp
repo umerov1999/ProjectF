@@ -48,13 +48,9 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#define _USE_MATH_DEFINES       //Math Constants are not defined in Standard C/C++.
-
 #include <cstring>
 #include <fstream>
 #include <cfloat>
-#include <cmath>
 #include "tvgLoader.h"
 #include "tvgXmlParser.h"
 #include "tvgSvgLoader.h"
@@ -392,15 +388,8 @@ static char* _idFromUrl(const char* url)
 
     int i = 0;
     while (url[i] > ' ' && url[i] != ')' && url[i] != '\'') ++i;
-
-    //custom strndup() for portability
-    int len = strlen(url);
-    if (i < len) len = i;
-
-    auto ret = (char*) malloc(len + 1);
-    if (!ret) return 0;
-    ret[len] = '\0';
-    return (char*) memcpy(ret, url, len);
+    
+    return svgUtilStrndup(url, i);
 }
 
 
@@ -1145,11 +1134,26 @@ static bool _parseStyleAttr(void* data, const char* key, const char* value, bool
     sz = strlen(key);
     for (unsigned int i = 0; i < sizeof(styleTags) / sizeof(styleTags[0]); i++) {
         if (styleTags[i].sz - 1 == sz && !strncmp(styleTags[i].tag, key, sz)) {
+            bool importance = false;
+            if (auto ptr = strstr(value, "!important")) {
+                size_t size = ptr - value;
+                while (size > 0 && isspace(value[size - 1])) {
+                    size--;
+                }
+                value = svgUtilStrndup(value, size);
+                importance = true;
+            }
             if (style) {
-                styleTags[i].tagHandler(loader, node, value);
-                node->style->flags = (node->style->flags | styleTags[i].flag);
+                if (importance || !(node->style->flagsImportance & styleTags[i].flag)) {
+                    styleTags[i].tagHandler(loader, node, value);
+                    node->style->flags = (node->style->flags | styleTags[i].flag);
+                }
             } else if (!(node->style->flags & styleTags[i].flag)) {
                 styleTags[i].tagHandler(loader, node, value);
+            }
+            if (importance) {
+                node->style->flagsImportance = (node->style->flags | styleTags[i].flag);
+                free(const_cast<char*>(value));
             }
             return true;
         }
@@ -2674,7 +2678,7 @@ static void _inheritGradient(SvgLoaderData* loader, SvgStyleGradient* to, SvgSty
         }
     }
 
-    if (to->stops.count == 0) _cloneGradStops(to->stops, from->stops);
+    if (to->stops.empty()) _cloneGradStops(to->stops, from->stops);
 }
 
 
@@ -3506,6 +3510,7 @@ void SvgLoader::run(unsigned tid)
         if (defs) _updateComposite(loaderData.doc, defs);
 
         _updateStyle(loaderData.doc, nullptr);
+        if (defs) _updateStyle(defs, nullptr);
 
         if (loaderData.gradients.count > 0) _updateGradient(&loaderData, loaderData.doc, &loaderData.gradients);
         if (defs) _updateGradient(&loaderData, loaderData.doc, &defs->node.defs.gradients);
@@ -3692,6 +3697,5 @@ bool SvgLoader::close()
 unique_ptr<Paint> SvgLoader::paint()
 {
     this->done();
-    if (root) return std::move(root);
-    else return nullptr;
+    return std::move(root);
 }

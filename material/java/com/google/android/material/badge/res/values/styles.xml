@@ -23,12 +23,13 @@
     <item name="badgeWithTextHeight">@dimen/mtrl_badge_with_text_size</item>
     <item name="badgeWidePadding">@dimen/mtrl_badge_long_text_horizontal_padding</item>
     <item name="backgroundColor">?attr/colorError</item>
-    <item name="maxCharacterCount">@integer/mtrl_badge_max_character_count</item>
+    <item name="maxNumber">@integer/m3_badge_max_number</item>
     <item name="badgeGravity">TOP_END</item>
     <item name="offsetAlignmentMode">legacy</item>
     <item name="badgeTextAppearance">@style/TextAppearance.MaterialComponents.Badge</item>
     <item name="badgeShapeAppearance">@style/ShapeAppearance.MaterialComponents.Badge</item>
     <item name="badgeWithTextShapeAppearance">@style/ShapeAppearance.MaterialComponents.Badge</item>
+    <item name="autoAdjustToWithinGrandparentBounds">false</item>
   </style>
 
   <style name="Base.TextAppearance.MaterialComponents.Badge" parent="TextAppearance.AppCompat">
@@ -68,6 +69,11 @@
     <item name="verticalOffsetWithText">@dimen/m3_badge_with_text_offset</item>
     <item name="badgeTextAppearance">@macro/m3_comp_badge_large_label_text_type</item>
     <item name="badgeWithTextShapeAppearance">@style/ShapeAppearance.M3.Comp.Badge.Shape</item>
+    <item name="badgeVerticalPadding">@dimen/m3_badge_with_text_vertical_padding</item>
+  </style>
+
+  <style name="Widget.Material3.Badge.AdjustToBounds" parent="Widget.Material3.Badge">
+    <item name="autoAdjustToWithinGrandparentBounds">true</item>
   </style>
 
 </resources>

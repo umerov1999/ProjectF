@@ -28,17 +28,31 @@ interface Maskable {
   /**
    * Set the percentage by which this {@link View} should mask itself along the x axis.
    *
+   * <p>This method serves the same purpose as {@link #setMaskRectF(RectF)} but requires the
+   * implementing view to calculate the correct rect given the mask percentage.
+   *
    * @param percentage 0 when this view is fully unmasked. 1 when this view is fully masked.
+   * @deprecated {@link CarouselLayoutManager} calculates its own mask percentages.
    */
+  @Deprecated
   void setMaskXPercentage(@FloatRange(from = 0F, to = 1F) float percentage);
 
   /**
    * Gets the percentage by which this {@link View} should mask itself along the x axis.
    *
    * @return a float between 0 and 1 where 0 is fully unmasked and 1 is fully masked.
+   * @deprecated {@link CarouselLayoutManager} calculates its own mask percentages.
    */
   @FloatRange(from = 0F, to = 1F)
+  @Deprecated
   float getMaskXPercentage();
+
+  /**
+   * Sets a {@link RectF} that this {@link View} will mask itself by.
+   *
+   * @param maskRect a rect in the view's coordinates to mask by
+   */
+  void setMaskRectF(@NonNull RectF maskRect);
 
   /** Gets a {@link RectF} that this {@link View} is masking itself by. */
   @NonNull

@@ -16,6 +16,8 @@ import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Comp
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_LOCAL_SERVER_AUDIO
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_PLAYLIST
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_RECOMMENDATIONS
+import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.module.FileUtils
 import dev.ragnarok.fenrir.settings.ISettings.IOtherSettings
 import dev.ragnarok.fenrir.util.Utils
 import kotlinx.serialization.builtins.ListSerializer
@@ -489,7 +491,15 @@ internal class OtherSettings(context: Context) : IOtherSettings {
     override val isChange_upload_size: Boolean
         get() = getPreferences(app).getBoolean("change_upload_size", false)
     override val isInstant_photo_display: Boolean
-        get() = getPreferences(app).getBoolean("instant_photo_display", false)
+        get() {
+            if (!getPreferences(app).contains("instant_photo_display")) {
+                getPreferences(app).edit().putBoolean(
+                    "instant_photo_display",
+                    FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4
+                ).apply()
+            }
+            return getPreferences(app).getBoolean("instant_photo_display", false)
+        }
     override val isShow_photos_line: Boolean
         get() = getPreferences(app).getBoolean("show_photos_line", true)
     override val isShow_photos_date: Boolean

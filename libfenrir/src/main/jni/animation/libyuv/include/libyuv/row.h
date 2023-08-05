@@ -791,21 +791,25 @@ extern "C" {
 #endif
 
 #if !defined(LIBYUV_DISABLE_RVV) && defined(__riscv_vector)
+#define HAS_COPYROW_RVV
+#if __riscv_v_intrinsic == 11000
 #define HAS_AB64TOARGBROW_RVV
+#define HAS_ABGRTOYJROW_RVV
+#define HAS_ABGRTOYROW_RVV
 #define HAS_AR64TOARGBROW_RVV
 #define HAS_ARGBATTENUATEROW_RVV
+#define HAS_ARGBBLENDROW_RVV
 #define HAS_ARGBCOPYYTOALPHAROW_RVV
 #define HAS_ARGBEXTRACTALPHAROW_RVV
 #define HAS_ARGBTOAB64ROW_RVV
 #define HAS_ARGBTOAR64ROW_RVV
 #define HAS_ARGBTORAWROW_RVV
 #define HAS_ARGBTORGB24ROW_RVV
-#define HAS_ARGBTOYROW_RVV
 #define HAS_ARGBTOYJROW_RVV
-#define HAS_ABGRTOYROW_RVV
-#define HAS_ABGRTOYJROW_RVV
+#define HAS_ARGBTOYMATRIXROW_RVV
+#define HAS_ARGBTOYROW_RVV
 #define HAS_BGRATOYROW_RVV
-#define HAS_COPYROW_RVV
+#define HAS_BLENDPLANEROW_RVV
 #define HAS_I400TOARGBROW_RVV
 #define HAS_I422ALPHATOARGBROW_RVV
 #define HAS_I422TOARGBROW_RVV
@@ -820,10 +824,10 @@ extern "C" {
 #define HAS_MERGERGBROW_RVV
 #define HAS_MERGEUVROW_RVV
 #define HAS_MERGEXRGBROW_RVV
-#define HAS_SPLITARGBROW_RVV
-#define HAS_SPLITRGBROW_RVV
-#define HAS_SPLITUVROW_RVV
-#define HAS_SPLITXRGBROW_RVV
+#define HAS_NV12TOARGBROW_RVV
+#define HAS_NV12TORGB24ROW_RVV
+#define HAS_NV21TOARGBROW_RVV
+#define HAS_NV21TORGB24ROW_RVV
 #define HAS_RAWTOARGBROW_RVV
 #define HAS_RAWTORGB24ROW_RVV
 #define HAS_RAWTORGBAROW_RVV
@@ -832,8 +836,15 @@ extern "C" {
 #define HAS_RGB24TOARGBROW_RVV
 #define HAS_RGB24TOYJROW_RVV
 #define HAS_RGB24TOYROW_RVV
-#define HAS_RGBATOYROW_RVV
 #define HAS_RGBATOYJROW_RVV
+#define HAS_RGBATOYMATRIXROW_RVV
+#define HAS_RGBATOYROW_RVV
+#define HAS_RGBTOYMATRIXROW_RVV
+#define HAS_SPLITARGBROW_RVV
+#define HAS_SPLITRGBROW_RVV
+#define HAS_SPLITUVROW_RVV
+#define HAS_SPLITXRGBROW_RVV
+#endif
 #endif
 
 #if defined(_MSC_VER) && !defined(__CLR_VER) && !defined(__clang__)
@@ -1349,6 +1360,26 @@ void UYVYToARGBRow_LSX(const uint8_t* src_uyvy,
                        uint8_t* dst_argb,
                        const struct YuvConstants* yuvconstants,
                        int width);
+void NV12ToARGBRow_RVV(const uint8_t* src_y,
+                       const uint8_t* src_uv,
+                       uint8_t* dst_argb,
+                       const struct YuvConstants* yuvconstants,
+                       int width);
+void NV21ToARGBRow_RVV(const uint8_t* src_y,
+                       const uint8_t* src_vu,
+                       uint8_t* dst_argb,
+                       const struct YuvConstants* yuvconstants,
+                       int width);
+void NV12ToRGB24Row_RVV(const uint8_t* src_y,
+                        const uint8_t* src_uv,
+                        uint8_t* dst_rgb24,
+                        const struct YuvConstants* yuvconstants,
+                        int width);
+void NV21ToRGB24Row_RVV(const uint8_t* src_y,
+                        const uint8_t* src_vu,
+                        uint8_t* dst_rgb24,
+                        const struct YuvConstants* yuvconstants,
+                        int width);
 
 void ARGBToYRow_AVX2(const uint8_t* src_argb, uint8_t* dst_y, int width);
 void ARGBToYRow_Any_AVX2(const uint8_t* src_ptr, uint8_t* dst_ptr, int width);
@@ -4517,6 +4548,10 @@ void ARGBBlendRow_LSX(const uint8_t* src_argb0,
                       const uint8_t* src_argb1,
                       uint8_t* dst_argb,
                       int width);
+void ARGBBlendRow_RVV(const uint8_t* src_argb0,
+                      const uint8_t* src_argb1,
+                      uint8_t* dst_argb,
+                      int width);
 void ARGBBlendRow_C(const uint8_t* src_argb,
                     const uint8_t* src_argb1,
                     uint8_t* dst_argb,
@@ -4543,6 +4578,11 @@ void BlendPlaneRow_Any_AVX2(const uint8_t* y_buf,
                             const uint8_t* v_buf,
                             uint8_t* dst_ptr,
                             int width);
+void BlendPlaneRow_RVV(const uint8_t* src0,
+                       const uint8_t* src1,
+                       const uint8_t* alpha,
+                       uint8_t* dst,
+                       int width);
 void BlendPlaneRow_C(const uint8_t* src0,
                      const uint8_t* src1,
                      const uint8_t* alpha,

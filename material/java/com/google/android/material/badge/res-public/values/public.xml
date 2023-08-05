@@ -20,10 +20,15 @@
   <public name="badgeTextColor" type="attr"/>
   <public name="badgeTextAppearance" type="attr"/>
   <public name="maxCharacterCount" type="attr"/>
+  <public name="maxNumber" type="attr"/>
+  <public name="badgeText" type="attr"/>
   <public name="number" type="attr"/>
   <public name="badgeGravity" type="attr"/>
+  <public name="badgeWidePadding" type="attr"/>
+  <public name="badgeVerticalPadding" type="attr"/>
   <public name="horizontalOffset" type="attr"/>
   <public name="verticalOffset" type="attr"/>
+  <public name="largeFontVerticalOffsetAdjustment" type="attr"/>
   <public name="offsetAlignmentMode" type="attr"/>
   <public name="badgeWidth" type="attr"/>
   <public name="badgeWithTextWidth" type="attr"/>
@@ -32,6 +37,7 @@
   <public name="badgeShapeAppearance" type="attr"/>
   <public name="badgeWithTextShapeAppearance" type="attr"/>
   <public name="badgeShapeAppearanceOverlay" type="attr"/>
+  <public name="autoAdjustToWithinGrandparentBounds" type="attr"/>
   <public name="badgeWithTextShapeAppearanceOverlay" type="attr"/>
   <public name="Widget.MaterialComponents.Badge" type="style"/>
   <public name="Widget.Material3.Badge" type="style"/>

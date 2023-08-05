@@ -184,8 +184,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
                     }
 
                     override fun onSlideClosed(): Boolean {
-                        finish()
-                        overridePendingTransition(0, 0)
+                        Utils.finishActivityImmediate(this@ShortVideoPagerActivity)
                         return true
                     }
 

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.activity.result.ActivityResultLauncher
+import dev.ragnarok.fenrir.util.Utils
 
 open class Place : Parcelable {
     val type: Int
@@ -96,8 +97,7 @@ open class Place : Parcelable {
         } else {
             context.startActivity(intent)
             if (isNeedFinishMain) {
-                context.finish()
-                context.overridePendingTransition(0, 0)
+                Utils.finishActivityImmediate(context)
             }
         }
     }

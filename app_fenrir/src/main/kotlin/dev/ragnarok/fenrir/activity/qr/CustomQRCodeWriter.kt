@@ -41,7 +41,7 @@ class CustomQRCodeWriter {
         height: Int,
         hints: Map<EncodeHintType, *>?,
         icon: Drawable?
-    ): Bitmap? {
+    ): Bitmap {
         require(contents.isNotEmpty()) { "Found empty contents" }
         require(!(width < 0 || height < 0)) { "Requested dimensions are too small: " + width + 'x' + height }
         var errorCorrectionLevel = ErrorCorrectionLevel.L

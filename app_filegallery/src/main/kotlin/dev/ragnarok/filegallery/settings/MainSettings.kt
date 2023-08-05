@@ -5,6 +5,8 @@ import android.content.res.Configuration
 import android.os.Environment
 import androidx.appcompat.app.AppCompatDelegate
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
+import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.module.FileUtils
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Constants.forceDeveloperMode
 import dev.ragnarok.filegallery.kJson
@@ -235,7 +237,15 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = getPreferences(app).getBoolean("show_photos_line", true)
 
     override val isInstant_photo_display: Boolean
-        get() = getPreferences(app).getBoolean("instant_photo_display", false)
+        get() {
+            if (!getPreferences(app).contains("instant_photo_display")) {
+                getPreferences(app).edit().putBoolean(
+                    "instant_photo_display",
+                    FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4
+                ).apply()
+            }
+            return getPreferences(app).getBoolean("instant_photo_display", false)
+        }
 
     override val isDownload_photo_tap: Boolean
         get() = getPreferences(app).getBoolean("download_photo_tap", true)

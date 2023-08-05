@@ -18,6 +18,7 @@ package com.google.android.material.search;
 
 import com.google.android.material.R;
 
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 import static com.google.android.material.theme.overlay.MaterialThemeOverlay.wrap;
 
 import android.animation.AnimatorListenerAdapter;
@@ -34,11 +35,13 @@ import android.os.Build.VERSION_CODES;
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
@@ -47,11 +50,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.RestrictTo;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -159,7 +165,7 @@ public class SearchBar extends Toolbar {
     validateAttributes(attrs);
 
     defaultNavigationIcon =
-        AppCompatResources.getDrawable(context, R.drawable.ic_search_black_24);
+        AppCompatResources.getDrawable(context, getDefaultNavigationIconResource());
     searchBarAnimationHelper = new SearchBarAnimationHelper();
 
     TypedArray a =
@@ -168,6 +174,7 @@ public class SearchBar extends Toolbar {
 
     ShapeAppearanceModel shapeAppearanceModel =
         ShapeAppearanceModel.builder(context, attrs, defStyleAttr, DEF_STYLE_RES).build();
+    int backgroundColor = a.getColor(R.styleable.SearchBar_backgroundTint, 0);
     float elevation = a.getDimension(R.styleable.SearchBar_elevation, 0);
     defaultMarginsEnabled = a.getBoolean(R.styleable.SearchBar_defaultMarginsEnabled, true);
     defaultScrollFlagsEnabled = a.getBoolean(R.styleable.SearchBar_defaultScrollFlagsEnabled, true);
@@ -195,11 +202,11 @@ public class SearchBar extends Toolbar {
     LayoutInflater.from(context).inflate(R.layout.mtrl_search_bar, this);
     layoutInflated = true;
 
-    textView = findViewById(R.id.search_bar_text_view);
+    textView = findViewById(R.id.open_search_bar_text_view);
 
     ViewCompat.setElevation(this, elevation);
     initTextView(textAppearanceResId, text, hint);
-    initBackground(shapeAppearanceModel, elevation, strokeWidth, strokeColor);
+    initBackground(shapeAppearanceModel, backgroundColor, elevation, strokeWidth, strokeColor);
 
     accessibilityManager =
         (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
@@ -271,6 +278,7 @@ public class SearchBar extends Toolbar {
 
   private void initBackground(
       ShapeAppearanceModel shapeAppearance,
+      @ColorInt int backgroundColor,
       float elevation,
       float strokeWidth,
       @ColorInt int strokeColor) {
@@ -281,7 +289,6 @@ public class SearchBar extends Toolbar {
       backgroundShape.setStroke(strokeWidth, strokeColor);
     }
 
-    int backgroundColor = MaterialColors.getColor(this, R.attr.colorSurface);
     int rippleColor = MaterialColors.getColor(this, androidx.appcompat.R.attr.colorControlHighlight);
     Drawable background;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -408,8 +415,16 @@ public class SearchBar extends Toolbar {
 
   @Override
   public void inflateMenu(@MenuRes int resId) {
+    // Pause dispatching item changes during inflation to improve performance.
+    Menu menu = getMenu();
+    if (menu instanceof MenuBuilder) {
+      ((MenuBuilder) menu).stopDispatchingItemsChanged();
+    }
     super.inflateMenu(resId);
     this.menuResId = resId;
+    if (menu instanceof MenuBuilder) {
+      ((MenuBuilder) menu).startDispatchingItemsChanged();
+    }
   }
 
   @Override
@@ -463,13 +478,27 @@ public class SearchBar extends Toolbar {
       Resources resources = getResources();
       int marginHorizontal =
           resources.getDimensionPixelSize(R.dimen.m3_searchbar_margin_horizontal);
-      int marginVertical = resources.getDimensionPixelSize(R.dimen.m3_searchbar_margin_vertical);
+      int marginVertical = resources.getDimensionPixelSize(getDefaultMarginVerticalResource());
       MarginLayoutParams lp = (MarginLayoutParams) getLayoutParams();
       lp.leftMargin = defaultIfZero(lp.leftMargin, marginHorizontal);
       lp.topMargin = defaultIfZero(lp.topMargin, marginVertical);
       lp.rightMargin = defaultIfZero(lp.rightMargin, marginHorizontal);
       lp.bottomMargin = defaultIfZero(lp.bottomMargin, marginVertical);
     }
+  }
+
+  /** @hide */
+  @DimenRes
+  @RestrictTo(LIBRARY_GROUP)
+  protected int getDefaultMarginVerticalResource() {
+    return R.dimen.m3_searchbar_margin_vertical;
+  }
+
+  /** @hide */
+  @DrawableRes
+  @RestrictTo(LIBRARY_GROUP)
+  protected int getDefaultNavigationIconResource() {
+    return R.drawable.ic_search_black_24;
   }
 
   private int defaultIfZero(int value, int defValue) {
@@ -545,7 +574,7 @@ public class SearchBar extends Toolbar {
   }
 
   /** Returns the text of main {@link TextView}, which usually represents the search text. */
-  @Nullable
+  @NonNull // TextView.getText() never returns null after initialization.
   public CharSequence getText() {
     return textView.getText();
   }

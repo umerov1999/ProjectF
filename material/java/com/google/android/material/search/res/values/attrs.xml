@@ -22,8 +22,12 @@
   <attr name="materialSearchViewStyle" format="reference"/>
   <!-- Style to use for SearchView prefixes in this theme. -->
   <attr name="materialSearchViewPrefixStyle" format="reference"/>
+  <!-- Style to use for SearchView Toolbar in this theme. -->
+  <attr name="materialSearchViewToolbarStyle" format="reference"/>
   <!-- Attribute to use for hiding the navigation icon in search bar and search view. -->
   <attr name="hideNavigationIcon" format="boolean"/>
+  <!-- Attribute to use for setting the search toolbar height. -->
+  <attr name="materialSearchViewToolbarHeight" format="dimension"/>
 
   <declare-styleable name="SearchBar">
     <!-- Text appearance for the main search TextView. -->
@@ -32,6 +36,8 @@
     <attr name="android:text"/>
     <!-- Hint for the main search TextView. -->
     <attr name="android:hint"/>
+    <!-- Color of the container. -->
+    <attr name="backgroundTint"/>
     <!-- Elevation of the SearchBar. -->
     <attr name="elevation"/>
     <!-- Whether the default margins should be applied to the SearchBar.
@@ -67,6 +73,8 @@
     <attr name="android:text"/>
     <!-- Hint for the main search EditText. -->
     <attr name="android:hint"/>
+    <!-- Color of the container. -->
+    <attr name="backgroundTint"/>
     <!-- Text for the search prefix which appears before the main search EditText. -->
     <attr name="searchPrefixText" format="string"/>
     <!-- Whether a DrawerArrowDrawable should be used for the navigation icon,
@@ -91,6 +99,9 @@
     <attr name="autoShowKeyboard" format="boolean"/>
     <!-- Layout resource to inflate as the header. -->
     <attr name="headerLayout"/>
+    <!-- Whether the automatic back handling behavior should be enabled.
+         Default is true. -->
+    <attr name="backHandlingEnabled" format="boolean"/>
   </declare-styleable>
 
 </resources>

@@ -36,8 +36,7 @@ internal open class ColorPanelSlideListener(
     }
 
     override fun onClosed() {
-        activity.finish()
-        activity.overridePendingTransition(0, 0)
+        Utils.finishActivityImmediate(activity)
     }
 
     override fun onOpened() {

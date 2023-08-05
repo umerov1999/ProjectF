@@ -711,6 +711,17 @@ static void ScalePlaneDown38(int src_width,
     }
   }
 #endif
+#if defined(HAS_SCALEROWDOWN38_RVV)
+  if (TestCpuFlag(kCpuHasRVV)) {
+    if (!filtering) {
+      ScaleRowDown38_3 = ScaleRowDown38_RVV;
+      ScaleRowDown38_2 = ScaleRowDown38_RVV;
+    } else {
+      ScaleRowDown38_3 = ScaleRowDown38_3_Box_RVV;
+      ScaleRowDown38_2 = ScaleRowDown38_2_Box_RVV;
+    }
+  }
+#endif
 
   for (y = 0; y < dst_height - 2; y += 3) {
     ScaleRowDown38_3(src_ptr, filter_stride, dst_ptr, dst_width);
@@ -1494,6 +1505,11 @@ static void ScalePlaneUp2_Linear(int src_width,
     ScaleRowUp = ScaleRowUp2_Linear_Any_NEON;
   }
 #endif
+#ifdef HAS_SCALEROWUP2_LINEAR_RVV
+  if (TestCpuFlag(kCpuHasRVV)) {
+    ScaleRowUp = ScaleRowUp2_Linear_RVV;
+  }
+#endif
 
   if (dst_height == 1) {
     ScaleRowUp(src_ptr + ((src_height - 1) / 2) * (int64_t)src_stride, dst_ptr,
@@ -1551,6 +1567,11 @@ static void ScalePlaneUp2_Bilinear(int src_width,
 #ifdef HAS_SCALEROWUP2_BILINEAR_NEON
   if (TestCpuFlag(kCpuHasNEON)) {
     Scale2RowUp = ScaleRowUp2_Bilinear_Any_NEON;
+  }
+#endif
+#ifdef HAS_SCALEROWUP2_BILINEAR_RVV
+  if (TestCpuFlag(kCpuHasRVV)) {
+    Scale2RowUp = ScaleRowUp2_Bilinear_RVV;
   }
 #endif
 

@@ -25,12 +25,14 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatDialog;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.FrameLayout;
 import androidx.annotation.AttrRes;
+import androidx.annotation.GravityInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -38,8 +40,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import com.google.android.material.motion.MaterialBackOrchestrator;
 import com.google.android.material.sidesheet.Sheet.StableSheetState;
 
 /**
@@ -60,6 +64,8 @@ abstract class SheetDialog<C extends SheetCallback> extends AppCompatDialog {
   boolean cancelable = true;
   private boolean canceledOnTouchOutside = true;
   private boolean canceledOnTouchOutsideSet;
+
+  @Nullable private MaterialBackOrchestrator backOrchestrator;
 
   SheetDialog(
       @NonNull Context context,
@@ -114,6 +120,20 @@ abstract class SheetDialog<C extends SheetCallback> extends AppCompatDialog {
     if (this.cancelable != cancelable) {
       this.cancelable = cancelable;
     }
+    if (getWindow() != null) {
+      updateListeningForBackCallbacks();
+    }
+  }
+
+  private void updateListeningForBackCallbacks() {
+    if (backOrchestrator == null) {
+      return;
+    }
+    if (cancelable) {
+      backOrchestrator.startListeningForBackCallbacks();
+    } else {
+      backOrchestrator.stopListeningForBackCallbacks();
+    }
   }
 
   @Override
@@ -121,6 +141,21 @@ abstract class SheetDialog<C extends SheetCallback> extends AppCompatDialog {
     super.onStart();
     if (behavior != null && behavior.getState() == Sheet.STATE_HIDDEN) {
       behavior.setState(getStateOnStart());
+    }
+  }
+
+  @Override
+  public void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    maybeUpdateWindowAnimationsBasedOnLayoutDirection();
+    updateListeningForBackCallbacks();
+  }
+
+  @Override
+  public void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    if (backOrchestrator != null) {
+      backOrchestrator.stopListeningForBackCallbacks();
     }
   }
 
@@ -181,6 +216,7 @@ abstract class SheetDialog<C extends SheetCallback> extends AppCompatDialog {
       sheet = container.findViewById(getDialogId());
       behavior = getBehaviorFromSheet(sheet);
       addSheetCancelOnHideCallback(behavior);
+      backOrchestrator = new MaterialBackOrchestrator(behavior, sheet);
     }
   }
 
@@ -263,6 +299,49 @@ abstract class SheetDialog<C extends SheetCallback> extends AppCompatDialog {
           }
         });
     return container;
+  }
+
+  /**
+   * Set the edge which the sheet should originate from.
+   *
+   * <p>Note: This method should be called when the sheet is initialized, before it is shown.
+   * Runtime sheet edge changes are not supported.
+   *
+   * @throws IllegalStateException if the sheet is null or has already been laid out
+   * @param gravity the edge from which the sheet and its animations should originate.
+   */
+  public void setSheetEdge(@GravityInt int gravity) {
+    if (sheet == null) {
+      throw new IllegalStateException(
+          "Sheet view reference is null; sheet edge cannot be changed if the sheet view is null.");
+    }
+    if (ViewCompat.isLaidOut(sheet)) {
+      throw new IllegalStateException(
+          "Sheet view has been laid out; sheet edge cannot be changed once the sheet has been laid"
+              + " out.");
+    }
+    ViewGroup.LayoutParams layoutParams = sheet.getLayoutParams();
+    if (layoutParams instanceof CoordinatorLayout.LayoutParams) {
+      ((CoordinatorLayout.LayoutParams) layoutParams).gravity = gravity;
+      maybeUpdateWindowAnimationsBasedOnLayoutDirection();
+    }
+  }
+
+  private void maybeUpdateWindowAnimationsBasedOnLayoutDirection() {
+    Window window = getWindow();
+    if (window != null
+        && sheet != null
+        && sheet.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
+      CoordinatorLayout.LayoutParams layoutParams =
+          (CoordinatorLayout.LayoutParams) sheet.getLayoutParams();
+      int absoluteGravity =
+          GravityCompat.getAbsoluteGravity(
+              layoutParams.gravity, ViewCompat.getLayoutDirection(sheet));
+      window.setWindowAnimations(
+          absoluteGravity == Gravity.LEFT
+              ? R.style.Animation_Material3_SideSheetDialog_Left
+              : R.style.Animation_Material3_SideSheetDialog_Right);
+    }
   }
 
   private boolean shouldWindowCloseOnTouchOutside() {

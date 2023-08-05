@@ -806,7 +806,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             )
         )
         requestMessagesUnread.launch(intent)
-        requireActivity().overridePendingTransition(0, 0)
+        Utils.activityTransactionImmediate(requireActivity())
     }
 
     override fun displayPinnedMessage(pinned: Message?, canChange: Boolean) {

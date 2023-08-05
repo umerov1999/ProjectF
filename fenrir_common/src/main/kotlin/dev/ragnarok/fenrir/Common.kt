@@ -8,7 +8,7 @@ import androidx.annotation.StringRes
 import dev.ragnarok.fenrir_common.R
 
 object Common {
-    private const val RANDOM_PAGAN_SYMBOL_NUMBER = 24
+    private const val RANDOM_PAGAN_SYMBOL_NUMBER = 25
     private var randomPaganSymbol = -1
 
     fun randomizePaganSymbol() {
@@ -86,6 +86,7 @@ object Common {
 
             22 -> PaganSymbolWall(R.raw.svg_pagan_valkyrie_1, 170f, 170f)
             23 -> PaganSymbolWall(R.raw.svg_pagan_valkyrie_2, 180f, 180f)
+            24 -> PaganSymbolWall(R.raw.svg_pagan_fenrir, 160f, 160f)
             else -> PaganSymbolWall(R.raw.svg_pagan_cat, 160f, 160f)
         }
     }

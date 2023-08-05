@@ -85,6 +85,7 @@ static int Android420ToABGR(const uint8_t *src_y,
                                   height);
 }
 
+
 extern "C" {
 JNIEXPORT jint
 Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeCopyBetweenByteBufferAndBitmap(
@@ -197,6 +198,7 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeS
     return 0;
 }
 
+#define PADDING_BYTES_FOR_CAMERA3_JPEG_BLOB 8
 /**
  * Writes the content JPEG array to the Surface.
  *
@@ -213,9 +215,18 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeW
         return -1;
     }
 
-    // Updates the size of ANativeWindow_Buffer with the JPEG bytes size.
+    // Updates the size of ANativeWindow_Buffer with the JPEG bytes size. PLEASE NOTE that native
+    // layer expects jpeg bytes to contain the camera3_jpeg_blob struct at the end of the buffer.
+    // If jpeg bytes are supplied without the camera3_jpeg_blob, it is possible that the content
+    // byte matches the CAMERA3_JPEG_BLOB_ID by chance and cause the wrong jpeg size to be reported.
+    // To workaround the problem, here it adds the padding 0s to the end of the buffer so that
+    // CAMERA3_JPEG_BLOB_ID won't be matched by any chance and the total bytes size is reported
+    // as the jpeg size accordingly. The side effect of this approach is that there will be 8 zero
+    // bytes at the end of the jpeg bytes apps received.
     jsize array_size = env->GetArrayLength(jpeg_array);
-    ANativeWindow_setBuffersGeometry(window, array_size, 1, AHARDWAREBUFFER_FORMAT_BLOB);
+    ANativeWindow_setBuffersGeometry(window,
+                                     array_size + PADDING_BYTES_FOR_CAMERA3_JPEG_BLOB,
+                                     1, AHARDWAREBUFFER_FORMAT_BLOB);
 
     ANativeWindow_Buffer buffer;
     int lockResult = ANativeWindow_lock(window, &buffer, nullptr);
@@ -234,6 +245,8 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeW
     }
     auto *buffer_ptr = reinterpret_cast<uint8_t *>(buffer.bits);
     memcpy(buffer_ptr, jpeg_ptr, array_size);
+    // Set 0 for the padding bytes.
+    memset(buffer_ptr + array_size, 0, PADDING_BYTES_FOR_CAMERA3_JPEG_BLOB);
 
     ANativeWindow_unlockAndPost(window);
     ANativeWindow_release(window);

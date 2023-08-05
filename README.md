@@ -9,8 +9,8 @@
 <b>Инструкция по сборке:</b>
 Требуется:
   1) Android Studio Giraffe (2022.3.1) или выше. Kotlin 1.9.*
-  2) Android SDK 33
-  3) Android NDK 25.2.9519653
+  2) Android SDK 34
+  3) Android NDK 26.0.10404224
   
   Если не работает музыка в Fenrir Kate, обновите kate_receipt_gms_token в app.build_config.
   Взять токен можно из Kate Mobile Extra Mod

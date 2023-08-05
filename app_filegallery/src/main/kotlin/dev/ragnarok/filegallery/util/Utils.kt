@@ -1,6 +1,7 @@
 package dev.ragnarok.filegallery.util
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.pm.PackageManager
@@ -113,6 +114,20 @@ object Utils {
 
     fun hasTiramisu(): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+    }
+
+    fun hasUpsideDownCake(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    }
+
+    @Suppress("deprecation")
+    fun finishActivityImmediate(activity: Activity) {
+        activity.finish()
+        if (!hasUpsideDownCake()) {
+            activity.overridePendingTransition(0, 0)
+        } else {
+            activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, 0, 0)
+        }
     }
 
     fun firstNonEmptyString(vararg array: String?): String? {

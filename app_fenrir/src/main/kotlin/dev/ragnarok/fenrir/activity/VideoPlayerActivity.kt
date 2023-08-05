@@ -237,8 +237,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
                         }
 
                         override fun onSlideClosed(): Boolean {
-                            finish()
-                            overridePendingTransition(0, 0)
+                            Utils.finishActivityImmediate(this@VideoPlayerActivity)
                             return true
                         }
 
