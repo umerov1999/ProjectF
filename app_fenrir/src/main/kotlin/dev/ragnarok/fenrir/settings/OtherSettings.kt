@@ -699,6 +699,20 @@ internal class OtherSettings(context: Context) : IOtherSettings {
     override val isEnable_dirs_files_count: Boolean
         get() = getPreferences(app).getBoolean("enable_dirs_files_count", true)
 
+    override val picassoDispatcher: Int
+        get() = try {
+            if (!getPreferences(app).contains("picasso_dispatcher")) {
+                getPreferences(app).edit().putString(
+                    "picasso_dispatcher",
+                    if (FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4) "1" else "0"
+                ).apply()
+            }
+            getPreferences(app).getString("picasso_dispatcher", "0")!!
+                .trim { it <= ' ' }.toInt()
+        } catch (e: Exception) {
+            0
+        }
+
     companion object {
         private const val KEY_JSON_STATE = "json_list_state"
         private const val KEY_USERNAME_UIDS = "user_name_changes_uids"

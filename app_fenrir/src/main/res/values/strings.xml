@@ -132,6 +132,16 @@
         <item>6</item>
     </string-array>
 
+    <string-array name="picasso_dispatcher_names" translatable="false">
+        <item>Handler</item>
+        <item>Coroutine</item>
+    </string-array>
+
+    <string-array name="picasso_dispatcher_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
     <string-array name="array_photo_rounded_names">
         <item>Always rounded</item>
         <item>Rounded if one photo</item>
@@ -1960,4 +1970,5 @@
     <string name="empty_background">Empty Background</string>
     <string name="remember">Remember</string>
     <string name="instant_photo_display">Instant photo display</string>
+    <string name="picasso_dispatcher" translatable="false">Picasso3 dispatcher</string>
 </resources>

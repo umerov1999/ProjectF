@@ -131,6 +131,7 @@ class SettingsBackup {
         var do_zoom_photo: Boolean? = null
         var change_upload_size: Boolean? = null
         var instant_photo_display: Boolean? = null
+        var picasso_dispatcher: String? = null
         var show_photos_line: Boolean? = null
         var show_photos_date: Boolean? = null
         var do_auto_play_video: Boolean? = null

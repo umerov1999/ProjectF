@@ -76,6 +76,7 @@ interface ISettings {
         val isCompress_incoming_traffic: Boolean
         val currentParser: Int
         val isLimitImage_cache: Int
+        val picassoDispatcher: Int
     }
 
     interface ISecuritySettings {

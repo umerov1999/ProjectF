@@ -148,6 +148,8 @@ interface ISettings {
         fun removeOwnerInChangesMonitor(ownerId: Long)
         val isAudio_catalog_v2: Boolean
 
+        val picassoDispatcher: Int
+
         @get:Lang
         val language: Int
         val rendering_mode: Int

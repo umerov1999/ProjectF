@@ -440,8 +440,20 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             }
 
             switch("instant_photo_display") {
-                defaultValue = false
+                defaultValue = Settings.get().main().isInstant_photo_display
                 titleRes = R.string.instant_photo_display
+            }
+
+            singleChoice(
+                "picasso_dispatcher",
+                selItems(R.array.picasso_dispatcher_names, R.array.picasso_dispatcher_values),
+                parentFragmentManager
+            ) {
+                initialSelection = Settings.get().main().picassoDispatcher.toString()
+                titleRes = R.string.picasso_dispatcher
+                onSelectionChange {
+                    clear_cache()
+                }
             }
         }
         pref("security") {

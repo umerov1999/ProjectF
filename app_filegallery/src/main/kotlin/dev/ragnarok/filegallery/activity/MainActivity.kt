@@ -253,14 +253,29 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
             mToolbar?.setNavigationIcon(R.drawable.client_round)
             mToolbar?.setNavigationOnClickListener {
                 val menus = ModalBottomSheetDialogFragment.Builder()
-                menus.add(
-                    OptionRequest(
-                        0,
-                        getString(R.string.night_mode_title),
-                        R.drawable.ic_outline_nights_stay,
-                        false
+                if (Settings.get()
+                        .main().nightMode == AppCompatDelegate.MODE_NIGHT_YES || Settings.get()
+                        .main().nightMode == AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY || Settings.get()
+                        .main().nightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                ) {
+                    menus.add(
+                        OptionRequest(
+                            0,
+                            getString(R.string.day_mode_title),
+                            R.drawable.ic_outline_wb_sunny,
+                            false
+                        )
                     )
-                )
+                } else {
+                    menus.add(
+                        OptionRequest(
+                            0,
+                            getString(R.string.night_mode_title),
+                            R.drawable.ic_outline_nights_stay,
+                            false
+                        )
+                    )
+                }
                 menus.add(
                     OptionRequest(
                         1,

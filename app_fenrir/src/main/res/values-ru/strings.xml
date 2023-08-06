@@ -900,7 +900,7 @@
     <string name="who_is_not_allowed_to_comment_this_album">Кому комментирование этого альбома запрещено?</string>
     <string name="copy_data">Копировать</string>
     <string name="forward">Переслать</string>
-    <string name="read">Прочесть</string>
+    <string name="read">Прочитать</string>
     <string name="open">Открыть</string>
     <string name="enter_captcha_text">Введите текст с картинки</string>
     <string name="from_camera">Сделать фото</string>

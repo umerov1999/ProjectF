@@ -1354,7 +1354,7 @@
     <string name="use_api_5_90_for_audio_summary">Калі запампоўка аўдыё не працуе, адключыце</string>
     <string name="expires">%1$s %2$s</string>
     <string name="disable_history">Не паказваць Гісторыі</string>
-    <string name="audio_round_icon">Круглыя ​​вокладкі аўдыё</string>
+    <string name="audio_round_icon">Круглыя вокладкі аўдыё</string>
     <string name="custom_chat_color">Першы колер фону</string>
     <string name="use_custom_chat_color">Задаць колер фону</string>
     <string name="custom_chat_color_second">Другі колер фону</string>

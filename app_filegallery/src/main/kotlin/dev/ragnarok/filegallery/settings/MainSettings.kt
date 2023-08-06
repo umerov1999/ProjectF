@@ -327,6 +327,20 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val isOpen_folder_new_window: Boolean
         get() = getPreferences(app).getBoolean("open_folder_new_window", false)
 
+    override val picassoDispatcher: Int
+        get() = try {
+            if (!getPreferences(app).contains("picasso_dispatcher")) {
+                getPreferences(app).edit().putString(
+                    "picasso_dispatcher",
+                    if (FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4) "1" else "0"
+                ).apply()
+            }
+            getPreferences(app).getString("picasso_dispatcher", "0")!!
+                .trim { it <= ' ' }.toInt()
+        } catch (e: Exception) {
+            0
+        }
+
     @get:Lang
     override val language: Int
         get() = try {

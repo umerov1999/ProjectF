@@ -71,6 +71,7 @@
     <string name="success">Успех</string>
     <string name="choose_theme_title">Цветовая палитра</string>
     <string name="night_mode_title">Ночной режим</string>
+    <string name="day_mode_title">Дневной режим</string>
     <string name="font_size">Размер шрифта</string>
     <string name="use_internal_downloader">Использовать внутренний загрузчик</string>
     <string name="use_internal_downloader_summary">Для видео и документов</string>

@@ -152,7 +152,7 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
             if (Settings.get().ui().nightMode == AppCompatDelegate.MODE_NIGHT_YES || Settings.get()
                     .ui().nightMode == AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY || Settings.get()
                     .ui().nightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            ) R.drawable.ic_outline_nights_stay else R.drawable.ic_outline_wb_sunny
+            ) R.drawable.ic_outline_wb_sunny else R.drawable.ic_outline_nights_stay
         )
         mAdapter = MenuListAdapter(context, mDrawerItems ?: mutableListOf(), this, true)
         mBottomSheetBehavior = BottomSheetBehavior.from(root.findViewById(R.id.bottom_sheet))

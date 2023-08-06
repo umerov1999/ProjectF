@@ -46,7 +46,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     public static final int VERTICAL = LinearLayout.VERTICAL;
 
     private static final String TAG = "DividerItem";
-    private static final int[] ATTRS = new int[]{ android.R.attr.listDivider };
+    private static final int[] ATTRS = { android.R.attr.listDivider };
 
     private Drawable mDivider;
 

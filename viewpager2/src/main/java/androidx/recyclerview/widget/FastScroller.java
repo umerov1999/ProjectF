@@ -71,8 +71,8 @@ class FastScroller extends RecyclerView.ItemDecoration implements RecyclerView.O
     private static final int HIDE_DURATION_MS = 500;
     private static final int SCROLLBAR_FULL_OPAQUE = 255;
 
-    private static final int[] PRESSED_STATE_SET = new int[]{android.R.attr.state_pressed};
-    private static final int[] EMPTY_STATE_SET = new int[]{};
+    private static final int[] PRESSED_STATE_SET = {android.R.attr.state_pressed};
+    private static final int[] EMPTY_STATE_SET = {};
 
     private final int mScrollbarMinimumRange;
     private final int mMargin;

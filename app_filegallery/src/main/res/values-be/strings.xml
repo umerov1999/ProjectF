@@ -71,6 +71,7 @@
     <string name="success">Поспех</string>
     <string name="choose_theme_title">Каляровая палітра</string>
     <string name="night_mode_title">Начны рэжым</string>
+    <string name="day_mode_title">Дзённы рэжым</string>
     <string name="font_size">Памер шрыфта</string>
     <string name="use_internal_downloader">Выкарыстоўваць унутраны загрузнік</string>
     <string name="use_internal_downloader_summary">Для відэа і дакументаў</string>
@@ -79,7 +80,7 @@
     <string name="download_photo_tap">Спампоўваць фота па доўгім націску</string>
     <string name="show_photos_line">Паказваць трэкбар з фоткамі</string>
     <string name="music_settings">Плэер і музыка</string>
-    <string name="audio_round_icon">Круглыя ​​вокладкі аўдыё</string>
+    <string name="audio_round_icon">Круглыя вокладкі аўдыё</string>
     <string name="use_long_click_download">Спампоўваць па доўгім націску</string>
     <string name="revert_play_audio">Кнопка плэй - меню</string>
     <string name="player_has_background">Фон плэера</string>
