@@ -948,6 +948,8 @@ class FenrirContentProvider : ContentProvider() {
             sVideosProjectionMap[VideosColumns.CAN_EDIT] =
                 VideosColumns.FULL_CAN_EDIT
             sVideosProjectionMap[VideosColumns.CAN_ADD] = VideosColumns.FULL_CAN_ADD
+            sVideosProjectionMap[VideosColumns.TRAILER] = VideosColumns.FULL_TRAILER
+            sVideosProjectionMap[VideosColumns.TIMELINE_THUMBS] = VideosColumns.FULL_TIMELINE_THUMBS
 
             sPostsProjectionMap = HashMap()
             sPostsProjectionMap[BaseColumns._ID] = PostsColumns.FULL_ID

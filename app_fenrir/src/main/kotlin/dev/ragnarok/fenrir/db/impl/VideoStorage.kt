@@ -101,6 +101,18 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
             .setPlatform(cursor.getString(VideosColumns.PLATFORM))
             .setCanEdit(cursor.getBoolean(VideosColumns.CAN_EDIT))
             .setCanAdd(cursor.getBoolean(VideosColumns.CAN_ADD))
+            .setTrailer(cursor.getString(VideosColumns.TRAILER))
+        val timelineThumbsText =
+            cursor.getBlob(VideosColumns.TIMELINE_THUMBS)
+        if (timelineThumbsText.nonNullNoEmpty()) {
+            video.setTimelineThumbs(
+                MsgPack.decodeFromByteArrayEx(
+                    VideoDboEntity.VideoDboTimelineEntity.serializer(),
+                    timelineThumbsText
+                )
+            )
+        }
+
         val privacyViewText =
             cursor.getBlob(VideosColumns.PRIVACY_VIEW)
         if (privacyViewText.nonNullNoEmpty()) {
@@ -221,6 +233,21 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
                     VideosColumns.PRIVACY_VIEW
                 )
             })
+            dbo.timelineThumbs.ifNonNull({
+                cv.put(
+                    VideosColumns.TIMELINE_THUMBS,
+                    MsgPack.encodeToByteArrayEx(
+                        VideoDboEntity.VideoDboTimelineEntity.serializer(),
+                        it
+                    )
+                )
+            }, {
+                cv.putNull(
+                    VideosColumns.TIMELINE_THUMBS
+                )
+            })
+            cv.put(VideosColumns.TRAILER, dbo.trailer)
+
             cv.put(VideosColumns.MP4_240, dbo.mp4link240)
             cv.put(VideosColumns.MP4_360, dbo.mp4link360)
             cv.put(VideosColumns.MP4_480, dbo.mp4link480)

@@ -320,6 +320,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         return false
     }
 
+    @SuppressLint("GestureBackNavigation")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (mPlayer == null) {
             return true

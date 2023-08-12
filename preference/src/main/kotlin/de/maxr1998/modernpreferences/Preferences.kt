@@ -34,7 +34,18 @@ import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
 import de.maxr1998.modernpreferences.helpers.DependencyManager
 import de.maxr1998.modernpreferences.helpers.KEY_ROOT_SCREEN
 import de.maxr1998.modernpreferences.helpers.PreferenceMarker
-import de.maxr1998.modernpreferences.preferences.*
+import de.maxr1998.modernpreferences.preferences.AccentButtonPreference
+import de.maxr1998.modernpreferences.preferences.CheckBoxPreference
+import de.maxr1998.modernpreferences.preferences.CollapsePreference
+import de.maxr1998.modernpreferences.preferences.ColorPickPreference
+import de.maxr1998.modernpreferences.preferences.CustomTextPreference
+import de.maxr1998.modernpreferences.preferences.EditTextPreference
+import de.maxr1998.modernpreferences.preferences.ExpandableTextPreference
+import de.maxr1998.modernpreferences.preferences.ImagePreference
+import de.maxr1998.modernpreferences.preferences.MultiLineEditTextPreference
+import de.maxr1998.modernpreferences.preferences.SeekBarPreference
+import de.maxr1998.modernpreferences.preferences.SeparatorSpaceTextPreference
+import de.maxr1998.modernpreferences.preferences.SwitchPreference
 import de.maxr1998.modernpreferences.preferences.choice.MultiChoiceDialogPreference
 import de.maxr1998.modernpreferences.preferences.choice.SingleChoiceDialogPreference
 import java.util.concurrent.atomic.AtomicBoolean
@@ -614,7 +625,7 @@ class PreferenceScreen internal constructor(builder: Builder) : Preference(build
     override fun hashCode() = (31 * key.hashCode()) + preferences.hashCode()
 
     @PreferenceMarker
-    class Builder constructor(private var context: Context?, key: String) :
+    class Builder(private var context: Context?, key: String) :
         AbstractPreference(key), Appendable {
         constructor(context: Context?) : this(context, KEY_ROOT_SCREEN)
         constructor(builder: Builder, key: String = "") : this(builder.context, key)

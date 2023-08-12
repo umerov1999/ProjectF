@@ -1,7 +1,11 @@
 package dev.ragnarok.filegallery.activity.photopager
 
 import android.app.Activity
-import android.content.*
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
@@ -13,7 +17,6 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
 import androidx.core.net.toFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.zxing.*
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso
 import dev.ragnarok.filegallery.R

@@ -31,17 +31,24 @@
 
 #include <cstring>
 
+#include "tdebug.h"
 #include "tfile.h"
 #include "tfilestream.h"
 #include "tstring.h"
-#include "tdebug.h"
-#include "trefcounter.h"
 
 #include "mpegfile.h"
 #include "id3v2framefactory.h"
 #include "apefile.h"
 
 using namespace TagLib;
+
+class FileRef::FileTypeResolver::FileTypeResolverPrivate
+{
+};
+
+class FileRef::StreamTypeResolver::StreamTypeResolverPrivate
+{
+};
 
 namespace
 {
@@ -185,17 +192,21 @@ namespace
   }
 }  // namespace
 
-class FileRef::FileRefPrivate : public RefCounter
+class FileRef::FileRefPrivate
 {
 public:
   FileRefPrivate() :
     file(nullptr),
     stream(nullptr) {}
 
-  ~FileRefPrivate() {
+  ~FileRefPrivate()
+  {
     delete file;
     delete stream;
   }
+
+  FileRefPrivate(const FileRefPrivate &) = delete;
+  FileRefPrivate &operator=(const FileRefPrivate &) = delete;
 
   File     *file;
   IOStream *stream;
@@ -206,40 +217,32 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 FileRef::FileRef() :
-  d(new FileRefPrivate())
+  d(std::make_shared<FileRefPrivate>())
 {
 }
 
 FileRef::FileRef(FileName fileName, bool readAudioProperties,
                  AudioProperties::ReadStyle audioPropertiesStyle) :
-  d(new FileRefPrivate())
+  d(std::make_shared<FileRefPrivate>())
 {
   parse(fileName, readAudioProperties, audioPropertiesStyle);
 }
 
-FileRef::FileRef(IOStream* stream, bool readAudioProperties, AudioProperties::ReadStyle audioPropertiesStyle) :
-  d(new FileRefPrivate())
+FileRef::FileRef(IOStream *stream, bool readAudioProperties, AudioProperties::ReadStyle audioPropertiesStyle) :
+  d(std::make_shared<FileRefPrivate>())
 {
   parse(stream, readAudioProperties, audioPropertiesStyle);
 }
 
 FileRef::FileRef(File *file) :
-  d(new FileRefPrivate())
+  d(std::make_shared<FileRefPrivate>())
 {
   d->file = file;
 }
 
-FileRef::FileRef(const FileRef &ref) :
-  d(ref.d)
-{
-  d->ref();
-}
+FileRef::FileRef(const FileRef &ref) = default;
 
-FileRef::~FileRef()
-{
-  if(d->deref())
-    delete d;
-}
+FileRef::~FileRef() = default;
 
 Tag *FileRef::tag() const
 {
@@ -410,6 +413,8 @@ void FileRef::parse(IOStream *stream, bool readAudioProperties,
   d->file = detectByContent(stream, readAudioProperties, audioPropertiesStyle);
 }
 
+FileRef::FileTypeResolver::FileTypeResolver() = default;
 FileRef::FileTypeResolver::~FileTypeResolver() = default;
 
+FileRef::StreamTypeResolver::StreamTypeResolver() = default;
 FileRef::StreamTypeResolver::~StreamTypeResolver() = default;

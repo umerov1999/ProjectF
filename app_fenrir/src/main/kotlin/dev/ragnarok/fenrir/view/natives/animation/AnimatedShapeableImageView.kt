@@ -25,7 +25,7 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
 
-class AnimatedShapeableImageView @JvmOverloads constructor(
+open class AnimatedShapeableImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : ShapeableImageView(context, attrs) {

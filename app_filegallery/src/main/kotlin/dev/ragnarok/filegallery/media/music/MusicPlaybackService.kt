@@ -761,10 +761,7 @@ class MusicPlaybackService : Service() {
     fun canPlayAfterCurrent(audio: Audio): Boolean {
         synchronized(this) {
             val current = currentTrackNotSyncPos
-            if (mPlayList.isNullOrEmpty() || current == -1 || mPlayList?.get(current) == audio) {
-                return false
-            }
-            return true
+            return !(mPlayList.isNullOrEmpty() || current == -1 || mPlayList?.get(current) == audio)
         }
     }
 

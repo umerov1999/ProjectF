@@ -326,7 +326,6 @@ public class FirebaseInstallationServiceClient {
                 // Return empty installation response with BAD_CONFIG response code after max retries
                 return InstallationResponse.builder().setResponseCode(ResponseCode.BAD_CONFIG).build();
             } catch (AssertionError | IOException ignored) {
-                continue;
             } finally {
                 httpURLConnection.disconnect();
                 TrafficStats.clearThreadStatsTag();
@@ -492,7 +491,6 @@ public class FirebaseInstallationServiceClient {
                 return TokenResult.builder().setResponseCode(TokenResult.ResponseCode.BAD_CONFIG).build();
                 // TODO(b/166168291): Remove code duplication and clean up this class.
             } catch (AssertionError | IOException ignored) {
-                continue;
             } finally {
                 httpURLConnection.disconnect();
                 TrafficStats.clearThreadStatsTag();

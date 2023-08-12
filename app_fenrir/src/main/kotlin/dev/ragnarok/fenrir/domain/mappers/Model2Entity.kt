@@ -609,6 +609,17 @@ object Model2Entity {
         return dbo
     }
 
+    fun buildVideoTimelineDbo(entity: Video.VideoTimeline): VideoDboEntity.VideoDboTimelineEntity {
+        return VideoDboEntity.VideoDboTimelineEntity().setCountPerImage(entity.countPerImage)
+            .setCountPerRow(entity.countPerRow)
+            .setCountTotal(entity.countTotal)
+            .setFrameHeight(entity.frameHeight)
+            .setFrameWidth(entity.frameWidth)
+            .setFrequency(entity.frequency)
+            .setIsUv(entity.isUv)
+            .setLinks(entity.links)
+    }
+
     private fun buildVideoDbo(video: Video): VideoDboEntity {
         return VideoDboEntity().set(video.id, video.ownerId)
             .setAlbumId(video.albumId)
@@ -643,6 +654,8 @@ object Model2Entity {
             .setCanRepost(video.isCanRepost)
             .setPrivate(video.private)
             .setFavorite(video.isFavorite)
+            .setTrailer(video.trailer)
+            .setTimelineThumbs(video.timelineThumbs?.let { buildVideoTimelineDbo(it) })
     }
 
     private fun mapPrivacy(privacy: SimplePrivacy): PrivacyEntity {

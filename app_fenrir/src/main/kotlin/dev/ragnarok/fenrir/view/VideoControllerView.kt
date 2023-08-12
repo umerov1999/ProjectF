@@ -323,6 +323,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         return false
     }
 
+    @SuppressLint("GestureBackNavigation")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (mPlayer == null) {
             return true
@@ -479,6 +480,8 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         fun toggleFullScreen()
         fun toPIPScreen()
         fun hideActionBar()
+        fun onScrolling(position: Long)
+        fun onScrollingStop()
     }
 
     companion object {
@@ -492,6 +495,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         setProgress()
         updatePausePlay()
         show()
+        mPlayer?.onScrollingStop()
     }
 
     override fun onSeekBarMoving(position: Long) {
@@ -503,5 +507,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         }
 
         if (mCurrentTime != null) mCurrentTime?.text = stringForTime(position)
+
+        mPlayer?.onScrolling(position)
     }
 }

@@ -8,6 +8,10 @@ android {
     compileSdk = appCompileSDK
     buildToolsVersion = appBuildTools
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     flavorDimensions.add("type")
     productFlavors {
         fenrir {

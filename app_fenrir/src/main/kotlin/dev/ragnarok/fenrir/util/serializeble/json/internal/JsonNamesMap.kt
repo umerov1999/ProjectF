@@ -5,10 +5,17 @@
 
 package dev.ragnarok.fenrir.util.serializeble.json.internal
 
-import dev.ragnarok.fenrir.util.serializeble.json.*
-import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
+import dev.ragnarok.fenrir.util.serializeble.json.Json
+import dev.ragnarok.fenrir.util.serializeble.json.JsonConfiguration
+import dev.ragnarok.fenrir.util.serializeble.json.JsonNames
+import dev.ragnarok.fenrir.util.serializeble.json.JsonNamingStrategy
+import dev.ragnarok.fenrir.util.serializeble.json.schemaCache
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialKind
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.encoding.CompositeDecoder
 
 internal val JsonDeserializationNamesKey = DescriptorSchemaCache.Key<Map<String, Int>>()
 internal val JsonSerializationNamesKey = DescriptorSchemaCache.Key<Array<String>>()

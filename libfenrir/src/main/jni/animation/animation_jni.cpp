@@ -18,17 +18,17 @@ extern "C" {
 #include <libswscale/swscale.h>
 }
 
-static std::string av_make_error_str(int errnum) {
+inline std::string av_make_error_str_animation(int errnum) {
     char errbuf[AV_ERROR_MAX_STRING_SIZE];
     av_strerror(errnum, errbuf, AV_ERROR_MAX_STRING_SIZE);
     return (std::string) errbuf;
 }
 
 #undef av_err2str
-#define av_err2str(errnum) av_make_error_str(errnum).c_str()
+#define av_err2str(errnum) av_make_error_str_animation(errnum).c_str()
 
 /*
-static inline void print_ffmpeg_error(int error) {
+inline void print_ffmpeg_error(int error) {
     __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "%s\n", av_err2str(error));
 }
 */
@@ -89,8 +89,9 @@ public:
     AVIOContext *ioContext = nullptr;
 };
 
-int open_codec_context(int *stream_idx, AVCodecContext **dec_ctx, AVFormatContext *fmt_ctx,
-                       enum AVMediaType type) {
+int
+open_codec_context_animation(int *stream_idx, AVCodecContext **dec_ctx, AVFormatContext *fmt_ctx,
+                             enum AVMediaType type) {
     int ret, stream_index;
     AVStream *st;
     const AVCodec *dec;
@@ -133,7 +134,7 @@ int open_codec_context(int *stream_idx, AVCodecContext **dec_ctx, AVFormatContex
     return 0;
 }
 
-static int decode_packet(VideoInfo *info, bool &got_frame) {
+int decode_packet_animation(VideoInfo *info, bool &got_frame) {
     int ret;
     int decoded = info->pkt.size;
     got_frame = false;
@@ -157,8 +158,8 @@ static int decode_packet(VideoInfo *info, bool &got_frame) {
     return decoded;
 }
 
-static jlong createDecoder(JNIEnv *env, jstring src,
-                           jintArray data) {
+jlong createDecoder_animation(JNIEnv *env, jstring src,
+                              jintArray data) {
     auto *info = new VideoInfo();
 
     char const *srcString = SafeGetStringUTFChars(env, src, nullptr);
@@ -184,8 +185,8 @@ static jlong createDecoder(JNIEnv *env, jstring src,
         return 0;
     }
 
-    if (open_codec_context(&info->video_stream_idx, &info->video_dec_ctx, info->fmt_ctx,
-                           AVMEDIA_TYPE_VIDEO) >= 0) {
+    if (open_codec_context_animation(&info->video_stream_idx, &info->video_dec_ctx, info->fmt_ctx,
+                                     AVMEDIA_TYPE_VIDEO) >= 0) {
         info->video_stream = info->fmt_ctx->streams[info->video_stream_idx];
     }
 
@@ -236,17 +237,17 @@ extern "C" JNIEXPORT jlong JNICALL
 Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_createDecoder(JNIEnv *env, jobject,
                                                                              jstring src,
                                                                              jintArray data) {
-    return createDecoder(env, src, data);
+    return createDecoder_animation(env, src, data);
 }
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_dev_ragnarok_fenrir_module_animation_AnimatedFileFrame_createDecoder(JNIEnv *env, jobject,
                                                                           jstring src,
                                                                           jintArray data) {
-    return createDecoder(env, src, data);
+    return createDecoder_animation(env, src, data);
 }
 
-static void destroyDecoder(jlong ptr) {
+void destroyDecoder_animation(jlong ptr) {
     if (ptr == 0) {
         return;
     }
@@ -257,13 +258,13 @@ static void destroyDecoder(jlong ptr) {
 extern "C" JNIEXPORT void JNICALL
 Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_destroyDecoder(JNIEnv *, jobject,
                                                                               jlong ptr) {
-    destroyDecoder(ptr);
+    destroyDecoder_animation(ptr);
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_dev_ragnarok_fenrir_module_animation_AnimatedFileFrame_destroyDecoder(JNIEnv *, jobject,
                                                                            jlong ptr) {
-    destroyDecoder(ptr);
+    destroyDecoder_animation(ptr);
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -318,7 +319,7 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_seekToMs(JNIEnv *
             }
 
             if (info->pkt.size > 0) {
-                ret = decode_packet(info, got_frame);
+                ret = decode_packet_animation(info, got_frame);
                 if (ret < 0) {
                     if (info->has_decoded_frames) {
                         ret = 0;
@@ -334,7 +335,7 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_seekToMs(JNIEnv *
             } else {
                 info->pkt.data = nullptr;
                 info->pkt.size = 0;
-                ret = decode_packet(info, got_frame);
+                ret = decode_packet_animation(info, got_frame);
                 if (ret < 0) {
                     return;
                 }
@@ -369,8 +370,8 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_seekToMs(JNIEnv *
     }
 }
 
-static inline void
-writeFrameToBitmap(JNIEnv *env, VideoInfo *info, jintArray data, jobject bitmap, jint stride) {
+void writeFrameToBitmap_animation(JNIEnv *env, VideoInfo *info, jintArray data, jobject bitmap,
+                                  jint stride) {
     jint *dataArr = env->GetIntArrayElements(data, nullptr);
     int32_t wantedWidth;
     int32_t wantedHeight;
@@ -450,10 +451,10 @@ writeFrameToBitmap(JNIEnv *env, VideoInfo *info, jintArray data, jobject bitmap,
     }
 }
 
-static jint getFrameAtTime(JNIEnv *env, jlong ptr, jlong ms,
-                           jobject bitmap,
-                           jintArray data,
-                           jint stride) {
+jint getFrameAtTime_animation(JNIEnv *env, jlong ptr, jlong ms,
+                              jobject bitmap,
+                              jintArray data,
+                              jint stride) {
     if (ptr == 0 || bitmap == nullptr || data == nullptr) {
         return 0;
     }
@@ -479,7 +480,7 @@ static jint getFrameAtTime(JNIEnv *env, jlong ptr, jlong ms,
             }
 
             if (info->pkt.size > 0) {
-                ret = decode_packet(info, got_frame);
+                ret = decode_packet_animation(info, got_frame);
                 if (ret < 0) {
                     if (info->has_decoded_frames) {
                         ret = 0;
@@ -495,7 +496,7 @@ static jint getFrameAtTime(JNIEnv *env, jlong ptr, jlong ms,
             } else {
                 info->pkt.data = nullptr;
                 info->pkt.size = 0;
-                ret = decode_packet(info, got_frame);
+                ret = decode_packet_animation(info, got_frame);
                 if (ret < 0) {
                     return 0;
                 }
@@ -521,7 +522,7 @@ static jint getFrameAtTime(JNIEnv *env, jlong ptr, jlong ms,
                         isLastPacket = av_read_frame(info->fmt_ctx, &info->pkt) < 0;
                     }
                     if (pkt_pts >= pts || isLastPacket) {
-                        writeFrameToBitmap(env, info, data, bitmap, stride);
+                        writeFrameToBitmap_animation(env, info, data, bitmap, stride);
                         finished = true;
                     }
                 }
@@ -544,7 +545,7 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_getFrameAtTime(JN
                                                                               jobject bitmap,
                                                                               jintArray data,
                                                                               jint stride) {
-    return getFrameAtTime(env, ptr, ms, bitmap, data, stride);
+    return getFrameAtTime_animation(env, ptr, ms, bitmap, data, stride);
 }
 
 extern "C" JNIEXPORT jint JNICALL
@@ -553,7 +554,7 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileFrame_getFrameAtTime(JNIEn
                                                                            jobject bitmap,
                                                                            jintArray data,
                                                                            jint stride) {
-    return getFrameAtTime(env, ptr, ms, bitmap, data, stride);
+    return getFrameAtTime_animation(env, ptr, ms, bitmap, data, stride);
 }
 
 extern "C" JNIEXPORT jint JNICALL
@@ -591,7 +592,7 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_getVideoFrame(JNI
         }
 
         if (info->pkt.size > 0) {
-            ret = decode_packet(info, got_frame);
+            ret = decode_packet_animation(info, got_frame);
             if (ret < 0) {
                 if (info->has_decoded_frames) {
                     ret = 0;
@@ -609,9 +610,9 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_getVideoFrame(JNI
         } else {
             info->pkt.data = nullptr;
             info->pkt.size = 0;
-            ret = decode_packet(info, got_frame);
+            ret = decode_packet_animation(info, got_frame);
             if (ret < 0) {
-                LOGE("can't decode packet flushed %d %s %s", ret, av_make_error_str(ret).c_str(),
+                LOGE("can't decode packet flushed %d %s %s", ret, av_err2str(ret),
                      info->src);
                 return 0;
             }
@@ -641,7 +642,7 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_getVideoFrame(JNI
                 info->frame->format == AV_PIX_FMT_YUVJ420P ||
                 info->frame->format == AV_PIX_FMT_YUV444P ||
                 info->frame->format == AV_PIX_FMT_YUVA420P) {
-                writeFrameToBitmap(env, info, data, bitmap, stride);
+                writeFrameToBitmap_animation(env, info, data, bitmap, stride);
             }
             info->has_decoded_frames = true;
             av_frame_unref(info->frame);

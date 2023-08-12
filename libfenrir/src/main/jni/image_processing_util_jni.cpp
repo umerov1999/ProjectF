@@ -21,11 +21,11 @@
   free(var##_mem);                  \
   var = 0
 
-static void weave_pixels(const uint8_t *src_u,
-                         const uint8_t *src_v,
-                         int src_pixel_stride_uv,
-                         uint8_t *dst_uv,
-                         int width) {
+void weave_pixels_image_proccessing(const uint8_t *src_u,
+                                    const uint8_t *src_v,
+                                    int src_pixel_stride_uv,
+                                    uint8_t *dst_uv,
+                                    int width) {
     int i;
     for (i = 0; i < width; ++i) {
         dst_uv[0] = *src_u;
@@ -36,7 +36,7 @@ static void weave_pixels(const uint8_t *src_u,
     }
 }
 
-static libyuv::RotationMode get_rotation_mode(int rotation) {
+libyuv::RotationMode get_rotation_mode_image_proccessing(int rotation) {
     libyuv::RotationMode mode = libyuv::kRotate0;
     switch (rotation) {
         case 0:
@@ -58,18 +58,18 @@ static libyuv::RotationMode get_rotation_mode(int rotation) {
 }
 
 // Helper function to convert Android420 to ABGR with options to choose full swing or studio swing.
-static int Android420ToABGR(const uint8_t *src_y,
-                            int src_stride_y,
-                            const uint8_t *src_u,
-                            int src_stride_u,
-                            const uint8_t *src_v,
-                            int src_stride_v,
-                            int src_pixel_stride_uv,
-                            uint8_t *dst_abgr,
-                            int dst_stride_abgr,
-                            bool is_full_swing,
-                            int width,
-                            int height) {
+int Android420ToABGR_image_proccessing(const uint8_t *src_y,
+                                       int src_stride_y,
+                                       const uint8_t *src_u,
+                                       int src_stride_u,
+                                       const uint8_t *src_v,
+                                       int src_stride_v,
+                                       int src_pixel_stride_uv,
+                                       uint8_t *dst_abgr,
+                                       int dst_stride_abgr,
+                                       bool is_full_swing,
+                                       int width,
+                                       int height) {
     return Android420ToARGBMatrix(src_y,
                                   src_stride_y,
                                   src_v,
@@ -294,7 +294,7 @@ Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid42
         return -1;
     }
 
-    libyuv::RotationMode mode = get_rotation_mode(rotation);
+    libyuv::RotationMode mode = get_rotation_mode_image_proccessing(rotation);
     bool has_rotation = rotation != 0;
 
     auto *buffer_ptr = reinterpret_cast<uint8_t *>(buffer.bits);
@@ -320,22 +320,22 @@ Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid42
         }
 
         // Convert yuv to rgb except the last line.
-        result = Android420ToABGR(src_y_ptr + start_offset_y,
-                                  src_stride_y,
-                                  src_u_ptr + start_offset_u,
-                                  src_stride_u,
-                                  src_v_ptr + start_offset_v,
-                                  src_stride_v,
-                                  src_pixel_stride_uv,
-                                  dst_ptr,
-                                  dst_stride_y,
+        result = Android420ToABGR_image_proccessing(src_y_ptr + start_offset_y,
+                                                    src_stride_y,
+                                                    src_u_ptr + start_offset_u,
+                                                    src_stride_u,
+                                                    src_v_ptr + start_offset_v,
+                                                    src_stride_v,
+                                                    src_pixel_stride_uv,
+                                                    dst_ptr,
+                                                    dst_stride_y,
                 /* is_full_swing = */true,
-                                  width,
-                                  height - 1);
+                                                    width,
+                                                    height - 1);
         if (result == 0) {
             // Convert the last row with (width - 1) pixels
             // since the last pixel's yuv data is missing.
-            result = Android420ToABGR(
+            result = Android420ToABGR_image_proccessing(
                     src_y_ptr + start_offset_y + src_stride_y * (height - 1),
                     src_stride_y - 1,
                     src_u_ptr + start_offset_u + src_stride_u * (height - 2) / 2,
@@ -367,18 +367,18 @@ Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid42
             }
         }
     } else {
-        result = Android420ToABGR(src_y_ptr + start_offset_y,
-                                  src_stride_y,
-                                  src_u_ptr + start_offset_u,
-                                  src_stride_u,
-                                  src_v_ptr + start_offset_v,
-                                  src_stride_v,
-                                  src_pixel_stride_uv,
-                                  dst_ptr,
-                                  dst_stride_y,
+        result = Android420ToABGR_image_proccessing(src_y_ptr + start_offset_y,
+                                                    src_stride_y,
+                                                    src_u_ptr + start_offset_u,
+                                                    src_stride_u,
+                                                    src_v_ptr + start_offset_v,
+                                                    src_stride_v,
+                                                    src_pixel_stride_uv,
+                                                    dst_ptr,
+                                                    dst_stride_y,
                 /* is_full_swing = */true,
-                                  width,
-                                  height);
+                                                    width,
+                                                    height);
     }
 
     // TODO(b/203141655): avoid unnecessary memory copy by merging libyuv API for rotation.
@@ -431,7 +431,7 @@ Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid42
 
     int dst_stride_y = bitmap_stride;
 
-    int result = Android420ToABGR(
+    int result = Android420ToABGR_image_proccessing(
             src_y_ptr,
             src_stride_y,
             src_u_ptr,
@@ -509,7 +509,7 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeR
     auto *rotated_v_ptr =
             static_cast<uint8_t *>(env->GetDirectBufferAddress(rotated_buffer_v));
 
-    libyuv::RotationMode mode = get_rotation_mode(rotation);
+    libyuv::RotationMode mode = get_rotation_mode_image_proccessing(rotation);
     bool flip_wh = (mode == libyuv::kRotate90 || mode == libyuv::kRotate270);
 
     int rotated_stride_y = flip_wh ? height : width;
@@ -577,7 +577,8 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeR
         align_buffer_64(plane_uv, halfwidth * 2 * halfheight);
         uint8_t *dst_uv = plane_uv;
         for (int y = 0; y < halfheight; y++) {
-            weave_pixels(src_v_ptr, src_u_ptr, src_pixel_stride_uv, dst_uv, halfwidth);
+            weave_pixels_image_proccessing(src_v_ptr, src_u_ptr, src_pixel_stride_uv, dst_uv,
+                                           halfwidth);
             src_u += src_stride_u;
             src_v += src_stride_v;
             dst_uv += halfwidth * 2;

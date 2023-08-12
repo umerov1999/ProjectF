@@ -29,8 +29,9 @@
 #include "taglib.h"
 #include "taglib_export.h"
 
-#include <vector>
 #include <iostream>
+#include <memory>
+#include <vector>
 
 namespace TagLib {
 
@@ -598,7 +599,7 @@ namespace TagLib {
 
   private:
     class ByteVectorPrivate;
-    ByteVectorPrivate *d;
+    std::unique_ptr<ByteVectorPrivate> d;
   };
 }  // namespace TagLib
 

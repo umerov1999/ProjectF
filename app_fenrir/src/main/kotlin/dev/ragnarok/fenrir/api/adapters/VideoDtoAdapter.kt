@@ -6,6 +6,7 @@ import dev.ragnarok.fenrir.api.model.VKApiVideo
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
 import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
@@ -74,6 +75,23 @@ class VideoDtoAdapter : AbsDtoAdapter<VKApiVideo>("VKApiVideo") {
             dto.external = optString(filesRoot, "external")
             dto.hls = optString(filesRoot, listOf("hls", "hls_ondemand"))
             dto.live = optString(filesRoot, "live")
+        }
+        if (hasObject(root, "trailer")) {
+            val trailerRoot = root["trailer"]?.jsonObject
+            dto.trailer = Utils.firstNonEmptyString(
+                optString(trailerRoot, "mp4_720"),
+                optString(trailerRoot, "mp4_1080"),
+                optString(trailerRoot, "mp4_480")
+            )
+        }
+
+        if (hasObject(root, "timeline_thumbs")) {
+            dto.timeline_thumbs = root["timeline_thumbs"]?.let {
+                kJson.decodeFromJsonElement(
+                    VKApiVideo.VKApiVideoTimeline.serializer(),
+                    it
+                )
+            }
         }
         val sz =
             if (dto.external.nonNullNoEmpty() && dto.external?.contains("youtube") == true) 320 else 800

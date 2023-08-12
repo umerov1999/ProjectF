@@ -1,6 +1,8 @@
 package dev.ragnarok.fenrir.api.model.response
 
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.VKApiCommunity
+import dev.ragnarok.fenrir.api.model.VKApiUser
+import dev.ragnarok.fenrir.api.model.VKApiVideo
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

@@ -228,7 +228,7 @@ ZSTDLIB_API size_t ZSTD_findFrameCompressedSize(const void* src, size_t srcSize)
  * for example to size a static array on stack.
  * Will produce constant value 0 if srcSize too large.
  */
-#define ZSTD_MAX_INPUT_SIZE ((sizeof(size_t)==8) ? 0xFF00FF00FF00FF00LLU : 0xFF00FF00U)
+#define ZSTD_MAX_INPUT_SIZE ((sizeof(size_t)==8) ? 0xFF00FF00FF00FF00ULL : 0xFF00FF00U)
 #define ZSTD_COMPRESSBOUND(srcSize)   (((size_t)(srcSize) >= ZSTD_MAX_INPUT_SIZE) ? 0 : (srcSize) + ((srcSize)>>8) + (((srcSize) < (128<<10)) ? (((128<<10) - (srcSize)) >> 11) /* margin, from 64 to 0 */ : 0))  /* this formula ensures that bound(A) + bound(B) <= bound(A+B) as long as A and B >= 128 KB */
 ZSTDLIB_API size_t ZSTD_compressBound(size_t srcSize); /*!< maximum compressed size in worst case single-pass scenario */
 /* ZSTD_isError() :
@@ -618,6 +618,7 @@ typedef enum {
      * ZSTD_d_forceIgnoreChecksum
      * ZSTD_d_refMultipleDDicts
      * ZSTD_d_disableHuffmanAssembly
+     * ZSTD_d_maxBlockSize
      * Because they are not stable, it's necessary to define ZSTD_STATIC_LINKING_ONLY to access them.
      * note : never ever use experimentalParam? names directly
      */
@@ -625,7 +626,8 @@ typedef enum {
      ZSTD_d_experimentalParam2=1001,
      ZSTD_d_experimentalParam3=1002,
      ZSTD_d_experimentalParam4=1003,
-     ZSTD_d_experimentalParam5=1004
+     ZSTD_d_experimentalParam5=1004,
+     ZSTD_d_experimentalParam6=1005
 
 } ZSTD_dParameter;
 
@@ -2429,6 +2431,22 @@ ZSTDLIB_STATIC_API size_t ZSTD_DCtx_getParameter(ZSTD_DCtx* dctx, ZSTD_dParamete
  * ZSTD_DISABLE_ASM.
  */
 #define ZSTD_d_disableHuffmanAssembly ZSTD_d_experimentalParam5
+
+/* ZSTD_d_maxBlockSize
+ * Allowed values are between 1KB and ZSTD_BLOCKSIZE_MAX (128KB).
+ * The default is ZSTD_BLOCKSIZE_MAX, and setting to 0 will set to the default.
+ *
+ * Forces the decompressor to reject blocks whose content size is
+ * larger than the configured maxBlockSize. When maxBlockSize is
+ * larger than the windowSize, the windowSize is used instead.
+ * This saves memory on the decoder when you know all blocks are small.
+ *
+ * This option is typically used in conjunction with ZSTD_c_maxBlockSize.
+ *
+ * WARNING: This causes the decoder to reject otherwise valid frames
+ * that have block sizes larger than the configured maxBlockSize.
+ */
+#define ZSTD_d_maxBlockSize ZSTD_d_experimentalParam6
 
 
 /*! ZSTD_DCtx_setFormat() :

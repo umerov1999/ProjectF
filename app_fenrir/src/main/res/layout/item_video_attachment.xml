@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <dev.ragnarok.fenrir.view.AspectRatioImageView
+            <dev.ragnarok.fenrir.view.natives.animation.AspectRatioAnimatedShapeableImageView
                 android:id="@+id/item_video_album_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

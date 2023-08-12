@@ -20,10 +20,21 @@ import android.graphics.Matrix
 import android.os.Build
 import android.view.Gravity
 import androidx.annotation.VisibleForTesting
-import androidx.exifinterface.media.ExifInterface.*
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_FLIP_HORIZONTAL
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_FLIP_VERTICAL
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_180
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_270
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_90
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_TRANSPOSE
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_TRANSVERSE
 import com.squareup.picasso3.BitmapUtils.shouldResize
 import com.squareup.picasso3.RequestHandler.Result.Bitmap
-import kotlin.math.*
+import kotlin.math.ceil
+import kotlin.math.cos
+import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sin
 
 internal class MatrixTransformation(private val data: Request) : Transformation {
     override fun transform(source: Bitmap): Bitmap {

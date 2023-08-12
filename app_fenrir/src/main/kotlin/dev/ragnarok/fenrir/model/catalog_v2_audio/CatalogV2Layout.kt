@@ -4,7 +4,13 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.IntDef
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.VKApiCatalogV2Layout
-import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders.*
+import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders.ArtistBannerViewHolder
+import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders.ButtonsViewHolder
+import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders.HeaderViewHolder
+import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders.LinkViewHolder
+import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders.SeparatorViewHolder
+import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders.VideoViewHolder
+import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders.ViewHolderFabric
 import dev.ragnarok.fenrir.model.AbsModelType
 
 class CatalogV2Layout : Parcelable {

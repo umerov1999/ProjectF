@@ -532,6 +532,8 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 "  [" + VideosColumns.PLATFORM + "] TEXT, " +
                 "  [" + VideosColumns.CAN_EDIT + "] BOOLEAN, " +
                 "  [" + VideosColumns.CAN_ADD + "] BOOLEAN, " +
+                "  [" + VideosColumns.TRAILER + "] TEXT, " +
+                "  [" + VideosColumns.TIMELINE_THUMBS + "] BLOB, " +
                 "  CONSTRAINT [] UNIQUE ([" + VideosColumns.VIDEO_ID + "], [" + VideosColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }

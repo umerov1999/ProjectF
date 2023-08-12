@@ -38,8 +38,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.view.ViewCompat;
 import com.google.android.material.internal.ThemeEnforcement;
+import com.google.android.material.internal.ViewUtils;
 import com.google.android.material.resources.MaterialResources;
 
 /**
@@ -53,6 +53,11 @@ import com.google.android.material.resources.MaterialResources;
  *             layoutManager.getOrientation());
  *     recyclerView.addItemDecoration(dividerItemDecoration);
  * </pre>
+ *
+ * <p>For more information, see the <a
+ * href="https://github.com/material-components/material-components-android/blob/master/docs/components/Divider.md">component
+ * developer guidance</a> and <a href="https://material.io/components/divider/overview">design
+ * guidelines</a>.
  */
 public class MaterialDividerItemDecoration extends ItemDecoration {
   public static final int HORIZONTAL = LinearLayout.HORIZONTAL;
@@ -313,7 +318,7 @@ public class MaterialDividerItemDecoration extends ItemDecoration {
       left = 0;
       right = parent.getWidth();
     }
-    boolean isRtl = ViewCompat.getLayoutDirection(parent) == ViewCompat.LAYOUT_DIRECTION_RTL;
+    boolean isRtl = ViewUtils.isLayoutRtl(parent);
     left += isRtl ? insetEnd : insetStart;
     right -= isRtl ? insetStart : insetEnd;
 
@@ -352,14 +357,25 @@ public class MaterialDividerItemDecoration extends ItemDecoration {
     top += insetStart;
     bottom -= insetEnd;
 
+    boolean isRtl = ViewUtils.isLayoutRtl(parent);
+
     int childCount = parent.getChildCount();
     for (int i = 0; i < childCount; i++) {
       View child = parent.getChildAt(i);
       if (shouldDrawDivider(parent, child)) {
         parent.getLayoutManager().getDecoratedBoundsWithMargins(child, tempRect);
         // Take into consideration any translationX added to the view.
-        int right = tempRect.right + Math.round(child.getTranslationX());
-        int left = right - thickness;
+        int translationX = Math.round(child.getTranslationX());
+        int left;
+        int right;
+        if (isRtl) {
+          left = tempRect.left + translationX;
+          right = left + thickness;
+        } else {
+          right = tempRect.right + translationX;
+          left = right - thickness;
+        }
+
         dividerDrawable.setBounds(left, top, right, bottom);
         dividerDrawable.draw(canvas);
       }
@@ -379,7 +395,11 @@ public class MaterialDividerItemDecoration extends ItemDecoration {
       if (orientation == VERTICAL) {
         outRect.bottom = thickness;
       } else {
-        outRect.right = thickness;
+        if (ViewUtils.isLayoutRtl(parent)) {
+          outRect.left = thickness;
+        } else {
+          outRect.right = thickness;
+        }
       }
     }
   }

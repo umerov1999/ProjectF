@@ -80,6 +80,10 @@ class VideoDboEntity : DboEntity() {
         private set
     var isCanRepost = false
         private set
+    var timelineThumbs: VideoDboTimelineEntity? = null
+        private set
+    var trailer: String? = null
+        private set
 
     operator fun set(id: Int, ownerId: Long): VideoDboEntity {
         this.id = id
@@ -89,6 +93,16 @@ class VideoDboEntity : DboEntity() {
 
     fun setAlbumId(albumId: Int): VideoDboEntity {
         this.albumId = albumId
+        return this
+    }
+
+    fun setTimelineThumbs(timelineThumbs: VideoDboTimelineEntity?): VideoDboEntity {
+        this.timelineThumbs = timelineThumbs
+        return this
+    }
+
+    fun setTrailer(trailer: String?): VideoDboEntity {
+        this.trailer = trailer
         return this
     }
 
@@ -255,5 +269,66 @@ class VideoDboEntity : DboEntity() {
     fun setFavorite(favorite: Boolean): VideoDboEntity {
         isFavorite = favorite
         return this
+    }
+
+    @Keep
+    @Serializable
+    class VideoDboTimelineEntity {
+        var countPerImage: Int = 0
+            private set
+        var countPerRow: Int = 0
+            private set
+        var countTotal: Int = 0
+            private set
+        var frameHeight: Int = 0
+            private set
+        var frameWidth: Int = 0
+            private set
+        var frequency: Int = 0
+            private set
+        var isUv: Boolean = false
+            private set
+        var links: List<String>? = null
+            private set
+
+        fun setCountPerImage(countPerImage: Int): VideoDboTimelineEntity {
+            this.countPerImage = countPerImage
+            return this
+        }
+
+        fun setCountPerRow(countPerRow: Int): VideoDboTimelineEntity {
+            this.countPerRow = countPerRow
+            return this
+        }
+
+        fun setCountTotal(countTotal: Int): VideoDboTimelineEntity {
+            this.countTotal = countTotal
+            return this
+        }
+
+        fun setFrameHeight(frameHeight: Int): VideoDboTimelineEntity {
+            this.frameHeight = frameHeight
+            return this
+        }
+
+        fun setFrameWidth(frameWidth: Int): VideoDboTimelineEntity {
+            this.frameWidth = frameWidth
+            return this
+        }
+
+        fun setFrequency(frequency: Int): VideoDboTimelineEntity {
+            this.frequency = frequency
+            return this
+        }
+
+        fun setIsUv(isUv: Boolean): VideoDboTimelineEntity {
+            this.isUv = isUv
+            return this
+        }
+
+        fun setLinks(links: List<String>?): VideoDboTimelineEntity {
+            this.links = links
+            return this
+        }
     }
 }

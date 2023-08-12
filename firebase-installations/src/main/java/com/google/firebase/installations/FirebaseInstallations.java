@@ -625,9 +625,7 @@ public class FirebaseInstallations implements FirebaseInstallationsApi {
             CrossProcessLock lock =
                     CrossProcessLock.acquire(firebaseApp.getApplicationContext(), LOCKFILE_NAME_GENERATE_FID);
             try {
-                PersistedInstallationEntry prefs =
-                        persistedInstallation.readPersistedInstallationEntryValue();
-                return prefs;
+                return persistedInstallation.readPersistedInstallationEntryValue();
 
             } finally {
                 // It is possible that the lock acquisition failed, resulting in lock being null.

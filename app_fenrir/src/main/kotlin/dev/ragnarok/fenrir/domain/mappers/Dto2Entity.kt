@@ -1525,6 +1525,17 @@ object Dto2Entity {
         return entity
     }
 
+    fun mapVideoTimeline(dto: VKApiVideo.VKApiVideoTimeline): VideoDboEntity.VideoDboTimelineEntity {
+        return VideoDboEntity.VideoDboTimelineEntity().setCountPerImage(dto.count_per_image)
+            .setCountPerRow(dto.count_per_row)
+            .setCountTotal(dto.count_total)
+            .setFrameHeight(dto.frame_height.toInt())
+            .setFrameWidth(dto.frame_width.toInt())
+            .setFrequency(dto.frequency.toInt())
+            .setIsUv(dto.is_uv)
+            .setLinks(dto.links)
+
+    }
 
     fun mapVideo(dto: VKApiVideo): VideoDboEntity {
         return VideoDboEntity().set(dto.id, dto.owner_id)
@@ -1562,6 +1573,8 @@ object Dto2Entity {
             .setCanAdd(dto.can_add)
             .setPrivate(dto.is_private)
             .setFavorite(dto.is_favorite)
+            .setTrailer(dto.trailer)
+            .setTimelineThumbs(dto.timeline_thumbs?.let { mapVideoTimeline(it) })
     }
 
     private fun mapPrivacy(dto: VKApiPrivacy): PrivacyEntity {

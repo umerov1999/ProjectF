@@ -2,7 +2,13 @@ package dev.ragnarok.filegallery.activity
 
 import android.Manifest
 import android.app.Activity
-import android.content.*
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.ComponentName
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -44,7 +50,11 @@ import dev.ragnarok.filegallery.fragment.tagdir.TagDirFragment
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerFragment
 import dev.ragnarok.filegallery.fragment.theme.ThemeFragment
 import dev.ragnarok.filegallery.fromIOToMain
-import dev.ragnarok.filegallery.listener.*
+import dev.ragnarok.filegallery.listener.AppStyleable
+import dev.ragnarok.filegallery.listener.BackPressCallback
+import dev.ragnarok.filegallery.listener.CanBackPressedCallback
+import dev.ragnarok.filegallery.listener.OnSectionResumeCallback
+import dev.ragnarok.filegallery.listener.UpdatableNavigation
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController.ServiceToken
 import dev.ragnarok.filegallery.media.music.MusicPlaybackService

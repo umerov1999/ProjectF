@@ -48,7 +48,6 @@ add_library(thorvg STATIC
         thorvg/src/lib/sw_engine/tvgSwStroke.cpp
         thorvg/src/lib/tvgAccessor.cpp
         thorvg/src/lib/tvgAnimation.cpp
-        thorvg/src/lib/tvgBezier.cpp
         thorvg/src/lib/tvgCanvas.cpp
         thorvg/src/lib/tvgFill.cpp
         thorvg/src/lib/tvgGlCanvas.cpp
@@ -70,7 +69,9 @@ add_library(thorvg STATIC
         thorvg/src/loaders/svg/tvgSvgPath.cpp
         thorvg/src/loaders/svg/tvgSvgSceneBuilder.cpp
         thorvg/src/loaders/svg/tvgSvgUtil.cpp
-        thorvg/src/loaders/svg/tvgXmlParser.cpp)
+        thorvg/src/loaders/svg/tvgXmlParser.cpp
+        thorvg/src/utils/tvgBezier.cpp
+        thorvg/src/utils/tvgStr.cpp)
 
 target_compile_options(thorvg PRIVATE
         -DTVG_STATIC=1 -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter ${SYM_VISIBILITY})
@@ -79,7 +80,8 @@ target_include_directories(thorvg PRIVATE
         thorvg/src/lib
         thorvg/src/lib/sw_engine
         thorvg/src/loaders/raw
-        thorvg/src/loaders/svg)
+        thorvg/src/loaders/svg
+        thorvg/src/utils)
 
 add_library(rlottie STATIC
         rlottie/src/lottie/lottieanimation.cpp
@@ -393,7 +395,6 @@ add_library(common STATIC
         audio/taglib/toolkit/tfilestream.cpp
         audio/taglib/toolkit/tiostream.cpp
         audio/taglib/toolkit/tpropertymap.cpp
-        audio/taglib/toolkit/trefcounter.cpp
         audio/taglib/toolkit/tstring.cpp
         audio/taglib/toolkit/tstringlist.cpp
         audio/taglib/toolkit/tzlib.cpp

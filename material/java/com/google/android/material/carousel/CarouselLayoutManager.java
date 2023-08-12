@@ -24,6 +24,7 @@ import static java.lang.Math.max;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -39,8 +40,10 @@ import androidx.recyclerview.widget.RecyclerView.State;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
@@ -51,6 +54,8 @@ import androidx.core.math.MathUtils;
 import androidx.core.util.Preconditions;
 import androidx.core.view.ViewCompat;
 import com.google.android.material.carousel.KeylineState.Keyline;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,6 +71,11 @@ import java.util.Map;
  * <p>Note that when Carousel measures and lays out items, the first item in the adapter will be
  * measured and it's desired size will be used to determine an appropriate size for all items in the
  * carousel.
+ *
+ * <p>For more information, see the <a
+ * href="https://github.com/material-components/material-components-android/blob/master/docs/components/Carousel.md">component
+ * developer guidance</a> and <a href="https://material.io/components/carousel/overview">design
+ * guidelines</a>.
  */
 public class CarouselLayoutManager extends LayoutManager
     implements Carousel, RecyclerView.SmoothScroller.ScrollVectorProvider {
@@ -105,6 +115,31 @@ public class CarouselLayoutManager extends LayoutManager
   public static final int VERTICAL = RecyclerView.VERTICAL;
 
   private CarouselOrientationHelper orientationHelper;
+
+  private final OnLayoutChangeListener recyclerViewSizeChangeListener =
+      (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+        // If RV dimen values have changed, refresh the keyline state.
+        if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
+          v.post(this::refreshKeylineState);
+        }
+      };
+
+  /** Aligns large items to the start of the carousel. */
+  public static final int ALIGNMENT_START = 0;
+
+  /** Aligns large items to the center of the carousel. */
+  public static final int ALIGNMENT_CENTER = 1;
+
+  /**
+   * Determines where to align the large items in the carousel.
+   *
+   * @hide
+   */
+  @IntDef({ALIGNMENT_START, ALIGNMENT_CENTER})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface Alignment {}
+
+  @Alignment private int carouselAlignment = ALIGNMENT_START;
 
   /**
    * An internal object used to store and run checks on a child to be potentially added to the
@@ -151,9 +186,31 @@ public class CarouselLayoutManager extends LayoutManager
   @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
   public CarouselLayoutManager(
       Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-    Properties properties = getProperties(context, attrs, defStyleAttr, defStyleRes);
-    setOrientation(properties.orientation);
     setCarouselStrategy(new MultiBrowseCarouselStrategy());
+
+    setCarouselAttributes(context, attrs);
+  }
+
+  private void setCarouselAttributes(Context context, AttributeSet attrs) {
+    if (attrs != null) {
+      TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Carousel);
+      setCarouselAlignment(a.getInt(R.styleable.Carousel_carousel_alignment, ALIGNMENT_START));
+      setOrientation(a.getInt(androidx.viewpager2.R.styleable.RecyclerView_android_orientation, HORIZONTAL));
+      a.recycle();
+    }
+  }
+
+  /**
+   * Sets the alignment of the focal items in the carousel.
+   */
+  public void setCarouselAlignment(@Alignment int alignment) {
+    this.carouselAlignment = alignment;
+    refreshKeylineState();
+  }
+
+  @Override
+  public int getCarouselAlignment() {
+    return carouselAlignment;
   }
 
   @Override
@@ -172,6 +229,19 @@ public class CarouselLayoutManager extends LayoutManager
   }
 
   @Override
+  public void onAttachedToWindow(RecyclerView view) {
+    super.onAttachedToWindow(view);
+    refreshKeylineState();
+    view.addOnLayoutChangeListener(recyclerViewSizeChangeListener);
+  }
+
+  @Override
+  public void onDetachedFromWindow(RecyclerView view, Recycler recycler) {
+    super.onDetachedFromWindow(view, recycler);
+    view.removeOnLayoutChangeListener(recyclerViewSizeChangeListener);
+  }
+
+  @Override
   public void onLayoutChildren(Recycler recycler, State state) {
     if (state.getItemCount() <= 0) {
       removeAndRecycleAllViews(recycler);
@@ -181,16 +251,11 @@ public class CarouselLayoutManager extends LayoutManager
 
     boolean isRtl = isLayoutRtl();
 
+    boolean isInitialLoad = keylineStateList == null;
     // If a keyline state hasn't been created, use the first child as a representative of how each
     // child would like to be measured and allow the strategy to create a keyline state.
-    boolean isInitialLoad = keylineStateList == null;
     if (isInitialLoad) {
-      View firstChild = recycler.getViewForPosition(0);
-      measureChildWithMargins(firstChild, 0, 0);
-      KeylineState keylineState =
-          carouselStrategy.onFirstChildMeasuredWithMargins(this, firstChild);
-      keylineStateList =
-          KeylineStateList.from(this, isRtl ? KeylineState.reverse(keylineState) : keylineState);
+      recalculateKeylineStateList(recycler);
     }
 
     // Ensure our scroll limits are initialized and valid for the data set size.
@@ -217,10 +282,19 @@ public class CarouselLayoutManager extends LayoutManager
     // Ensure currentFillStartPosition is valid if the number of items in the adapter has changed.
     currentFillStartPosition = MathUtils.clamp(currentFillStartPosition, 0, state.getItemCount());
 
-    updateCurrentKeylineStateForScrollOffset();
+    updateCurrentKeylineStateForScrollOffset(keylineStateList);
 
     detachAndScrapAttachedViews(recycler);
     fill(recycler, state);
+  }
+
+  private void recalculateKeylineStateList(Recycler recycler) {
+    View firstChild = recycler.getViewForPosition(0);
+    measureChildWithMargins(firstChild, 0, 0);
+    KeylineState keylineState = carouselStrategy.onFirstChildMeasuredWithMargins(this, firstChild);
+    keylineStateList =
+        KeylineStateList.from(
+            this, isLayoutRtl() ? KeylineState.reverse(keylineState) : keylineState);
   }
 
   /**
@@ -623,7 +697,8 @@ public class CarouselLayoutManager extends LayoutManager
    *
    * <p>This method should be called any time a change in the scroll offset occurs.
    */
-  private void updateCurrentKeylineStateForScrollOffset() {
+  private void updateCurrentKeylineStateForScrollOffset(
+      @NonNull KeylineStateList keylineStateList) {
     if (maxScroll <= minScroll) {
       // We don't have enough items in the list to scroll and we should use the keyline state
       // that aligns items to the start of the container.
@@ -637,9 +712,9 @@ public class CarouselLayoutManager extends LayoutManager
   }
 
   /**
-   * Calculates the horizontal distance children should be scrolled by for a given {@code dx}.
+   * Calculates the distance children should be scrolled by for a given {@code delta}.
    *
-   * @param dx the delta, resulting from a gesture or other event, that the list would like to be
+   * @param delta the delta, resulting from a gesture or other event, that the list would like to be
    *     scrolled by
    * @param currentScroll the current horizontal scroll offset that is always between the min and
    *     max horizontal scroll
@@ -664,7 +739,7 @@ public class CarouselLayoutManager extends LayoutManager
    * Calculates the total offset needed to scroll the first item in the list to the center of the
    * start focal keyline.
    */
-  private int calculateStartScroll(KeylineStateList stateList) {
+  private int calculateStartScroll(@NonNull KeylineStateList stateList) {
     boolean isRtl = isLayoutRtl();
     KeylineState startState = isRtl ? stateList.getEndState() : stateList.getStartState();
     Keyline startFocalKeyline =
@@ -1046,7 +1121,7 @@ public class CarouselLayoutManager extends LayoutManager
     }
     scrollOffset = getScrollOffsetForPosition(position, getKeylineStateForPosition(position));
     currentFillStartPosition = MathUtils.clamp(position, 0, max(0, getItemCount() - 1));
-    updateCurrentKeylineStateForScrollOffset();
+    updateCurrentKeylineStateForScrollOffset(keylineStateList);
     requestLayout();
   }
 
@@ -1151,10 +1226,14 @@ public class CarouselLayoutManager extends LayoutManager
       return 0;
     }
 
+    if (keylineStateList == null) {
+      recalculateKeylineStateList(recycler);
+    }
+
     // Calculate how much the carousel should scroll and update the scroll offset.
     int scrolledBy = calculateShouldScrollBy(distance, scrollOffset, minScroll, maxScroll);
     scrollOffset += scrolledBy;
-    updateCurrentKeylineStateForScrollOffset();
+    updateCurrentKeylineStateForScrollOffset(keylineStateList);
 
     float halfItemSize = currentKeylineState.getItemSize() / 2F;
     int startPosition = getPosition(getChildAt(0));
@@ -1218,7 +1297,7 @@ public class CarouselLayoutManager extends LayoutManager
    */
   @Override
   public int computeHorizontalScrollExtent(@NonNull State state) {
-    return (int) keylineStateList.getDefaultState().getItemSize();
+    return keylineStateList == null ? 0 : (int) keylineStateList.getDefaultState().getItemSize();
   }
 
   /**
@@ -1240,7 +1319,7 @@ public class CarouselLayoutManager extends LayoutManager
 
   @Override
   public int computeVerticalScrollExtent(@NonNull State state) {
-    return (int) keylineStateList.getDefaultState().getItemSize();
+    return keylineStateList == null ? 0 : (int) keylineStateList.getDefaultState().getItemSize();
   }
 
   @Override

@@ -8,7 +8,11 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationStrategy
-import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.descriptors.PolymorphicKind
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialKind
+import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.modules.SerializersModuleCollector
 import kotlin.reflect.KClass
 

@@ -8,7 +8,7 @@
 
 <b>Инструкция по сборке:</b>
 Требуется:
-  1) Android Studio Giraffe (2022.3.1) или выше. Kotlin 1.9.*
+  1) Android Studio Hedgehog (2023.1.1) или выше. Kotlin 1.9.*
   2) Android SDK 34
   3) Android NDK 26.0.10404224
   

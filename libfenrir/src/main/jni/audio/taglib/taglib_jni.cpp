@@ -114,7 +114,8 @@ Java_dev_ragnarok_fenrir_module_FileUtils_audioTagModifyNative(JNIEnv *env, jobj
         env->ReleaseStringUTFChars(cover_file, cover_fileString);
     }
     buf.clear();
-    return f.save(MPEG::File::TagTypes::ID3v2, TagLib::File::StripOthers, ID3v2::v4, TagLib::File::Duplicate);
+    return f.save(MPEG::File::TagTypes::ID3v2, TagLib::File::StripOthers, ID3v2::v4,
+                  TagLib::File::Duplicate);
 }
 
 extern "C" JNIEXPORT jboolean

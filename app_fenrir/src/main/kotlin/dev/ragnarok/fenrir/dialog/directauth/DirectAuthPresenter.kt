@@ -42,9 +42,9 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
         val captchaSid = if (requiredCaptcha != null) requiredCaptcha?.sid else null
         val captchaCode = if (captcha.nonNullNoEmpty()) captcha?.trim { it <= ' ' } else null
         val code: String? = if (requireSmsCode) {
-            if (smsCode.nonNullNoEmpty<CharSequence>()) smsCode?.trim { it <= ' ' } else null
+            if (smsCode.nonNullNoEmpty()) smsCode?.trim { it <= ' ' } else null
         } else if (requireAppCode) {
-            if (appCode.nonNullNoEmpty<CharSequence>()) appCode?.trim { it <= ' ' } else null
+            if (appCode.nonNullNoEmpty()) appCode?.trim { it <= ' ' } else null
         } else {
             null
         }

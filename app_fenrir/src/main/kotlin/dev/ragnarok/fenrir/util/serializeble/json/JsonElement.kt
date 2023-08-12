@@ -174,8 +174,7 @@ internal class JsonLiteral internal constructor(
         if (other == null || this::class != other::class) return false
         other as JsonLiteral
         if (isString != other.isString) return false
-        if (content != other.content) return false
-        return true
+        return content == other.content
     }
 
     @SuppressAnimalSniffer // Boolean.hashCode(boolean)

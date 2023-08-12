@@ -24,7 +24,13 @@ import dev.ragnarok.fenrir.fragment.photos.vkphotoalbums.VKPhotoAlbumsFragment
 import dev.ragnarok.fenrir.fragment.videos.localvideos.LocalVideosFragment
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.BackPressCallback
-import dev.ragnarok.fenrir.model.selection.*
+import dev.ragnarok.fenrir.model.selection.FileManagerSelectableSource
+import dev.ragnarok.fenrir.model.selection.LocalGallerySelectableSource
+import dev.ragnarok.fenrir.model.selection.LocalPhotosSelectableSource
+import dev.ragnarok.fenrir.model.selection.LocalVideosSelectableSource
+import dev.ragnarok.fenrir.model.selection.Sources
+import dev.ragnarok.fenrir.model.selection.Types
+import dev.ragnarok.fenrir.model.selection.VKPhotosSelectableSource
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.createPageTransform
 

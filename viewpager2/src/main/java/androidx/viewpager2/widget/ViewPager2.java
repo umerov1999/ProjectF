@@ -296,7 +296,7 @@ public final class ViewPager2 extends ViewGroup {
     }
 
     private void setOrientation(Context context, AttributeSet attrs) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RecyclerView);
+        @SuppressLint("CustomViewStyleable") TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RecyclerView);
         ViewCompat.saveAttributeDataForStyleable(this, context, R.styleable.RecyclerView, attrs,
                 a, 0, 0);
         try {

@@ -34,20 +34,20 @@ public:
 };
 
 PropertyMap::PropertyMap() :
-  d(new PropertyMapPrivate)
+  d(std::make_unique<PropertyMapPrivate>())
 {
 
 }
 
 PropertyMap::PropertyMap(const PropertyMap &m) :
   SimplePropertyMap(m),
-  d(new PropertyMapPrivate)
+  d(std::make_unique<PropertyMapPrivate>())
 {
   *d = *m.d;
 }
 
 PropertyMap::PropertyMap(const SimplePropertyMap &m) :
-  d(new PropertyMapPrivate)
+  d(std::make_unique<PropertyMapPrivate>())
 {
   for(auto [key, value] : m) {
     if(!key.isEmpty())
@@ -57,10 +57,7 @@ PropertyMap::PropertyMap(const SimplePropertyMap &m) :
   }
 }
 
-PropertyMap::~PropertyMap()
-{
-  delete d;
-}
+PropertyMap::~PropertyMap() = default;
 
 bool PropertyMap::insert(const String &key, const StringList &values)
 {
@@ -98,13 +95,7 @@ bool PropertyMap::contains(const String &key) const
 
 bool PropertyMap::contains(const PropertyMap &other) const
 {
-  for(auto it = other.begin(); it != other.end(); ++it) {
-    if(!SimplePropertyMap::contains(it->first))
-      return false;
-    if ((*this)[it->first] != it->second)
-      return false;
-  }
-  return true;
+  return std::all_of(other.begin(), other.end(), [this](const auto &o) { return contains(o.first) && (*this)[o.first] == o.second; });
 }
 
 PropertyMap &PropertyMap::erase(const String &key)

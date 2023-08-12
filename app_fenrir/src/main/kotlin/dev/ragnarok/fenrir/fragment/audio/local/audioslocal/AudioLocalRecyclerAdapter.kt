@@ -20,7 +20,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso3.Transformation
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.fromIOToMain
+import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.canPlayAfterCurrent
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.currentAudio
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.isNowPlayingOrPreparingOrPaused
@@ -35,12 +38,14 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.menu.options.AudioLocalOption
 import dev.ragnarok.fenrir.module.FileUtils
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.PolyTransformation
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils

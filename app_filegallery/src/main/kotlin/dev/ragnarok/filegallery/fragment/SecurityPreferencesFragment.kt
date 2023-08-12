@@ -15,7 +15,12 @@ import androidx.recyclerview.widget.RecyclerView
 import de.maxr1998.modernpreferences.AbsPreferencesFragment
 import de.maxr1998.modernpreferences.PreferenceScreen
 import de.maxr1998.modernpreferences.PreferencesAdapter
-import de.maxr1998.modernpreferences.helpers.*
+import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.onCheckedBeforeChange
+import de.maxr1998.modernpreferences.helpers.onClick
+import de.maxr1998.modernpreferences.helpers.pref
+import de.maxr1998.modernpreferences.helpers.screen
+import de.maxr1998.modernpreferences.helpers.switch
 import de.maxr1998.modernpreferences.preferences.TwoStatePreference
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.activity.ActivityFeatures

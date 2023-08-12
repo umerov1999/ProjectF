@@ -49,8 +49,13 @@ import java.lang.annotation.RetentionPolicy;
  *   <li>{@code indicatorInset}: the inset from component's bound to the spinner's outer edge.
  *   <li>{@code indicatorDirectionCircular}: the rotation direction of the spinner or indicator.
  * </ul>
+ *
+ * <p>For more information, see the <a
+ * href="https://github.com/material-components/material-components-android/blob/master/docs/components/ProgressIndicator.md">component
+ * developer guidance</a> and <a
+ * href="https://material.io/components/progress-indicators/overview">design guidelines</a>.
  */
-public final class CircularProgressIndicator
+public class CircularProgressIndicator
     extends BaseProgressIndicator<CircularProgressIndicatorSpec> {
   public static final int DEF_STYLE_RES =
       R.style.Widget_MaterialComponents_CircularProgressIndicator;

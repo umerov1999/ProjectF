@@ -9,6 +9,10 @@ android {
     buildToolsVersion = appBuildTools
     ndkVersion = appNdk
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         minSdk = appMinSDK
         targetSdk = appTargetSDK

@@ -72,14 +72,13 @@
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cover_cardview"
+                        style="?materialCardStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="16dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        app:cardCornerRadius="4dp"
-                        app:cardElevation="0dp">
+                        android:foreground="?attr/selectableItemBackgroundBorderless">
 
-                        <dev.ragnarok.fenrir.view.AspectRatioImageView
+                        <dev.ragnarok.fenrir.view.natives.animation.AspectRatioAnimatedShapeableImageView
                             android:id="@+id/fragment_video_preview_image"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

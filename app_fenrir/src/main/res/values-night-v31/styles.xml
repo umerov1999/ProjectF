@@ -25,6 +25,12 @@
         <item name="colorOnBackground">#1E1E1E</item>
         <item name="colorSurface">#F01E1E1E</item>
 
+        <item name="colorSurfaceContainer">?colorSurface</item>
+        <item name="colorSurfaceContainerLow">?colorSurface</item>
+        <item name="colorSurfaceContainerLowest">?colorSurface</item>
+        <item name="colorSurfaceContainerHigh">?colorSurface</item>
+        <item name="colorSurfaceContainerHighest">?colorSurfaceVariant</item>
+
         <item name="colorOnSurface">#CCCCCC</item>
         <item name="colorSurfaceVariant">#161616</item>
         <item name="colorOnSurfaceVariant">#A3A3A3</item>

@@ -87,6 +87,10 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         private set
     var optionalOwner: Owner? = null
         private set
+    var timelineThumbs: VideoTimeline? = null
+        private set
+    var trailer: String? = null
+        private set
 
     constructor()
     internal constructor(parcel: Parcel) {
@@ -128,6 +132,8 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         isFavorite = parcel.getBoolean()
         msgId = parcel.readInt()
         msgPeerId = parcel.readLong()
+        trailer = parcel.readString()
+        timelineThumbs = parcel.readTypedObjectCompat(VideoTimeline.CREATOR)
         optionalOwner = ParcelableOwnerWrapper.readOwner(parcel)
     }
 
@@ -170,6 +176,8 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         isFavorite = parcel.readBoolean()
         msgId = parcel.readInt()
         msgPeerId = parcel.readLong()
+        trailer = parcel.readString()
+        timelineThumbs = parcel.readParcelable(VideoTimeline.NativeCreator)
         optionalOwner = ParcelableOwnerWrapper.readOwner(parcel)
     }
 
@@ -227,6 +235,8 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         parcel.putBoolean(isFavorite)
         parcel.writeInt(msgId)
         parcel.writeLong(msgPeerId)
+        parcel.writeString(trailer)
+        parcel.writeTypedObjectCompat(timelineThumbs, flags)
         ParcelableOwnerWrapper.writeOwner(parcel, flags, optionalOwner)
     }
 
@@ -269,7 +279,19 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
         dest.writeBoolean(isFavorite)
         dest.writeInt(msgId)
         dest.writeLong(msgPeerId)
+        dest.writeString(trailer)
+        dest.writeParcelable(timelineThumbs)
         ParcelableOwnerWrapper.writeOwner(dest, optionalOwner)
+    }
+
+    fun setTimelineThumbs(timelineThumbs: VideoTimeline?): Video {
+        this.timelineThumbs = timelineThumbs
+        return this
+    }
+
+    fun setTrailer(trailer: String?): Video {
+        this.trailer = trailer
+        return this
     }
 
     fun setCanAdd(canAdd: Boolean): Video {
@@ -459,6 +481,134 @@ class Video : AbsModel, ParcelNative.ParcelableNative {
     fun setOptionalOwner(optionalOwner: Owner?): Video {
         this.optionalOwner = optionalOwner
         return this
+    }
+
+    class VideoTimeline : Parcelable, ParcelNative.ParcelableNative {
+        var countPerImage: Int = 0
+            private set
+        var countPerRow: Int = 0
+            private set
+        var countTotal: Int = 0
+            private set
+        var frameHeight: Int = 0
+            private set
+        var frameWidth: Int = 0
+            private set
+        var frequency: Int = 0
+            private set
+        var isUv: Boolean = false
+            private set
+        var links: List<String>? = null
+            private set
+
+        constructor()
+        internal constructor(parcel: Parcel) {
+            countPerImage = parcel.readInt()
+            countPerRow = parcel.readInt()
+            countTotal = parcel.readInt()
+            frameHeight = parcel.readInt()
+            frameWidth = parcel.readInt()
+            frequency = parcel.readInt()
+            isUv = parcel.getBoolean()
+            links = parcel.createStringArrayList()
+        }
+
+        internal constructor(parcel: ParcelNative) {
+            countPerImage = parcel.readInt()
+            countPerRow = parcel.readInt()
+            countTotal = parcel.readInt()
+            frameHeight = parcel.readInt()
+            frameWidth = parcel.readInt()
+            frequency = parcel.readInt()
+            isUv = parcel.readBoolean()
+            links = parcel.readStringList()
+        }
+
+        fun setCountPerImage(countPerImage: Int): VideoTimeline {
+            this.countPerImage = countPerImage
+            return this
+        }
+
+        fun setCountPerRow(countPerRow: Int): VideoTimeline {
+            this.countPerRow = countPerRow
+            return this
+        }
+
+        fun setCountTotal(countTotal: Int): VideoTimeline {
+            this.countTotal = countTotal
+            return this
+        }
+
+        fun setFrameHeight(frameHeight: Int): VideoTimeline {
+            this.frameHeight = frameHeight
+            return this
+        }
+
+        fun setFrameWidth(frameWidth: Int): VideoTimeline {
+            this.frameWidth = frameWidth
+            return this
+        }
+
+        fun setFrequency(frequency: Int): VideoTimeline {
+            this.frequency = frequency
+            return this
+        }
+
+        fun setIsUv(isUv: Boolean): VideoTimeline {
+            this.isUv = isUv
+            return this
+        }
+
+        fun setLinks(links: List<String>?): VideoTimeline {
+            this.links = links
+            return this
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(countPerImage)
+            parcel.writeInt(countPerRow)
+            parcel.writeInt(countTotal)
+            parcel.writeInt(frameHeight)
+            parcel.writeInt(frameWidth)
+            parcel.writeInt(frequency)
+            parcel.putBoolean(isUv)
+            parcel.writeStringList(links)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object {
+            @JvmField
+            val CREATOR: Parcelable.Creator<VideoTimeline> =
+                object : Parcelable.Creator<VideoTimeline> {
+                    override fun createFromParcel(parcel: Parcel): VideoTimeline {
+                        return VideoTimeline(parcel)
+                    }
+
+                    override fun newArray(size: Int): Array<VideoTimeline?> {
+                        return arrayOfNulls(size)
+                    }
+                }
+            val NativeCreator: ParcelNative.Creator<VideoTimeline> =
+                object : ParcelNative.Creator<VideoTimeline> {
+                    override fun readFromParcelNative(dest: ParcelNative): VideoTimeline {
+                        return VideoTimeline(dest)
+                    }
+                }
+        }
+
+        override fun writeToParcelNative(dest: ParcelNative) {
+            dest.writeInt(countPerImage)
+            dest.writeInt(countPerRow)
+            dest.writeInt(countTotal)
+            dest.writeInt(frameHeight)
+            dest.writeInt(frameWidth)
+            dest.writeInt(frequency)
+            dest.writeBoolean(isUv)
+            dest.writeStringList(links)
+        }
     }
 
     companion object {

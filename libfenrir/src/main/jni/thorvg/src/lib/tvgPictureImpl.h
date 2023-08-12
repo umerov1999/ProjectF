@@ -70,7 +70,6 @@ struct Picture::Impl
     Picture* picture = nullptr;
     bool resizing = false;
     bool needComp = false;            //need composition
-    bool animated = false;            //picture is belonged to Animation
 
     Impl(Picture* p) : picture(p)
     {
@@ -84,41 +83,10 @@ struct Picture::Impl
 
     bool dispose(RenderMethod& renderer)
     {
-        bool ret = true;
-        if (paint) ret = paint->pImpl->dispose(renderer);
-        else if (surface) ret =  renderer.dispose(rd);
+        if (paint) paint->pImpl->dispose(renderer);
+        else if (surface) renderer.dispose(rd);
         rd = nullptr;
-
-        return ret;
-    }
-
-    RenderUpdateFlag load()
-    {
-        if (loader) {
-            if (!paint) {
-                if (auto p = loader->paint()) {
-                    paint = p.release();
-                    loader->close();
-                    if (w != loader->w || h != loader->h) {
-                        if (!resizing) {
-                            w = loader->w;
-                            h = loader->h;
-                        }
-                        loader->resize(paint, w, h);
-                        resizing = false;
-                    }
-                    if (paint) return RenderUpdateFlag::None;
-                }
-            } else loader->sync();
-
-            if (!surface) {
-                if ((surface = loader->bitmap().release())) {
-                    loader->close();
-                    return RenderUpdateFlag::Image;
-                }
-            }
-        }
-        return RenderUpdateFlag::None;
+        return true;
     }
 
     RenderTransform resizeTransform(const RenderTransform* pTransform)
@@ -320,6 +288,24 @@ struct Picture::Impl
         load();
         return new PictureIterator(paint);
     }
+
+    uint32_t* data(uint32_t* w, uint32_t* h)
+    {
+        //Try it, If not loaded yet.
+        load();
+
+        if (loader) {
+            if (w) *w = static_cast<uint32_t>(loader->w);
+            if (h) *h = static_cast<uint32_t>(loader->h);
+        } else {
+            if (w) *w = 0;
+            if (h) *h = 0;
+        }
+        if (surface) return surface->buf32;
+        else return nullptr;
+    }
+
+    RenderUpdateFlag load();
 };
 
 #endif //_TVG_PICTURE_IMPL_H_

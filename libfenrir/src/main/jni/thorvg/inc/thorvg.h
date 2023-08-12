@@ -1270,7 +1270,7 @@ public:
      *
      * @param[in] data A pointer to a memory location where the content of the picture file is stored.
      * @param[in] size The size in bytes of the memory occupied by the @p data.
-     * @param[in] mimeType Mimetype or extension of data such as "jpg", "jpeg", "svg", "svg+xml", "png", etc. In case an empty string or an unknown type is provided, the loaders will be tried one by one.
+     * @param[in] mimeType Mimetype or extension of data such as "jpg", "jpeg", "lottie", "svg", "svg+xml", "png", etc. In case an empty string or an unknown type is provided, the loaders will be tried one by one.
      * @param[in] copy If @c true the data are copied into the engine local buffer, otherwise they are not.
      *
      * @retval Result::Success When succeed.
@@ -1280,6 +1280,7 @@ public:
      *
      * @warning: It's the user responsibility to release the @p data memory if the @p copy is @c true.
      *
+     * @note If you are unsure about the MIME type, you can provide an empty value like @c "", and thorvg will attempt to figure it out.
      * @since 0.5
      */
     Result load(const char* data, uint32_t size, const std::string& mimeType, bool copy = false) noexcept;
@@ -1306,17 +1307,6 @@ public:
      * @return Result::Success when succeed.
      */
     Result size(float* w, float* h) const noexcept;
-
-    /**
-     * @brief Gets the pixels information of the picture.
-     *
-     * @note The data must be pre-multiplied by the alpha channels.
-     *
-     * @warning Please do not use it, this API is not official one. It could be modified in the next version.
-     *
-     * @BETA_API
-     */
-    const uint32_t* data(uint32_t* w, uint32_t* h) const noexcept;
 
     /**
      * @brief Loads a raw data from a memory block with a given size.

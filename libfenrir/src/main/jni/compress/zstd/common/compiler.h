@@ -51,12 +51,19 @@
 #  define WIN_CDECL
 #endif
 
+/* UNUSED_ATTR tells the compiler it is okay if the function is unused. */
+#if defined(__GNUC__)
+#  define UNUSED_ATTR __attribute__((unused))
+#else
+#  define UNUSED_ATTR
+#endif
+
 /**
  * FORCE_INLINE_TEMPLATE is used to define C "templates", which take constant
  * parameters. They must be inlined for the compiler to eliminate the constant
  * branches.
  */
-#define FORCE_INLINE_TEMPLATE static INLINE_KEYWORD FORCE_INLINE_ATTR
+#define FORCE_INLINE_TEMPLATE static INLINE_KEYWORD FORCE_INLINE_ATTR UNUSED_ATTR
 /**
  * HINT_INLINE is used to help the compiler generate better code. It is *not*
  * used for "templates", so it can be tweaked based on the compilers
@@ -71,14 +78,28 @@
 #if !defined(__clang__) && defined(__GNUC__) && __GNUC__ >= 4 && __GNUC_MINOR__ >= 8 && __GNUC__ < 5
 #  define HINT_INLINE static INLINE_KEYWORD
 #else
-#  define HINT_INLINE static INLINE_KEYWORD FORCE_INLINE_ATTR
+#  define HINT_INLINE FORCE_INLINE_TEMPLATE
 #endif
 
-/* UNUSED_ATTR tells the compiler it is okay if the function is unused. */
+/* "soft" inline :
+ * The compiler is free to select if it's a good idea to inline or not.
+ * The main objective is to silence compiler warnings
+ * when a defined function in included but not used.
+ *
+ * Note : this macro is prefixed `MEM_` because it used to be provided by `mem.h` unit.
+ * Updating the prefix is probably preferable, but requires a fairly large codemod,
+ * since this name is used everywhere.
+ */
+#ifndef MEM_STATIC  /* already defined in Linux Kernel mem.h */
 #if defined(__GNUC__)
-#  define UNUSED_ATTR __attribute__((unused))
+#  define MEM_STATIC static __inline UNUSED_ATTR
+#elif defined (__cplusplus) || (defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 */)
+#  define MEM_STATIC static inline
+#elif defined(_MSC_VER)
+#  define MEM_STATIC static __inline
 #else
-#  define UNUSED_ATTR
+#  define MEM_STATIC static  /* this version may generate warnings for unused static functions; disable the relevant warning */
+#endif
 #endif
 
 /* force no inlining */
@@ -112,7 +133,7 @@
 #  define PREFETCH_L1(ptr)  (void)(ptr)  /* disabled */
 #  define PREFETCH_L2(ptr)  (void)(ptr)  /* disabled */
 #else
-#  if defined(_MSC_VER) && (defined(_M_X64) || defined(_M_I86))  /* _mm_prefetch() is not defined outside of x86/x64 */
+#  if defined(_MSC_VER) && (defined(_M_X64) || defined(_M_I86)) && !defined(_M_ARM64EC)  /* _mm_prefetch() is not defined outside of x86/x64 */
 #    include <mmintrin.h>   /* https://msdn.microsoft.com/fr-fr/library/84szxsww(v=vs.90).aspx */
 #    define PREFETCH_L1(ptr)  _mm_prefetch((const char*)(ptr), _MM_HINT_T0)
 #    define PREFETCH_L2(ptr)  _mm_prefetch((const char*)(ptr), _MM_HINT_T1)

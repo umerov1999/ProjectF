@@ -32,7 +32,7 @@ internal fun <T> Json.encodeByWriter(
     val encoder = StreamingJsonEncoder(
         writer, this,
         WriteMode.OBJ,
-        arrayOfNulls(WriteMode.values().size)
+        arrayOfNulls(WriteMode.entries.size)
     )
     encoder.encodeSerializableValue(serializer, value)
 }

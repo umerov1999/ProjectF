@@ -10,7 +10,11 @@ import dev.ragnarok.fenrir.module.FileUtils
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Constants.forceDeveloperMode
 import dev.ragnarok.filegallery.kJson
-import dev.ragnarok.filegallery.model.*
+import dev.ragnarok.filegallery.model.Lang
+import dev.ragnarok.filegallery.model.LocalServerSettings
+import dev.ragnarok.filegallery.model.ParserType
+import dev.ragnarok.filegallery.model.PlayerCoverBackgroundSettings
+import dev.ragnarok.filegallery.model.SlidrSettings
 import dev.ragnarok.filegallery.settings.ISettings.IMainSettings
 import dev.ragnarok.filegallery.settings.theme.ThemeOverlay
 import dev.ragnarok.filegallery.view.pager.Transformers_Types

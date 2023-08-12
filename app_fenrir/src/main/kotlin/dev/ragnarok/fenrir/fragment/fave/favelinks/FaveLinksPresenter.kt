@@ -136,7 +136,7 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     private fun onLinkRemoved(accountId: Long, id: String) {
-        if (accountId != accountId) {
+        if (accountId != this.accountId) {
             return
         }
         for (i in links.indices) {

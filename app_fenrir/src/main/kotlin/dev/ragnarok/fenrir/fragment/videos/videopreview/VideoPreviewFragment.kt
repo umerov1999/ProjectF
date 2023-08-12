@@ -60,11 +60,14 @@ import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.doDownloadVideo
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.shareLink
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.CircleCounterButton
+import dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
+import dev.ragnarok.fenrir.view.natives.animation.AspectRatioAnimatedShapeableImageView
 
 class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPreviewView>(),
     View.OnClickListener, View.OnLongClickListener, IVideoPreviewView, MenuProvider {
@@ -89,7 +92,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
     private var commentsButton: CircleCounterButton? = null
     private var mTitleText: TextView? = null
     private var mSubtitleText: TextView? = null
-    private var mPreviewImage: ImageView? = null
+    private var mPreviewImage: AspectRatioAnimatedShapeableImageView? = null
     private var mOwnerAvatar: ImageView? = null
     private var mOwnerText: TextView? = null
     private var mUploadDate: TextView? = null
@@ -280,10 +283,38 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             mSubtitleText?.movementMethod = LinkMovementMethod.getInstance()
         }
         val imageUrl = video.image
-        if (imageUrl.nonNullNoEmpty<CharSequence>() && mPreviewImage != null) {
-            with()
-                .load(imageUrl)
-                .into(mPreviewImage ?: return)
+        val trailerUrl = video.trailer
+
+        mPreviewImage?.let { pp ->
+            if (Settings.get().other().isAutoplay_gif && trailerUrl.nonNullNoEmpty()) {
+                with().cancelRequest(pp)
+                pp.setDecoderCallback(object :
+                    AnimatedShapeableImageView.OnDecoderInit {
+                    override fun onLoaded(success: Boolean) {
+                        if (!success) {
+                            if (imageUrl.nonNullNoEmpty()) {
+                                with()
+                                    .load(imageUrl)
+                                    .placeholder(R.drawable.background_gray)
+                                    .tag(Constants.PICASSO_TAG)
+                                    .into(pp)
+                            } else {
+                                with().cancelRequest(pp)
+                            }
+                        }
+                    }
+                })
+                pp.fromNet(
+                    (video.ownerId.toString() + "_" + video.id.toString()),
+                    video.trailer,
+                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
+                )
+            } else if (imageUrl.nonNullNoEmpty()) {
+                with()
+                    .load(imageUrl)
+                    .placeholder(R.drawable.background_gray)
+                    .into(pp)
+            }
         }
     }
 
@@ -582,7 +613,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             openInternal(video, InternalVideoSize.SIZE_360)
         } else if (!video.mp4link240.isNullOrEmpty()) {
             openInternal(video, InternalVideoSize.SIZE_240)
-        } else if (video.externalLink.nonNullNoEmpty<CharSequence>()) {
+        } else if (video.externalLink.nonNullNoEmpty()) {
             if (video.externalLink?.contains("youtube") == true) {
                 when {
                     AppPrefs.isReVancedYoutubeInstalled(requireActivity()) -> {

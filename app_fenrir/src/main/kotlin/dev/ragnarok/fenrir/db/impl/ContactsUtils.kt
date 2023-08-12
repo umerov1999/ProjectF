@@ -6,7 +6,11 @@ import android.database.Cursor
 import android.provider.BaseColumns
 import android.provider.ContactsContract
 import androidx.annotation.Keep
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.getLong
+import dev.ragnarok.fenrir.getString
+import dev.ragnarok.fenrir.kJson
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import io.reactivex.rxjava3.core.Single
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

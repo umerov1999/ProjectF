@@ -27,7 +27,6 @@ import android.widget.RemoteViews
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle.Event.*
 import androidx.lifecycle.LifecycleOwner
 import com.squareup.picasso3.MemoryPolicy.Companion.shouldReadFromMemoryCache
 import com.squareup.picasso3.Picasso.LoadedFrom.MEMORY

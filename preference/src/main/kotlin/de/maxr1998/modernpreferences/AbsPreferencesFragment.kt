@@ -6,7 +6,11 @@ import android.os.Parcelable
 import android.view.View
 import androidx.annotation.ArrayRes
 import androidx.fragment.app.Fragment
-import de.maxr1998.modernpreferences.preferences.*
+import de.maxr1998.modernpreferences.preferences.ColorPickPreference
+import de.maxr1998.modernpreferences.preferences.CustomTextPreference
+import de.maxr1998.modernpreferences.preferences.EditTextPreference
+import de.maxr1998.modernpreferences.preferences.MultiLineEditTextPreference
+import de.maxr1998.modernpreferences.preferences.SeparatorSpaceTextPreference
 import de.maxr1998.modernpreferences.preferences.choice.MultiChoiceDialogPreference
 import de.maxr1998.modernpreferences.preferences.choice.SelectionItem
 import de.maxr1998.modernpreferences.preferences.choice.SingleChoiceDialogPreference

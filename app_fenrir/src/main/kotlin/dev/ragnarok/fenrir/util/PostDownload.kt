@@ -10,12 +10,16 @@ import android.webkit.MimeTypeMap
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.push.OwnerInfo
 import dev.ragnarok.fenrir.service.ChatDownloadWorker
 import dev.ragnarok.fenrir.settings.Settings

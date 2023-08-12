@@ -3,8 +3,11 @@ package dev.ragnarok.fenrir.model
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.Keep
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.CheckDonate
+import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.isValueAssigned

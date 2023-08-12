@@ -11,8 +11,8 @@ extern "C" {
 
 #define ERRRET(str) {ret = false; LOGE("%s\n", str); goto out;}
 
-static int
-decode_packet(AVCodecContext *context, AVFrame *frame, AVPacket *packet, bool &got_frame) {
+int decode_packet_to_mp4_audio(AVCodecContext *context, AVFrame *frame, AVPacket *packet,
+                               bool &got_frame) {
     int ret;
     int decoded = packet->size;
     got_frame = false;
@@ -34,8 +34,8 @@ decode_packet(AVCodecContext *context, AVFrame *frame, AVPacket *packet, bool &g
     return decoded;
 }
 
-static int
-encode_frame(AVCodecContext *context, AVFrame *frame, AVPacket *packet, bool &got_packet) {
+int encode_frame_to_mp4_audio(AVCodecContext *context, AVFrame *frame, AVPacket *packet,
+                              bool &got_packet) {
     int ret;
     int decoded = packet->size;
     got_packet = false;
@@ -57,7 +57,7 @@ encode_frame(AVCodecContext *context, AVFrame *frame, AVPacket *packet, bool &go
     return decoded;
 }
 
-static bool encode_to_mp4a(const char *src, const char *dst) {
+bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
     bool ret = true;
     // Allocate and init re-usable frames
     AVCodecContext *fileCodecContext = nullptr, *audioCodecContext = nullptr;
@@ -163,8 +163,8 @@ static bool encode_to_mp4a(const char *src, const char *dst) {
 
     while (av_read_frame(formatContext, inPacket) >= 0) {
         if (inPacket->stream_index == streamId) {
-            if (decode_packet(fileCodecContext, audioFrameDecoded,
-                              inPacket, frameFinished) < 0) {
+            if (decode_packet_to_mp4_audio(fileCodecContext, audioFrameDecoded,
+                                           inPacket, frameFinished) < 0) {
                 ERRRET("Could not decode_packet")
             }
 
@@ -219,8 +219,8 @@ static bool encode_to_mp4a(const char *src, const char *dst) {
                     outPacket->data = nullptr;
                     outPacket->size = 0;
 
-                    if (encode_frame(audioCodecContext, audioFrameConverted, outPacket,
-                                     frameFinished) < 0) {
+                    if (encode_frame_to_mp4_audio(audioCodecContext, audioFrameConverted, outPacket,
+                                                  frameFinished) < 0) {
                         av_packet_free(&outPacket);
                         ERRRET("Error encoding audio frame")
                     }
@@ -261,7 +261,7 @@ static bool encode_to_mp4a(const char *src, const char *dst) {
 }
 
 /*
-static void av_log(void*, int level, const char *fmt, va_list vl)
+inline void av_log_to_mp4_audio(void*, int level, const char *fmt, va_list vl)
 {
     int android_level = ANDROID_LOG_DEFAULT;
     switch (level) {
@@ -296,7 +296,7 @@ Java_dev_ragnarok_fenrir_module_encoder_ToMp4Audio_encodeToMp4(JNIEnv *env, jobj
 //av_log_set_callback(av_log);
     char const *inputString = SafeGetStringUTFChars(env, input, nullptr);
     char const *outputString = SafeGetStringUTFChars(env, output, nullptr);
-    bool ret = encode_to_mp4a(inputString, outputString);
+    bool ret = encode_to_mp4a_to_mp4_audio(inputString, outputString);
     if (inputString != nullptr) {
         env->ReleaseStringUTFChars(input, inputString);
     }

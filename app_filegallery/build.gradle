@@ -8,6 +8,7 @@ android {
     namespace "dev.ragnarok.filegallery"
     buildFeatures {
         aidl = true
+        buildConfig = true
     }
     packagingOptions {
         exclude("META-INF/notice.txt")

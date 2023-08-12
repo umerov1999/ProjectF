@@ -1110,6 +1110,16 @@ object Entity2Model {
             })
     }
 
+    fun buildVideoTimelineFromDbo(entity: VideoDboEntity.VideoDboTimelineEntity): Video.VideoTimeline {
+        return Video.VideoTimeline().setCountPerImage(entity.countPerImage)
+            .setCountPerRow(entity.countPerRow)
+            .setCountTotal(entity.countTotal)
+            .setFrameHeight(entity.frameHeight)
+            .setFrameWidth(entity.frameWidth)
+            .setFrequency(entity.frequency)
+            .setIsUv(entity.isUv)
+            .setLinks(entity.links)
+    }
 
     fun buildVideoFromDbo(entity: VideoDboEntity): Video {
         return Video()
@@ -1149,6 +1159,8 @@ object Entity2Model {
             .setCanAdd(entity.isCanAdd)
             .setPrivate(entity.private)
             .setFavorite(entity.isFavorite)
+            .setTrailer(entity.trailer)
+            .setTimelineThumbs(entity.timelineThumbs?.let { buildVideoTimelineFromDbo(it) })
     }
 
 

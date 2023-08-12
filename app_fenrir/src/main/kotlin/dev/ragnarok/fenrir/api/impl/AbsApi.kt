@@ -1,8 +1,12 @@
 package dev.ragnarok.fenrir.api.impl
 
 import android.os.SystemClock
-import dev.ragnarok.fenrir.*
-import dev.ragnarok.fenrir.api.*
+import dev.ragnarok.fenrir.Includes
+import dev.ragnarok.fenrir.api.AbsVKApiInterceptor
+import dev.ragnarok.fenrir.api.ApiException
+import dev.ragnarok.fenrir.api.IServiceProvider
+import dev.ragnarok.fenrir.api.OutOfDateException
+import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.model.Captcha
 import dev.ragnarok.fenrir.api.model.Error
 import dev.ragnarok.fenrir.api.model.Params
@@ -11,6 +15,11 @@ import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.VKResponse
 import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.api.rest.IServiceRest
+import dev.ragnarok.fenrir.isMsgPack
+import dev.ragnarok.fenrir.kJson
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.nullOrEmpty
+import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.service.ApiErrorCodes
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.refresh.RefreshToken
@@ -22,7 +31,9 @@ import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.exceptions.Exceptions
 import io.reactivex.rxjava3.functions.Function
 import kotlinx.serialization.KSerializer
-import okhttp3.*
+import okhttp3.FormBody
+import okhttp3.Request
+import okhttp3.Response
 import kotlin.random.Random
 
 internal open class AbsApi(val accountId: Long, private val restProvider: IServiceProvider) {
@@ -198,7 +209,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                         break
                     }
                 }
-                if (code != null) {
+                if (code.nonNullNoEmpty() && captcha.sid.nonNullNoEmpty()) {
                     params["captcha_sid"] = captcha.sid
                     params["captcha_key"] = code
                 }

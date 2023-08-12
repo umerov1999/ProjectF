@@ -1,11 +1,13 @@
 package dev.ragnarok.fenrir.api.model
 
+import androidx.annotation.Keep
 import dev.ragnarok.fenrir.api.adapters.VideoDtoAdapter
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.IIdComparable
 import dev.ragnarok.fenrir.api.model.interfaces.Commentable
 import dev.ragnarok.fenrir.api.model.interfaces.Copyable
 import dev.ragnarok.fenrir.api.model.interfaces.Likeable
 import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -166,8 +168,41 @@ class VKApiVideo : VKApiAttachment, Commentable, Likeable, Copyable, IIdComparab
     var can_add = false
     var is_private = false
     var is_favorite = false
+
+
+    var timeline_thumbs: VKApiVideoTimeline? = null
+    var trailer: String? = null
+
     override fun getType(): String {
         return VKApiAttachment.TYPE_VIDEO
+    }
+
+    @Keep
+    @Serializable
+    class VKApiVideoTimeline {
+        @SerialName("count_per_image")
+        var count_per_image: Int = 0
+
+        @SerialName("count_per_row")
+        var count_per_row: Int = 0
+
+        @SerialName("count_total")
+        var count_total: Int = 0
+
+        @SerialName("frame_height")
+        var frame_height: Double = 0.0
+
+        @SerialName("frame_width")
+        var frame_width: Double = 0.0
+
+        @SerialName("frequency")
+        var frequency: Double = 0.0
+
+        @SerialName("is_uv")
+        var is_uv: Boolean = false
+
+        @SerialName("links")
+        var links: List<String>? = null
     }
 
     override fun compareFullId(object_s: String): Boolean {

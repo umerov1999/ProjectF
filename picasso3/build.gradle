@@ -8,6 +8,10 @@ android {
     compileSdk = appCompileSDK
     buildToolsVersion = appBuildTools
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         minSdk = appMinSDK
         targetSdk = appTargetSDK

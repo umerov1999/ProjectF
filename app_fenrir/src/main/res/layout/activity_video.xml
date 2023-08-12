@@ -44,6 +44,17 @@
             android:stateListAnimator="@animator/clicked" />
     </com.google.android.material.appbar.MaterialToolbar>
 
+    <dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
+        android:id="@+id/item_timeline_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/panel"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
+
     <FrameLayout
         android:id="@+id/panel"
         android:layout_width="match_parent"

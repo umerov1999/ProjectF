@@ -41,7 +41,7 @@ abstract class RequestHandler {
      * @see RequestHandler
      * @see [load]
      */
-    sealed class Result constructor(
+    sealed class Result(
         /**
          * Returns the resulting [Picasso.LoadedFrom] generated from a [load] call.
          */
@@ -51,13 +51,13 @@ abstract class RequestHandler {
          */
         val exifRotation: Int = 0
     ) {
-        class Bitmap constructor(
+        class Bitmap(
             var bitmap: android.graphics.Bitmap,
             loadedFrom: LoadedFrom,
             exifRotation: Int = 0
         ) : Result(loadedFrom, exifRotation)
 
-        class Drawable constructor(
+        class Drawable(
             val drawable: android.graphics.drawable.Drawable,
             loadedFrom: LoadedFrom,
             exifRotation: Int = 0

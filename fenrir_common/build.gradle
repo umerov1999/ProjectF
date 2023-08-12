@@ -8,6 +8,10 @@ android {
     compileSdk = appCompileSDK
     buildToolsVersion = appBuildTools
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         generatedDensities = []
         minSdk = appMinSDK

@@ -27,8 +27,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.TintTypedArray;
@@ -37,7 +35,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import androidx.annotation.RequiresApi;
 import androidx.core.graphics.drawable.DrawableCompat;
 import com.google.android.material.drawable.DrawableUtils;
 import com.google.android.material.internal.ThemeEnforcement;
@@ -47,6 +44,11 @@ import com.google.android.material.internal.ViewUtils;
  * A class that creates a Material Themed Switch. This class is intended to provide a brand new
  * Switch design and replace the obsolete
  * {@link com.google.android.material.switchmaterial.SwitchMaterial} class.
+ *
+ * <p>For more information, see the <a
+ * href="https://github.com/material-components/material-components-android/blob/master/docs/components/Switch.md">component
+ * developer guidance</a> and <a href="https://material.io/components/switch/overview">design
+ * guidelines</a>.
  */
 public class MaterialSwitch extends SwitchCompat {
   private static final int DEF_STYLE_RES = R.style.Widget_Material3_CompoundButton_MaterialSwitch;
@@ -54,8 +56,7 @@ public class MaterialSwitch extends SwitchCompat {
 
   @Nullable private Drawable thumbDrawable;
   @Nullable private Drawable thumbIconDrawable;
-  @Px private int thumbIconWidth = DrawableUtils.INTRINSIC_SIZE;
-  @Px private int thumbIconHeight = DrawableUtils.INTRINSIC_SIZE;
+  @Px private int thumbIconSize = DrawableUtils.INTRINSIC_SIZE;
 
   @Nullable private Drawable trackDrawable;
   @Nullable private Drawable trackDecorationDrawable;
@@ -96,12 +97,8 @@ public class MaterialSwitch extends SwitchCompat {
             context, attrs, R.styleable.MaterialSwitch, defStyleAttr, DEF_STYLE_RES);
 
     thumbIconDrawable = attributes.getDrawable(R.styleable.MaterialSwitch_thumbIcon);
-    if (VERSION.SDK_INT >= VERSION_CODES.M) {
-      thumbIconWidth = attributes.getDimensionPixelSize(
-            R.styleable.MaterialSwitch_thumbIconWidth, DrawableUtils.INTRINSIC_SIZE);
-      thumbIconHeight = attributes.getDimensionPixelSize(
-            R.styleable.MaterialSwitch_thumbIconHeight, DrawableUtils.INTRINSIC_SIZE);
-    }
+    thumbIconSize = attributes.getDimensionPixelSize(
+        R.styleable.MaterialSwitch_thumbIconSize, DrawableUtils.INTRINSIC_SIZE);
 
     thumbIconTintList = attributes.getColorStateList(R.styleable.MaterialSwitch_thumbIconTint);
     thumbIconTintMode =
@@ -208,51 +205,25 @@ public class MaterialSwitch extends SwitchCompat {
   }
 
   /**
-   * Sets the width of the thumb icon.
+   * Sets the size of the thumb icon.
    *
-   * @attr ref com.google.android.material.R.styleable#MaterialSwitch_thumbIconWidth
+   * @attr ref com.google.android.material.R.styleable#MaterialSwitch_thumbIconSize
    */
-  @RequiresApi(VERSION_CODES.M)
-  public void setThumbIconWidth(@Px final int width) {
-    if (thumbIconWidth != width) {
-      thumbIconWidth = width;
+  public void setThumbIconSize(@Px final int size) {
+    if (thumbIconSize != size) {
+      thumbIconSize = size;
       refreshThumbDrawable();
     }
   }
 
   /**
-   * Returns the width of the thumb icon.
+   * Returns the size of the thumb icon.
    *
-   * @attr ref com.google.android.material.R.styleable#MaterialSwitch_thumbIconWidth
+   * @attr ref com.google.android.material.R.styleable#MaterialSwitch_thumbIconSize
    */
-  @RequiresApi(VERSION_CODES.M)
   @Px
-  public int getThumbIconWidth() {
-    return thumbIconWidth;
-  }
-
-  /**
-   * Sets the height of the thumb icon.
-   *
-   * @attr ref com.google.android.material.R.styleable#MaterialSwitch_thumbIconHeight
-   */
-  @RequiresApi(VERSION_CODES.M)
-  public void setThumbIconHeight(@Px final int height) {
-    if (thumbIconHeight != height) {
-      thumbIconHeight = height;
-      refreshThumbDrawable();
-    }
-  }
-
-  /**
-   * Returns the height of the thumb icon.
-   *
-   * @attr ref com.google.android.material.R.styleable#MaterialSwitch_thumbIconHeight
-   */
-  @RequiresApi(VERSION_CODES.M)
-  @Px
-  public int getThumbIconHeight() {
-    return thumbIconHeight;
+  public int getThumbIconSize() {
+    return thumbIconSize;
   }
 
   /**
@@ -430,10 +401,8 @@ public class MaterialSwitch extends SwitchCompat {
 
     updateDrawableTints();
 
-    super.setThumbDrawable(VERSION.SDK_INT < VERSION_CODES.M
-            ? DrawableUtils.compositeTwoLayeredDrawable(thumbDrawable, thumbIconDrawable)
-            : DrawableUtils.compositeTwoLayeredDrawable(
-                thumbDrawable, thumbIconDrawable, thumbIconWidth, thumbIconHeight));
+    super.setThumbDrawable(DrawableUtils.compositeTwoLayeredDrawable(
+        thumbDrawable, thumbIconDrawable, thumbIconSize, thumbIconSize));
 
     refreshDrawableState();
   }

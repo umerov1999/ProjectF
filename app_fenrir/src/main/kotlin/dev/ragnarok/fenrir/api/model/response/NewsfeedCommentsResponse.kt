@@ -1,7 +1,12 @@
 package dev.ragnarok.fenrir.api.model.response
 
 import dev.ragnarok.fenrir.api.adapters.NewsfeedCommentDtoAdapter
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.VKApiCommunity
+import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.VKApiPost
+import dev.ragnarok.fenrir.api.model.VKApiTopic
+import dev.ragnarok.fenrir.api.model.VKApiUser
+import dev.ragnarok.fenrir.api.model.VKApiVideo
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

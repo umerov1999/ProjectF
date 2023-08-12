@@ -261,7 +261,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
         rootView
     )
 
-    private class EmojisPagerAdapter constructor(
+    private class EmojisPagerAdapter(
         private val views: List<Array<Emojicon>>,
         private val stickersGridViews: List<StickerSet>,
         private val mEmojiconPopup: EmojiconsPopup

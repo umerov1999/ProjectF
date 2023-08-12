@@ -22,6 +22,7 @@ import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.mozaik.MozaikLayout
 import dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
+import dev.ragnarok.fenrir.view.natives.animation.AspectRatioAnimatedShapeableImageView
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.addZoomableView
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.removeZoomableView
 
@@ -55,7 +56,7 @@ class PhotosViewHelper internal constructor(
             }
             if (g < videos.size) {
                 val image = videos[g]
-                holder.vgPhoto.setOnClickListener {
+                holder.vgVideo.setOnClickListener {
                     if (image.type == PostImage.TYPE_VIDEO) {
                         val video = image.attachment as Video
                         attachmentsActionCallback.onVideoPlay(video)
@@ -66,17 +67,55 @@ class PhotosViewHelper internal constructor(
                     val video = image.attachment as Video
                     holder.tvDelay.text = AppTextUtils.getDurationString(video.duration)
                     holder.tvTitle.text = Utils.firstNonEmptyString(video.title, " ")
-                }
-                if (url.nonNullNoEmpty()) {
-                    PicassoInstance.with()
-                        .load(url)
-                        .placeholder(R.drawable.background_gray)
-                        .tag(Constants.PICASSO_TAG)
-                        .into(holder.vgPhoto)
-                    tmpV.visibility = View.VISIBLE
+
+                    if (isAutoplayGif && video.trailer.nonNullNoEmpty()) {
+                        PicassoInstance.with().cancelRequest(holder.vgVideo)
+                        holder.vgVideo.setDecoderCallback(object :
+                            AnimatedShapeableImageView.OnDecoderInit {
+                            override fun onLoaded(success: Boolean) {
+                                if (!success) {
+                                    if (url.nonNullNoEmpty()) {
+                                        PicassoInstance.with()
+                                            .load(url)
+                                            .placeholder(R.drawable.background_gray)
+                                            .tag(Constants.PICASSO_TAG)
+                                            .into(holder.vgVideo)
+                                        tmpV.visibility = View.VISIBLE
+                                    } else {
+                                        PicassoInstance.with().cancelRequest(holder.vgVideo)
+                                        tmpV.visibility = View.GONE
+                                    }
+                                }
+                            }
+                        })
+                        holder.vgVideo.fromNet(
+                            (video.ownerId.toString() + "_" + image.attachment.id.toString()),
+                            video.trailer,
+                            Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
+                        )
+                    } else if (url.nonNullNoEmpty()) {
+                        PicassoInstance.with()
+                            .load(url)
+                            .placeholder(R.drawable.background_gray)
+                            .tag(Constants.PICASSO_TAG)
+                            .into(holder.vgVideo)
+                        tmpV.visibility = View.VISIBLE
+                    } else {
+                        PicassoInstance.with().cancelRequest(holder.vgVideo)
+                        tmpV.visibility = View.GONE
+                    }
                 } else {
-                    PicassoInstance.with().cancelRequest(holder.vgPhoto)
-                    tmpV.visibility = View.GONE
+                    if (url.nonNullNoEmpty()) {
+                        PicassoInstance.with()
+                            .load(url)
+                            .placeholder(R.drawable.background_gray)
+                            .tag(Constants.PICASSO_TAG)
+                            .into(holder.vgVideo)
+                        tmpV.visibility = View.VISIBLE
+                    } else {
+                        PicassoInstance.with().cancelRequest(holder.vgVideo)
+                        tmpV.visibility = View.GONE
+                    }
                 }
             } else {
                 tmpV.visibility = View.GONE
@@ -184,6 +223,7 @@ class PhotosViewHelper internal constructor(
                     }
                 }
                 if (isAutoplayGif && image.type == PostImage.TYPE_GIF) {
+                    PicassoInstance.with().cancelRequest(holder.vgPhoto)
                     holder.vgPhoto.setDecoderCallback(object :
                         AnimatedShapeableImageView.OnDecoderInit {
                         override fun onLoaded(success: Boolean) {
@@ -252,7 +292,8 @@ class PhotosViewHelper internal constructor(
     }
 
     private class VideoHolder(itemView: View) {
-        val vgPhoto: AspectRatioImageView = itemView.findViewById(R.id.item_video_album_image)
+        val vgVideo: AspectRatioAnimatedShapeableImageView =
+            itemView.findViewById(R.id.item_video_album_image)
         val tvTitle: TextView = itemView.findViewById(R.id.item_video_album_title)
         val tvDelay: TextView = itemView.findViewById(R.id.item_video_album_count)
 

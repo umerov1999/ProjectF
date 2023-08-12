@@ -64,7 +64,6 @@ class TagUnion::TagUnionPrivate
 public:
   TagUnionPrivate() : tags(3, static_cast<Tag *>(nullptr))
   {
-
   }
 
   ~TagUnionPrivate()
@@ -74,21 +73,21 @@ public:
     delete tags[2];
   }
 
+  TagUnionPrivate(const TagUnionPrivate &) = delete;
+  TagUnionPrivate &operator=(const TagUnionPrivate &) = delete;
+
   std::vector<Tag *> tags;
 };
 
 TagUnion::TagUnion(Tag *first, Tag *second, Tag *third) :
-  d(new TagUnionPrivate())
+  d(std::make_unique<TagUnionPrivate>())
 {
   d->tags[0] = first;
   d->tags[1] = second;
   d->tags[2] = third;
 }
 
-TagUnion::~TagUnion()
-{
-  delete d;
-}
+TagUnion::~TagUnion() = default;
 
 Tag *TagUnion::operator[](int index) const
 {

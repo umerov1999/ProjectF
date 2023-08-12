@@ -18,7 +18,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.maxr1998.modernpreferences.AbsPreferencesFragment
 import de.maxr1998.modernpreferences.PreferenceScreen
 import de.maxr1998.modernpreferences.PreferencesAdapter
-import de.maxr1998.modernpreferences.helpers.*
+import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.collapse
+import de.maxr1998.modernpreferences.helpers.onCheckedBeforeChange
+import de.maxr1998.modernpreferences.helpers.onCheckedChange
+import de.maxr1998.modernpreferences.helpers.onClick
+import de.maxr1998.modernpreferences.helpers.pref
+import de.maxr1998.modernpreferences.helpers.screen
+import de.maxr1998.modernpreferences.helpers.singleChoice
+import de.maxr1998.modernpreferences.helpers.switch
 import de.maxr1998.modernpreferences.preferences.TwoStatePreference
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures

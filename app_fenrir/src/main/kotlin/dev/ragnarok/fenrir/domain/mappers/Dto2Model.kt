@@ -1136,6 +1136,17 @@ object Dto2Model {
         return document;
     }*/
 
+    fun transform(dto: VKApiVideo.VKApiVideoTimeline): Video.VideoTimeline {
+        return Video.VideoTimeline().setCountPerImage(dto.count_per_image)
+            .setCountPerRow(dto.count_per_row)
+            .setCountTotal(dto.count_total)
+            .setFrameHeight(dto.frame_height.toInt())
+            .setFrameWidth(dto.frame_width.toInt())
+            .setFrequency(dto.frequency.toInt())
+            .setIsUv(dto.is_uv)
+            .setLinks(dto.links)
+    }
+
     fun transform(dto: VKApiVideo): Video {
         return Video()
             .setId(dto.id)
@@ -1174,6 +1185,8 @@ object Dto2Model {
             .setCanAdd(dto.can_add)
             .setPrivate(dto.is_private)
             .setFavorite(dto.is_favorite)
+            .setTrailer(dto.trailer)
+            .setTimelineThumbs(dto.timeline_thumbs?.let { transform(it) })
     }
 
     fun transform(dto: VKApiWikiPage): WikiPage {

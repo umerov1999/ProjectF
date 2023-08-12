@@ -8,7 +8,9 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
@@ -27,6 +29,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.customview.widget.ViewDragHelper.STATE_IDLE
+import com.squareup.picasso3.BitmapTarget
+import com.squareup.picasso3.Picasso
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.Includes.proxySettings
 import dev.ragnarok.fenrir.activity.SwipebleActivity.Companion.applyIntent
@@ -41,6 +45,8 @@ import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.InternalVideoSize
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.VideoSize
+import dev.ragnarok.fenrir.picasso.PicassoInstance
+import dev.ragnarok.fenrir.picasso.transforms.CropTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.push.OwnerInfo
 import dev.ragnarok.fenrir.settings.CurrentTheme
@@ -51,13 +57,16 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.ExpandableSurfaceView
 import dev.ragnarok.fenrir.view.VideoControllerView
+import dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import kotlin.math.floor
 
 class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
     VideoControllerView.MediaPlayerControl, IVideoPlayer.IVideoSizeChangeListener, AppStyleable {
     private val mCompositeDisposable = CompositeDisposable()
     private var mDecorView: View? = null
     private var mPlaySpeed: ImageView? = null
+    private var mItemTimelineImage: AnimatedShapeableImageView? = null
     private var mControllerView: VideoControllerView? = null
     private var mSurfaceView: ExpandableSurfaceView? = null
     private var mPlayer: IVideoPlayer? = null
@@ -196,6 +205,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         }
         mControllerView = VideoControllerView(this)
         mSurfaceView = findViewById(R.id.videoSurface)
+        mItemTimelineImage = findViewById(R.id.item_timeline_image)
         if (Settings.get().other().isVideo_swipes) {
             attach(
                 this,
@@ -526,6 +536,57 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
                     WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         }
+    }
+
+    private val targetTimeline = object : BitmapTarget {
+        override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
+            if (!isFinishing) {
+                mItemTimelineImage?.setImageBitmap(bitmap)
+            }
+        }
+
+        override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+        }
+
+        override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {
+            if (!isFinishing) {
+                mItemTimelineImage?.setImageDrawable(null)
+            }
+        }
+    }
+
+    private var p = Pair(0, 0)
+
+    override fun onScrolling(position: Long) {
+        video?.timelineThumbs?.let {
+            mItemTimelineImage?.let { si ->
+                if (it.isUv && it.links.nonNullNoEmpty()) {
+                    val k = position.toDouble() / it.frequency / 1000
+                    val index =
+                        Utils.clamp((k / it.countPerImage).toInt(), 0, it.links?.size.orZero() - 1)
+                    val x = it.frameWidth * (k % it.countPerRow).toInt()
+                    val y = it.frameHeight * floor((k % it.countPerImage / it.countPerRow)).toInt()
+
+                    if (p.first != x || p.second != y) {
+                        p = Pair(x, y)
+                        si.visibility = View.VISIBLE
+                        PicassoInstance.with().cancelRequest(targetTimeline)
+
+                        it.links?.get(index)?.nonNullNoEmpty { vi ->
+                            PicassoInstance.with()
+                                .load(vi)
+                                .tag(Constants.PICASSO_TAG)
+                                .transform(CropTransformation(x, y, it.frameWidth, it.frameHeight))
+                                .into(targetTimeline)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onScrollingStop() {
+        mItemTimelineImage?.visibility = View.GONE
     }
 
     private val fileUrl: String

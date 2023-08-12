@@ -2,10 +2,19 @@ package dev.ragnarok.fenrir.fragment.accounts
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
-import android.content.*
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
@@ -21,8 +30,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.AccountType
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Constants.DEFAULT_ACCOUNT_TYPE
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.Includes
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.EnterPinActivity
 import dev.ragnarok.fenrir.activity.FileManagerSelectActivity
@@ -33,9 +46,11 @@ import dev.ragnarok.fenrir.dialog.directauth.DirectAuthDialog
 import dev.ragnarok.fenrir.dialog.directauth.DirectAuthDialog.Companion.newInstance
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
+import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Account
+import dev.ragnarok.fenrir.model.SaveAccount
 import dev.ragnarok.fenrir.place.PlaceFactory.getPreferencesPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermission
@@ -45,10 +60,8 @@ import dev.ragnarok.fenrir.util.MessagesReplyItemCallback
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.isHiddenAccount
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
-import dev.ragnarok.fenrir.util.serializeble.json.*
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
-import okhttp3.*
 
 class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IAccountsView,
     View.OnClickListener, AccountAdapter.Callback,

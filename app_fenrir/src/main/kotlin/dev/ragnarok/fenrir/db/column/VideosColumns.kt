@@ -41,6 +41,8 @@ object VideosColumns : BaseColumns {
     const val PLATFORM = "platform"
     const val CAN_EDIT = "can_edit"
     const val CAN_ADD = "can_add"
+    const val TRAILER = "trailer"
+    const val TIMELINE_THUMBS = "timeline_thumbs"
     const val FULL_ID = TABLENAME + "." + BaseColumns._ID
     const val FULL_VIDEO_ID = "$TABLENAME.$VIDEO_ID"
     const val FULL_OWNER_ID = "$TABLENAME.$OWNER_ID"
@@ -79,4 +81,6 @@ object VideosColumns : BaseColumns {
     const val FULL_PLATFORM = "$TABLENAME.$PLATFORM"
     const val FULL_CAN_EDIT = "$TABLENAME.$CAN_EDIT"
     const val FULL_CAN_ADD = "$TABLENAME.$CAN_ADD"
+    const val FULL_TRAILER = "$TABLENAME.$TRAILER"
+    const val FULL_TIMELINE_THUMBS = "$TABLENAME.$TIMELINE_THUMBS"
 }
