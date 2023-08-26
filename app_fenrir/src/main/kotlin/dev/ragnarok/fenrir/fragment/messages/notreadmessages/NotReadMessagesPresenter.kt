@@ -257,6 +257,7 @@ class NotReadMessagesPresenter(
 
     private fun readUnreadMessagesUpIfExists(message: Message) {
         if (isHiddenAccount(accountId)) return
+
         if (!message.isOut && message.originalId > lastReadId.getIncoming()) {
             lastReadId.setIncoming(message.originalId)
             view?.notifyDataChanged()

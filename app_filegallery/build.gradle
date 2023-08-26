@@ -10,13 +10,17 @@ android {
         aidl = true
         buildConfig = true
     }
-    packagingOptions {
-        exclude("META-INF/notice.txt")
-        exclude("META-INF/license.txt")
-        exclude("META-INF/LICENSE")
-        exclude("META-INF/NOTICE")
-        exclude("META-INF/*.version")
-        exclude("META-INF/versions/**")
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+        resources.excludes.add("META-INF/notice.txt")
+        resources.excludes.add("META-INF/license.txt")
+        resources.excludes.add("META-INF/LICENSE")
+        resources.excludes.add("META-INF/NOTICE")
+        resources.excludes.add("META-INF/*.version")
+        resources.excludes.add("META-INF/versions/**")
     }
 
     dependenciesInfo {
@@ -29,8 +33,6 @@ android {
     ndkVersion = appNdk
 
     defaultConfig {
-        generatedDensities = []
-
         minSdk = appMinSDK
         targetSdk = appTargetSDK
         versionCode = appFileGalleryVersionCode
@@ -76,10 +78,12 @@ android {
         release {
             minifyEnabled = false
             shrinkResources = false
+            signingConfig signingConfigs.fenrir
         }
         debug {
             minifyEnabled = false
             shrinkResources = false
+            signingConfig signingConfigs.fenrir
         }
     }
 }
@@ -129,7 +133,7 @@ dependencies {
     implementation("androidx.collection:collection-ktx:$collectionVersion")
     implementation("androidx.savedstate:savedstate-ktx:$savedStateVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlin_serializer")
-    implementation("com.google.errorprone:error_prone_annotations:${errorproneVersion}")
+    implementation("com.google.errorprone:error_prone_annotations:${errorProneVersion}")
 
     modules {
         module("com.google.guava:listenablefuture") {

@@ -71,6 +71,8 @@ add_library(thorvg STATIC
         thorvg/src/loaders/svg/tvgSvgUtil.cpp
         thorvg/src/loaders/svg/tvgXmlParser.cpp
         thorvg/src/utils/tvgBezier.cpp
+        thorvg/src/utils/tvgCompressor.cpp
+        thorvg/src/utils/tvgMath.cpp
         thorvg/src/utils/tvgStr.cpp)
 
 target_compile_options(thorvg PRIVATE

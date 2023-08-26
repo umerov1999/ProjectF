@@ -13,7 +13,6 @@ android {
     }
 
     defaultConfig {
-        generatedDensities = []
         minSdk = appMinSDK
         targetSdk = appTargetSDK
     }

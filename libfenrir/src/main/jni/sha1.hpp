@@ -83,18 +83,12 @@ public:
         block[BLOCK_INTS - 2] = (uint32_t)(total_bits >> 32);
         transform(digest, block, transforms);
 
-        /* Hex std::string */
-        std::ostringstream result;
-        for (size_t i = 0; i < sizeof(digest) / sizeof(digest[0]); i++)
-        {
-            result << std::hex << std::setfill('0') << std::setw(8);
-            result << digest[i];
-        }
+        std::string result = to_hex_bytes(5, digest);
 
         /* Reset for next run */
         reset(digest, buffer, transforms);
 
-        return result.str();
+        return result;
     }
     static std::string from_file(const std::string& filename) {
         std::ifstream stream(filename, std::ios::binary);
@@ -300,6 +294,26 @@ private:
                 | (buffer[4 * i + 1] & 0xff) << 16
                 | (buffer[4 * i + 0] & 0xff) << 24;
         }
+    }
+
+    template<typename U>
+    static std::string to_hex_bytes(size_t count, const U* arr)
+    {
+        if (count <= 0) {
+            return "";
+        }
+
+        const char hexChars[16] = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
+        std::string result;
+        result.reserve(count * sizeof(U) * 2);
+        for (size_t s = 0; s < count; s++) {
+            auto buf = (uint8_t*)arr;
+            for(auto i = (int)sizeof(U) - 1; i >= 0; i--) {
+                result.push_back(*(hexChars + ((*(buf + i + s * sizeof(U)) & 0xF0) >> 4)));
+                result.push_back(*(hexChars + (*(buf + i + s * sizeof(U)) & 0xF)));
+            }
+        }
+        return result;
     }
 
     uint32_t digest[5];

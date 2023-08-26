@@ -4,12 +4,11 @@
 
 @file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
 
-package dev.ragnarok.fenrir.util.serializeble.json.internal.lexer
+package dev.ragnarok.filegallery.util.serializeble.json.internal.lexer
 
-import dev.ragnarok.fenrir.util.serializeble.json.internal.CharArrayPoolBatchSize
-import dev.ragnarok.fenrir.util.serializeble.json.internal.SerialReader
+import dev.ragnarok.filegallery.util.serializeble.json.internal.CharArrayPoolBatchSize
+import dev.ragnarok.filegallery.util.serializeble.json.internal.SerialReader
 
-@PublishedApi
 internal const val BATCH_SIZE: Int = 16 * 1024
 private const val DEFAULT_THRESHOLD = 128
 

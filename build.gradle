@@ -4,7 +4,7 @@ buildscript {
 
     ext.appCompileSDK = 34
     ext.appBuildTools = "34.0.0"
-    ext.appNdk = "26.0.10404224"
+    ext.appNdk = "26.0.10636728"
     ext.appMinSDK = is_developer_build ? 29 : 21
     ext.appTargetSDK = 31
     ext.appFenrirVersionCode = 999
@@ -13,12 +13,12 @@ buildscript {
     ext.appFileGalleryVersionName = "1.999"
 
     //androidx libraries
-    ext.activityVersion = "1.8.0-alpha06"
-    ext.annotationVersion = "1.7.0-beta01"
+    ext.activityVersion = "1.8.0-alpha07"
+    ext.annotationVersion = "1.7.0-rc01"
     ext.appcompatVersion = "1.6.1"
     ext.biometricVersion = "1.2.0-alpha05"
     ext.browserVersion = "1.6.0"
-    ext.cameraVersion = "1.3.0-beta02"
+    ext.cameraVersion = "1.3.0-rc01"
     ext.cardviewVersion = "1.0.0"
     ext.collectionVersion = "1.3.0-beta01"
     ext.concurentVersion = "1.2.0-alpha02"
@@ -33,7 +33,7 @@ buildscript {
     ext.fragmentVersion = "1.6.1"
     ext.lifecycleVersion = "2.6.1"
     ext.mediaVersion = "1.7.0-alpha01"
-    ext.media3Version = "1.1.0"
+    ext.media3Version = "1.1.1"
     ext.recyclerviewVersion = "1.3.1"
     ext.resourceInspectionAnnotation = "1.0.1"
     ext.savedStateVersion = "1.2.1"
@@ -54,17 +54,17 @@ buildscript {
     ext.firebaseComponentsVersion = "17.1.0"
     ext.firebaseAnnotationsVersion = "16.2.0"
     ext.playServicesTasksVersion = "18.0.2"
-    ext.autoValueVersion = "1.10.2"
+    ext.autoValueVersion = "1.10.3"
 
     //common libraries
-    ext.kotlin_version = "1.9.0"
+    ext.kotlin_version = "1.9.10"
     ext.kotlin_coroutines = "1.7.3"
-    ext.kotlin_serializer = "1.6.0-RC"
+    ext.kotlin_serializer = "1.6.0"
     ext.okhttpLibraryVersion = "5.0.0-alpha.11"
     ext.okioVersion = "3.5.0"
-    ext.rxJavaVersion = "3.1.6"
+    ext.rxJavaVersion = "3.1.7"
     ext.guavaVersion = "32.1.2-android"
-    ext.errorproneVersion = "2.15.0"
+    ext.errorProneVersion = "2.21.1"
     ext.checkerCompatQualVersion = "2.5.5"
     ext.checkerQualAndroidVersion = "3.37.0"
     ext.desugarLibraryVersion = "2.0.3"
@@ -91,7 +91,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.2.0-alpha15"
+        classpath "com.android.tools.build:gradle:8.2.0-beta01"
         classpath "com.google.gms:google-services:4.3.15"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
@@ -108,5 +108,5 @@ allprojects {
 }
 
 tasks.register('clean', Delete) {
-    delete rootProject.buildDir
+    delete rootProject.layout.buildDirectory.asFile.get()
 }

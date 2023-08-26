@@ -955,6 +955,12 @@ static void _handleStrokeDashArrayAttr(SvgLoaderData* loader, SvgNode* node, con
     _parseDashArray(loader, value, &node->style->stroke.dash);
 }
 
+static void _handleStrokeDashOffsetAttr(SvgLoaderData* loader, SvgNode* node, const char* value)
+{
+    node->style->stroke.flags = (node->style->stroke.flags | SvgStrokeFlags::DashOffset);
+    node->style->stroke.dash.offset = _toFloat(loader->svgParse, value, SvgParserLengthType::Horizontal);
+}
+
 static void _handleStrokeWidthAttr(SvgLoaderData* loader, SvgNode* node, const char* value)
 {
     node->style->stroke.flags = (node->style->stroke.flags | SvgStrokeFlags::Width);
@@ -1111,6 +1117,7 @@ static constexpr struct
     STYLE_DEF(stroke-linecap, StrokeLineCap, SvgStyleFlags::StrokeLineCap),
     STYLE_DEF(stroke-opacity, StrokeOpacity, SvgStyleFlags::StrokeOpacity),
     STYLE_DEF(stroke-dasharray, StrokeDashArray, SvgStyleFlags::StrokeDashArray),
+    STYLE_DEF(stroke-dashoffset, StrokeDashOffset, SvgStyleFlags::StrokeDashOffset),
     STYLE_DEF(transform, Transform, SvgStyleFlags::Transform),
     STYLE_DEF(clip-path, ClipPath, SvgStyleFlags::ClipPath),
     STYLE_DEF(mask, Mask, SvgStyleFlags::Mask),
@@ -2776,6 +2783,9 @@ static void _styleInherit(SvgStyleProperty* child, const SvgStyleProperty* paren
             }
         }
     }
+    if (!(child->stroke.flags & SvgStrokeFlags::DashOffset)) {
+        child->stroke.dash.offset = parent->stroke.dash.offset;
+    }
     if (!(child->stroke.flags & SvgStrokeFlags::Cap)) {
         child->stroke.cap = parent->stroke.cap;
     }
@@ -2842,13 +2852,15 @@ static void _styleCopy(SvgStyleProperty* to, const SvgStyleProperty* from)
             }
         }
     }
+    if (from->stroke.flags & SvgStrokeFlags::DashOffset) {
+        to->stroke.dash.offset = from->stroke.dash.offset;
+    }
     if (from->stroke.flags & SvgStrokeFlags::Cap) {
         to->stroke.cap = from->stroke.cap;
     }
     if (from->stroke.flags & SvgStrokeFlags::Join) {
         to->stroke.join = from->stroke.join;
     }
-
     if (from->stroke.flags & SvgStrokeFlags::Miterlimit) {
         to->stroke.miterlimit = from->stroke.miterlimit;
     }
@@ -3463,8 +3475,29 @@ static bool _svgLoaderParserForValidCheck(void* data, SimpleXMLType type, const 
 }
 
 
-void SvgLoader::clear()
+void SvgLoader::clear(bool all)
 {
+    //flush out the intermediate data
+    free(loaderData.svgParse);
+    loaderData.svgParse = nullptr;
+
+    for (auto gradient = loaderData.gradients.data; gradient < loaderData.gradients.end(); ++gradient) {
+        (*gradient)->clear();
+        free(*gradient);
+    }
+    loaderData.gradients.reset();
+
+    _freeNode(loaderData.doc);
+    loaderData.doc = nullptr;
+    loaderData.stack.reset();
+
+    if (!all) return;
+
+    for (auto p = loaderData.images.data; p < loaderData.images.end(); ++p) {
+        free(*p);
+    }
+    loaderData.images.reset();
+
     if (copy) free((char*)content);
     size = 0;
     content = nullptr;
@@ -3516,6 +3549,20 @@ void SvgLoader::run(unsigned tid)
         if (defs) _updateGradient(&loaderData, loaderData.doc, &defs->node.defs.gradients);
     }
     root = svgSceneBuild(loaderData, {vx, vy, vw, vh}, w, h, align, meetOrSlice, svgPath, viewFlag);
+
+    //In case no viewbox and width/height data is provided the completion of loading
+    //has to be forced, in order to establish this data based on the whole picture.
+    if (!(viewFlag & SvgViewFlag::Viewbox)) {
+        //Override viewbox & size again after svg loading.
+        vx = loaderData.doc->node.doc.vx;
+        vy = loaderData.doc->node.doc.vy;
+        vw = loaderData.doc->node.doc.vw;
+        vh = loaderData.doc->node.doc.vh;
+        w = loaderData.doc->node.doc.w;
+        h = loaderData.doc->node.doc.h;
+    }
+
+    clear(false);
 }
 
 
@@ -3585,14 +3632,6 @@ bool SvgLoader::header()
             }
 
             run(0);
-
-            //Override viewbox & size again after svg loading.
-            vx = loaderData.doc->node.doc.vx;
-            vy = loaderData.doc->node.doc.vy;
-            vw = loaderData.doc->node.doc.vw;
-            vh = loaderData.doc->node.doc.vh;
-            w = loaderData.doc->node.doc.w;
-            h = loaderData.doc->node.doc.h;
         }
 
         return true;
@@ -3671,22 +3710,6 @@ bool SvgLoader::read()
 bool SvgLoader::close()
 {
     this->done();
-
-    if (loaderData.svgParse) {
-        free(loaderData.svgParse);
-        loaderData.svgParse = nullptr;
-    }
-    auto gradients = loaderData.gradients.data;
-    for (size_t i = 0; i < loaderData.gradients.count; ++i) {
-        (*gradients)->clear();
-        free(*gradients);
-        ++gradients;
-    }
-    loaderData.gradients.reset();
-
-    _freeNode(loaderData.doc);
-    loaderData.doc = nullptr;
-    loaderData.stack.reset();
 
     clear();
 

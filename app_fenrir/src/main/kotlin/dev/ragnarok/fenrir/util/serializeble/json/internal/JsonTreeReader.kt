@@ -21,6 +21,7 @@ import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.TC_END_LIST
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.TC_END_OBJ
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.TC_OTHER
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.TC_STRING
+import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.tokenDescription
 
 internal class JsonTreeReader(
     configuration: JsonConfiguration,
@@ -116,7 +117,13 @@ internal class JsonTreeReader(
             }
 
             TC_BEGIN_LIST -> readArray()
-            else -> lexer.fail("Cannot begin reading element, unexpected token: $token")
+            else -> lexer.fail(
+                "Cannot read Json element because of unexpected ${
+                    tokenDescription(
+                        token
+                    )
+                }"
+            )
         }
     }
 

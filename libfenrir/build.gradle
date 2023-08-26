@@ -69,7 +69,7 @@ dependencies {
     implementation("androidx.collection:collection-ktx:$collectionVersion")
     implementation("com.squareup.okio:okio:$okioVersion")
     implementation("androidx.media3:media3-exoplayer:$media3Version")
-    implementation("com.google.errorprone:error_prone_annotations:${errorproneVersion}")
+    implementation("com.google.errorprone:error_prone_annotations:${errorProneVersion}")
 
     modules {
         module("com.google.guava:listenablefuture") {

@@ -169,14 +169,16 @@ static void _dashCubicTo(SwDashStroke& dash, const Point* ctrl1, const Point* ct
             _outlineCubicTo(*dash.outline, ctrl1, ctrl2, to, transform);
         }
     } else {
+        bool begin = true;          //starting with move_to
         while (len > dash.curLen) {
             Bezier left, right;
             len -= dash.curLen;
             bezSplitAt(cur, dash.curLen, left, right);
             if (!dash.curOpGap) {
                 // leftovers from a previous command don't require moveTo
-                if (dash.pattern[dash.curIdx] - dash.curLen < FLT_EPSILON) {
+                if (begin || dash.pattern[dash.curIdx] - dash.curLen < FLT_EPSILON) {
                     _outlineMoveTo(*dash.outline, &left.start, transform);
+                    begin = false;
                 }
                 _outlineCubicTo(*dash.outline, &left.ctrl1, &left.ctrl2, &left.end, transform);
             }
@@ -215,18 +217,29 @@ static SwOutline* _genDashOutline(const RenderShape* rshape, const Matrix* trans
     if (cmdCnt == 0 || ptsCnt == 0) return nullptr;
 
     SwDashStroke dash;
-    dash.curIdx = 0;
-    dash.curLen = 0;
-    dash.ptStart = {0, 0};
-    dash.ptCur = {0, 0};
-    dash.curOpGap = false;
 
-    const float* pattern;
-    dash.cnt = rshape->strokeDash(&pattern);
+    float offset;
+    dash.cnt = rshape->strokeDash((const float**)&dash.pattern, &offset);
     if (dash.cnt == 0) return nullptr;
 
+    auto patternLength = 0.0f;
+    uint32_t offIdx = 0;
+    if (fabsf(offset) > FLT_EPSILON) {
+        for (size_t i = 0; i < dash.cnt; ++i) patternLength += dash.pattern[i];
+        bool isOdd = dash.cnt % 2;
+        if (isOdd) patternLength *= 2;
+
+        offset = fmod(offset, patternLength);
+        if (offset < 0) offset += patternLength;
+
+        for (size_t i = 0; i < dash.cnt * (1 + (size_t)isOdd); ++i, ++offIdx) {
+            auto curPattern = dash.pattern[i % dash.cnt];
+            if (offset < curPattern) break;
+            offset -= curPattern;
+        }
+    }
+
     //OPTMIZE ME: Use mempool???
-    dash.pattern = const_cast<float*>(pattern);
     dash.outline = static_cast<SwOutline*>(calloc(1, sizeof(SwOutline)));
 
     //smart reservation
@@ -271,9 +284,9 @@ static SwOutline* _genDashOutline(const RenderShape* rshape, const Matrix* trans
             }
             case PathCommand::MoveTo: {
                 //reset the dash
-                dash.curIdx = 0;
-                dash.curLen = *dash.pattern;
-                dash.curOpGap = false;
+                dash.curIdx = offIdx % dash.cnt;
+                dash.curLen = dash.pattern[dash.curIdx] - offset;
+                dash.curOpGap = offIdx % 2;
                 dash.ptStart = dash.ptCur = *pts;
                 ++pts;
                 break;
@@ -515,7 +528,7 @@ bool shapeGenStrokeRle(SwShape* shape, const RenderShape* rshape, const Matrix* 
     bool ret = true;
 
     //Dash Style Stroke
-    if (rshape->strokeDash(nullptr) > 0) {
+    if (rshape->strokeDash(nullptr, nullptr) > 0) {
         shapeOutline = _genDashOutline(rshape, transform);
         if (!shapeOutline) return false;
         freeOutline = true;

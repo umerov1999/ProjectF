@@ -577,10 +577,10 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeR
         align_buffer_64(plane_uv, halfwidth * 2 * halfheight);
         uint8_t *dst_uv = plane_uv;
         for (int y = 0; y < halfheight; y++) {
-            weave_pixels_image_proccessing(src_v_ptr, src_u_ptr, src_pixel_stride_uv, dst_uv,
+            weave_pixels_image_proccessing(src_u_ptr, src_v_ptr, src_pixel_stride_uv, dst_uv,
                                            halfwidth);
-            src_u += src_stride_u;
-            src_v += src_stride_v;
+            src_u_ptr += src_stride_u;
+            src_v_ptr += src_stride_v;
             dst_uv += halfwidth * 2;
         }
 

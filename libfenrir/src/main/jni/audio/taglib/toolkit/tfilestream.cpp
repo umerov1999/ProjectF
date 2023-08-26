@@ -52,9 +52,9 @@ namespace
     const DWORD access = readOnly ? GENERIC_READ : (GENERIC_READ | GENERIC_WRITE);
 
 #if defined (PLATFORM_WINRT)
-    return CreateFile2(path.wstr().c_str(), access, FILE_SHARE_READ, OPEN_EXISTING, NULL);
+    return CreateFile2(path.wstr().c_str(), access, FILE_SHARE_READ, OPEN_EXISTING, nullptr);
 #else
-    return CreateFileW(path.wstr().c_str(), access, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+    return CreateFileW(path.wstr().c_str(), access, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
 #endif
   }
 
@@ -71,19 +71,17 @@ namespace
   size_t readFile(FileHandle file, ByteVector &buffer)
   {
     DWORD length;
-    if(ReadFile(file, buffer.data(), static_cast<DWORD>(buffer.size()), &length, NULL))
+    if(ReadFile(file, buffer.data(), static_cast<DWORD>(buffer.size()), &length, nullptr))
       return static_cast<size_t>(length);
-    else
-      return 0;
+    return 0;
   }
 
   size_t writeFile(FileHandle file, const ByteVector &buffer)
   {
     DWORD length;
-    if(WriteFile(file, buffer.data(), static_cast<DWORD>(buffer.size()), &length, NULL))
+    if(WriteFile(file, buffer.data(), static_cast<DWORD>(buffer.size()), &length, nullptr))
       return static_cast<size_t>(length);
-    else
-      return 0;
+    return 0;
   }
 
 #else   // _WIN32
@@ -378,7 +376,7 @@ void FileStream::seek(offset_t offset, Position p)
   LARGE_INTEGER liOffset;
   liOffset.QuadPart = offset;
 
-  if(!SetFilePointerEx(d->file, liOffset, NULL, static_cast<DWORD>(p))) {
+  if(!SetFilePointerEx(d->file, liOffset, nullptr, static_cast<DWORD>(p))) {
     debug("FileStream::seek() -- Failed to set the file pointer.");
   }
 
@@ -428,10 +426,9 @@ offset_t FileStream::tell() const
   if(SetFilePointerEx(d->file, zero, &position, FILE_CURRENT)) {
     return position.QuadPart;
   }
-  else {
-    debug("FileStream::tell() -- Failed to get the file pointer.");
-    return 0;
-  }
+
+  debug("FileStream::tell() -- Failed to get the file pointer.");
+  return 0;
 
 #else
 
@@ -454,10 +451,9 @@ offset_t FileStream::length()
   if(GetFileSizeEx(d->file, &fileSize)) {
     return fileSize.QuadPart;
   }
-  else {
-    debug("FileStream::length() -- Failed to get the file size.");
-    return 0;
-  }
+
+  debug("FileStream::length() -- Failed to get the file size.");
+  return 0;
 
 #else
 

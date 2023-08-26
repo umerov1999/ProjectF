@@ -38,7 +38,7 @@ dependencies {
     implementation("androidx.fragment:fragment:$fragmentVersion")
     implementation("androidx.collection:collection:$collectionVersion")
     implementation("androidx.tracing:tracing:$tracingVersion")
-    implementation("com.google.errorprone:error_prone_annotations:${errorproneVersion}")
+    implementation("com.google.errorprone:error_prone_annotations:${errorProneVersion}")
     implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
     implementation("androidx.concurrent:concurrent-futures:$concurentVersion")
     annotationProcessor("com.google.auto.value:auto-value:$autoValueVersion")

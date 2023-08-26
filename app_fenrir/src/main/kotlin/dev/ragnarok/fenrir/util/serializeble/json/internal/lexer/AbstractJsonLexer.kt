@@ -12,9 +12,9 @@ import kotlin.math.floor
 import kotlin.math.pow
 
 internal const val lenientHint =
-    "Use 'isLenient = true' in 'Json {}` builder to accept non-compliant JSON."
+    "Use 'isLenient = true' in 'Json {}' builder to accept non-compliant JSON."
 internal const val coerceInputValuesHint =
-    "Use 'coerceInputValues = true' in 'Json {}` builder to coerce nulls to default values."
+    "Use 'coerceInputValues = true' in 'Json {}' builder to coerce nulls to default values."
 internal const val specialFlowingValuesHint =
     "It is possible to deserialize them using 'JsonBuilder.allowSpecialFloatingPointValues = true'"
 internal const val ignoreUnknownKeysHint =
@@ -59,6 +59,20 @@ private const val CTC_MAX = 0x7e
 private const val ESC2C_MAX = 0x75
 
 internal const val asciiCaseMask = 1 shl 5
+
+internal fun tokenDescription(token: Byte) = when (token) {
+    TC_STRING -> "quotation mark '\"'"
+    TC_STRING_ESC -> "string escape sequence '\\'"
+    TC_COMMA -> "comma ','"
+    TC_COLON -> "colon ':'"
+    TC_BEGIN_OBJ -> "start of the object '{'"
+    TC_END_OBJ -> "end of the object '}'"
+    TC_BEGIN_LIST -> "start of the array '['"
+    TC_END_LIST -> "end of the array ']'"
+    TC_EOF -> "end of the input"
+    TC_INVALID -> "invalid token"
+    else -> "valid token" // should never happen
+}
 
 // object instead of @SharedImmutable because there is mutual initialization in [initC2ESC] and [initC2TC]
 internal object CharMappings {
@@ -204,33 +218,28 @@ internal abstract class AbstractJsonLexer {
     }
 
     protected fun unexpectedToken(expected: Char) {
-        --currentPosition // To properly handle null
-        if (currentPosition >= 0 && expected == STRING && consumeStringLenient() == NULL) {
-            fail(
-                "Expected string literal but 'null' literal was found",
-                currentPosition - 4,
-                coerceInputValuesHint
-            )
+        if (currentPosition > 0 && expected == STRING) {
+            val inputLiteral = withPositionRollback {
+                currentPosition--
+                consumeStringLenient()
+            }
+            if (inputLiteral == NULL)
+                fail(
+                    "Expected string literal but 'null' literal was found",
+                    currentPosition - 1,
+                    coerceInputValuesHint
+                )
         }
         fail(charToTokenClass(expected))
     }
 
-    internal fun fail(expectedToken: Byte): Nothing {
-        // We know that the token was consumed prior to this call
+    internal fun fail(expectedToken: Byte, wasConsumed: Boolean = true): Nothing {
         // Slow path, never called in normal code, can avoid optimizing it
-        val expected = when (expectedToken) {
-            TC_STRING -> "quotation mark '\"'"
-            TC_COMMA -> "comma ','"
-            TC_COLON -> "colon ':'"
-            TC_BEGIN_OBJ -> "start of the object '{'"
-            TC_END_OBJ -> "end of the object '}'"
-            TC_BEGIN_LIST -> "start of the array '['"
-            TC_END_LIST -> "end of the array ']'"
-            else -> "valid token" // should never happen
-        }
+        val expected = tokenDescription(expectedToken)
+        val position = if (wasConsumed) currentPosition - 1 else currentPosition
         val s =
-            if (currentPosition == source.length || currentPosition <= 0) "EOF" else source[currentPosition - 1].toString()
-        fail("Expected $expected, but had '$s' instead", currentPosition - 1)
+            if (currentPosition == source.length || position < 0) "EOF" else source[position].toString()
+        fail("Expected $expected, but had '$s' instead", position)
     }
 
     fun peekNextToken(): Byte {
@@ -401,7 +410,7 @@ internal abstract class AbstractJsonLexer {
                 usedAppend = true
                 currentPosition = prefetchOrEof(appendEscape(lastPosition, currentPosition))
                 if (currentPosition == -1)
-                    fail("EOF", currentPosition)
+                    fail("Unexpected EOF", currentPosition)
                 lastPosition = currentPosition
             } else if (++currentPosition >= source.length) {
                 usedAppend = true
@@ -409,7 +418,7 @@ internal abstract class AbstractJsonLexer {
                 appendRange(lastPosition, currentPosition)
                 currentPosition = prefetchOrEof(currentPosition)
                 if (currentPosition == -1)
-                    fail("EOF", currentPosition)
+                    fail("Unexpected EOF", currentPosition)
                 lastPosition = currentPosition
             }
             char = source[currentPosition]
@@ -782,5 +791,14 @@ internal abstract class AbstractJsonLexer {
         }
 
         currentPosition = current + literalSuffix.length
+    }
+
+    private inline fun <T> withPositionRollback(action: () -> T): T {
+        val snapshot = currentPosition
+        try {
+            return action()
+        } finally {
+            currentPosition = snapshot
+        }
     }
 }
