@@ -20,6 +20,7 @@ interface VKApiAttachment {
         const val TYPE_LINK = "link"
         const val TYPE_ARTICLE = "article"
         const val TYPE_STORY = "story"
+        const val TYPE_NARRATIVE = "narrative"
         const val TYPE_CALL = "call"
         const val TYPE_NOT_SUPPORT = "not_support"
         const val TYPE_NOTE = "note"

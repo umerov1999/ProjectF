@@ -19,6 +19,7 @@ class NarrativesDtoAdapter : AbsDtoAdapter<VKApiNarratives>("VKApiNarratives") {
         val root = json.jsonObject
         dto.id = optInt(root, "id")
         dto.owner_id = optLong(root, "owner_id")
+        dto.access_key = optString(root, "access_key")
         dto.title = optString(root, "title")
         if (hasArray(root, "story_ids")) {
             val temp = root["story_ids"]?.jsonArray

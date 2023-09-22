@@ -56,6 +56,7 @@ import dev.ragnarok.fenrir.model.Link
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.MarketAlbum
 import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.Poll
@@ -488,11 +489,11 @@ class CatalogV2SectionAdapter(
             audios.displayAudios(recPlaylist.getAudios(), object :
                 AttachmentsViewBinder.OnAttachmentsActionCallback {
                 override fun onPollOpen(poll: Poll) {
-                    TODO("Not yet implemented")
+
                 }
 
                 override fun onVideoPlay(video: Video) {
-                    TODO("Not yet implemented")
+
                 }
 
                 override fun onAudioPlay(
@@ -511,64 +512,48 @@ class CatalogV2SectionAdapter(
                     ).tryOpenWith(mContext)
                 }
 
-                override fun onForwardMessagesOpen(messages: ArrayList<Message>) {
-                }
+                override fun onForwardMessagesOpen(messages: ArrayList<Message>) {}
 
-                override fun onOpenOwner(ownerId: Long) {
-                }
+                override fun onOpenOwner(ownerId: Long) {}
 
-                override fun onGoToMessagesLookup(message: Message) {
-                }
+                override fun onGoToMessagesLookup(message: Message) {}
 
-                override fun onDocPreviewOpen(document: Document) {
-                }
+                override fun onDocPreviewOpen(document: Document) {}
 
-                override fun onPostOpen(post: Post) {
-                }
+                override fun onPostOpen(post: Post) {}
 
-                override fun onLinkOpen(link: Link) {
-                }
+                override fun onLinkOpen(link: Link) {}
 
-                override fun onUrlOpen(url: String) {
-                }
+                override fun onUrlOpen(url: String) {}
 
-                override fun onFaveArticle(article: Article) {
-                }
+                override fun onFaveArticle(article: Article) {}
 
-                override fun onShareArticle(article: Article) {
-                }
+                override fun onShareArticle(article: Article) {}
 
-                override fun onWikiPageOpen(page: WikiPage) {
-                }
+                override fun onWikiPageOpen(page: WikiPage) {}
 
-                override fun onPhotosOpen(photos: ArrayList<Photo>, index: Int, refresh: Boolean) {
-                }
+                override fun onPhotosOpen(photos: ArrayList<Photo>, index: Int, refresh: Boolean) {}
 
                 override fun onUrlPhotoOpen(url: String, prefix: String, photo_prefix: String) {
                     PlaceFactory.getSingleURLPhotoPlace(url, prefix, photo_prefix)
                         .tryOpenWith(mContext)
                 }
 
-                override fun onStoryOpen(story: Story) {
-                }
+                override fun onStoryOpen(story: Story) {}
 
-                override fun onWallReplyOpen(reply: WallReply) {
-                }
+                override fun onNarrativeOpen(narratives: Narratives) {}
 
-                override fun onAudioPlaylistOpen(playlist: AudioPlaylist) {
-                }
+                override fun onWallReplyOpen(reply: WallReply) {}
 
-                override fun onPhotoAlbumOpen(album: PhotoAlbum) {
-                }
+                override fun onAudioPlaylistOpen(playlist: AudioPlaylist) {}
 
-                override fun onMarketAlbumOpen(market_album: MarketAlbum) {
-                }
+                override fun onPhotoAlbumOpen(album: PhotoAlbum) {}
 
-                override fun onMarketOpen(market: Market) {
-                }
+                override fun onMarketAlbumOpen(market_album: MarketAlbum) {}
 
-                override fun onArtistOpen(artist: AudioArtist) {
-                }
+                override fun onMarketOpen(market: Market) {}
+
+                override fun onArtistOpen(artist: AudioArtist) {}
 
                 override fun onRequestWritePermissions() {
                     clickListener?.onRequestWritePermissions()

@@ -15,6 +15,7 @@ import dev.ragnarok.fenrir.model.Graffiti
 import dev.ragnarok.fenrir.model.Link
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.MarketAlbum
+import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.model.NotSupported
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
@@ -73,6 +74,14 @@ object Model2Dto {
 
             is Story -> {
                 return AttachmentsTokenCreator.ofStory(model.id, model.ownerId, model.accessKey)
+            }
+
+            is Narratives -> {
+                return AttachmentsTokenCreator.ofNarrative(
+                    model.id,
+                    model.owner_id,
+                    model.accessKey
+                )
             }
 
             is Graffiti -> {

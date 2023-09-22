@@ -152,11 +152,12 @@ object Dto2Model {
             .setTitle(chat.title)
     }
 
-    fun transform(narrative: VKApiNarratives): Narratives {
+    fun transformNarrative(narrative: VKApiNarratives): Narratives {
         return Narratives(narrative.id, narrative.owner_id)
             .setTitle(narrative.title)
             .setCover(narrative.cover)
             .setStory_ids(narrative.story_ids)
+            .setAccessKey(narrative.access_key)
     }
 
     fun transformOwner(owner: VKApiOwner?): Owner? {
@@ -1266,6 +1267,9 @@ object Dto2Model {
 
                 VKApiAttachment.TYPE_STORY -> attachments.prepareStories()
                     .add(transformStory(attachment as VKApiStory, owners))
+
+                VKApiAttachment.TYPE_NARRATIVE -> attachments.prepareNarratives()
+                    .add(transformNarrative(attachment as VKApiNarratives))
 
                 VKApiAttachment.TYPE_ALBUM -> attachments.preparePhotoAlbums().add(
                     transform(attachment as VKApiPhotoAlbum)

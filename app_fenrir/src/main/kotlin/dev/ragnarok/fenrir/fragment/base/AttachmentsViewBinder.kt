@@ -776,6 +776,24 @@ class AttachmentsViewBinder(
                     }
                 }
 
+                AttachmentsTypes.NARRATIVE -> {
+                    ivPhotoT.visibility = View.GONE
+                    ivType.visibility = View.GONE
+                    ivPhoto_Post.visibility = View.GONE
+                    val st = doc.attachment as Narratives
+                    if (st.cover != null) {
+                        ivPhotoT.visibility = View.VISIBLE
+                        displayAvatar(
+                            ivPhotoT,
+                            mAvatarTransformation,
+                            st.cover,
+                            Constants.PICASSO_TAG
+                        )
+                    } else {
+                        ivPhotoT.visibility = View.GONE
+                    }
+                }
+
                 AttachmentsTypes.POST -> {
                     ivPhotoT.visibility = View.GONE
                     ivType.visibility = View.GONE
@@ -1061,6 +1079,7 @@ class AttachmentsViewBinder(
             )
 
             AttachmentsTypes.STORY -> mAttachmentsActionCallback?.onStoryOpen(link.attachment as Story)
+            AttachmentsTypes.NARRATIVE -> mAttachmentsActionCallback?.onNarrativeOpen(link.attachment as Narratives)
             AttachmentsTypes.AUDIO_PLAYLIST -> mAttachmentsActionCallback?.onAudioPlaylistOpen(
                 link.attachment as AudioPlaylist
             )
@@ -1134,6 +1153,7 @@ class AttachmentsViewBinder(
         fun onPhotosOpen(photos: ArrayList<Photo>, index: Int, refresh: Boolean)
         fun onUrlPhotoOpen(url: String, prefix: String, photo_prefix: String)
         fun onStoryOpen(story: Story)
+        fun onNarrativeOpen(narratives: Narratives)
         fun onWallReplyOpen(reply: WallReply)
         fun onAudioPlaylistOpen(playlist: AudioPlaylist)
         fun onPhotoAlbumOpen(album: PhotoAlbum)

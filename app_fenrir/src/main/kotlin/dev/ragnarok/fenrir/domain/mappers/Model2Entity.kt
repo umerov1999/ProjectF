@@ -22,6 +22,7 @@ import dev.ragnarok.fenrir.db.model.entity.LinkDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MarketAlbumDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MarketDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
+import dev.ragnarok.fenrir.db.model.entity.NarrativesDboEntity
 import dev.ragnarok.fenrir.db.model.entity.NotSupportedDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PageDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PhotoAlbumDboEntity
@@ -61,6 +62,7 @@ import dev.ragnarok.fenrir.model.Link
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.MarketAlbum
 import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.model.NotSupported
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
@@ -219,6 +221,11 @@ object Model2Entity {
             entities
         )
         mapAndAdd(
+            attachments.narratives,
+            { buildNarrativeDbo(it) },
+            entities
+        )
+        mapAndAdd(
             attachments.calls,
             { buildCallDbo(it) },
             entities
@@ -334,6 +341,10 @@ object Model2Entity {
 
                 AbsModelType.MODEL_STORY -> {
                     entities.add(buildStoryDbo(model as Story))
+                }
+
+                AbsModelType.MODEL_NARRATIVE -> {
+                    entities.add(buildNarrativeDbo(model as Narratives))
                 }
 
                 AbsModelType.MODEL_AUDIO_PLAYLIST -> {
@@ -478,6 +489,16 @@ object Model2Entity {
             .setSubTitle(dbo.subTitle)
             .setURL(dbo.uRL)
             .setIsFavorite(dbo.isFavorite)
+    }
+
+    private fun buildNarrativeDbo(dbo: Narratives): NarrativesDboEntity {
+        return NarrativesDboEntity()
+            .setId(dbo.id)
+            .setOwnerId(dbo.owner_id)
+            .setTitle(dbo.title)
+            .setCover(dbo.cover)
+            .setStory_ids(dbo.stories)
+            .setAccessKey(dbo.accessKey)
     }
 
     private fun buildStoryDbo(dbo: Story): StoryDboEntity {

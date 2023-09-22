@@ -96,6 +96,10 @@ class AttachmentsBottomSheetAdapter(
                 bindStory(holder, model as Story)
             }
 
+            AbsModelType.MODEL_NARRATIVE -> {
+                bindNarrative(holder, model as Narratives)
+            }
+
             AbsModelType.MODEL_CALL -> {
                 bindCall(holder)
             }
@@ -255,6 +259,15 @@ class AttachmentsBottomSheetAdapter(
         holder.Retry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         val photoLink = story.owner?.maxSquareAvatar
+        bindImageView(holder, photoLink)
+    }
+
+    private fun bindNarrative(holder: EntryHolder, narratives: Narratives) {
+        holder.title.setText(R.string.narratives)
+        holder.progress.visibility = View.INVISIBLE
+        holder.Retry.visibility = View.GONE
+        holder.tintView.visibility = View.GONE
+        val photoLink = narratives.cover
         bindImageView(holder, photoLink)
     }
 

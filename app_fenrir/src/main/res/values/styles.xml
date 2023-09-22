@@ -1007,6 +1007,7 @@
     </style>
 
     <style name="Widget.MPM.Menu.Material3" parent="Widget.Material3.PopupMenu.Overflow">
+        <item name="android:popupBackground">@drawable/mpm_popup_menu_background</item>
         <item name="mpm_paddingBottom">0dp</item>
         <item name="mpm_paddingStart">0dp</item>
         <item name="mpm_paddingEnd">0dp</item>

@@ -27,6 +27,7 @@ import dev.ragnarok.fenrir.db.model.entity.MarketAlbumDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MarketDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MilitaryEntity
+import dev.ragnarok.fenrir.db.model.entity.NarrativesDboEntity
 import dev.ragnarok.fenrir.db.model.entity.NewsDboEntity
 import dev.ragnarok.fenrir.db.model.entity.NotSupportedDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PageDboEntity
@@ -86,6 +87,7 @@ import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.MarketAlbum
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Military
+import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.model.News
 import dev.ragnarok.fenrir.model.NotSupported
 import dev.ragnarok.fenrir.model.Owner
@@ -711,6 +713,10 @@ object Entity2Model {
                 return buildStoryFromDbo(dboEntity, owners)
             }
 
+            is NarrativesDboEntity -> {
+                return buildNarrativeFromDbo(dboEntity)
+            }
+
             is PhotoAlbumDboEntity -> {
                 return mapPhotoAlbum(dboEntity)
             }
@@ -1095,6 +1101,14 @@ object Entity2Model {
             .setOwner(owners.getById(dbo.ownerId))
             .setPhoto(dbo.photo?.let { map(it) })
             .setVideo(dbo.video?.let { buildVideoFromDbo(it) })
+    }
+
+    private fun buildNarrativeFromDbo(dbo: NarrativesDboEntity): Narratives {
+        return Narratives(dbo.id, dbo.owner_id)
+            .setTitle(dbo.title)
+            .setCover(dbo.cover)
+            .setStory_ids(dbo.stories)
+            .setAccessKey(dbo.accessKey)
     }
 
     private fun buildGraffitiFromDbo(dto: GraffitiDboEntity): Graffiti {

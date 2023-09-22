@@ -6,7 +6,9 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
+import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActionCallback
+import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService.Companion.startForPlayList
 import dev.ragnarok.fenrir.model.Article
@@ -20,6 +22,7 @@ import dev.ragnarok.fenrir.model.Link
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.MarketAlbum
 import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.Poll
@@ -28,6 +31,7 @@ import dev.ragnarok.fenrir.model.Story
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.WallReply
 import dev.ragnarok.fenrir.model.WikiPage
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.PlaceFactory.getArtistPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getAudiosInAlbumPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getCommentsPlace
@@ -164,6 +168,22 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
     override fun onStoryOpen(story: Story) {
         getHistoryVideoPreviewPlace(accountId, ArrayList(setOf(story)), 0).tryOpenWith(
             requireActivity()
+        )
+    }
+
+    override fun onNarrativeOpen(narratives: Narratives) {
+        appendDisposable(
+            InteractorFactory.createStoriesInteractor()
+                .getStoryById(accountId, narratives.getStoriesIds())
+                .fromIOToMain()
+                .subscribe({
+                    if (it.nonNullNoEmpty()) {
+                        getHistoryVideoPreviewPlace(accountId, ArrayList(it), 0).tryOpenWith(
+                            requireActivity()
+                        )
+                    }
+                }, {
+                })
         )
     }
 

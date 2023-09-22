@@ -159,7 +159,7 @@ internal class MaterialRecyclerViewPopupWindow(
         } else {
             popup.width = widthSpec
             popup.height = height
-            setPopupClipToScreenEnabled()
+            //setPopupClipToScreenEnabled()
             // use outside touchable to dismiss drop down when touching outside of it, so
             // only set this if the dropdown is not always visible
             popup.isOutsideTouchable = true
@@ -195,7 +195,7 @@ internal class MaterialRecyclerViewPopupWindow(
         } else {
             popup.width = widthSpec
             popup.height = height
-            setPopupClipToScreenEnabled()
+            //setPopupClipToScreenEnabled()
             // use outside touchable to dismiss drop down when touching outside of it, so
             // only set this if the dropdown is not always visible
             popup.isOutsideTouchable = true
@@ -370,11 +370,13 @@ internal class MaterialRecyclerViewPopupWindow(
         ViewGroup.LayoutParams.WRAP_CONTENT
     )
 
+    /*
     private fun setPopupClipToScreenEnabled() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             popup.setIsClippedToScreen(true)
         }
     }
+     */
 
     private fun getMaxAvailableHeight(
         anchor: View,

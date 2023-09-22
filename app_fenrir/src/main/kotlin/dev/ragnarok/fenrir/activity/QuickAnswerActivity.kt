@@ -41,6 +41,7 @@ import dev.ragnarok.fenrir.model.Link
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.MarketAlbum
 import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
@@ -209,6 +210,8 @@ class QuickAnswerActivity : AppCompatActivity() {
                     }
 
                     override fun onStoryOpen(story: Story) {}
+                    override fun onNarrativeOpen(narratives: Narratives) {}
+
                     override fun onWallReplyOpen(reply: WallReply) {}
                     override fun onAudioPlaylistOpen(playlist: AudioPlaylist) {}
                     override fun onPhotoAlbumOpen(album: PhotoAlbum) {}

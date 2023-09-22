@@ -117,6 +117,10 @@ class AttachmentsDtoAdapter : AbsDtoAdapter<VKApiAttachments>("VKApiAttachments"
                     kJson.decodeFromJsonElement(VKApiStory.serializer(), o ?: return null)
                 }
 
+                VKApiAttachment.TYPE_NARRATIVE == type -> {
+                    kJson.decodeFromJsonElement(VKApiNarratives.serializer(), o ?: return null)
+                }
+
                 VKApiAttachment.TYPE_CALL == type -> {
                     kJson.decodeFromJsonElement(VKApiCall.serializer(), o ?: return null)
                 }

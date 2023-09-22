@@ -15,6 +15,7 @@ import dev.ragnarok.fenrir.model.Graffiti
 import dev.ragnarok.fenrir.model.Link
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.MarketAlbum
+import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.model.NotSupported
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.Poll
@@ -22,6 +23,7 @@ import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.Story
 import dev.ragnarok.fenrir.model.WallReply
 import dev.ragnarok.fenrir.model.WikiPage
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
@@ -44,6 +46,7 @@ class DocLink(val attachment: AbsModel) {
                 AttachmentsTypes.WALL_REPLY -> return (attachment as WallReply).authorPhoto
                 AttachmentsTypes.GRAFFITI -> return (attachment as Graffiti).url
                 AttachmentsTypes.STORY -> return (attachment as Story).owner?.maxSquareAvatar
+                AttachmentsTypes.NARRATIVE -> return (attachment as Narratives).cover
                 AttachmentsTypes.ALBUM -> {
                     val album = attachment as PhotoAlbum
                     return album.getSizes()?.getUrlForSize(
@@ -106,6 +109,7 @@ class DocLink(val attachment: AbsModel) {
             }
 
             AttachmentsTypes.STORY -> return (attachment as Story).owner?.fullName
+            AttachmentsTypes.NARRATIVE -> return (attachment as Narratives).title
             AttachmentsTypes.WIKI_PAGE -> return context.getString(R.string.wiki_page)
             AttachmentsTypes.CALL -> {
                 val initiator = (attachment as Call).initiator_id
@@ -128,6 +132,7 @@ class DocLink(val attachment: AbsModel) {
             AttachmentsTypes.LINK -> return URL
             AttachmentsTypes.WIKI_PAGE -> return W
             AttachmentsTypes.STORY -> return context.getString(R.string.story)
+            AttachmentsTypes.NARRATIVE -> return context.getString(R.string.narratives)
             AttachmentsTypes.AUDIO_PLAYLIST -> return context.getString(R.string.playlist)
         }
         return null
@@ -216,6 +221,11 @@ class DocLink(val attachment: AbsModel) {
                 }
             }
 
+            AttachmentsTypes.NARRATIVE -> {
+                return (attachment as Narratives).stories?.size.orZero()
+                    .toString() + " " + context.getString(R.string.stories)
+            }
+
             AttachmentsTypes.GEO -> {
                 val geo = attachment as Geo
                 return geo.latitude.orEmpty() + " " + geo.longitude.orEmpty() + "\r\n" + geo.address.orEmpty()
@@ -253,6 +263,10 @@ class DocLink(val attachment: AbsModel) {
 
                 AbsModelType.MODEL_STORY -> {
                     return AttachmentsTypes.STORY
+                }
+
+                AbsModelType.MODEL_NARRATIVE -> {
+                    return AttachmentsTypes.NARRATIVE
                 }
 
                 AbsModelType.MODEL_CALL -> {

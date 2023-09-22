@@ -17,6 +17,7 @@ import dev.ragnarok.fenrir.model.Link
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.MarketAlbum
 import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.Poll
@@ -25,6 +26,7 @@ import dev.ragnarok.fenrir.model.Story
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.WallReply
 import dev.ragnarok.fenrir.model.WikiPage
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
 
 abstract class PlaceSupportPresenter<V>(accountId: Long, savedInstanceState: Bundle?) :
@@ -46,6 +48,20 @@ abstract class PlaceSupportPresenter<V>(accountId: Long, savedInstanceState: Bun
 
     fun fireStoryClick(story: Story) {
         view?.openStory(accountId, story)
+    }
+
+    fun fireNarrativeClick(narratives: Narratives) {
+        appendDisposable(
+            InteractorFactory.createStoriesInteractor()
+                .getStoryById(accountId, narratives.getStoriesIds())
+                .fromIOToMain()
+                .subscribe({
+                    if (it.nonNullNoEmpty()) {
+                        view?.openHistoryVideo(accountId, ArrayList(it), 0)
+                    }
+                }, {
+                })
+        )
     }
 
     fun firePhotoClick(photos: ArrayList<Photo>, index: Int, refresh: Boolean) {

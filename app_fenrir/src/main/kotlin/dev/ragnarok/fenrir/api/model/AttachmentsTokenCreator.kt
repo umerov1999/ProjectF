@@ -23,6 +23,10 @@ object AttachmentsTokenCreator {
         return AttachmentTokens.AttachmentToken("story", id, ownerId, accessKey)
     }
 
+    fun ofNarrative(id: Int, ownerId: Long, accessKey: String?): IAttachmentToken {
+        return AttachmentTokens.AttachmentToken("narrative", id, ownerId, accessKey)
+    }
+
     fun ofPhotoAlbum(id: Int, ownerId: Long): IAttachmentToken {
         return AttachmentTokens.AttachmentToken("album", id, ownerId)
     }

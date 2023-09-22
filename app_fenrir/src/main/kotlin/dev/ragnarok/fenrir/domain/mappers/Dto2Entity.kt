@@ -27,6 +27,7 @@ import dev.ragnarok.fenrir.api.model.VKApiMarket
 import dev.ragnarok.fenrir.api.model.VKApiMarketAlbum
 import dev.ragnarok.fenrir.api.model.VKApiMessage
 import dev.ragnarok.fenrir.api.model.VKApiMilitary
+import dev.ragnarok.fenrir.api.model.VKApiNarratives
 import dev.ragnarok.fenrir.api.model.VKApiNews
 import dev.ragnarok.fenrir.api.model.VKApiNotSupported
 import dev.ragnarok.fenrir.api.model.VKApiPhoto
@@ -97,6 +98,7 @@ import dev.ragnarok.fenrir.db.model.entity.MarketAlbumDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MarketDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MilitaryEntity
+import dev.ragnarok.fenrir.db.model.entity.NarrativesDboEntity
 import dev.ragnarok.fenrir.db.model.entity.NewsDboEntity
 import dev.ragnarok.fenrir.db.model.entity.NotSupportedDboEntity
 import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
@@ -1028,6 +1030,10 @@ object Dto2Entity {
                 return mapStory(dto as VKApiStory)
             }
 
+            VKApiAttachment.TYPE_NARRATIVE -> {
+                return mapNarrative(dto as VKApiNarratives)
+            }
+
             VKApiAttachment.TYPE_GRAFFITI -> {
                 return mapGraffiti(dto as VKApiGraffiti)
             }
@@ -1366,6 +1372,15 @@ object Dto2Entity {
             .setTarget_url(dto.target_url)
             .setPhoto(dto.photo?.let { mapPhoto(it) })
             .setVideo(dto.video?.let { mapVideo(it) })
+    }
+
+    private fun mapNarrative(dto: VKApiNarratives): NarrativesDboEntity {
+        return NarrativesDboEntity().setId(dto.id)
+            .setOwnerId(dto.owner_id)
+            .setAccessKey(dto.access_key)
+            .setTitle(dto.title)
+            .setCover(dto.cover)
+            .setStory_ids(dto.story_ids)
     }
 
     private fun mapWallReply(dto: VKApiWallReply): WallReplyDboEntity {

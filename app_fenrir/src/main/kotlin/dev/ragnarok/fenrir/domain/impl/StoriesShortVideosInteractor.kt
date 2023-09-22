@@ -9,6 +9,7 @@ import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.IStoriesShortVideosInteractor
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
+import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformNarrative
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformOwner
 import dev.ragnarok.fenrir.domain.mappers.MapUtil
 import dev.ragnarok.fenrir.model.IOwnersBundle
@@ -85,7 +86,7 @@ class StoriesShortVideosInteractor(
             .getNarratives(owner_id, offset, count)
             .flatMap { story ->
                 val dtos = listEmptyIfNull(story.items)
-                Single.just(MapUtil.mapAll(dtos) { transform(it) })
+                Single.just(MapUtil.mapAll(dtos) { transformNarrative(it) })
             }
     }
 

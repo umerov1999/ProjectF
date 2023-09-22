@@ -15,6 +15,7 @@ import dev.ragnarok.fenrir.db.model.entity.GraffitiDboEntity
 import dev.ragnarok.fenrir.db.model.entity.LinkDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MarketAlbumDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MarketDboEntity
+import dev.ragnarok.fenrir.db.model.entity.NarrativesDboEntity
 import dev.ragnarok.fenrir.db.model.entity.NotSupportedDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PhotoAlbumDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PhotoDboEntity
@@ -59,6 +60,14 @@ object Entity2Dto {
                 return AttachmentsTokenCreator.ofStory(
                     dboEntity.id,
                     dboEntity.ownerId,
+                    dboEntity.accessKey
+                )
+            }
+
+            is NarrativesDboEntity -> {
+                return AttachmentsTokenCreator.ofNarrative(
+                    dboEntity.id,
+                    dboEntity.owner_id,
                     dboEntity.accessKey
                 )
             }

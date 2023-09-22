@@ -36,6 +36,7 @@ import androidx.annotation.IntDef
     AbsModelType.MODEL_SHORT_LINK,
     AbsModelType.MODEL_STICKER,
     AbsModelType.MODEL_STORY,
+    AbsModelType.MODEL_NARRATIVE,
     AbsModelType.MODEL_TOPIC,
     AbsModelType.MODEL_USER,
     AbsModelType.MODEL_VIDEO,
@@ -88,18 +89,19 @@ annotation class AbsModelType {
         const val MODEL_SHORT_LINK = 30
         const val MODEL_STICKER = 31
         const val MODEL_STORY = 32
-        const val MODEL_TOPIC = 33
-        const val MODEL_USER = 34
-        const val MODEL_VIDEO = 35
-        const val MODEL_VIDEO_ALBUM = 36
-        const val MODEL_VOICE_MESSAGE = 37
-        const val MODEL_WALL_REPLY = 38
-        const val MODEL_WIKI_PAGE = 39
-        const val MODEL_AUDIO_CATALOG_V2_ARTIST = 40
-        const val MODEL_UPLOAD = 41
-        const val MODEL_GEO = 42
-        const val MODEL_CATALOG_V2_BLOCK = 43
-        const val MODEL_CATALOG_V2_LINK = 44
-        const val MODEL_CATALOG_V2_RECOMMENDATION_PLAYLIST = 45
+        const val MODEL_NARRATIVE = 33
+        const val MODEL_TOPIC = 34
+        const val MODEL_USER = 35
+        const val MODEL_VIDEO = 36
+        const val MODEL_VIDEO_ALBUM = 37
+        const val MODEL_VOICE_MESSAGE = 38
+        const val MODEL_WALL_REPLY = 39
+        const val MODEL_WIKI_PAGE = 40
+        const val MODEL_AUDIO_CATALOG_V2_ARTIST = 41
+        const val MODEL_UPLOAD = 42
+        const val MODEL_GEO = 43
+        const val MODEL_CATALOG_V2_BLOCK = 44
+        const val MODEL_CATALOG_V2_LINK = 45
+        const val MODEL_CATALOG_V2_RECOMMENDATION_PLAYLIST = 46
     }
 }

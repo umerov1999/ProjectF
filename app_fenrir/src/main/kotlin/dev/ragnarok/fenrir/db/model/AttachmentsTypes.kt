@@ -11,6 +11,7 @@ import androidx.annotation.IntDef
     AttachmentsTypes.ARTICLE,
     AttachmentsTypes.LINK,
     AttachmentsTypes.STORY,
+    AttachmentsTypes.NARRATIVE,
     AttachmentsTypes.CALL,
     AttachmentsTypes.POLL,
     AttachmentsTypes.PAGE,
@@ -41,23 +42,24 @@ annotation class AttachmentsTypes {
         const val ARTICLE = 6
         const val LINK = 7
         const val STORY = 8
-        const val CALL = 9
-        const val POLL = 10
-        const val PAGE = 11
-        const val AUDIO_PLAYLIST = 12
-        const val STICKER = 13
-        const val TOPIC = 14
-        const val AUDIO_MESSAGE = 15
-        const val GIFT = 16
-        const val GRAFFITI = 17
-        const val ALBUM = 18
-        const val NOT_SUPPORTED = 19
-        const val WALL_REPLY = 20
-        const val EVENT = 21
-        const val MARKET = 22
-        const val MARKET_ALBUM = 23
-        const val ARTIST = 24
-        const val WIKI_PAGE = 25
-        const val GEO = 26
+        const val NARRATIVE = 9
+        const val CALL = 10
+        const val POLL = 11
+        const val PAGE = 12
+        const val AUDIO_PLAYLIST = 13
+        const val STICKER = 14
+        const val TOPIC = 15
+        const val AUDIO_MESSAGE = 16
+        const val GIFT = 17
+        const val GRAFFITI = 18
+        const val ALBUM = 19
+        const val NOT_SUPPORTED = 20
+        const val WALL_REPLY = 21
+        const val EVENT = 22
+        const val MARKET = 23
+        const val MARKET_ALBUM = 24
+        const val ARTIST = 25
+        const val WIKI_PAGE = 26
+        const val GEO = 27
     }
 }

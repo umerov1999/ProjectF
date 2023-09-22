@@ -29,6 +29,8 @@ class Attachments : Parcelable, Cloneable {
         private set
     var stories: ArrayList<Story>? = null
         private set
+    var narratives: ArrayList<Narratives>? = null
+        private set
     var calls: ArrayList<Call>? = null
         private set
     var geos: ArrayList<Geo>? = null
@@ -75,6 +77,7 @@ class Attachments : Parcelable, Cloneable {
         voiceMessages = parcel.createTypedArrayList(VoiceMessage.CREATOR)
         gifts = parcel.createTypedArrayList(GiftItem.CREATOR)
         stories = parcel.createTypedArrayList(Story.CREATOR)
+        narratives = parcel.createTypedArrayList(Narratives.CREATOR)
         calls = parcel.createTypedArrayList(Call.CREATOR)
         geos = parcel.createTypedArrayList(Geo.CREATOR)
         audioPlaylists = parcel.createTypedArrayList(AudioPlaylist.CREATOR)
@@ -102,6 +105,7 @@ class Attachments : Parcelable, Cloneable {
         dest.writeTypedList(voiceMessages)
         dest.writeTypedList(gifts)
         dest.writeTypedList(stories)
+        dest.writeTypedList(narratives)
         dest.writeTypedList(calls)
         dest.writeTypedList(geos)
         dest.writeTypedList(audioPlaylists)
@@ -170,6 +174,11 @@ class Attachments : Parcelable, Cloneable {
 
             AbsModelType.MODEL_STORY -> {
                 prepareStories().add(model as Story)
+                return
+            }
+
+            AbsModelType.MODEL_NARRATIVE -> {
+                prepareNarratives().add(model as Narratives)
                 return
             }
 
@@ -275,6 +284,9 @@ class Attachments : Parcelable, Cloneable {
         stories.nonNullNoEmpty {
             result.addAll(it)
         }
+        narratives.nonNullNoEmpty {
+            result.addAll(it)
+        }
         calls.nonNullNoEmpty {
             result.addAll(it)
         }
@@ -364,6 +376,13 @@ class Attachments : Parcelable, Cloneable {
             stories = ArrayList(1)
         }
         return stories!!
+    }
+
+    fun prepareNarratives(): ArrayList<Narratives> {
+        if (narratives == null) {
+            narratives = ArrayList(1)
+        }
+        return narratives!!
     }
 
     fun prepareCalls(): ArrayList<Call> {
@@ -496,6 +515,7 @@ class Attachments : Parcelable, Cloneable {
             links,
             articles,
             stories,
+            narratives,
             photoAlbums,
             calls,
             geos,
@@ -524,6 +544,7 @@ class Attachments : Parcelable, Cloneable {
             links,
             articles,
             stories,
+            narratives,
             photoAlbums,
             calls,
             geos,
@@ -639,6 +660,11 @@ class Attachments : Parcelable, Cloneable {
                 result.add(DocLink(story))
             }
         }
+        if (narratives != null) {
+            for (narrative in narratives.orEmpty()) {
+                result.add(DocLink(narrative))
+            }
+        }
         if (calls != null) {
             for (call in calls.orEmpty()) {
                 result.add(DocLink(call))
@@ -709,6 +735,7 @@ class Attachments : Parcelable, Cloneable {
         clone.links = cloneListAsArrayList(links)
         clone.articles = cloneListAsArrayList(articles)
         clone.stories = cloneListAsArrayList(stories)
+        clone.narratives = cloneListAsArrayList(narratives)
         clone.photoAlbums = cloneListAsArrayList(photoAlbums)
         clone.calls = cloneListAsArrayList(calls)
         clone.geos = cloneListAsArrayList(geos)
@@ -754,6 +781,9 @@ class Attachments : Parcelable, Cloneable {
         }
         if (stories != null) {
             line = line + " stories=" + safeCountOf(stories)
+        }
+        if (narratives != null) {
+            line = line + " narratives=" + safeCountOf(narratives)
         }
         if (photoAlbums != null) {
             line = line + " photo_albums=" + safeCountOf(photoAlbums)
