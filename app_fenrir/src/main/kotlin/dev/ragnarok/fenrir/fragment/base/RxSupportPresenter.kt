@@ -71,7 +71,7 @@ abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
         if (Constants.IS_DEBUG) {
             lThrowable.printStackTrace()
         }
-        if (Settings.get().other().isDeveloper_mode) {
+        if (Settings.get().main().isDeveloper_mode) {
             eView.showThrowable(lThrowable)
         } else {
             eView.showError(ErrorLocalizer.localizeThrowable(applicationContext, lThrowable))
@@ -95,7 +95,7 @@ abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
         if (Constants.IS_DEBUG) {
             lThrowable.printStackTrace()
         }
-        if (Settings.get().other().isDeveloper_mode) {
+        if (Settings.get().main().isDeveloper_mode) {
             view.showThrowable(lThrowable)
         } else {
             view.showError(ErrorLocalizer.localizeThrowable(applicationContext, lThrowable))

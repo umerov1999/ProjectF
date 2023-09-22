@@ -43,11 +43,11 @@ namespace
       return std::wstring();
 
     std::wstring wstr(len - 1, L'\0');
-    MultiByteToWideChar(CP_ACP, 0, str, -1, &wstr[0], len);
+    MultiByteToWideChar(CP_ACP, 0, str, -1, wstr.data(), len);
 
     return wstr;
   }
-}
+} // namespace
 
 FileName::FileName(const wchar_t *name) :
   m_wname(name)
@@ -59,7 +59,7 @@ FileName::FileName(const char *name) :
 {
 }
 
-FileName::FileName(const FileName &name) = default;
+FileName::FileName(const FileName &) = default;
 
 FileName::operator const wchar_t *() const
 {

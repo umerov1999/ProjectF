@@ -278,7 +278,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
                 val index = requireArguments().getInt(Extra.INDEX)
                 if (FenrirNative.isNativeLoaded && Settings.get()
-                        .other().isNative_parcel_story
+                        .main().isNative_parcel_story
                 ) {
                     var pointer = requireArguments().getLong(Extra.STORY)
                     requireArguments().putLong(Extra.STORY, 0)
@@ -716,7 +716,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, aid)
             args.putInt(Extra.INDEX, index)
-            if (FenrirNative.isNativeLoaded && Settings.get().other().isNative_parcel_story) {
+            if (FenrirNative.isNativeLoaded && Settings.get().main().isNative_parcel_story) {
                 val pointer = ParcelNative.createParcelableList(stories, ParcelFlags.NULL_LIST)
                 Utils.registerParcelNative(pointer)
                 args.putLong(

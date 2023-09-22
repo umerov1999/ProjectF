@@ -26,8 +26,8 @@
 #ifndef TAGLIB_OWNERSHIPFRAME_H
 #define TAGLIB_OWNERSHIPFRAME_H
 
-#include "id3v2frame.h"
 #include "taglib_export.h"
+#include "id3v2frame.h"
 
 namespace TagLib {
 
@@ -82,7 +82,7 @@ namespace TagLib {
        *
        * \see datePurchased()
        */
-      void setDatePurchased(const String &datePurchased);
+      void setDatePurchased(const String &s);
 
       /*!
        * Returns the price paid.
@@ -96,7 +96,7 @@ namespace TagLib {
        *
        * \see pricePaid()
        */
-      void setPricePaid(const String &pricePaid);
+      void setPricePaid(const String &s);
 
       /*!
        * Returns the seller.

@@ -24,8 +24,6 @@
  ***************************************************************************/
 
 #include "tfilestream.h"
-#include "tstring.h"
-#include "tdebug.h"
 
 #ifdef _WIN32
 # include <windows.h>
@@ -33,6 +31,9 @@
 # include <cstdio>
 # include <unistd.h>
 #endif
+
+#include "tstring.h"
+#include "tdebug.h"
 
 using namespace TagLib;
 
@@ -42,8 +43,8 @@ namespace
 
   // Uses Win32 native API instead of POSIX API to reduce the resource consumption.
 
-  typedef FileName FileNameHandle;
-  typedef HANDLE FileHandle;
+  using FileNameHandle = FileName;
+  using FileHandle = HANDLE;
 
   const FileHandle InvalidFileHandle = INVALID_HANDLE_VALUE;
 
@@ -92,7 +93,7 @@ namespace
     operator FileName () const { return c_str(); }
   };
 
-  typedef FILE* FileHandle;
+  using FileHandle = FILE *;
 
   const FileHandle InvalidFileHandle = nullptr;
 
@@ -127,16 +128,14 @@ namespace
 class FileStream::FileStreamPrivate
 {
 public:
-  FileStreamPrivate(const FileName &fileName)
-    : file(InvalidFileHandle)
-    , name(fileName)
-    , readOnly(true)
+  FileStreamPrivate(const FileName &fileName) :
+    name(fileName)
   {
   }
 
-  FileHandle file;
+  FileHandle file { InvalidFileHandle };
   FileNameHandle name;
-  bool readOnly;
+  bool readOnly { true };
 };
 
 ////////////////////////////////////////////////////////////////////////////////

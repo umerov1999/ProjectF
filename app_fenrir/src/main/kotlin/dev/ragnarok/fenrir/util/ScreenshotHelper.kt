@@ -16,7 +16,7 @@ object ScreenshotHelper {
 
     @Suppress("DEPRECATION")
     fun makeScreenshot(activity: Activity) {
-        val saveDir = File(Settings.get().other().photoDir + "/Screenshots")
+        val saveDir = File(Settings.get().main().photoDir + "/Screenshots")
         if (!saveDir.exists()) {
             saveDir.mkdirs()
         }

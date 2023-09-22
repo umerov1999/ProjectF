@@ -12,7 +12,7 @@ import java.io.StringWriter
 object PersistentLogger {
     @SuppressLint("CheckResult")
     fun logThrowable(tag: String, throwable: Throwable) {
-        if (!Settings.get().other().isDoLogs) return
+        if (!Settings.get().main().isDoLogs) return
         val store = Includes.stores.tempStore()
         val cause = Utils.getCauseIfRuntime(throwable)
         cause.printStackTrace()
@@ -27,7 +27,7 @@ object PersistentLogger {
     }
 
     fun logThrowableSync(tag: String, throwable: Throwable) {
-        if (!Settings.get().other().isDoLogs) return
+        if (!Settings.get().main().isDoLogs) return
         val store = Includes.stores.tempStore()
         val cause = Utils.getCauseIfRuntime(throwable)
         getStackTrace(cause)

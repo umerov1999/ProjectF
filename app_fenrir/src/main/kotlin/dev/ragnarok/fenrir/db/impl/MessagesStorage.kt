@@ -16,6 +16,7 @@ import dev.ragnarok.fenrir.db.model.MessageEditEntity
 import dev.ragnarok.fenrir.db.model.MessagePatch
 import dev.ragnarok.fenrir.db.model.entity.KeyboardEntity
 import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
+import dev.ragnarok.fenrir.db.model.entity.ReactionEntity
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.getBlob
 import dev.ragnarok.fenrir.getBoolean
@@ -23,11 +24,13 @@ import dev.ragnarok.fenrir.getInt
 import dev.ragnarok.fenrir.getLong
 import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.ifNonNull
+import dev.ragnarok.fenrir.ifNonNullNoEmpty
 import dev.ragnarok.fenrir.model.ChatAction
 import dev.ragnarok.fenrir.model.DraftMessage
 import dev.ragnarok.fenrir.model.MessageStatus
 import dev.ragnarok.fenrir.model.criteria.MessagesCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Exestime.log
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.empty
@@ -43,6 +46,7 @@ import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.MaybeEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 
@@ -224,16 +228,6 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             })
 
             cv.put(MessagesColumns.PAYLOAD, patch.payload)
-            patch.keyboard.ifNonNull({
-                cv.put(
-                    MessagesColumns.KEYBOARD,
-                    MsgPack.encodeToByteArrayEx(KeyboardEntity.serializer(), it)
-                )
-            }, {
-                cv.putNull(
-                    MessagesColumns.KEYBOARD
-                )
-            })
 
             // Other fileds is NULL
             val uri = getMessageContentUriFor(accountId)
@@ -308,16 +302,6 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                         })
 
                         cv.put(MessagesColumns.PAYLOAD, patch.payload)
-                        patch.keyboard.ifNonNull({
-                            cv.put(
-                                MessagesColumns.KEYBOARD,
-                                MsgPack.encodeToByteArrayEx(KeyboardEntity.serializer(), it)
-                            )
-                        }, {
-                            cv.putNull(
-                                MessagesColumns.KEYBOARD
-                            )
-                        })
                         val where = MessagesColumns._ID + " = ?"
                         val args = arrayOf(messageId.toString())
                         operations.add(
@@ -435,13 +419,46 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             val uri = getMessageContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(patches.size)
             for (patch in patches) {
-                val cv = ContentValues()
-                if (patch.deletion != null) {
-                    cv.put(MessagesColumns.DELETED, patch.deletion?.deleted == true)
-                    cv.put(MessagesColumns.DELETED_FOR_ALL, patch.deletion?.deletedForAll == true)
+                patch.reaction.requireNonNull { to ->
+                    val cv = ContentValues()
+
+                    if (!to.keepMyReaction) {
+                        cv.put(MessagesColumns.REACTION_ID, to.reactionId)
+                    }
+                    to.reactions.ifNonNullNoEmpty({
+                        cv.put(
+                            MessagesColumns.REACTIONS,
+                            MsgPack.encodeToByteArrayEx(
+                                ListSerializer(ReactionEntity.serializer()),
+                                it
+                            )
+                        )
+                    }, {
+                        cv.putNull(
+                            MessagesColumns.REACTIONS
+                        )
+                    })
+
+                    if (cv.size() > 0) {
+                        operations.add(
+                            ContentProviderOperation.newUpdate(uri)
+                                .withValues(cv)
+                                .withSelection(
+                                    MessagesColumns.PEER_ID + " = ? AND " + MessagesColumns.CONVERSATION_MESSAGE_ID + " = ?",
+                                    arrayOf(patch.peerId.toString(), patch.messageId.toString())
+                                )
+                                .build()
+                        )
+                    }
                 }
-                if (patch.important != null) {
-                    cv.put(MessagesColumns.IMPORTANT, patch.important?.important == true)
+
+                val cv = ContentValues()
+                patch.deletion.requireNonNull {
+                    cv.put(MessagesColumns.DELETED, it.deleted)
+                    cv.put(MessagesColumns.DELETED_FOR_ALL, it.deletedForAll)
+                }
+                patch.important.requireNonNull {
+                    cv.put(MessagesColumns.IMPORTANT, it.important)
                 }
                 if (cv.size() == 0) continue
                 operations.add(
@@ -813,7 +830,19 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                     MessagesColumns.KEYBOARD
                 )
             })
+            dbo.reactions.ifNonNull({
+                cv.put(
+                    MessagesColumns.REACTIONS,
+                    MsgPack.encodeToByteArrayEx(ListSerializer(ReactionEntity.serializer()), it)
+                )
+            }, {
+                cv.putNull(
+                    MessagesColumns.REACTIONS
+                )
+            })
             cv.put(MessagesColumns.UPDATE_TIME, dbo.updateTime)
+            cv.put(MessagesColumns.CONVERSATION_MESSAGE_ID, dbo.conversation_message_id)
+            cv.put(MessagesColumns.REACTION_ID, dbo.reaction_id)
             cv.put(MessagesColumns.PAYLOAD, dbo.payload)
             val uri = getMessageContentUriFor(accountId)
             val builder = ContentProviderOperation.newInsert(uri)
@@ -857,6 +886,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             val fromId = cursor.getLong(MessagesColumns.FROM_ID)
             var extras: Map<Int, String>? = null
             var keyboard: KeyboardEntity? = null
+            var reactions: List<ReactionEntity>? = null
             val extrasText = cursor.getBlob(MessagesColumns.EXTRAS)
             if (extrasText.nonNullNoEmpty()) {
                 extras = MsgPack.decodeFromByteArrayEx(
@@ -870,6 +900,15 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                 cursor.getBlob(MessagesColumns.KEYBOARD)
             if (keyboardText.nonNullNoEmpty()) {
                 keyboard = MsgPack.decodeFromByteArrayEx(KeyboardEntity.serializer(), keyboardText)
+            }
+
+            val reactionText =
+                cursor.getBlob(MessagesColumns.REACTIONS)
+            if (reactionText.nonNullNoEmpty()) {
+                reactions = MsgPack.decodeFromByteArrayEx(
+                    ListSerializer(ReactionEntity.serializer()),
+                    reactionText
+                )
             }
             return MessageDboEntity().set(id, peerId, fromId)
                 .setEncrypted(cursor.getBoolean(MessagesColumns.ENCRYPTED))
@@ -895,8 +934,11 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                 .setPhoto200(cursor.getString(MessagesColumns.PHOTO_200))
                 .setRandomId(cursor.getLong(MessagesColumns.RANDOM_ID))
                 .setUpdateTime(cursor.getLong(MessagesColumns.UPDATE_TIME))
+                .setConversationMessageId(cursor.getInt(MessagesColumns.CONVERSATION_MESSAGE_ID))
+                .setReactionId(cursor.getInt(MessagesColumns.REACTION_ID))
                 .setPayload(cursor.getString(MessagesColumns.PAYLOAD))
                 .setKeyboard(keyboard)
+                .setReactions(reactions)
         }
     }
 }

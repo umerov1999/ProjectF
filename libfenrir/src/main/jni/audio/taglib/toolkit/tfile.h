@@ -26,11 +26,11 @@
 #ifndef TAGLIB_FILE_H
 #define TAGLIB_FILE_H
 
+#include "tbytevector.h"
+#include "tiostream.h"
 #include "taglib_export.h"
 #include "taglib.h"
 #include "tag.h"
-#include "tbytevector.h"
-#include "tiostream.h"
 
 namespace TagLib {
 
@@ -66,8 +66,8 @@ namespace TagLib {
      * Specify which tags to strip either explicitly, or on save.
      */
     enum StripTags {
-      StripNone,  //<! Don't strip any tags
-      StripOthers //<! Strip all tags not explicitly referenced in method call
+      StripNone,  //!< Don't strip any tags
+      StripOthers //!< Strip all tags not explicitly referenced in method call
     };
 
     /*!
@@ -75,8 +75,8 @@ namespace TagLib {
      * types should be synchronized.
      */
     enum DuplicateTags {
-      Duplicate,     //<! Synchronize values between different tag types
-      DoNotDuplicate //<! Do not synchronize values between different tag types
+      Duplicate,     //!< Synchronize values between different tag types
+      DoNotDuplicate //!< Do not synchronize values between different tag types
     };
 
     /*!

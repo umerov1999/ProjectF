@@ -16,6 +16,8 @@ class MessageDboEntity : DboEntity() {
         private set
     var date: Long = 0
         private set
+    var conversation_message_id = 0
+        private set
     var isOut = false
         private set
     var body: String? = null
@@ -33,6 +35,10 @@ class MessageDboEntity : DboEntity() {
     var isHasAttachments = false
         private set
     var keyboard: KeyboardEntity? = null
+        private set
+    var reactions: List<ReactionEntity>? = null
+        private set
+    var reaction_id = 0
         private set
 
     @MessageStatus
@@ -206,6 +212,21 @@ class MessageDboEntity : DboEntity() {
 
     fun setPayload(payload: String?): MessageDboEntity {
         this.payload = payload
+        return this
+    }
+
+    fun setReactionId(reaction_id: Int): MessageDboEntity {
+        this.reaction_id = reaction_id
+        return this
+    }
+
+    fun setReactions(reactions: List<ReactionEntity>?): MessageDboEntity {
+        this.reactions = reactions
+        return this
+    }
+
+    fun setConversationMessageId(conversation_message_id: Int): MessageDboEntity {
+        this.conversation_message_id = conversation_message_id
         return this
     }
 }

@@ -105,7 +105,7 @@ object NotificationHelper {
      */
     @SuppressLint("CheckResult")
     fun notifyNewMessage(context: Context, accountId: Long, message: Message) {
-        if (Settings.get().other().isDisable_notifications) return
+        if (Settings.get().main().isDisable_notifications) return
         ChatEntryFetcher.getRx(context, accountId, accountId)
             .subscribeOn(NotificationScheduler.INSTANCE)
             .subscribe({ account ->

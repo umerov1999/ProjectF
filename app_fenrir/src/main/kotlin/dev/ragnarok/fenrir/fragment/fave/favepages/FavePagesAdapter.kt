@@ -41,7 +41,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val favePage = data[position]
-        if (Settings.get().other().isMention_fave) {
+        if (Settings.get().main().isMention_fave) {
             holder.itemView.setOnLongClickListener {
                 if (favePage.getOwnerObjectId() >= 0) {
                     favePage.owner?.let { it1 -> clickListener?.onMention(it1) }
@@ -60,7 +60,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
         holder.ivVerified.visibility =
             if (favePage.owner?.isVerified == true) View.VISIBLE else View.GONE
 
-        if (Settings.get().other()
+        if (Settings.get().main()
                 .isOwnerInChangesMonitor(favePage.owner?.ownerId ?: favePage.getOwnerObjectId())
         ) {
             holder.ivMonitor.visibility = View.VISIBLE
@@ -197,7 +197,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
         }
 
         init {
-            if (!Settings.get().other().isMention_fave) {
+            if (!Settings.get().main().isMention_fave) {
                 itemView.setOnCreateContextMenuListener(this)
             }
             ivOnline = itemView.findViewById(R.id.header_navi_menu_online)

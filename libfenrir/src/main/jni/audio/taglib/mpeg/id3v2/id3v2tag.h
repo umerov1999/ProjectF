@@ -26,13 +26,12 @@
 #ifndef TAGLIB_ID3V2TAG_H
 #define TAGLIB_ID3V2TAG_H
 
-#include "tag.h"
 #include "tbytevector.h"
 #include "tstring.h"
 #include "tlist.h"
 #include "tmap.h"
 #include "taglib_export.h"
-
+#include "tag.h"
 #include "id3v2.h"
 #include "id3v2framefactory.h"
 
@@ -45,8 +44,8 @@ namespace TagLib {
     class Header;
     class ExtendedHeader;
 
-    typedef List<Frame *> FrameList;
-    typedef Map<ByteVector, FrameList> FrameListMap;
+    using FrameList = List<Frame *>;
+    using FrameListMap = Map<ByteVector, FrameList>;
 
     //! An abstraction for the ISO-8859-1 string to data encoding in ID3v2 tags.
 

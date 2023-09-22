@@ -180,7 +180,7 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
             photos,
             position,
             false,
-            Settings.get().other().isInvertPhotoRev
+            Settings.get().main().isInvertPhotoRev
         )
             .tryOpenWith(requireActivity())
     }

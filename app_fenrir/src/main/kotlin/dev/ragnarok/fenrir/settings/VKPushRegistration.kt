@@ -18,19 +18,19 @@ class VKPushRegistration {
         private set
 
     @SerialName("gmcToken")
-    lateinit var gmcToken: String
+    lateinit var fcmToken: String
         private set
 
     operator fun set(
         userId: Long,
         deviceId: String,
         vkToken: String,
-        gmcToken: String
+        fcmToken: String
     ): VKPushRegistration {
         this.userId = userId
         this.deviceId = deviceId
         this.vkToken = vkToken
-        this.gmcToken = gmcToken
+        this.fcmToken = fcmToken
         return this
     }
 }

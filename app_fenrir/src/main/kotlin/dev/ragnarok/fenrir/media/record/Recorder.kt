@@ -122,6 +122,6 @@ class Recorder(val filePath: String, val context: Context) {
             get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
         val isOpusSupported: Boolean
             get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Settings.get()
-                .other().isRecording_to_opus
+                .main().isRecording_to_opus
     }
 }

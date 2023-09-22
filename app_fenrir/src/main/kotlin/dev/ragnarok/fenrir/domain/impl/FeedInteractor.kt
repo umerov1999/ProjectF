@@ -18,11 +18,14 @@ import dev.ragnarok.fenrir.domain.mappers.Entity2Model.fillOwnerIds
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
 import dev.ragnarok.fenrir.fragment.search.options.SimpleDateOption
 import dev.ragnarok.fenrir.fragment.search.options.SimpleGPSOption
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.FeedList
+import dev.ragnarok.fenrir.model.FeedSourceCriteria
+import dev.ragnarok.fenrir.model.News
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.criteria.FeedCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import dev.ragnarok.fenrir.settings.ISettings.IOtherSettings
-import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
@@ -33,7 +36,7 @@ import java.util.Locale
 class FeedInteractor(
     private val networker: INetworker,
     private val stores: IStorages,
-    private val otherSettings: IOtherSettings,
+    private val mainSettings: ISettings.IMainSettings,
     private val ownersRepository: IOwnersRepository
 ) : IFeedInteractor {
     private fun containInWords(rgx: Set<String>?, dto: VKApiNews): Boolean {
@@ -121,8 +124,8 @@ class FeedInteractor(
                     stores.feed()
                         .store(accountId, dbos, ownerEntities, startFrom.isNullOrEmpty())
                         .flatMap {
-                            otherSettings.storeFeedNextFrom(accountId, nextFrom)
-                            otherSettings.setFeedSourceIds(accountId, sourceIds)
+                            mainSettings.storeFeedNextFrom(accountId, nextFrom)
+                            mainSettings.setFeedSourceIds(accountId, sourceIds)
                             ownersRepository.findBaseOwnersDataAsBundle(
                                 accountId,
                                 ownIds.all,
@@ -153,9 +156,9 @@ class FeedInteractor(
                     ).contains(sourceIds)
                 ) null else sourceIds, startFrom, count, Fields.FIELDS_BASE_OWNER]
                     .flatMap { response ->
-                        val blockAds = Settings.get().other().isAd_block_story_news
-                        val needStripRepost = Settings.get().other().isStrip_news_repost
-                        val rgx = Settings.get().other().isBlock_news_by_words
+                        val blockAds = mainSettings.isAd_block_story_news
+                        val needStripRepost = mainSettings.isStrip_news_repost
+                        val rgx = mainSettings.isBlock_news_by_words
                         val nextFrom = response.nextFrom
                         val owners = transformOwners(response.profiles, response.groups)
                         val feed = listEmptyIfNull(response.items)
@@ -176,8 +179,8 @@ class FeedInteractor(
                         stores.feed()
                             .store(accountId, dbos, ownerEntities, startFrom.isNullOrEmpty())
                             .flatMap {
-                                otherSettings.storeFeedNextFrom(accountId, nextFrom)
-                                otherSettings.setFeedSourceIds(accountId, sourceIds)
+                                mainSettings.storeFeedNextFrom(accountId, nextFrom)
+                                mainSettings.setFeedSourceIds(accountId, sourceIds)
                                 ownersRepository.findBaseOwnersDataAsBundle(
                                     accountId,
                                     ownIds.all,

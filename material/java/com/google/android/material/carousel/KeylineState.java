@@ -45,9 +45,9 @@ import java.util.List;
  * <p>Keylines can be either focal or non-focal. A focal keyline is a keyline where items are
  * considered visible or interactable in their fullest form. This usually means where items will be
  * fully unmaksed and viewable. There must be at least one focal keyline in a KeylineState. The
- * focal keylines are important for usability and alignment. Start-aligned strategies should
- * place focal keylines at the beginning of the scroll container, center-aligned strategies at
- * the center of the scroll container, etc.
+ * focal keylines are important for usability and alignment. Start-aligned strategies should place
+ * focal keylines at the beginning of the scroll container, center-aligned strategies at the center
+ * of the scroll container, etc.
  */
 final class KeylineState {
 
@@ -126,7 +126,7 @@ final class KeylineState {
   /** Returns the last non-anchor keyline. */
   @Nullable
   Keyline getLastNonAnchorKeyline() {
-    for (int i = keylines.size()-1; i >= 0; i--) {
+    for (int i = keylines.size() - 1; i >= 0; i--) {
       Keyline keyline = keylines.get(i);
       if (!keyline.isAnchor) {
         return keyline;
@@ -186,16 +186,19 @@ final class KeylineState {
     KeylineState.Builder builder =
         new KeylineState.Builder(keylineState.getItemSize(), availableSpace);
 
+    // The new start offset should now be the same distance from the left of the carousel container
+    // as the last item's right was from the right of the container.
     float start =
-        keylineState.getFirstKeyline().locOffset
-            - (keylineState.getFirstKeyline().maskedItemSize / 2F);
+        availableSpace
+            - keylineState.getLastKeyline().locOffset
+            - (keylineState.getLastKeyline().maskedItemSize / 2F);
     for (int i = keylineState.getKeylines().size() - 1; i >= 0; i--) {
       Keyline k = keylineState.getKeylines().get(i);
       float offset = start + (k.maskedItemSize / 2F);
       boolean isFocal =
           i >= keylineState.getFirstFocalKeylineIndex()
               && i <= keylineState.getLastFocalKeylineIndex();
-      builder.addKeyline(offset, k.mask, k.maskedItemSize, isFocal);
+      builder.addKeyline(offset, k.mask, k.maskedItemSize, isFocal, k.isAnchor);
       start += k.maskedItemSize;
     }
 
@@ -242,7 +245,6 @@ final class KeylineState {
     private float lastKeylineMaskedSize = 0F;
 
     private int latestAnchorKeylineIndex = NO_INDEX;
-
 
     /**
      * Creates a new {@link KeylineState.Builder}.
@@ -336,8 +338,7 @@ final class KeylineState {
       }
       if (isAnchor) {
         if (isFocal) {
-          throw new IllegalArgumentException(
-              "Anchor keylines cannot be focal.");
+          throw new IllegalArgumentException("Anchor keylines cannot be focal.");
         }
         if (latestAnchorKeylineIndex != NO_INDEX && latestAnchorKeylineIndex != 0) {
           throw new IllegalArgumentException(
@@ -419,8 +420,8 @@ final class KeylineState {
       // Calculate if the item will be cut off on either side. Currently we do not support an item
       // cut off on both sides as we do not not support that use case. If an item is cut off on both
       // sides, only the end cutoff will be included in the cutoff.
-      float keylineStart = offsetLoc - maskedItemSize/2F;
-      float keylineEnd = offsetLoc + maskedItemSize/2F;
+      float keylineStart = offsetLoc - maskedItemSize / 2F;
+      float keylineEnd = offsetLoc + maskedItemSize / 2F;
       if (keylineEnd > availableSpace) {
         cutoff = Math.abs(keylineEnd - max(keylineEnd - maskedItemSize, availableSpace));
       } else if (keylineStart < 0) {
@@ -434,9 +435,9 @@ final class KeylineState {
      * Adds an anchor keyline along the scrolling axis where an object should be masked by the given
      * {@code mask} and positioned at {@code offsetLoc}.
      *
-     * <p>Anchor keylines are keylines that are added to increase motion of carousel items going
-     * out of bounds of the carousel, and are 'anchored' (ie. does not shift). These keylines must
-     * be at the start or end of all keylines.
+     * <p>Anchor keylines are keylines that are added to increase motion of carousel items going out
+     * of bounds of the carousel, and are 'anchored' (ie. does not shift). These keylines must be at
+     * the start or end of all keylines.
      *
      * <p>Note that calls to {@link #addKeyline(float, float, float, boolean)} and {@link
      * #addKeylineRange(float, float, float, int)} are added in order. This method should be called

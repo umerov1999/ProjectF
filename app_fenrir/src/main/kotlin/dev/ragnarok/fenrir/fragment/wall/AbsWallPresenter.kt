@@ -454,10 +454,10 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     fun fireToggleMonitor() {
-        if (Settings.get().other().isOwnerInChangesMonitor(ownerId)) {
-            Settings.get().other().removeOwnerInChangesMonitor(ownerId)
+        if (Settings.get().main().isOwnerInChangesMonitor(ownerId)) {
+            Settings.get().main().removeOwnerInChangesMonitor(ownerId)
         } else {
-            Settings.get().other().putOwnerInChangesMonitor(ownerId)
+            Settings.get().main().putOwnerInChangesMonitor(ownerId)
         }
     }
 
@@ -478,7 +478,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         netCompositeDisposable.clear()
         cacheCompositeDisposable.clear()
         requestWall(0)
-        if (!Settings.get().other().isDisable_history) {
+        if (!Settings.get().main().isDisable_history) {
             appendDisposable(storiesInteractor.getStories(
                 accountId,
                 if (accountId == ownerId) null else ownerId
@@ -575,7 +575,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     fun fireLikeClick(post: Post) {
-        if (Settings.get().other().isDisable_likes || isHiddenAccount(accountId)) {
+        if (Settings.get().main().isDisable_likes || isHiddenAccount(accountId)) {
             return
         }
         appendDisposable(walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
@@ -703,7 +703,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     private fun doUploadStoryFile(context: Context, file: String) {
-        for (i in Settings.get().other().photoExt) {
+        for (i in Settings.get().main().photoExt) {
             if (file.endsWith(i, true)) {
                 Uri.fromFile(
                     File(
@@ -713,7 +713,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
                 return
             }
         }
-        for (i in Settings.get().other().videoExt) {
+        for (i in Settings.get().main().videoExt) {
             if (file.endsWith(i, true)) {
                 doUploadStoryFile(
                     file,
@@ -952,7 +952,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         ownersRepository = owners
         storiesInteractor = InteractorFactory.createStoriesInteractor()
         loadWallCachedData()
-        if (!Settings.get().other().isDisable_history) {
+        if (!Settings.get().main().isDisable_history) {
             appendDisposable(storiesInteractor.getStories(
                 accountId,
                 if (accountId == ownerId) null else ownerId

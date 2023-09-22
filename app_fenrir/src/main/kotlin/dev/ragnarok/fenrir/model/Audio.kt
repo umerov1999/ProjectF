@@ -121,7 +121,7 @@ class Audio : AbsModel {
      */
     fun needRefresh(): Pair<Boolean, Boolean> {
         val empty_url = url.isNullOrEmpty()
-        val refresh_old = get().other().isUse_api_5_90_for_audio
+        val refresh_old = get().main().isUse_api_5_90_for_audio
         return Pair(empty_url || refresh_old && isHLS, refresh_old)
     }
 

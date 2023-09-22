@@ -8,6 +8,7 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.db.column.AudiosColumns
 import dev.ragnarok.fenrir.db.column.LogsColumns
+import dev.ragnarok.fenrir.db.column.ReactionsColumns
 import dev.ragnarok.fenrir.db.column.SearchRequestColumns
 import dev.ragnarok.fenrir.db.column.ShortcutsColumns
 import dev.ragnarok.fenrir.db.column.StickerSetsColumns
@@ -32,6 +33,19 @@ class TempDataHelper(context: Context) :
         createStickerSetsTable(db)
         createStickerSetsCustomTable(db)
         createStickersKeywordsTable(db)
+        createReactionAssetsTable(db)
+    }
+
+    private fun createReactionAssetsTable(db: SQLiteDatabase) {
+        val sql = "CREATE TABLE IF NOT EXISTS [" + ReactionsColumns.TABLENAME + "] (\n" +
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + ReactionsColumns.REACTION_ID + "] INTEGER, " +
+                " [" + ReactionsColumns.ACCOUNT_ID + "] INTEGER, " +
+                " [" + ReactionsColumns.STATIC + "] TEXT, " +
+                " [" + ReactionsColumns.SMALL_ANIMATION + "] TEXT, " +
+                " [" + ReactionsColumns.BIG_ANIMATION + "] TEXT, " +
+                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+        db.execSQL(sql)
     }
 
     private fun createStickerSetsTable(db: SQLiteDatabase) {
@@ -76,84 +90,82 @@ class TempDataHelper(context: Context) :
 
     private fun createTmpDataTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE IF NOT EXISTS [" + TempDataColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + TempDataColumns.OWNER_ID + "] INTEGER, " +
-                "  [" + TempDataColumns.SOURCE_ID + "] INTEGER, " +
-                "  [" + TempDataColumns.DATA + "] BLOB, " +
-                "  CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + TempDataColumns.OWNER_ID + "] INTEGER, " +
+                " [" + TempDataColumns.SOURCE_ID + "] INTEGER, " +
+                " [" + TempDataColumns.DATA + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createSearchRequestTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE IF NOT EXISTS [" + SearchRequestColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + SearchRequestColumns.SOURCE_ID + "] INTEGER, " +
-                "  [" + SearchRequestColumns.QUERY + "] TEXT, " +
-                "  CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + SearchRequestColumns.SOURCE_ID + "] INTEGER, " +
+                " [" + SearchRequestColumns.QUERY + "] TEXT, " +
+                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createShortcutsColumn(db: SQLiteDatabase) {
         val sql = "CREATE TABLE IF NOT EXISTS [" + ShortcutsColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + ShortcutsColumns.ACTION + "] TEXT, " +
-                "  [" + ShortcutsColumns.COVER + "] TEXT, " +
-                "  [" + ShortcutsColumns.NAME + "] TEXT, " +
-                "  CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + ShortcutsColumns.ACTION + "] TEXT, " +
+                " [" + ShortcutsColumns.COVER + "] TEXT, " +
+                " [" + ShortcutsColumns.NAME + "] TEXT, " +
+                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createLogsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE IF NOT EXISTS [" + LogsColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + LogsColumns.TYPE + "] INTEGER, " +
-                "  [" + LogsColumns.DATE + "] INTEGER, " +
-                "  [" + LogsColumns.TAG + "] TEXT, " +
-                "  [" + LogsColumns.BODY + "] TEXT, " +
-                "  CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + LogsColumns.TYPE + "] INTEGER, " +
+                " [" + LogsColumns.DATE + "] INTEGER, " +
+                " [" + LogsColumns.TAG + "] TEXT, " +
+                " [" + LogsColumns.BODY + "] TEXT, " +
+                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createAudiosTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE IF NOT EXISTS [" + AudiosColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + AudiosColumns.SOURCE_OWNER_ID + "] INTEGER, " +
-                "  [" + AudiosColumns.AUDIO_ID + "] INTEGER, " +
-                "  [" + AudiosColumns.AUDIO_OWNER_ID + "] INTEGER, " +
-                "  [" + AudiosColumns.ARTIST + "] TEXT, " +
-                "  [" + AudiosColumns.TITLE + "] TEXT, " +
-                "  [" + AudiosColumns.DURATION + "] INTEGER, " +
-                "  [" + AudiosColumns.URL + "] TEXT, " +
-                "  [" + AudiosColumns.LYRICS_ID + "] INTEGER, " +
-                "  [" + AudiosColumns.DATE + "] INTEGER, " +
-                "  [" + AudiosColumns.ALBUM_ID + "] INTEGER, " +
-                "  [" + AudiosColumns.ALBUM_OWNER_ID + "] INTEGER, " +
-                "  [" + AudiosColumns.ALBUM_ACCESS_KEY + "] TEXT, " +
-                "  [" + AudiosColumns.GENRE + "] INTEGER, " +
-                "  [" + AudiosColumns.DELETED + "] BOOLEAN, " +
-                "  [" + AudiosColumns.ACCESS_KEY + "] TEXT, " +
-                "  [" + AudiosColumns.THUMB_IMAGE_BIG + "] TEXT, " +
-                "  [" + AudiosColumns.THUMB_IMAGE_VERY_BIG + "] TEXT, " +
-                "  [" + AudiosColumns.THUMB_IMAGE_LITTLE + "] TEXT, " +
-                "  [" + AudiosColumns.ALBUM_TITLE + "] TEXT, " +
-                "  [" + AudiosColumns.MAIN_ARTISTS + "] BLOB, " +
-                "  [" + AudiosColumns.IS_HQ + "] BOOLEAN, " +
-                "  CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + AudiosColumns.SOURCE_OWNER_ID + "] INTEGER, " +
+                " [" + AudiosColumns.AUDIO_ID + "] INTEGER, " +
+                " [" + AudiosColumns.AUDIO_OWNER_ID + "] INTEGER, " +
+                " [" + AudiosColumns.ARTIST + "] TEXT, " +
+                " [" + AudiosColumns.TITLE + "] TEXT, " +
+                " [" + AudiosColumns.DURATION + "] INTEGER, " +
+                " [" + AudiosColumns.URL + "] TEXT, " +
+                " [" + AudiosColumns.LYRICS_ID + "] INTEGER, " +
+                " [" + AudiosColumns.DATE + "] INTEGER, " +
+                " [" + AudiosColumns.ALBUM_ID + "] INTEGER, " +
+                " [" + AudiosColumns.ALBUM_OWNER_ID + "] INTEGER, " +
+                " [" + AudiosColumns.ALBUM_ACCESS_KEY + "] TEXT, " +
+                " [" + AudiosColumns.GENRE + "] INTEGER, " +
+                " [" + AudiosColumns.DELETED + "] BOOLEAN, " +
+                " [" + AudiosColumns.ACCESS_KEY + "] TEXT, " +
+                " [" + AudiosColumns.THUMB_IMAGE_BIG + "] TEXT, " +
+                " [" + AudiosColumns.THUMB_IMAGE_VERY_BIG + "] TEXT, " +
+                " [" + AudiosColumns.THUMB_IMAGE_LITTLE + "] TEXT, " +
+                " [" + AudiosColumns.ALBUM_TITLE + "] TEXT, " +
+                " [" + AudiosColumns.MAIN_ARTISTS + "] BLOB, " +
+                " [" + AudiosColumns.IS_HQ + "] BOOLEAN, " +
+                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     fun clear() {
         val db = writableDatabase
-        db.execSQL("DROP TABLE IF EXISTS " + TempDataColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + SearchRequestColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + AudiosColumns.TABLENAME)
-        onCreate(db)
+        db.execSQL("DELETE FROM " + TempDataColumns.TABLENAME)
+        db.execSQL("DELETE FROM " + SearchRequestColumns.TABLENAME)
+        db.execSQL("DELETE FROM " + AudiosColumns.TABLENAME)
     }
 
     fun clearLogs() {
         val db = writableDatabase
-        db.execSQL("DROP TABLE IF EXISTS " + LogsColumns.TABLENAME)
-        onCreate(db)
+        db.execSQL("DELETE FROM " + LogsColumns.TABLENAME)
     }
 
     private fun purge(db: SQLiteDatabase) {
@@ -165,6 +177,7 @@ class TempDataHelper(context: Context) :
         db.execSQL("DROP TABLE IF EXISTS " + StickerSetsColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + StickerSetsCustomColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + StickersKeywordsColumns.TABLENAME)
+        db.execSQL("DROP TABLE IF EXISTS " + ReactionsColumns.TABLENAME)
         onCreate(db)
     }
 

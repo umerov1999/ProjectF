@@ -115,6 +115,7 @@ renderer::Composition::Composition(std::shared_ptr<model::Composition> model)
 void renderer::Composition::setValue(const std::string &keypath,
                                      LOTVariant &       value)
 {
+    mHasDynamicValue = true;
     LOTKeyPath key(keypath);
     mRootLayer->resolveKeyPath(key, 0, value);
 }
@@ -122,7 +123,7 @@ void renderer::Composition::setValue(const std::string &keypath,
 bool renderer::Composition::update(int frameNo, const VSize &size)
 {
     // check if cached frame is same as requested frame.
-    if ((mViewSize == size) && (mCurFrameNo == frameNo))
+    if (!mHasDynamicValue && (mViewSize == size) && (mCurFrameNo == frameNo))
         return false;
 
     mViewSize = size;

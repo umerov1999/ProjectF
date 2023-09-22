@@ -26,9 +26,9 @@
 #ifndef TAGLIB_IOSTREAM_H
 #define TAGLIB_IOSTREAM_H
 
+#include "tbytevector.h"
 #include "taglib_export.h"
 #include "taglib.h"
-#include "tbytevector.h"
 
 namespace TagLib {
 
@@ -51,7 +51,7 @@ namespace TagLib {
     const std::wstring m_wname;
   };
 #else
-  typedef const char *FileName;
+  using FileName = const char *;
 #endif
 
   //! An abstract class that provides operations on a sequence of bytes

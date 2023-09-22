@@ -11,7 +11,6 @@ class SaveMessageBuilder(private val accountId: Long, private val peerId: Long) 
     private var requireEncryption = false
     private var draftMessageId: Int? = null
     private var payload: String? = null
-    private var keyboard: Keyboard? = null
 
     @KeyLocationPolicy
     private var keyLocationPolicy: Int
@@ -40,15 +39,6 @@ class SaveMessageBuilder(private val accountId: Long, private val peerId: Long) 
 
     fun attach(attachment: AbsModel): SaveMessageBuilder {
         prepareAttachments(1).add(attachment)
-        return this
-    }
-
-    fun getKeyboard(): Keyboard? {
-        return keyboard
-    }
-
-    fun setKeyboard(keyboard: Keyboard?): SaveMessageBuilder {
-        this.keyboard = keyboard
         return this
     }
 

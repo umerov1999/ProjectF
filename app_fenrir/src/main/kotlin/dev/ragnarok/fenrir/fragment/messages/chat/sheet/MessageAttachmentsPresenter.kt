@@ -231,7 +231,7 @@ class MessageAttachmentsPresenter(
     }
 
     private fun doUploadFile(context: Context, file: String) {
-        for (i in Settings.get().other().photoExt) {
+        for (i in Settings.get().main().photoExt) {
             if (file.endsWith(i, true)) {
                 val size = Settings.get()
                     .main()
@@ -256,7 +256,7 @@ class MessageAttachmentsPresenter(
                 return
             }
         }
-        for (i in Settings.get().other().videoExt) {
+        for (i in Settings.get().main().videoExt) {
             if (file.endsWith(i, true)) {
                 doUploadFile(
                     file,
@@ -266,7 +266,7 @@ class MessageAttachmentsPresenter(
                 return
             }
         }
-        for (i in Settings.get().other().audioExt) {
+        for (i in Settings.get().main().audioExt) {
             if (file.endsWith(i, true)) {
                 doUploadFile(
                     file,

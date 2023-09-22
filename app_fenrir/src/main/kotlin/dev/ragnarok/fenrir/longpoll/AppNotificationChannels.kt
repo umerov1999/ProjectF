@@ -199,7 +199,7 @@ object AppNotificationChannels {
     }
 
     private fun makeChannelId(id: String): String {
-        val ch = Settings.get().other().customChannelNotif
+        val ch = Settings.get().main().customChannelNotif
         return if (ch == 0) {
             id
         } else id + "_" + ch
@@ -209,7 +209,7 @@ object AppNotificationChannels {
     fun invalidateSoundChannels(context: Context) {
         val nManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-        Settings.get().other().customChannelNotif
+        Settings.get().main().customChannelNotif
         nManager?.deleteNotificationChannel(chatMessageChannelId)
         nManager?.deleteNotificationChannel(groupChatMessageChannelId)
         nManager?.deleteNotificationChannel(likesChannelId)
@@ -219,6 +219,6 @@ object AppNotificationChannels {
         nManager?.deleteNotificationChannel(groupInvitesChannelId)
         nManager?.deleteNotificationChannel(friendRequestsChannelId)
         nManager?.deleteNotificationChannel(birthdaysChannelId)
-        Settings.get().other().nextCustomChannelNotif()
+        Settings.get().main().nextCustomChannelNotif()
     }
 }

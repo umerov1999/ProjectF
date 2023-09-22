@@ -25,18 +25,15 @@
 
 #include "popularimeterframe.h"
 
-#include "tdebug.h"
-
 using namespace TagLib;
 using namespace ID3v2;
 
 class PopularimeterFrame::PopularimeterFramePrivate
 {
 public:
-  PopularimeterFramePrivate() : rating(0), counter(0) {}
   String email;
-  int rating;
-  unsigned int counter;
+  int rating { 0 };
+  unsigned int counter { 0 };
 };
 
 ////////////////////////////////////////////////////////////////////////////////

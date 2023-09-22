@@ -160,7 +160,7 @@ class MusicPlaybackService : Service() {
         mNotificationHelper = NotificationHelper(this)
         setUpRemoteControlClient()
 
-        IDLE_DELAY = Settings.get().other().musicLifecycle
+        IDLE_DELAY = Settings.get().main().musicLifecycle
 
         mPlayer = MultiPlayer(this)
         val filter = IntentFilter()
@@ -546,7 +546,7 @@ class MusicPlaybackService : Service() {
                 return
             }
 
-            if (Settings.get().other().isForce_cache && TrackIsDownloaded(audio) == 1)
+            if (Settings.get().main().isForce_cache && TrackIsDownloaded(audio) == 1)
                 audio.setUrl(GetLocalTrackLink(audio))
             if (UpdateMeta) {
                 errorsCount = 0
@@ -961,7 +961,7 @@ class MusicPlaybackService : Service() {
         var mCurrentMediaPlayer: ExoPlayer = ExoPlayer.Builder(
             service, DefaultRenderersFactory(service)
                 .setExtensionRendererMode(
-                    when (Settings.get().other().fFmpegPlugin) {
+                    when (Settings.get().main().fFmpegPlugin) {
                         0 -> EXTENSION_RENDERER_MODE_OFF
                         1 -> EXTENSION_RENDERER_MODE_ON
                         2 -> EXTENSION_RENDERER_MODE_PREFER
@@ -1031,7 +1031,7 @@ class MusicPlaybackService : Service() {
                     audio
                 )
                 if (Settings.get()
-                        .other()
+                        .main()
                         .isAudioBroadcastActive
                 ) {
                     single = single.andThen(

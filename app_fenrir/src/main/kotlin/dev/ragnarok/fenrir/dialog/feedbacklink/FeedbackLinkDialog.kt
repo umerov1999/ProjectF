@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.dialog.feedbacklink
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.view.View
@@ -10,6 +11,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.getParcelableCompat
+import dev.ragnarok.fenrir.model.AbsModel
+import dev.ragnarok.fenrir.model.AbsModelType
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.Photo
@@ -17,15 +20,24 @@ import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.Topic
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.model.feedback.CommentFeedback
+import dev.ragnarok.fenrir.model.feedback.CopyFeedback
 import dev.ragnarok.fenrir.model.feedback.Feedback
+import dev.ragnarok.fenrir.model.feedback.FeedbackModelType
+import dev.ragnarok.fenrir.model.feedback.LikeCommentFeedback
+import dev.ragnarok.fenrir.model.feedback.LikeFeedback
+import dev.ragnarok.fenrir.model.feedback.MentionCommentFeedback
+import dev.ragnarok.fenrir.model.feedback.MentionFeedback
 import dev.ragnarok.fenrir.model.feedback.ParcelableFeedbackWrapper
+import dev.ragnarok.fenrir.model.feedback.PostPublishFeedback
+import dev.ragnarok.fenrir.model.feedback.ReplyCommentFeedback
+import dev.ragnarok.fenrir.model.feedback.UsersFeedback
 import dev.ragnarok.fenrir.place.PlaceFactory.getCommentsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getPostPreviewPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSimpleGalleryPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
-import java.lang.reflect.Field
 
 class FeedbackLinkDialog : DialogFragment(), FeedbackLinkAdapter.ActionListener {
     private var mFeedback: Feedback? = null
@@ -35,29 +47,53 @@ class FeedbackLinkDialog : DialogFragment(), FeedbackLinkAdapter.ActionListener 
         mFeedback = wrapper?.get()
     }
 
-    private fun getAllModels(notification: Feedback?): List<Any> {
+    @SuppressLint("SwitchIntDef")
+    private fun getAllModels(notification: Feedback?): List<AbsModel> {
         notification ?: return emptyList()
-        val models: MutableList<Any> = ArrayList()
-        val fields: MutableList<Field> = ArrayList()
-        fillClassFields(fields, notification.javaClass)
-        for (field in fields) {
-            field.isAccessible = true
-            try {
-                val o = field[notification]
-                if (o is List<*>) {
-                    for (listItem in o) {
-                        if (isSupport(listItem) && !models.contains(listItem)) {
-                            if (listItem != null) {
-                                models.add(listItem)
-                            }
-                        }
-                    }
-                }
-                if (o != null && isSupport(o) && !models.contains(o)) {
-                    models.add(o)
-                }
-            } catch (e: IllegalAccessException) {
-                e.printStackTrace()
+        val models: MutableList<AbsModel> = ArrayList()
+        when (notification.getModelType()) {
+            FeedbackModelType.MODEL_COMMENT_FEEDBACK -> {
+                addSupport(models, (notification as CommentFeedback).commentOf)
+                addSupport(models, notification.comment)
+            }
+
+            FeedbackModelType.MODEL_COPY_FEEDBACK -> {
+                addSupport(models, (notification as CopyFeedback).what)
+                addListSupport(models, notification.owners)
+            }
+
+            FeedbackModelType.MODEL_LIKECOMMENT_FEEDBACK -> {
+                addSupport(models, (notification as LikeCommentFeedback).liked)
+                addSupport(models, notification.commented)
+                addListSupport(models, notification.owners)
+            }
+
+            FeedbackModelType.MODEL_LIKE_FEEDBACK -> {
+                addSupport(models, (notification as LikeFeedback).liked)
+                addListSupport(models, notification.owners)
+            }
+
+            FeedbackModelType.MODEL_MENTIONCOMMENT_FEEDBACK -> {
+                addSupport(models, (notification as MentionCommentFeedback).where)
+                addSupport(models, notification.commentOf)
+            }
+
+            FeedbackModelType.MODEL_MENTION_FEEDBACK -> {
+                addSupport(models, (notification as MentionFeedback).where)
+            }
+
+            FeedbackModelType.MODEL_POSTPUBLISH_FEEDBACK -> {
+                addSupport(models, (notification as PostPublishFeedback).post)
+            }
+
+            FeedbackModelType.MODEL_REPLYCOMMENT_FEEDBACK -> {
+                addSupport(models, (notification as ReplyCommentFeedback).commentsOf)
+                addSupport(models, notification.ownComment)
+                addSupport(models, notification.feedbackComment)
+            }
+
+            FeedbackModelType.MODEL_USERS_FEEDBACK -> {
+                addListSupport(models, (notification as UsersFeedback).owners)
             }
         }
         return models
@@ -127,20 +163,40 @@ class FeedbackLinkDialog : DialogFragment(), FeedbackLinkAdapter.ActionListener 
             return feedbackLinkDialog
         }
 
-        internal fun fillClassFields(fields: MutableList<Field>, type: Class<*>) {
-            fields.addAll(listOf(*type.declaredFields))
-            if (type.superclass != null) {
-                fillClassFields(fields, type.superclass)
+        internal fun addSupport(models: MutableList<AbsModel>, o: AbsModel?) {
+            if (o == null) {
+                return
+            }
+            if (o.getModelType() == AbsModelType.MODEL_USER ||
+                o.getModelType() == AbsModelType.MODEL_POST ||
+                o.getModelType() == AbsModelType.MODEL_PHOTO ||
+                o.getModelType() == AbsModelType.MODEL_COMMENT ||
+                o.getModelType() == AbsModelType.MODEL_VIDEO ||
+                o.getModelType() == AbsModelType.MODEL_TOPIC
+            ) {
+                if (!models.contains(o)) {
+                    models.add(o)
+                }
             }
         }
 
-        internal fun isSupport(o: Any?): Boolean {
-            return o is User ||
-                    o is Post ||
-                    o is Photo ||
-                    o is Comment ||
-                    o is Video ||
-                    o is Topic
+        internal inline fun <reified T : AbsModel> addListSupport(
+            models: MutableList<AbsModel>,
+            o: List<T>?
+        ) {
+            for (i in o.orEmpty()) {
+                if (i.getModelType() == AbsModelType.MODEL_USER ||
+                    i.getModelType() == AbsModelType.MODEL_POST ||
+                    i.getModelType() == AbsModelType.MODEL_PHOTO ||
+                    i.getModelType() == AbsModelType.MODEL_COMMENT ||
+                    i.getModelType() == AbsModelType.MODEL_VIDEO ||
+                    i.getModelType() == AbsModelType.MODEL_TOPIC
+                ) {
+                    if (!models.contains(i)) {
+                        models.add(i)
+                    }
+                }
+            }
         }
     }
 }

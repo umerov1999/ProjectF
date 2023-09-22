@@ -206,7 +206,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         mControllerView = VideoControllerView(this)
         mSurfaceView = findViewById(R.id.videoSurface)
         mItemTimelineImage = findViewById(R.id.item_timeline_image)
-        if (Settings.get().other().isVideo_swipes) {
+        if (Settings.get().main().isVideo_swipes) {
             attach(
                 this,
                 SlidrConfig.Builder().setAlphaForView(false).fromUnColoredToColoredStatusBar(true)
@@ -281,7 +281,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
             )
         }
         mControllerView?.setMediaPlayer(this)
-        if (Settings.get().other().isVideo_controller_to_decor) {
+        if (Settings.get().main().isVideo_controller_to_decor) {
             mControllerView?.setAnchorView(mDecorView as ViewGroup?, true)
         } else {
             mControllerView?.setAnchorView(findViewById(R.id.panel), false)

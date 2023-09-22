@@ -85,7 +85,7 @@ class NewsFeedSearchPresenter(
     }
 
     fun fireLikeClick(post: Post) {
-        if (Settings.get().other().isDisable_likes || Utils.isHiddenAccount(
+        if (Settings.get().main().isDisable_likes || Utils.isHiddenAccount(
                 accountId
             )
         ) {

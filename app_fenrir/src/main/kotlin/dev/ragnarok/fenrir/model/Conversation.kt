@@ -75,7 +75,7 @@ class Conversation(private val id: Long) {
     fun getDisplayTitle(context: Context): String? {
         return when (Peer.getType(id)) {
             Peer.USER, Peer.GROUP -> {
-                val custom = get().other().getUserNameChanges(id)
+                val custom = get().main().getUserNameChanges(id)
                 if (custom.nonNullNoEmpty()) {
                     return custom
                 }
@@ -95,7 +95,7 @@ class Conversation(private val id: Long) {
     fun getDisplayTitle(): String? {
         return when (Peer.getType(id)) {
             Peer.USER, Peer.GROUP -> {
-                val custom = get().other().getUserNameChanges(id)
+                val custom = get().main().getUserNameChanges(id)
                 if (custom.nonNullNoEmpty()) {
                     return custom
                 }

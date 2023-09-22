@@ -51,8 +51,8 @@ template <class T>
 template <class TP> class List<T>::ListPrivate  : public ListPrivateBase
 {
 public:
-  ListPrivate() : ListPrivateBase() {}
-  ListPrivate(const std::list<TP> &l) : ListPrivateBase(), list(l) {}
+  using ListPrivateBase::ListPrivateBase;
+  ListPrivate(const std::list<TP> &l) : list(l) {}
   void clear() {
     list.clear();
   }
@@ -63,11 +63,11 @@ public:
 // setAutoDelete() functionality.
 
 template <class T>
-template <class TP> class List<T>::ListPrivate<TP *>  : public ListPrivateBase
+template <class TP> class List<T>::ListPrivate<TP *> : public ListPrivateBase
 {
 public:
-  ListPrivate() : ListPrivateBase() {}
-  ListPrivate(const std::list<TP *> &l) : ListPrivateBase(), list(l) {}
+  using ListPrivateBase::ListPrivateBase;
+  ListPrivate(const std::list<TP *> &l) : list(l) {}
   ~ListPrivate() {
     clear();
   }
@@ -94,9 +94,7 @@ List<T>::List() :
 }
 
 template <class T>
-List<T>::List(const List<T> &l) : d(l.d)
-{
-}
+List<T>::List(const List<T> &) = default;
 
 template <class T>
 List<T>::~List() = default;

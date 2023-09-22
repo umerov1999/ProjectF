@@ -157,7 +157,7 @@ class Dialog : IdentificableOwner, Parcelable {
     fun getDisplayTitle(context: Context): String? {
         return when (Peer.getType(peerId)) {
             Peer.USER, Peer.GROUP -> {
-                val custom = get().other().getUserNameChanges(peerId)
+                val custom = get().main().getUserNameChanges(peerId)
                 if (custom.nonNullNoEmpty()) {
                     return custom
                 }
@@ -177,7 +177,7 @@ class Dialog : IdentificableOwner, Parcelable {
     fun getDisplayTitle(): String? {
         return when (Peer.getType(peerId)) {
             Peer.USER, Peer.GROUP -> {
-                val custom = get().other().getUserNameChanges(peerId)
+                val custom = get().main().getUserNameChanges(peerId)
                 if (custom.nonNullNoEmpty()) {
                     return custom
                 }

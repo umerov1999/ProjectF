@@ -66,7 +66,7 @@ class VideosTabsFragment : BaseFragment(), MenuProvider {
         adapter.addFragment(VIDEOS)
         adapter.addFragment(ALBUMS)
         if (accountId == ownerId && Settings.get()
-                .other().localServer.enabled && !IVideosListView.ACTION_SELECT.equals(
+                .main().localServer.enabled && !IVideosListView.ACTION_SELECT.equals(
                 action,
                 ignoreCase = true
             )

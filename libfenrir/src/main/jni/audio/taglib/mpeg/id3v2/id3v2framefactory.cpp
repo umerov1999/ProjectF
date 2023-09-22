@@ -25,12 +25,13 @@
 
 #include "id3v2framefactory.h"
 
+#include <array>
+#include <utility>
+
 #include "tdebug.h"
 #include "tzlib.h"
-
 #include "id3v2synchdata.h"
 #include "id3v1genres.h"
-
 #include "frames/attachedpictureframe.h"
 #include "frames/commentsframe.h"
 #include "frames/relativevolumeframe.h"
@@ -49,8 +50,6 @@
 #include "frames/tableofcontentsframe.h"
 #include "frames/podcastframe.h"
 
-#include <array>
-
 using namespace TagLib;
 using namespace ID3v2;
 
@@ -61,8 +60,7 @@ namespace
     StringList fields = frame->fieldList();
     StringList newfields;
 
-    for(auto it = fields.cbegin(); it != fields.cend(); ++it) {
-      String s = *it;
+    for(auto s : std::as_const(fields)) {
       int offset = 0;
       int end = 0;
 
@@ -93,12 +91,8 @@ namespace
 class FrameFactory::FrameFactoryPrivate
 {
 public:
-  FrameFactoryPrivate() :
-    defaultEncoding(String::Latin1),
-    useDefaultEncoding(false) {}
-
-  String::Type defaultEncoding;
-  bool useDefaultEncoding;
+  String::Type defaultEncoding { String::Latin1 };
+  bool useDefaultEncoding { false };
 
   template <class T> void setTextEncoding(T *frame)
   {
@@ -147,7 +141,8 @@ std::pair<Frame::Header *, bool> FrameFactory::prepareFrameHeader(
   }
 #endif
 
-  if(std::any_of(frameID.begin(), frameID.end(), [](auto c) { return (c < 'A' || c > 'Z') && (c < '0' || c > '9'); })) {
+  if(std::any_of(frameID.cbegin(), frameID.cend(),
+      [](auto c) { return (c < 'A' || c > 'Z') && (c < '0' || c > '9'); })) {
     delete header;
     return { nullptr, false };
   }

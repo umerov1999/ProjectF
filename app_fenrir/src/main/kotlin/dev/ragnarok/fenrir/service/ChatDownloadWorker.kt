@@ -469,9 +469,9 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             var result_msgs = "<ul><#MESSAGE_LIST#></ul>"
             result_msgs = Apply("<#MESSAGE_LIST#>", msgs.toString(), result_msgs)
             main = Apply("<#MESSAGES#>", result_msgs, main)
-            CheckDirectory(Settings.get().other().docDir)
+            CheckDirectory(Settings.get().main().docDir)
             val html = File(
-                Settings.get().other().docDir, makeLegalFilename(
+                Settings.get().main().docDir, makeLegalFilename(
                     peer_title + "_" + DOWNLOAD_DATE_FORMAT.format(
                         Date()
                     ), "html"
@@ -581,9 +581,9 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     mBuilder.build()
                 )
             }
-            CheckDirectory(Settings.get().other().docDir)
+            CheckDirectory(Settings.get().main().docDir)
             val html = File(
-                Settings.get().other().docDir, makeLegalFilename(
+                Settings.get().main().docDir, makeLegalFilename(
                     peer_title + "_" + DOWNLOAD_DATE_FORMAT.format(
                         Date()
                     ), "json"

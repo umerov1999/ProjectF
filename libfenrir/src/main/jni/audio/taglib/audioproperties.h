@@ -26,9 +26,10 @@
 #ifndef TAGLIB_AUDIOPROPERTIES_H
 #define TAGLIB_AUDIOPROPERTIES_H
 
-#include "taglib_export.h"
-
 #include <memory>
+
+#include "taglib.h"
+#include "taglib_export.h"
 
 namespace TagLib {
 
@@ -77,6 +78,7 @@ namespace TagLib {
       *
       * \deprecated Use lengthInSeconds().
       */
+    TAGLIB_DEPRECATED
     virtual int length() const;
 
     /*!

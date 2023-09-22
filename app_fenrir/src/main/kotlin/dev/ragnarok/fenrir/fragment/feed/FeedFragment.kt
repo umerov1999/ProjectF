@@ -197,7 +197,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         // восстанавливаем из настроек последнее значение next_from, данные до которого
         // хранятся в базе данных
         mNextFrom = Settings.get()
-                .other()
+                .main()
                 .restoreFeedNextFrom(getAccountId());
 
         // загружаем все новости, которые сохранены в базу данных текущего аккаунта

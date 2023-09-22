@@ -568,7 +568,7 @@ class AudioContainer : LinearLayout {
         audios: ArrayList<Audio>
     ) {
         if (isNowPlayingOrPreparingOrPaused(audio)) {
-            if (!Settings.get().other().isUse_stop_audio) {
+            if (!Settings.get().main().isUse_stop_audio) {
                 updateAudioStatus(holder, audio)
                 playOrPause()
             } else {
@@ -587,8 +587,12 @@ class AudioContainer : LinearLayout {
         holderPosition: Int?
     ) {
         if (audios.isNullOrEmpty()) {
-            visibility = View.GONE
             dispose()
+
+            if (childCount > 0) {
+                removeAllViews()
+            }
+            visibility = View.GONE
             return
         }
         visibility = View.VISIBLE
@@ -601,133 +605,132 @@ class AudioContainer : LinearLayout {
             itemView.tag = holder
             addView(itemView)
         }
-        for (g in 0 until childCount) {
+        if (childCount > audios.size) {
+            removeViews(audios.size, childCount - audios.size)
+        }
+        for (g in audios.indices) {
             val root = getChildAt(g) as ViewGroup? ?: continue
-            if (g < audios.size) {
-                val check = root.tag as AudioHolder? ?: continue
-                val audio = audios[g]
-                check.tvTitle.text = audio.artist
-                check.tvSubtitle.text = audio.title
-                if (!audio.isLocal && !audio.isLocalServer && Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID && !audio.isHLS) {
-                    check.quality.visibility = VISIBLE
-                    if (audio.isHq) {
-                        check.quality.setImageResource(R.drawable.high_quality)
-                    } else {
-                        check.quality.setImageResource(R.drawable.low_quality)
-                    }
+            val check = root.tag as AudioHolder? ?: continue
+            val audio = audios[g]
+            check.tvTitle.text = audio.artist
+            check.tvSubtitle.text = audio.title
+            if (!audio.isLocal && !audio.isLocalServer && Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID && !audio.isHLS) {
+                check.quality.visibility = VISIBLE
+                if (audio.isHq) {
+                    check.quality.setImageResource(R.drawable.high_quality)
                 } else {
-                    check.quality.visibility = GONE
+                    check.quality.setImageResource(R.drawable.low_quality)
                 }
-                updateAudioStatus(check, audio)
-                if (audio.thumb_image_little.nonNullNoEmpty()) {
-                    with()
-                        .load(audio.thumb_image_little)
-                        .placeholder(
-                            ResourcesCompat.getDrawable(
-                                context.resources, audioCoverSimple, context.theme
-                            ) ?: return
+            } else {
+                check.quality.visibility = GONE
+            }
+            updateAudioStatus(check, audio)
+            if (audio.thumb_image_little.nonNullNoEmpty()) {
+                with()
+                    .load(audio.thumb_image_little)
+                    .placeholder(
+                        ResourcesCompat.getDrawable(
+                            context.resources, audioCoverSimple, context.theme
+                        ) ?: return
 
-                        )
-                        .transform(transformCover)
-                        .tag(Constants.PICASSO_TAG)
-                        .into(check.play_cover)
-                } else {
-                    with().cancelRequest(check.play_cover)
-                    check.play_cover.setImageResource(audioCoverSimple)
+                    )
+                    .transform(transformCover)
+                    .tag(Constants.PICASSO_TAG)
+                    .into(check.play_cover)
+            } else {
+                with().cancelRequest(check.play_cover)
+                check.play_cover.setImageResource(audioCoverSimple)
+            }
+            check.ibPlay.setOnLongClickListener {
+                if (audio.thumb_image_very_big.nonNullNoEmpty()
+                    || audio.thumb_image_big.nonNullNoEmpty() || audio.thumb_image_little.nonNullNoEmpty()
+                ) {
+                    audio.artist?.let { it1 ->
+                        audio.title?.let { it2 ->
+                            Utils.firstNonEmptyString(
+                                audio.thumb_image_very_big,
+                                audio.thumb_image_big, audio.thumb_image_little
+                            )?.let { it3 ->
+                                mAttachmentsActionCallback?.onUrlPhotoOpen(
+                                    it3, it1, it2
+                                )
+                            }
+                        }
+                    }
                 }
-                check.ibPlay.setOnLongClickListener {
-                    if (audio.thumb_image_very_big.nonNullNoEmpty()
-                        || audio.thumb_image_big.nonNullNoEmpty() || audio.thumb_image_little.nonNullNoEmpty()
-                    ) {
-                        audio.artist?.let { it1 ->
-                            audio.title?.let { it2 ->
-                                Utils.firstNonEmptyString(
-                                    audio.thumb_image_very_big,
-                                    audio.thumb_image_big, audio.thumb_image_little
-                                )?.let { it3 ->
-                                    mAttachmentsActionCallback?.onUrlPhotoOpen(
-                                        it3, it1, it2
+                true
+            }
+            check.ibPlay.setOnClickListener { v: View ->
+                if (Settings.get().main().isRevert_play_audio) {
+                    doMenu(check, mAttachmentsActionCallback, g, v, audio, audios)
+                } else {
+                    doPlay(check, mAttachmentsActionCallback, g, audio, audios)
+                }
+            }
+            if (audio.duration <= 0) check.time.visibility = INVISIBLE else {
+                check.time.visibility = VISIBLE
+                check.time.text = AppTextUtils.getDurationString(audio.duration)
+            }
+            updateDownloadState(check, audio)
+            check.lyric.visibility = if (audio.lyricsId != 0) VISIBLE else GONE
+            check.my.visibility =
+                if (audio.ownerId == Settings.get().accounts().current) VISIBLE else GONE
+            check.Track.setOnLongClickListener { v: View? ->
+                if (!hasReadWriteStoragePermission(context)) {
+                    mAttachmentsActionCallback?.onRequestWritePermissions()
+                    return@setOnLongClickListener false
+                }
+                audio.downloadIndicator = 1
+                updateDownloadState(check, audio)
+                val ret = doDownloadAudio(
+                    context,
+                    audio,
+                    Settings.get().accounts().current,
+                    Force = false,
+                    isLocal = false
+                )
+                when (ret) {
+                    0 -> createCustomToast(context).showToastBottom(R.string.saved_audio)
+                    1, 2 -> {
+                        v?.let {
+                            CustomSnackbars.createCustomSnackbars(it)
+                                ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
+                                ?.themedSnack(
+                                    if (ret == 1) R.string.audio_force_download else R.string.audio_force_download_pc
+                                )
+                                ?.setAction(
+                                    R.string.button_yes
+                                ) {
+                                    doDownloadAudio(
+                                        context,
+                                        audio,
+                                        Settings.get().accounts().current,
+                                        Force = true,
+                                        isLocal = false
                                     )
                                 }
-                            }
+                                ?.show()
                         }
                     }
-                    true
-                }
-                check.ibPlay.setOnClickListener { v: View ->
-                    if (Settings.get().main().isRevert_play_audio) {
-                        doMenu(check, mAttachmentsActionCallback, g, v, audio, audios)
-                    } else {
-                        doPlay(check, mAttachmentsActionCallback, g, audio, audios)
-                    }
-                }
-                if (audio.duration <= 0) check.time.visibility = INVISIBLE else {
-                    check.time.visibility = VISIBLE
-                    check.time.text = AppTextUtils.getDurationString(audio.duration)
-                }
-                updateDownloadState(check, audio)
-                check.lyric.visibility = if (audio.lyricsId != 0) VISIBLE else GONE
-                check.my.visibility =
-                    if (audio.ownerId == Settings.get().accounts().current) VISIBLE else GONE
-                check.Track.setOnLongClickListener { v: View? ->
-                    if (!hasReadWriteStoragePermission(context)) {
-                        mAttachmentsActionCallback?.onRequestWritePermissions()
-                        return@setOnLongClickListener false
-                    }
-                    audio.downloadIndicator = 1
-                    updateDownloadState(check, audio)
-                    val ret = doDownloadAudio(
-                        context,
-                        audio,
-                        Settings.get().accounts().current,
-                        Force = false,
-                        isLocal = false
-                    )
-                    when (ret) {
-                        0 -> createCustomToast(context).showToastBottom(R.string.saved_audio)
-                        1, 2 -> {
-                            v?.let {
-                                CustomSnackbars.createCustomSnackbars(it)
-                                    ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
-                                    ?.themedSnack(
-                                        if (ret == 1) R.string.audio_force_download else R.string.audio_force_download_pc
-                                    )
-                                    ?.setAction(
-                                        R.string.button_yes
-                                    ) {
-                                        doDownloadAudio(
-                                            context,
-                                            audio,
-                                            Settings.get().accounts().current,
-                                            Force = true,
-                                            isLocal = false
-                                        )
-                                    }
-                                    ?.show()
-                            }
-                        }
 
-                        else -> {
-                            audio.downloadIndicator = 0
-                            updateDownloadState(check, audio)
-                            createCustomToast(context).showToastBottom(R.string.error_audio)
-                        }
-                    }
-                    true
-                }
-                check.Track.setOnClickListener { view: View ->
-                    check.cancelSelectionAnimation()
-                    check.startSomeAnimation()
-                    if (Settings.get().main().isRevert_play_audio) {
-                        doPlay(check, mAttachmentsActionCallback, g, audio, audios)
-                    } else {
-                        doMenu(check, mAttachmentsActionCallback, g, view, audio, audios)
+                    else -> {
+                        audio.downloadIndicator = 0
+                        updateDownloadState(check, audio)
+                        createCustomToast(context).showToastBottom(R.string.error_audio)
                     }
                 }
-                root.visibility = VISIBLE
-            } else {
-                root.visibility = GONE
+                true
             }
+            check.Track.setOnClickListener { view: View ->
+                check.cancelSelectionAnimation()
+                check.startSomeAnimation()
+                if (Settings.get().main().isRevert_play_audio) {
+                    doPlay(check, mAttachmentsActionCallback, g, audio, audios)
+                } else {
+                    doMenu(check, mAttachmentsActionCallback, g, view, audio, audios)
+                }
+            }
+            root.visibility = VISIBLE
         }
         mPlayerDisposable.dispose()
         mPlayerDisposable = observeServiceBinding()

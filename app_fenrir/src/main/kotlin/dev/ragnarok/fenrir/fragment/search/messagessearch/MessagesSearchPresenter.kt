@@ -128,7 +128,7 @@ class MessagesSearchPresenter(
             val messageChanged = player.toggle(voiceMessageId, voiceMessage)
             if (messageChanged) {
                 if (!voiceMessage.wasListened()) {
-                    if (!Utils.isHiddenCurrent && Settings.get().other().isMarkListenedVoice) {
+                    if (!Utils.isHiddenCurrent && Settings.get().main().isMarkListenedVoice) {
                         appendDisposable(
                             messages.markAsListened(accountId, messageId)
                                 .fromIOToMain()

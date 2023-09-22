@@ -71,8 +71,10 @@ class CommentContainer : LinearLayout {
         } else {
             CurrentTheme.createTransformationForAvatar()
         }
-        colorTextSecondary = CurrentTheme.getSecondaryTextColorCode(context)
-        iconColorActive = CurrentTheme.getColorPrimary(context)
+        if (!isInEditMode) {
+            colorTextSecondary = CurrentTheme.getSecondaryTextColorCode(context)
+            iconColorActive = CurrentTheme.getColorPrimary(context)
+        }
     }
 
     fun displayComments(
@@ -82,6 +84,9 @@ class CommentContainer : LinearLayout {
         onHashTagClickListener: EmojiconTextView.OnHashTagClickListener?
     ) {
         if (commentsData.isNullOrEmpty()) {
+            if (childCount > 0) {
+                removeAllViews()
+            }
             visibility = View.GONE
             return
         }
@@ -94,6 +99,9 @@ class CommentContainer : LinearLayout {
             }
         }
         if (comments.isEmpty()) {
+            if (childCount > 0) {
+                removeAllViews()
+            }
             visibility = View.GONE
             return
         }
@@ -106,92 +114,90 @@ class CommentContainer : LinearLayout {
             itemView.tag = holder
             addView(itemView)
         }
-        for (g in 0 until childCount) {
+        if (childCount > comments.size) {
+            removeViews(comments.size, childCount - comments.size)
+        }
+        for (g in comments.indices) {
             val root = getChildAt(g) as ViewGroup? ?: continue
-            if (g < comments.size) {
-                val comment = comments[g]
-                val check: CommentHolder = root.tag as CommentHolder? ?: continue
-                root.setOnLongClickListener {
-                    listener?.populateCommentContextMenu(comment)
-                    true
-                }
-                check.cancelSelectionAnimation()
-                if (comment.isAnimationNow) {
-                    check.startSelectionAnimation()
-                    comment.setAnimationNow(false)
-                }
-                check.tvText.setOnLongClickListener {
-                    listener?.populateCommentContextMenu(comment)
-                    true
-                }
-                if (!comment.hasAttachments()) {
-                    check.vAttachmentsRoot.visibility = GONE
-                } else {
-                    check.vAttachmentsRoot.visibility = VISIBLE
-                    binder.displayAttachments(
-                        comment.attachments,
-                        check.attachmentContainers,
-                        true,
-                        null, null, null
-                    )
-                }
-                check.tvOwnerName.text = comment.fullAuthorName
-                val text = OwnerLinkSpanFactory.withSpans(
-                    comment.text,
-                    owners = true,
-                    topics = true,
-                    listener = object : LinkActionAdapter() {
-                        override fun onTopicLinkClicked(link: TopicLink) {
-                            listener?.onReplyToOwnerClick(link.replyToOwner, link.replyToCommentId)
-                        }
-
-                        override fun onOwnerClick(ownerId: Long) {
-                            listener?.onAvatarClick(ownerId)
-                        }
-                    })
-                if (text.isNullOrEmpty() && comment.fromId == 0L) {
-                    check.tvText.visibility = VISIBLE
-                    check.tvText.setText(R.string.deleted)
-                } else {
-                    check.tvText.setText(text, TextView.BufferType.SPANNABLE)
-                    check.tvText.visibility =
-                        if (comment.text.isNullOrEmpty()) GONE else VISIBLE
-                    check.tvText.movementMethod = LinkMovementMethod.getInstance()
-                }
-                check.tvLikeCounter.visibility = if (comment.likesCount > 0) VISIBLE else GONE
-                TextViewCompat.setCompoundDrawableTintList(
-                    check.tvLikeCounter,
-                    ColorStateList.valueOf(if (comment.isUserLikes) iconColorActive else colorTextSecondary)
-                )
-                check.tvLikeCounter.text = AppTextUtils.getCounterWithK(comment.likesCount)
-                check.tvLikeCounter.visibility = if (comment.likesCount > 0) VISIBLE else GONE
-                check.tvLikeCounter.setTextColor(if (comment.isUserLikes) iconColorActive else colorTextSecondary)
-                check.tvTime.movementMethod = LinkMovementMethod.getInstance()
-                displayAvatar(
-                    check.ivOwnerAvatar,
-                    transformation,
-                    comment.maxAuthorAvaUrl,
-                    Constants.PICASSO_TAG
-                )
-                check.tvTime.setText(
-                    genTimeAndReplyText(comment, listener),
-                    TextView.BufferType.SPANNABLE
-                )
-                check.tvTime.setTextColor(colorTextSecondary)
-                check.tvLikeCounter.setOnClickListener {
-                    listener?.onCommentLikeClick(
-                        comment, !comment.isUserLikes
-                    )
-                }
-                check.ivOwnerAvatar.setOnClickListener {
-                    if (comment.fromId == 0L) {
-                        return@setOnClickListener
-                    }
-                    listener?.onAvatarClick(comment.fromId)
-                }
-                root.visibility = VISIBLE
+            val comment = comments[g]
+            val check: CommentHolder = root.tag as CommentHolder? ?: continue
+            root.setOnLongClickListener {
+                listener?.populateCommentContextMenu(comment)
+                true
+            }
+            check.cancelSelectionAnimation()
+            if (comment.isAnimationNow) {
+                check.startSelectionAnimation()
+                comment.setAnimationNow(false)
+            }
+            check.tvText.setOnLongClickListener {
+                listener?.populateCommentContextMenu(comment)
+                true
+            }
+            if (!comment.hasAttachments()) {
+                check.vAttachmentsRoot.visibility = GONE
             } else {
-                root.visibility = GONE
+                check.vAttachmentsRoot.visibility = VISIBLE
+                binder.displayAttachments(
+                    comment.attachments,
+                    check.attachmentContainers,
+                    true,
+                    null, null, null
+                )
+            }
+            check.tvOwnerName.text = comment.fullAuthorName
+            val text = OwnerLinkSpanFactory.withSpans(
+                comment.text,
+                owners = true,
+                topics = true,
+                listener = object : LinkActionAdapter() {
+                    override fun onTopicLinkClicked(link: TopicLink) {
+                        listener?.onReplyToOwnerClick(link.replyToOwner, link.replyToCommentId)
+                    }
+
+                    override fun onOwnerClick(ownerId: Long) {
+                        listener?.onAvatarClick(ownerId)
+                    }
+                })
+            if (text.isNullOrEmpty() && comment.fromId == 0L) {
+                check.tvText.visibility = VISIBLE
+                check.tvText.setText(R.string.deleted)
+            } else {
+                check.tvText.setText(text, TextView.BufferType.SPANNABLE)
+                check.tvText.visibility =
+                    if (comment.text.isNullOrEmpty()) GONE else VISIBLE
+                check.tvText.movementMethod = LinkMovementMethod.getInstance()
+            }
+            check.tvLikeCounter.visibility = if (comment.likesCount > 0) VISIBLE else GONE
+            TextViewCompat.setCompoundDrawableTintList(
+                check.tvLikeCounter,
+                ColorStateList.valueOf(if (comment.isUserLikes) iconColorActive else colorTextSecondary)
+            )
+            check.tvLikeCounter.text = AppTextUtils.getCounterWithK(comment.likesCount)
+            check.tvLikeCounter.visibility = if (comment.likesCount > 0) VISIBLE else GONE
+            check.tvLikeCounter.setTextColor(if (comment.isUserLikes) iconColorActive else colorTextSecondary)
+            check.tvTime.movementMethod = LinkMovementMethod.getInstance()
+            displayAvatar(
+                check.ivOwnerAvatar,
+                transformation,
+                comment.maxAuthorAvaUrl,
+                Constants.PICASSO_TAG
+            )
+            check.tvTime.setText(
+                genTimeAndReplyText(comment, listener),
+                TextView.BufferType.SPANNABLE
+            )
+            check.tvTime.setTextColor(colorTextSecondary)
+            check.tvLikeCounter.setOnClickListener {
+                listener?.onCommentLikeClick(
+                    comment, !comment.isUserLikes
+                )
+            }
+            check.ivOwnerAvatar.setOnClickListener {
+                if (comment.fromId == 0L) {
+                    return@setOnClickListener
+                }
+                listener?.onAvatarClick(comment.fromId)
             }
         }
     }

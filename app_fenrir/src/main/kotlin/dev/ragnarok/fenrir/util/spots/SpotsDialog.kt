@@ -140,7 +140,7 @@ class SpotsDialog internal constructor(
 
         fun build(): AlertDialog {
             if (!Settings.get()
-                    .other().isNew_loading_dialog || !hasMarshmallow() || !FenrirNative.isNativeLoaded
+                    .main().isNew_loading_dialog || !hasMarshmallow() || !FenrirNative.isNativeLoaded
             ) {
                 return SpotsDialog(
                     context,

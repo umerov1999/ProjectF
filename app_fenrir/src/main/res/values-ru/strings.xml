@@ -1723,4 +1723,7 @@
     <string name="empty_background">Пустой фон</string>
     <string name="remember">Запомнить</string>
     <string name="instant_photo_display">Мгновенный показ фото</string>
+    <string name="select_more">Выбрать больше…</string>
+    <string name="chat_popup_menu">Контекстное меню в чате</string>
+    <string name="reactions">Реакции</string>
 </resources>

@@ -295,7 +295,7 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
             source,
             position,
             false,
-            Settings.get().other().isInvertPhotoRev
+            Settings.get().main().isInvertPhotoRev
         ).tryOpenWith(requireActivity())
     }
 
@@ -313,7 +313,7 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
             parcelNativePointer,
             position,
             false,
-            Settings.get().other().isInvertPhotoRev
+            Settings.get().main().isInvertPhotoRev
         ).setActivityResultLauncher(requestPhotoUpdate).tryOpenWith(requireActivity())
     }
 
@@ -371,7 +371,7 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
         super.onPrepareMenu(menu)
         menu.findItem(R.id.action_toggle_rev).setTitle(
             if (Settings.get()
-                    .other().isInvertPhotoRev
+                    .main().isInvertPhotoRev
             ) R.string.sort_new_to_old else R.string.sort_old_to_new
         )
         menu.findItem(R.id.action_show_date).isVisible =

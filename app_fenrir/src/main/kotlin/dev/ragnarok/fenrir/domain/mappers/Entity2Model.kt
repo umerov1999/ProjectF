@@ -1,15 +1,119 @@
 package dev.ragnarok.fenrir.domain.mappers
 
-import dev.ragnarok.fenrir.db.model.entity.*
+import dev.ragnarok.fenrir.db.model.entity.ArticleDboEntity
+import dev.ragnarok.fenrir.db.model.entity.AudioArtistDboEntity
 import dev.ragnarok.fenrir.db.model.entity.AudioArtistDboEntity.AudioArtistImageEntity
+import dev.ragnarok.fenrir.db.model.entity.AudioDboEntity
+import dev.ragnarok.fenrir.db.model.entity.AudioMessageDboEntity
+import dev.ragnarok.fenrir.db.model.entity.AudioPlaylistDboEntity
+import dev.ragnarok.fenrir.db.model.entity.CallDboEntity
+import dev.ragnarok.fenrir.db.model.entity.CareerEntity
+import dev.ragnarok.fenrir.db.model.entity.CityEntity
+import dev.ragnarok.fenrir.db.model.entity.CommentEntity
+import dev.ragnarok.fenrir.db.model.entity.CommunityDetailsEntity
+import dev.ragnarok.fenrir.db.model.entity.CommunityEntity
+import dev.ragnarok.fenrir.db.model.entity.CountryDboEntity
+import dev.ragnarok.fenrir.db.model.entity.DboEntity
+import dev.ragnarok.fenrir.db.model.entity.DialogDboEntity
+import dev.ragnarok.fenrir.db.model.entity.DocumentDboEntity
+import dev.ragnarok.fenrir.db.model.entity.EventDboEntity
+import dev.ragnarok.fenrir.db.model.entity.FavePageEntity
+import dev.ragnarok.fenrir.db.model.entity.GeoDboEntity
+import dev.ragnarok.fenrir.db.model.entity.GiftItemDboEntity
+import dev.ragnarok.fenrir.db.model.entity.GraffitiDboEntity
+import dev.ragnarok.fenrir.db.model.entity.KeyboardEntity
+import dev.ragnarok.fenrir.db.model.entity.LinkDboEntity
+import dev.ragnarok.fenrir.db.model.entity.MarketAlbumDboEntity
+import dev.ragnarok.fenrir.db.model.entity.MarketDboEntity
+import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
+import dev.ragnarok.fenrir.db.model.entity.MilitaryEntity
+import dev.ragnarok.fenrir.db.model.entity.NewsDboEntity
+import dev.ragnarok.fenrir.db.model.entity.NotSupportedDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PageDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PhotoAlbumDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PhotoDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PhotoSizeEntity
+import dev.ragnarok.fenrir.db.model.entity.PollDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PostDboEntity
+import dev.ragnarok.fenrir.db.model.entity.PrivacyEntity
+import dev.ragnarok.fenrir.db.model.entity.ReactionAssetEntity
+import dev.ragnarok.fenrir.db.model.entity.ReactionEntity
+import dev.ragnarok.fenrir.db.model.entity.SchoolEntity
+import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity.AnimationEntity
+import dev.ragnarok.fenrir.db.model.entity.StickerSetEntity
+import dev.ragnarok.fenrir.db.model.entity.StickersKeywordsEntity
+import dev.ragnarok.fenrir.db.model.entity.StoryDboEntity
+import dev.ragnarok.fenrir.db.model.entity.TopicDboEntity
+import dev.ragnarok.fenrir.db.model.entity.UniversityEntity
+import dev.ragnarok.fenrir.db.model.entity.UserDetailsEntity
 import dev.ragnarok.fenrir.db.model.entity.UserDetailsEntity.RelativeEntity
+import dev.ragnarok.fenrir.db.model.entity.UserEntity
+import dev.ragnarok.fenrir.db.model.entity.VideoAlbumDboEntity
+import dev.ragnarok.fenrir.db.model.entity.VideoDboEntity
+import dev.ragnarok.fenrir.db.model.entity.WallReplyDboEntity
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.fillPostOwners
 import dev.ragnarok.fenrir.domain.mappers.MapUtil.mapAll
 import dev.ragnarok.fenrir.domain.mappers.MapUtil.mapAllMutable
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.AbsModel
+import dev.ragnarok.fenrir.model.Article
+import dev.ragnarok.fenrir.model.Attachments
+import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.model.AudioArtist
 import dev.ragnarok.fenrir.model.AudioArtist.AudioArtistImage
+import dev.ragnarok.fenrir.model.AudioPlaylist
+import dev.ragnarok.fenrir.model.Call
+import dev.ragnarok.fenrir.model.Career
+import dev.ragnarok.fenrir.model.City
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.CommunityDetails
+import dev.ragnarok.fenrir.model.CryptStatus
+import dev.ragnarok.fenrir.model.Dialog
+import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.model.Document.VideoPreview
+import dev.ragnarok.fenrir.model.Event
+import dev.ragnarok.fenrir.model.FavePage
+import dev.ragnarok.fenrir.model.Geo
+import dev.ragnarok.fenrir.model.GiftItem
+import dev.ragnarok.fenrir.model.Graffiti
+import dev.ragnarok.fenrir.model.IOwnersBundle
+import dev.ragnarok.fenrir.model.IdPair
+import dev.ragnarok.fenrir.model.Keyboard
+import dev.ragnarok.fenrir.model.Link
+import dev.ragnarok.fenrir.model.Market
+import dev.ragnarok.fenrir.model.MarketAlbum
+import dev.ragnarok.fenrir.model.Message
+import dev.ragnarok.fenrir.model.Military
+import dev.ragnarok.fenrir.model.News
+import dev.ragnarok.fenrir.model.NotSupported
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.OwnerType
+import dev.ragnarok.fenrir.model.Peer
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.PhotoSizes
+import dev.ragnarok.fenrir.model.Poll
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.PostSource
+import dev.ragnarok.fenrir.model.Reaction
+import dev.ragnarok.fenrir.model.ReactionAsset
+import dev.ragnarok.fenrir.model.School
+import dev.ragnarok.fenrir.model.SimplePrivacy
+import dev.ragnarok.fenrir.model.Sticker
+import dev.ragnarok.fenrir.model.StickerSet
+import dev.ragnarok.fenrir.model.StickersKeywords
+import dev.ragnarok.fenrir.model.Story
+import dev.ragnarok.fenrir.model.Topic
+import dev.ragnarok.fenrir.model.University
+import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.model.UserDetails
+import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.model.VideoAlbum
+import dev.ragnarok.fenrir.model.VoiceMessage
+import dev.ragnarok.fenrir.model.WallReply
+import dev.ragnarok.fenrir.model.WikiPage
 import dev.ragnarok.fenrir.model.database.Country
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
@@ -506,6 +610,15 @@ object Entity2Model {
             .setOne_time(keyboard.one_time).setButtons(buttons)
     }
 
+    fun buildReactionAssetFromDbo(dto: ReactionAssetEntity): ReactionAsset {
+        return ReactionAsset().setReactionId(dto.reaction_id)
+            .setBigAnimation(dto.big_animation).setSmallAnimation(dto.small_animation)
+            .setStatic(dto.static)
+    }
+
+    fun buildReactionFromDbo(dto: ReactionEntity): Reaction {
+        return Reaction().setReactionId(dto.reaction_id).setCount(dto.count)
+    }
 
     fun message(accountId: Long, dbo: MessageDboEntity, owners: IOwnersBundle): Message {
         val message = Message(dbo.id)
@@ -535,6 +648,8 @@ object Entity2Model {
             .setUpdateTime(dbo.updateTime)
             .setPayload(dbo.payload)
             .setKeyboard(buildKeyboardFromDbo(dbo.keyboard))
+            .setConversationMessageId(dbo.conversation_message_id)
+            .setReactionId(dbo.reaction_id)
         if (dbo.actionMemberId != 0L) {
             message.setActionUser(owners.getById(dbo.actionMemberId))
         }
@@ -545,6 +660,12 @@ object Entity2Model {
             for (fwdDbo in it) {
                 message.prepareFwd(it.size)
                     .add(message(accountId, fwdDbo, owners))
+            }
+        }
+        dbo.reactions.nonNullNoEmpty {
+            for (reactDbo in it) {
+                message.prepareReactions(it.size)
+                    .add(buildReactionFromDbo(reactDbo))
             }
         }
         return message

@@ -28,8 +28,84 @@ interface ISettings {
     fun notifications(): INotificationSettings
     fun main(): IMainSettings
     fun accounts(): IAccountsSettings
-    fun other(): IOtherSettings
-    interface IOtherSettings {
+
+    interface IAccountsSettings {
+        val observeChanges: Flowable<Long>
+        val observeRegistered: Flowable<IAccountsSettings>
+        val registered: List<Long>
+        var current: Long
+        val currentAccessToken: String?
+
+        @AccountType
+        val currentType: Int
+        val currentHidden: Boolean
+        fun remove(accountId: Long): Long?
+        fun registerAccountId(accountId: Long, setCurrent: Boolean)
+        fun storeAccessToken(accountId: Long, accessToken: String?)
+        fun storeLogin(accountId: Long, loginCombo: String?)
+        fun removeDevice(accountId: Long)
+        fun storeDevice(accountId: Long, deviceName: String?)
+        fun getDevice(accountId: Long): String?
+        fun getLogin(accountId: Long): String?
+        fun storeTokenType(accountId: Long, @AccountType type: Int)
+        fun getAccessToken(accountId: Long): String?
+
+        @AccountType
+        fun getType(accountId: Long): Int
+        fun removeAccessToken(accountId: Long)
+        fun removeType(accountId: Long)
+        fun removeLogin(accountId: Long)
+
+        fun loadAccounts(refresh: Boolean)
+
+        companion object {
+            const val INVALID_ID = -1L
+        }
+    }
+
+    interface IMainSettings {
+        val isSendByEnter: Boolean
+        val isMy_message_no_color: Boolean
+        val isNotification_bubbles_enabled: Boolean
+        val isMessages_menu_down: Boolean
+        val isExpand_voice_transcript: Boolean
+        val isChat_popup_menu: Boolean
+
+        @get:ThemeOverlay
+        val themeOverlay: Int
+        val isAudio_round_icon: Boolean
+        val isUse_long_click_download: Boolean
+        val isRevert_play_audio: Boolean
+        val isShow_bot_keyboard: Boolean
+        val isPlayer_support_volume: Boolean
+        val isOpenUrlInternal: Int
+        var uploadImageSize: Int?
+        val uploadImageSizePref: Int
+
+        @get:PhotoSize
+        val prefPreviewImageSize: Int
+        fun notifyPrefPreviewSizeChanged()
+
+        @PhotoSize
+        fun getPrefDisplayImageSize(@PhotoSize byDefault: Int): Int
+
+        @get:Transformers_Types
+        val viewpager_page_transform: Int
+
+        @get:Transformers_Types
+        val player_cover_transform: Int
+        val start_newsMode: Int
+        fun setPrefDisplayImageSize(@PhotoSize size: Int)
+        val isWebview_night_mode: Boolean
+        val isSnow_mode: Boolean
+        val photoRoundMode: Int
+        val fontSize: Int
+        val fontOnlyForChats: Boolean
+        val isLoad_history_notif: Boolean
+        val isDont_write: Boolean
+        val isOver_ten_attach: Boolean
+        val cryptVersion: Int
+
         fun getFeedSourceIds(accountId: Long): String?
         fun setFeedSourceIds(accountId: Long, sourceIds: String?)
         fun storeFeedScrollState(accountId: Long, state: String?)
@@ -142,6 +218,9 @@ interface ISettings {
         fun del_last_sticker_sets_sync(accountId: Long)
         fun del_last_sticker_sets_custom_sync(accountId: Long)
         fun del_last_sticker_keywords_sync(accountId: Long)
+        fun del_last_reaction_assets_sync(accountId: Long)
+        fun set_last_reaction_assets_sync(accountId: Long, time: Long)
+        fun get_last_reaction_assets_sync(accountId: Long): Long
         fun reloadOwnerChangesMonitor()
         fun isOwnerInChangesMonitor(ownerId: Long): Boolean
         fun putOwnerInChangesMonitor(ownerId: Long)
@@ -167,83 +246,6 @@ interface ISettings {
         fun nextCustomChannelNotif()
         val currentParser: Int
         var catalogV2ListSort: List<Int>
-    }
-
-    interface IAccountsSettings {
-        val observeChanges: Flowable<Long>
-        val observeRegistered: Flowable<IAccountsSettings>
-        val registered: List<Long>
-        var current: Long
-        val currentAccessToken: String?
-
-        @AccountType
-        val currentType: Int
-        val currentHidden: Boolean
-        fun remove(accountId: Long): Long?
-        fun registerAccountId(accountId: Long, setCurrent: Boolean)
-        fun storeAccessToken(accountId: Long, accessToken: String?)
-        fun storeLogin(accountId: Long, loginCombo: String?)
-        fun removeDevice(accountId: Long)
-        fun storeDevice(accountId: Long, deviceName: String?)
-        fun getDevice(accountId: Long): String?
-        fun getLogin(accountId: Long): String?
-        fun storeTokenType(accountId: Long, @AccountType type: Int)
-        fun getAccessToken(accountId: Long): String?
-
-        @AccountType
-        fun getType(accountId: Long): Int
-        fun removeAccessToken(accountId: Long)
-        fun removeType(accountId: Long)
-        fun removeLogin(accountId: Long)
-
-        fun loadAccounts(refresh: Boolean)
-
-        companion object {
-            const val INVALID_ID = -1L
-        }
-    }
-
-    interface IMainSettings {
-        val isSendByEnter: Boolean
-        val isMy_message_no_color: Boolean
-        val isNotification_bubbles_enabled: Boolean
-        val isMessages_menu_down: Boolean
-        val isExpand_voice_transcript: Boolean
-
-        @get:ThemeOverlay
-        val themeOverlay: Int
-        val isAudio_round_icon: Boolean
-        val isUse_long_click_download: Boolean
-        val isRevert_play_audio: Boolean
-        val isShow_bot_keyboard: Boolean
-        val isPlayer_support_volume: Boolean
-        val isOpenUrlInternal: Int
-        var uploadImageSize: Int?
-        val uploadImageSizePref: Int
-
-        @get:PhotoSize
-        val prefPreviewImageSize: Int
-        fun notifyPrefPreviewSizeChanged()
-
-        @PhotoSize
-        fun getPrefDisplayImageSize(@PhotoSize byDefault: Int): Int
-
-        @get:Transformers_Types
-        val viewpager_page_transform: Int
-
-        @get:Transformers_Types
-        val player_cover_transform: Int
-        val start_newsMode: Int
-        fun setPrefDisplayImageSize(@PhotoSize size: Int)
-        val isWebview_night_mode: Boolean
-        val isSnow_mode: Boolean
-        val photoRoundMode: Int
-        val fontSize: Int
-        val fontOnlyForChats: Boolean
-        val isLoad_history_notif: Boolean
-        val isDont_write: Boolean
-        val isOver_ten_attach: Boolean
-        val cryptVersion: Int
     }
 
     interface INotificationSettings {

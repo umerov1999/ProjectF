@@ -66,12 +66,12 @@ class VKPhotosPresenter(
     private var owner: Owner? = null
     private var requestNow = false
     private var endOfContent = false
-    var isShowBDate = Settings.get().other().isShow_photos_date
+    var isShowBDate = Settings.get().main().isShow_photos_date
         private set
     private var invertPhotoRev: Boolean
     fun togglePhotoInvert() {
         invertPhotoRev = !invertPhotoRev
-        Settings.get().other().isInvertPhotoRev = invertPhotoRev
+        Settings.get().main().isInvertPhotoRev = invertPhotoRev
         fireRefresh()
     }
 
@@ -461,7 +461,7 @@ class VKPhotosPresenter(
     fun firePhotoClick(wrapper: SelectablePhotoWrapper) {
         var Index = 0
         var trig = false
-        if (!FenrirNative.isNativeLoaded || !Settings.get().other().isNative_parcel_photo) {
+        if (!FenrirNative.isNativeLoaded || !Settings.get().main().isNative_parcel_photo) {
             val photos_ret = ArrayList<Photo>(photos.size)
             for (i in photos.indices) {
                 val photo = photos[i]
@@ -596,7 +596,7 @@ class VKPhotosPresenter(
     }
 
     init {
-        invertPhotoRev = Settings.get().other().isInvertPhotoRev
+        invertPhotoRev = Settings.get().main().isInvertPhotoRev
         interactor = InteractorFactory.createPhotosInteractor()
         ownersRepository = owners
         uploadManager = Includes.uploadManager

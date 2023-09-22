@@ -23,14 +23,15 @@
 #include "tvgMath.h" /* to include math.h before cstring */
 #include <cstring>
 #include <string>
-#include "tvgShapeImpl.h"
+#include "tvgShape.h"
 #include "tvgCompressor.h"
 #include "tvgPaint.h"
+#include "tvgFill.h"
+#include "tvgStr.h"
 #include "tvgSvgLoaderCommon.h"
 #include "tvgSvgSceneBuilder.h"
 #include "tvgSvgPath.h"
 #include "tvgSvgUtil.h"
-#include "tvgStr.h"
 
 /************************************************************************/
 /* Internal Class Implementation                                        */
@@ -114,7 +115,7 @@ static unique_ptr<LinearGradient> _applyLinearGradientProperty(SvgStyleGradient*
         if (!stops) return fillGrad;
         auto prevOffset = 0.0f;
         for (uint32_t i = 0; i < g->stops.count; ++i) {
-            auto colorStop = &g->stops.data[i];
+            auto colorStop = &g->stops[i];
             //Use premultiplied color
             stops[i].r = colorStop->r;
             stops[i].g = colorStop->g;
@@ -151,6 +152,7 @@ static unique_ptr<RadialGradient> _applyRadialGradientProperty(SvgStyleGradient*
         g->radial->r = g->radial->r * sqrtf(powf(vBox.w, 2.0f) + powf(vBox.h, 2.0f)) / sqrtf(2.0f);
         g->radial->fx = g->radial->fx * vBox.w;
         g->radial->fy = g->radial->fy * vBox.h;
+        g->radial->fr = g->radial->fr * sqrtf(powf(vBox.w, 2.0f) + powf(vBox.h, 2.0f)) / sqrtf(2.0f);
     } else {
         Matrix m = {vBox.w, 0, vBox.x, 0, vBox.h, vBox.y, 0, 0, 1};
         if (isTransform) _transformMultiply(&m, &finalTransform);
@@ -162,11 +164,7 @@ static unique_ptr<RadialGradient> _applyRadialGradientProperty(SvgStyleGradient*
 
     if (isTransform) fillGrad->transform(finalTransform);
 
-    //TODO: Tvg is not support to focal
-    //if (g->radial->fx != 0 && g->radial->fy != 0) {
-    //    fillGrad->radial(g->radial->fx, g->radial->fy, g->radial->r);
-    //}
-    fillGrad->radial(g->radial->cx, g->radial->cy, g->radial->r);
+    P(fillGrad)->radial(g->radial->cx, g->radial->cy, g->radial->r, g->radial->fx, g->radial->fy, g->radial->fr);
     fillGrad->spread(g->spread);
 
     //Update the stops
@@ -176,7 +174,7 @@ static unique_ptr<RadialGradient> _applyRadialGradientProperty(SvgStyleGradient*
         if (!stops) return fillGrad;
         auto prevOffset = 0.0f;
         for (uint32_t i = 0; i < g->stops.count; ++i) {
-            auto colorStop = &g->stops.data[i];
+            auto colorStop = &g->stops[i];
             //Use premultiplied color
             stops[i].r = colorStop->r;
             stops[i].g = colorStop->g;
@@ -552,11 +550,14 @@ static bool _isValidImageMimeTypeAndEncoding(const char** href, const char** mim
     return false;
 }
 
+#include "tvgTaskScheduler.h"
 
 static unique_ptr<Picture> _imageBuildHelper(SvgLoaderData& loaderData, SvgNode* node, const Box& vBox, const string& svgPath)
 {
     if (!node->node.image.href) return nullptr;
     auto picture = Picture::gen();
+
+    TaskScheduler::async(false);    //force to load a picture on the same thread
 
     const char* href = node->node.image.href;
     if (!strncmp(href, "data:", sizeof("data:") - 1)) {
@@ -569,12 +570,14 @@ static unique_ptr<Picture> _imageBuildHelper(SvgLoaderData& loaderData, SvgNode*
             auto size = b64Decode(href, strlen(href), &decoded);
             if (picture->load(decoded, size, mimetype, false) != Result::Success) {
                 free(decoded);
+                TaskScheduler::async(true);
                 return nullptr;
             }
         } else {
             auto size = svgUtilURLDecode(href, &decoded);
             if (picture->load(decoded, size, mimetype, false) != Result::Success) {
                 free(decoded);
+                TaskScheduler::async(true);
                 return nullptr;
             }
         }
@@ -586,6 +589,7 @@ static unique_ptr<Picture> _imageBuildHelper(SvgLoaderData& loaderData, SvgNode*
         const char *dot = strrchr(href, '.');
         if (dot && !strcmp(dot, ".svg")) {
             TVGLOG("SVG", "Embedded svg file is disabled.");
+            TaskScheduler::async(true);
             return nullptr;
         }
         string imagePath = href;
@@ -593,8 +597,13 @@ static unique_ptr<Picture> _imageBuildHelper(SvgLoaderData& loaderData, SvgNode*
             auto last = svgPath.find_last_of("/");
             imagePath = svgPath.substr(0, (last == string::npos ? 0 : last + 1)) + imagePath;
         }
-        if (picture->load(imagePath) != Result::Success) return nullptr;
+        if (picture->load(imagePath) != Result::Success) {
+            TaskScheduler::async(true);
+            return nullptr;
+        }
     }
+
+    TaskScheduler::async(true);
 
     float w, h;
     Matrix m = {1, 0, 0, 0, 1, 0, 0, 0, 1};
@@ -607,6 +616,7 @@ static unique_ptr<Picture> _imageBuildHelper(SvgLoaderData& loaderData, SvgNode*
     picture->transform(m);
 
     _applyComposition(loaderData, picture.get(), node, vBox, svgPath);
+
     return picture;
 }
 

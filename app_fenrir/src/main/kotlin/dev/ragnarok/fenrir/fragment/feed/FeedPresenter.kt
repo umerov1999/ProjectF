@@ -276,10 +276,10 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     private fun restoreNextFromAndFeedSources() {
         mSourceIds = Settings.get()
-            .other()
+            .main()
             .getFeedSourceIds(accountId)
         mNextFrom = Settings.get()
-            .other()
+            .main()
             .restoreFeedNextFrom(accountId)
     }
 
@@ -316,7 +316,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     fun fireScrollStateOnPause(json: String?) {
         Settings.get()
-            .other()
+            .main()
             .storeFeedScrollState(accountId, json)
     }
 
@@ -526,7 +526,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
         restoreNextFromAndFeedSources()
         refreshFeedSources()
         val scrollState = Settings.get()
-            .other()
+            .main()
             .restoreFeedScrollState(accountId)
         loadCachedFeed(scrollState)
     }

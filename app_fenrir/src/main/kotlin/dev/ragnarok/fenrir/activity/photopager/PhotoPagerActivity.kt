@@ -221,7 +221,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     private var mPagerAdapter: Adapter? = null
     private var mCanSaveYourself = false
     private var mCanDelete = false
-    private val bShowPhotosLine = Settings.get().other().isShow_photos_line
+    private val bShowPhotosLine = Settings.get().main().isShow_photos_line
     private val mAdapterRecycler = ImageListAdapter()
 
     @LayoutRes
@@ -462,7 +462,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                         Utils.unregisterParcelNative(nativePointer)
                         requireArguments().putLong(EXTRA_PHOTOS, 0)
                         if (FenrirNative.isNativeLoaded && Settings.get()
-                                .other().isNative_parcel_photo && nativePointer != 0L
+                                .main().isNative_parcel_photo && nativePointer != 0L
                         ) {
                             return PhotoAlbumPagerPresenter(
                                 indexx,
@@ -521,7 +521,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
 
                     Place.VK_PHOTO_TMP_SOURCE -> {
                         if (!FenrirNative.isNativeLoaded || !Settings.get()
-                                .other().isNative_parcel_photo
+                                .main().isNative_parcel_photo
                         ) {
                             val source: TmpSource =
                                 requireArguments().getParcelableCompat(Extra.SOURCE)!!
@@ -985,7 +985,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     .inflate(R.layout.content_photo_page, container, false)
             )
             ret.photo.setOnLongClickListener {
-                if (Settings.get().other().isDownload_photo_tap) {
+                if (Settings.get().main().isDownload_photo_tap) {
                     presenter?.fireSaveOnDriveClick(this@PhotoPagerActivity)
                 } else if (ret.photo.drawable is Rotatable) {
                     var rot = (ret.photo.drawable as Rotatable).getRotation() + 45

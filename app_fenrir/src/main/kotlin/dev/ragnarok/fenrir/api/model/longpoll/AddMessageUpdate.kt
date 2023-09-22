@@ -4,6 +4,7 @@ import dev.ragnarok.fenrir.api.model.VKApiConversation.CurrentKeyboard
 import dev.ragnarok.fenrir.nonNullNoEmpty
 
 class AddMessageUpdate : AbsLongpollEvent(ACTION_MESSAGE_ADDED) {
+    var conversationMessageId = 0
     var messageId = 0
     var timestamp: Long = 0
     var text: String? = null

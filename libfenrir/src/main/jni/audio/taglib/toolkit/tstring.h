@@ -26,12 +26,12 @@
 #ifndef TAGLIB_STRING_H
 #define TAGLIB_STRING_H
 
-#include "taglib_export.h"
-#include "taglib.h"
-#include "tbytevector.h"
-
 #include <iostream>
 #include <string>
+
+#include "tbytevector.h"
+#include "taglib_export.h"
+#include "taglib.h"
 
 /*!
  * \relates TagLib::String
@@ -86,8 +86,8 @@ namespace TagLib {
   public:
 
 #ifndef DO_NOT_DOCUMENT
-    typedef TagLib::wstring::iterator Iterator;
-    typedef TagLib::wstring::const_iterator ConstIterator;
+    using Iterator = TagLib::wstring::iterator;
+    using ConstIterator = TagLib::wstring::const_iterator;
 #endif
 
     /**

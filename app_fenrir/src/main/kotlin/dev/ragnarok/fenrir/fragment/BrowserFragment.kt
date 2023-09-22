@@ -136,7 +136,7 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
 
     internal fun downloadResult(Prefix: String?, dirL: File, url: String, type: String) {
         var dir = dirL
-        if (Prefix != null && Settings.get().other().isPhoto_to_user_dir) {
+        if (Prefix != null && Settings.get().main().isPhoto_to_user_dir) {
             val dir_final = File(dir.absolutePath + "/" + Prefix)
             if (!dir_final.isDirectory) {
                 val created = dir_final.mkdirs()
@@ -201,7 +201,7 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                         typeRes ?: return@show
                         owner ?: return@show
                         typeRes += ("_$fileName")
-                        val dir = File(Settings.get().other().photoDir)
+                        val dir = File(Settings.get().main().photoDir)
                         if (!dir.isDirectory) {
                             val created = dir.mkdirs()
                             if (!created) {

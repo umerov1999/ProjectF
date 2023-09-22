@@ -145,7 +145,7 @@ class CommentsPresenter(
     }
 
     fun fireTextEdited(s: String?) {
-        if (!Settings.get().other().isHint_stickers) {
+        if (!Settings.get().main().isHint_stickers) {
             return
         }
         stickersWordsDisplayDisposable.dispose()
@@ -860,7 +860,7 @@ class CommentsPresenter(
     }
 
     private fun likeInternal(add: Boolean, comment: Comment) {
-        if (Settings.get().other().isDisable_likes || Utils.isHiddenAccount(
+        if (Settings.get().main().isDisable_likes || Utils.isHiddenAccount(
                 accountId
             )
         ) {
@@ -1009,7 +1009,7 @@ class CommentsPresenter(
     fun fireDirectionChanged() {
         data.clear()
         view?.notifyDataSetChanged()
-        directionDesc = Settings.get().other().isCommentsDesc
+        directionDesc = Settings.get().main().isCommentsDesc
         requestInitialData()
     }
 
@@ -1164,7 +1164,7 @@ class CommentsPresenter(
         stickersInteractor = InteractorFactory.createStickersInteractor()
         this.commented = commented
         this.focusToComment = focusToComment
-        directionDesc = Settings.get().other().isCommentsDesc
+        directionDesc = Settings.get().main().isCommentsDesc
         this.CommentThread = commentThread
         data = ArrayList()
         val attachmentsRepository = attachmentsRepository

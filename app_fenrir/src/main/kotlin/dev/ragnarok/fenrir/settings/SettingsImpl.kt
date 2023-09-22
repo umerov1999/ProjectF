@@ -5,7 +5,6 @@ import dev.ragnarok.fenrir.settings.ISettings.IAccountsSettings
 import dev.ragnarok.fenrir.settings.ISettings.IDrawerSettings
 import dev.ragnarok.fenrir.settings.ISettings.IMainSettings
 import dev.ragnarok.fenrir.settings.ISettings.INotificationSettings
-import dev.ragnarok.fenrir.settings.ISettings.IOtherSettings
 import dev.ragnarok.fenrir.settings.ISettings.IPushSettings
 import dev.ragnarok.fenrir.settings.ISettings.IRecentChats
 import dev.ragnarok.fenrir.settings.ISettings.ISecuritySettings
@@ -22,7 +21,6 @@ class SettingsImpl(app: Context) : ISettings {
     private val notificationSettings: INotificationSettings
     private val mainSettings: IMainSettings
     private val accountsSettings: IAccountsSettings
-    private val otherSettings: IOtherSettings
     override fun recentChats(): IRecentChats {
         return recentChats
     }
@@ -59,10 +57,6 @@ class SettingsImpl(app: Context) : ISettings {
         return accountsSettings
     }
 
-    override fun other(): IOtherSettings {
-        return otherSettings
-    }
-
     init {
         notificationSettings = NotificationsPrefs(app)
         recentChats = RecentChatsSettings(app)
@@ -73,6 +67,5 @@ class SettingsImpl(app: Context) : ISettings {
         iuiSettings = UISettings(app)
         mainSettings = MainSettings(app)
         accountsSettings = AccountsSettings(app)
-        otherSettings = OtherSettings(app)
     }
 }

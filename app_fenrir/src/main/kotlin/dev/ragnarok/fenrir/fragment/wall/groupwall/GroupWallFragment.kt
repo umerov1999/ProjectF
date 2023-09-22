@@ -136,7 +136,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
                 community.isVerified
             )
         )
-        val donate_anim = Settings.get().other().donate_anim_set
+        val donate_anim = Settings.get().main().donate_anim_set
         if (donate_anim > 0 && community.isDonated) {
             mHeaderHolder?.bDonate?.visibility = View.VISIBLE
             mHeaderHolder?.bDonate?.setAutoRepeat(true)
@@ -274,7 +274,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         resource: String?,
         supportOpen: Boolean
     ) {
-        if (!Settings.get().other().isShow_wall_cover) return
+        if (!Settings.get().main().isShow_wall_cover) return
         if (supportOpen) {
             mHeaderHolder?.vgCover?.setOnLongClickListener {
                 presenter?.fireAvatarPhotoClick(resource, null)

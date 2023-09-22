@@ -1,12 +1,14 @@
 package dev.ragnarok.fenrir.api.interfaces
 
 import androidx.annotation.CheckResult
+import dev.ragnarok.fenrir.api.model.Assets
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiChat
 import dev.ragnarok.fenrir.api.model.VKApiConversation
 import dev.ragnarok.fenrir.api.model.VKApiJsonString
 import dev.ragnarok.fenrir.api.model.VKApiLongpollServer
 import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.VKApiReactionAsset
 import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.AttachmentsHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.ConversationDeleteResult
@@ -185,4 +187,10 @@ interface IMessagesApi {
 
     @CheckResult
     fun setMemberRole(peer_id: Long?, member_id: Long?, role: String?): Single<Int>
+
+    @CheckResult
+    fun sendOrDeleteReaction(peer_id: Long, cmid: Int, reaction_id: Int?): Single<Int>
+
+    @CheckResult
+    fun getReactionsAssets(): Single<Assets<VKApiReactionAsset>>
 }

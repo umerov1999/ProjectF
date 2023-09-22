@@ -83,7 +83,7 @@ class PushRegistrationResolver(
                             accountId,
                             data.deviceId ?: "",
                             vkToken,
-                            data.gcmToken
+                            data.fcmToken
                         )
                     target.add(current)
                     completable = completable.andThen(register(current))
@@ -134,7 +134,7 @@ class PushRegistrationResolver(
             networker.vkManual(registration.userId, registration.vkToken)
                 .account()
                 .registerDevice(
-                    registration.gmcToken,
+                    registration.fcmToken,
                     null,
                     null,
                     "fcm",
@@ -150,7 +150,7 @@ class PushRegistrationResolver(
             networker.vkManual(registration.userId, registration.vkToken)
                 .account()
                 .registerDevice(
-                    registration.gmcToken,
+                    registration.fcmToken,
                     1,
                     Constants.VK_ANDROID_APP_VERSION_CODE,
                     "fcm",
@@ -190,7 +190,7 @@ class PushRegistrationResolver(
         if (data.deviceId != available.deviceId) {
             return Reason.REMOVE
         }
-        if (data.gcmToken != available.gmcToken) {
+        if (data.fcmToken != available.fcmToken) {
             return Reason.REMOVE
         }
         if (optionAccountId.isEmpty) {
@@ -216,7 +216,7 @@ class PushRegistrationResolver(
         OK, REMOVE, UNREGISTER_AND_REMOVE
     }
 
-    private class Data(val gcmToken: String, val deviceId: String?)
+    private class Data(val fcmToken: String, val deviceId: String?)
     companion object {
         private val TAG = PushRegistrationResolver::class.java.simpleName
     }

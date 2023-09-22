@@ -282,7 +282,7 @@ class ConversationMultiAttachmentsPresenter(
 
     fun playAudio(context: Context, position: Int) {
         MusicPlaybackService.startForPlayList(context, mAudios, position, false)
-        if (!Settings.get().other().isShow_mini_player) PlaceFactory.getPlayerPlace(accountId)
+        if (!Settings.get().main().isShow_mini_player) PlaceFactory.getPlayerPlace(accountId)
             .tryOpenWith(
                 context
             )
@@ -359,7 +359,7 @@ class ConversationMultiAttachmentsPresenter(
     }
 
     fun firePhotoClick(position: Int) {
-        if (FenrirNative.isNativeLoaded && Settings.get().other().isNative_parcel_photo) {
+        if (FenrirNative.isNativeLoaded && Settings.get().main().isNative_parcel_photo) {
             view?.goToTempPhotosGallery(
                 accountId,
                 ParcelNative.createParcelableList(mPhotos, ParcelFlags.NULL_LIST),
@@ -453,7 +453,7 @@ class ConversationMultiAttachmentsPresenter(
     }
 
     fun fireLikeClick(post: Post) {
-        if (Settings.get().other().isDisable_likes || Utils.isHiddenAccount(
+        if (Settings.get().main().isDisable_likes || Utils.isHiddenAccount(
                 accountId
             )
         ) {

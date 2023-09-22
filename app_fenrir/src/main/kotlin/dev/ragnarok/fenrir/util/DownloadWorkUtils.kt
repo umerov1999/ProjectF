@@ -233,18 +233,18 @@ object DownloadWorkUtils {
         if (audio.url?.contains("file://") == true || audio.url?.contains("content://") == true)
             return audio.url!!
         return "file://" + Settings.get()
-            .other().musicDir + "/" + makeLegalFilename(audio.artist + " - " + audio.title, "mp3")
+            .main().musicDir + "/" + makeLegalFilename(audio.artist + " - " + audio.title, "mp3")
     }
 
 
     fun doSyncRemoteAudio(context: Context) {
         val url =
             Settings.get()
-                .other().localServer.url + "/method/audio.dumplist?password=" + Settings.get()
-                .other().localServer.password
+                .main().localServer.url + "/method/audio.dumplist?password=" + Settings.get()
+                .main().localServer.password
         val result_filename = DownloadInfo(
             "local_server_audio_list",
-            Settings.get().other().musicDir,
+            Settings.get().main().musicDir,
             "json"
         )
         CheckDirectory(result_filename.path)
@@ -253,7 +253,7 @@ object DownloadWorkUtils {
             Temp.delete()
         }
         try {
-            if (!Settings.get().other().isUse_internal_downloader) {
+            if (!Settings.get().main().isUse_internal_downloader) {
                 toExternalDownloader(context, url, result_filename)
             } else {
                 toDefaultInternalDownloader(context, url, result_filename, "json")
@@ -269,14 +269,14 @@ object DownloadWorkUtils {
             makeLegalFilename(
                 optString(video.title) +
                         " - " + video.ownerId + "_" + video.id + "_" + Res + "P", null
-            ), Settings.get().other().videoDir, "mp4"
+            ), Settings.get().main().videoDir, "mp4"
         )
         CheckDirectory(result_filename.path)
         if (default_file_exist(context, result_filename)) {
             return
         }
         try {
-            if (!Settings.get().other().isUse_internal_downloader) {
+            if (!Settings.get().main().isUse_internal_downloader) {
                 toExternalDownloader(context, url, result_filename)
             } else {
                 toDefaultInternalDownloader(context, url, result_filename, "video")
@@ -293,7 +293,7 @@ object DownloadWorkUtils {
         val extDownload: String
         val urlDownload: String
         if (doc.getLinkOgg().nonNullNoEmpty() && (doc.getLinkMp3().isNullOrEmpty() || Settings.get()
-                .other().isDownload_voice_ogg)
+                .main().isDownload_voice_ogg)
         ) {
             extDownload = "ogg"
             urlDownload = (doc.getLinkOgg() ?: return)
@@ -303,7 +303,7 @@ object DownloadWorkUtils {
         }
         val result_filename = DownloadInfo(
             makeLegalFilename("Голосовуха " + doc.getOwnerId() + "_" + doc.getId(), null),
-            Settings.get().other().docDir,
+            Settings.get().main().docDir,
             extDownload
         )
         CheckDirectory(result_filename.path)
@@ -311,7 +311,7 @@ object DownloadWorkUtils {
             return
         }
         try {
-            if (!Settings.get().other().isUse_internal_downloader) {
+            if (!Settings.get().main().isUse_internal_downloader) {
                 toExternalDownloader(context, urlDownload, result_filename)
             } else {
                 toDefaultInternalDownloader(context, urlDownload, result_filename, "voice")
@@ -335,7 +335,7 @@ object DownloadWorkUtils {
             return
         val result_filename = DownloadInfo(
             makeLegalFilename(sticker.id.toString(), null),
-            Settings.get().other().stickerDir,
+            Settings.get().main().stickerDir,
             if (sticker.isAnimated) "json" else "png"
         )
         CheckDirectory(result_filename.path)
@@ -343,7 +343,7 @@ object DownloadWorkUtils {
             return
         }
         try {
-            if (!Settings.get().other().isUse_internal_downloader) {
+            if (!Settings.get().main().isUse_internal_downloader) {
                 toExternalDownloader(context, link, result_filename)
             } else {
                 toDefaultInternalDownloader(context, link, result_filename, "sticker")
@@ -374,7 +374,7 @@ object DownloadWorkUtils {
         val result_filename =
             makeDoc(
                 makeLegalFilename(doc.title ?: "null", null),
-                Settings.get().other().docDir,
+                Settings.get().main().docDir,
                 doc.ext
             )
         CheckDirectory(result_filename.path)
@@ -390,7 +390,7 @@ object DownloadWorkUtils {
             }
         }
         try {
-            if (!Settings.get().other().isUse_internal_downloader) {
+            if (!Settings.get().main().isUse_internal_downloader) {
                 toExternalDownloader(context, pUrl, result_filename)
             } else {
                 toDefaultInternalDownloader(context, pUrl, result_filename, "doc")
@@ -409,7 +409,7 @@ object DownloadWorkUtils {
             return
         }
         try {
-            if (!Settings.get().other().isUse_internal_downloader) {
+            if (!Settings.get().main().isUse_internal_downloader) {
                 toExternalDownloader(context, url, result_filename)
             } else {
                 toDefaultInternalDownloader(context, url, result_filename, "photo")
@@ -435,7 +435,7 @@ object DownloadWorkUtils {
 
         val result_filename = DownloadInfo(
             makeLegalFilename(audio.artist + " - " + audio.title, null),
-            Settings.get().other().musicDir,
+            Settings.get().main().musicDir,
             "mp3"
         )
         CheckDirectory(result_filename.path)
@@ -493,7 +493,7 @@ object DownloadWorkUtils {
     fun makeDownloadRequestAudio(audio: Audio, account_id: Long): OneTimeWorkRequest {
         val result_filename = DownloadInfo(
             makeLegalFilename(audio.artist + " - " + audio.title, null),
-            Settings.get().other().musicDir,
+            Settings.get().main().musicDir,
             "mp3"
         )
         val downloadWork = OneTimeWorkRequest.Builder(TrackDownloadWorker::class.java)
@@ -817,7 +817,7 @@ object DownloadWorkUtils {
                 )
                 mBuilder.setContentIntent(readPendingIntent)
 
-                if (Settings.get().other().isDeveloper_mode) {
+                if (Settings.get().main().isDeveloper_mode) {
                     val deleteIntent = QuickReplyService.intentForDeleteFile(
                         applicationContext,
                         file_v.build(),
@@ -881,7 +881,9 @@ object DownloadWorkUtils {
                     InteractorFactory
                         .createAudioInteractor()
                         .getByIdOld(account_id, listOf(audio), mode.second)
-                        .map { e -> e[0].url ?: audio.url ?: "" }, audio.url
+                        .map { e ->
+                            e[0].url.nonNullNoEmpty({ l -> l }, { audio.url.orEmpty() })
+                        }, audio.url
                 )
                 if (link.nonNullNoEmpty()) {
                     audio.setUrl(link)
@@ -989,7 +991,7 @@ object DownloadWorkUtils {
                 )
                 mBuilder.setContentIntent(ReadPendingIntent)
 
-                if (Settings.get().other().isDeveloper_mode) {
+                if (Settings.get().main().isDeveloper_mode) {
                     val DeleteIntent = QuickReplyService.intentForDeleteFile(
                         applicationContext,
                         file_v.build(),

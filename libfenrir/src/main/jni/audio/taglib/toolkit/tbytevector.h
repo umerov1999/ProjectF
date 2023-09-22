@@ -26,12 +26,12 @@
 #ifndef TAGLIB_BYTEVECTOR_H
 #define TAGLIB_BYTEVECTOR_H
 
-#include "taglib.h"
-#include "taglib_export.h"
-
 #include <iostream>
 #include <memory>
 #include <vector>
+
+#include "taglib.h"
+#include "taglib_export.h"
 
 namespace TagLib {
 
@@ -47,10 +47,10 @@ namespace TagLib {
   {
   public:
 #ifndef DO_NOT_DOCUMENT
-    typedef std::vector<char>::iterator Iterator;
-    typedef std::vector<char>::const_iterator ConstIterator;
-    typedef std::vector<char>::reverse_iterator ReverseIterator;
-    typedef std::vector<char>::const_reverse_iterator ConstReverseIterator;
+    using Iterator = std::vector<char>::iterator;
+    using ConstIterator = std::vector<char>::const_iterator;
+    using ReverseIterator = std::vector<char>::reverse_iterator;
+    using ConstReverseIterator = std::vector<char>::const_reverse_iterator;
 #endif
 
     /*!
@@ -99,9 +99,9 @@ namespace TagLib {
     ~ByteVector();
 
     /*!
-     * Sets the data for the byte array using the first \a length bytes of \a data
+     * Sets the data for the byte array using the first \a length bytes of \a s
      */
-    ByteVector &setData(const char *data, unsigned int length);
+    ByteVector &setData(const char *s, unsigned int length);
 
     /*!
      * Sets the data for the byte array copies \a data up to the first null

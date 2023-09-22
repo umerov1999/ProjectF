@@ -25,7 +25,8 @@
 
 #include "apeitem.h"
 
-#include "tbytevectorlist.h"
+#include <utility>
+
 #include "tdebug.h"
 
 using namespace TagLib;
@@ -34,15 +35,11 @@ using namespace APE;
 class APE::Item::ItemPrivate
 {
 public:
-  ItemPrivate() :
-    type(Text),
-    readOnly(false) {}
-
-  Item::ItemTypes type;
+  Item::ItemTypes type { Text };
   String key;
   ByteVector value;
   StringList text;
-  bool readOnly;
+  bool readOnly { false };
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -178,12 +175,9 @@ int APE::Item::size() const
   switch(d->type) {
     case Text:
       if(!d->text.isEmpty()) {
-        auto it = d->text.cbegin();
-
-        result += it->data(String::UTF8).size();
-        it++;
-        for(; it != d->text.cend(); ++it)
-          result += 1 + it->data(String::UTF8).size();
+        for(const auto &t : std::as_const(d->text))
+          result += 1 + t.data(String::UTF8).size();
+        result -= 1;
       }
       break;
 
@@ -268,8 +262,7 @@ ByteVector APE::Item::render() const
     auto it = d->text.cbegin();
 
     value.append(it->data(String::UTF8));
-    it++;
-    for(; it != d->text.cend(); ++it) {
+    for(it = std::next(it); it != d->text.cend(); ++it) {
       value.append('\0');
       value.append(it->data(String::UTF8));
     }

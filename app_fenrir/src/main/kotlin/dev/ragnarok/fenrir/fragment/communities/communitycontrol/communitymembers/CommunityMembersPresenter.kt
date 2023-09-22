@@ -23,7 +23,7 @@ class CommunityMembersPresenter(
     private var netLoadingNow = false
     private var offset = 0
     private var filter: String? = null
-    private val isNotFriendShow: Boolean = Settings.get().other().isOwnerInChangesMonitor(-group_id)
+    private val isNotFriendShow: Boolean = Settings.get().main().isOwnerInChangesMonitor(-group_id)
     private fun resolveRefreshingView() {
         view?.showRefreshing(
             netLoadingNow

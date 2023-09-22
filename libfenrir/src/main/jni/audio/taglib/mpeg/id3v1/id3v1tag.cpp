@@ -27,7 +27,6 @@
 
 #include "tdebug.h"
 #include "tfile.h"
-
 #include "id3v1genres.h"
 
 using namespace TagLib;
@@ -42,22 +41,16 @@ namespace
 class ID3v1::Tag::TagPrivate
 {
 public:
-  TagPrivate() :
-    file(nullptr),
-    tagOffset(0),
-    track(0),
-    genre(255) {}
-
-  File *file;
-  offset_t tagOffset;
+  File *file { nullptr };
+  offset_t tagOffset { 0 };
 
   String title;
   String artist;
   String album;
   String year;
   String comment;
-  unsigned char track;
-  unsigned char genre;
+  unsigned char track { 0 };
+  unsigned char genre { 255 };
 };
 
 class ID3v1::StringHandler::StringHandlerPrivate

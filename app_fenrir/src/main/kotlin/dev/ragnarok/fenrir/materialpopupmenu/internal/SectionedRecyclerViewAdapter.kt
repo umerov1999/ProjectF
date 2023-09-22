@@ -1,5 +1,21 @@
 package dev.ragnarok.fenrir.materialpopupmenu.internal
 
+/*
+ * Copyright (C) 2015 Tomás Ruiz-López.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
@@ -7,14 +23,10 @@ import androidx.recyclerview.widget.RecyclerView
  * An extension to RecyclerView.Adapter to provide sections with headers to a
  * RecyclerView. Each section can have an arbitrary number of items.
  *
- *
- * Modified version of [SectionedRecyclerView](https://github.com/truizlop/SectionedRecyclerView) adapter without the footers
- * and converted to Kotlin.
- *
  * @param H  Class extending RecyclerView.ViewHolder to hold and bind the header view
  * @param VH Class extending RecyclerView.ViewHolder to hold and bind the items view
  * */
-abstract class SectionedRecyclerViewAdapter<H : RecyclerView.ViewHolder, VH : RecyclerView.ViewHolder> :
+internal abstract class SectionedRecyclerViewAdapter<H : RecyclerView.ViewHolder, VH : RecyclerView.ViewHolder> :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var sectionForPosition: IntArray? = null
@@ -23,12 +35,9 @@ abstract class SectionedRecyclerViewAdapter<H : RecyclerView.ViewHolder, VH : Re
     private var count = 0
 
     /**
-     * Returns the sum of number of items for each section plus headers and footers if they
-     * are provided.
+     * Returns the sum of number of items for each section
      */
-    override fun getItemCount(): Int {
-        return count
-    }
+    override fun getItemCount(): Int = count
 
     fun setupIndices() {
         count = countItems()
@@ -38,7 +47,6 @@ abstract class SectionedRecyclerViewAdapter<H : RecyclerView.ViewHolder, VH : Re
 
     private fun countItems(): Int {
         val sections = sectionCount
-
         return (0 until sections).sumOf { getItemCountForSection(it) + 1 }
     }
 
@@ -49,7 +57,6 @@ abstract class SectionedRecyclerViewAdapter<H : RecyclerView.ViewHolder, VH : Re
         for (i in 0 until sections) {
             setPrecomputedItem(index, true, i, 0)
             index++
-
 
             for (j in 0 until getItemCountForSection(i)) {
                 setPrecomputedItem(index, false, i, j)
@@ -70,13 +77,10 @@ abstract class SectionedRecyclerViewAdapter<H : RecyclerView.ViewHolder, VH : Re
         positionWithinSection?.set(index, position)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (isSectionHeaderViewType(viewType)) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+        if (isSectionHeaderViewType(viewType))
             onCreateSectionHeaderViewHolder(parent, viewType)
-        } else {
-            onCreateItemViewHolder(parent, viewType)
-        }
-    }
+        else onCreateItemViewHolder(parent, viewType)
 
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -95,8 +99,8 @@ abstract class SectionedRecyclerViewAdapter<H : RecyclerView.ViewHolder, VH : Re
             setupIndices()
         }
 
-        val section = sectionForPosition!![position]
-        val index = positionWithinSection!![position]
+        val section = sectionForPosition?.get(position) ?: return TYPE_SECTION_HEADER
+        val index = positionWithinSection?.get(position) ?: return TYPE_SECTION_HEADER
 
         return if (isSectionHeaderPosition(position)) {
             getSectionHeaderViewType(section)
@@ -106,14 +110,9 @@ abstract class SectionedRecyclerViewAdapter<H : RecyclerView.ViewHolder, VH : Re
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun getSectionHeaderViewType(section: Int): Int {
-        return TYPE_SECTION_HEADER
-    }
+    private fun getSectionHeaderViewType(section: Int): Int = TYPE_SECTION_HEADER
 
-    @Suppress("UNUSED_PARAMETER")
-    protected open fun getSectionItemViewType(section: Int, position: Int): Int {
-        return TYPE_ITEM
-    }
+    protected open fun getSectionItemViewType(section: Int, position: Int): Int = TYPE_ITEM
 
     /**
      * Returns true if the argument position corresponds to a header
@@ -122,12 +121,10 @@ abstract class SectionedRecyclerViewAdapter<H : RecyclerView.ViewHolder, VH : Re
         if (isHeader == null) {
             setupIndices()
         }
-        return isHeader!![position]
+        return isHeader?.get(position) ?: false
     }
 
-    private fun isSectionHeaderViewType(viewType: Int): Boolean {
-        return viewType == TYPE_SECTION_HEADER
-    }
+    private fun isSectionHeaderViewType(viewType: Int) = viewType == TYPE_SECTION_HEADER
 
     /**
      * Returns the number of sections in the RecyclerView
@@ -160,8 +157,12 @@ abstract class SectionedRecyclerViewAdapter<H : RecyclerView.ViewHolder, VH : Re
     protected abstract fun onBindItemViewHolder(holder: VH, section: Int, position: Int)
 
     companion object {
-
         internal const val TYPE_SECTION_HEADER = -1
         internal const val TYPE_ITEM = -2
+        internal const val TYPE_CHECKBOX_ITEM = -3
+        internal const val TYPE_NAV_BACK_ITEM = -4
+        internal const val TYPE_RADIO_GROUP_ITEM = -5
+        internal const val TYPE_RADIO_BUTTON_ITEM = -6
+        internal const val TYPE_SWITCH_ITEM = -7
     }
 }

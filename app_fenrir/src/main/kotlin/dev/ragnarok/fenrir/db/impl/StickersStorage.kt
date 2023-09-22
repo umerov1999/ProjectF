@@ -85,9 +85,9 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
     }
 
     override fun clearAccount(accountId: Long): Completable {
-        Settings.get().other().del_last_sticker_sets_sync(accountId)
-        Settings.get().other().del_last_sticker_sets_custom_sync(accountId)
-        Settings.get().other().del_last_sticker_keywords_sync(accountId)
+        Settings.get().main().del_last_sticker_sets_sync(accountId)
+        Settings.get().main().del_last_sticker_sets_custom_sync(accountId)
+        Settings.get().main().del_last_sticker_keywords_sync(accountId)
         return Completable.create { e: CompletableEmitter ->
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()

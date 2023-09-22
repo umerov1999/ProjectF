@@ -148,8 +148,8 @@ class AudiosLocalFragment : BaseMvpFragment<AudiosLocalPresenter, IAudiosLocalVi
         LocalAudioAlbumsFragment.newInstance(selectedId,
             object : LocalAudioAlbumsFragment.Listener {
                 override fun onSelected(bucket_id: Int) {
-                    if (Settings.get().other().isRememberLocalAudioAlbum) {
-                        Settings.get().other().currentLocalAudioAlbum = bucket_id
+                    if (Settings.get().main().isRememberLocalAudioAlbum) {
+                        Settings.get().main().currentLocalAudioAlbum = bucket_id
                     }
                     presenter?.fireBucketSelected(
                         bucket_id

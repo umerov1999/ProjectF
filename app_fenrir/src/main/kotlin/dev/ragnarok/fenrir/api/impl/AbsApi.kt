@@ -233,7 +233,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                     var method = it["post_url"]
                     if ("empty" == method) {
                         method = "https://" + Settings.get()
-                            .other().apiDomain + "/method/" + it["method"]
+                            .main().apiDomain + "/method/" + it["method"]
                     }
                     return@Function rawVKRequest<T>(
                         method,
@@ -265,7 +265,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                     var method = it["post_url"]
                     if ("empty" == method) {
                         method = "https://" + Settings.get()
-                            .other().apiDomain + "/method/" + it["method"]
+                            .main().apiDomain + "/method/" + it["method"]
                     }
                     return@Function rawVKRequestOnly(method, params)
                         .map(checkResponseWithErrorHandling())

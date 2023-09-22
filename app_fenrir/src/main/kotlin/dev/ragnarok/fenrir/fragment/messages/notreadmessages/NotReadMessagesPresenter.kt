@@ -10,7 +10,9 @@ import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Side
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.getSelected
 import dev.ragnarok.fenrir.util.Utils.indexOf
@@ -34,7 +36,7 @@ class NotReadMessagesPresenter(
     private var unreadCount: Int
     override fun onGuiCreated(viewHost: INotReadMessagesView) {
         super.onGuiCreated(viewHost)
-        viewHost.displayMessages(data, lastReadId)
+        viewHost.displayMessages(accountId, data, lastReadId)
         loadingState.updateState()
         resolveToolbar()
         resolveUnreadCount()
@@ -251,12 +253,39 @@ class NotReadMessagesPresenter(
         )
     }
 
-    public override fun onMessageClick(message: Message) {
-        readUnreadMessagesUpIfExists(message)
+    public override fun onMessageClick(message: Message, position: Int, x: Int?, y: Int?) {
+        if (!readUnreadMessagesUpIfExists(message)) {
+            if (x != null && y != null) {
+                resolvePopupMenu(message, position, x, y)
+            }
+        }
     }
 
-    private fun readUnreadMessagesUpIfExists(message: Message) {
-        if (isHiddenAccount(accountId)) return
+    private fun resolvePopupMenu(message: Message, position: Int, x: Int, y: Int) {
+        if (isHiddenAccount(accountId) || !Settings.get()
+                .main().isChat_popup_menu || Utils.countOfSelection(
+                data
+            ) > 0
+        ) {
+            return
+        }
+        message.isSelected = true
+        safeNotifyItemChanged(position)
+
+        view?.showPopupOptions(
+            position,
+            x,
+            y,
+            canEdit = false,
+            canPin = false,
+            canStar = false,
+            doStar = false,
+            canSpam = !message.isOut
+        )
+    }
+
+    private fun readUnreadMessagesUpIfExists(message: Message): Boolean {
+        if (isHiddenAccount(accountId)) return false
 
         if (!message.isOut && message.originalId > lastReadId.getIncoming()) {
             lastReadId.setIncoming(message.originalId)
@@ -278,7 +307,9 @@ class NotReadMessagesPresenter(
                 }) { t ->
                     showError(t)
                 })
+            return true
         }
+        return false
     }
 
     private fun onUpDataLoaded(messages: List<Message>) {

@@ -112,6 +112,8 @@ class VKApiMessage
     var payload // "payload":"null"
             : String? = null
     var conversation_message_id = 0
+    var reactions: ArrayList<VKApiReaction>? = null
+    var reaction_id: Int = 0
     var update_time: Long = 0
 
     companion object {

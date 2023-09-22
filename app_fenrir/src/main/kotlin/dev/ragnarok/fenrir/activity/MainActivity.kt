@@ -349,11 +349,11 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     private var isZoomPhoto = false
     private val snowLayout: Int
         get() = if (Settings.get()
-                .other().is_side_navigation
+                .main().is_side_navigation
         ) R.layout.activity_main_side_with_snow else R.layout.activity_main_with_snow
     private val normalLayout: Int
         get() = if (Settings.get()
-                .other().is_side_navigation
+                .main().is_side_navigation
         ) R.layout.activity_main_side else R.layout.activity_main
 
     @MainActivityTransforms
@@ -392,7 +392,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         Utils.registerColorsThorVG(this)
 
         super.onCreate(savedInstanceState)
-        isZoomPhoto = Settings.get().other().isDo_zoom_photo
+        isZoomPhoto = Settings.get().main().isDo_zoom_photo
         mCompositeDisposable.add(
             Settings.get()
                 .accounts()
@@ -419,7 +419,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
         mViewFragment = findViewById(R.id.fragment)
         val anim: ObjectAnimator
-        if (mDrawerLayout != null && Settings.get().other().is_side_navigation) {
+        if (mDrawerLayout != null && Settings.get().main().is_side_navigation) {
             navigationView?.setUp(mDrawerLayout)
             anim = ObjectAnimator.ofPropertyValuesHolder(
                 mViewFragment, PropertyValuesHolder.ofFloat(
@@ -487,13 +487,13 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                         )
                         .fromIOToMain()
                         .subscribe(RxUtils.dummy()) { t ->
-                            if (Settings.get().other().isDeveloper_mode) {
+                            if (Settings.get().main().isDeveloper_mode) {
                                 createCustomToast(this).showToastThrowable(t)
                             }
                         })
-                    Settings.get().other().last_audio_sync.let {
+                    Settings.get().main().last_audio_sync.let {
                         if (it > 0 && (System.currentTimeMillis() / 1000L) - it > 900) {
-                            Settings.get().other().set_last_audio_sync(-1)
+                            Settings.get().main().set_last_audio_sync(-1)
                             mCompositeDisposable.add(
                                 Includes.stores.tempStore().deleteAudios()
                                     .fromIOToMain()
@@ -501,8 +501,8 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             )
                         }
                     }
-                    Settings.get().other().appStoredVersionEqual
-                    if (Settings.get().other().isDelete_cache_images) {
+                    Settings.get().main().appStoredVersionEqual
+                    if (Settings.get().main().isDelete_cache_images) {
                         cleanCache(this, false)
                     }
                 }
@@ -535,7 +535,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                         return
                     }
                 }
-                if (supportFragmentManager.backStackEntryCount == 1) {
+                if (supportFragmentManager.backStackEntryCount == 1 || supportFragmentManager.backStackEntryCount <= 0) {
                     if (getMainActivityTransform() != MainActivityTransforms.SWIPEBLE) {
                         if (isFragmentWithoutNavigation) {
                             openNavigationPage(AbsNavigationView.SECTION_ITEM_FEED, false)
@@ -596,13 +596,13 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
     private fun checkFCMRegistration(onlyCheckGMS: Boolean) {
         if (!checkPlayServices(this)) {
-            if (!Settings.get().other().isDisabledErrorFCM) {
+            if (!Settings.get().main().isDisabledErrorFCM) {
                 mViewFragment?.let {
                     CustomSnackbars.createCustomSnackbars(mViewFragment, mBottomNavigationContainer)
                         ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
                         ?.themedSnack(R.string.this_device_does_not_support_fcm)
                         ?.setAction(R.string.button_access) {
-                            Settings.get().other().setDisableErrorFCM(true)
+                            Settings.get().main().setDisableErrorFCM(true)
                         }
                         ?.show()
                 }
@@ -637,7 +637,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             if (!isFragmentWithoutNavigation) {
                 mToolbar?.setNavigationIcon(
                     if (Settings.get()
-                            .other().isRunes_show
+                            .main().isRunes_show
                     ) R.drawable.client_round else R.drawable.client_round_vk
                 )
                 mToolbar?.setNavigationOnClickListener {
@@ -801,7 +801,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         navigationView?.onAccountChange(newAccountId)
         Accounts.showAccountSwitchedToast(this)
         updateNotificationCount(newAccountId)
-        if (!Settings.get().other().isDeveloper_mode) {
+        if (!Settings.get().main().isDeveloper_mode) {
             stop()
         }
     }
@@ -984,7 +984,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     private fun openChat(accountId: Long, messagesOwnerId: Long, peer: Peer, closeMain: Boolean) {
-        if (Settings.get().other().isEnable_show_recent_dialogs) {
+        if (Settings.get().main().isEnable_show_recent_dialogs) {
             val recentChat = RecentChat(accountId, peer.id, peer.getTitle(), peer.avaUrl)
             navigationView?.appendRecentChat(recentChat)
             navigationView?.refreshNavigationItems()
@@ -1084,7 +1084,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         }
         mCurrentFrontSection = item
         navigationView?.selectPage(item)
-        if (Settings.get().other().isDo_not_clear_back_stack && menu && isPlaying) {
+        if (Settings.get().main().isDo_not_clear_back_stack && menu && isPlaying) {
             doClearBackStack = !doClearBackStack
         }
         if (doClearBackStack) {
@@ -1272,7 +1272,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     override fun onChatResume(accountId: Long, peerId: Long, title: String?, imgUrl: String?) {
-        if (Settings.get().other().isEnable_show_recent_dialogs) {
+        if (Settings.get().main().isEnable_show_recent_dialogs) {
             val recentChat = RecentChat(accountId, peerId, title, imgUrl)
             navigationView?.appendRecentChat(recentChat)
             navigationView?.refreshNavigationItems()
@@ -1338,12 +1338,12 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             navigationView?.closeSheet()
             navigationView?.blockSheet()
             mBottomNavigationContainer?.visibility = View.GONE
-            if (Settings.get().other().is_side_navigation) {
+            if (Settings.get().main().is_side_navigation) {
                 findViewById<MaterialCardView>(R.id.miniplayer_side_root)?.visibility = View.GONE
             }
         } else {
             mBottomNavigationContainer?.visibility = View.VISIBLE
-            if (Settings.get().other().is_side_navigation) {
+            if (Settings.get().main().is_side_navigation) {
                 findViewById<MaterialCardView>(R.id.miniplayer_side_root)?.visibility = View.VISIBLE
             }
             navigationView?.unblockSheet()
@@ -1458,7 +1458,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             }
 
             Place.AUDIOS -> attachToFront(
-                if (Settings.get().other().isAudio_catalog_v2) CatalogV2ListFragment.newInstance(
+                if (Settings.get().main().isAudio_catalog_v2) CatalogV2ListFragment.newInstance(
                     args.getLong(Extra.ACCOUNT_ID),
                     args.getLong(Extra.OWNER_ID)
                 ) else AudiosTabsFragment.newInstance(

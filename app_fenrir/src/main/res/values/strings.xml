@@ -1971,4 +1971,7 @@
     <string name="remember">Remember</string>
     <string name="instant_photo_display">Instant photo display</string>
     <string name="picasso_dispatcher" translatable="false">Picasso3 dispatcher</string>
+    <string name="select_more">Select More…</string>
+    <string name="chat_popup_menu">Popup Menu in chat</string>
+    <string name="reactions">Reactions</string>
 </resources>

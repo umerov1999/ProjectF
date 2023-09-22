@@ -24,17 +24,16 @@
  ***************************************************************************/
 
 #include "tfile.h"
+
 #include "tfilestream.h"
-#include "tstring.h"
-#include "tdebug.h"
 #include "tpropertymap.h"
+#include "tstring.h"
 
 #ifdef _WIN32
 # include <windows.h>
 # include <io.h>
 #else
-# include <cstdio>
-# include <unistd.h>
+#  include <unistd.h>
 #endif
 
 #ifndef R_OK
@@ -44,9 +43,6 @@
 # define W_OK 2
 #endif
 
-#include "mpegfile.h"
-#include "apefile.h"
-
 using namespace TagLib;
 
 class File::FilePrivate
@@ -54,8 +50,9 @@ class File::FilePrivate
 public:
   FilePrivate(IOStream *stream, bool owner) :
     stream(stream),
-    streamOwner(owner),
-    valid(true) {}
+    streamOwner(owner)
+  {
+  }
 
   ~FilePrivate()
   {
@@ -68,7 +65,7 @@ public:
 
   IOStream *stream;
   bool streamOwner;
-  bool valid;
+  bool valid { true };
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +122,6 @@ offset_t File::find(const ByteVector &pattern, offset_t fromOffset, const ByteVe
   // The position in the file that the current buffer starts at.
 
   offset_t bufferOffset = fromOffset;
-  ByteVector buffer;
 
   // These variables are used to keep track of a partial match that happens at
   // the end of a buffer.
@@ -160,7 +156,7 @@ offset_t File::find(const ByteVector &pattern, offset_t fromOffset, const ByteVe
   // then check for "before".  The order is important because it gives priority
   // to "real" matches.
 
-  for(buffer = readBlock(bufferSize()); buffer.size() > 0; buffer = readBlock(bufferSize())) {
+  for(auto buffer = readBlock(bufferSize()); !buffer.isEmpty(); buffer = readBlock(bufferSize())) {
 
     // (1) previous partial match
 

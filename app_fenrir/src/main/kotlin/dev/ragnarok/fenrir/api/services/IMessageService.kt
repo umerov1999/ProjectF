@@ -1,10 +1,12 @@
 package dev.ragnarok.fenrir.api.services
 
+import dev.ragnarok.fenrir.api.model.Assets
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiConversation
 import dev.ragnarok.fenrir.api.model.VKApiJsonString
 import dev.ragnarok.fenrir.api.model.VKApiLongpollServer
 import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.VKApiReactionAsset
 import dev.ragnarok.fenrir.api.model.response.AttachmentsHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.ChatsInfoResponse
@@ -649,6 +651,42 @@ class IMessageService : IServiceRest() {
                 "peer_id" to peer_id,
                 "member_id" to member_id,
                 "role" to role
+            ), baseInt
+        )
+    }
+
+    fun getReactionsAssets(
+        client_version: Int?
+    ): Single<BaseResponse<Assets<VKApiReactionAsset>>> {
+        return rest.request(
+            "messages.getReactionsAssets", form(
+                "client_version" to client_version
+            ), assets(VKApiReactionAsset.serializer())
+        )
+    }
+
+    fun sendReaction(
+        peer_id: Long,
+        cmid: Int,
+        reaction_id: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.sendReaction", form(
+                "peer_id" to peer_id,
+                "cmid" to cmid,
+                "reaction_id" to reaction_id
+            ), baseInt
+        )
+    }
+
+    fun deleteReaction(
+        peer_id: Long,
+        cmid: Int
+    ): Single<BaseResponse<Int>> {
+        return rest.request(
+            "messages.deleteReaction", form(
+                "peer_id" to peer_id,
+                "cmid" to cmid
             ), baseInt
         )
     }

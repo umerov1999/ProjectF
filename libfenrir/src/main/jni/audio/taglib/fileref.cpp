@@ -30,11 +30,10 @@
 #include "fileref.h"
 
 #include <cstring>
+#include <utility>
 
-#include "tdebug.h"
-#include "tfile.h"
 #include "tfilestream.h"
-#include "tstring.h"
+#include "tdebug.h"
 
 #include "mpegfile.h"
 #include "id3v2framefactory.h"
@@ -52,8 +51,7 @@ class FileRef::StreamTypeResolver::StreamTypeResolverPrivate
 
 namespace
 {
-  typedef List<const FileRef::FileTypeResolver *> ResolverList;
-  ResolverList fileTypeResolvers;
+  List<const FileRef::FileTypeResolver *> fileTypeResolvers;
 
   // Detect the file type by user-defined resolvers.
 
@@ -67,8 +65,8 @@ namespace
     if(::strlen(fileName) == 0)
       return nullptr;
 #endif
-    for(auto it = fileTypeResolvers.cbegin(); it != fileTypeResolvers.cend(); ++it) {
-      File *file = (*it)->createFile(fileName, readAudioProperties, audioPropertiesStyle);
+    for(const auto &resolver : std::as_const(fileTypeResolvers)) {
+      File *file = resolver->createFile(fileName, readAudioProperties, audioPropertiesStyle);
       if(file)
         return file;
     }
@@ -79,8 +77,8 @@ namespace
   File *detectByResolvers(IOStream* stream, bool readAudioProperties,
                           AudioProperties::ReadStyle audioPropertiesStyle)
   {
-    for(auto it = fileTypeResolvers.cbegin(); it != fileTypeResolvers.cend(); ++it) {
-      if(auto streamResolver = dynamic_cast<const FileRef::StreamTypeResolver*>(*it)) {
+    for(const auto &resolver : std::as_const(fileTypeResolvers)) {
+      if(auto streamResolver = dynamic_cast<const FileRef::StreamTypeResolver *>(resolver)) {
         if(File *file = streamResolver->createFileFromStream(
              stream, readAudioProperties, audioPropertiesStyle))
           return file;
@@ -164,8 +162,7 @@ namespace
   File* createInternal(FileName fileName, bool readAudioProperties,
                        AudioProperties::ReadStyle audioPropertiesStyle)
   {
-    File *file = detectByResolvers(fileName, readAudioProperties, audioPropertiesStyle);
-    if(file)
+    if(auto file = detectByResolvers(fileName, readAudioProperties, audioPropertiesStyle))
       return file;
 
 #ifdef _WIN32
@@ -195,10 +192,7 @@ namespace
 class FileRef::FileRefPrivate
 {
 public:
-  FileRefPrivate() :
-    file(nullptr),
-    stream(nullptr) {}
-
+  FileRefPrivate() = default;
   ~FileRefPrivate()
   {
     delete file;
@@ -208,8 +202,8 @@ public:
   FileRefPrivate(const FileRefPrivate &) = delete;
   FileRefPrivate &operator=(const FileRefPrivate &) = delete;
 
-  File     *file;
-  IOStream *stream;
+  File *file { nullptr };
+  IOStream *stream { nullptr };
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -240,7 +234,7 @@ FileRef::FileRef(File *file) :
   d->file = file;
 }
 
-FileRef::FileRef(const FileRef &ref) = default;
+FileRef::FileRef(const FileRef &) = default;
 
 FileRef::~FileRef() = default;
 
@@ -326,11 +320,7 @@ bool FileRef::isNull() const
   return (!d->file || !d->file->isValid());
 }
 
-FileRef &FileRef::operator=(const FileRef &ref)
-{
-  FileRef(ref).swap(*this);
-  return *this;
-}
+FileRef &FileRef::operator=(const FileRef &) = default;
 
 void FileRef::swap(FileRef &ref)
 {

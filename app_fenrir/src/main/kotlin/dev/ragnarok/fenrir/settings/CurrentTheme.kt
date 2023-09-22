@@ -60,10 +60,10 @@ object CurrentTheme {
     }
 
     private fun getStatic(activity: Activity): Drawable {
-        if (Settings.get().other().isCustom_chat_color) {
+        if (Settings.get().main().isCustom_chat_color) {
             return GradientDrawable(
                 GradientDrawable.Orientation.TL_BR,
-                intArrayOf(Settings.get().other().colorChat, Settings.get().other().secondColorChat)
+                intArrayOf(Settings.get().main().colorChat, Settings.get().main().secondColorChat)
             )
         }
         val color = getColorFromAttrs(R.attr.messages_background_color, activity, Color.WHITE)
@@ -83,10 +83,10 @@ object CurrentTheme {
                     val d = Drawable.createFromPath(bitmap.absolutePath)
                         ?: return getStatic(activity)
                     if (Settings.get()
-                            .other().isCustom_chat_color
+                            .main().isCustom_chat_color
                     ) setColorFilter(
                         d,
-                        Settings.get().other().colorChat
+                        Settings.get().main().colorChat
                     )
                     return d
                 }
@@ -95,9 +95,9 @@ object CurrentTheme {
 
             else -> return getStatic(activity)
         }
-        if (Settings.get().other().isCustom_chat_color) {
+        if (Settings.get().main().isCustom_chat_color) {
             val r1 = ret?.mutate()
-            setColorFilter(r1, Settings.get().other().colorChat)
+            setColorFilter(r1, Settings.get().main().colorChat)
             return r1
         }
         return ret

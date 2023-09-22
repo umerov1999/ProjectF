@@ -107,7 +107,7 @@ class LoadMoreFooterHelper {
         fun createFrom(view: View?, callback: Callback?): LoadMoreFooterHelper? {
             view ?: return null
             val helper = LoadMoreFooterHelper()
-            helper.animation_id = Settings.get().other().endListAnimation
+            helper.animation_id = Settings.get().main().endListAnimation
             helper.holder = Holder(view)
             helper.callback = callback
             helper.holder?.bLoadMore?.setOnClickListener { callback?.onLoadMoreClick() }

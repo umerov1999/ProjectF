@@ -38,7 +38,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
     private val netSearchDisposable = CompositeDisposable()
     private val filterDisposable = CompositeDisposable()
     private val isNotFriendShow: Boolean =
-        Settings.get().other().isOwnerInChangesMonitor(userId) && userId != accountId
+        Settings.get().main().isOwnerInChangesMonitor(userId) && userId != accountId
     private var actualEndOfContent = false
     private var netSearchEndOfContent = false
     private var actualLoadingNow = false
@@ -203,7 +203,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
         val filter = filter
         val single: Single<List<Community>>
 
-        val in_page = Settings.get().other().isCommunities_in_page_search
+        val in_page = Settings.get().main().isCommunities_in_page_search
         val inc = if (in_page) 1000 else 100
         val searchSingle = if (in_page) communitiesInteractor.getActual(
             accountId,

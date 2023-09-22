@@ -54,7 +54,7 @@ class RequestExecutePresenter(accountId: Long, savedInstanceState: Bundle?) :
                     val name = parts[0].lowercase(Locale.getDefault()).trim { it <= ' ' }
                     var value = parts[1].trim { it <= ' ' }
                     value = value.replace("\"".toRegex(), "")
-                    if ((name == "user_id" || name == "peer_id" || name == "owner_id") && (value.equals(
+                    if ((name == "user_id" || name == "peer_id" || name == "peer_ids" || name == "owner_id") && (value.equals(
                             "my",
                             ignoreCase = true
                         ) || value.equals("я", ignoreCase = true))

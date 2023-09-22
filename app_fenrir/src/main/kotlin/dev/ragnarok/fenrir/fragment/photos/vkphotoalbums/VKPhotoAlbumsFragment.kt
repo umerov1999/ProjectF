@@ -250,7 +250,7 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
     override fun onPrepareMenu(menu: Menu) {
         super.onPrepareMenu(menu)
         menu.findItem(R.id.action_photo_toggle_like).setIcon(
-            if (Settings.get().other().isDisable_likes) R.drawable.ic_no_heart else R.drawable.heart
+            if (Settings.get().main().isDisable_likes) R.drawable.ic_no_heart else R.drawable.heart
         )
     }
 
@@ -262,7 +262,7 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
             }
 
             R.id.action_photo_toggle_like -> {
-                Settings.get().other().isDisable_likes = !Settings.get().other().isDisable_likes
+                Settings.get().main().isDisable_likes = !Settings.get().main().isDisable_likes
                 requireActivity().invalidateOptionsMenu()
                 true
             }

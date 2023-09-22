@@ -26,10 +26,10 @@
 #ifndef TAGLIB_LIST_H
 #define TAGLIB_LIST_H
 
-#include "taglib.h"
-
 #include <list>
 #include <memory>
+
+#include "taglib.h"
 
 namespace TagLib {
 
@@ -55,8 +55,8 @@ namespace TagLib {
   {
   public:
 #ifndef DO_NOT_DOCUMENT
-    typedef typename std::list<T>::iterator Iterator;
-    typedef typename std::list<T>::const_iterator ConstIterator;
+    using Iterator = typename std::list<T>::iterator;
+    using ConstIterator = typename std::list<T>::const_iterator;
 #endif
 
     /*!
@@ -114,9 +114,9 @@ namespace TagLib {
     ConstIterator cend() const;
 
     /*!
-     * Inserts a copy of \a value before \a it.
+     * Inserts a copy of \a item before \a it.
      */
-    Iterator insert(Iterator it, const T &value);
+    Iterator insert(Iterator it, const T &item);
 
     /*!
      * Inserts the \a value into the list.  This assumes that the list is

@@ -38,15 +38,7 @@
 #define TAGLIB_CONSTRUCT_BITSET(x) static_cast<unsigned long>(x)
 #endif
 
-#if __cplusplus >= 201402
 #define TAGLIB_DEPRECATED [[deprecated]]
-#elif defined(__GNUC__) || defined(__clang__)
-#define TAGLIB_DEPRECATED __attribute__((deprecated))
-#elif defined(_MSC_VER)
-#define TAGLIB_DEPRECATED __declspec(deprecated)
-#else
-#define TAGLIB_DEPRECATED
-#endif
 
 #ifndef _WIN32
 #include <sys/types.h>
@@ -70,26 +62,26 @@ namespace TagLib {
 
   // These integer types are deprecated. Do not use them.
 
-  typedef wchar_t            wchar;   // Assumed to be sufficient to store a UTF-16 char.
-  typedef unsigned char      uchar;
-  typedef unsigned short     ushort;
-  typedef unsigned int       uint;
-  typedef unsigned long      ulong;
-  typedef unsigned long long ulonglong;
+  using wchar = wchar_t; // Assumed to be sufficient to store a UTF-16 char.
+  using uchar = unsigned char;
+  using ushort = unsigned short;
+  using uint = unsigned int;
+  using ulong = unsigned long;
+  using ulonglong = unsigned long long;
 
   // Offset or length type for I/O streams.
   // In Win32, always 64bit. Otherwise, equivalent to off_t.
 #ifdef _WIN32
-  typedef long long offset_t;
+  using offset_t = long long;
 #else
-  typedef off_t     offset_t;
+  using offset_t = off_t;
 #endif
 
   /*!
    * Unfortunately std::wstring isn't defined on some systems, (i.e. GCC < 3)
    * so I'm providing something here that should be constant.
    */
-  typedef std::basic_string<wchar_t> wstring;
+  using wstring = std::basic_string<wchar_t>;
 }  // namespace TagLib
 
 /*!

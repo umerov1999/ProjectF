@@ -240,6 +240,7 @@ struct Matrix
     float e31, e32, e33;
 };
 
+
 /**
  * @brief A data structure representing a texture mesh vertex
  *
@@ -1040,7 +1041,7 @@ public:
      *
      * @return Result::Success when succeed, Result::NonSupport unsupported value, Result::FailedAllocation otherwise.
      * 
-     * @BETA_API
+     * @since 0.11
      */
     Result strokeMiterlimit(float miterlimit) noexcept;
 
@@ -1194,7 +1195,7 @@ public:
      *
      * @return The stroke miterlimit value when succeed, 4 if no stroke was set.
      *
-     * @BETA_API
+     * @since 0.11
      */
     float strokeMiterlimit() const noexcept;
 

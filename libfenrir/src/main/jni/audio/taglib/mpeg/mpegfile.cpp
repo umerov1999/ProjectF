@@ -25,18 +25,16 @@
 
 #include "mpegfile.h"
 
-#include "tagunion.h"
-#include "tagutils.h"
-#include "id3v2tag.h"
-#include "id3v2header.h"
-#include "id3v1tag.h"
+#include "tdebug.h"
+#include "tpropertymap.h"
 #include "apefooter.h"
 #include "apetag.h"
-#include "tdebug.h"
-
+#include "id3v1tag.h"
+#include "id3v2tag.h"
+#include "tagunion.h"
+#include "tagutils.h"
 #include "mpegheader.h"
 #include "mpegutils.h"
-#include "tpropertymap.h"
 
 using namespace TagLib;
 
@@ -49,13 +47,9 @@ class MPEG::File::FilePrivate
 {
 public:
   FilePrivate(const ID3v2::FrameFactory *frameFactory = ID3v2::FrameFactory::instance()) :
-    ID3v2FrameFactory(frameFactory),
-    ID3v2Location(-1),
-    ID3v2OriginalSize(0),
-    APELocation(-1),
-    APEOriginalSize(0),
-    ID3v1Location(-1),
-    properties(nullptr) {}
+    ID3v2FrameFactory(frameFactory)
+  {
+  }
 
   ~FilePrivate()
   {
@@ -67,17 +61,17 @@ public:
 
   const ID3v2::FrameFactory *ID3v2FrameFactory;
 
-  offset_t ID3v2Location;
-  long ID3v2OriginalSize;
+  offset_t ID3v2Location { -1 };
+  long ID3v2OriginalSize { 0 };
 
-  offset_t APELocation;
-  long APEOriginalSize;
+  offset_t APELocation { -1 };
+  long APEOriginalSize { 0 };
 
-  offset_t ID3v1Location;
+  offset_t ID3v1Location { -1 };
 
   TagUnion tag;
 
-  Properties *properties;
+  Properties *properties { nullptr };
 };
 
 ////////////////////////////////////////////////////////////////////////////////

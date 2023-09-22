@@ -200,7 +200,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                         return
                     }
                 }
-                if (supportFragmentManager.backStackEntryCount == 1) {
+                if (supportFragmentManager.backStackEntryCount == 1 || supportFragmentManager.backStackEntryCount <= 0) {
                     if (mLastBackPressedTime < 0
                         || mLastBackPressedTime + DOUBLE_BACK_PRESSED_TIMEOUT > System.currentTimeMillis()
                     ) {

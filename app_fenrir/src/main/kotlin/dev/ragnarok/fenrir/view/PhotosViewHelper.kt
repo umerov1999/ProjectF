@@ -24,7 +24,6 @@ import dev.ragnarok.fenrir.view.mozaik.MozaikLayout
 import dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
 import dev.ragnarok.fenrir.view.natives.animation.AspectRatioAnimatedShapeableImageView
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.addZoomableView
-import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.removeZoomableView
 
 class PhotosViewHelper internal constructor(
     private val context: Context,
@@ -32,21 +31,29 @@ class PhotosViewHelper internal constructor(
 ) {
     @PhotoSize
     private val mPhotoPreviewSize = Settings.get().main().prefPreviewImageSize
-    private val isAutoplayGif = Settings.get().other().isAutoplay_gif
+    private val isAutoplayGif = Settings.get().main().isAutoplay_gif
 
     @SuppressLint("SetTextI18n")
     fun displayVideos(videos: List<PostImage>, container: ViewGroup) {
-        container.visibility = if (videos.isEmpty()) View.GONE else View.VISIBLE
         if (videos.isEmpty()) {
+            if (container.childCount > 0) {
+                container.removeAllViews()
+            }
+            container.visibility = View.GONE
             return
         }
+        container.visibility = View.VISIBLE
+
         val i = videos.size - container.childCount
         for (j in 0 until i) {
             val root = LayoutInflater.from(context)
                 .inflate(R.layout.item_video_attachment, container, false)
             container.addView(root)
         }
-        for (g in 0 until container.childCount) {
+        if (container.childCount > videos.size) {
+            container.removeViews(videos.size, container.childCount - videos.size)
+        }
+        for (g in videos.indices) {
             val tmpV = container.getChildAt(g)
             var holder: VideoHolder? =
                 if (tmpV.tag is VideoHolder) tmpV.tag as VideoHolder else null
@@ -54,75 +61,72 @@ class PhotosViewHelper internal constructor(
                 holder = VideoHolder(tmpV)
                 tmpV.tag = holder
             }
-            if (g < videos.size) {
-                val image = videos[g]
-                holder.vgVideo.setOnClickListener {
-                    if (image.type == PostImage.TYPE_VIDEO) {
-                        val video = image.attachment as Video
-                        attachmentsActionCallback.onVideoPlay(video)
-                    }
-                }
-                val url = image.getPreviewUrl(mPhotoPreviewSize)
+            val image = videos[g]
+            holder.vgVideo.setOnClickListener {
                 if (image.type == PostImage.TYPE_VIDEO) {
                     val video = image.attachment as Video
-                    holder.tvDelay.text = AppTextUtils.getDurationString(video.duration)
-                    holder.tvTitle.text = Utils.firstNonEmptyString(video.title, " ")
+                    attachmentsActionCallback.onVideoPlay(video)
+                }
+            }
+            val url = image.getPreviewUrl(mPhotoPreviewSize)
+            if (image.type == PostImage.TYPE_VIDEO) {
+                val video = image.attachment as Video
+                holder.tvDelay.text = AppTextUtils.getDurationString(video.duration)
+                holder.tvTitle.text = Utils.firstNonEmptyString(video.title, " ")
 
-                    if (isAutoplayGif && video.trailer.nonNullNoEmpty()) {
-                        PicassoInstance.with().cancelRequest(holder.vgVideo)
-                        holder.vgVideo.setDecoderCallback(object :
-                            AnimatedShapeableImageView.OnDecoderInit {
-                            override fun onLoaded(success: Boolean) {
-                                if (!success) {
-                                    if (url.nonNullNoEmpty()) {
-                                        PicassoInstance.with()
-                                            .load(url)
-                                            .placeholder(R.drawable.background_gray)
-                                            .tag(Constants.PICASSO_TAG)
-                                            .into(holder.vgVideo)
-                                        tmpV.visibility = View.VISIBLE
-                                    } else {
-                                        PicassoInstance.with().cancelRequest(holder.vgVideo)
-                                        tmpV.visibility = View.GONE
-                                    }
+                if (isAutoplayGif && video.trailer.nonNullNoEmpty()) {
+                    PicassoInstance.with().cancelRequest(holder.vgVideo)
+                    holder.vgVideo.setDecoderCallback(object :
+                        AnimatedShapeableImageView.OnDecoderInit {
+                        override fun onLoaded(success: Boolean) {
+                            if (!success) {
+                                if (url.nonNullNoEmpty()) {
+                                    PicassoInstance.with()
+                                        .load(url)
+                                        .placeholder(R.drawable.background_gray)
+                                        .tag(Constants.PICASSO_TAG)
+                                        .into(holder.vgVideo)
+                                    tmpV.visibility = View.VISIBLE
+                                } else {
+                                    PicassoInstance.with().cancelRequest(holder.vgVideo)
+                                    tmpV.visibility = View.GONE
                                 }
                             }
-                        })
-                        holder.vgVideo.fromNet(
-                            (video.ownerId.toString() + "_" + image.attachment.id.toString()),
-                            video.trailer,
-                            Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
-                        )
-                    } else if (url.nonNullNoEmpty()) {
-                        PicassoInstance.with()
-                            .load(url)
-                            .placeholder(R.drawable.background_gray)
-                            .tag(Constants.PICASSO_TAG)
-                            .into(holder.vgVideo)
-                        tmpV.visibility = View.VISIBLE
-                    } else {
-                        PicassoInstance.with().cancelRequest(holder.vgVideo)
-                        tmpV.visibility = View.GONE
-                    }
+                        }
+                    })
+                    holder.vgVideo.fromNet(
+                        (video.ownerId.toString() + "_" + image.attachment.id.toString()),
+                        video.trailer,
+                        Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
+                    )
+                } else if (url.nonNullNoEmpty()) {
+                    PicassoInstance.with()
+                        .load(url)
+                        .placeholder(R.drawable.background_gray)
+                        .tag(Constants.PICASSO_TAG)
+                        .into(holder.vgVideo)
+                    tmpV.visibility = View.VISIBLE
                 } else {
-                    if (url.nonNullNoEmpty()) {
-                        PicassoInstance.with()
-                            .load(url)
-                            .placeholder(R.drawable.background_gray)
-                            .tag(Constants.PICASSO_TAG)
-                            .into(holder.vgVideo)
-                        tmpV.visibility = View.VISIBLE
-                    } else {
-                        PicassoInstance.with().cancelRequest(holder.vgVideo)
-                        tmpV.visibility = View.GONE
-                    }
+                    PicassoInstance.with().cancelRequest(holder.vgVideo)
+                    tmpV.visibility = View.GONE
                 }
             } else {
-                tmpV.visibility = View.GONE
+                if (url.nonNullNoEmpty()) {
+                    PicassoInstance.with()
+                        .load(url)
+                        .placeholder(R.drawable.background_gray)
+                        .tag(Constants.PICASSO_TAG)
+                        .into(holder.vgVideo)
+                    tmpV.visibility = View.VISIBLE
+                } else {
+                    PicassoInstance.with().cancelRequest(holder.vgVideo)
+                    tmpV.visibility = View.GONE
+                }
             }
         }
     }
 
+    /*
     fun removeZoomable(container: ViewGroup?) {
         if (container == null)
             return
@@ -130,13 +134,18 @@ class PhotosViewHelper internal constructor(
             removeZoomableView(container.getChildAt(g))
         }
     }
+     */
 
     fun displayPhotos(photos: List<PostImage>, container: ViewGroup) {
-        container.visibility = if (photos.isEmpty()) View.GONE else View.VISIBLE
         if (photos.isEmpty()) {
-            removeZoomable(container)
+            if (container.childCount > 0) {
+                container.removeAllViews()
+            }
+            container.visibility = View.GONE
             return
         }
+        container.visibility = View.VISIBLE
+
         var images = photos
         if (container is MozaikLayout) {
             if (photos.size > 10) {
@@ -179,90 +188,88 @@ class PhotosViewHelper internal constructor(
         if (container is MozaikLayout) {
             container.setPhotos(images)
         }
-        for (g in 0 until container.childCount) {
+        if (container.childCount > images.size) {
+            container.removeViews(images.size, container.childCount - images.size)
+        }
+        for (g in images.indices) {
             val tmpV = container.getChildAt(g)
             var holder: Holder? = if (tmpV.tag is Holder) tmpV.tag as Holder else null
             if (holder == null) {
                 holder = Holder(tmpV)
                 tmpV.tag = holder
             }
-            if (g < images.size) {
-                addZoomableView(tmpV, holder)
-                val image = images[g]
-                holder.ivPlay.visibility =
-                    if (image.type == PostImage.TYPE_IMAGE) View.GONE else View.VISIBLE
-                holder.tvTitle.visibility =
-                    if (image.type == PostImage.TYPE_IMAGE) View.GONE else View.VISIBLE
-                holder.vgPhoto.setOnClickListener {
-                    when (image.type) {
-                        PostImage.TYPE_IMAGE -> openImages(photos, g)
-                        PostImage.TYPE_VIDEO -> {
-                            val video = image.attachment as Video
-                            attachmentsActionCallback.onVideoPlay(video)
-                        }
-
-                        PostImage.TYPE_GIF -> {
-                            val document = image.attachment as Document
-                            attachmentsActionCallback.onDocPreviewOpen(document)
-                        }
-                    }
-                }
-                val url = image.getPreviewUrl(mPhotoPreviewSize)
+            addZoomableView(tmpV, holder)
+            val image = images[g]
+            holder.ivPlay.visibility =
+                if (image.type == PostImage.TYPE_IMAGE) View.GONE else View.VISIBLE
+            holder.tvTitle.visibility =
+                if (image.type == PostImage.TYPE_IMAGE) View.GONE else View.VISIBLE
+            holder.vgPhoto.setOnClickListener {
                 when (image.type) {
+                    PostImage.TYPE_IMAGE -> openImages(photos, g)
                     PostImage.TYPE_VIDEO -> {
                         val video = image.attachment as Video
-                        holder.tvTitle.text = AppTextUtils.getDurationString(video.duration)
+                        attachmentsActionCallback.onVideoPlay(video)
                     }
 
                     PostImage.TYPE_GIF -> {
                         val document = image.attachment as Document
-                        holder.tvTitle.text = context.getString(
-                            R.string.gif,
-                            AppTextUtils.getSizeString(document.size)
-                        )
+                        attachmentsActionCallback.onDocPreviewOpen(document)
                     }
                 }
-                if (isAutoplayGif && image.type == PostImage.TYPE_GIF) {
-                    PicassoInstance.with().cancelRequest(holder.vgPhoto)
-                    holder.vgPhoto.setDecoderCallback(object :
-                        AnimatedShapeableImageView.OnDecoderInit {
-                        override fun onLoaded(success: Boolean) {
-                            if (!success) {
-                                holder.ivPlay.visibility = View.VISIBLE
-                                if (url.nonNullNoEmpty()) {
-                                    PicassoInstance.with()
-                                        .load(url)
-                                        .placeholder(R.drawable.background_gray)
-                                        .tag(Constants.PICASSO_TAG)
-                                        .into(holder.vgPhoto)
-                                    tmpV.visibility = View.VISIBLE
-                                } else {
-                                    PicassoInstance.with().cancelRequest(holder.vgPhoto)
-                                    tmpV.visibility = View.GONE
-                                }
-                            } else {
-                                holder.ivPlay.visibility = View.GONE
-                            }
-                        }
-                    })
-                    holder.vgPhoto.fromNet(
-                        ((image.attachment as Document).ownerId.toString() + "_" + image.attachment.id.toString()),
-                        image.attachment.videoPreview?.src,
-                        Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
-                    )
-                } else if (url.nonNullNoEmpty()) {
-                    PicassoInstance.with()
-                        .load(url)
-                        .placeholder(R.drawable.background_gray)
-                        .tag(Constants.PICASSO_TAG)
-                        .into(holder.vgPhoto)
-                    tmpV.visibility = View.VISIBLE
-                } else {
-                    PicassoInstance.with().cancelRequest(holder.vgPhoto)
-                    tmpV.visibility = View.GONE
+            }
+            val url = image.getPreviewUrl(mPhotoPreviewSize)
+            when (image.type) {
+                PostImage.TYPE_VIDEO -> {
+                    val video = image.attachment as Video
+                    holder.tvTitle.text = AppTextUtils.getDurationString(video.duration)
                 }
+
+                PostImage.TYPE_GIF -> {
+                    val document = image.attachment as Document
+                    holder.tvTitle.text = context.getString(
+                        R.string.gif,
+                        AppTextUtils.getSizeString(document.size)
+                    )
+                }
+            }
+            if (isAutoplayGif && image.type == PostImage.TYPE_GIF) {
+                PicassoInstance.with().cancelRequest(holder.vgPhoto)
+                holder.vgPhoto.setDecoderCallback(object :
+                    AnimatedShapeableImageView.OnDecoderInit {
+                    override fun onLoaded(success: Boolean) {
+                        if (!success) {
+                            holder.ivPlay.visibility = View.VISIBLE
+                            if (url.nonNullNoEmpty()) {
+                                PicassoInstance.with()
+                                    .load(url)
+                                    .placeholder(R.drawable.background_gray)
+                                    .tag(Constants.PICASSO_TAG)
+                                    .into(holder.vgPhoto)
+                                tmpV.visibility = View.VISIBLE
+                            } else {
+                                PicassoInstance.with().cancelRequest(holder.vgPhoto)
+                                tmpV.visibility = View.GONE
+                            }
+                        } else {
+                            holder.ivPlay.visibility = View.GONE
+                        }
+                    }
+                })
+                holder.vgPhoto.fromNet(
+                    ((image.attachment as Document).ownerId.toString() + "_" + image.attachment.id.toString()),
+                    image.attachment.videoPreview?.src,
+                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
+                )
+            } else if (url.nonNullNoEmpty()) {
+                PicassoInstance.with()
+                    .load(url)
+                    .placeholder(R.drawable.background_gray)
+                    .tag(Constants.PICASSO_TAG)
+                    .into(holder.vgPhoto)
+                tmpV.visibility = View.VISIBLE
             } else {
-                removeZoomableView(tmpV)
+                PicassoInstance.with().cancelRequest(holder.vgPhoto)
                 tmpV.visibility = View.GONE
             }
         }

@@ -1,0 +1,5 @@
+https://maven.google.com/androidx/camera/camera-camera2/1.3.0-rc02/camera-camera2-1.3.0-rc02-sources.jar
+https://maven.google.com/androidx/camera/camera-core/1.3.0-rc02/camera-core-1.3.0-rc02-sources.jar
+https://maven.google.com/androidx/camera/camera-lifecycle/1.3.0-rc02/camera-lifecycle-1.3.0-rc02-sources.jar
+https://maven.google.com/androidx/camera/camera-video/1.3.0-rc02/camera-video-1.3.0-rc02-sources.jar
+https://maven.google.com/androidx/camera/camera-view/1.3.0-rc02/camera-view-1.3.0-rc02-sources.jar

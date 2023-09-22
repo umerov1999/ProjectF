@@ -1,128 +1,217 @@
 package dev.ragnarok.fenrir.materialpopupmenu
 
 import android.content.Context
-import android.graphics.drawable.Drawable
+import android.content.res.ColorStateList
+import android.content.res.TypedArray
 import android.view.View
-import androidx.annotation.ColorInt
-import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
+import android.widget.CompoundButton
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.StyleRes
 import androidx.annotation.UiThread
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.appcompat.widget.MaterialRecyclerViewPopupWindow
+import androidx.core.widget.ImageViewCompat
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.materialpopupmenu.builder.SectionBuilder
+import dev.ragnarok.fenrir.materialpopupmenu.internal.MaterialRecyclerViewPopupWindow
+import dev.ragnarok.fenrir.materialpopupmenu.internal.MenuNavStack
 import dev.ragnarok.fenrir.materialpopupmenu.internal.PopupMenuAdapter
 
 /**
  * Holds all the required information for showing a popup menu.
  *
- * @param style Style of the popup menu. See [MaterialPopupMenuBuilder.style]
- * @param dropdownGravity Gravity of the dropdown list. See [MaterialPopupMenuBuilder.dropdownGravity]
+ * @param data container of the information
  * @param sections a list of sections
  *
  * @author Piotr Zawadzki
  */
 class MaterialPopupMenu
 internal constructor(
-    @StyleRes internal val style: Int,
-    internal val dropdownGravity: Int,
-    internal val sections: List<PopupMenuSection>,
-    internal val fixedContentWidthInPx: Int,
-    internal val dropDownVerticalOffset: Int?,
-    internal val dropDownHorizontalOffset: Int?
+    private val view: View,
+    private val context: Context,
+    private val data: MaterialPopupMenuBuilder.Data,
+    private val sections: MutableList<PopupMenuSection>,
+    private val calculateHeightOfAnchorView: Boolean,
+    private val dismissListener: Runnable?
 ) {
 
     private var popupWindow: MaterialRecyclerViewPopupWindow? = null
 
-    private var dismissListener: (() -> Unit)? = null
+    internal fun isRootMenu() = !data.isSubMenu
+
+    internal fun setIsSubMenu(
+        labelRes: Int = 0,
+        label: CharSequence? = null,
+        navBackConfig: MaterialPopupMenuBuilder.NavBackItem.() -> Unit
+    ) = apply {
+        data.isSubMenu = true
+        sections.add(0, MaterialPopupMenuBuilder.Section(context).apply {
+            navBackItem(labelRes, label, navBackConfig)
+        }.toPopupMenuSection())
+    }
+
+    internal fun setIsSubMenu(navBackItem: PopupMenuNavBackItem) = apply {
+        data.isSubMenu = true
+        sections.add(0, SectionBuilder().addNavBackItem(navBackItem).build())
+    }
 
     /**
      * Shows a popup menu in the UI.
-     *
-     * This must be called on the UI thread.
-     * @param context Context
-     * @param anchor view used to anchor the popup
      */
     @UiThread
-    fun show(context: Context, anchor: View) {
-        val style = resolvePopupStyle(context)
-        val styledContext = ContextThemeWrapper(context, style)
+    fun show() {
+        MenuNavStack.init(this)
         val popupWindow = MaterialRecyclerViewPopupWindow(
-            context = styledContext,
-            dropDownGravity = dropdownGravity,
-            fixedContentWidthInPx = fixedContentWidthInPx,
-            dropDownVerticalOffset = dropDownVerticalOffset,
-            dropDownHorizontalOffset = dropDownHorizontalOffset
+            view = view,
+            adapter = PopupMenuAdapter(sections) { popupWindow?.dismiss() },
+            context = ContextThemeWrapper(context, resolvePopupStyle()),
+            dropDownGravity = data.dropdownGravity,
+            fixedContentWidthInPx = data.fixedContentWidthInPx,
+            dropDownVerticalOffset = data.dropDownVerticalOffset,
+            dropDownHorizontalOffset = data.dropDownHorizontalOffset,
+            calculateHeightOfAnchorView = calculateHeightOfAnchorView,
+            customAnimation = data.customAnimation
         )
-        val adapter = PopupMenuAdapter(sections) { popupWindow.dismiss() }
-
-        popupWindow.adapter = adapter
-        popupWindow.anchorView = anchor
 
         popupWindow.show()
         this.popupWindow = popupWindow
-        setOnDismissListener(this.dismissListener)
+        this.popupWindow?.setOnDismissListener(dismissListener)
+    }
+
+    /**
+     * Shows a popup menu in the UI.
+     */
+    @UiThread
+    fun showAtLocation(x: Int, y: Int) {
+        MenuNavStack.init(this)
+        val popupWindow = MaterialRecyclerViewPopupWindow(
+            view = view,
+            adapter = PopupMenuAdapter(sections) { popupWindow?.dismiss() },
+            context = ContextThemeWrapper(context, resolvePopupStyle()),
+            dropDownGravity = data.dropdownGravity,
+            fixedContentWidthInPx = data.fixedContentWidthInPx,
+            dropDownVerticalOffset = data.dropDownVerticalOffset,
+            dropDownHorizontalOffset = data.dropDownHorizontalOffset,
+            calculateHeightOfAnchorView = calculateHeightOfAnchorView,
+            customAnimation = data.customAnimation
+        )
+
+        popupWindow.showAtLocation(x, y)
+        this.popupWindow = popupWindow
+        this.popupWindow?.setOnDismissListener(dismissListener)
     }
 
     /**
      * Dismisses the popup window.
      */
     @UiThread
-    fun dismiss() {
-        this.popupWindow?.dismiss()
-    }
+    fun dismiss() = popupWindow?.dismiss()
 
-    /**
-     * Sets a listener that is called when this popup window is dismissed.
-     *
-     * @param listener Listener that is called when this popup window is dismissed.
-     */
-    private fun setOnDismissListener(listener: (() -> Unit)?) {
-        this.dismissListener = listener
-        this.popupWindow?.setOnDismissListener(listener)
-    }
+    @StyleRes
+    private fun resolvePopupStyle(): Int {
+        if (data.style != 0)
+            return data.style
 
-    private fun resolvePopupStyle(context: Context): Int {
-        if (style != 0) {
-            return style
-        }
-
-        val a = context.obtainStyledAttributes(intArrayOf(R.attr.materialPopupMenuStyle))
-        val resolvedStyle = a.getResourceId(0, R.style.Widget_MPM_Menu)
+        val a: TypedArray =
+            context.obtainStyledAttributes(intArrayOf(R.attr.materialPopupMenuStyle))
+        val resolvedStyle = a.getResourceId(0, R.style.Widget_MPM_Menu_Material3)
         a.recycle()
 
         return resolvedStyle
     }
 
-    internal data class PopupMenuSection(
-        val title: CharSequence?,
-        val items: List<AbstractPopupMenuItem>
+    data class PopupMenuSection internal constructor(
+        internal val data: MaterialPopupMenuBuilder.Section.Data,
+        internal val items: List<AbstractPopupMenuItem>
     )
 
-    internal data class PopupMenuItem(
-        val label: CharSequence?,
-        @StringRes val labelRes: Int,
-        @ColorInt val labelColor: Int,
-        @DrawableRes val icon: Int,
-        val iconDrawable: Drawable?,
-        @ColorInt val iconColor: Int,
-        val hasNestedItems: Boolean,
-        override val viewBoundCallback: ViewBoundCallback,
-        override val callback: () -> Unit,
-        override val dismissOnSelect: Boolean
-    ) : AbstractPopupMenuItem(callback, dismissOnSelect, viewBoundCallback)
+    sealed class PopupMenuNormalItem(
+        override val data: MaterialPopupMenuBuilder.NormalItem.Data,
+        override val onShowCallback: OnShowCallback
+    ) : AbstractPopupMenuItem(data, onShowCallback) {
+        fun bindToViews(icon: ImageView, label: TextView) {
+            if (data.label != null) {
+                label.text = data.label
+            } else {
+                label.setText(data.labelRes)
+            }
+            label.gravity = data.labelAlignment
+            label.typeface = data.labelTypeface
+            if (data.icon != 0 || data.iconDrawable != null) {
+                with(icon) {
+                    visibility = View.VISIBLE
+                    when {
+                        data.icon != 0 -> setImageResource(data.icon)
+                        data.iconDrawable != null -> setImageDrawable(data.iconDrawable)
+                    }
+                    if (data.iconColor != 0) {
+                        ImageViewCompat.setImageTintList(
+                            this,
+                            ColorStateList.valueOf(data.iconColor)
+                        )
+                    }
+                }
+            }
+            if (data.labelColor != 0) {
+                label.setTextColor(data.labelColor)
+            }
+        }
+    }
 
-    internal data class PopupMenuCustomItem(
-        @LayoutRes val layoutResId: Int,
-        override val viewBoundCallback: ViewBoundCallback,
-        override val callback: () -> Unit,
-        override val dismissOnSelect: Boolean
-    ) : AbstractPopupMenuItem(callback, dismissOnSelect, viewBoundCallback)
+    sealed class PopupMenuToggleItem(
+        override val data: MaterialPopupMenuBuilder.ToggleItem.Data,
+        override val onShowCallback: OnShowCallback
+    ) : PopupMenuNormalItem(data, onShowCallback) {
+        fun bindToViews(icon: ImageView, label: TextView, toggle: CompoundButton) {
+            bindToViews(icon, label)
+            toggle.isChecked = data.isChecked
+            data.config?.accept(onShowCallback, toggle)
+        }
+    }
 
-    internal abstract class AbstractPopupMenuItem(
-        open val callback: () -> Unit,
-        open val dismissOnSelect: Boolean,
-        open val viewBoundCallback: ViewBoundCallback
-    )
+    data class PopupMenuItem internal constructor(
+        override val data: MaterialPopupMenuBuilder.Item.Data,
+        override val onShowCallback: OnShowCallback
+    ) : PopupMenuNormalItem(data, onShowCallback)
+
+    data class PopupMenuCheckboxItem internal constructor(
+        override val data: MaterialPopupMenuBuilder.CheckboxItem.Data,
+        override val onShowCallback: OnShowCallback
+    ) : PopupMenuToggleItem(data, onShowCallback)
+
+    data class PopupMenuSwitchItem internal constructor(
+        override val data: MaterialPopupMenuBuilder.SwitchItem.Data,
+        override val onShowCallback: OnShowCallback
+    ) : PopupMenuToggleItem(data, onShowCallback)
+
+    data class PopupMenuCustomItem internal constructor(
+        override val data: MaterialPopupMenuBuilder.CustomItem.Data,
+        override val onShowCallback: OnShowCallback
+    ) : AbstractPopupMenuItem(data, onShowCallback)
+
+    data class PopupMenuRadioGroupItem internal constructor(
+        override val data: MaterialPopupMenuBuilder.RadioGroupItem.Data,
+        override val onShowCallback: OnShowCallback
+    ) : AbstractPopupMenuItem(data, onShowCallback)
+
+    data class PopupMenuRadioButtonItem internal constructor(
+        override val data: MaterialPopupMenuBuilder.RadioButtonItem.Data,
+        override val onShowCallback: OnShowCallback
+    ) : PopupMenuToggleItem(data, onShowCallback)
+
+    data class PopupMenuNavBackItem internal constructor(
+        override val data: MaterialPopupMenuBuilder.NavBackItem.Data,
+        override val onShowCallback: OnShowCallback
+    ) : PopupMenuNormalItem(data, onShowCallback)
+
+    sealed class AbstractPopupMenuItem(
+        internal open val data: MaterialPopupMenuBuilder.AbstractItem.Data,
+        internal open val onShowCallback: OnShowCallback
+    ) {
+        internal fun dismissMenuIfAllowed() {
+            if (data.dismissOnSelect) {
+                onShowCallback.dismissPopupAction()
+            }
+        }
+    }
 }

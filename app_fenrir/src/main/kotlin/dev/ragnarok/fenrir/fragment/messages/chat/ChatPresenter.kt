@@ -29,6 +29,7 @@ import dev.ragnarok.fenrir.crypt.KeyPairDoesNotExistException
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.domain.*
 import dev.ragnarok.fenrir.domain.IOwnersRepository.Companion.MODE_NET
+import dev.ragnarok.fenrir.domain.mappers.Entity2Model
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.exception.UploadNotResolvedException
 import dev.ragnarok.fenrir.fragment.messages.AbsMessageListPresenter
@@ -132,7 +133,7 @@ class ChatPresenter(
 
     private val isEncryptionSupport: Boolean
         get() = Peer.isUser(peerId) && peerId != messagesOwnerId && !Settings.get()
-            .other().isDisabled_encryption
+            .main().isDisabled_encryption
 
     private val isEncryptionEnabled: Boolean
         get() = Settings.get()
@@ -268,6 +269,10 @@ class ChatPresenter(
         updateSubtitle()
     }
 
+    override fun resolveListView() {
+        view?.displayMessages(messagesOwnerId, data, lastReadId)
+    }
+
     fun invertChronology() {
         chronologyInvert = true
         resolveOptionMenu()
@@ -364,6 +369,16 @@ class ChatPresenter(
         }
         data.clear()
         view?.notifyDataChanged()
+    }
+
+    override fun fireReactionModeCopyClick(position: Int) {
+        if (isHiddenAccount(messagesOwnerId) || isHiddenAccount(accountId)) {
+            return
+        }
+        if (position >= 0 && data.size > position) {
+            data[position].setReactionEditMode(!data[position].reactionEditMode)
+            safeNotifyItemChanged(position)
+        }
     }
 
     private fun onPeerUpdate(updates: List<PeerUpdate>) {
@@ -721,7 +736,7 @@ class ChatPresenter(
     }
 
     private fun fireCheckMessages() {
-        if (Settings.get().other().isAuto_read) {
+        if (Settings.get().main().isAuto_read) {
             appendDisposable(
                 checkErrorMessages().fromIOToMain()
                     .subscribe({ t -> if (t) startSendService() else readAllUnreadMessagesIfExists() }) { })
@@ -729,7 +744,7 @@ class ChatPresenter(
     }
 
     fun fireNetworkChanged() {
-        if (!isHiddenAccount(accountId)) {
+        if (!isHiddenAccount(messagesOwnerId) && !isHiddenAccount(messagesOwnerId)) {
             appendDisposable(
                 checkErrorMessages().fromIOToMain()
                     .subscribe({ t -> if (t) startSendService() else readAllUnreadMessagesIfExists() }) { })
@@ -742,7 +757,7 @@ class ChatPresenter(
             lastReadId.setOutgoing(outgoing)
             view?.notifyDataChanged()
         }
-        if (Settings.get().other().isAuto_read) {
+        if (Settings.get().main().isAuto_read) {
             appendDisposable(
                 checkErrorMessages().fromIOToMain()
                     .subscribe({ t -> if (t) startSendService() else readAllUnreadMessagesIfExists() }) { })
@@ -751,7 +766,7 @@ class ChatPresenter(
 
     @SuppressLint("CheckResult")
     private fun checkErrorMessages(): Single<Boolean> {
-        if (isHiddenAccount(accountId)) return Single.just(false)
+        if (isHiddenAccount(messagesOwnerId) || isHiddenAccount(accountId)) return Single.just(false)
         val list: ArrayList<Int> = ArrayList()
         for (i: Message in data) {
             if (i.status == MessageStatus.ERROR) {
@@ -835,7 +850,7 @@ class ChatPresenter(
     }
 
     fun fireTextEdited(s: String?) {
-        if (!Settings.get().other().isHint_stickers) {
+        if (!Settings.get().main().isHint_stickers) {
             return
         }
         stickersWordsDisplayDisposable.dispose()
@@ -877,7 +892,9 @@ class ChatPresenter(
             resolvePrimaryButton()
         }
 
-        if (!isHiddenAccount(accountId) && !Settings.get().main().isDont_write) {
+        if (!isHiddenAccount(messagesOwnerId) && !isHiddenAccount(accountId) && !Settings.get()
+                .main().isDont_write
+        ) {
             readAllUnreadMessagesIfExists()
             textingNotifier.notifyAboutTyping(peerId)
         }
@@ -1159,7 +1176,7 @@ class ChatPresenter(
             } ?: run {
                 view?.setupPrimaryButtonAsRegular(
                     canSendNormalMessage(),
-                    !isHiddenAccount(accountId)
+                    !isHiddenAccount(messagesOwnerId) && !isHiddenAccount(accountId)
                 )
             }
         }
@@ -1217,50 +1234,88 @@ class ChatPresenter(
     }
 
     private fun onMessagesUpdate(updates: List<MessageUpdate>) {
+        var needReload = false
         for (update in updates) {
-            val targetIndex = indexOf(update.getMessageId())
-
-            update.getStatusUpdate()?.run {
-                if (getVkid() != null) {
+            update.getStatusUpdate().requireNonNull {
+                val targetIndex = indexOf(update.getMessageId())
+                if (it.getVkid() != null) {
                     // message was sent
-                    val alreadyExist = indexOf(getVkid().orZero()) != -1
+                    val alreadyExist = indexOf(it.getVkid().orZero()) != -1
 
                     if (alreadyExist) {
                         if (targetIndex != -1) {
                             data.removeAt(targetIndex)
+                            if (!needReload) {
+                                needReload = true
+                            }
                         }
                     } else {
                         if (targetIndex != -1) {
                             val message = data[targetIndex]
-                            message.setStatus(getStatus())
-                            message.setId(getVkid().orZero())
+                            message.setStatus(it.getStatus())
+                            message.setId(it.getVkid().orZero())
 
                             data.removeAt(targetIndex)
                             addMessageToList(message)
+                            if (!needReload) {
+                                needReload = true
+                            }
                         }
                     }
                 } else {
                     //message not sent
                     if (targetIndex != -1) {
                         val message = data[targetIndex]
-                        message.setStatus(getStatus())
+                        message.setStatus(it.getStatus())
+                        if (!needReload) {
+                            needReload = true
+                        }
                     }
                 }
-            } ?: run {
-                if (targetIndex != -1) {
-                    update.getDeleteUpdate()?.run {
-                        data[targetIndex].setDeleted(isDeleted())
-                        data[targetIndex].setDeletedForAll(isDeletedForAll())
-                    }
+            }
 
-                    update.getImportantUpdate()?.run {
-                        data[targetIndex].setImportant(isImportant())
+            update.getDeleteUpdate().requireNonNull {
+                val targetIndex = indexOf(update.getMessageId())
+                if (targetIndex != -1) {
+                    data[targetIndex].setDeleted(it.isDeleted())
+                    data[targetIndex].setDeletedForAll(it.isDeletedForAll())
+                    if (!needReload) {
+                        needReload = true
+                    }
+                }
+            }
+
+            update.getImportantUpdate().requireNonNull {
+                val targetIndex = indexOf(update.getMessageId())
+                if (targetIndex != -1) {
+                    data[targetIndex].setImportant(it.isImportant())
+                    if (!needReload) {
+                        needReload = true
+                    }
+                }
+            }
+
+            update.getReactionUpdate().requireNonNull {
+                val targetIndex = indexOf(update.getMessageId(), it.peerId())
+                if (targetIndex != -1) {
+                    if (!it.isKeepMyReaction()) {
+                        data[targetIndex].setReactionId(it.reactionId())
+                    }
+                    data[targetIndex].reactions?.clear()
+                    data[targetIndex].setReactions(null)
+                    for (react in it.reactions()) {
+                        data[targetIndex].prepareReactions(it.reactions().size)
+                            .add(Entity2Model.buildReactionFromDbo(react))
+                    }
+                    if (!needReload) {
+                        needReload = true
                     }
                 }
             }
         }
-
-        view?.notifyDataChanged()
+        if (needReload) {
+            view?.notifyDataChanged()
+        }
     }
 
     private fun onRealtimeMessageReceived(message: Message) {
@@ -1311,7 +1366,7 @@ class ChatPresenter(
                 .subscribe(dummy(), ignore())
             view?.convertToKeyboard(message.keyboard)
         }
-        if (Settings.get().other().isAuto_read && !Processors.realtimeMessages
+        if (Settings.get().main().isAuto_read && !Processors.realtimeMessages
                 .isNotificationIntercepted(accountId, peerId)
         ) {
             readAllUnreadMessagesIfExists()
@@ -1402,9 +1457,9 @@ class ChatPresenter(
         val selectionCount = countOfSelection(data)
         if (selectionCount <= 0)
             return false
-        return !data.find {
-            it.isSelected
-        }!!.isImportant
+        data.find { it.isSelected }?.isImportant?.let {
+            return !it
+        } ?: return true
     }
 
     private fun canStar(): Boolean {
@@ -1429,6 +1484,14 @@ class ChatPresenter(
             }
         }
         return true
+    }
+
+    private fun doStar(message: Message): Boolean {
+        return !message.isImportant
+    }
+
+    private fun canStar(message: Message): Boolean {
+        return message.status == MessageStatus.SENT
     }
 
     override fun resolveActionMode() {
@@ -1602,16 +1665,20 @@ class ChatPresenter(
             .subscribeIOAndIgnoreResults()
     }
 
-    override fun onMessageClick(message: Message) {
+    override fun onMessageClick(message: Message, position: Int, x: Int?, y: Int?) {
         if (message.status == MessageStatus.ERROR) {
             view?.showErrorSendDialog(message)
         } else {
-            readUnreadMessagesUpIfExists(message)
+            if (!readUnreadMessagesUpIfExists(message)) {
+                if (x != null && y != null) {
+                    resolvePopupMenu(message, position, x, y)
+                }
+            }
         }
     }
 
-    private fun readUnreadMessagesUpIfExists(message: Message) {
-        if (isHiddenAccount(accountId)) return
+    private fun readUnreadMessagesUpIfExists(message: Message): Boolean {
+        if (isHiddenAccount(messagesOwnerId) || isHiddenAccount(accountId)) return false
 
         if (!message.isOut && message.originalId > lastReadId.getIncoming()) {
             lastReadId.setIncoming(message.originalId)
@@ -1623,11 +1690,13 @@ class ChatPresenter(
                     .fromIOToMain()
                     .subscribe(dummy()) { t -> showError(view, t) }
             )
+            return true
         }
+        return false
     }
 
     private fun readAllUnreadMessagesIfExists() {
-        if (isHiddenAccount(accountId)) return
+        if (isHiddenAccount(messagesOwnerId) || isHiddenAccount(accountId)) return
         val last = if (data.nonNullNoEmpty()) data[0] else return
 
         if (!last.isOut && last.originalId > lastReadId.getIncoming()) {
@@ -1641,6 +1710,27 @@ class ChatPresenter(
                     .subscribe(dummy()) { t -> showError(view, t) }
             )
         }
+    }
+
+    private fun resolvePopupMenu(message: Message, position: Int, x: Int, y: Int) {
+        if (isHiddenAccount(messagesOwnerId) || isHiddenAccount(accountId) || !Settings.get()
+                .main().isChat_popup_menu || countOfSelection(data) > 0
+        ) {
+            return
+        }
+        message.isSelected = true
+        safeNotifyItemChanged(position)
+
+        view?.showPopupOptions(
+            position,
+            x,
+            y,
+            canEdit(message),
+            canChangePin(),
+            canStar(message),
+            doStar(message),
+            !message.isOut
+        )
     }
 
     fun fireMessageRestoreClick(message: Message) {
@@ -2239,19 +2329,35 @@ class ChatPresenter(
     }
 
     fun fireSendMyStickerClick(file: Sticker.LocalSticker) {
+        view?.scrollTo(0)
         netLoadingDisposable = checkGraffitiMessage(file)
             .fromIOToMain()
             .subscribe({
                 if (it.nonEmpty()) {
                     val kk = it.get() as AttachmentTokens.AttachmentToken
+                    val builder = SaveMessageBuilder(messagesOwnerId, peerId)
+
+                    val fwds = ArrayList<Message>()
+                    for (model in outConfig.getModels()) {
+                        if (model is FwdMessages) {
+                            fwds.addAll(model.fwds)
+                        }
+                    }
+                    if (fwds.size == 1) {
+                        builder.setForwardMessages(fwds)
+                        outConfig.getModels().clear()
+                        view?.resetInputAttachments()
+                        resolveAttachmentsCounter()
+                    }
+
                     if (!file.isAnimated) {
                         val graffiti = Graffiti().setId(kk.id).setOwner_id(kk.ownerId)
                             .setAccess_key(kk.accessKey)
-                        val builder = SaveMessageBuilder(messagesOwnerId, peerId).attach(graffiti)
+                        builder.attach(graffiti)
                         sendMessage(builder)
                     } else {
                         val doc = Document(kk.id, kk.ownerId).setAccessKey(kk.accessKey)
-                        val builder = SaveMessageBuilder(messagesOwnerId, peerId).attach(doc)
+                        builder.attach(doc)
                         sendMessage(builder)
                     }
                 }
@@ -2275,6 +2381,26 @@ class ChatPresenter(
             resolveAttachmentsCounter()
         }
         sendMessage(builder)
+    }
+
+    fun fireReactionClicked(reaction_id: Int?, conversation_message_id: Int, peerId: Long) {
+        if (isHiddenAccount(messagesOwnerId) || isHiddenAccount(accountId)) {
+            return
+        }
+        netLoadingDisposable = messagesRepository.sendOrDeleteReaction(
+            messagesOwnerId,
+            peerId,
+            conversation_message_id,
+            reaction_id
+        )
+            .fromIOToMain()
+            .subscribe({
+                val res = indexOf(conversation_message_id, peerId)
+                if (res != -1) {
+                    data[res].setReactionEditMode(false)
+                    view?.notifyItemChanged(res)
+                }
+            }, { onConversationFetchFail(it) })
     }
 
     fun fireBotSendClick(item: Keyboard.Button, context: Context) {

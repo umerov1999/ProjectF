@@ -118,9 +118,9 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
             .fromIOToMain()
             .subscribe({ owner ->
                 Export.setOnClickListener {
-                    DownloadWorkUtils.CheckDirectory(Settings.get().other().docDir)
+                    DownloadWorkUtils.CheckDirectory(Settings.get().main().docDir)
                     val file = File(
-                        Settings.get().other().docDir, DownloadWorkUtils.makeLegalFilename(
+                        Settings.get().main().docDir, DownloadWorkUtils.makeLegalFilename(
                             "OwnerChanges_" + owner.owner.fullName.orEmpty() + "_" + DOWNLOAD_DATE_FORMAT.format(
                                 delta.time * 1000L
                             ), "json"

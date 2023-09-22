@@ -132,6 +132,12 @@
                     app:tint="?android:textColorSecondary" />
             </LinearLayout>
 
+            <dev.ragnarok.fenrir.view.ReactionContainer
+                android:id="@+id/item_message_reaction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:orientation="horizontal" />
         </dev.ragnarok.fenrir.view.MessageView>
     </LinearLayout>
 </LinearLayout>

@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
 }
 
-//1.11.0-alpha01
+//1.11.0-alpha03
 
 def srcDirs = [
         'com/google/android/material/animation',
@@ -111,7 +111,6 @@ dependencies {
     implementation("androidx.cardview:cardview:$cardviewVersion")
     implementation("androidx.dynamicanimation:dynamicanimation:$dynamicanimationVersion")
     implementation("androidx.constraintlayout:constraintlayout:$constraintlayoutVersion")
-    //implementation("androidx.recyclerview:recyclerview:$recyclerviewVersion")
     implementation("androidx.coordinatorlayout:coordinatorlayout:$coordinatorlayoutVersion")
     implementation("androidx.vectordrawable:vectordrawable:$vectordrawableVersion")
     implementation("androidx.transition:transition:$transitionVersion")

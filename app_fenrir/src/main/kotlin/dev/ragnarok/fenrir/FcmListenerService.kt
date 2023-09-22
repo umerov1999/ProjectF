@@ -37,7 +37,7 @@ class FcmListenerService : FirebaseMessagingService() {
             .accounts()
             .current
         if (accountId == ISettings.IAccountsSettings.INVALID_ID || pushType.isNullOrEmpty() || Settings.get()
-                .other().isSettings_no_push
+                .main().isSettings_no_push
         ) {
             return
         }
@@ -46,7 +46,7 @@ class FcmListenerService : FirebaseMessagingService() {
             Logger.d(TAG, "Invalid push registration on VK")
             return
         }
-        if (Settings.get().other().isDump_fcm && PushType.ERASE != pushType) {
+        if (Settings.get().main().isDump_fcm && PushType.ERASE != pushType) {
             if (Constants.IS_DEBUG) {
                 Logger.d(
                     TAG,

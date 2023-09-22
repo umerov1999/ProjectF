@@ -7,10 +7,12 @@ import android.provider.BaseColumns
 import dev.ragnarok.fenrir.db.TempDataHelper
 import dev.ragnarok.fenrir.db.column.AudiosColumns
 import dev.ragnarok.fenrir.db.column.LogsColumns
+import dev.ragnarok.fenrir.db.column.ReactionsColumns
 import dev.ragnarok.fenrir.db.column.SearchRequestColumns
 import dev.ragnarok.fenrir.db.column.ShortcutsColumns
 import dev.ragnarok.fenrir.db.column.TempDataColumns
 import dev.ragnarok.fenrir.db.interfaces.ITempDataStorage
+import dev.ragnarok.fenrir.db.model.entity.ReactionAssetEntity
 import dev.ragnarok.fenrir.db.serialize.ISerializeAdapter
 import dev.ragnarok.fenrir.getBlob
 import dev.ragnarok.fenrir.getBoolean
@@ -236,6 +238,82 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         }
     }
 
+    override fun addReactionsAssets(accountId: Long, list: List<ReactionAssetEntity>): Completable {
+        return Completable.create {
+            val db = helper.writableDatabase
+            db.beginTransaction()
+            if (it.isDisposed) {
+                db.endTransaction()
+                it.onComplete()
+                return@create
+            }
+            try {
+                db.delete(
+                    ReactionsColumns.TABLENAME,
+                    ReactionsColumns.ACCOUNT_ID + " = ?", arrayOf(accountId.toString())
+                )
+                for (i in list) {
+                    val cv = ContentValues()
+                    cv.put(ReactionsColumns.REACTION_ID, i.reaction_id)
+                    cv.put(ReactionsColumns.ACCOUNT_ID, accountId)
+                    cv.put(ReactionsColumns.BIG_ANIMATION, i.big_animation)
+                    cv.put(ReactionsColumns.SMALL_ANIMATION, i.small_animation)
+                    cv.put(ReactionsColumns.STATIC, i.static)
+                    db.insert(ReactionsColumns.TABLENAME, null, cv)
+                }
+                if (!it.isDisposed) {
+                    db.setTransactionSuccessful()
+                }
+            } finally {
+                db.endTransaction()
+            }
+            it.onComplete()
+        }
+    }
+
+    override fun getReactionsAssets(accountId: Long): Single<List<ReactionAssetEntity>> {
+        return Single.fromCallable {
+            val start = System.currentTimeMillis()
+            val where = ReactionsColumns.ACCOUNT_ID + " = ?"
+            val args = arrayOf(accountId.toString())
+            val cursor = helper.writableDatabase.query(
+                ReactionsColumns.TABLENAME,
+                PROJECTION_REACTION_ASSET,
+                where,
+                args,
+                null,
+                null,
+                ReactionsColumns.REACTION_ID + " DESC"
+            )
+            val data: MutableList<ReactionAssetEntity> = ArrayList(cursor.count)
+            cursor.use {
+                while (it.moveToNext()) {
+                    data.add(mapReactionAsset(it))
+                }
+            }
+            log("SearchRequestHelperStorage.getReactionsAssets", start, "count: " + data.size)
+            data
+        }
+    }
+
+    override fun clearReactionAssets(accountId: Long): Completable {
+        Settings.get().main().del_last_reaction_assets_sync(accountId)
+        return Completable.create { e: CompletableEmitter ->
+            val db = TempDataHelper.helper.writableDatabase
+            db.beginTransaction()
+            try {
+                val whereDel = ReactionsColumns.ACCOUNT_ID + " = ?"
+                db.delete(ReactionsColumns.TABLENAME, whereDel, arrayOf(accountId.toString()))
+                db.setTransactionSuccessful()
+                db.endTransaction()
+                e.onComplete()
+            } catch (exception: Exception) {
+                db.endTransaction()
+                e.tryOnError(exception)
+            }
+        }
+    }
+
     override fun deleteShortcut(action: String): Completable {
         return Completable.fromAction {
             val start = System.currentTimeMillis()
@@ -332,7 +410,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 it1.onComplete()
                 return@create
             }
-            Settings.get().other().set_last_audio_sync(System.currentTimeMillis() / 1000L)
+            Settings.get().main().set_last_audio_sync(System.currentTimeMillis() / 1000L)
             try {
                 if (clear) {
                     db.delete(
@@ -428,6 +506,14 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             LogsColumns.BODY
         )
 
+        private val PROJECTION_REACTION_ASSET = arrayOf(
+            BaseColumns._ID,
+            ReactionsColumns.REACTION_ID,
+            ReactionsColumns.BIG_ANIMATION,
+            ReactionsColumns.SMALL_ANIMATION,
+            ReactionsColumns.STATIC
+        )
+
         private val PROJECTION_AUDIO = arrayOf(
             BaseColumns._ID,
             AudiosColumns.SOURCE_OWNER_ID,
@@ -503,6 +589,14 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 .setAction(cursor.getString(ShortcutsColumns.ACTION)!!)
                 .setName(cursor.getString(ShortcutsColumns.NAME)!!)
                 .setCover(cursor.getString(ShortcutsColumns.COVER)!!)
+        }
+
+        internal fun mapReactionAsset(cursor: Cursor): ReactionAssetEntity {
+            return ReactionAssetEntity()
+                .setReactionId(cursor.getInt(ReactionsColumns.REACTION_ID))
+                .setBigAnimation(cursor.getString(ReactionsColumns.BIG_ANIMATION))
+                .setSmallAnimation(cursor.getString(ReactionsColumns.SMALL_ANIMATION))
+                .setStatic(cursor.getString(ReactionsColumns.STATIC))
         }
     }
 }

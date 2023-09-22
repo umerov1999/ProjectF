@@ -259,7 +259,7 @@ class StoryPagerPresenter(
     }
 
     private fun doSaveOnDrive(photo: Story) {
-        val dir = File(Settings.get().other().photoDir)
+        val dir = File(Settings.get().main().photoDir)
         if (!dir.isDirectory) {
             val created = dir.mkdirs()
             if (!created) {
@@ -283,7 +283,7 @@ class StoryPagerPresenter(
 
     private fun downloadResult(Prefix: String?, dirF: File, photo: Photo) {
         var dir = dirF
-        if (Prefix != null && Settings.get().other().isPhoto_to_user_dir) {
+        if (Prefix != null && Settings.get().main().isPhoto_to_user_dir) {
             val dir_final = File(dir.absolutePath + "/" + Prefix)
             if (!dir_final.isDirectory) {
                 val created = dir_final.mkdirs()

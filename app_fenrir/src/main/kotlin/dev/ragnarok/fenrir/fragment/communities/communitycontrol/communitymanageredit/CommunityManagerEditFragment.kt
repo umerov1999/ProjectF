@@ -9,12 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.ImageView
-import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import com.google.android.material.checkbox.MaterialCheckBox
+import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -44,9 +44,9 @@ class CommunityManagerEditFragment :
     private var mOnlineView: OnlineView? = null
     private var mName: TextView? = null
     private var mDomain: TextView? = null
-    private var mButtonModerator: RadioButton? = null
-    private var mButtonEditor: RadioButton? = null
-    private var mButtonAdmin: RadioButton? = null
+    private var mButtonModerator: MaterialRadioButton? = null
+    private var mButtonEditor: MaterialRadioButton? = null
+    private var mButtonAdmin: MaterialRadioButton? = null
     private var mShowAsContact: MaterialCheckBox? = null
     private var mContactInfoRoot: ViewGroup? = null
     private var mPosition: TextInputEditText? = null

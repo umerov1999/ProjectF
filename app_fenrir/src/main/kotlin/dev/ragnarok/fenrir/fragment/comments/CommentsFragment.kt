@@ -656,7 +656,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         if (mGotoSourceAvailable) {
             mGotoSourceText?.let { gotoSource.setTitle(it) }
         }
-        val desc = Settings.get().other().isCommentsDesc
+        val desc = Settings.get().main().isCommentsDesc
         menu.findItem(R.id.direction).setIcon(getDirectionIcon(desc))
     }
 
@@ -683,7 +683,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
             }
 
             R.id.direction -> {
-                val decs = Settings.get().other().toggleCommentsDirection
+                val decs = Settings.get().main().toggleCommentsDirection
                 menuItem.setIcon(getDirectionIcon(decs))
                 presenter?.fireDirectionChanged()
                 return true

@@ -32,11 +32,11 @@ class App : Application() {
         super.onCreate()
 
         AppCompatDelegate.setDefaultNightMode(Settings.get().ui().nightMode)
-        if (Settings.get().other().isDeveloper_mode) {
+        if (Settings.get().main().isDeveloper_mode) {
             CrashUtils.install(this)
         }
 
-        if (Settings.get().other().isEnable_native) {
+        if (Settings.get().main().isEnable_native) {
             FenrirNative.loadNativeLibrary(object : FenrirNative.NativeOnException {
                 override fun onException(e: Error) {
                     PersistentLogger.logThrowable("NativeError", e)
@@ -57,11 +57,11 @@ class App : Application() {
             MusicPlaybackController.tracksExist = FileExistJVM()
         }
 
-        Utils.isCompressIncomingTraffic = Settings.get().other().isCompress_incoming_traffic
-        Utils.isCompressOutgoingTraffic = Settings.get().other().isCompress_outgoing_traffic
-        Utils.currentParser = Settings.get().other().currentParser
+        Utils.isCompressIncomingTraffic = Settings.get().main().isCompress_incoming_traffic
+        Utils.isCompressOutgoingTraffic = Settings.get().main().isCompress_outgoing_traffic
+        Utils.currentParser = Settings.get().main().currentParser
         PicassoInstance.init(this, Includes.proxySettings)
-        if (Settings.get().other().isKeepLongpoll) {
+        if (Settings.get().main().isKeepLongpoll) {
             KeepLongpollService.start(this)
         }
         compositeDisposable.add(messages
@@ -103,7 +103,7 @@ class App : Application() {
         RxJavaPlugins.setErrorHandler {
             it.printStackTrace()
             Handler(mainLooper).post {
-                if (Settings.get().other().isDeveloper_mode) {
+                if (Settings.get().main().isDeveloper_mode) {
                     createCustomToast(this).showToastError(
                         ErrorLocalizer.localizeThrowable(
                             this,

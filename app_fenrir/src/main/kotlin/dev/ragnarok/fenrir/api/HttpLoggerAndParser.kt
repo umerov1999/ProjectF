@@ -24,7 +24,7 @@ object HttpLoggerAndParser {
         json: Converter.Factory,
         msgpack: Converter.Factory
     ): Converter.Factory {
-        return if (Settings.get().other().currentParser == ParserType.MSGPACK) {
+        return if (Settings.get().main().currentParser == ParserType.MSGPACK) {
             msgpack
         } else {
             json
@@ -112,7 +112,7 @@ object HttpLoggerAndParser {
     fun adjust(builder: OkHttpClient.Builder) {
         if (Constants.IS_DEBUG) {
             /*
-            if (Settings.get().other().currentParser == ParserType.JSON) {
+            if (Settings.get().main().currentParser == ParserType.JSON) {
                 builder.addInterceptor(DEFAULT_LOGGING_INTERCEPTOR)
             } else {
                 builder.addInterceptor(UPLOAD_LOGGING_INTERCEPTOR)
@@ -129,7 +129,7 @@ object HttpLoggerAndParser {
     }
 
     fun configureToIgnoreCertificates(builder: OkHttpClient.Builder) {
-        if (Settings.get().other().isValidate_tls) {
+        if (Settings.get().main().isValidate_tls) {
             return
         }
         try {

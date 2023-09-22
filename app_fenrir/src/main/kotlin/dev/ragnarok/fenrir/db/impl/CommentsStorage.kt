@@ -233,7 +233,7 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
             contentValues.put(CommentsColumns.THREADS_COUNT, 0)
             contentValues.putNull(CommentsColumns.THREADS)
             contentValues.put(CommentsColumns.LIKES, 0)
-            contentValues.put(CommentsColumns.USER_LIKES, 0)
+            contentValues.put(CommentsColumns.USER_LIKES, false)
             val commentsWithAccountUri = getCommentsContentUriFor(accountId)
             if (id == null) {
                 val uri = contentResolver.insert(commentsWithAccountUri, contentValues)

@@ -70,7 +70,7 @@ class FeedbackVKOfficialAdapter(
                 holder.small.visibility = View.VISIBLE
                 holder.small.setImageResource(
                     if (Settings.get()
-                            .other().isRunes_show
+                            .main().isRunes_show
                     ) R.drawable.client_round else R.drawable.client_round_vk
                 )
                 Utils.setColorFilter(
@@ -82,7 +82,7 @@ class FeedbackVKOfficialAdapter(
                 holder.small.visibility = View.INVISIBLE
                 holder.avatar.setImageResource(
                     if (Settings.get()
-                            .other().isRunes_show
+                            .main().isRunes_show
                     ) R.drawable.client_round else R.drawable.client_round_vk
                 )
                 Utils.setColorFilter(

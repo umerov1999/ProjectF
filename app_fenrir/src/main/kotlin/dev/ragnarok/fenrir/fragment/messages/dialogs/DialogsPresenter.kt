@@ -9,6 +9,7 @@ import dev.ragnarok.fenrir.crypt.KeyLocationPolicy
 import dev.ragnarok.fenrir.domain.IAccountsInteractor
 import dev.ragnarok.fenrir.domain.IMessagesRepository
 import dev.ragnarok.fenrir.domain.IOwnersRepository
+import dev.ragnarok.fenrir.domain.IStickersInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.domain.Repository.owners
@@ -50,6 +51,7 @@ class DialogsPresenter(
 ) : AccountDependencyPresenter<IDialogsView>(accountId, savedInstanceState, true) {
     private val dialogs: ArrayList<Dialog>
     private val messagesInteractor: IMessagesRepository
+    private val stickerInteractor: IStickersInteractor
     private val accountsInteractor: IAccountsInteractor
     private val longpollManager: ILongpollManager
     private val netDisposable = CompositeDisposable()
@@ -84,7 +86,7 @@ class DialogsPresenter(
     }
 
     private fun onDialogsFirstResponse(data: List<Dialog>) {
-        if (!Settings.get().other().isBe_online || isHiddenAccount(accountId)) {
+        if (!Settings.get().main().isBe_online || isHiddenAccount(accountId)) {
             netDisposable.add(
                 accountsInteractor.setOffline(accountId)
                     .fromIOToMain()
@@ -97,7 +99,7 @@ class DialogsPresenter(
         dialogs.addAll(data)
         safeNotifyDataSetChanged()
         if (!isHiddenCurrent) {
-            receiveStickers()
+            receiveSubItems()
         }
     }
 
@@ -146,7 +148,7 @@ class DialogsPresenter(
     }
 
     private fun onNextDialogsResponse(data: List<Dialog>) {
-        if (!Settings.get().other().isBe_online || isHiddenAccount(accountId)) {
+        if (!Settings.get().main().isBe_online || isHiddenAccount(accountId)) {
             netDisposable.add(
                 accountsInteractor.setOffline(accountId)
                     .fromIOToMain()
@@ -232,48 +234,69 @@ class DialogsPresenter(
     }
 
     @SuppressLint("CheckResult")
-    private fun receiveStickers() {
+    private fun receiveSubItems() {
         if (accountId <= 0) {
             return
         }
         try {
+            if (Utils.needReloadReactionAssets(accountId)) {
+                messagesInteractor
+                    .getReactionsAssets(accountId)
+                    .fromIOToMain()
+                    .subscribe({
+                        if (Utils.getReactionsAssets()[accountId] == null) {
+                            Utils.getReactionsAssets()[accountId] = HashMap()
+                        } else {
+                            Utils.getReactionsAssets()[accountId]?.clear()
+                        }
+                        for (i in it) {
+                            Utils.getReactionsAssets()[accountId]?.set(i.reaction_id, i)
+                        }
+                    }) {
+                        Settings.get().main().del_last_reaction_assets_sync(accountId)
+                        if (Settings.get().main().isDeveloper_mode) {
+                            showError(it)
+                        }
+                    }
+            }
+
             if (Utils.needReloadStickerSets(accountId)) {
-                InteractorFactory.createStickersInteractor()
+                stickerInteractor
                     .reciveAndStoreStickerSets(accountId)
                     .fromIOToMain()
                     .subscribe(dummy()) {
-                        Settings.get().other().del_last_sticker_sets_sync(accountId)
-                        if (Settings.get().other().isDeveloper_mode) {
+                        Settings.get().main().del_last_sticker_sets_sync(accountId)
+                        if (Settings.get().main().isDeveloper_mode) {
                             showError(it)
                         }
                     }
             }
             if (Utils.needReloadStickerSetsCustom(accountId)) {
-                InteractorFactory.createStickersInteractor()
+                stickerInteractor
                     .reciveAndStoreCustomStickerSets(accountId)
                     .fromIOToMain()
                     .subscribe(dummy()) {
-                        Settings.get().other().del_last_sticker_sets_custom_sync(accountId)
-                        if (Settings.get().other().isDeveloper_mode) {
+                        Settings.get().main().del_last_sticker_sets_custom_sync(accountId)
+                        if (Settings.get().main().isDeveloper_mode) {
                             showError(it)
                         }
                     }
             }
             if (Settings.get()
-                    .other().isHint_stickers && Utils.needReloadStickerKeywords(accountId)
+                    .main().isHint_stickers && Utils.needReloadStickerKeywords(accountId)
             ) {
-                InteractorFactory.createStickersInteractor()
+                stickerInteractor
                     .reciveAndStoreKeywordsStickers(accountId)
                     .fromIOToMain()
                     .subscribe(dummy()) {
-                        Settings.get().other().del_last_sticker_keywords_sync(accountId)
-                        if (Settings.get().other().isDeveloper_mode) {
+                        Settings.get().main().del_last_sticker_keywords_sync(accountId)
+                        if (Settings.get().main().isDeveloper_mode) {
                             showError(it)
                         }
                     }
             }
         } catch (e: Exception) {
-            if (Settings.get().other().isDeveloper_mode) {
+            if (Settings.get().main().isDeveloper_mode) {
                 showError(e)
             }
         }
@@ -295,9 +318,9 @@ class DialogsPresenter(
             }
         }
 
-        if (Settings.get().other().isNot_update_dialogs || isHiddenCurrent) {
+        if (Settings.get().main().isNot_update_dialogs || isHiddenCurrent) {
             if (!isHiddenCurrent) {
-                receiveStickers()
+                receiveSubItems()
             }
             if (needReloadDialogs(accountId)) {
                 if (view == null) {
@@ -719,6 +742,7 @@ class DialogsPresenter(
         dialogsOwnerId = savedInstanceState?.getLong(SAVE_DIALOGS_OWNER_ID)
             ?: initialDialogsOwnerId
         messagesInteractor = messages
+        stickerInteractor = InteractorFactory.createStickersInteractor()
         accountsInteractor = InteractorFactory.createAccountInteractor()
         longpollManager = LongpollInstance.longpollManager
         appendDisposable(

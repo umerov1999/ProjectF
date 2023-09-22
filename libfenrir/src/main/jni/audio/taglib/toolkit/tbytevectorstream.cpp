@@ -24,30 +24,24 @@
  ***************************************************************************/
 
 #include "tbytevectorstream.h"
-#include "tstring.h"
-#include "tdebug.h"
 
-#include <cstdio>
 #include <cstring>
 
-#include <cstdlib>
+#include "tstring.h"
 
 using namespace TagLib;
 
 class ByteVectorStream::ByteVectorStreamPrivate
 {
 public:
-  ByteVectorStreamPrivate(const ByteVector &data);
+  ByteVectorStreamPrivate(const ByteVector &data) :
+    data(data)
+  {
+  }
 
   ByteVector data;
-  offset_t position;
+  offset_t position { 0 };
 };
-
-ByteVectorStream::ByteVectorStreamPrivate::ByteVectorStreamPrivate(const ByteVector &data) :
-  data(data),
-  position(0)
-{
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // public members

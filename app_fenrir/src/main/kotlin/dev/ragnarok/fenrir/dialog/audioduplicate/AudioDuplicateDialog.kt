@@ -140,7 +140,7 @@ class AudioDuplicateDialog :
         }
         holder.play.setOnClickListener {
             if (isNowPlayingOrPreparingOrPaused(audio)) {
-                if (!Settings.get().other().isUse_stop_audio) {
+                if (!Settings.get().main().isUse_stop_audio) {
                     playOrPause()
                 } else {
                     stop()

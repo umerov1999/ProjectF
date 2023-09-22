@@ -26,7 +26,6 @@
     <dimen name="refresher_offset_start">40dp</dimen>
     <dimen name="refresher_offset_end">72dp</dimen>
 
-    <dimen name="mpm_popup_menu_vertical_padding">8dp</dimen>
     <dimen name="mpm_popup_menu_max_width">280dp</dimen>
     <dimen name="mpm_popup_menu_min_width">112dp</dimen>
     <dimen name="mpm_popup_menu_width_unit">56dp</dimen>

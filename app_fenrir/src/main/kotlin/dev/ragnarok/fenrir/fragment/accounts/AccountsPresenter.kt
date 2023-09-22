@@ -190,6 +190,11 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             Includes.stores.stickers().clearAccount(account.getOwnerObjectId()).fromIOToMain()
                 .subscribe(RxUtils.dummy(), RxUtils.ignore())
         )
+        appendDisposable(
+            Includes.stores.tempStore().clearReactionAssets(account.getOwnerObjectId())
+                .fromIOToMain()
+                .subscribe(RxUtils.dummy(), RxUtils.ignore())
+        )
     }
 
     fun processNewAccount(
@@ -294,9 +299,9 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         appendDisposable(
             accountsInteractor.getExchangeToken(accountFromTmp).fromIOToMain().subscribe({
                 if (it.token.nonNullNoEmpty()) {
-                    DownloadWorkUtils.CheckDirectory(Settings.get().other().docDir)
+                    DownloadWorkUtils.CheckDirectory(Settings.get().main().docDir)
                     val file = File(
-                        Settings.get().other().docDir, "${accountFromTmp}_exchange_token.json"
+                        Settings.get().main().docDir, "${accountFromTmp}_exchange_token.json"
                     )
                     appendDisposable(
                         mOwnersInteractor.findBaseOwnersDataAsBundle(
@@ -673,7 +678,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                     Single.create { emitter: SingleEmitter<Response> ->
                         val request: Request = Request.Builder()
                             .url(
-                                "https://" + Settings.get().other()
+                                "https://" + Settings.get().main()
                                     .apiDomain + "/method/users.get"
                             )
                             .post(bodyBuilder.build())

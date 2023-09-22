@@ -25,46 +25,30 @@
 
 #include "mpegheader.h"
 
+#include <array>
+
 #include "tbytevector.h"
 #include "tdebug.h"
 #include "tfile.h"
-#include "tstring.h"
-
 #include "mpegutils.h"
-
-#include <array>
 
 using namespace TagLib;
 
 class MPEG::Header::HeaderPrivate
 {
 public:
-  HeaderPrivate() :
-    isValid(false),
-    version(Version1),
-    layer(0),
-    protectionEnabled(false),
-    bitrate(0),
-    sampleRate(0),
-    isPadded(false),
-    channelMode(Stereo),
-    isCopyrighted(false),
-    isOriginal(false),
-    frameLength(0),
-    samplesPerFrame(0) {}
-
-  bool isValid;
-  Version version;
-  int layer;
-  bool protectionEnabled;
-  int bitrate;
-  int sampleRate;
-  bool isPadded;
-  ChannelMode channelMode;
-  bool isCopyrighted;
-  bool isOriginal;
-  int frameLength;
-  int samplesPerFrame;
+  bool isValid { false };
+  Version version { Version1 };
+  int layer { 0 };
+  bool protectionEnabled { false };
+  int bitrate { 0 };
+  int sampleRate { 0 };
+  bool isPadded { false };
+  ChannelMode channelMode { Stereo };
+  bool isCopyrighted { false };
+  bool isOriginal { false };
+  int frameLength { 0 };
+  int samplesPerFrame { 0 };
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,8 +61,7 @@ MPEG::Header::Header(File *file, offset_t offset, bool checkLength) :
   parse(file, offset, checkLength);
 }
 
-MPEG::Header::Header(const Header &h) = default;
-
+MPEG::Header::Header(const Header &) = default;
 MPEG::Header::~Header() = default;
 
 bool MPEG::Header::isValid() const

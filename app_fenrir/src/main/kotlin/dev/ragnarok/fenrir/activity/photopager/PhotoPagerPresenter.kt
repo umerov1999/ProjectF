@@ -347,7 +347,7 @@ open class PhotoPagerPresenter internal constructor(
     }
 
     private fun addOrRemoveLike() {
-        if (Settings.get().other().isDisable_likes || Utils.isHiddenAccount(
+        if (Settings.get().main().isDisable_likes || Utils.isHiddenAccount(
                 accountId
             )
         ) {
@@ -404,7 +404,7 @@ open class PhotoPagerPresenter internal constructor(
     }
 
     private fun doSaveOnDrive(context: Context) {
-        val dir = File(Settings.get().other().photoDir)
+        val dir = File(Settings.get().main().photoDir)
         if (!dir.isDirectory) {
             val created = dir.mkdirs()
             if (!created) {
@@ -441,7 +441,7 @@ open class PhotoPagerPresenter internal constructor(
 
     private fun downloadResult(context: Context, Prefix: String?, dirL: File, photo: Photo) {
         var dir = dirL
-        if (Prefix != null && Settings.get().other().isPhoto_to_user_dir) {
+        if (Prefix != null && Settings.get().main().isPhoto_to_user_dir) {
             val dir_final = File(dir.absolutePath + "/" + Prefix)
             if (!dir_final.isDirectory) {
                 val created = dir_final.mkdirs()

@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.api.rest
 
+import dev.ragnarok.fenrir.api.model.Assets
 import dev.ragnarok.fenrir.api.model.Dictionary
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
@@ -43,6 +44,10 @@ abstract class IServiceRest {
 
         inline fun <reified T : Any> items(serial: KSerializer<T>): KSerializer<BaseResponse<Items<T>>> {
             return BaseResponse.serializer(Items.serializer(serial))
+        }
+
+        inline fun <reified T : Any> assets(serial: KSerializer<T>): KSerializer<BaseResponse<Assets<T>>> {
+            return BaseResponse.serializer(Assets.serializer(serial))
         }
 
         inline fun <reified T : Any> dictionary(serial: KSerializer<T>): KSerializer<BaseResponse<Dictionary<T>>> {

@@ -116,7 +116,7 @@ class AudioPlaylistsAdapter(
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
             val position = recyclerView?.getChildAdapterPosition(v) ?: 0
             val playlist = data[position]
-            if (!Utils.isValueAssigned(playlist.getId(), Settings.get().other().servicePlaylist)) {
+            if (!Utils.isValueAssigned(playlist.getId(), Settings.get().main().servicePlaylist)) {
                 if (Settings.get().accounts().current == playlist.getOwnerId()) {
                     menu.add(0, v.id, 0, R.string.delete)
                         .setOnMenuItemClickListener {

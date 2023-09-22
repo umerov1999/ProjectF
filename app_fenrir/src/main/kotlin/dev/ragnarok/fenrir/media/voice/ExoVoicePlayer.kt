@@ -59,7 +59,7 @@ class ExoVoicePlayer(context: Context, config: ProxyConfig?) : IVoicePlayer {
     private fun preparePlayer() {
         setStatus(IVoicePlayer.STATUS_PREPARING)
         var extensionRenderer = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
-        when (Settings.get().other().fFmpegPlugin) {
+        when (Settings.get().main().fFmpegPlugin) {
             0 -> extensionRenderer = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
             1 -> extensionRenderer = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
             2 -> extensionRenderer = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
@@ -181,7 +181,7 @@ class ExoVoicePlayer(context: Context, config: ProxyConfig?) : IVoicePlayer {
     companion object {
         internal val isOpusSupported: Boolean
             get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || Settings.get()
-                .other().isEnable_native || Settings.get().other().fFmpegPlugin != 0
+                .main().isEnable_native || Settings.get().main().fFmpegPlugin != 0
     }
 
     init {

@@ -27,7 +27,6 @@
 
 #include <cerrno>
 #include <climits>
-
 #include <utf8.h>
 
 #include "tdebug.h"
@@ -159,7 +158,7 @@ String::String() :
 {
 }
 
-String::String(const String &s) = default;
+String::String(const String &) = default;
 
 String::String(const std::string &s, Type t) :
   d(std::make_shared<StringPrivate>())
@@ -376,11 +375,11 @@ String String::upper() const
   String s;
   s.d->data.reserve(size());
 
-  for(ConstIterator it = begin(); it != end(); ++it) {
-    if(*it >= 'a' && *it <= 'z')
-      s.d->data.push_back(*it + 'A' - 'a');
+  for(wchar_t c : *this) {
+    if(c >= 'a' && c <= 'z')
+      s.d->data.push_back(c + 'A' - 'a');
     else
-      s.d->data.push_back(*it);
+      s.d->data.push_back(c);
   }
 
   return s;
@@ -410,8 +409,9 @@ ByteVector String::data(Type t) const
       ByteVector v(size(), 0);
       char *p = v.data();
 
-      for(ConstIterator it = begin(); it != end(); ++it)
-        *p++ = static_cast<char>(*it);
+      for(wchar_t c : *this) {
+        *p++ = static_cast<char>(c);
+      }
 
       return v;
     }
@@ -441,9 +441,9 @@ ByteVector String::data(Type t) const
       *p++ = '\xff';
       *p++ = '\xfe';
 
-      for(ConstIterator it = begin(); it != end(); ++it) {
-        *p++ = static_cast<char>(*it & 0xff);
-        *p++ = static_cast<char>(*it >> 8);
+      for(wchar_t c : *this) {
+        *p++ = static_cast<char>(c & 0xff);
+        *p++ = static_cast<char>(c >> 8);
       }
 
       return v;
@@ -453,9 +453,9 @@ ByteVector String::data(Type t) const
       ByteVector v(size() * 2, 0);
       char *p = v.data();
 
-      for(ConstIterator it = begin(); it != end(); ++it) {
-        *p++ = static_cast<char>(*it >> 8);
-        *p++ = static_cast<char>(*it & 0xff);
+      for(wchar_t c : *this) {
+        *p++ = static_cast<char>(c >> 8);
+        *p++ = static_cast<char>(c & 0xff);
       }
 
       return v;
@@ -465,9 +465,9 @@ ByteVector String::data(Type t) const
       ByteVector v(size() * 2, 0);
       char *p = v.data();
 
-      for(ConstIterator it = begin(); it != end(); ++it) {
-        *p++ = static_cast<char>(*it & 0xff);
-        *p++ = static_cast<char>(*it >> 8);
+      for(wchar_t c : *this) {
+        *p++ = static_cast<char>(c & 0xff);
+        *p++ = static_cast<char>(c >> 8);
       }
 
       return v;
@@ -611,11 +611,7 @@ String &String::operator+=(char c)
   return *this;
 }
 
-String &String::operator=(const String &s)
-{
-  String(s).swap(*this);
-  return *this;
-}
+String &String::operator=(const String &) = default;
 
 String &String::operator=(const std::string &s)
 {

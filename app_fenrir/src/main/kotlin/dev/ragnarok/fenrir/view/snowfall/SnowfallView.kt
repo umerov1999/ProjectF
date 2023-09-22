@@ -43,7 +43,7 @@ class SnowfallView(context: Context, attrs: AttributeSet) : View(context, attrs)
         val a = context.obtainStyledAttributes(attrs, R.styleable.SnowfallView)
         snowflakeImage = ResourcesCompat.getDrawable(
             context.resources,
-            Common.getSnowRes(if (isInEditMode) 16 else Settings.get().other().paganSymbol),
+            Common.getSnowRes(if (isInEditMode) 16 else Settings.get().main().paganSymbol),
             context.theme
         )?.toBitmap()
         try {

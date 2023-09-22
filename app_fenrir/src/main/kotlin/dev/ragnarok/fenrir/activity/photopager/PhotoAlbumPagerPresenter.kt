@@ -191,7 +191,7 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
     }
 
     override fun close() {
-        if (Settings.get().other().isNative_parcel_photo && FenrirNative.isNativeLoaded) {
+        if (Settings.get().main().isNative_parcel_photo && FenrirNative.isNativeLoaded) {
             val ptr = ParcelNative.createParcelableList(mPhotos, ParcelFlags.NULL_LIST)
             view?.returnInfo(
                 currentIndex,

@@ -211,7 +211,7 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     fun playAudio(context: Context, position: Int) {
         startForPlayList(context, audios, position, false)
-        if (!Settings.get().other().isShow_mini_player) getPlayerPlace(accountId).tryOpenWith(
+        if (!Settings.get().main().isShow_mini_player) getPlayerPlace(accountId).tryOpenWith(
             context
         )
     }
@@ -369,8 +369,8 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
         audios = ArrayList()
         origin_audios = ArrayList()
 
-        bucket_id = if (Settings.get().other().isRememberLocalAudioAlbum) {
-            Settings.get().other().currentLocalAudioAlbum
+        bucket_id = if (Settings.get().main().isRememberLocalAudioAlbum) {
+            Settings.get().main().currentLocalAudioAlbum
         } else {
             0
         }

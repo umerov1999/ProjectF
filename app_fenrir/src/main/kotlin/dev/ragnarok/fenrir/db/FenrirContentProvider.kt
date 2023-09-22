@@ -730,6 +730,10 @@ class FenrirContentProvider : ContentProvider() {
             sMessagesProjectionMap[MessagesColumns.PAYLOAD] =
                 MessagesColumns.FULL_PAYLOAD
             sMessagesProjectionMap[MessagesColumns.KEYBOARD] = MessagesColumns.FULL_KEYBOARD
+            sMessagesProjectionMap[MessagesColumns.CONVERSATION_MESSAGE_ID] =
+                MessagesColumns.FULL_CONVERSATION_MESSAGE_ID
+            sMessagesProjectionMap[MessagesColumns.REACTIONS] = MessagesColumns.FULL_REACTIONS
+            sMessagesProjectionMap[MessagesColumns.REACTION_ID] = MessagesColumns.FULL_REACTION_ID
 
             sMessagesAttachmentsProjectionMap = HashMap()
             sMessagesAttachmentsProjectionMap[BaseColumns._ID] = MessagesAttachmentsColumns.FULL_ID

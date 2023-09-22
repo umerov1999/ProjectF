@@ -198,7 +198,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 requestWritePermission.launch()
             }
         }
-        var dir = File(Settings.get().other().photoDir)
+        var dir = File(Settings.get().main().photoDir)
         if (!dir.isDirectory) {
             val created = dir.mkdirs()
             if (!created) {
@@ -206,7 +206,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 return
             }
         } else dir.setLastModified(Calendar.getInstance().time.time)
-        if (prefix != null && Settings.get().other().isPhoto_to_user_dir) {
+        if (prefix != null && Settings.get().main().isPhoto_to_user_dir) {
             val dir_final = File(dir.absolutePath + "/" + prefix)
             if (!dir_final.isDirectory) {
                 val created = dir_final.mkdirs()

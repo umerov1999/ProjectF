@@ -21,7 +21,7 @@ class LinkSpan(
     private val is_underline: Boolean
 ) : ClickableSpan() {
     override fun onClick(widget: View) {
-        if (Settings.get().other().is_notification_force_link) {
+        if (Settings.get().main().is_notification_force_link) {
             LinkHelper.openUrl(context as Activity, Settings.get().accounts().current, link, false)
             return
         }

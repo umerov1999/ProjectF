@@ -22,6 +22,7 @@ import dev.ragnarok.fenrir.model.Keyboard
 import dev.ragnarok.fenrir.model.LastReadId
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.VoiceMessage
+import dev.ragnarok.fenrir.settings.Settings
 
 class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMessageActionListener,
     IFwdsView, VoiceActionListener {
@@ -35,7 +36,14 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
         val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        mAdapter = MessagesAdapter(requireActivity(), mutableListOf(), this, true)
+        mAdapter = MessagesAdapter(
+            Settings.get().accounts().current,
+            requireActivity(),
+            mutableListOf(),
+            LastReadId(0, 0),
+            this,
+            true
+        )
         mAdapter?.setOnMessageActionListener(this)
         mAdapter?.setVoiceActionListener(this)
         recyclerView.adapter = mAdapter
@@ -81,13 +89,30 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
         return false
     }
 
-    override fun onMessageClicked(message: Message, position: Int) {
+    override fun onMessageClicked(message: Message, position: Int, x: Int, y: Int) {
         // not supported
     }
 
     override fun onMessageDelete(message: Message) {}
-    override fun displayMessages(messages: MutableList<Message>, lastReadId: LastReadId) {
+    override fun displayMessages(
+        accountId: Long,
+        messages: MutableList<Message>,
+        lastReadId: LastReadId
+    ) {
         mAdapter?.setItems(messages, lastReadId)
+    }
+
+    override fun showPopupOptions(
+        position: Int,
+        x: Int,
+        y: Int,
+        canEdit: Boolean,
+        canPin: Boolean,
+        canStar: Boolean,
+        doStar: Boolean,
+        canSpam: Boolean
+    ) {
+        // not supported
     }
 
     override fun notifyMessagesUpAdded(position: Int, count: Int) {

@@ -99,7 +99,7 @@ class VKRestProvider(
 
     private fun createDefaultVkApiRest(okHttpClient: OkHttpClient.Builder): SimplePostHttp {
         return SimplePostHttp(
-            "https://" + Settings.get().other().apiDomain + "/method",
+            "https://" + Settings.get().main().apiDomain + "/method",
             okHttpClient
         )
     }

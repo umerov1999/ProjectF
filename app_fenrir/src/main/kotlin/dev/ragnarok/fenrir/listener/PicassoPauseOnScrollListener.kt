@@ -19,7 +19,7 @@ class PicassoPauseOnScrollListener(private val tag: String) : RecyclerView.OnScr
             recyclerView: RecyclerView?,
             tag: String = Constants.PICASSO_TAG
         ) {
-            if (!Settings.get().other().isInstant_photo_display) {
+            if (!Settings.get().main().isInstant_photo_display) {
                 recyclerView?.addOnScrollListener(PicassoPauseOnScrollListener(tag))
             }
         }

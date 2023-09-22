@@ -316,7 +316,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                         dbos.add(buildPhotoAlbumDbo(GrpPhotos))
                         albums.add(transform(GrpPhotos))
                     }
-                    if (Settings.get().other().localServer.enabled && accountId == ownerId) {
+                    if (Settings.get().main().localServer.enabled && accountId == ownerId) {
                         val Srvph = VKApiPhotoAlbum()
                         Srvph.title = "Local Server"
                         Srvph.id = -311

@@ -56,7 +56,7 @@ class AudiosSearchPresenter(
 
     fun playAudio(context: Context, position: Int) {
         startForPlayList(context, data as ArrayList<Audio>, position, false)
-        if (!Settings.get().other().isShow_mini_player) getPlayerPlace(
+        if (!Settings.get().main().isShow_mini_player) getPlayerPlace(
             Settings.get().accounts().current
         ).tryOpenWith(
             context

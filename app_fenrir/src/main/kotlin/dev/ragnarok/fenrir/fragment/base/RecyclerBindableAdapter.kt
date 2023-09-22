@@ -205,7 +205,9 @@ abstract class RecyclerBindableAdapter<T, VH : RecyclerView.ViewHolder>(private 
 
         //empty out our FrameLayout and replace with our header/footer
         (vh.itemView as ViewGroup).let {
-            it.removeAllViews()
+            if (it.childCount > 0) {
+                it.removeAllViews()
+            }
             it.addView(view)
         }
     }

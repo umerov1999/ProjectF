@@ -98,7 +98,7 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
         }
         resumedView?.showHelper()
         if (accountId == owner_id) {
-            val ids = Settings.get().other().servicePlaylist
+            val ids = Settings.get().main().servicePlaylist
             if (ids.nonNullNoEmpty()) {
                 actualDataLoading = true
                 resolveRefreshingView()
@@ -279,7 +279,7 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
                 )
                 if (clone && isValueAssigned(
                         album.getId(),
-                        Settings.get().other().servicePlaylist
+                        Settings.get().main().servicePlaylist
                     )
                 ) {
                     fireRefresh()

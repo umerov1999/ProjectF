@@ -11,7 +11,9 @@ import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Side
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.getSelected
 import dev.ragnarok.fenrir.util.Utils.indexOf
@@ -63,9 +65,38 @@ class MessagesLookPresenter(
 
     override fun onGuiCreated(viewHost: IMessagesLookView) {
         super.onGuiCreated(viewHost)
-        viewHost.displayMessages(data, lastReadId)
+        viewHost.displayMessages(accountId, data, lastReadId)
         loadingState.updateState()
         view?.displayToolbarAvatar(accountId, peer)
+    }
+
+    public override fun onMessageClick(message: Message, position: Int, x: Int?, y: Int?) {
+        if (x != null && y != null) {
+            resolvePopupMenu(message, position, x, y)
+        }
+    }
+
+    private fun resolvePopupMenu(message: Message, position: Int, x: Int, y: Int) {
+        if (Utils.isHiddenAccount(accountId) || !Settings.get()
+                .main().isChat_popup_menu || Utils.countOfSelection(
+                data
+            ) > 0
+        ) {
+            return
+        }
+        message.isSelected = true
+        safeNotifyItemChanged(position)
+
+        view?.showPopupOptions(
+            position,
+            x,
+            y,
+            canEdit = false,
+            canPin = false,
+            canStar = false,
+            doStar = false,
+            canSpam = !message.isOut
+        )
     }
 
     private fun initRequest() {

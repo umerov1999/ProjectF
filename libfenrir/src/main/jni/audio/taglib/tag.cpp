@@ -24,6 +24,9 @@
  ***************************************************************************/
 
 #include "tag.h"
+
+#include <utility>
+
 #include "tstringlist.h"
 #include "tpropertymap.h"
 
@@ -61,9 +64,9 @@ PropertyMap Tag::properties() const
     map["COMMENT"].append(comment());
   if(!(genre().isEmpty()))
     map["GENRE"].append(genre());
-  if(!(year() == 0))
+  if(year() != 0)
     map["DATE"].append(String::number(year()));
-  if(!(track() == 0))
+  if(track() != 0)
     map["TRACKNUMBER"].append(String::number(track()));
   return map;
 }
@@ -134,11 +137,11 @@ PropertyMap Tag::setProperties(const PropertyMap &origProps)
 
   // for each tag that has been set above, remove the first entry in the corresponding
   // value list. The others will be returned as unsupported by this format.
-  for(auto it = oneValueSet.cbegin(); it != oneValueSet.cend(); ++it) {
-    if(properties[*it].size() == 1)
-      properties.erase(*it);
+  for(const auto &entry : std::as_const(oneValueSet)) {
+    if(properties[entry].size() == 1)
+      properties.erase(entry);
     else
-      properties[*it].erase( properties[*it].begin() );
+      properties[entry].erase(properties[entry].begin());
   }
   return properties;
 }

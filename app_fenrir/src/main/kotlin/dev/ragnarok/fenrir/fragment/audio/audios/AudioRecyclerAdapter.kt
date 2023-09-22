@@ -86,7 +86,7 @@ class AudioRecyclerAdapter(
     private var iSSelectMode: Boolean
     private var mClickListener: ClickListener? = null
     private var currAudio: Audio?
-    internal fun deleteTrack(accountId: Long, audio: Audio, position: Int) {
+    private fun deleteTrack(accountId: Long, audio: Audio, position: Int) {
         audioListDisposable = if (playlist_id == null) {
             mAudioInteractor.delete(accountId, audio.id, audio.ownerId).fromIOToMain().subscribe(
                 {
@@ -110,14 +110,14 @@ class AudioRecyclerAdapter(
         }
     }
 
-    internal fun addTrack(accountId: Long, audio: Audio) {
+    private fun addTrack(accountId: Long, audio: Audio) {
         audioListDisposable = mAudioInteractor.add(accountId, audio, null).fromIOToMain().subscribe(
             { createCustomToast(mContext).showToast(R.string.added) }) { t ->
             createCustomToast(mContext).showToastThrowable(t)
         }
     }
 
-    internal fun getMp3AndBitrate(accountId: Long, audio: Audio) {
+    private fun getMp3AndBitrate(accountId: Long, audio: Audio) {
         val mode = audio.needRefresh()
         if (mode.first) {
             audioListDisposable =
@@ -289,7 +289,7 @@ class AudioRecyclerAdapter(
         }
     }
 
-    internal fun updateDownloadState(holder: AudioHolder, audio: Audio) {
+    private fun updateDownloadState(holder: AudioHolder, audio: Audio) {
         if (audio.downloadIndicator == 2) {
             holder.saved.setImageResource(R.drawable.remote_cloud)
             Utils.setColorFilter(holder.saved, CurrentTheme.getColorSecondary(mContext))
@@ -452,7 +452,7 @@ class AudioRecyclerAdapter(
             when (option.id) {
                 AudioOption.play_item_audio -> {
                     mClickListener?.onClick(position, audio)
-                    if (Settings.get().other().isShow_mini_player) getPlayerPlace(
+                    if (Settings.get().main().isShow_mini_player) getPlayerPlace(
                         Settings.get().accounts().current
                     ).tryOpenWith(mContext)
                 }
@@ -625,7 +625,7 @@ class AudioRecyclerAdapter(
 
     private fun doPlay(position: Int, audio: Audio) {
         if (isNowPlayingOrPreparingOrPaused(audio)) {
-            if (!Settings.get().other().isUse_stop_audio) {
+            if (!Settings.get().main().isUse_stop_audio) {
                 playOrPause()
             } else {
                 stop()

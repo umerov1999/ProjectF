@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.dialog.feedbacklink
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
+import dev.ragnarok.fenrir.model.AbsModel
+import dev.ragnarok.fenrir.model.AbsModelType
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoSize
@@ -24,7 +27,7 @@ import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 
 class FeedbackLinkAdapter(
     private val mContext: Context,
-    private val mData: List<Any>,
+    private val mData: List<AbsModel>,
     private val mActionListener: ActionListener
 ) : RecyclerView.Adapter<FeedbackLinkAdapter.ViewHolder>() {
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
@@ -35,61 +38,74 @@ class FeedbackLinkAdapter(
         )
     }
 
+    @SuppressLint("SwitchIntDef")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mData[position]
         var title: String? = null
-        if (item is User) {
-            title = item.fullName
-            holder.mSubtitle.setText(R.string.open_profile)
-            holder.ivImage.visibility = View.VISIBLE
-            displayAvatar(holder.ivImage, transformation, item.maxSquareAvatar, null)
-        } else if (item is Post) {
-            title = item.textCopiesInclude
-            holder.mSubtitle.setText(R.string.open_post)
-            val imageUrl = item.findFirstImageCopiesInclude(PhotoSize.M, false)
-            if (imageUrl.isNullOrEmpty()) {
-                holder.ivImage.visibility = View.GONE
-            } else {
+        when (item.getModelType()) {
+            AbsModelType.MODEL_USER -> {
+                title = (item as User).fullName
+                holder.mSubtitle.setText(R.string.open_profile)
                 holder.ivImage.visibility = View.VISIBLE
-                with()
-                    .load(imageUrl)
-                    .into(holder.ivImage)
+                displayAvatar(holder.ivImage, transformation, item.maxSquareAvatar, null)
             }
-        } else if (item is Comment) {
-            title = item.text
-            holder.mSubtitle.setText(R.string.jump_to_comment)
-            val senderAvatar = item.maxAuthorAvaUrl
-            holder.ivImage.visibility =
-                if (senderAvatar.isNullOrEmpty()) View.GONE else View.VISIBLE
-            displayAvatar(holder.ivImage, transformation, senderAvatar, null)
-        } else if (item is Photo) {
-            title = item.text
-            holder.mSubtitle.setText(R.string.show_photo)
-            val imgUrl = item.getUrlForSize(PhotoSize.M, false)
-            if (imgUrl.isNullOrEmpty()) {
+
+            AbsModelType.MODEL_POST -> {
+                title = (item as Post).textCopiesInclude
+                holder.mSubtitle.setText(R.string.open_post)
+                val imageUrl = item.findFirstImageCopiesInclude(PhotoSize.M, false)
+                if (imageUrl.isNullOrEmpty()) {
+                    holder.ivImage.visibility = View.GONE
+                } else {
+                    holder.ivImage.visibility = View.VISIBLE
+                    with()
+                        .load(imageUrl)
+                        .into(holder.ivImage)
+                }
+            }
+
+            AbsModelType.MODEL_COMMENT -> {
+                title = (item as Comment).text
+                holder.mSubtitle.setText(R.string.jump_to_comment)
+                val senderAvatar = item.maxAuthorAvaUrl
+                holder.ivImage.visibility =
+                    if (senderAvatar.isNullOrEmpty()) View.GONE else View.VISIBLE
+                displayAvatar(holder.ivImage, transformation, senderAvatar, null)
+            }
+
+            AbsModelType.MODEL_PHOTO -> {
+                title = (item as Photo).text
+                holder.mSubtitle.setText(R.string.show_photo)
+                val imgUrl = item.getUrlForSize(PhotoSize.M, false)
+                if (imgUrl.isNullOrEmpty()) {
+                    holder.ivImage.visibility = View.GONE
+                } else {
+                    holder.ivImage.visibility = View.VISIBLE
+                    with()
+                        .load(imgUrl)
+                        .into(holder.ivImage)
+                }
+            }
+
+            AbsModelType.MODEL_VIDEO -> {
+                val imgUrl = (item as Video).image
+                title = item.title
+                holder.mSubtitle.setText(R.string.show_video)
+                if (imgUrl.isNullOrEmpty()) {
+                    holder.ivImage.visibility = View.GONE
+                } else {
+                    holder.ivImage.visibility = View.VISIBLE
+                    with()
+                        .load(imgUrl)
+                        .into(holder.ivImage)
+                }
+            }
+
+            AbsModelType.MODEL_TOPIC -> {
+                title = (item as Topic).title
+                holder.mSubtitle.setText(R.string.open_topic)
                 holder.ivImage.visibility = View.GONE
-            } else {
-                holder.ivImage.visibility = View.VISIBLE
-                with()
-                    .load(imgUrl)
-                    .into(holder.ivImage)
             }
-        } else if (item is Video) {
-            val imgUrl = item.image
-            title = item.title
-            holder.mSubtitle.setText(R.string.show_video)
-            if (imgUrl.isNullOrEmpty()) {
-                holder.ivImage.visibility = View.GONE
-            } else {
-                holder.ivImage.visibility = View.VISIBLE
-                with()
-                    .load(imgUrl)
-                    .into(holder.ivImage)
-            }
-        } else if (item is Topic) {
-            title = item.title
-            holder.mSubtitle.setText(R.string.open_topic)
-            holder.ivImage.visibility = View.GONE
         }
         val spannableTitle = OwnerLinkSpanFactory.withSpans(
             title,
@@ -115,6 +131,7 @@ class FeedbackLinkAdapter(
         fun onUserClick(user: User)
     }
 
+    @SuppressLint("SwitchIntDef")
     inner class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {
         val mTitle: TextView = root.findViewById(R.id.item_feedback_link_text)
         val mSubtitle: TextView = root.findViewById(R.id.item_feedback_link_text2)
@@ -124,29 +141,30 @@ class FeedbackLinkAdapter(
             val ivForward = root.findViewById<ImageView>(R.id.item_feedback_link_forward)
             Utils.setColorFilter(ivForward, CurrentTheme.getColorPrimary(mContext))
             root.setOnClickListener {
-                when (val item = mData[bindingAdapterPosition]) {
-                    is User -> {
-                        mActionListener.onUserClick(item)
+                val item = mData[bindingAdapterPosition]
+                when (item.getModelType()) {
+                    AbsModelType.MODEL_USER -> {
+                        mActionListener.onUserClick(item as User)
                     }
 
-                    is Post -> {
-                        mActionListener.onPostClick(item)
+                    AbsModelType.MODEL_POST -> {
+                        mActionListener.onPostClick(item as Post)
                     }
 
-                    is Comment -> {
-                        mActionListener.onCommentClick(item)
+                    AbsModelType.MODEL_COMMENT -> {
+                        mActionListener.onCommentClick(item as Comment)
                     }
 
-                    is Photo -> {
-                        mActionListener.onPhotoClick(item)
+                    AbsModelType.MODEL_PHOTO -> {
+                        mActionListener.onPhotoClick(item as Photo)
                     }
 
-                    is Video -> {
-                        mActionListener.onVideoClick(item)
+                    AbsModelType.MODEL_VIDEO -> {
+                        mActionListener.onVideoClick(item as Video)
                     }
 
-                    is Topic -> {
-                        mActionListener.onTopicClick(item)
+                    AbsModelType.MODEL_TOPIC -> {
+                        mActionListener.onTopicClick(item as Topic)
                     }
                 }
             }

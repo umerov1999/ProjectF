@@ -46,7 +46,7 @@ object Includes {
         VoicePlayerFactory(
             provideApplicationContext(),
             proxySettings,
-            settings.other()
+            settings.main()
         )
     }
 

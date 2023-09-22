@@ -30,7 +30,7 @@ class FileExistNative : AbsFileExist {
             if (!hasReadStoragePermissionSimple(context)) return
         }
         RemoteAudios.clear()
-        val audios = File(Settings.get().other().musicDir, "local_server_audio_list.json")
+        val audios = File(Settings.get().main().musicDir, "local_server_audio_list.json")
         if (!audios.exists()) {
             return
         }
@@ -60,7 +60,7 @@ class FileExistNative : AbsFileExist {
 
     override fun findLocalImages(photos: List<SelectablePhotoWrapper>): Completable {
         return Completable.create { t: CompletableEmitter ->
-            val temp = File(Settings.get().other().photoDir)
+            val temp = File(Settings.get().main().photoDir)
             if (!temp.exists()) {
                 t.onComplete()
                 return@create
@@ -87,7 +87,7 @@ class FileExistNative : AbsFileExist {
     override fun findAllAudios(context: Context): Completable {
         return if (!hasReadStoragePermissionSimple(context)) Completable.complete() else Completable.create { t: CompletableEmitter ->
             findRemoteAudios(context, false)
-            val temp = File(Settings.get().other().musicDir)
+            val temp = File(Settings.get().main().musicDir)
             if (!temp.exists()) {
                 t.onComplete()
                 return@create

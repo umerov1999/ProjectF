@@ -118,7 +118,7 @@ class BigVKPhotosAdapter(
         } else {
             holder.bottomTop.visibility = View.GONE
         }
-        if (Settings.get().other().isNative_parcel_photo && FenrirNative.isNativeLoaded) {
+        if (Settings.get().main().isNative_parcel_photo && FenrirNative.isNativeLoaded) {
             if (photoWrapper.current) {
                 holder.current.visibility = View.VISIBLE
                 holder.current.fromRes(

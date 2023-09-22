@@ -74,7 +74,7 @@ object InteractorFactory {
     }
 
     fun createFeedInteractor(): IFeedInteractor {
-        return FeedInteractor(networkInterfaces, stores, Settings.get().other(), owners)
+        return FeedInteractor(networkInterfaces, stores, Settings.get().main(), owners)
     }
 
     fun createGroupSettingsInteractor(): IGroupSettingsInteractor {

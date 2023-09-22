@@ -176,7 +176,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             presenter?.fireOpenOwnerClicked()
         }
         mTransformation = CurrentTheme.createTransformationForAvatar()
-        if (Settings.get().other().isDo_auto_play_video) {
+        if (Settings.get().main().isDo_auto_play_video) {
             mRootView?.findViewById<View>(R.id.cover_cardview)?.setOnClickListener {
                 presenter?.fireAutoPlayClick()
             }
@@ -286,7 +286,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         val trailerUrl = video.trailer
 
         mPreviewImage?.let { pp ->
-            if (Settings.get().other().isAutoplay_gif && trailerUrl.nonNullNoEmpty()) {
+            if (Settings.get().main().isAutoplay_gif && trailerUrl.nonNullNoEmpty()) {
                 with().cancelRequest(pp)
                 pp.setDecoderCallback(object :
                     AnimatedShapeableImageView.OnDecoderInit {

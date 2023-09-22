@@ -26,8 +26,8 @@
 #ifndef TAGLIB_SYNCHRONIZEDLYRICSFRAME_H
 #define TAGLIB_SYNCHRONIZEDLYRICSFRAME_H
 
-#include "id3v2frame.h"
 #include "tlist.h"
+#include "id3v2frame.h"
 
 namespace TagLib {
 
@@ -94,7 +94,7 @@ namespace TagLib {
       /*!
        * List of synchronized lyrics.
        */
-      typedef TagLib::List<SynchedText> SynchedTextList;
+      using SynchedTextList = TagLib::List<SynchedText>;
 
       /*!
        * Construct an empty synchronized lyrics frame that will use the text
@@ -178,11 +178,11 @@ namespace TagLib {
       /*!
        * Set the language using the 3 byte language code from
        * <a href="http://en.wikipedia.org/wiki/ISO_639">ISO-639-2</a> to
-       * \a languageCode.
+       * \a languageEncoding.
        *
        * \see language()
        */
-      void setLanguage(const ByteVector &languageCode);
+      void setLanguage(const ByteVector &languageEncoding);
 
       /*!
        * Set the timestamp format.

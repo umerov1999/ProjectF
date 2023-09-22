@@ -138,13 +138,13 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
         if (ownerId >= 0) {
             if (accountId == ownerId) {
                 adapter.addFragment(LOCAL)
-                if (Settings.get().other().localServer.enabled) {
+                if (Settings.get().main().localServer.enabled) {
                     adapter.addFragment(LOCAL_SERVER)
                 }
             }
             adapter.addFragment(MY_RECOMMENDATIONS)
         }
-        if (accountId == ownerId && Settings.get().other().isEnable_show_audio_top) {
+        if (accountId == ownerId && Settings.get().main().isEnable_show_audio_top) {
             adapter.addFragment(VKApiAudio.Genre.TOP_ALL)
             adapter.addFragment(VKApiAudio.Genre.ETHNIC)
             adapter.addFragment(VKApiAudio.Genre.INSTRUMENTAL)

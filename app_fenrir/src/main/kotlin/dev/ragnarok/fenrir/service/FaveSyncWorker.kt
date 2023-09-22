@@ -134,7 +134,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
             log.append("\r\n-----------------------------------------------\r\n")
         }
         Thread.sleep(500)
-        if (Settings.get().other().isOwnerInChangesMonitor(id)) {
+        if (Settings.get().main().isOwnerInChangesMonitor(id)) {
             if (id >= 0) {
                 try {
                     relationshipInteractor.getActualFriendsList(
@@ -293,7 +293,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         Thread.sleep(500)
         try {
             photosInteractor[accountId, id, -7, 100, 0, !Settings.get()
-                .other().isInvertPhotoRev].blockingGet()
+                .main().isInvertPhotoRev].blockingGet()
         } catch (e: Exception) {
             log.append("+++++++++++++++PHOTO_FROM_WALL++++++++++++++++++++++++++++\r\n")
             log.append(
@@ -330,7 +330,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                 accountId,
                 id,
                 1,
-                if (Settings.get().other().isInvertPhotoRev) 1 else 0,
+                if (Settings.get().main().isInvertPhotoRev) 1 else 0,
                 0,
                 100
             ).blockingGet()

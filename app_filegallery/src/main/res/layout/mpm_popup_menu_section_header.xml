@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:theme="@style/Widget.MPM.Menu">
+    tools:theme="@style/Widget.MPM.Menu.Material3">
 
     <View
         android:id="@+id/mpm_popup_menu_section_separator"
@@ -12,10 +12,9 @@
         android:layout_height="@dimen/mpm_popup_menu_item_section_separator_height"
         android:layout_marginTop="@dimen/mpm_popup_menu_item_section_separator_margin_vertical"
         android:layout_marginBottom="@dimen/mpm_popup_menu_item_section_separator_margin_vertical"
-        android:background="?colorOnSurface"
-        tools:visibility="visible" />
+        android:background="?colorOnSurface" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/mpm_popup_menu_section_header_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,7 +25,6 @@
         android:lines="1"
         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
         android:textSize="@dimen/mpm_popup_menu_item_section_label_text_size"
-        tools:text="Header"
-        tools:visibility="visible" />
+        tools:text="Header" />
 
 </LinearLayout>

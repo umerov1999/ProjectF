@@ -2,14 +2,17 @@ package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.api.model.VKApiConversation
 import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.VKApiReaction
 import dev.ragnarok.fenrir.api.model.longpoll.*
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.serializeble.json.*
 import java.util.Collections
+
 
 class LongpollUpdateDtoAdapter : AbsDtoAdapter<AbsLongpollEvent?>("AbsLongpollEvent?") {
     @Throws(Exception::class)
@@ -29,6 +32,42 @@ class LongpollUpdateDtoAdapter : AbsDtoAdapter<AbsLongpollEvent?>("AbsLongpollEv
             AbsLongpollEvent.ACTION_MESSAGE_EDITED, AbsLongpollEvent.ACTION_MESSAGE_CHANGED, AbsLongpollEvent.ACTION_MESSAGE_ADDED -> return deserializeAddMessageUpdate(
                 array
             )
+
+            AbsLongpollEvent.ACTION_MESSAGE_REACTION_CHANGE -> {
+                @ReactionEventType val event_type_of_reaction: Int =
+                    ReactionEventType.toReactionEventType(optInt(array, 1))
+                var myReaction: Int? = null
+                if (event_type_of_reaction == ReactionEventType.UNKNOW) {
+                    return null
+                }
+                val peer_id = optLong(array, 2)
+                val conversation_message_id = optInt(array, 3)
+                var reactionCountIndex = 4
+                if (event_type_of_reaction == ReactionEventType.I_ADDED_REACTION) {
+                    myReaction = optInt(array, 4)
+                    reactionCountIndex = 5
+                }
+                val myReactionChanged =
+                    event_type_of_reaction == ReactionEventType.I_ADDED_REACTION || event_type_of_reaction == ReactionEventType.I_DELETED_REACTION
+                val reactionCount = optInt(array, reactionCountIndex)
+                var offset = reactionCountIndex + 1
+                val arrayReactionList = ArrayList<VKApiReaction>()
+                for (s in 0..<reactionCount) {
+                    val reaction = VKApiReaction()
+                    reaction.reaction_id = optInt(array, offset + 1)
+                    reaction.count = optInt(array, offset + 2)
+                    offset += optInt(array, offset) + 1
+                    arrayReactionList.add(reaction)
+                }
+                return ReactionMessageChangeUpdate(
+                    event_type_of_reaction,
+                    peer_id,
+                    conversation_message_id,
+                    myReaction.orZero(),
+                    myReactionChanged,
+                    arrayReactionList
+                )
+            }
 
             AbsLongpollEvent.ACTION_USER_WRITE_TEXT_IN_DIALOG -> {
                 val w = WriteTextInDialogUpdate(true)
@@ -148,6 +187,7 @@ class LongpollUpdateDtoAdapter : AbsDtoAdapter<AbsLongpollEvent?>("AbsLongpollEv
             }
         }
         update.random_id = optString(array, 8) // ok
+        update.conversationMessageId = optInt(array, 9)
         update.edit_time = optLong(array, 10)
         if (update.from == 0L && !Peer.isGroupChat(update.peerId) && !Peer.isContactChat(update.peerId) && !update.isOut) {
             update.from = update.peerId

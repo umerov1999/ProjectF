@@ -37,7 +37,7 @@ class SelectProfilesActivity : MainActivity(), SelectedProfilesAdapter.ActionLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mLayoutRes = if (Settings.get()
-                .other().is_side_navigation
+                .main().is_side_navigation
         ) R.layout.activity_main_with_profiles_selection_side else R.layout.activity_main_with_profiles_selection
         super.onCreate(savedInstanceState)
         mLastBackPressedTime = Long.MAX_VALUE - DOUBLE_BACK_PRESSED_TIMEOUT

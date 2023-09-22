@@ -135,13 +135,13 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
             }
         }
         ivHeaderNotifications.setOnClickListener {
-            val rs = !Settings.get().other().isDisable_notifications
-            Settings.get().other().isDisable_notifications = rs
+            val rs = !Settings.get().main().isDisable_notifications
+            Settings.get().main().isDisable_notifications = rs
             ivHeaderNotifications.setImageResource(if (rs) R.drawable.notification_disable else R.drawable.feed)
         }
         ivHeaderNotifications.setImageResource(
             if (Settings.get()
-                    .other().isDisable_notifications
+                    .main().isDisable_notifications
             ) R.drawable.notification_disable else R.drawable.feed
         )
         ivHeaderDayNight.setOnLongClickListener {
@@ -231,7 +231,7 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
             mDrawerItems?.add(SECTION_ITEM_SETTINGS)
             mDrawerItems?.add(SECTION_ITEM_ACCOUNTS)
             if (mRecentChats.nonNullNoEmpty() && Settings.get()
-                    .other().isEnable_show_recent_dialogs
+                    .main().isEnable_show_recent_dialogs
             ) {
                 mRecentChats?.let { mDrawerItems?.addAll(it) }
             }
@@ -253,7 +253,7 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
 //        items.add(new DividerMenuItem());
         items.add(SECTION_ITEM_SETTINGS)
         items.add(SECTION_ITEM_ACCOUNTS)
-        if (mRecentChats.nonNullNoEmpty() && Settings.get().other().isEnable_show_recent_dialogs) {
+        if (mRecentChats.nonNullNoEmpty() && Settings.get().main().isEnable_show_recent_dialogs) {
             mRecentChats?.let { items.addAll(it) }
         }
         return items

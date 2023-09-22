@@ -31,11 +31,9 @@
 #include "tdebug.h"
 #include "tstringlist.h"
 #include "tzlib.h"
-
+#include "tpropertymap.h"
 #include "id3v2tag.h"
 #include "id3v2synchdata.h"
-
-#include "tpropertymap.h"
 #include "frames/textidentificationframe.h"
 #include "frames/urllinkframe.h"
 #include "frames/unsynchronizedlyricsframe.h"
@@ -50,10 +48,7 @@ using namespace ID3v2;
 class Frame::FramePrivate
 {
 public:
-  FramePrivate() :
-    header(nullptr)
-    {}
-
+  FramePrivate() = default;
   ~FramePrivate()
   {
     delete header;
@@ -62,7 +57,7 @@ public:
   FramePrivate(const FramePrivate &) = delete;
   FramePrivate &operator=(const FramePrivate &) = delete;
 
-  Frame::Header *header;
+  Frame::Header *header { nullptr };
 };
 
 namespace
@@ -72,7 +67,8 @@ namespace
     if(frameID.size() != 4)
       return false;
 
-    return std::none_of(frameID.begin(), frameID.end(), [](auto c) { return (c < 'A' || c > 'Z') && (c < '0' || c > '9'); });
+    return std::none_of(frameID.begin(), frameID.end(),
+      [](auto c) { return (c < 'A' || c > 'Z') && (c < '0' || c > '9'); });
   }
 }  // namespace
 
@@ -174,7 +170,6 @@ void Frame::setData(const ByteVector &data)
 
 void Frame::setText(const String &)
 {
-
 }
 
 ByteVector Frame::render() const
@@ -287,8 +282,8 @@ String::Type Frame::checkTextEncoding(const StringList &fields, String::Type enc
   if(encoding != String::Latin1)
     return encoding;
 
-  for(auto it = fields.begin(); it != fields.end(); ++it) {
-    if(!(*it).isLatin1()) {
+  for(const auto &field : fields) {
+    if(!field.isLatin1()) {
       if(header()->version() == 4) {
         debug("Frame::checkEncoding() -- Rendering using UTF8.");
         return String::UTF8;
@@ -469,13 +464,13 @@ void Frame::splitProperties(const PropertyMap &original, PropertyMap &singleFram
   singleFrameProperties.clear();
   tiplProperties.clear();
   tmclProperties.clear();
-  for(auto it = original.begin(); it != original.end(); ++it) {
-    if(TextIdentificationFrame::involvedPeopleMap().contains(it->first))
-      tiplProperties.insert(it->first, it->second);
-    else if(it->first.startsWith(TextIdentificationFrame::instrumentPrefix))
-      tmclProperties.insert(it->first, it->second);
+  for(const auto &[person, tag] : original) {
+    if(TextIdentificationFrame::involvedPeopleMap().contains(person))
+      tiplProperties.insert(person, tag);
+    else if(person.startsWith(TextIdentificationFrame::instrumentPrefix))
+      tmclProperties.insert(person, tag);
     else
-      singleFrameProperties.insert(it->first, it->second);
+      singleFrameProperties.insert(person, tag);
   }
 }
 
@@ -486,33 +481,20 @@ void Frame::splitProperties(const PropertyMap &original, PropertyMap &singleFram
 class Frame::Header::HeaderPrivate
 {
 public:
-  HeaderPrivate() :
-    frameSize(0),
-    version(4),
-    tagAlterPreservation(false),
-    fileAlterPreservation(false),
-    readOnly(false),
-    groupingIdentity(false),
-    compression(false),
-    encryption(false),
-    unsynchronisation(false),
-    dataLengthIndicator(false)
-    {}
-
   ByteVector frameID;
-  unsigned int frameSize;
-  unsigned int version;
+  unsigned int frameSize { 0 };
+  unsigned int version { 4 };
 
   // flags
 
-  bool tagAlterPreservation;
-  bool fileAlterPreservation;
-  bool readOnly;
-  bool groupingIdentity;
-  bool compression;
-  bool encryption;
-  bool unsynchronisation;
-  bool dataLengthIndicator;
+  bool tagAlterPreservation { false };
+  bool fileAlterPreservation { false };
+  bool readOnly { false };
+  bool groupingIdentity { false };
+  bool compression { false };
+  bool encryption { false };
+  bool unsynchronisation { false };
+  bool dataLengthIndicator { false };
 };
 
 ////////////////////////////////////////////////////////////////////////////////

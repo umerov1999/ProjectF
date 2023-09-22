@@ -21,7 +21,7 @@ import kotlin.math.cos
 class AudioPlayerCoverDrawable(private val bitmap: Bitmap) : Drawable() {
     private val startTimeMillis: Long = SystemClock.uptimeMillis()
     private val settings: PlayerCoverBackgroundSettings =
-        Settings.get().other().playerCoverBackgroundSettings
+        Settings.get().main().playerCoverBackgroundSettings
     private var animatingFade = true
     private var pAlpha = 0xCC
     private var tmpRotation: Float = 0f

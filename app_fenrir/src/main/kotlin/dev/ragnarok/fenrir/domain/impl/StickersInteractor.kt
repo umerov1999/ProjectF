@@ -43,7 +43,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
                         )
                     }).setActive(true).setPurchased(true)
                 if (items.items.isNullOrEmpty()) {
-                    Settings.get().other().del_last_sticker_sets_custom_sync(accountId)
+                    Settings.get().main().del_last_sticker_sets_custom_sync(accountId)
                 }
                 storage.storeStickerSetsCustom(accountId, listOf(temp))
             }
@@ -60,7 +60,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
                 }
                 val ret = mapAllMutable(list) { mapStickerSet(it) }
                 if (list.isEmpty()) {
-                    Settings.get().other().del_last_sticker_sets_sync(accountId)
+                    Settings.get().main().del_last_sticker_sets_sync(accountId)
                 }
                 storage.storeStickerSets(accountId, ret)
             }
@@ -88,7 +88,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
                     temp.add(StickersKeywordsEntity(stickersKeywords, userStickers))
                 }
                 if (list.isEmpty()) {
-                    Settings.get().other().del_last_sticker_keywords_sync(accountId)
+                    Settings.get().main().del_last_sticker_keywords_sync(accountId)
                 }
                 storage.storeKeyWords(accountId, temp)
             }
@@ -121,7 +121,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
             Completable.complete()
         } else {
             Completable.create { t ->
-                val temp = File(Settings.get().other().stickerDir)
+                val temp = File(Settings.get().main().stickerDir)
                 if (!temp.exists()) {
                     t.onComplete()
                     return@create

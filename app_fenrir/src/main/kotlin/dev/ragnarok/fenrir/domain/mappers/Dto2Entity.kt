@@ -34,6 +34,8 @@ import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
 import dev.ragnarok.fenrir.api.model.VKApiPoll
 import dev.ragnarok.fenrir.api.model.VKApiPost
 import dev.ragnarok.fenrir.api.model.VKApiPrivacy
+import dev.ragnarok.fenrir.api.model.VKApiReaction
+import dev.ragnarok.fenrir.api.model.VKApiReactionAsset
 import dev.ragnarok.fenrir.api.model.VKApiSchool
 import dev.ragnarok.fenrir.api.model.VKApiSticker
 import dev.ragnarok.fenrir.api.model.VKApiSticker.VKApiAnimation
@@ -107,6 +109,8 @@ import dev.ragnarok.fenrir.db.model.entity.PollDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PostDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PostDboEntity.SourceDbo
 import dev.ragnarok.fenrir.db.model.entity.PrivacyEntity
+import dev.ragnarok.fenrir.db.model.entity.ReactionAssetEntity
+import dev.ragnarok.fenrir.db.model.entity.ReactionEntity
 import dev.ragnarok.fenrir.db.model.entity.SchoolEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity.AnimationEntity
@@ -1292,6 +1296,16 @@ object Dto2Entity {
             )
     }
 
+    fun mapReactionAsset(dto: VKApiReactionAsset): ReactionAssetEntity {
+        return ReactionAssetEntity().setReactionId(dto.reaction_id)
+            .setBigAnimation(dto.big_animation).setSmallAnimation(dto.small_animation)
+            .setStatic(dto.static)
+    }
+
+    fun mapReaction(dto: VKApiReaction): ReactionEntity {
+        return ReactionEntity().setReactionId(dto.reaction_id).setCount(dto.count)
+    }
+
     private fun mapStickerImage(dto: VKApiSticker.Image): StickerDboEntity.Img {
         return StickerDboEntity.Img().set(dto.url, dto.width, dto.height)
     }
@@ -1504,6 +1518,13 @@ object Dto2Entity {
             .setRandomId(randomId)
             .setUpdateTime(dto.update_time)
             .setPayload(dto.payload)
+            .setConversationMessageId(dto.conversation_message_id)
+            .setReactionId(dto.reaction_id)
+            .setReactions(mapAll(
+                dto.reactions
+            ) {
+                mapReaction(it)
+            })
         if (entity.isHasAttachments) {
             entity.setAttachments(dto.attachments?.let { mapAttachmentsList(it) })
         } else {

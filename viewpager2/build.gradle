@@ -4,6 +4,9 @@ plugins {
     id("kotlinx-serialization")
 }
 
+//recyclerview 1.3.1
+//viewpager 1.1.0-beta02
+
 android {
     namespace "androidx.viewpager2"
     compileSdk = appCompileSDK
@@ -44,7 +47,6 @@ dependencies {
     implementation("androidx.annotation:annotation:$annotationVersion")
     implementation("androidx.appcompat:appcompat:$appcompatVersion")
     implementation("androidx.core:core-ktx:$coreVersion")
-    //implementation("androidx.recyclerview:recyclerview:$recyclerviewVersion")
     implementation("androidx.customview:customview:$customviewVersion")
     implementation("androidx.customview:customview-poolingcontainer:$customviewPoolingcontainerVersion")
     implementation("androidx.activity:activity-ktx:$activityVersion")

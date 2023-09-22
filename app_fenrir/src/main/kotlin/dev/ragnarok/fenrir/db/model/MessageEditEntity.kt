@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.db.model
 
 import dev.ragnarok.fenrir.db.model.entity.DboEntity
-import dev.ragnarok.fenrir.db.model.entity.KeyboardEntity
 import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
 
 class MessageEditEntity(val status: Int, val senderId: Long) {
@@ -23,8 +22,6 @@ class MessageEditEntity(val status: Int, val senderId: Long) {
         private set
     var payload: String? = null
         private set
-    var keyboard: KeyboardEntity? = null
-        private set
     var body: String? = null
         private set
     var extras: Map<Int, String>? = null
@@ -32,11 +29,6 @@ class MessageEditEntity(val status: Int, val senderId: Long) {
 
     fun setBody(body: String?): MessageEditEntity {
         this.body = body
-        return this
-    }
-
-    fun setKeyboard(keyboard: KeyboardEntity?): MessageEditEntity {
-        this.keyboard = keyboard
         return this
     }
 

@@ -15,7 +15,6 @@ import android.util.SparseBooleanArray
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.RadioButton
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,6 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.yalantis.ucrop.UCrop
@@ -52,6 +52,7 @@ import dev.ragnarok.fenrir.fragment.search.criteria.MessageSearchCriteria
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.link.internal.TopicLink
 import dev.ragnarok.fenrir.listener.*
+import dev.ragnarok.fenrir.materialpopupmenu.popupMenu
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.*
@@ -69,6 +70,7 @@ import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.InputViewController
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper
+import dev.ragnarok.fenrir.view.ReactionContainer
 import dev.ragnarok.fenrir.view.WeakViewAnimatorAdapter
 import dev.ragnarok.fenrir.view.emoji.BotKeyboardView
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
@@ -85,7 +87,8 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     InputViewController.RecordActionsCallback,
     AttachmentsViewBinder.VoiceActionListener, EmojiconsPopup.OnStickerClickedListener,
     EmojiconsPopup.OnMyStickerClickedListener,
-    EmojiconTextView.OnHashTagClickListener, BotKeyboardView.BotKeyboardViewDelegate {
+    EmojiconTextView.OnHashTagClickListener, BotKeyboardView.BotKeyboardViewDelegate,
+    ReactionContainer.ReactionClicked {
 
     private var headerView: View? = null
     private var loadMoreFooterHelper: LoadMoreFooterHelper? = null
@@ -257,7 +260,8 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         stickersAdapter?.setStickerClickedListener(object :
             EmojiconsPopup.OnStickerClickedListener {
             override fun onStickerClick(sticker: Sticker) {
-                presenter?.fireStickerSendClick(sticker); presenter?.resetDraftMessage()
+                presenter?.fireStickerSendClick(sticker)
+                presenter?.resetDraftMessage()
             }
         })
         stickersKeywordsView?.let {
@@ -297,7 +301,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 it.setOnLongClickListener { presenter?.fireDialogAttachmentsClick(); true; }
             }
 
-            if (!Settings.get().other().isEnable_last_read)
+            if (!Settings.get().main().isEnable_last_read)
                 it.visibility = View.GONE
             else
                 it.visibility = View.VISIBLE
@@ -316,7 +320,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     presenter?.fireScrollToEnd()
                 }
             })
-            if (Settings.get().other().isEnable_last_read) {
+            if (Settings.get().main().isEnable_last_read) {
                 gotoButton?.let { addOnScrollListener(ChatOnScrollListener(it)) }
             }
         }
@@ -437,6 +441,117 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 duration = 200
             }
         animator?.start()
+    }
+
+    override fun showPopupOptions(
+        position: Int,
+        x: Int,
+        y: Int,
+        canEdit: Boolean,
+        canPin: Boolean,
+        canStar: Boolean,
+        doStar: Boolean,
+        canSpam: Boolean
+    ) {
+        var hasOpt = false
+        view?.let { anchorView ->
+            if (anchorView.isAttachedToWindow) {
+                anchorView.popupMenu(requireActivity(), x, y) {
+                    section {
+                        if (canEdit) {
+                            item(R.string.edit) {
+                                icon = R.drawable.pencil
+                                iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                                onSelect {
+                                    presenter?.fireActionModeEditClick()
+                                }
+                            }
+                        }
+                        item(R.string.forward) {
+                            icon = R.drawable.ic_outline_forward
+                            iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                            onSelect {
+                                presenter?.onActionModeForwardClick()
+                            }
+                        }
+                        item(R.string.copy_data) {
+                            icon = R.drawable.content_copy
+                            iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                            onSelect {
+                                presenter?.fireActionModeCopyClick()
+                            }
+                        }
+                        item(R.string.reactions) {
+                            icon = R.drawable.emoticon
+                            iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                            onSelect {
+                                presenter?.fireReactionModeCopyClick(position)
+                            }
+                        }
+                        item(R.string.select_more) {
+                            icon = R.drawable.ic_arrow_down
+                            iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                            onSelect {
+                                hasOpt = true
+                                presenter?.resolveActionMode()
+                            }
+                        }
+                        if (canPin) {
+                            item(R.string.pin) {
+                                icon = R.drawable.pin
+                                iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                                onSelect {
+                                    presenter?.fireActionModePinClick()
+                                }
+                            }
+                        }
+                        if (canStar) {
+                            item(R.string.important) {
+                                icon = if (doStar) R.drawable.star_add else R.drawable.star_none
+                                iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                                onSelect {
+                                    presenter?.fireActionModeStarClick()
+                                }
+                            }
+                        }
+                        item(R.string.delete) {
+                            icon = R.drawable.ic_outline_delete
+                            iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                            onSelect {
+                                presenter?.fireActionModeDeleteClick()
+                            }
+                        }
+                        if (canSpam) {
+                            item(R.string.reason_spam) {
+                                icon = R.drawable.report
+                                iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                                onSelect {
+                                    val dlgAlert = MaterialAlertDialogBuilder(requireActivity())
+                                    dlgAlert.setIcon(R.drawable.report_red)
+                                    dlgAlert.setMessage(R.string.do_report)
+                                    dlgAlert.setTitle(R.string.select)
+                                    dlgAlert.setPositiveButton(
+                                        R.string.button_yes
+                                    ) { _: DialogInterface?, _: Int -> presenter?.fireActionModeSpamClick() }
+                                    dlgAlert.setNeutralButton(
+                                        R.string.delete
+                                    ) { _: DialogInterface?, _: Int -> presenter?.fireActionModeDeleteClick() }
+                                    dlgAlert.setCancelable(true)
+                                    dlgAlert.create().show()
+                                }
+                            }
+                        }
+                    }
+                    onDismiss {
+                        if (hasOpt) {
+                            return@onDismiss
+                        }
+                        presenter?.clearSelection(position)
+                    }
+                    setCalculateHeightOfAnchorView(true)
+                }
+            }
+        }
     }
 
     private class ActionModeHolder(val rootView: View, fragment: ChatFragment) :
@@ -566,11 +681,16 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         return LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, true)
     }
 
-    override fun displayMessages(messages: MutableList<Message>, lastReadId: LastReadId) {
-        adapter = MessagesAdapter(requireActivity(), messages, lastReadId, this, false)
+    override fun displayMessages(
+        accountId: Long,
+        messages: MutableList<Message>,
+        lastReadId: LastReadId
+    ) {
+        adapter = MessagesAdapter(accountId, requireActivity(), messages, lastReadId, this, false)
             .also {
                 it.setOnMessageActionListener(this)
                 it.setVoiceActionListener(this)
+                it.setonReactionListener(this)
                 headerView?.let { it1 -> it.addFooter(it1) }
                 it.setOnHashTagClickListener(this)
             }
@@ -787,7 +907,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         peer: Peer
     ) {
         if (!Settings.get()
-                .other().isNot_read_show || requireActivity() is SwipebleActivity || requireActivity() is SendAttachmentsActivity
+                .main().isNot_read_show || requireActivity() is SwipebleActivity || requireActivity() is SendAttachmentsActivity
             || requireActivity() is SelectProfilesActivity || requireActivity() is AttachmentsActivity
         ) {
             return
@@ -881,6 +1001,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
     override fun onStickerClick(sticker: Sticker) {
         presenter?.fireStickerSendClick(sticker)
+    }
+
+    override fun onMyStickerClick(file: Sticker.LocalSticker) {
+        presenter?.fireSendMyStickerClick(file)
     }
 
     override fun onHashTagClicked(hashTag: String) {
@@ -996,7 +1120,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     }
 
     private fun onEditLocalFileSelected(file: String) {
-        for (i in Settings.get().other().photoExt) {
+        for (i in Settings.get().main().photoExt) {
             if (file.endsWith(i, true)) {
                 when (val defaultSize = Settings.get().main().uploadImageSize) {
                     null -> {
@@ -1032,13 +1156,13 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 return
             }
         }
-        for (i in Settings.get().other().videoExt) {
+        for (i in Settings.get().main().videoExt) {
             if (file.endsWith(i, true)) {
                 presenter?.fireFileVideoForUploadSelected(file)
                 return
             }
         }
-        for (i in Settings.get().other().audioExt) {
+        for (i in Settings.get().main().audioExt) {
             if (file.endsWith(i, true)) {
                 presenter?.fireFileAudioForUploadSelected(file)
                 return
@@ -1282,7 +1406,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
             rootView.findViewById<View>(R.id.button_photo_settings).visibility =
                 if (Settings.get()
-                        .other().isChange_upload_size || isGroupChat
+                        .main().isChange_upload_size || isGroupChat
                 ) View.VISIBLE else View.GONE
 
             rootView.findViewById<ImageView>(R.id.button_photo_settings)
@@ -1697,8 +1821,8 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
     override fun showEncryptionKeysPolicyChooseDialog(requestCode: Int) {
         val view = View.inflate(activity, R.layout.dialog_select_encryption_key_policy, null)
-        val buttonOnDisk = view.findViewById<RadioButton>(R.id.button_on_disk)
-        val buttonInRam = view.findViewById<RadioButton>(R.id.button_in_ram)
+        val buttonOnDisk = view.findViewById<MaterialRadioButton>(R.id.button_on_disk)
+        val buttonInRam = view.findViewById<MaterialRadioButton>(R.id.button_in_ram)
 
         buttonOnDisk.isChecked = true
 
@@ -1922,10 +2046,6 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         presenter?.fireChatDownloadClick(requireActivity(), action)
     }
 
-    override fun onMyStickerClick(file: Sticker.LocalSticker) {
-        presenter?.fireSendMyStickerClick(file)
-    }
-
     override fun onInputTextChanged(s: String?) {
         presenter?.fireDraftMessageTextEdited(s)
         presenter?.fireTextEdited(s)
@@ -1970,7 +2090,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
     override fun onAvatarClick(message: Message, userId: Long, position: Int) {
         if (isActionModeVisible()) {
-            presenter?.fireMessageClick(message, position)
+            presenter?.fireMessageClick(message, position, null, null)
         } else {
             presenter?.fireOwnerClick(userId)
         }
@@ -1989,8 +2109,8 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         return true
     }
 
-    override fun onMessageClicked(message: Message, position: Int) {
-        presenter?.fireMessageClick(message, position)
+    override fun onMessageClicked(message: Message, position: Int, x: Int, y: Int) {
+        presenter?.fireMessageClick(message, position, x, y)
     }
 
     override fun onLongAvatarClick(message: Message, userId: Long, position: Int) {
@@ -2002,6 +2122,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         if (needClose) {
             inputViewController?.closeBotKeyboard()
         }
+    }
+
+    override fun onReactionClicked(reaction_id: Int?, conversation_message_id: Int, peerId: Long) {
+        presenter?.fireReactionClicked(reaction_id, conversation_message_id, peerId)
     }
 
     override fun copyToClipBoard(link: String) {
@@ -2020,7 +2144,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        connectivityManager = if (Settings.get().other().isAuto_read && !Settings.get()
+        connectivityManager = if (Settings.get().main().isAuto_read && !Settings.get()
                 .accounts().currentHidden && AppPerms.hasAccessNetworkStatePermission(
                 requireActivity()
             )
@@ -2044,70 +2168,6 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         super.onDestroyView()
         inputViewController?.destroyView()
         inputViewController = null
-    }
-
-    internal class NetworkBroadcastReceiverPostM(
-        private val context: Context,
-        private val call: Utils.SafeCallInt
-    ) {
-        private var networkCallback: ConnectivityManager.NetworkCallback? = null
-        private var connectivityManager: ConnectivityManager? = null
-
-        @SuppressLint("MissingPermission")
-        fun register() {
-            connectivityManager =
-                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
-            if (connectivityManager != null) {
-                networkCallback = object : ConnectivityManager.NetworkCallback() {
-                    override fun onAvailable(network: Network) {
-                        call.call()
-                    }
-
-                    override fun onLost(network: Network) {
-
-                    }
-                }
-                val networkRequest =
-                    NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                        .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-                        .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
-                connectivityManager?.registerNetworkCallback(
-                    networkRequest.build(),
-                    networkCallback ?: return
-                )
-            }
-        }
-
-        fun unregister() {
-            if (connectivityManager != null && networkCallback != null) {
-                (connectivityManager ?: return).unregisterNetworkCallback(networkCallback ?: return)
-            }
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    class NetworkBroadcastReceiver(
-        private val context: Context,
-        private val call: Utils.SafeCallInt
-    ) :
-        BroadcastReceiver() {
-        fun register() {
-            val filter = IntentFilter()
-            filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
-            context.registerReceiver(this, filter)
-        }
-
-        fun unregister() {
-            context.unregisterReceiver(this)
-        }
-
-        @SuppressLint("MissingPermission")
-        override fun onReceive(context: Context, intent: Intent) {
-            val action = intent.action
-            if (ConnectivityManager.CONNECTIVITY_ACTION == action) {
-                call.call()
-            }
-        }
     }
 
     companion object {

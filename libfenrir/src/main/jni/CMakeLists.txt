@@ -37,32 +37,30 @@ foreach (ffmpeg_lib avutil swresample avcodec avformat swscale)
 endforeach ()
 
 add_library(thorvg STATIC
-        thorvg/src/lib/sw_engine/tvgSwFill.cpp
-        thorvg/src/lib/sw_engine/tvgSwImage.cpp
-        thorvg/src/lib/sw_engine/tvgSwMath.cpp
-        thorvg/src/lib/sw_engine/tvgSwMemPool.cpp
-        thorvg/src/lib/sw_engine/tvgSwRaster.cpp
-        thorvg/src/lib/sw_engine/tvgSwRenderer.cpp
-        thorvg/src/lib/sw_engine/tvgSwRle.cpp
-        thorvg/src/lib/sw_engine/tvgSwShape.cpp
-        thorvg/src/lib/sw_engine/tvgSwStroke.cpp
-        thorvg/src/lib/tvgAccessor.cpp
-        thorvg/src/lib/tvgAnimation.cpp
-        thorvg/src/lib/tvgCanvas.cpp
-        thorvg/src/lib/tvgFill.cpp
-        thorvg/src/lib/tvgGlCanvas.cpp
-        thorvg/src/lib/tvgInitializer.cpp
-        thorvg/src/lib/tvgLinearGradient.cpp
-        thorvg/src/lib/tvgLoader.cpp
-        thorvg/src/lib/tvgPaint.cpp
-        thorvg/src/lib/tvgPicture.cpp
-        thorvg/src/lib/tvgRadialGradient.cpp
-        thorvg/src/lib/tvgRender.cpp
-        thorvg/src/lib/tvgSaver.cpp
-        thorvg/src/lib/tvgScene.cpp
-        thorvg/src/lib/tvgShape.cpp
-        thorvg/src/lib/tvgSwCanvas.cpp
-        thorvg/src/lib/tvgTaskScheduler.cpp
+        thorvg/src/renderer/sw_engine/tvgSwFill.cpp
+        thorvg/src/renderer/sw_engine/tvgSwImage.cpp
+        thorvg/src/renderer/sw_engine/tvgSwMath.cpp
+        thorvg/src/renderer/sw_engine/tvgSwMemPool.cpp
+        thorvg/src/renderer/sw_engine/tvgSwRaster.cpp
+        thorvg/src/renderer/sw_engine/tvgSwRenderer.cpp
+        thorvg/src/renderer/sw_engine/tvgSwRle.cpp
+        thorvg/src/renderer/sw_engine/tvgSwShape.cpp
+        thorvg/src/renderer/sw_engine/tvgSwStroke.cpp
+        thorvg/src/renderer/tvgAccessor.cpp
+        thorvg/src/renderer/tvgAnimation.cpp
+        thorvg/src/renderer/tvgCanvas.cpp
+        thorvg/src/renderer/tvgFill.cpp
+        thorvg/src/renderer/tvgGlCanvas.cpp
+        thorvg/src/renderer/tvgInitializer.cpp
+        thorvg/src/renderer/tvgLoader.cpp
+        thorvg/src/renderer/tvgPaint.cpp
+        thorvg/src/renderer/tvgPicture.cpp
+        thorvg/src/renderer/tvgRender.cpp
+        thorvg/src/renderer/tvgSaver.cpp
+        thorvg/src/renderer/tvgScene.cpp
+        thorvg/src/renderer/tvgShape.cpp
+        thorvg/src/renderer/tvgSwCanvas.cpp
+        thorvg/src/renderer/tvgTaskScheduler.cpp
         thorvg/src/loaders/raw/tvgRawLoader.cpp
         thorvg/src/loaders/svg/tvgSvgCssStyle.cpp
         thorvg/src/loaders/svg/tvgSvgLoader.cpp
@@ -70,20 +68,20 @@ add_library(thorvg STATIC
         thorvg/src/loaders/svg/tvgSvgSceneBuilder.cpp
         thorvg/src/loaders/svg/tvgSvgUtil.cpp
         thorvg/src/loaders/svg/tvgXmlParser.cpp
-        thorvg/src/utils/tvgBezier.cpp
-        thorvg/src/utils/tvgCompressor.cpp
-        thorvg/src/utils/tvgMath.cpp
-        thorvg/src/utils/tvgStr.cpp)
+        thorvg/src/common/tvgBezier.cpp
+        thorvg/src/common/tvgCompressor.cpp
+        thorvg/src/common/tvgMath.cpp
+        thorvg/src/common/tvgStr.cpp)
 
 target_compile_options(thorvg PRIVATE
         -DTVG_STATIC=1 -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter ${SYM_VISIBILITY})
 target_include_directories(thorvg PRIVATE
         thorvg/inc
-        thorvg/src/lib
-        thorvg/src/lib/sw_engine
+        thorvg/src/renderer
+        thorvg/src/renderer/sw_engine
         thorvg/src/loaders/raw
         thorvg/src/loaders/svg
-        thorvg/src/utils)
+        thorvg/src/common)
 
 add_library(rlottie STATIC
         rlottie/src/lottie/lottieanimation.cpp

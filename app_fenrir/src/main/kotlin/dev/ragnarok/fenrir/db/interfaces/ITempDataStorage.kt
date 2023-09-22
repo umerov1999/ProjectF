@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.db.interfaces
 
+import dev.ragnarok.fenrir.db.model.entity.ReactionAssetEntity
 import dev.ragnarok.fenrir.db.serialize.ISerializeAdapter
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.LogEvent
@@ -48,4 +49,10 @@ interface ITempDataStorage {
     fun deleteAudios(): Completable
 
     fun deleteAudio(sourceOwner: Long, id: Int, ownerId: Long): Completable
+
+    fun addReactionsAssets(accountId: Long, list: List<ReactionAssetEntity>): Completable
+
+    fun getReactionsAssets(accountId: Long): Single<List<ReactionAssetEntity>>
+
+    fun clearReactionAssets(accountId: Long): Completable
 }

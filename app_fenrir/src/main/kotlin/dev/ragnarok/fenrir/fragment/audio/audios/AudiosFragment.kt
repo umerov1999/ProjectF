@@ -155,7 +155,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
         save_mode.visibility = when {
             isSelectMode -> View.GONE
             Settings.get()
-                .other().isAudio_save_mode_button -> View.VISIBLE
+                .main().isAudio_save_mode_button -> View.VISIBLE
 
             else -> View.GONE
         }
@@ -203,7 +203,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
                     mAudioRecyclerAdapter?.toggleSelectMode(isSaveMode)
                     presenter?.fireUpdateSelectMode()
                     if (tracks.isNotEmpty()) {
-                        CheckDirectory(Settings.get().other().musicDir)
+                        CheckDirectory(Settings.get().main().musicDir)
                         val account_id = presenter?.accountId ?: Settings.get().accounts().current
                         var obj = WorkManager.getInstance(requireActivity()).beginWith(
                             makeDownloadRequestAudio(

@@ -203,7 +203,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                 true
             )
         )
-        if (Settings.get().other().localServer.enabled) {
+        if (Settings.get().main().localServer.enabled) {
             menus.add(
                 OptionRequest(
                     AudioLocalOption.play_via_local_server,
@@ -268,7 +268,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
 
                 AudioLocalOption.play_item_audio -> {
                     mClickListener?.onClick(position, audio)
-                    if (Settings.get().other().isShow_mini_player) getPlayerPlace(
+                    if (Settings.get().main().isShow_mini_player) getPlayerPlace(
                         Settings.get().accounts().current
                     ).tryOpenWith(mContext)
                 }
@@ -316,7 +316,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
 
     private fun doPlay(position: Int, audio: Audio) {
         if (isNowPlayingOrPreparingOrPaused(audio)) {
-            if (!Settings.get().other().isUse_stop_audio) {
+            if (!Settings.get().main().isUse_stop_audio) {
                 playOrPause()
             } else {
                 stop()

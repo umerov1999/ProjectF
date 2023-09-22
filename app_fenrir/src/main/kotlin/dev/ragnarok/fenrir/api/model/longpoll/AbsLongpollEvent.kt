@@ -18,5 +18,6 @@ open class AbsLongpollEvent(val action: Int) {
         const val ACTION_USER_WRITE_TEXT_IN_DIALOG = 63
         const val ACTION_USER_WRITE_VOICE_IN_DIALOG = 64
         const val ACTION_COUNTER_UNREAD_WAS_CHANGED = 80
+        const val ACTION_MESSAGE_REACTION_CHANGE = 601
     }
 }

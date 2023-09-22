@@ -56,6 +56,14 @@ class LongPollEventSaver {
                 )
             )
         }
+        if (updates.message_reaction_changed_updates.nonNullNoEmpty()) {
+            completable = completable.andThen(
+                messagesInteractor.handleMessageReactionsChangedUpdates(
+                    accountId,
+                    updates.message_reaction_changed_updates
+                )
+            )
+        }
         return completable
     }
 

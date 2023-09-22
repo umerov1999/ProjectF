@@ -160,7 +160,7 @@ class MessageAttachmentsFragment :
         }
         view.findViewById<View>(R.id.button_photo_settings).visibility =
             if (Settings.get()
-                    .other().isChange_upload_size || requireArguments().getBoolean(Extra.IS_CHAT)
+                    .main().isChange_upload_size || requireArguments().getBoolean(Extra.IS_CHAT)
             ) View.VISIBLE else View.GONE
 
         view.findViewById<ImageView>(R.id.button_photo_settings)

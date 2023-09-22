@@ -13,11 +13,13 @@ import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.MessageSearchCriteria
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Keyboard
+import dev.ragnarok.fenrir.model.LastReadId
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.model.VoiceMessage
 import dev.ragnarok.fenrir.place.PlaceFactory.getChatPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getMessagesLookupPlace
+import dev.ragnarok.fenrir.settings.Settings
 
 class MessagesSearchFragment :
     AbsSearchFragment<MessagesSearchPresenter, IMessagesSearchView, Message, MessagesAdapter>(),
@@ -28,7 +30,14 @@ class MessagesSearchFragment :
 
     override fun postCreate(root: View) {}
     override fun createAdapter(data: MutableList<Message>): MessagesAdapter {
-        val adapter = MessagesAdapter(requireActivity(), data, this, true)
+        val adapter = MessagesAdapter(
+            Settings.get().accounts().current,
+            requireActivity(),
+            data,
+            LastReadId(0, 0),
+            this,
+            true
+        )
         //adapter.setOnHashTagClickListener(this);
         adapter.setOnMessageActionListener(this)
         adapter.setVoiceActionListener(this)
@@ -66,7 +75,7 @@ class MessagesSearchFragment :
         return true
     }
 
-    override fun onMessageClicked(message: Message, position: Int) {
+    override fun onMessageClicked(message: Message, position: Int, x: Int, y: Int) {
         presenter?.fireMessageClick(
             message
         )

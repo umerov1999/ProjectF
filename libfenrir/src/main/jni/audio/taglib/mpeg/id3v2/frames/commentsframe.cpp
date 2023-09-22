@@ -25,12 +25,13 @@
 
 #include "commentsframe.h"
 
+#include <utility>
+
 #include "tbytevectorlist.h"
-#include "id3v2tag.h"
 #include "tdebug.h"
 #include "tstringlist.h"
-
 #include "tpropertymap.h"
+#include "id3v2tag.h"
 
 using namespace TagLib;
 using namespace ID3v2;
@@ -38,8 +39,7 @@ using namespace ID3v2;
 class CommentsFrame::CommentsFramePrivate
 {
 public:
-  CommentsFramePrivate() : textEncoding(String::Latin1) {}
-  String::Type textEncoding;
+  String::Type textEncoding { String::Latin1 };
   ByteVector language;
   String description;
   String text;
@@ -123,11 +123,8 @@ PropertyMap CommentsFrame::asProperties() const
 
 CommentsFrame *CommentsFrame::findByDescription(const ID3v2::Tag *tag, const String &d) // static
 {
-  const ID3v2::FrameList comments = tag->frameList("COMM");
-
-  for(auto it = comments.begin(); it != comments.end(); ++it)
-  {
-    auto frame = dynamic_cast<CommentsFrame *>(*it);
+  for(const auto &comment : std::as_const(tag->frameList("COMM"))) {
+    auto frame = dynamic_cast<CommentsFrame *>(comment);
     if(frame && frame->description() == d)
       return frame;
   }

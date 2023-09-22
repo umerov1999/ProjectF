@@ -7,6 +7,7 @@ import dev.ragnarok.fenrir.api.model.longpoll.InputMessagesSetReadUpdate
 import dev.ragnarok.fenrir.api.model.longpoll.MessageFlagsResetUpdate
 import dev.ragnarok.fenrir.api.model.longpoll.MessageFlagsSetUpdate
 import dev.ragnarok.fenrir.api.model.longpoll.OutputMessagesSetReadUpdate
+import dev.ragnarok.fenrir.api.model.longpoll.ReactionMessageChangeUpdate
 import dev.ragnarok.fenrir.api.model.longpoll.WriteTextInDialogUpdate
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.AppChatUser
@@ -18,6 +19,7 @@ import dev.ragnarok.fenrir.model.MessageUpdate
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.model.PeerDeleting
 import dev.ragnarok.fenrir.model.PeerUpdate
+import dev.ragnarok.fenrir.model.ReactionAsset
 import dev.ragnarok.fenrir.model.SaveMessageBuilder
 import dev.ragnarok.fenrir.model.SentMsg
 import dev.ragnarok.fenrir.model.User
@@ -47,6 +49,11 @@ interface IMessagesRepository {
     ): Completable
 
     fun handleWriteUpdates(accountId: Long, updates: List<WriteTextInDialogUpdate>?): Completable
+    fun handleMessageReactionsChangedUpdates(
+        accountId: Long,
+        updates: List<ReactionMessageChangeUpdate>?
+    ): Completable
+
     fun observeSentMessages(): Flowable<SentMsg>
     fun observePeerUpdates(): Flowable<List<PeerUpdate>>
     fun observeMessageUpdates(): Flowable<List<MessageUpdate>>
@@ -195,4 +202,10 @@ interface IMessagesRepository {
     fun pin(accountId: Long, peerId: Long, message: Message?): Completable
     fun pinUnPinConversation(accountId: Long, peerId: Long, peen: Boolean): Completable
     fun markAsListened(accountId: Long, message_id: Int): Completable
+    fun sendOrDeleteReaction(
+        accountId: Long,
+        peer_id: Long, cmid: Int, reaction_id: Int?
+    ): Completable
+
+    fun getReactionsAssets(accountId: Long): Single<List<ReactionAsset>>
 }

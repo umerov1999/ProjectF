@@ -143,7 +143,7 @@ class StoriesShortVideosInteractor(
                     owners
                 )
                     .map<List<Story>> { owners1: IOwnersBundle ->
-                        val blockAds = Settings.get().other().isAd_block_story_news
+                        val blockAds = Settings.get().main().isAd_block_story_news
                         val stories: MutableList<Story> = ArrayList()
                         for (dto in dtos) {
                             if (dto.is_ads && blockAds) {

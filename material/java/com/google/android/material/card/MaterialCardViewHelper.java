@@ -221,7 +221,7 @@ class MaterialCardViewHelper {
 
     materialCardView.setBackgroundInternal(insetDrawable(bgDrawable));
     fgDrawable =
-        materialCardView.isClickable() ? getClickableForeground() : getForegroundContentDrawable();
+        shouldUseClickableForeground() ? getClickableForeground() : getForegroundContentDrawable();
     materialCardView.setForeground(insetDrawable(fgDrawable));
   }
 
@@ -305,7 +305,7 @@ class MaterialCardViewHelper {
   void updateClickable() {
     Drawable previousFgDrawable = fgDrawable;
     fgDrawable =
-        materialCardView.isClickable() ? getClickableForeground() : getForegroundContentDrawable();
+        shouldUseClickableForeground() ? getClickableForeground() : getForegroundContentDrawable();
     if (previousFgDrawable != fgDrawable) {
       updateInsetForeground(fgDrawable);
     }
@@ -682,6 +682,17 @@ class MaterialCardViewHelper {
       return size / 2;
     }
     return 0;
+  }
+
+  private boolean shouldUseClickableForeground() {
+    if (materialCardView.isClickable()) {
+      return true;
+    }
+    View view = materialCardView;
+    while (view.isDuplicateParentStateEnabled() && view.getParent() instanceof View) {
+      view = (View) view.getParent();
+    }
+    return view.isClickable();
   }
 
   @NonNull

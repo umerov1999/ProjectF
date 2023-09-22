@@ -31,6 +31,8 @@ import dev.ragnarok.fenrir.db.model.entity.PollDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PostDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PostDboEntity.SourceDbo
 import dev.ragnarok.fenrir.db.model.entity.PrivacyEntity
+import dev.ragnarok.fenrir.db.model.entity.ReactionAssetEntity
+import dev.ragnarok.fenrir.db.model.entity.ReactionEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity.AnimationEntity
 import dev.ragnarok.fenrir.db.model.entity.StoryDboEntity
@@ -65,6 +67,8 @@ import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoSizes
 import dev.ragnarok.fenrir.model.Poll
 import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Reaction
+import dev.ragnarok.fenrir.model.ReactionAsset
 import dev.ragnarok.fenrir.model.SimplePrivacy
 import dev.ragnarok.fenrir.model.Sticker
 import dev.ragnarok.fenrir.model.Story
@@ -114,6 +118,16 @@ object Model2Entity {
             .setMinor_id(model.getMinor_id())
     }
 
+    fun buildReactionAssetEntity(dto: ReactionAsset): ReactionAssetEntity {
+        return ReactionAssetEntity().setReactionId(dto.reaction_id)
+            .setBigAnimation(dto.big_animation).setSmallAnimation(dto.small_animation)
+            .setStatic(dto.static)
+    }
+
+    private fun buildReactionEntity(dto: Reaction): ReactionEntity {
+        return ReactionEntity().setReactionId(dto.reaction_id).setCount(dto.count)
+    }
+
     fun buildMessageEntity(message: Message): MessageDboEntity {
         return MessageDboEntity().set(message.getObjectId(), message.peerId, message.senderId)
             .setDate(message.date)
@@ -145,6 +159,11 @@ object Model2Entity {
             .setUpdateTime(message.updateTime)
             .setPayload(message.payload)
             .setKeyboard(buildKeyboardEntity(message.keyboard))
+            .setConversationMessageId(message.conversation_message_id)
+            .setReactionId(message.reaction_id)
+            .setReactions(mapAll(
+                message.reactions
+            ) { buildReactionEntity(it) })
     }
 
     private fun buildEntityAttachments(attachments: Attachments): List<DboEntity> {

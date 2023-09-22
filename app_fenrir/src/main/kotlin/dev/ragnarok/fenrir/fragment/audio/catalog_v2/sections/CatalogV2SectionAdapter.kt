@@ -506,7 +506,7 @@ class CatalogV2SectionAdapter(
                         position,
                         false
                     )
-                    if (!Settings.get().other().isShow_mini_player) PlaceFactory.getPlayerPlace(
+                    if (!Settings.get().main().isShow_mini_player) PlaceFactory.getPlayerPlace(
                         Settings.get().accounts().current
                     ).tryOpenWith(mContext)
                 }
@@ -1100,7 +1100,7 @@ class CatalogV2SectionAdapter(
 
     private fun doPlay(position: Int, audio: Audio) {
         if (MusicPlaybackController.isNowPlayingOrPreparingOrPaused(audio)) {
-            if (!Settings.get().other().isUse_stop_audio) {
+            if (!Settings.get().main().isUse_stop_audio) {
                 MusicPlaybackController.playOrPause()
             } else {
                 MusicPlaybackController.stop()
@@ -1118,7 +1118,7 @@ class CatalogV2SectionAdapter(
             MusicPlaybackService.startForPlayList(
                 mContext, op, op.indexOf(audio), false
             )
-            if (!Settings.get().other().isShow_mini_player) PlaceFactory.getPlayerPlace(
+            if (!Settings.get().main().isShow_mini_player) PlaceFactory.getPlayerPlace(
                 account_id
             ).tryOpenWith(mContext)
         }

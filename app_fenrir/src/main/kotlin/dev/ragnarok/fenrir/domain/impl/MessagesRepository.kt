@@ -26,20 +26,24 @@ import dev.ragnarok.fenrir.db.model.PeerPatch
 import dev.ragnarok.fenrir.db.model.entity.DialogDboEntity
 import dev.ragnarok.fenrir.db.model.entity.MessageDboEntity
 import dev.ragnarok.fenrir.db.model.entity.PeerDialogEntity
+import dev.ragnarok.fenrir.db.model.entity.ReactionAssetEntity
 import dev.ragnarok.fenrir.db.model.entity.StickerDboEntity
 import dev.ragnarok.fenrir.domain.IMessagesDecryptor
 import dev.ragnarok.fenrir.domain.IMessagesRepository
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.InteractorFactory.createAccountInteractor
 import dev.ragnarok.fenrir.domain.Mode
+import dev.ragnarok.fenrir.domain.mappers.Dto2Entity
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapDialog
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapMessage
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapOwners
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapPeerDialog
+import dev.ragnarok.fenrir.domain.mappers.Dto2Model
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformMessages
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformOwners
 import dev.ragnarok.fenrir.domain.mappers.Entity2Dto.createToken
+import dev.ragnarok.fenrir.domain.mappers.Entity2Model
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildDialogFromDbo
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildKeyboardFromDbo
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.fillOwnerIds
@@ -71,6 +75,7 @@ import dev.ragnarok.fenrir.util.Optional.Companion.empty
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Unixtime.now
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.hasFlag
 import dev.ragnarok.fenrir.util.Utils.isHiddenAccount
@@ -166,7 +171,7 @@ class MessagesRepository(
         nowSending = false
         if (cause is NotFoundException) {
             val accountId = Settings.get().accounts().current
-            if (!Settings.get().other().isBe_online || isHiddenAccount(accountId)) {
+            if (!Settings.get().main().isBe_online || isHiddenAccount(accountId)) {
                 compositeDisposable.add(
                     createAccountInteractor().setOffline(accountId)
                         .subscribeOn(senderScheduler)
@@ -265,6 +270,24 @@ class MessagesRepository(
         return applyMessagesPatchesAndPublish(accountId, patches)
     }
 
+    override fun handleMessageReactionsChangedUpdates(
+        accountId: Long,
+        updates: List<ReactionMessageChangeUpdate>?
+    ): Completable {
+        val patches: MutableList<MessagePatch> = ArrayList()
+        if (updates.nonNullNoEmpty()) {
+            for (update in updates) {
+                val patch = MessagePatch(update.conversation_message_id, update.peer_id)
+                patch.reaction = MessagePatch.ReactionUpdate(
+                    !update.myReactionChanged,
+                    update.myReaction,
+                    mapAll(update.arrayReactionList) { Dto2Entity.mapReaction(it) })
+                patches.add(patch)
+            }
+        }
+        return applyMessagesPatchesAndPublish(accountId, patches)
+    }
+
     override fun handleWriteUpdates(
         accountId: Long,
         updates: List<WriteTextInDialogUpdate>?
@@ -322,8 +345,8 @@ class MessagesRepository(
         val patches: MutableList<PeerPatch> = ArrayList()
         if (setUpdates.nonNullNoEmpty()) {
             for (update in setUpdates) {
-                if (!Settings.get().other().isDisable_notifications && Settings.get()
-                        .other().isInfo_reading && update.peerId < VKApiMessage.CHAT_PEER
+                if (!Settings.get().main().isDisable_notifications && Settings.get()
+                        .main().isInfo_reading && update.peerId < VKApiMessage.CHAT_PEER
                 ) {
                     compositeDisposable.add(
                         getRx(
@@ -996,7 +1019,6 @@ class MessagesRepository(
                 val patch = MessageEditEntity(status, accountId)
                 patch.setEncrypted(builder.isRequireEncryption())
                 patch.setPayload(builder.getPayload())
-                patch.setKeyboard(buildKeyboardEntity(builder.getKeyboard()))
                 patch.setDate(now())
                 patch.setRead(false)
                 patch.setOut(true)
@@ -1322,6 +1344,45 @@ class MessagesRepository(
                 }
                 applyMessagesPatchesAndPublish(accountId, patches)
             }
+    }
+
+    override fun getReactionsAssets(accountId: Long): Single<List<ReactionAsset>> {
+        if (Utils.needFetchReactionAssets(accountId)) {
+            return networker.vkDefault(accountId)
+                .messages()
+                .getReactionsAssets()
+                .flatMap { ndtos ->
+                    val dtos: List<VKApiReactionAsset> = listEmptyIfNull(ndtos.assets)
+                    val dbos: List<ReactionAssetEntity> =
+                        mapAll(dtos) { Dto2Entity.mapReactionAsset(it) }
+                    val models: List<ReactionAsset> =
+                        mapAll(dtos) { Dto2Model.transformReactionAsset(it) }
+
+                    if (dtos.isEmpty()) {
+                        Settings.get().main().del_last_reaction_assets_sync(accountId)
+                        return@flatMap Single.just(models)
+                    }
+                    storages.tempStore().addReactionsAssets(accountId, dbos)
+                        .andThen(Single.just(models))
+                }
+        } else {
+            return storages.tempStore().getReactionsAssets(accountId).map {
+                val dbos: List<ReactionAssetEntity> = listEmptyIfNull(it)
+                val models: List<ReactionAsset> =
+                    mapAll(dbos) { st -> Entity2Model.buildReactionAssetFromDbo(st) }
+                models
+            }
+        }
+    }
+
+    override fun sendOrDeleteReaction(
+        accountId: Long,
+        peer_id: Long, cmid: Int, reaction_id: Int?
+    ): Completable {
+        return networker.vkDefault(accountId)
+            .messages()
+            .sendOrDeleteReaction(peer_id, cmid, reaction_id)
+            .ignoreElement()
     }
 
     override fun pinUnPinConversation(accountId: Long, peerId: Long, peen: Boolean): Completable {
@@ -1769,6 +1830,16 @@ class MessagesRepository(
             }
             patch.important.requireNonNull {
                 update.setImportantUpdate(ImportantUpdate(it.important))
+            }
+            patch.reaction.requireNonNull {
+                update.setReactionUpdate(
+                    MessageUpdate.ReactionUpdate(
+                        patch.peerId,
+                        it.keepMyReaction,
+                        it.reactionId,
+                        it.reactions
+                    )
+                )
             }
             return update
         }

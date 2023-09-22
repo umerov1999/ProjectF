@@ -70,6 +70,7 @@ import okhttp3.*
 import java.io.Closeable
 import java.io.IOException
 import java.util.Calendar
+import java.util.Collections
 import java.util.LinkedList
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -83,6 +84,10 @@ object Utils {
     private val reload_dialogs: MutableList<Long> = LinkedList()
     private val cachedMyStickers: MutableList<LocalSticker> = LinkedList()
     private val registeredParcels: MutableSet<Long> = HashSet()
+    private val reactionsAssets: MutableMap<Long, MutableMap<Int, ReactionAsset>> =
+        Collections.synchronizedMap(LinkedHashMap())
+    private val reload_reactions_assets: MutableList<Long> = LinkedList()
+
     var follower_kick_mode = false
     private val displaySize = Point()
     private var device_id: String? = null
@@ -95,6 +100,10 @@ object Utils {
     var currentParser = 0
 
     var currentColorsReplacement = ArrayMap<String, Int>()
+
+    fun getReactionsAssets(): MutableMap<Long, MutableMap<Int, ReactionAsset>> {
+        return reactionsAssets
+    }
 
     fun getCachedMyStickers(): MutableList<LocalSticker> {
         return cachedMyStickers
@@ -152,6 +161,13 @@ object Utils {
         return false
     }
 
+    fun needReloadReactionAssets(account_id: Long): Boolean {
+        if (!reload_reactions_assets.contains(account_id)) {
+            reload_reactions_assets.add(account_id)
+            return true
+        }
+        return false
+    }
 
     fun needReloadDialogs(account_id: Long): Boolean {
         if (!reload_dialogs.contains(account_id)) {
@@ -162,9 +178,9 @@ object Utils {
     }
 
     fun needReloadStickerSets(account_id: Long): Boolean {
-        Settings.get().other().get_last_sticker_sets_sync(account_id).let {
+        Settings.get().main().get_last_sticker_sets_sync(account_id).let {
             if (it <= 0 || (System.currentTimeMillis() / 1000L) - it > 900) {
-                Settings.get().other()
+                Settings.get().main()
                     .set_last_sticker_sets_sync(account_id, System.currentTimeMillis() / 1000L)
                 return true
             }
@@ -173,9 +189,9 @@ object Utils {
     }
 
     fun needReloadStickerSetsCustom(account_id: Long): Boolean {
-        Settings.get().other().get_last_sticker_sets_custom_sync(account_id).let {
+        Settings.get().main().get_last_sticker_sets_custom_sync(account_id).let {
             if (it <= 0 || (System.currentTimeMillis() / 1000L) - it > 400) {
-                Settings.get().other()
+                Settings.get().main()
                     .set_last_sticker_sets_custom_sync(
                         account_id,
                         System.currentTimeMillis() / 1000L
@@ -187,10 +203,21 @@ object Utils {
     }
 
     fun needReloadStickerKeywords(account_id: Long): Boolean {
-        Settings.get().other().get_last_sticker_keywords_sync(account_id).let {
+        Settings.get().main().get_last_sticker_keywords_sync(account_id).let {
             if (it <= 0 || (System.currentTimeMillis() / 1000L) - it > 3600) {
-                Settings.get().other()
+                Settings.get().main()
                     .set_last_sticker_keywords_sync(account_id, System.currentTimeMillis() / 1000L)
+                return true
+            }
+        }
+        return false
+    }
+
+    fun needFetchReactionAssets(account_id: Long): Boolean {
+        Settings.get().main().get_last_reaction_assets_sync(account_id).let {
+            if (it <= 0 || (System.currentTimeMillis() / 1000L) - it > 3600) {
+                Settings.get().main()
+                    .set_last_reaction_assets_sync(account_id, System.currentTimeMillis() / 1000L)
                 return true
             }
         }
@@ -1338,41 +1365,11 @@ object Utils {
         return false
     }
 
-
-    fun safeObjectCall(obj: Any?, function: SafeCallInt) {
-        if (obj != null) {
-            function.call()
-        }
-    }
-
-
     fun safeCheck(obj: CharSequence?, function: SafeCallCheckInt): Boolean {
         return if (obj.nonNullNoEmpty()) {
             function.check()
         } else false
     }
-
-
-    fun safeCall(obj: CharSequence?, function: SafeCallInt) {
-        if (obj.nonNullNoEmpty()) {
-            function.call()
-        }
-    }
-
-
-    fun safeCall(obj: Collection<*>?, function: SafeCallInt) {
-        if (obj.nonNullNoEmpty()) {
-            function.call()
-        }
-    }
-
-
-    fun safeCall(data: Map<*, *>?, function: SafeCallInt) {
-        if (data.nonNullNoEmpty()) {
-            function.call()
-        }
-    }
-
 
     fun clamp(value: Int, min: Int, max: Int): Int {
         if (value > max) {
@@ -1523,7 +1520,7 @@ object Utils {
 
 
     val appLocale: Locale
-        get() = getLocaleSettings(Settings.get().other().language)
+        get() = getLocaleSettings(Settings.get().main().language)
 
     @Suppress("DEPRECATION")
 
@@ -1553,7 +1550,7 @@ object Utils {
             Constants.DEVICE_COUNTRY_CODE = "ru"
         }
         val size = Settings.get().main().fontSize
-        @Lang val lang = Settings.get().other().language
+        @Lang val lang = Settings.get().main().language
         val locale = getLocaleSettings(lang)
         updateDateLang(locale)
         updateDateLang()

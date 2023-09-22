@@ -25,12 +25,10 @@
 
 #include "id3v2header.h"
 
-#include <iostream>
 #include <bitset>
 
 #include "tstring.h"
 #include "tdebug.h"
-
 #include "id3v2footer.h"
 #include "id3v2synchdata.h"
 
@@ -40,24 +38,15 @@ using namespace ID3v2;
 class Header::HeaderPrivate
 {
 public:
-  HeaderPrivate() :
-    majorVersion(4),
-    revisionNumber(0),
-    unsynchronisation(false),
-    extendedHeader(false),
-    experimentalIndicator(false),
-    footerPresent(false),
-    tagSize(0) {}
+  unsigned int majorVersion { 4 };
+  unsigned int revisionNumber { 0 };
 
-  unsigned int majorVersion;
-  unsigned int revisionNumber;
+  bool unsynchronisation { false };
+  bool extendedHeader { false };
+  bool experimentalIndicator { false };
+  bool footerPresent { false };
 
-  bool unsynchronisation;
-  bool extendedHeader;
-  bool experimentalIndicator;
-  bool footerPresent;
-
-  unsigned int tagSize;
+  unsigned int tagSize { 0 };
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -208,8 +197,8 @@ void Header::parse(const ByteVector &data)
     return;
   }
 
-  for(auto it = sizeData.begin(); it != sizeData.end(); it++) {
-    if(static_cast<unsigned char>(*it) >= 128) {
+  for(const auto &size : sizeData) {
+    if(static_cast<unsigned char>(size) >= 128) {
       d->tagSize = 0;
       debug("TagLib::ID3v2::Header::parse() - One of the size bytes in the id3v2 header was greater than the allowed 128.");
       return;

@@ -139,7 +139,7 @@ class User : Owner {
 
     override val fullName: String
         get() {
-            val custom = get().other().getUserNameChanges(id)
+            val custom = get().main().getUserNameChanges(id)
             return if (custom.nonNullNoEmpty()) {
                 custom
             } else "$firstName $lastName"

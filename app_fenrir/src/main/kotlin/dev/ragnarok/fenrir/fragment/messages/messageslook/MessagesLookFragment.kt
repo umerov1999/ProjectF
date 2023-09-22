@@ -24,6 +24,7 @@ import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter.OnMessageActio
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
+import dev.ragnarok.fenrir.materialpopupmenu.popupMenu
 import dev.ragnarok.fenrir.model.FwdMessages
 import dev.ragnarok.fenrir.model.Keyboard
 import dev.ragnarok.fenrir.model.LastReadId
@@ -37,9 +38,7 @@ import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.Utils.SafeCallInt
 import dev.ragnarok.fenrir.util.Utils.createGradientChatImage
-import dev.ragnarok.fenrir.util.Utils.safeObjectCall
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper.Companion.createFrom
 import java.lang.ref.WeakReference
@@ -111,13 +110,95 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         presenter?.fireHeaderLoadMoreClick()
     }
 
-    override fun displayMessages(messages: MutableList<Message>, lastReadId: LastReadId) {
-        mMessagesAdapter = MessagesAdapter(requireActivity(), messages, lastReadId, this, true)
+    override fun displayMessages(
+        accountId: Long,
+        messages: MutableList<Message>,
+        lastReadId: LastReadId
+    ) {
+        mMessagesAdapter =
+            MessagesAdapter(accountId, requireActivity(), messages, lastReadId, this, true)
         mMessagesAdapter?.setOnMessageActionListener(this)
         mMessagesAdapter?.setVoiceActionListener(this)
         mFooterView?.let { mMessagesAdapter?.addFooter(it) }
         mHeaderView?.let { mMessagesAdapter?.addHeader(it) }
         mRecyclerView?.adapter = mMessagesAdapter
+    }
+
+    override fun showPopupOptions(
+        position: Int,
+        x: Int,
+        y: Int,
+        canEdit: Boolean,
+        canPin: Boolean,
+        canStar: Boolean,
+        doStar: Boolean,
+        canSpam: Boolean
+    ) {
+        var hasOpt = false
+        view?.let { anchorView ->
+            if (anchorView.isAttachedToWindow) {
+                anchorView.popupMenu(requireActivity(), x, y) {
+                    section {
+                        item(R.string.forward) {
+                            icon = R.drawable.ic_outline_forward
+                            iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                            onSelect {
+                                presenter?.fireForwardClick()
+                            }
+                        }
+                        item(R.string.copy_data) {
+                            icon = R.drawable.content_copy
+                            iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                            onSelect {
+                                presenter?.fireActionModeCopyClick()
+                            }
+                        }
+                        item(R.string.select_more) {
+                            icon = R.drawable.ic_arrow_down
+                            iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                            onSelect {
+                                hasOpt = true
+                                presenter?.resolveActionMode()
+                            }
+                        }
+                        item(R.string.delete) {
+                            icon = R.drawable.ic_outline_delete
+                            iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                            onSelect {
+                                presenter?.fireActionModeDeleteClick()
+                            }
+                        }
+                        if (canSpam) {
+                            item(R.string.reason_spam) {
+                                icon = R.drawable.report
+                                iconColor = CurrentTheme.getColorSecondary(requireActivity())
+                                onSelect {
+                                    val dlgAlert = MaterialAlertDialogBuilder(requireActivity())
+                                    dlgAlert.setIcon(R.drawable.report_red)
+                                    dlgAlert.setMessage(R.string.do_report)
+                                    dlgAlert.setTitle(R.string.select)
+                                    dlgAlert.setPositiveButton(
+                                        R.string.button_yes
+                                    ) { _: DialogInterface?, _: Int -> presenter?.fireActionModeSpamClick() }
+                                    dlgAlert.setNeutralButton(
+                                        R.string.delete
+                                    ) { _: DialogInterface?, _: Int -> presenter?.fireActionModeDeleteClick() }
+                                    dlgAlert.setCancelable(true)
+                                    dlgAlert.create().show()
+                                }
+                            }
+                        }
+                    }
+                    onDismiss {
+                        if (hasOpt) {
+                            return@onDismiss
+                        }
+                        presenter?.clearSelection(position)
+                    }
+                    setCalculateHeightOfAnchorView(true)
+                }
+            }
+        }
     }
 
     override fun focusTo(index: Int) {
@@ -248,7 +329,8 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         if (mActionView?.isVisible == true) {
             presenter?.fireMessageClick(
                 message,
-                position
+                position,
+                null, null
             )
         } else {
             presenter?.fireOwnerClick(
@@ -261,7 +343,8 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         if (mActionView?.isVisible == true) {
             presenter?.fireMessageClick(
                 message,
-                position
+                position,
+                null, null
             )
         } else {
             presenter?.fireOwnerClick(
@@ -285,10 +368,11 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         return true
     }
 
-    override fun onMessageClicked(message: Message, position: Int) {
+    override fun onMessageClicked(message: Message, position: Int, x: Int, y: Int) {
         presenter?.fireMessageClick(
             message,
-            position
+            position,
+            x, y
         )
     }
 
@@ -379,19 +463,9 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         fun hide() {
             rootView.visibility = View.GONE
             if (Settings.get().main().isMessages_menu_down) {
-                safeObjectCall(reference.get(), object : SafeCallInt {
-                    override fun call() {
-                        if (reference.get()?.downMenuGroup != null) {
-                            reference.get()?.downMenuGroup?.visibility = View.GONE
-                        }
-                    }
-                })
+                reference.get()?.downMenuGroup?.visibility = View.GONE
             }
-            safeObjectCall(reference.get(), object : SafeCallInt {
-                override fun call() {
-                    reference.get()?.presenter?.fireActionModeDestroy()
-                }
-            })
+            reference.get()?.presenter?.fireActionModeDestroy()
         }
 
         override fun onClick(v: View) {
@@ -401,29 +475,17 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
                 }
 
                 R.id.buttonForward -> {
-                    safeObjectCall(reference.get(), object : SafeCallInt {
-                        override fun call() {
-                            reference.get()?.presenter?.fireForwardClick()
-                        }
-                    })
+                    reference.get()?.presenter?.fireForwardClick()
                     hide()
                 }
 
                 R.id.buttonCopy -> {
-                    safeObjectCall(reference.get(), object : SafeCallInt {
-                        override fun call() {
-                            reference.get()?.presenter?.fireActionModeCopyClick()
-                        }
-                    })
+                    reference.get()?.presenter?.fireActionModeCopyClick()
                     hide()
                 }
 
                 R.id.buttonDelete -> {
-                    safeObjectCall(reference.get(), object : SafeCallInt {
-                        override fun call() {
-                            reference.get()?.presenter?.fireActionModeDeleteClick()
-                        }
-                    })
+                    reference.get()?.presenter?.fireActionModeDeleteClick()
                     hide()
                 }
 
@@ -433,19 +495,11 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
                         .setMessage(R.string.do_report)
                         .setTitle(R.string.select)
                         .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
-                            safeObjectCall(reference.get(), object : SafeCallInt {
-                                override fun call() {
-                                    reference.get()?.presenter?.fireActionModeSpamClick()
-                                }
-                            })
+                            reference.get()?.presenter?.fireActionModeSpamClick()
                             hide()
                         }
                         .setNeutralButton(R.string.delete) { _: DialogInterface?, _: Int ->
-                            safeObjectCall(reference.get(), object : SafeCallInt {
-                                override fun call() {
-                                    reference.get()?.presenter?.fireActionModeDeleteClick()
-                                }
-                            })
+                            reference.get()?.presenter?.fireActionModeDeleteClick()
                             hide()
                         }
                         .setCancelable(true)

@@ -27,12 +27,14 @@ import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Keyboard
+import dev.ragnarok.fenrir.model.LastReadId
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
@@ -82,7 +84,14 @@ class LocalJsonToChatFragment :
             LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, true)
         PicassoPauseOnScrollListener.addListener(recyclerView)
         mLoadingProgressBar = root.findViewById(R.id.loading_progress_bar)
-        mAdapter = MessagesAdapter(requireActivity(), mutableListOf(), this, true)
+        mAdapter = MessagesAdapter(
+            Settings.get().accounts().current,
+            requireActivity(),
+            mutableListOf(),
+            LastReadId(0, 0),
+            this,
+            true
+        )
         recyclerView?.adapter = mAdapter
         return root
     }
@@ -328,7 +337,9 @@ class LocalJsonToChatFragment :
         presenter?.fireOwnerClick(userId)
     }
 
-    override fun onLongAvatarClick(message: Message, userId: Long, position: Int) {}
+    override fun onLongAvatarClick(message: Message, userId: Long, position: Int) {
+    }
+
     override fun onRestoreClick(message: Message, position: Int) {}
     override fun onBotKeyboardClick(button: Keyboard.Button) {}
 
@@ -336,7 +347,7 @@ class LocalJsonToChatFragment :
         return false
     }
 
-    override fun onMessageClicked(message: Message, position: Int) {}
+    override fun onMessageClicked(message: Message, position: Int, x: Int, y: Int) {}
     override fun onMessageDelete(message: Message) {}
 
     companion object {

@@ -72,17 +72,17 @@ class AttachmentsViewBinder(
         holderPosition: Int?
     ) {
         if (attachments == null) {
-            safeSetVisibitity(containers.vgAudios, View.GONE)
-            safeSetVisibitity(containers.vgVideos, View.GONE)
-            safeSetVisibitity(containers.vgArticles, View.GONE)
-            safeSetVisibitity(containers.vgBigLinks, View.GONE)
-            safeSetVisibitity(containers.vgDocs, View.GONE)
-            safeSetVisibitity(containers.vgPhotos, View.GONE)
-            safeSetVisibitity(containers.vgPosts, View.GONE)
-            safeSetVisibitity(containers.vgStickers, View.GONE)
-            safeSetVisibitity(containers.voiceMessageRoot, View.GONE)
-            safeSetVisibitity(containers.vgFriends, View.GONE)
-            photosViewHelper.removeZoomable(containers.vgPhotos)
+            safeRemoveChildrenAndGoneParent(containers.vgAudios)
+            safeRemoveChildrenAndGoneParent(containers.vgVideos)
+            safeRemoveChildrenAndGoneParent(containers.vgArticles)
+            safeRemoveChildrenAndGoneParent(containers.vgBigLinks)
+            safeRemoveChildrenAndGoneParent(containers.vgDocs)
+            safeRemoveChildrenAndGoneParent(containers.vgPhotos)
+            safeRemoveChildrenAndGoneParent(containers.vgPosts)
+            safeRemoveChildrenAndGoneParent(containers.vgStickers)
+            safeRemoveChildrenAndGoneParent(containers.voiceMessageRoot)
+            safeRemoveChildrenAndGoneParent(containers.vgFriends)
+            safeRemoveChildrenAndGoneParent(containers.vgPhotos)
             containers.vgAudios?.dispose()
         } else {
             displayArticles(attachments.articles, containers.vgArticles)
@@ -119,6 +119,9 @@ class AttachmentsViewBinder(
         peerId: Long?
     ) {
         if (voices.isNullOrEmpty() || container == null) {
+            if (container?.childCount.orZero() > 0) {
+                container?.removeAllViews()
+            }
             container?.visibility = View.GONE
             return
         }
@@ -131,16 +134,14 @@ class AttachmentsViewBinder(
             itemView.tag = holder
             container.addView(itemView)
         }
-        for (g in 0 until container.childCount) {
+        if (container.childCount > voices.size) {
+            container.removeViews(voices.size, container.childCount - voices.size)
+        }
+        for (g in voices.indices) {
             val root = container.getChildAt(g) as ViewGroup? ?: continue
-            if (g < voices.size) {
-                val holder = root.tag as VoiceHolder? ?: continue
-                val voice = voices[g]
-                bindVoiceHolder(holder, voice, messageId, peerId)
-                root.visibility = View.VISIBLE
-            } else {
-                root.visibility = View.GONE
-            }
+            val holder = root.tag as VoiceHolder? ?: continue
+            val voice = voices[g]
+            bindVoiceHolder(holder, voice, messageId, peerId)
         }
     }
 
@@ -302,6 +303,9 @@ class AttachmentsViewBinder(
 
     private fun displayStickers(stickers: List<Sticker>?, stickersContainer: ViewGroup?) {
         if (stickers.isNullOrEmpty() || stickersContainer == null) {
+            if (stickersContainer?.childCount.orZero() > 0) {
+                stickersContainer?.removeAllViews()
+            }
             stickersContainer?.visibility = View.GONE
             return
         }
@@ -354,6 +358,9 @@ class AttachmentsViewBinder(
         layout: Int
     ) {
         if (posts.isNullOrEmpty() || container == null) {
+            if (container?.childCount.orZero() > 0) {
+                container?.removeAllViews()
+            }
             container?.visibility = View.GONE
             return
         }
@@ -369,61 +376,62 @@ class AttachmentsViewBinder(
             }
             container.addView(itemView)
         }
-        for (g in 0 until container.childCount) {
+        if (container.childCount > posts.size) {
+            container.removeViews(posts.size, container.childCount - posts.size)
+        }
+        for (g in posts.indices) {
             val postViewGroup = container.getChildAt(g) as ViewGroup? ?: continue
-            if (g < posts.size) {
-                val check = postViewGroup.tag as CopyHolder? ?: continue
-                val copy = posts[g]
-                postViewGroup.visibility = View.VISIBLE
-                val text =
-                    if (reduce) AppTextUtils.reduceStringForPost(copy.text) else copy.text
-                check.bodyView.visibility =
-                    if (copy.text.isNullOrEmpty()) View.GONE else View.VISIBLE
-                check.bodyView.setOnHashTagClickListener(mOnHashTagClickListener)
-                check.bodyView.text =
-                    OwnerLinkSpanFactory.withSpans(
-                        text,
-                        owners = true,
-                        topics = false,
-                        listener = object : LinkActionAdapter() {
-                            override fun onOwnerClick(ownerId: Long) {
-                                mAttachmentsActionCallback?.onOpenOwner(ownerId)
-                            }
-                        })
-                check.ivAvatar.setOnClickListener {
-                    mAttachmentsActionCallback?.onOpenOwner(
-                        copy.authorId
-                    )
-                }
-                displayAvatar(
-                    check.ivAvatar,
-                    mAvatarTransformation,
-                    copy.authorPhoto,
-                    Constants.PICASSO_TAG
+            val check = postViewGroup.tag as CopyHolder? ?: continue
+            val copy = posts[g]
+            val text =
+                if (reduce) AppTextUtils.reduceStringForPost(copy.text) else copy.text
+            check.bodyView.visibility =
+                if (copy.text.isNullOrEmpty()) View.GONE else View.VISIBLE
+            check.bodyView.setOnHashTagClickListener(mOnHashTagClickListener)
+            check.bodyView.text =
+                OwnerLinkSpanFactory.withSpans(
+                    text,
+                    owners = true,
+                    topics = false,
+                    listener = object : LinkActionAdapter() {
+                        override fun onOwnerClick(ownerId: Long) {
+                            mAttachmentsActionCallback?.onOpenOwner(ownerId)
+                        }
+                    })
+            check.ivAvatar.setOnClickListener {
+                mAttachmentsActionCallback?.onOpenOwner(
+                    copy.authorId
                 )
-                check.tvShowMore.visibility = if (reduce && Utils.safeLenghtOf(
-                        copy.text
-                    ) > 400
-                ) View.VISIBLE else View.GONE
-                check.ownerName.text = copy.authorName
-                check.buttonDots.tag = copy
-                displayAttachments(
-                    copy.attachments,
-                    check.attachmentsHolder,
-                    false,
-                    null,
-                    null,
-                    null
-                )
-            } else {
-                postViewGroup.visibility = View.GONE
             }
+            displayAvatar(
+                check.ivAvatar,
+                mAvatarTransformation,
+                copy.authorPhoto,
+                Constants.PICASSO_TAG
+            )
+            check.tvShowMore.visibility = if (reduce && Utils.safeLenghtOf(
+                    copy.text
+                ) > 400
+            ) View.VISIBLE else View.GONE
+            check.ownerName.text = copy.authorName
+            check.buttonDots.tag = copy
+            displayAttachments(
+                copy.attachments,
+                check.attachmentsHolder,
+                false,
+                null,
+                null,
+                null
+            )
         }
     }
 
     @SuppressLint("SetTextI18n")
     fun displayFriendsPost(users: List<User>?, container: ViewGroup?, layout: Int) {
         if (users.isNullOrEmpty() || container == null) {
+            if (container?.childCount.orZero() > 0) {
+                container?.removeAllViews()
+            }
             container?.visibility = View.GONE
             return
         }
@@ -435,41 +443,39 @@ class AttachmentsViewBinder(
             itemView.tag = holder
             container.addView(itemView)
         }
-        for (g in 0 until container.childCount) {
+        if (container.childCount > users.size) {
+            container.removeViews(users.size, container.childCount - users.size)
+        }
+        for (g in users.indices) {
             val postViewGroup = container.getChildAt(g) as ViewGroup? ?: continue
-            if (g < users.size) {
-                val holder = postViewGroup.tag as FriendsPostViewHolder? ?: continue
-                val user = users[g]
-                postViewGroup.visibility = View.VISIBLE
-                if (user.fullName.isEmpty()) holder.tvTitle.visibility =
-                    View.INVISIBLE else {
-                    holder.tvTitle.visibility = View.VISIBLE
-                    holder.tvTitle.text = user.fullName
-                }
-                if (user.domain.isNullOrEmpty()) holder.tvDescription.visibility =
-                    View.INVISIBLE else {
-                    holder.tvDescription.visibility = View.VISIBLE
-                    holder.tvDescription.text = "@" + user.domain
-                }
-                val imageUrl = user.maxSquareAvatar
-                if (imageUrl != null) {
-                    displayAvatar(
-                        holder.ivImage,
-                        mAvatarTransformation,
-                        imageUrl,
-                        Constants.PICASSO_TAG
-                    )
-                } else {
-                    with().cancelRequest(holder.ivImage)
-                    holder.ivImage.setImageResource(R.drawable.ic_avatar_unknown)
-                }
-                holder.ivImage.setOnClickListener {
-                    mAttachmentsActionCallback?.onOpenOwner(
-                        user.ownerId
-                    )
-                }
+            val holder = postViewGroup.tag as FriendsPostViewHolder? ?: continue
+            val user = users[g]
+            if (user.fullName.isEmpty()) holder.tvTitle.visibility =
+                View.INVISIBLE else {
+                holder.tvTitle.visibility = View.VISIBLE
+                holder.tvTitle.text = user.fullName
+            }
+            if (user.domain.isNullOrEmpty()) holder.tvDescription.visibility =
+                View.INVISIBLE else {
+                holder.tvDescription.visibility = View.VISIBLE
+                holder.tvDescription.text = "@" + user.domain
+            }
+            val imageUrl = user.maxSquareAvatar
+            if (imageUrl != null) {
+                displayAvatar(
+                    holder.ivImage,
+                    mAvatarTransformation,
+                    imageUrl,
+                    Constants.PICASSO_TAG
+                )
             } else {
-                postViewGroup.visibility = View.GONE
+                with().cancelRequest(holder.ivImage)
+                holder.ivImage.setImageResource(R.drawable.ic_avatar_unknown)
+            }
+            holder.ivImage.setOnClickListener {
+                mAttachmentsActionCallback?.onOpenOwner(
+                    user.ownerId
+                )
             }
         }
     }
@@ -480,6 +486,9 @@ class AttachmentsViewBinder(
         postsAsLinks: Boolean
     ) {
         if (fwds.isNullOrEmpty() || fwdContainer == null) {
+            if (fwdContainer?.childCount.orZero() > 0) {
+                fwdContainer?.removeAllViews()
+            }
             fwdContainer?.visibility = View.GONE
             return
         }
@@ -490,80 +499,80 @@ class AttachmentsViewBinder(
                 .inflate(R.layout.item_forward_message, fwdContainer, false)
             fwdContainer.addView(localView)
         }
-        for (g in 0 until fwdContainer.childCount) {
+        if (fwdContainer.childCount > fwds.size) {
+            fwdContainer.removeViews(fwds.size, fwdContainer.childCount - fwds.size)
+        }
+        for (g in fwds.indices) {
             val itemView = fwdContainer.getChildAt(g) as ViewGroup? ?: continue
-            if (g < fwds.size) {
-                val message = fwds[g]
-                itemView.visibility = View.VISIBLE
-                itemView.tag = null
-                if (Settings.get().other().isDeveloper_mode) {
-                    itemView.findViewById<View>(R.id.item_message_bubble)
-                        .setOnLongClickListener {
-                            mAttachmentsActionCallback?.onGoToMessagesLookup(message)
-                            true
-                        }
-                }
-                val tvBody = itemView.findViewById<TextView>(R.id.item_fwd_message_text)
-                tvBody.text = OwnerLinkSpanFactory.withSpans(
-                    if (message.cryptStatus == CryptStatus.DECRYPTED) message.decryptedBody else message.body,
-                    owners = true,
-                    topics = false,
-                    listener = object : LinkActionAdapter() {
-                        override fun onOwnerClick(ownerId: Long) {
-                            mAttachmentsActionCallback?.onOpenOwner(ownerId)
-                        }
-                    })
-                tvBody.visibility =
-                    if (message.body.isNullOrEmpty()) View.GONE else View.VISIBLE
-                (itemView.findViewById<View>(R.id.item_fwd_message_username) as TextView).text =
-                    message.sender?.fullName
-                (itemView.findViewById<View>(R.id.item_fwd_message_time) as TextView).text =
-                    AppTextUtils.getDateFromUnixTime(message.date)
-                val tvFwds: MaterialButton = itemView.findViewById(R.id.item_forward_message_fwds)
-                tvFwds.visibility =
-                    if (message.forwardMessagesCount > 0) View.VISIBLE else View.GONE
-                tvFwds.setOnClickListener {
-                    message.fwd?.let { it1 -> mAttachmentsActionCallback?.onForwardMessagesOpen(it1) }
-                }
-                val ivAvatar = itemView.findViewById<ImageView>(R.id.item_fwd_message_avatar)
-                displayAvatar(
-                    ivAvatar,
-                    mAvatarTransformation,
-                    message.sender?.maxSquareAvatar,
-                    Constants.PICASSO_TAG
-                )
-                ivAvatar.setOnClickListener {
-                    mAttachmentsActionCallback?.onOpenOwner(
-                        message.senderId
-                    )
-                }
-                val attachmentContainers = AttachmentsHolder()
-                attachmentContainers.setVgAudios(itemView.findViewById(R.id.audio_attachments))
-                    .setVgVideos(itemView.findViewById(R.id.video_attachments))
-                    .setVgDocs(itemView.findViewById(R.id.docs_attachments))
-                    .setVgArticles(itemView.findViewById(R.id.articles_attachments))
-                    .setVgBigLinks(itemView.findViewById(R.id.biglinks_attachments))
-                    .setVgPhotos(itemView.findViewById(R.id.photo_attachments))
-                    .setVgPosts(itemView.findViewById(R.id.posts_attachments))
-                    .setVgStickers(itemView.findViewById(R.id.stickers_attachments))
-                    .setVoiceMessageRoot(itemView.findViewById(R.id.voice_message_attachments))
-                displayAttachments(
-                    message.attachments,
-                    attachmentContainers,
-                    postsAsLinks,
-                    message.getObjectId(),
-                    message.peerId,
-                    null
-                )
-            } else {
-                itemView.visibility = View.GONE
-                itemView.tag = null
+            val message = fwds[g]
+            itemView.tag = null
+            if (Settings.get().main().isDeveloper_mode) {
+                itemView.findViewById<View>(R.id.item_message_bubble)
+                    .setOnLongClickListener {
+                        mAttachmentsActionCallback?.onGoToMessagesLookup(message)
+                        true
+                    }
             }
+            val tvBody = itemView.findViewById<TextView>(R.id.item_fwd_message_text)
+            tvBody.text = OwnerLinkSpanFactory.withSpans(
+                if (message.cryptStatus == CryptStatus.DECRYPTED) message.decryptedBody else message.body,
+                owners = true,
+                topics = false,
+                listener = object : LinkActionAdapter() {
+                    override fun onOwnerClick(ownerId: Long) {
+                        mAttachmentsActionCallback?.onOpenOwner(ownerId)
+                    }
+                })
+            tvBody.visibility =
+                if (message.body.isNullOrEmpty()) View.GONE else View.VISIBLE
+            (itemView.findViewById<View>(R.id.item_fwd_message_username) as TextView).text =
+                message.sender?.fullName
+            (itemView.findViewById<View>(R.id.item_fwd_message_time) as TextView).text =
+                AppTextUtils.getDateFromUnixTime(message.date)
+            val tvFwds: MaterialButton = itemView.findViewById(R.id.item_forward_message_fwds)
+            tvFwds.visibility =
+                if (message.forwardMessagesCount > 0) View.VISIBLE else View.GONE
+            tvFwds.setOnClickListener {
+                message.fwd?.let { it1 -> mAttachmentsActionCallback?.onForwardMessagesOpen(it1) }
+            }
+            val ivAvatar = itemView.findViewById<ImageView>(R.id.item_fwd_message_avatar)
+            displayAvatar(
+                ivAvatar,
+                mAvatarTransformation,
+                message.sender?.maxSquareAvatar,
+                Constants.PICASSO_TAG
+            )
+            ivAvatar.setOnClickListener {
+                mAttachmentsActionCallback?.onOpenOwner(
+                    message.senderId
+                )
+            }
+            val attachmentContainers = AttachmentsHolder()
+            attachmentContainers.setVgAudios(itemView.findViewById(R.id.audio_attachments))
+                .setVgVideos(itemView.findViewById(R.id.video_attachments))
+                .setVgDocs(itemView.findViewById(R.id.docs_attachments))
+                .setVgArticles(itemView.findViewById(R.id.articles_attachments))
+                .setVgBigLinks(itemView.findViewById(R.id.biglinks_attachments))
+                .setVgPhotos(itemView.findViewById(R.id.photo_attachments))
+                .setVgPosts(itemView.findViewById(R.id.posts_attachments))
+                .setVgStickers(itemView.findViewById(R.id.stickers_attachments))
+                .setVoiceMessageRoot(itemView.findViewById(R.id.voice_message_attachments))
+            displayAttachments(
+                message.attachments,
+                attachmentContainers,
+                postsAsLinks,
+                message.getObjectId(),
+                message.peerId,
+                null
+            )
         }
     }
 
     private fun displayDocs(docs: List<DocLink>?, root: ViewGroup?) {
         if (docs.isNullOrEmpty() || root == null) {
+            if (root?.childCount.orZero() > 0) {
+                root?.removeAllViews()
+            }
             root?.visibility = View.GONE
             return
         }
@@ -572,318 +581,318 @@ class AttachmentsViewBinder(
         for (j in 0 until i) {
             root.addView(LayoutInflater.from(mContext).inflate(R.layout.item_document, root, false))
         }
-        for (g in 0 until root.childCount) {
+        if (root.childCount > docs.size) {
+            root.removeViews(docs.size, root.childCount - docs.size)
+        }
+        for (g in docs.indices) {
             val itemView = root.getChildAt(g) as ViewGroup? ?: continue
-            if (g < docs.size) {
-                val doc = docs[g]
-                itemView.visibility = View.VISIBLE
-                itemView.tag = null
-                val tvTitle = itemView.findViewById<TextView>(R.id.item_document_title)
-                val tvDetails = itemView.findViewById<TextView>(R.id.item_document_ext_size)
-                val tvPostText: EmojiconTextView = itemView.findViewById(R.id.item_message_text)
-                val ivPhotoT: ShapeableImageView = itemView.findViewById(R.id.item_document_image)
-                val ivPhoto_Post = itemView.findViewById<ImageView>(R.id.item_post_avatar_image)
-                val ivType = itemView.findViewById<ImageView>(R.id.item_document_type)
-                val tvShowMore = itemView.findViewById<TextView>(R.id.item_post_show_more)
-                val title = doc.getTitle(mContext)
-                val details = doc.getSecondaryText(mContext)
-                val imageUrl = doc.imageUrl
-                val ext = if (doc.getExt(mContext) == null) "" else doc.getExt(mContext) + ", "
-                val subtitle =
-                    Utils.firstNonEmptyString(ext, " ") + Utils.firstNonEmptyString(details, " ")
-                if (title.isNullOrEmpty()) {
-                    tvTitle.visibility = View.GONE
-                } else {
-                    tvTitle.text = title
-                    tvTitle.visibility = View.VISIBLE
-                }
-                if (doc.type == AttachmentsTypes.POST) {
-                    tvShowMore.visibility = if (subtitle.length > 400) View.VISIBLE else View.GONE
-                    tvDetails.visibility = View.GONE
-                    tvPostText.visibility = View.VISIBLE
-                    tvPostText.text = OwnerLinkSpanFactory.withSpans(
-                        AppTextUtils.reduceStringForPost(subtitle),
-                        owners = true,
-                        topics = false,
-                        listener = object : LinkActionAdapter() {
-                            override fun onOwnerClick(ownerId: Long) {
-                                mAttachmentsActionCallback?.onOpenOwner(ownerId)
-                            }
-                        })
-                } else if (doc.type == AttachmentsTypes.WALL_REPLY) {
-                    tvShowMore.visibility = if (subtitle.length > 400) View.VISIBLE else View.GONE
-                    tvDetails.visibility = View.GONE
-                    tvPostText.visibility = View.VISIBLE
-                    tvPostText.text = OwnerLinkSpanFactory.withSpans(
-                        AppTextUtils.reduceStringForPost(subtitle),
-                        owners = true,
-                        topics = false,
-                        listener = object : LinkActionAdapter() {
-                            override fun onOwnerClick(ownerId: Long) {
-                                mAttachmentsActionCallback?.onOpenOwner(ownerId)
-                            }
-                        })
-                } else if (doc.type == AttachmentsTypes.EVENT) {
-                    tvShowMore.visibility = View.GONE
-                    tvDetails.visibility = View.GONE
-                    tvPostText.visibility = View.VISIBLE
-                    tvPostText.text = OwnerLinkSpanFactory.withSpans(
-                        AppTextUtils.reduceStringForPost(subtitle),
-                        owners = true,
-                        topics = false,
-                        listener = object : LinkActionAdapter() {
-                            override fun onOwnerClick(ownerId: Long) {
-                                mAttachmentsActionCallback?.onOpenOwner(ownerId)
-                            }
-                        })
-                } else if (doc.type == AttachmentsTypes.NOT_SUPPORTED) {
-                    tvShowMore.visibility = View.GONE
-                    tvDetails.visibility = View.GONE
-                    tvPostText.visibility = View.VISIBLE
-                    tvPostText.text = AppTextUtils.reduceStringForPost(subtitle)
-                } else {
-                    tvDetails.visibility = View.VISIBLE
-                    tvPostText.visibility = View.GONE
-                    tvShowMore.visibility = View.GONE
-                    if (subtitle.isEmpty()) {
-                        tvDetails.visibility = View.GONE
-                    } else {
-                        tvDetails.text = subtitle
-                        tvDetails.visibility = View.VISIBLE
-                    }
-                }
-                val attachmentsRoot =
-                    itemView.findViewById<View>(R.id.item_message_attachment_container)
-                val attachmentsHolder = AttachmentsHolder()
-                attachmentsHolder.setVgAudios(attachmentsRoot.findViewById(R.id.audio_attachments))
-                    .setVgVideos(attachmentsRoot.findViewById(R.id.video_attachments))
-                    .setVgDocs(attachmentsRoot.findViewById(R.id.docs_attachments))
-                    .setVgArticles(attachmentsRoot.findViewById(R.id.articles_attachments))
-                    .setVgBigLinks(attachmentsRoot.findViewById(R.id.biglinks_attachments))
-                    .setVgPhotos(attachmentsRoot.findViewById(R.id.photo_attachments))
-                    .setVgPosts(attachmentsRoot.findViewById(R.id.posts_attachments))
-                    .setVoiceMessageRoot(attachmentsRoot.findViewById(R.id.voice_message_attachments))
-                attachmentsRoot.visibility = View.GONE
-                itemView.setOnClickListener { openDocLink(doc) }
-                ivPhoto_Post.visibility = View.GONE
-                when (doc.type) {
-                    AttachmentsTypes.DOC -> if (imageUrl != null) {
-                        ivType.visibility = View.GONE
-                        ivPhotoT.visibility = View.VISIBLE
-                        displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
-                    } else {
-                        ivType.visibility = View.VISIBLE
-                        ivPhotoT.visibility = View.GONE
-                        ivType.setImageResource(R.drawable.file)
-                    }
-
-                    AttachmentsTypes.GRAFFITI -> {
-                        ivPhotoT.visibility = View.GONE
-                        if (imageUrl != null) {
-                            ivType.visibility = View.GONE
-                            ivPhotoT.visibility = View.VISIBLE
-                            displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
-                        } else {
-                            ivType.visibility = View.VISIBLE
-                            ivType.setImageResource(R.drawable.counter)
-                        }
-                    }
-
-                    AttachmentsTypes.AUDIO_PLAYLIST -> if (imageUrl != null) {
-                        ivType.visibility = View.VISIBLE
-                        ivPhotoT.visibility = View.VISIBLE
-                        displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
-                        ivType.setImageResource(R.drawable.audio_player)
-                    } else {
-                        ivPhotoT.visibility = View.GONE
-                    }
-
-                    AttachmentsTypes.ALBUM -> if (imageUrl != null) {
-                        ivType.visibility = View.VISIBLE
-                        ivPhotoT.visibility = View.VISIBLE
-                        displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
-                        ivType.setImageResource(R.drawable.album_photo)
-                    } else {
-                        ivPhotoT.visibility = View.GONE
-                    }
-
-                    AttachmentsTypes.MARKET_ALBUM -> if (imageUrl != null) {
-                        ivType.visibility = View.VISIBLE
-                        ivPhotoT.visibility = View.VISIBLE
-                        displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
-                        ivType.setImageResource(R.drawable.ic_market_stack)
-                    } else {
-                        ivPhotoT.visibility = View.GONE
-                    }
-
-                    AttachmentsTypes.ARTIST -> if (imageUrl != null) {
-                        ivType.visibility = View.VISIBLE
-                        ivPhotoT.visibility = View.VISIBLE
-                        displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
-                        ivType.setImageResource(R.drawable.artist_icon)
-                    } else {
-                        ivPhotoT.visibility = View.GONE
-                    }
-
-                    AttachmentsTypes.MARKET -> if (imageUrl != null) {
-                        ivType.visibility = View.VISIBLE
-                        ivPhotoT.visibility = View.VISIBLE
-                        displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
-                        ivType.setImageResource(R.drawable.ic_market_outline)
-                    } else {
-                        ivPhotoT.visibility = View.GONE
-                    }
-
-                    AttachmentsTypes.STORY -> {
-                        ivPhotoT.visibility = View.GONE
-                        ivType.visibility = View.GONE
-                        if (imageUrl != null) {
-                            ivPhoto_Post.visibility = View.VISIBLE
-                            displayAvatar(
-                                ivPhoto_Post,
-                                mAvatarTransformation,
-                                imageUrl,
-                                Constants.PICASSO_TAG
-                            )
-                        } else {
-                            ivPhoto_Post.visibility = View.GONE
-                        }
-                        val st = doc.attachment as Story
-                        val prw = when {
-                            st.photo != null -> st.photo?.getUrlForSize(
-                                PhotoSize.X,
-                                true
-                            )
-
-                            st.video != null -> st.video?.image
-                            else -> null
-                        }
-                        if (prw != null) {
-                            ivPhotoT.visibility = View.VISIBLE
-                            displayAvatar(ivPhotoT, null, prw, Constants.PICASSO_TAG)
-                        } else {
-                            ivPhotoT.visibility = View.GONE
-                        }
-                    }
-
-                    AttachmentsTypes.POST -> {
-                        ivPhotoT.visibility = View.GONE
-                        ivType.visibility = View.GONE
-                        if (imageUrl != null) {
-                            ivPhoto_Post.visibility = View.VISIBLE
-                            displayAvatar(
-                                ivPhoto_Post,
-                                mAvatarTransformation,
-                                imageUrl,
-                                Constants.PICASSO_TAG
-                            )
-                        } else {
-                            ivPhoto_Post.visibility = View.GONE
-                        }
-                        val post = doc.attachment as Post
-                        val hasAttachments = post.attachments?.hasAttachments == true
-                        attachmentsRoot.visibility = if (hasAttachments) View.VISIBLE else View.GONE
-                        if (hasAttachments) displayAttachments(
-                            post.attachments,
-                            attachmentsHolder,
-                            false,
-                            null, null, null
-                        )
-                    }
-
-                    AttachmentsTypes.WALL_REPLY -> {
-                        ivPhotoT.visibility = View.GONE
-                        ivType.visibility = View.VISIBLE
-                        ivType.setImageResource(R.drawable.comment)
-                        if (imageUrl != null) {
-                            ivPhoto_Post.visibility = View.VISIBLE
-                            displayAvatar(
-                                ivPhoto_Post,
-                                mAvatarTransformation,
-                                imageUrl,
-                                Constants.PICASSO_TAG
-                            )
-                        } else {
-                            ivPhoto_Post.visibility = View.GONE
-                        }
-                        val comment = doc.attachment as WallReply
-                        val hasCommentAttachments = comment.attachments?.hasAttachments == true
-                        attachmentsRoot.visibility =
-                            if (hasCommentAttachments) View.VISIBLE else View.GONE
-                        if (hasCommentAttachments) displayAttachments(
-                            comment.attachments,
-                            attachmentsHolder,
-                            false,
-                            null, null, null
-                        )
-                    }
-
-                    AttachmentsTypes.EVENT -> {
-                        ivPhotoT.visibility = View.GONE
-                        ivType.visibility = View.VISIBLE
-                        ivType.setImageResource(R.drawable.feed)
-                        if (imageUrl != null) {
-                            ivPhoto_Post.visibility = View.VISIBLE
-                            displayAvatar(
-                                ivPhoto_Post,
-                                mAvatarTransformation,
-                                imageUrl,
-                                Constants.PICASSO_TAG
-                            )
-                        } else {
-                            ivPhoto_Post.visibility = View.GONE
-                        }
-                    }
-
-                    AttachmentsTypes.LINK, AttachmentsTypes.WIKI_PAGE -> {
-                        ivType.visibility = View.VISIBLE
-                        if (imageUrl != null) {
-                            ivPhotoT.visibility = View.VISIBLE
-                            displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
-                        } else {
-                            ivPhotoT.visibility = View.GONE
-                        }
-                        ivType.setImageResource(R.drawable.attachment)
-                    }
-
-                    AttachmentsTypes.NOT_SUPPORTED -> {
-                        ivType.visibility = View.GONE
-                        ivPhotoT.visibility = View.VISIBLE
-                        ivPhotoT.setImageResource(R.drawable.not_supported)
-                    }
-
-                    AttachmentsTypes.POLL -> {
-                        ivType.visibility = View.VISIBLE
-                        ivPhotoT.visibility = View.GONE
-                        ivType.setImageResource(R.drawable.chart_bar)
-                    }
-
-                    AttachmentsTypes.CALL -> {
-                        ivType.visibility = View.VISIBLE
-                        ivPhotoT.visibility = View.GONE
-                        ivType.setImageResource(R.drawable.phone_call)
-                    }
-
-                    AttachmentsTypes.GEO -> {
-                        ivType.visibility = View.VISIBLE
-                        ivPhotoT.visibility = View.GONE
-                        ivType.setImageResource(R.drawable.geo)
-                    }
-
-                    else -> {
-                        ivType.visibility = View.GONE
-                        ivPhotoT.visibility = View.GONE
-                    }
-                }
+            val doc = docs[g]
+            itemView.tag = null
+            val tvTitle = itemView.findViewById<TextView>(R.id.item_document_title)
+            val tvDetails = itemView.findViewById<TextView>(R.id.item_document_ext_size)
+            val tvPostText: EmojiconTextView = itemView.findViewById(R.id.item_message_text)
+            val ivPhotoT: ShapeableImageView = itemView.findViewById(R.id.item_document_image)
+            val ivPhoto_Post = itemView.findViewById<ImageView>(R.id.item_post_avatar_image)
+            val ivType = itemView.findViewById<ImageView>(R.id.item_document_type)
+            val tvShowMore = itemView.findViewById<TextView>(R.id.item_post_show_more)
+            val title = doc.getTitle(mContext)
+            val details = doc.getSecondaryText(mContext)
+            val imageUrl = doc.imageUrl
+            val ext = if (doc.getExt(mContext) == null) "" else doc.getExt(mContext) + ", "
+            val subtitle =
+                Utils.firstNonEmptyString(ext, " ") + Utils.firstNonEmptyString(details, " ")
+            if (title.isNullOrEmpty()) {
+                tvTitle.visibility = View.GONE
             } else {
-                itemView.visibility = View.GONE
-                itemView.tag = null
+                tvTitle.text = title
+                tvTitle.visibility = View.VISIBLE
+            }
+            if (doc.type == AttachmentsTypes.POST) {
+                tvShowMore.visibility = if (subtitle.length > 400) View.VISIBLE else View.GONE
+                tvDetails.visibility = View.GONE
+                tvPostText.visibility = View.VISIBLE
+                tvPostText.text = OwnerLinkSpanFactory.withSpans(
+                    AppTextUtils.reduceStringForPost(subtitle),
+                    owners = true,
+                    topics = false,
+                    listener = object : LinkActionAdapter() {
+                        override fun onOwnerClick(ownerId: Long) {
+                            mAttachmentsActionCallback?.onOpenOwner(ownerId)
+                        }
+                    })
+            } else if (doc.type == AttachmentsTypes.WALL_REPLY) {
+                tvShowMore.visibility = if (subtitle.length > 400) View.VISIBLE else View.GONE
+                tvDetails.visibility = View.GONE
+                tvPostText.visibility = View.VISIBLE
+                tvPostText.text = OwnerLinkSpanFactory.withSpans(
+                    AppTextUtils.reduceStringForPost(subtitle),
+                    owners = true,
+                    topics = false,
+                    listener = object : LinkActionAdapter() {
+                        override fun onOwnerClick(ownerId: Long) {
+                            mAttachmentsActionCallback?.onOpenOwner(ownerId)
+                        }
+                    })
+            } else if (doc.type == AttachmentsTypes.EVENT) {
+                tvShowMore.visibility = View.GONE
+                tvDetails.visibility = View.GONE
+                tvPostText.visibility = View.VISIBLE
+                tvPostText.text = OwnerLinkSpanFactory.withSpans(
+                    AppTextUtils.reduceStringForPost(subtitle),
+                    owners = true,
+                    topics = false,
+                    listener = object : LinkActionAdapter() {
+                        override fun onOwnerClick(ownerId: Long) {
+                            mAttachmentsActionCallback?.onOpenOwner(ownerId)
+                        }
+                    })
+            } else if (doc.type == AttachmentsTypes.NOT_SUPPORTED) {
+                tvShowMore.visibility = View.GONE
+                tvDetails.visibility = View.GONE
+                tvPostText.visibility = View.VISIBLE
+                tvPostText.text = AppTextUtils.reduceStringForPost(subtitle)
+            } else {
+                tvDetails.visibility = View.VISIBLE
+                tvPostText.visibility = View.GONE
+                tvShowMore.visibility = View.GONE
+                if (subtitle.isEmpty()) {
+                    tvDetails.visibility = View.GONE
+                } else {
+                    tvDetails.text = subtitle
+                    tvDetails.visibility = View.VISIBLE
+                }
+            }
+            val attachmentsRoot =
+                itemView.findViewById<View>(R.id.item_message_attachment_container)
+            val attachmentsHolder = AttachmentsHolder()
+            attachmentsHolder.setVgAudios(attachmentsRoot.findViewById(R.id.audio_attachments))
+                .setVgVideos(attachmentsRoot.findViewById(R.id.video_attachments))
+                .setVgDocs(attachmentsRoot.findViewById(R.id.docs_attachments))
+                .setVgArticles(attachmentsRoot.findViewById(R.id.articles_attachments))
+                .setVgBigLinks(attachmentsRoot.findViewById(R.id.biglinks_attachments))
+                .setVgPhotos(attachmentsRoot.findViewById(R.id.photo_attachments))
+                .setVgPosts(attachmentsRoot.findViewById(R.id.posts_attachments))
+                .setVoiceMessageRoot(attachmentsRoot.findViewById(R.id.voice_message_attachments))
+            attachmentsRoot.visibility = View.GONE
+            itemView.setOnClickListener { openDocLink(doc) }
+            ivPhoto_Post.visibility = View.GONE
+            when (doc.type) {
+                AttachmentsTypes.DOC -> if (imageUrl != null) {
+                    ivType.visibility = View.GONE
+                    ivPhotoT.visibility = View.VISIBLE
+                    displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
+                } else {
+                    ivType.visibility = View.VISIBLE
+                    ivPhotoT.visibility = View.GONE
+                    ivType.setImageResource(R.drawable.file)
+                }
+
+                AttachmentsTypes.GRAFFITI -> {
+                    ivPhotoT.visibility = View.GONE
+                    if (imageUrl != null) {
+                        ivType.visibility = View.GONE
+                        ivPhotoT.visibility = View.VISIBLE
+                        displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
+                    } else {
+                        ivType.visibility = View.VISIBLE
+                        ivType.setImageResource(R.drawable.counter)
+                    }
+                }
+
+                AttachmentsTypes.AUDIO_PLAYLIST -> if (imageUrl != null) {
+                    ivType.visibility = View.VISIBLE
+                    ivPhotoT.visibility = View.VISIBLE
+                    displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
+                    ivType.setImageResource(R.drawable.audio_player)
+                } else {
+                    ivPhotoT.visibility = View.GONE
+                }
+
+                AttachmentsTypes.ALBUM -> if (imageUrl != null) {
+                    ivType.visibility = View.VISIBLE
+                    ivPhotoT.visibility = View.VISIBLE
+                    displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
+                    ivType.setImageResource(R.drawable.album_photo)
+                } else {
+                    ivPhotoT.visibility = View.GONE
+                }
+
+                AttachmentsTypes.MARKET_ALBUM -> if (imageUrl != null) {
+                    ivType.visibility = View.VISIBLE
+                    ivPhotoT.visibility = View.VISIBLE
+                    displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
+                    ivType.setImageResource(R.drawable.ic_market_stack)
+                } else {
+                    ivPhotoT.visibility = View.GONE
+                }
+
+                AttachmentsTypes.ARTIST -> if (imageUrl != null) {
+                    ivType.visibility = View.VISIBLE
+                    ivPhotoT.visibility = View.VISIBLE
+                    displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
+                    ivType.setImageResource(R.drawable.artist_icon)
+                } else {
+                    ivPhotoT.visibility = View.GONE
+                }
+
+                AttachmentsTypes.MARKET -> if (imageUrl != null) {
+                    ivType.visibility = View.VISIBLE
+                    ivPhotoT.visibility = View.VISIBLE
+                    displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
+                    ivType.setImageResource(R.drawable.ic_market_outline)
+                } else {
+                    ivPhotoT.visibility = View.GONE
+                }
+
+                AttachmentsTypes.STORY -> {
+                    ivPhotoT.visibility = View.GONE
+                    ivType.visibility = View.GONE
+                    if (imageUrl != null) {
+                        ivPhoto_Post.visibility = View.VISIBLE
+                        displayAvatar(
+                            ivPhoto_Post,
+                            mAvatarTransformation,
+                            imageUrl,
+                            Constants.PICASSO_TAG
+                        )
+                    } else {
+                        ivPhoto_Post.visibility = View.GONE
+                    }
+                    val st = doc.attachment as Story
+                    val prw = when {
+                        st.photo != null -> st.photo?.getUrlForSize(
+                            PhotoSize.X,
+                            true
+                        )
+
+                        st.video != null -> st.video?.image
+                        else -> null
+                    }
+                    if (prw != null) {
+                        ivPhotoT.visibility = View.VISIBLE
+                        displayAvatar(ivPhotoT, null, prw, Constants.PICASSO_TAG)
+                    } else {
+                        ivPhotoT.visibility = View.GONE
+                    }
+                }
+
+                AttachmentsTypes.POST -> {
+                    ivPhotoT.visibility = View.GONE
+                    ivType.visibility = View.GONE
+                    if (imageUrl != null) {
+                        ivPhoto_Post.visibility = View.VISIBLE
+                        displayAvatar(
+                            ivPhoto_Post,
+                            mAvatarTransformation,
+                            imageUrl,
+                            Constants.PICASSO_TAG
+                        )
+                    } else {
+                        ivPhoto_Post.visibility = View.GONE
+                    }
+                    val post = doc.attachment as Post
+                    val hasAttachments = post.attachments?.hasAttachments == true
+                    attachmentsRoot.visibility = if (hasAttachments) View.VISIBLE else View.GONE
+                    if (hasAttachments) displayAttachments(
+                        post.attachments,
+                        attachmentsHolder,
+                        false,
+                        null, null, null
+                    )
+                }
+
+                AttachmentsTypes.WALL_REPLY -> {
+                    ivPhotoT.visibility = View.GONE
+                    ivType.visibility = View.VISIBLE
+                    ivType.setImageResource(R.drawable.comment)
+                    if (imageUrl != null) {
+                        ivPhoto_Post.visibility = View.VISIBLE
+                        displayAvatar(
+                            ivPhoto_Post,
+                            mAvatarTransformation,
+                            imageUrl,
+                            Constants.PICASSO_TAG
+                        )
+                    } else {
+                        ivPhoto_Post.visibility = View.GONE
+                    }
+                    val comment = doc.attachment as WallReply
+                    val hasCommentAttachments = comment.attachments?.hasAttachments == true
+                    attachmentsRoot.visibility =
+                        if (hasCommentAttachments) View.VISIBLE else View.GONE
+                    if (hasCommentAttachments) displayAttachments(
+                        comment.attachments,
+                        attachmentsHolder,
+                        false,
+                        null, null, null
+                    )
+                }
+
+                AttachmentsTypes.EVENT -> {
+                    ivPhotoT.visibility = View.GONE
+                    ivType.visibility = View.VISIBLE
+                    ivType.setImageResource(R.drawable.feed)
+                    if (imageUrl != null) {
+                        ivPhoto_Post.visibility = View.VISIBLE
+                        displayAvatar(
+                            ivPhoto_Post,
+                            mAvatarTransformation,
+                            imageUrl,
+                            Constants.PICASSO_TAG
+                        )
+                    } else {
+                        ivPhoto_Post.visibility = View.GONE
+                    }
+                }
+
+                AttachmentsTypes.LINK, AttachmentsTypes.WIKI_PAGE -> {
+                    ivType.visibility = View.VISIBLE
+                    if (imageUrl != null) {
+                        ivPhotoT.visibility = View.VISIBLE
+                        displayAvatar(ivPhotoT, null, imageUrl, Constants.PICASSO_TAG)
+                    } else {
+                        ivPhotoT.visibility = View.GONE
+                    }
+                    ivType.setImageResource(R.drawable.attachment)
+                }
+
+                AttachmentsTypes.NOT_SUPPORTED -> {
+                    ivType.visibility = View.GONE
+                    ivPhotoT.visibility = View.VISIBLE
+                    ivPhotoT.setImageResource(R.drawable.not_supported)
+                }
+
+                AttachmentsTypes.POLL -> {
+                    ivType.visibility = View.VISIBLE
+                    ivPhotoT.visibility = View.GONE
+                    ivType.setImageResource(R.drawable.chart_bar)
+                }
+
+                AttachmentsTypes.CALL -> {
+                    ivType.visibility = View.VISIBLE
+                    ivPhotoT.visibility = View.GONE
+                    ivType.setImageResource(R.drawable.phone_call)
+                }
+
+                AttachmentsTypes.GEO -> {
+                    ivType.visibility = View.VISIBLE
+                    ivPhotoT.visibility = View.GONE
+                    ivType.setImageResource(R.drawable.geo)
+                }
+
+                else -> {
+                    ivType.visibility = View.GONE
+                    ivPhotoT.visibility = View.GONE
+                }
             }
         }
     }
 
     private fun displayBigLinks(bigLinks: List<Link>?, root: ViewGroup?) {
         if (bigLinks.isNullOrEmpty() || root == null) {
+            if (root?.childCount.orZero() > 0) {
+                root?.removeAllViews()
+            }
             root?.visibility = View.GONE
             return
         }
@@ -892,74 +901,74 @@ class AttachmentsViewBinder(
         for (j in 0 until i) {
             root.addView(LayoutInflater.from(mContext).inflate(R.layout.item_big_link, root, false))
         }
-        for (g in 0 until root.childCount) {
+        if (root.childCount > bigLinks.size) {
+            root.removeViews(bigLinks.size, root.childCount - bigLinks.size)
+        }
+        for (g in bigLinks.indices) {
             val itemView = root.getChildAt(g) as ViewGroup? ?: continue
-            if (g < bigLinks.size) {
-                val bigLink = bigLinks[g]
-                itemView.visibility = View.VISIBLE
-                itemView.tag = null
-                val ivPhoto = itemView.findViewById<ImageView>(R.id.item_big_link_image)
-                val ivTitle = itemView.findViewById<TextView>(R.id.item_big_link_title)
-                val ivCaption = itemView.findViewById<TextView>(R.id.item_big_link_caption)
-                val ivUrl = itemView.findViewById<TextView>(R.id.item_big_link_url)
-                val ivButton = itemView.findViewById<Button>(R.id.item_big_link_open)
-                if (bigLink.url.nonNullNoEmpty()) {
-                    ivButton.visibility = View.VISIBLE
-                    ivButton.setOnClickListener {
-                        bigLink.url.nonNullNoEmpty {
-                            mAttachmentsActionCallback?.onLinkOpen(bigLink)
-                        }
+            val bigLink = bigLinks[g]
+            itemView.tag = null
+            val ivPhoto = itemView.findViewById<ImageView>(R.id.item_big_link_image)
+            val ivTitle = itemView.findViewById<TextView>(R.id.item_big_link_title)
+            val ivCaption = itemView.findViewById<TextView>(R.id.item_big_link_caption)
+            val ivUrl = itemView.findViewById<TextView>(R.id.item_big_link_url)
+            val ivButton = itemView.findViewById<Button>(R.id.item_big_link_open)
+            if (bigLink.url.nonNullNoEmpty()) {
+                ivButton.visibility = View.VISIBLE
+                ivButton.setOnClickListener {
+                    bigLink.url.nonNullNoEmpty {
+                        mAttachmentsActionCallback?.onLinkOpen(bigLink)
                     }
-                } else {
-                    ivButton.visibility = View.GONE
                 }
-                var photo_url: String? = null
-                if (bigLink.photo != null) {
-                    photo_url = bigLink.photo?.getUrlForSize(
-                        PhotoSize.L,
-                        false
-                    )
-                }
-                if (photo_url != null) {
-                    ivPhoto.visibility = View.VISIBLE
-                    displayAvatar(ivPhoto, null, photo_url, Constants.PICASSO_TAG)
-                    ivPhoto.setOnLongClickListener {
-                        bigLink.photo?.let {
-                            val op = it
-                            if (op.sizes?.getL()?.url.nonNullNoEmpty()) {
-                                op.sizes?.setY(op.sizes?.getL())
-                                op.sizes?.setW(op.sizes?.getL())
-                            } else {
-                                op.sizes?.setY(op.sizes?.getK())
-                                op.sizes?.setW(op.sizes?.getK())
-                            }
-                            val temp = ArrayList(listOf(op))
-                            mAttachmentsActionCallback?.onPhotosOpen(temp, 0, false)
-                        }
-                        true
-                    }
-                } else ivPhoto.visibility = View.GONE
-                if (bigLink.title != null) {
-                    ivTitle.visibility = View.VISIBLE
-                    ivTitle.text = bigLink.title
-                } else ivTitle.visibility = View.GONE
-                if (bigLink.url != null) {
-                    ivUrl.visibility = View.VISIBLE
-                    ivUrl.text = bigLink.url
-                } else ivUrl.visibility = View.GONE
-                if (bigLink.caption != null) {
-                    ivCaption.visibility = View.VISIBLE
-                    ivCaption.text = bigLink.caption
-                } else ivCaption.visibility = View.GONE
             } else {
-                itemView.visibility = View.GONE
-                itemView.tag = null
+                ivButton.visibility = View.GONE
             }
+            var photo_url: String? = null
+            if (bigLink.photo != null) {
+                photo_url = bigLink.photo?.getUrlForSize(
+                    PhotoSize.L,
+                    false
+                )
+            }
+            if (photo_url != null) {
+                ivPhoto.visibility = View.VISIBLE
+                displayAvatar(ivPhoto, null, photo_url, Constants.PICASSO_TAG)
+                ivPhoto.setOnLongClickListener {
+                    bigLink.photo?.let {
+                        val op = it
+                        if (op.sizes?.getL()?.url.nonNullNoEmpty()) {
+                            op.sizes?.setY(op.sizes?.getL())
+                            op.sizes?.setW(op.sizes?.getL())
+                        } else {
+                            op.sizes?.setY(op.sizes?.getK())
+                            op.sizes?.setW(op.sizes?.getK())
+                        }
+                        val temp = ArrayList(listOf(op))
+                        mAttachmentsActionCallback?.onPhotosOpen(temp, 0, false)
+                    }
+                    true
+                }
+            } else ivPhoto.visibility = View.GONE
+            if (bigLink.title != null) {
+                ivTitle.visibility = View.VISIBLE
+                ivTitle.text = bigLink.title
+            } else ivTitle.visibility = View.GONE
+            if (bigLink.url != null) {
+                ivUrl.visibility = View.VISIBLE
+                ivUrl.text = bigLink.url
+            } else ivUrl.visibility = View.GONE
+            if (bigLink.caption != null) {
+                ivCaption.visibility = View.VISIBLE
+                ivCaption.text = bigLink.caption
+            } else ivCaption.visibility = View.GONE
         }
     }
 
     private fun displayArticles(articles: List<Article>?, root: ViewGroup?) {
         if (articles.isNullOrEmpty() || root == null) {
+            if (root?.childCount.orZero() > 0) {
+                root?.removeAllViews()
+            }
             root?.visibility = View.GONE
             return
         }
@@ -968,76 +977,73 @@ class AttachmentsViewBinder(
         for (j in 0 until i) {
             root.addView(LayoutInflater.from(mContext).inflate(R.layout.item_article, root, false))
         }
-        for (g in 0 until root.childCount) {
+        if (root.childCount > articles.size) {
+            root.removeViews(articles.size, root.childCount - articles.size)
+        }
+        for (g in articles.indices) {
             val itemView = root.getChildAt(g) as ViewGroup? ?: continue
-            if (g < articles.size) {
-                val article = articles[g]
-                itemView.visibility = View.VISIBLE
-                itemView.tag = null
-                val ivPhoto = itemView.findViewById<ImageView>(R.id.item_article_image)
-                val ivSubTitle = itemView.findViewById<TextView>(R.id.item_article_subtitle)
-                val ivTitle = itemView.findViewById<TextView>(R.id.item_article_title)
-                val ivName = itemView.findViewById<TextView>(R.id.item_article_name)
-                val btFave = itemView.findViewById<ImageView>(R.id.item_article_to_fave)
-                val btShare = itemView.findViewById<ImageView>(R.id.item_article_share)
-                val ivButton = itemView.findViewById<Button>(R.id.item_article_read)
-                if (article.uRL.nonNullNoEmpty()) {
-                    btFave.visibility = View.VISIBLE
+            val article = articles[g]
+            itemView.tag = null
+            val ivPhoto = itemView.findViewById<ImageView>(R.id.item_article_image)
+            val ivSubTitle = itemView.findViewById<TextView>(R.id.item_article_subtitle)
+            val ivTitle = itemView.findViewById<TextView>(R.id.item_article_title)
+            val ivName = itemView.findViewById<TextView>(R.id.item_article_name)
+            val btFave = itemView.findViewById<ImageView>(R.id.item_article_to_fave)
+            val btShare = itemView.findViewById<ImageView>(R.id.item_article_share)
+            val ivButton = itemView.findViewById<Button>(R.id.item_article_read)
+            if (article.uRL.nonNullNoEmpty()) {
+                btFave.visibility = View.VISIBLE
+                btFave.setImageResource(if (article.isFavorite) R.drawable.favorite else R.drawable.star)
+                btFave.setOnClickListener {
+                    mAttachmentsActionCallback?.onFaveArticle(article)
+                    article.setIsFavorite(!article.isFavorite)
                     btFave.setImageResource(if (article.isFavorite) R.drawable.favorite else R.drawable.star)
-                    btFave.setOnClickListener {
-                        mAttachmentsActionCallback?.onFaveArticle(article)
-                        article.setIsFavorite(!article.isFavorite)
-                        btFave.setImageResource(if (article.isFavorite) R.drawable.favorite else R.drawable.star)
-                    }
-                    ivButton.visibility = View.VISIBLE
-                    ivButton.setOnClickListener {
-                        article.uRL.nonNullNoEmpty {
-                            mAttachmentsActionCallback?.onUrlOpen(it)
-                        }
-                    }
-                } else {
-                    ivButton.visibility = View.GONE
-                    btFave.visibility = View.GONE
                 }
-                btShare.setOnClickListener {
-                    mAttachmentsActionCallback?.onShareArticle(
-                        article
-                    )
-                }
-                var photo_url: String? = null
-                if (article.photo != null) {
-                    photo_url = article.photo?.getUrlForSize(
-                        Settings.get().main().prefPreviewImageSize,
-                        false
-                    )
-                }
-                if (photo_url != null) {
-                    ivPhoto.visibility = View.VISIBLE
-                    displayAvatar(ivPhoto, null, photo_url, Constants.PICASSO_TAG)
-                    ivPhoto.setOnLongClickListener {
-                        article.photo?.let {
-                            val temp = ArrayList(listOf(it))
-                            mAttachmentsActionCallback?.onPhotosOpen(temp, 0, false)
-                        }
-                        true
+                ivButton.visibility = View.VISIBLE
+                ivButton.setOnClickListener {
+                    article.uRL.nonNullNoEmpty {
+                        mAttachmentsActionCallback?.onUrlOpen(it)
                     }
-                } else ivPhoto.visibility = View.GONE
-                if (article.subTitle != null) {
-                    ivSubTitle.visibility = View.VISIBLE
-                    ivSubTitle.text = article.subTitle
-                } else ivSubTitle.visibility = View.GONE
-                if (article.title != null) {
-                    ivTitle.visibility = View.VISIBLE
-                    ivTitle.text = article.title
-                } else ivTitle.visibility = View.GONE
-                if (article.ownerName != null) {
-                    ivName.visibility = View.VISIBLE
-                    ivName.text = article.ownerName
-                } else ivName.visibility = View.GONE
+                }
             } else {
-                itemView.visibility = View.GONE
-                itemView.tag = null
+                ivButton.visibility = View.GONE
+                btFave.visibility = View.GONE
             }
+            btShare.setOnClickListener {
+                mAttachmentsActionCallback?.onShareArticle(
+                    article
+                )
+            }
+            var photo_url: String? = null
+            if (article.photo != null) {
+                photo_url = article.photo?.getUrlForSize(
+                    Settings.get().main().prefPreviewImageSize,
+                    false
+                )
+            }
+            if (photo_url != null) {
+                ivPhoto.visibility = View.VISIBLE
+                displayAvatar(ivPhoto, null, photo_url, Constants.PICASSO_TAG)
+                ivPhoto.setOnLongClickListener {
+                    article.photo?.let {
+                        val temp = ArrayList(listOf(it))
+                        mAttachmentsActionCallback?.onPhotosOpen(temp, 0, false)
+                    }
+                    true
+                }
+            } else ivPhoto.visibility = View.GONE
+            if (article.subTitle != null) {
+                ivSubTitle.visibility = View.VISIBLE
+                ivSubTitle.text = article.subTitle
+            } else ivSubTitle.visibility = View.GONE
+            if (article.title != null) {
+                ivTitle.visibility = View.VISIBLE
+                ivTitle.text = article.title
+            } else ivTitle.visibility = View.GONE
+            if (article.ownerName != null) {
+                ivName.visibility = View.VISIBLE
+                ivName.text = article.ownerName
+            } else ivName.visibility = View.GONE
         }
     }
 
@@ -1206,6 +1212,15 @@ class AttachmentsViewBinder(
         private var sHolderIdCounter = 0
         internal fun safeSetVisibitity(view: View?, visibility: Int) {
             if (view != null) view.visibility = visibility
+        }
+
+        internal fun safeRemoveChildrenAndGoneParent(container: ViewGroup?) {
+            if (container != null) {
+                if (container.childCount > 0) {
+                    container.removeAllViews()
+                }
+                container.visibility = View.GONE
+            }
         }
 
         internal fun generateHolderId(): Int {

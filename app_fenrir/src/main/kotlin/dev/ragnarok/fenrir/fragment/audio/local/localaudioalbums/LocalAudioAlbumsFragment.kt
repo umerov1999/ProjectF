@@ -52,9 +52,9 @@ class LocalAudioAlbumsFragment :
         val view = inflater.inflate(R.layout.fragment_local_albums_audio, container, false)
         val mySearchView: MySearchView = view.findViewById(R.id.searchview)
         val mRememberAudioAlbum: MaterialSwitch = view.findViewById(R.id.remember_audio_album)
-        mRememberAudioAlbum.isChecked = Settings.get().other().isRememberLocalAudioAlbum
+        mRememberAudioAlbum.isChecked = Settings.get().main().isRememberLocalAudioAlbum
         mRememberAudioAlbum.setOnClickListener {
-            Settings.get().other().isRememberLocalAudioAlbum = mRememberAudioAlbum.isChecked
+            Settings.get().main().isRememberLocalAudioAlbum = mRememberAudioAlbum.isChecked
         }
         mySearchView.setRightButtonVisibility(false)
         mySearchView.setLeftIcon(R.drawable.magnify)

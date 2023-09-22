@@ -42,7 +42,7 @@ class DialogsAdapter(private val mContext: Context, private var mDialogs: List<D
     private val mForegroundColorSpan: ForegroundColorSpan =
         ForegroundColorSpan(CurrentTheme.getPrimaryTextColorCode(mContext))
     private val mDataObserver: AdapterDataObserver
-    private val headerInDialog: Boolean = Settings.get().other().isHeaders_in_dialog
+    private val headerInDialog: Boolean = Settings.get().main().isHeaders_in_dialog
     private var showHidden = false
     private var mStartOfToday: Long = 0
     private var mClickListener: ClickListener? = null

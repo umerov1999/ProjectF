@@ -1006,16 +1006,15 @@
         <item name="cornerSizeTopLeft">0dp</item>
     </style>
 
-    <style name="Widget.MPM.Menu" parent="Widget.AppCompat.PopupMenu.Overflow">
-        <item name="android:popupBackground">@drawable/popupmenu_background</item>
-        <item name="mpm_paddingBottom">@dimen/mpm_popup_menu_vertical_padding</item>
+    <style name="Widget.MPM.Menu.Material3" parent="Widget.Material3.PopupMenu.Overflow">
+        <item name="mpm_paddingBottom">0dp</item>
         <item name="mpm_paddingStart">0dp</item>
         <item name="mpm_paddingEnd">0dp</item>
-        <item name="mpm_paddingTop">@dimen/mpm_popup_menu_vertical_padding</item>
+        <item name="mpm_paddingTop">0dp</item>
     </style>
 
     <style name="Widget.MPM.Item" parent="">
-        <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
     <style name="MyOutlinedButton" parent="Widget.Material3.Button.OutlinedButton">

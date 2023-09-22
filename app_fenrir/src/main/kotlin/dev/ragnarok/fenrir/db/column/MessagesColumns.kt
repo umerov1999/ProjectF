@@ -22,6 +22,9 @@ object MessagesColumns : BaseColumns {
     const val UPDATE_TIME = "update_time"
     const val PAYLOAD = "payload"
     const val KEYBOARD = "keyboard"
+    const val CONVERSATION_MESSAGE_ID = "conversation_message_id"
+    const val REACTIONS = "reactions"
+    const val REACTION_ID = "reaction_id"
 
     //chat_columns
     const val ACTION = "action"
@@ -61,4 +64,7 @@ object MessagesColumns : BaseColumns {
     const val FULL_EXTRAS = "$TABLENAME.$EXTRAS"
     const val FULL_PAYLOAD = "$TABLENAME.$PAYLOAD"
     const val FULL_KEYBOARD = "$TABLENAME.$KEYBOARD"
+    const val FULL_CONVERSATION_MESSAGE_ID = "$TABLENAME.$CONVERSATION_MESSAGE_ID"
+    const val FULL_REACTIONS = "$TABLENAME.$REACTIONS"
+    const val FULL_REACTION_ID = "$TABLENAME.$REACTION_ID"
 }

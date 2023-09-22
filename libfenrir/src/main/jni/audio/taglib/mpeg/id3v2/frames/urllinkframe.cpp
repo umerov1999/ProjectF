@@ -27,10 +27,13 @@
  ***************************************************************************/
 
 #include "urllinkframe.h"
-#include "id3v2tag.h"
+
+#include <utility>
+
 #include "tdebug.h"
 #include "tstringlist.h"
 #include "tpropertymap.h"
+#include "id3v2tag.h"
 
 using namespace TagLib;
 using namespace ID3v2;
@@ -44,8 +47,7 @@ public:
 class UserUrlLinkFrame::UserUrlLinkFramePrivate
 {
 public:
-  UserUrlLinkFramePrivate() : textEncoding(String::Latin1) {}
-  String::Type textEncoding;
+  String::Type textEncoding { String::Latin1 };
   String description;
 };
 
@@ -173,9 +175,8 @@ PropertyMap UserUrlLinkFrame::asProperties() const
 
 UserUrlLinkFrame *UserUrlLinkFrame::find(ID3v2::Tag *tag, const String &description) // static
 {
-  const FrameList l = tag->frameList("WXXX");
-  for(auto it = l.begin(); it != l.end(); ++it) {
-    auto f = dynamic_cast<UserUrlLinkFrame *>(*it);
+  for(const auto &frame : std::as_const(tag->frameList("WXXX"))) {
+    auto f = dynamic_cast<UserUrlLinkFrame *>(frame);
     if(f && f->description() == description)
       return f;
   }

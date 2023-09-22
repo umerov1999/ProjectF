@@ -58,7 +58,7 @@ class UploadRestProvider(private val proxySettings: IProxySettings) : IUploadRes
         HttpLoggerAndParser.adjustUpload(builder)
         HttpLoggerAndParser.configureToIgnoreCertificates(builder)
         return SimplePostHttp(
-            "https://" + Settings.get().other().apiDomain + "/method",
+            "https://" + Settings.get().main().apiDomain + "/method",
             builder
         )
     }

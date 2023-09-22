@@ -577,7 +577,7 @@ class UserWallPresenter(
     }
 
     fun renameLocal(name: String?) {
-        Settings.get().other().setUserNameChanges(ownerId, name)
+        Settings.get().main().setUserNameChanges(ownerId, name)
         onUserInfoUpdated()
     }
 

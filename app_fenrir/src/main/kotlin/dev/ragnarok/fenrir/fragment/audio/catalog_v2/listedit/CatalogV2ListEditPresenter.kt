@@ -7,7 +7,7 @@ import java.util.Collections
 
 class CatalogV2ListEditPresenter(savedInstanceState: Bundle?) :
     AbsPresenter<ICatalogV2ListEditView>(savedInstanceState) {
-    private val data: List<Int> = Settings.get().other().catalogV2ListSort
+    private val data: List<Int> = Settings.get().main().catalogV2ListSort
 
     override fun onGuiCreated(viewHost: ICatalogV2ListEditView) {
         super.onGuiCreated(viewHost)
@@ -15,7 +15,7 @@ class CatalogV2ListEditPresenter(savedInstanceState: Bundle?) :
     }
 
     private fun save() {
-        Settings.get().other().catalogV2ListSort = data
+        Settings.get().main().catalogV2ListSort = data
     }
 
     fun fireSaveClick() {

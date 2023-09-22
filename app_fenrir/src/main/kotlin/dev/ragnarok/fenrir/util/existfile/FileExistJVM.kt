@@ -44,7 +44,7 @@ class FileExistJVM : AbsFileExist {
             }
         }
         RemoteAudios.clear()
-        val audios = File(Settings.get().other().musicDir, "local_server_audio_list.json")
+        val audios = File(Settings.get().main().musicDir, "local_server_audio_list.json")
         if (!audios.exists()) {
             if (needLock) {
                 setBusy(false)
@@ -107,7 +107,7 @@ class FileExistJVM : AbsFileExist {
             if (!setBusy(true)) {
                 return@create
             }
-            val temp = File(Settings.get().other().photoDir)
+            val temp = File(Settings.get().main().photoDir)
             if (!temp.exists()) {
                 setBusy(false)
                 t.onComplete()
@@ -156,7 +156,7 @@ class FileExistJVM : AbsFileExist {
                 return@create
             }
             findRemoteAudios(context, false)
-            val temp = File(Settings.get().other().musicDir)
+            val temp = File(Settings.get().main().musicDir)
             if (!temp.exists()) {
                 setBusy(false)
                 t.onComplete()

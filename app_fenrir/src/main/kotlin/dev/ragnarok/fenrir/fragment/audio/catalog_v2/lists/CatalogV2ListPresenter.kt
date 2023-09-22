@@ -88,7 +88,7 @@ class CatalogV2ListPresenter(
 
     private fun onNetDataGetError(t: Throwable) {
         mSections.clear()
-        val srt = Settings.get().other().catalogV2ListSort
+        val srt = Settings.get().main().catalogV2ListSort
         for (i in srt) {
             makeByUid(i, null)
         }
@@ -134,7 +134,7 @@ class CatalogV2ListPresenter(
 
             TYPE_LOCAL_SERVER_AUDIO -> {
                 if (accountId == owner_id && accountId >= 0 && Settings.get()
-                        .other().localServer.enabled
+                        .main().localServer.enabled
                 ) {
                     mSections.add(
                         CatalogV2List.CatalogV2ListItem(
@@ -169,7 +169,7 @@ class CatalogV2ListPresenter(
         netLoadingNow = false
         resolveLoading()
         mSections.clear()
-        val srt = Settings.get().other().catalogV2ListSort
+        val srt = Settings.get().main().catalogV2ListSort
         for (i in srt) {
             makeByUid(i, data.sections)
         }

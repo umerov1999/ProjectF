@@ -25,7 +25,7 @@ class Peer : Parcelable {
 
     fun getTitle(): String? {
         if (isUser(id)) {
-            val custom = get().other().getUserNameChanges(id)
+            val custom = get().main().getUserNameChanges(id)
             if (custom.nonNullNoEmpty()) {
                 return custom
             }

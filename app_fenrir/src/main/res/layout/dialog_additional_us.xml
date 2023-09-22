@@ -40,11 +40,11 @@
             android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/item_gcm_token"
+                android:id="@+id/item_fcm_token"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:hint="Push Token:"
+                android:hint="FCM Token:"
                 android:inputType="text|textMultiLine|textLongMessage|textNoSuggestions"
                 android:minHeight="48dp"
                 android:textSize="@dimen/font_size_subtitle"

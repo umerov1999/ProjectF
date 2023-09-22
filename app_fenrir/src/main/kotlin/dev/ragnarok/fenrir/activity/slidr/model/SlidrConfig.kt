@@ -217,7 +217,7 @@ class SlidrConfig internal constructor() {
         }
 
         fun build(): SlidrConfig {
-            val settings = get().other().slidrSettings
+            val settings = get().main().slidrSettings
             when (config.position) {
                 SlidrPosition.LEFT, SlidrPosition.RIGHT, SlidrPosition.HORIZONTAL -> {
                     config.sensitivity = settings.horizontal_sensitive

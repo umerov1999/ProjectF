@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.MPM.Item"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/mpm_popup_menu_item_height"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/mpm_popup_menu_item_padding_horizontal"
+    android:paddingEnd="@dimen/mpm_popup_menu_item_padding_horizontal"
+    tools:theme="@style/Widget.MPM.Menu.Material3">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/mpm_popup_menu_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/mpm_popup_menu_item_icon_margin_end"
+        android:visibility="gone"
+        app:tint="?colorPrimary"
+        tools:src="@android:drawable/ic_input_add"
+        tools:visibility="visible" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/mpm_popup_menu_item_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:lines="1"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+        android:textSize="@dimen/mpm_popup_menu_item_label_text_size"
+        tools:text="Preview" />
+
+    <com.google.android.material.radiobutton.MaterialRadioButton
+        android:id="@+id/mpm_popup_menu_item_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/mpm_popup_menu_item_icon_margin_end"
+        android:background="@null"
+        android:clickable="false" />
+
+</LinearLayout>

@@ -76,14 +76,13 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled = false
-            shrinkResources = false
-            signingConfig signingConfigs.fenrir
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             minifyEnabled = false
             shrinkResources = false
-            signingConfig signingConfigs.fenrir
         }
     }
 }
@@ -102,7 +101,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-common:$lifecycleVersion")
     implementation("androidx.annotation:annotation:$annotationVersion")
-    //implementation("androidx.recyclerview:recyclerview:$recyclerviewVersion")
     implementation("androidx.vectordrawable:vectordrawable:$vectordrawableVersion")
     implementation("androidx.appcompat:appcompat:$appcompatVersion")
     implementation("androidx.customview:customview:$customviewVersion")

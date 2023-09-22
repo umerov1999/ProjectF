@@ -19,6 +19,7 @@ class VKApiLongpollUpdates {
     var input_messages_set_read_updates: MutableList<InputMessagesSetReadUpdate>? = null
     var output_messages_set_read_updates: MutableList<OutputMessagesSetReadUpdate>? = null
     var badge_count_change_updates: MutableList<BadgeCountChangeUpdate>? = null
+    var message_reaction_changed_updates: MutableList<ReactionMessageChangeUpdate>? = null
 
     //public VkApiLongpollUpdates(int account_id) {
     //    this.account_id = account_id;
@@ -33,6 +34,12 @@ class VKApiLongpollUpdates {
 
             AbsLongpollEvent.ACTION_MESSAGE_EDITED, AbsLongpollEvent.ACTION_MESSAGE_CHANGED, AbsLongpollEvent.ACTION_MESSAGE_ADDED -> add_message_updates =
                 addAndReturn(add_message_updates, update as AddMessageUpdate)
+
+            AbsLongpollEvent.ACTION_MESSAGE_REACTION_CHANGE -> message_reaction_changed_updates =
+                addAndReturn(
+                    message_reaction_changed_updates,
+                    update as ReactionMessageChangeUpdate
+                )
 
             AbsLongpollEvent.ACTION_USER_IS_ONLINE -> user_is_online_updates =
                 addAndReturn(user_is_online_updates, update as UserIsOnlineUpdate)
@@ -67,7 +74,8 @@ class VKApiLongpollUpdates {
             message_flags_set_updates,
             input_messages_set_read_updates,
             output_messages_set_read_updates,
-            badge_count_change_updates
+            badge_count_change_updates,
+            message_reaction_changed_updates
         )
     val isEmpty: Boolean
         get() = updatesCount == 0

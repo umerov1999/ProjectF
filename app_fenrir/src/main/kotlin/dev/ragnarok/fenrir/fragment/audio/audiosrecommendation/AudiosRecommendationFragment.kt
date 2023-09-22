@@ -78,7 +78,7 @@ class AudiosRecommendationFragment :
         val save_mode: FloatingActionButton = root.findViewById(R.id.save_mode_button)
         val Goto: FloatingActionButton = root.findViewById(R.id.goto_button)
         save_mode.visibility =
-            if (Settings.get().other().isAudio_save_mode_button) View.VISIBLE else View.GONE
+            if (Settings.get().main().isAudio_save_mode_button) View.VISIBLE else View.GONE
         save_mode.setOnClickListener {
             isSaveMode = !isSaveMode
             Goto.setImageResource(if (isSaveMode) R.drawable.check else R.drawable.audio_player)
@@ -110,7 +110,7 @@ class AudiosRecommendationFragment :
                 mAudioRecyclerAdapter?.toggleSelectMode(isSaveMode)
                 presenter?.fireUpdateSelectMode()
                 if (tracks.isNotEmpty()) {
-                    CheckDirectory(Settings.get().other().musicDir)
+                    CheckDirectory(Settings.get().main().musicDir)
                     val account_id = presenter?.accountId ?: Settings.get().accounts().current
                     var obj = WorkManager.getInstance(requireActivity()).beginWith(
                         makeDownloadRequestAudio(

@@ -40,5 +40,16 @@ interface IBasicMessageListView : IMvpView, IAttachmentsPlacesView,
     )
 
     fun finishActionMode()
-    fun displayMessages(messages: MutableList<Message>, lastReadId: LastReadId)
+    fun displayMessages(accountId: Long, messages: MutableList<Message>, lastReadId: LastReadId)
+
+    fun showPopupOptions(
+        position: Int,
+        x: Int,
+        y: Int,
+        canEdit: Boolean,
+        canPin: Boolean,
+        canStar: Boolean,
+        doStar: Boolean,
+        canSpam: Boolean
+    )
 }

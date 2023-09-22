@@ -32,22 +32,18 @@ class Message : AbsModel, Identificable, ISelectable {
         private set
     var date: Long = 0
         private set
+    var conversation_message_id = 0
+        private set
     override var isSelected = false
+    var reactionEditMode = false
+        private set
     var isDeleted = false
         private set
     var isDeletedForAll = false
         private set
     var originalId = 0
         private set
-
-    /*public String getTitle() {
-        return title;
-    }
-
-    public Message setTitle(String title) {
-        this.title = title;
-        return this;
-    }*/  var isImportant = false
+    var isImportant = false
         private set
     var attachments: Attachments? = null
         private set
@@ -56,6 +52,10 @@ class Message : AbsModel, Identificable, ISelectable {
     var payload: String? = null
         private set
     var keyboard: Keyboard? = null
+        private set
+    var reactions: ArrayList<Reaction>? = null
+        private set
+    var reaction_id = 0
         private set
 
     //chat_columns
@@ -102,7 +102,6 @@ class Message : AbsModel, Identificable, ISelectable {
         id = parcel.readInt()
         body = parcel.readString()
         decryptedBody = parcel.readString()
-        //this.title = in.readString();
         peerId = parcel.readLong()
         senderId = parcel.readLong()
         isOut = parcel.getBoolean()
@@ -112,7 +111,9 @@ class Message : AbsModel, Identificable, ISelectable {
         @CryptStatus val cs = parcel.readInt()
         cryptStatus = cs
         date = parcel.readLong()
+        conversation_message_id = parcel.readInt()
         isSelected = parcel.getBoolean()
+        reactionEditMode = parcel.getBoolean()
         isDeleted = parcel.getBoolean()
         isDeletedForAll = parcel.getBoolean()
         attachments = parcel.readTypedObjectCompat(Attachments.CREATOR)
@@ -137,6 +138,8 @@ class Message : AbsModel, Identificable, ISelectable {
         updateTime = parcel.readLong()
         payload = parcel.readString()
         keyboard = parcel.readTypedObjectCompat(Keyboard.CREATOR)
+        reaction_id = parcel.readInt()
+        reactions = parcel.createTypedArrayList(Reaction.CREATOR)
     }
 
     @AbsModelType
@@ -202,12 +205,26 @@ class Message : AbsModel, Identificable, ISelectable {
         return this
     }
 
+    fun getReactionCount(reaction_id: Int): Int {
+        for (i in reactions.orEmpty()) {
+            if (i.reaction_id == reaction_id) {
+                return i.count
+            }
+        }
+        return 0
+    }
+
     override fun getObjectId(): Int {
         return id
     }
 
     fun setId(id: Int): Message {
         this.id = id
+        return this
+    }
+
+    fun setReactionEditMode(reactionEditMode: Boolean): Message {
+        this.reactionEditMode = reactionEditMode
         return this
     }
 
@@ -231,6 +248,13 @@ class Message : AbsModel, Identificable, ISelectable {
             fwd = ArrayList(capacity)
         }
         return fwd!!
+    }
+
+    fun prepareReactions(capacity: Int): ArrayList<Reaction> {
+        if (reactions == null) {
+            reactions = ArrayList(capacity)
+        }
+        return reactions!!
     }
 
     fun setOriginalId(originalId: Int): Message {
@@ -358,7 +382,6 @@ class Message : AbsModel, Identificable, ISelectable {
         parcel.writeInt(id)
         parcel.writeString(body)
         parcel.writeString(decryptedBody)
-        //dest.writeString(title);
         parcel.writeLong(peerId)
         parcel.writeLong(senderId)
         parcel.putBoolean(isOut)
@@ -366,7 +389,9 @@ class Message : AbsModel, Identificable, ISelectable {
         parcel.writeInt(status)
         parcel.writeInt(cryptStatus)
         parcel.writeLong(date)
+        parcel.writeInt(conversation_message_id)
         parcel.putBoolean(isSelected)
+        parcel.putBoolean(reactionEditMode)
         parcel.putBoolean(isDeleted)
         parcel.putBoolean(isDeletedForAll)
         parcel.writeTypedObjectCompat(attachments, flags)
@@ -388,6 +413,8 @@ class Message : AbsModel, Identificable, ISelectable {
         parcel.writeLong(updateTime)
         parcel.writeString(payload)
         parcel.writeTypedObjectCompat(keyboard, flags)
+        parcel.writeInt(reaction_id)
+        parcel.writeTypedList(reactions)
     }
 
     fun setUpdateTime(updateTime: Long): Message {
@@ -489,6 +516,21 @@ class Message : AbsModel, Identificable, ISelectable {
 
     fun setPayload(payload: String?): Message {
         this.payload = payload
+        return this
+    }
+
+    fun setReactionId(reaction_id: Int): Message {
+        this.reaction_id = reaction_id
+        return this
+    }
+
+    fun setReactions(reactions: ArrayList<Reaction>?): Message {
+        this.reactions = reactions
+        return this
+    }
+
+    fun setConversationMessageId(conversation_message_id: Int): Message {
+        this.conversation_message_id = conversation_message_id
         return this
     }
 

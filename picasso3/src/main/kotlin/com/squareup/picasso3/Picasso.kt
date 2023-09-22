@@ -117,6 +117,12 @@ class Picasso internal constructor(
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
+        cancelAll()
+    }
+
+    @JvmName("-cancelAll")
+    internal fun cancelAll() {
         checkMain()
 
         val actions = targetToAction.values.toList()
@@ -185,6 +191,12 @@ class Picasso internal constructor(
     }
 
     override fun onStop(owner: LifecycleOwner) {
+        super.onStop(owner)
+        pauseAll()
+    }
+
+    @JvmName("-pauseAll")
+    internal fun pauseAll() {
         checkMain()
 
         val actions = targetToAction.values.toList()
@@ -212,7 +224,12 @@ class Picasso internal constructor(
         dispatcher.dispatchPauseTag(tag)
     }
 
-    override fun onResume(owner: LifecycleOwner) {
+    override fun onStart(owner: LifecycleOwner) {
+        resumeAll()
+    }
+
+    @JvmName("-resumeAll")
+    internal fun resumeAll() {
         checkMain()
 
         val actions = targetToAction.values.toList()

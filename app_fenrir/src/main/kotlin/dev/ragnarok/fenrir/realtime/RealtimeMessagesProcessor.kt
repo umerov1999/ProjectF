@@ -76,7 +76,13 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
     }
 
     @Throws(QueueContainsException::class)
-    override fun process(accountId: Long, messageId: Int, ignoreIfExists: Boolean): Int {
+    override fun process(
+        accountId: Long,
+        messageId: Int,
+        peerId: Long,
+        conversationMessageId: Int,
+        ignoreIfExists: Boolean
+    ): Int {
         if (hasInQueueOrCurrent(messageId)) {
             throw QueueContainsException()
         }

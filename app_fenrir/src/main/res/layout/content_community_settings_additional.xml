@@ -53,19 +53,19 @@
         android:layout_marginTop="8dp"
         android:orientation="vertical">
 
-        <RadioButton
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/age_under16"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/age_restriction_under_16_years" />
 
-        <RadioButton
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/age_16_to_18"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/age_restriction_16_years_and_over" />
 
-        <RadioButton
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/age_after_18"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

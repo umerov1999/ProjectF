@@ -1,10 +1,12 @@
 package dev.ragnarok.fenrir.fragment.messages.chat
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.text.method.LinkMovementMethod
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -28,6 +30,8 @@ import dev.ragnarok.fenrir.model.Keyboard
 import dev.ragnarok.fenrir.model.LastReadId
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.MessageStatus
+import dev.ragnarok.fenrir.model.ReactionAsset
+import dev.ragnarok.fenrir.model.ReactionWithAsset
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
@@ -40,6 +44,7 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.view.MessageView
 import dev.ragnarok.fenrir.view.OnlineView
+import dev.ragnarok.fenrir.view.ReactionContainer
 import dev.ragnarok.fenrir.view.emoji.BotKeyboardView
 import dev.ragnarok.fenrir.view.emoji.BotKeyboardView.BotKeyboardViewDelegate
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
@@ -47,7 +52,9 @@ import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import java.text.SimpleDateFormat
 import java.util.Date
 
+
 class MessagesAdapter(
+    accountId: Long,
     private val context: Context,
     items: MutableList<Message>,
     private var lastReadId: LastReadId,
@@ -70,13 +77,10 @@ class MessagesAdapter(
         }
     private var onHashTagClickListener: EmojiconTextView.OnHashTagClickListener? = null
     private var onMessageActionListener: OnMessageActionListener? = null
+    private var onReactionListener: ReactionContainer.ReactionClicked? = null
 
-    constructor(
-        context: Context,
-        items: MutableList<Message>,
-        callback: OnAttachmentsActionCallback,
-        disable_read: Boolean
-    ) : this(context, items, LastReadId(0, 0), callback, disable_read)
+    private val reactions: Map<Int, ReactionAsset> =
+        HashMap(Utils.getReactionsAssets()[accountId].orEmpty())
 
     override fun onBindItemViewHolder(
         viewHolder: RecyclerView.ViewHolder,
@@ -255,6 +259,7 @@ class MessagesAdapter(
         root.background.alpha = 60
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun bindBaseMessageHolder(holder: BaseMessageHolder, message: Message) {
         holder.important.visibility = if (message.isImportant) View.VISIBLE else View.GONE
         bindStatusText(holder.status, message.status, message.date, message.updateTime)
@@ -288,10 +293,23 @@ class MessagesAdapter(
             )
             true
         }
+
+        var lastX = 0
+        var lastY = 0
+        holder.itemView.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                lastX = event.x.toInt()
+                lastY = event.y.toInt()
+            }
+            false
+        }
+
         holder.itemView.setOnClickListener {
             onMessageActionListener?.onMessageClicked(
                 message,
-                getItemRawPosition(holder.bindingAdapterPosition)
+                getItemRawPosition(holder.bindingAdapterPosition),
+                lastX + it.x.toInt(),
+                lastY + it.y.toInt()
             )
         }
         holder.itemView.setOnLongClickListener {
@@ -343,9 +361,9 @@ class MessagesAdapter(
                 )
 
                 CryptStatus.NO_ENCRYPTION, CryptStatus.DECRYPTED -> if (message.isOut) {
-                    if (Settings.get().other().isCustom_MyMessage) holder.bubble.setGradientColor(
-                        Settings.get().other().colorMyMessage,
-                        Settings.get().other().secondColorMyMessage
+                    if (Settings.get().main().isCustom_MyMessage) holder.bubble.setGradientColor(
+                        Settings.get().main().colorMyMessage,
+                        Settings.get().main().secondColorMyMessage
                     ) else {
                         if (Settings.get()
                                 .main().isMy_message_no_color
@@ -402,8 +420,36 @@ class MessagesAdapter(
             )
             attachmentsViewBinder.displayForwards(message.fwd, holder.forwardMessagesRoot, true)
         }
+        val reactionMarked: MutableList<ReactionWithAsset> = ArrayList()
+        if (!message.reactionEditMode) {
+            for (i in message.reactions.orEmpty()) {
+                if (reactions.containsKey(i.reaction_id)) {
+                    reactions[i.reaction_id]?.let {
+                        reactionMarked.add(ReactionWithAsset().setReaction(i).setReactionAsset(it))
+                    }
+                } else {
+                    reactionMarked.add(ReactionWithAsset().setReaction(i))
+                }
+            }
+        } else {
+            for ((key, value) in reactions) {
+                reactionMarked.add(
+                    ReactionWithAsset().setReactionAsset(value)
+                        .setCount(message.getReactionCount(key))
+                )
+            }
+        }
+        holder.reactionContainer?.displayReactions(
+            message.reactionEditMode,
+            message.reaction_id,
+            reactionMarked,
+            message.conversation_message_id,
+            message.peerId,
+            onReactionListener
+        )
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun bindServiceHolder(holder: ServiceMessageHolder, message: Message) {
         if (message.isDeleted) {
             holder.root.alpha = 0.6f
@@ -434,10 +480,23 @@ class MessagesAdapter(
         if (disable_read) read = true
         bindReadState(holder.itemView, message.status == MessageStatus.SENT && read)
         holder.tvAction.text = message.getServiceText(context)
+
+        var lastX = 0
+        var lastY = 0
+        holder.itemView.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                lastX = event.x.toInt()
+                lastY = event.y.toInt()
+            }
+            false
+        }
+
         holder.itemView.setOnClickListener {
             onMessageActionListener?.onMessageClicked(
                 message,
-                getItemRawPosition(holder.bindingAdapterPosition)
+                getItemRawPosition(holder.bindingAdapterPosition),
+                lastX + it.x.toInt(),
+                lastY + it.y.toInt()
             )
         }
         holder.itemView.setOnLongClickListener {
@@ -539,13 +598,22 @@ class MessagesAdapter(
         this.onMessageActionListener = onMessageActionListener
     }
 
+    fun setonReactionListener(onReactionListener: ReactionContainer.ReactionClicked?) {
+        this.onReactionListener = onReactionListener
+    }
+
     interface OnMessageActionListener {
         fun onAvatarClick(message: Message, userId: Long, position: Int)
-        fun onLongAvatarClick(message: Message, userId: Long, position: Int)
+        fun onLongAvatarClick(
+            message: Message,
+            userId: Long,
+            position: Int
+        )
+
         fun onRestoreClick(message: Message, position: Int)
         fun onBotKeyboardClick(button: Keyboard.Button)
         fun onMessageLongClick(message: Message, position: Int): Boolean
-        fun onMessageClicked(message: Message, position: Int)
+        fun onMessageClicked(message: Message, position: Int, x: Int, y: Int)
         fun onMessageDelete(message: Message)
     }
 
@@ -621,6 +689,8 @@ class MessagesAdapter(
         val attachmentsHolder: AttachmentsHolder
         val encryptedView: View = itemView.findViewById(R.id.item_message_encrypted)
         val botKeyboardView: BotKeyboardView? = itemView.findViewById(R.id.input_keyboard_container)
+        val reactionContainer: ReactionContainer? =
+            itemView.findViewById(R.id.item_message_reaction)
 
         init {
             body.movementMethod = LinkMovementMethod.getInstance()

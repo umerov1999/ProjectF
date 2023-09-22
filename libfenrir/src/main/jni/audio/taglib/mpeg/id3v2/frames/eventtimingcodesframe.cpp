@@ -24,10 +24,13 @@
  ***************************************************************************/
 
 #include "eventtimingcodesframe.h"
+
+#include <utility>
+
 #include "tbytevectorlist.h"
-#include "id3v2tag.h"
 #include "tdebug.h"
 #include "tpropertymap.h"
+#include "id3v2tag.h"
 
 using namespace TagLib;
 using namespace ID3v2;
@@ -35,9 +38,7 @@ using namespace ID3v2;
 class EventTimingCodesFrame::EventTimingCodesFramePrivate
 {
 public:
-  EventTimingCodesFramePrivate() :
-    timestampFormat(EventTimingCodesFrame::AbsoluteMilliseconds) {}
-  EventTimingCodesFrame::TimestampFormat timestampFormat;
+  EventTimingCodesFrame::TimestampFormat timestampFormat { EventTimingCodesFrame::AbsoluteMilliseconds };
   EventTimingCodesFrame::SynchedEventList synchedEvents;
 };
 
@@ -118,8 +119,7 @@ ByteVector EventTimingCodesFrame::renderFields() const
   ByteVector v;
 
   v.append(static_cast<char>(d->timestampFormat));
-  for(auto it = d->synchedEvents.cbegin(); it != d->synchedEvents.cend(); ++it) {
-    const SynchedEvent &entry = *it;
+  for(const auto &entry : std::as_const(d->synchedEvents)) {
     v.append(static_cast<char>(entry.type));
     v.append(ByteVector::fromUInt(entry.time));
   }

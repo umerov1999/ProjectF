@@ -33,15 +33,12 @@
 
 #include "apefile.h"
 
-#include "tbytevector.h"
-#include "tstring.h"
 #include "tdebug.h"
-#include "tagunion.h"
+#include "tpropertymap.h"
 #include "id3v1tag.h"
 #include "id3v2header.h"
-#include "tpropertymap.h"
+#include "tagunion.h"
 #include "tagutils.h"
-
 #include "apetag.h"
 #include "apefooter.h"
 
@@ -55,15 +52,7 @@ namespace
 class APE::File::FilePrivate
 {
 public:
-  FilePrivate() :
-    APELocation(-1),
-    APESize(0),
-    ID3v1Location(-1),
-    ID3v2Header(nullptr),
-    ID3v2Location(-1),
-    ID3v2Size(0),
-    properties(nullptr) {}
-
+  FilePrivate() = default;
   ~FilePrivate()
   {
     delete ID3v2Header;
@@ -73,18 +62,18 @@ public:
   FilePrivate(const FilePrivate &) = delete;
   FilePrivate &operator=(const FilePrivate &) = delete;
 
-  offset_t APELocation;
-  long APESize;
+  offset_t APELocation { -1 };
+  long APESize { 0 };
 
-  offset_t ID3v1Location;
+  offset_t ID3v1Location { -1 };
 
-  ID3v2::Header *ID3v2Header;
-  offset_t ID3v2Location;
-  long ID3v2Size;
+  ID3v2::Header *ID3v2Header { nullptr };
+  offset_t ID3v2Location { -1 };
+  long ID3v2Size { 0 };
 
   TagUnion tag;
 
-  Properties *properties;
+  Properties *properties { nullptr };
 };
 
 ////////////////////////////////////////////////////////////////////////////////

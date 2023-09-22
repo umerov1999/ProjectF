@@ -98,13 +98,13 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
     private var mUploadRoot: View? = null
     protected fun setupPaganContent(Runes: View?, paganSymbol: RLottieImageView?) {
         Runes?.visibility = if (Settings.get()
-                .other().isRunes_show
+                .main().isRunes_show
         ) View.VISIBLE else View.GONE
         if (!FenrirNative.isNativeLoaded) {
             paganSymbol?.visibility = View.GONE
             return
         }
-        val symbol = Settings.get().other().paganSymbol
+        val symbol = Settings.get().main().paganSymbol
         paganSymbol?.visibility = if (symbol != 0) View.VISIBLE else View.GONE
         if (symbol == 0) {
             return
@@ -385,7 +385,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
             photos,
             position,
             false,
-            Settings.get().other().isInvertPhotoRev
+            Settings.get().main().isInvertPhotoRev
         )
             .tryOpenWith(requireActivity())
     }
@@ -556,13 +556,13 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
     override fun onPrepareMenu(menu: Menu) {
         val view = OptionView()
         presenter?.fireOptionViewCreated(view)
-        val isDebug = Settings.get().other().isDeveloper_mode
+        val isDebug = Settings.get().main().isDeveloper_mode
         menu.findItem(R.id.action_open_url).isVisible = view.isMy
         menu.findItem(R.id.search_stories).isVisible = view.isMy && isDebug
         menu.findItem(R.id.action_edit).isVisible = view.isMy
         menu.findItem(R.id.action_add_to_shortcut).isVisible = !view.isMy
         menu.findItem(R.id.action_toggle_monitor).setTitle(
-            if (Settings.get().other()
+            if (Settings.get().main()
                     .isOwnerInChangesMonitor(view.ownerId)
             ) R.string.toggle_monitor_off else R.string.toggle_monitor_on
         )

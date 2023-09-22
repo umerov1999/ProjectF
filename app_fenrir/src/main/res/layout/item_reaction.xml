@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:background="@drawable/reaction_bubble"
+    android:orientation="horizontal"
+    android:paddingLeft="8dp"
+    android:paddingTop="2dp"
+    android:paddingRight="8dp"
+    android:paddingBottom="2dp">
+
+    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        android:id="@+id/reaction"
+        android:layout_width="28dp"
+        android:layout_height="28dp" />
+
+    <TextView
+        android:id="@+id/count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="4dp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textSize="12sp"
+        tools:ignore="SmallSp"
+        tools:text="1" />
+</LinearLayout>

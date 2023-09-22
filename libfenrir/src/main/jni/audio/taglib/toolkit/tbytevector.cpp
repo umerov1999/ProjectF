@@ -28,13 +28,10 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
-#include <cstdio>
 #include <cstring>
 #include <iostream>
-#include <limits>
 
 #include "tdebug.h"
-#include "tstring.h"
 #include "tutils.h"
 
 // This is a bit ugly to keep writing over and over again.
@@ -376,12 +373,12 @@ ByteVector &ByteVector::setData(const char *data)
 char *ByteVector::data()
 {
   detach();
-  return (size() > 0) ? (&(*d->data)[d->offset]) : nullptr;
+  return !isEmpty() ? (&(*d->data)[d->offset]) : nullptr;
 }
 
 const char *ByteVector::data() const
 {
-  return (size() > 0) ? (&(*d->data)[d->offset]) : nullptr;
+  return !isEmpty() ? (&(*d->data)[d->offset]) : nullptr;
 }
 
 ByteVector ByteVector::mid(unsigned int index, unsigned int length) const
@@ -451,10 +448,7 @@ ByteVector &ByteVector::replace(char oldByte, char newByte)
 {
   detach();
 
-  for(auto it = begin(); it != end(); ++it) {
-    if(*it == oldByte)
-      *it = newByte;
-  }
+  std::replace(this->begin(), this->end(), oldByte, newByte);
 
   return *this;
 }
@@ -965,7 +959,8 @@ void ByteVector::detach()
 
 std::ostream &operator<<(std::ostream &s, const TagLib::ByteVector &v)
 {
-  for(unsigned int i = 0; i < v.size(); i++)
-    s << v[i];
+  for(const auto &byte : v) {
+    s << byte;
+  }
   return s;
 }

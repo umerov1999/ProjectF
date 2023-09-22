@@ -34,9 +34,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.ColorStateListDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -53,7 +51,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Dimension;
-import androidx.annotation.DoNotInline;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
@@ -75,8 +72,9 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Accessibilit
 import androidx.core.view.accessibility.AccessibilityViewCommand;
 import androidx.customview.view.AbsSavedState;
 import com.google.android.material.animation.AnimationUtils;
-import com.google.android.material.animation.ArgbEvaluatorCompat;
 import com.google.android.material.appbar.AppBarLayout.BaseBehavior.SavedState;
+import com.google.android.material.color.MaterialColors;
+import com.google.android.material.drawable.DrawableUtils;
 import com.google.android.material.internal.ThemeEnforcement;
 import com.google.android.material.motion.MotionUtils;
 import com.google.android.material.resources.MaterialResources;
@@ -210,7 +208,7 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
   private boolean liftOnScroll;
   @IdRes private int liftOnScrollTargetViewId;
   @Nullable private WeakReference<View> liftOnScrollTargetView;
-  @Nullable private final ColorStateList liftOnScrollColor;
+  private final boolean hasLiftOnScrollColor;
   @Nullable private ValueAnimator liftOnScrollColorAnimator;
   @Nullable private AnimatorUpdateListener liftOnScrollColorUpdateListener;
   private final List<LiftOnScrollListener> liftOnScrollListeners = new ArrayList<>();
@@ -221,6 +219,7 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
   private int[] tmpStatesArray;
 
   @Nullable private Drawable statusBarForeground;
+  @Nullable private Integer statusBarForegroundOriginalColor;
 
   private final float appBarElevation;
 
@@ -258,18 +257,19 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
 
     ViewCompat.setBackground(this, a.getDrawable(R.styleable.AppBarLayout_android_background));
 
-    liftOnScrollColor =
-        MaterialResources.getColorStateList(
-            context, a, R.styleable.AppBarLayout_liftOnScrollColor);
+    ColorStateList liftOnScrollColor =
+        MaterialResources.getColorStateList(context, a, R.styleable.AppBarLayout_liftOnScrollColor);
+    hasLiftOnScrollColor = liftOnScrollColor != null;
 
-    ColorStateList backgroundCSL = getBackgroundCSL();
-    if (backgroundCSL != null) {
+    ColorStateList originalBackgroundColor = DrawableUtils.getColorStateListOrNull(getBackground());
+    if (originalBackgroundColor != null) {
       MaterialShapeDrawable materialShapeDrawable = new MaterialShapeDrawable();
-      materialShapeDrawable.setFillColor(backgroundCSL);
+      materialShapeDrawable.setFillColor(originalBackgroundColor);
       // If there is a lift on scroll color specified, we do not initialize the elevation overlay
       // and set the alpha to zero manually.
       if (liftOnScrollColor != null) {
-        initializeLiftOnScrollWithColor(materialShapeDrawable);
+        initializeLiftOnScrollWithColor(
+            materialShapeDrawable, originalBackgroundColor, liftOnScrollColor);
       } else {
         initializeLiftOnScrollWithElevation(context, materialShapeDrawable);
       }
@@ -326,36 +326,27 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
         });
   }
 
-  @Nullable
-  private ColorStateList getBackgroundCSL() {
-    Drawable background = getBackground();
-    if (background instanceof ColorDrawable) {
-      return ColorStateList.valueOf(((ColorDrawable) background).getColor());
-    } else if (VERSION.SDK_INT >= VERSION_CODES.Q) {
-      return DrawableHelperV29.maybeGetBackgroundCSL(background);
-    }
-    return null;
-  }
-
-  private void initializeLiftOnScrollWithColor(MaterialShapeDrawable background) {
-    MaterialShapeDrawable liftBackground = new MaterialShapeDrawable();
-    liftBackground.setFillColor(liftOnScrollColor);
-    liftBackground.setAlpha(lifted ? 255 : 0);
-    background.setAlpha(lifted ? 0 : 255);
-
+  private void initializeLiftOnScrollWithColor(
+      MaterialShapeDrawable background,
+      @NonNull ColorStateList originalBackgroundColor,
+      @NonNull ColorStateList liftOnScrollColor) {
+    Integer colorSurface = MaterialColors.getColorOrNull(getContext(), R.attr.colorSurface);
     liftOnScrollColorUpdateListener =
         valueAnimator -> {
-          float liftAlpha = (float) valueAnimator.getAnimatedValue();
-          background.setAlpha((int) (255f - liftAlpha));
-          liftBackground.setAlpha((int) liftAlpha);
+          float liftProgress = (float) valueAnimator.getAnimatedValue();
+          int mixedColor =
+              MaterialColors.layer(
+                  originalBackgroundColor.getDefaultColor(),
+                  liftOnScrollColor.getDefaultColor(),
+                  liftProgress);
+          background.setFillColor(ColorStateList.valueOf(mixedColor));
+          if (statusBarForeground != null
+              && statusBarForegroundOriginalColor != null
+              && statusBarForegroundOriginalColor.equals(colorSurface)) {
+            DrawableCompat.setTint(statusBarForeground, mixedColor);
+          }
 
           if (!liftOnScrollListeners.isEmpty()) {
-            int mixedColor =
-                ArgbEvaluatorCompat.getInstance()
-                    .evaluate(
-                        liftAlpha / 255f,
-                        background.getResolvedTintColor(),
-                        liftBackground.getResolvedTintColor());
             for (LiftOnScrollListener liftOnScrollListener : liftOnScrollListeners) {
               if (background.getFillColor() != null) {
                 liftOnScrollListener.onUpdate(0, mixedColor);
@@ -363,9 +354,7 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
             }
           }
         };
-
-    LayerDrawable layerBackground = new LayerDrawable(new Drawable[] {background, liftBackground});
-    ViewCompat.setBackground(this, layerBackground);
+    ViewCompat.setBackground(this, background);
   }
 
   private void initializeLiftOnScrollWithElevation(
@@ -458,6 +447,7 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
         statusBarForeground.setCallback(null);
       }
       statusBarForeground = drawable != null ? drawable.mutate() : null;
+      statusBarForegroundOriginalColor = extractStatusBarForegroundColor();
       if (statusBarForeground != null) {
         if (statusBarForeground.isStateful()) {
           statusBarForeground.setState(getDrawableState());
@@ -506,6 +496,19 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
   @Nullable
   public Drawable getStatusBarForeground() {
     return statusBarForeground;
+  }
+
+  @Nullable
+  private Integer extractStatusBarForegroundColor() {
+    if (statusBarForeground instanceof MaterialShapeDrawable) {
+      return ((MaterialShapeDrawable) statusBarForeground).getResolvedTintColor();
+    }
+    ColorStateList statusBarForegroundColorStateList =
+        DrawableUtils.getColorStateListOrNull(statusBarForeground);
+    if (statusBarForegroundColorStateList != null) {
+      return statusBarForegroundColorStateList.getDefaultColor();
+    }
+    return null;
   }
 
   @Override
@@ -680,9 +683,6 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
   @Nullable
   public MaterialShapeDrawable getMaterialShapeBackground() {
     Drawable background = getBackground();
-    if (background instanceof LayerDrawable) {
-      background = ((LayerDrawable) background).getDrawable(0);
-    }
     return background instanceof MaterialShapeDrawable ? (MaterialShapeDrawable) background : null;
   }
 
@@ -1029,11 +1029,12 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
     if (force && this.lifted != lifted) {
       this.lifted = lifted;
       refreshDrawableState();
-      if (liftOnScroll && isLiftOnScrollCompatibleBackground()) {
-        if (liftOnScrollColor != null) {
-          startLiftOnScrollColorAnimation(
-              lifted ? 0 : 255, lifted ? 255 : 0);
-        } else {
+      if (isLiftOnScrollCompatibleBackground()) {
+        if (hasLiftOnScrollColor) {
+          // Only start the liftOnScrollColor based animation because the elevation based
+          // animation will happen via the lifted drawable state change and state list animator.
+          startLiftOnScrollColorAnimation(lifted ? 0 : 1, lifted ? 1 : 0);
+        } else if (liftOnScroll) {
           startLiftOnScrollColorAnimation(
               lifted ? 0 : appBarElevation, lifted ? appBarElevation : 0);
         }
@@ -1044,19 +1045,7 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
   }
 
   private boolean isLiftOnScrollCompatibleBackground() {
-    Drawable background = getBackground();
-    if (background instanceof MaterialShapeDrawable) {
-      return true;
-    }
-    if (background instanceof LayerDrawable) {
-      LayerDrawable layerBackground = (LayerDrawable) background;
-      if (layerBackground.getNumberOfLayers() == 2
-          && layerBackground.getDrawable(0) instanceof MaterialShapeDrawable
-          && layerBackground.getDrawable(1) instanceof MaterialShapeDrawable) {
-        return true;
-      }
-    }
-    return false;
+    return getBackground() instanceof MaterialShapeDrawable;
   }
 
   private void startLiftOnScrollColorAnimation(
@@ -2610,18 +2599,6 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
         ViewCompat.setClipBounds(child, null);
         child.setTranslationY(0);
       }
-    }
-  }
-
-  @RequiresApi(VERSION_CODES.Q)
-  private static class DrawableHelperV29 {
-    @DoNotInline
-    @Nullable
-    private static ColorStateList maybeGetBackgroundCSL(@Nullable Drawable background) {
-      if (background instanceof ColorStateListDrawable) {
-        return ((ColorStateListDrawable) background).getColorStateList();
-      }
-      return null;
     }
   }
 }

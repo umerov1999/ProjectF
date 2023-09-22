@@ -37,7 +37,6 @@ import dev.ragnarok.fenrir.model.VoiceMessage
 import dev.ragnarok.fenrir.place.PlaceFactory.getMessagesLookupPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.MessagesReplyItemCallback
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import java.lang.ref.WeakReference
 
@@ -86,7 +85,14 @@ class ImportantMessagesFragment :
                 .show()
         }).attachToRecyclerView(recyclerView)
 
-        mAdapter = MessagesAdapter(requireActivity(), mutableListOf(), this, true)
+        mAdapter = MessagesAdapter(
+            Settings.get().accounts().current,
+            requireActivity(),
+            mutableListOf(),
+            LastReadId(0, 0),
+            this,
+            true
+        )
         mAdapter?.setOnMessageActionListener(this)
         mAdapter?.setVoiceActionListener(this)
         recyclerView.adapter = mAdapter
@@ -142,15 +148,32 @@ class ImportantMessagesFragment :
         return true
     }
 
-    override fun onMessageClicked(message: Message, position: Int) {
+    override fun onMessageClicked(message: Message, position: Int, x: Int, y: Int) {
         presenter?.fireImportantMessageClick(
             message, position
         )
     }
 
     override fun onMessageDelete(message: Message) {}
-    override fun displayMessages(messages: MutableList<Message>, lastReadId: LastReadId) {
+    override fun displayMessages(
+        accountId: Long,
+        messages: MutableList<Message>,
+        lastReadId: LastReadId
+    ) {
         mAdapter?.setItems(messages, lastReadId)
+    }
+
+    override fun showPopupOptions(
+        position: Int,
+        x: Int,
+        y: Int,
+        canEdit: Boolean,
+        canPin: Boolean,
+        canStar: Boolean,
+        doStar: Boolean,
+        canSpam: Boolean
+    ) {
+        //"Not yet implemented"
     }
 
     override fun notifyDataAdded(position: Int, count: Int) {
@@ -324,19 +347,9 @@ class ImportantMessagesFragment :
         fun hide() {
             rootView.visibility = View.GONE
             if (Settings.get().main().isMessages_menu_down) {
-                Utils.safeObjectCall(reference.get(), object : Utils.SafeCallInt {
-                    override fun call() {
-                        if (reference.get()?.downMenuGroup != null) {
-                            reference.get()?.downMenuGroup?.visibility = View.GONE
-                        }
-                    }
-                })
+                reference.get()?.downMenuGroup?.visibility = View.GONE
             }
-            Utils.safeObjectCall(reference.get(), object : Utils.SafeCallInt {
-                override fun call() {
-                    reference.get()?.presenter?.fireActionModeDestroy()
-                }
-            })
+            reference.get()?.presenter?.fireActionModeDestroy()
         }
 
         override fun onClick(v: View) {
@@ -346,29 +359,17 @@ class ImportantMessagesFragment :
                 }
 
                 R.id.buttonForward -> {
-                    Utils.safeObjectCall(reference.get(), object : Utils.SafeCallInt {
-                        override fun call() {
-                            reference.get()?.presenter?.fireForwardClick()
-                        }
-                    })
+                    reference.get()?.presenter?.fireForwardClick()
                     hide()
                 }
 
                 R.id.buttonCopy -> {
-                    Utils.safeObjectCall(reference.get(), object : Utils.SafeCallInt {
-                        override fun call() {
-                            reference.get()?.presenter?.fireActionModeCopyClick()
-                        }
-                    })
+                    reference.get()?.presenter?.fireActionModeCopyClick()
                     hide()
                 }
 
                 R.id.buttonDelete -> {
-                    Utils.safeObjectCall(reference.get(), object : Utils.SafeCallInt {
-                        override fun call() {
-                            reference.get()?.presenter?.fireActionModeDeleteClick()
-                        }
-                    })
+                    reference.get()?.presenter?.fireActionModeDeleteClick()
                     hide()
                 }
 
@@ -378,19 +379,11 @@ class ImportantMessagesFragment :
                         .setMessage(R.string.do_report)
                         .setTitle(R.string.select)
                         .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
-                            Utils.safeObjectCall(reference.get(), object : Utils.SafeCallInt {
-                                override fun call() {
-                                    reference.get()?.presenter?.fireActionModeSpamClick()
-                                }
-                            })
+                            reference.get()?.presenter?.fireActionModeSpamClick()
                             hide()
                         }
                         .setNeutralButton(R.string.delete) { _: DialogInterface?, _: Int ->
-                            Utils.safeObjectCall(reference.get(), object : Utils.SafeCallInt {
-                                override fun call() {
-                                    reference.get()?.presenter?.fireActionModeDeleteClick()
-                                }
-                            })
+                            reference.get()?.presenter?.fireActionModeDeleteClick()
                             hide()
                         }
                         .setCancelable(true)

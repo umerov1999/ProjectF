@@ -211,7 +211,7 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     fun firePhotoClick(wrapper: Photo) {
         var Index = 0
         var trig = false
-        if (!FenrirNative.isNativeLoaded || !Settings.get().other().isNative_parcel_photo) {
+        if (!FenrirNative.isNativeLoaded || !Settings.get().main().isNative_parcel_photo) {
             for (i in photos.indices) {
                 val photo = photos[i]
                 if (!trig && photo.getObjectId() == wrapper.getObjectId() && photo.ownerId == wrapper.ownerId) {

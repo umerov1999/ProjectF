@@ -58,7 +58,7 @@ class DBHelper private constructor(context: Context, aid: Long) :
         type: String,
         defaultValue: String
     ) {
-        db.execSQL("ALTER TABLE $tableName ADD $column $type $defaultValue;")
+        db.execSQL("ALTER TABLE $tableName ADD $column $type DEFAULT $defaultValue;")
     }
 
     private fun dropColumn(db: SQLiteDatabase, tableName: String, column: String) {
@@ -444,9 +444,11 @@ class DBHelper private constructor(context: Context, aid: Long) :
     private fun createMessagesTable(db: SQLiteDatabase) {
         val create = "CREATE TABLE [" + MessagesColumns.TABLENAME + "] (\n" +
                 " [" + MessagesColumns._ID + "] INTEGER PRIMARY KEY ON CONFLICT REPLACE AUTOINCREMENT NOT NULL UNIQUE, " +
+                " [" + MessagesColumns.ORIGINAL_ID + "] INTEGER, " +
                 " [" + MessagesColumns.PEER_ID + "] INTEGER, " +
                 " [" + MessagesColumns.FROM_ID + "] INTEGER, " +
                 " [" + MessagesColumns.DATE + "] INTEGER, " +
+                " [" + MessagesColumns.CONVERSATION_MESSAGE_ID + "] INTEGER, " +
                 " [" + MessagesColumns.OUT + "] BOOLEAN, " +
                 " [" + MessagesColumns.BODY + "] TEXT, " +
                 " [" + MessagesColumns.ENCRYPTED + "] BOOLEAN, " +
@@ -467,8 +469,9 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 " [" + MessagesColumns.PHOTO_200 + "] TEXT, " +
                 " [" + MessagesColumns.RANDOM_ID + "] INTEGER, " +
                 " [" + MessagesColumns.EXTRAS + "] BLOB, " +
-                " [" + MessagesColumns.ORIGINAL_ID + "] INTEGER, " +
                 " [" + MessagesColumns.KEYBOARD + "] BLOB, " +
+                " [" + MessagesColumns.REACTIONS + "] BLOB, " +
+                " [" + MessagesColumns.REACTION_ID + "] INTEGER, " +
                 " [" + MessagesColumns.PAYLOAD + "] TEXT);"
         val insertZeroRow =
             "INSERT INTO " + MessagesColumns.TABLENAME + " (" + MessagesColumns._ID + ") VALUES (0)"
@@ -480,6 +483,7 @@ class DBHelper private constructor(context: Context, aid: Long) :
         db.execSQL(insertZeroRow)
         db.execSQL(insert)
         db.execSQL(delete)
+        //db.execSQL("CREATE INDEX IF NOT EXISTS keys_index ON ${MessagesColumns.TABLENAME} (${MessagesColumns.PEER_ID}, ${MessagesColumns.CONVERSATION_MESSAGE_ID}, ${MessagesColumns.ORIGINAL_ID});")
     }
 
     private fun createFriendListsTable(db: SQLiteDatabase) {
@@ -513,8 +517,8 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 "  [" + VideosColumns.CAN_COMMENT + "] BOOLEAN, " +
                 "  [" + VideosColumns.IS_PRIVATE + "] BOOLEAN, " +
                 "  [" + VideosColumns.IS_FAVORITE + "] BOOLEAN, " +
-                "  [" + VideosColumns.CAN_REPOST + "] INTEGER, " +
-                "  [" + VideosColumns.USER_LIKES + "] INTEGER, " +
+                "  [" + VideosColumns.CAN_REPOST + "] BOOLEAN, " +
+                "  [" + VideosColumns.USER_LIKES + "] BOOLEAN, " +
                 "  [" + VideosColumns.REPEAT + "] INTEGER, " +
                 "  [" + VideosColumns.LIKES + "] INTEGER, " +
                 "  [" + VideosColumns.PRIVACY_VIEW + "] BLOB, " +

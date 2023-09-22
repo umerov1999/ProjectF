@@ -31,7 +31,7 @@ class MenuListAdapter(
     private val colorOnSurface: Int = CurrentTheme.getColorOnSurface(context)
     private val dp: Int = Utils.dpToPx(1f, context).toInt()
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
-    private val noStroke: Boolean = Settings.get().other().is_side_no_stroke
+    private val noStroke: Boolean = Settings.get().main().is_side_no_stroke
     override fun onBindItemViewHolder(
         viewHolder: RecyclerView.ViewHolder,
         position: Int,

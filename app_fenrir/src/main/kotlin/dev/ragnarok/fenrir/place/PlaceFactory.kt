@@ -967,7 +967,7 @@ object PlaceFactory {
 
 
     fun getArtistPlace(accountId: Long, id: String?): Place {
-        return if (Settings.get().other().isAudio_catalog_v2) getCatalogV2AudioCatalogPlace(
+        return if (Settings.get().main().isAudio_catalog_v2) getCatalogV2AudioCatalogPlace(
             accountId,
             accountId,
             id, null, null

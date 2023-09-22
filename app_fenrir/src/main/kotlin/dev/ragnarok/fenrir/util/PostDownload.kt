@@ -421,9 +421,9 @@ class PostDownload(private val context: Context) {
                 var result_msgs = "<ul><#MESSAGE_LIST#></ul>"
                 result_msgs = Apply("<#MESSAGE_LIST#>", msgs.toString(), result_msgs)
                 main = Apply("<#MESSAGES#>", result_msgs, main)
-                DownloadWorkUtils.CheckDirectory(Settings.get().other().docDir)
+                DownloadWorkUtils.CheckDirectory(Settings.get().main().docDir)
                 val html = File(
-                    Settings.get().other().docDir, DownloadWorkUtils.makeLegalFilename(
+                    Settings.get().main().docDir, DownloadWorkUtils.makeLegalFilename(
                         peer_title, "html"
                     )
                 )

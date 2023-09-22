@@ -24,10 +24,13 @@
  ***************************************************************************/
 
 #include "synchronizedlyricsframe.h"
+
+#include <utility>
+
 #include "tbytevectorlist.h"
-#include "id3v2tag.h"
 #include "tdebug.h"
 #include "tpropertymap.h"
+#include "id3v2tag.h"
 
 using namespace TagLib;
 using namespace ID3v2;
@@ -35,14 +38,10 @@ using namespace ID3v2;
 class SynchronizedLyricsFrame::SynchronizedLyricsFramePrivate
 {
 public:
-  SynchronizedLyricsFramePrivate() :
-    textEncoding(String::Latin1),
-    timestampFormat(SynchronizedLyricsFrame::AbsoluteMilliseconds),
-    type(SynchronizedLyricsFrame::Lyrics) {}
-  String::Type textEncoding;
+  String::Type textEncoding { String::Latin1 };
   ByteVector language;
-  SynchronizedLyricsFrame::TimestampFormat timestampFormat;
-  SynchronizedLyricsFrame::Type type;
+  SynchronizedLyricsFrame::TimestampFormat timestampFormat { SynchronizedLyricsFrame::AbsoluteMilliseconds };
+  SynchronizedLyricsFrame::Type type { SynchronizedLyricsFrame::Lyrics };
   String description;
   SynchronizedLyricsFrame::SynchedTextList synchedText;
 };
@@ -203,10 +202,8 @@ ByteVector SynchronizedLyricsFrame::renderFields() const
   String::Type encoding = d->textEncoding;
 
   encoding = checkTextEncoding(d->description, encoding);
-  for(auto it = d->synchedText.cbegin();
-      it != d->synchedText.cend();
-      ++it) {
-    encoding = checkTextEncoding(it->text, encoding);
+  for(const auto &frame : std::as_const(d->synchedText)) {
+    encoding = checkTextEncoding(frame.text, encoding);
   }
 
   v.append(static_cast<char>(encoding));
@@ -215,8 +212,7 @@ ByteVector SynchronizedLyricsFrame::renderFields() const
   v.append(static_cast<char>(d->type));
   v.append(d->description.data(encoding));
   v.append(textDelimiter(encoding));
-  for(auto it = d->synchedText.cbegin(); it != d->synchedText.cend(); ++it) {
-    const SynchedText &entry = *it;
+  for(const auto &entry : std::as_const(d->synchedText)) {
     v.append(entry.text.data(encoding));
     v.append(textDelimiter(encoding));
     v.append(ByteVector::fromUInt(entry.time));
