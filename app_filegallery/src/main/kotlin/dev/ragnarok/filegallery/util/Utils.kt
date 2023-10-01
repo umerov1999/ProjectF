@@ -406,10 +406,6 @@ object Utils {
                 return Locale("ru", "RU")
             }
 
-            Lang.BELORUSSIAN -> {
-                return Locale("be", "BY")
-            }
-
             Lang.DEFAULT -> {}
         }
         return Locale.getDefault()

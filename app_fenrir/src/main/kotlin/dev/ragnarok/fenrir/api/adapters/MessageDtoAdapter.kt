@@ -27,7 +27,7 @@ class MessageDtoAdapter : AbsDtoAdapter<VKApiMessage>("VKApiMessage") {
         dto.date = optLong(root, "date")
         //dto.read_state = optBoolean(root, "read_state");
         //dto.title = VKStringUtils.unescape(optString(root, "title"));
-        dto.body = VKStringUtils.unescape(
+        dto.text = VKStringUtils.unescape(
             if (root.has("text")) optString(
                 root,
                 "text"

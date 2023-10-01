@@ -10,6 +10,7 @@ import dev.ragnarok.fenrir.api.model.VKApiGroupChats
 import dev.ragnarok.fenrir.api.model.VKApiMarket
 import dev.ragnarok.fenrir.api.model.VKApiMarketAlbum
 import dev.ragnarok.fenrir.api.model.VKApiUser
+import dev.ragnarok.fenrir.api.model.response.GroupByIdResponse
 import dev.ragnarok.fenrir.api.model.response.GroupLongpollServer
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
@@ -121,7 +122,7 @@ interface IGroupsApi {
     fun getById(
         ids: Collection<Long>, domains: Collection<String>?,
         groupId: String?, fields: String?
-    ): Single<List<VKApiCommunity>>
+    ): Single<GroupByIdResponse>
 
     @CheckResult
     fun getLongPollServer(groupId: Long): Single<GroupLongpollServer>

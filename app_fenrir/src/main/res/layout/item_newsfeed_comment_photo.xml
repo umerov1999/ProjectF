@@ -26,7 +26,7 @@
             android:paddingEnd="16dp"
             android:paddingBottom="8dp">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/photo_owner_avatar"
                 android:layout_width="@dimen/avatar_size_small"
                 android:layout_height="@dimen/avatar_size_small"
@@ -41,7 +41,7 @@
                 android:layout_toEndOf="@id/photo_owner_avatar"
                 android:orientation="vertical">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/photo_owner_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     tools:text="Owner name" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/photo_datetime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
             app:aspectRatioW="1"
             app:dominantMeasurement="width" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/photo_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

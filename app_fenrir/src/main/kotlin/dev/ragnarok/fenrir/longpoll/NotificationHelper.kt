@@ -209,7 +209,7 @@ object NotificationHelper {
         context: Context
     ): CharSequence? {
         var messageText =
-            if (message.decryptedBody.isNullOrEmpty()) message.body else message.decryptedBody
+            if (message.decryptedText.isNullOrEmpty()) message.text else message.decryptedText
         if (messageText == null) messageText = ""
         if (message.forwardMessagesCount > 0) {
             messageText += " " + context.getString(

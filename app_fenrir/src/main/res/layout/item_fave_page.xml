@@ -39,7 +39,7 @@
                 android:padding="4dp"
                 app:circle_color="?icon_color_active" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_verified"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -55,7 +55,7 @@
                 android:visibility="gone"
                 app:tint="@color/white" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_blacklisted"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
@@ -66,7 +66,7 @@
                 android:src="@drawable/audio_died"
                 android:visibility="gone" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_monitor"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -84,7 +84,7 @@
             android:layout_gravity="center"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
                 android:textSize="14sp"
                 tools:text="User.Name" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

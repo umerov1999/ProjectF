@@ -12,7 +12,7 @@
     android:paddingStart="2dp"
     android:paddingEnd="2dp">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/button_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
         android:textColorHint="?android:textColorSecondary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/clear"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -50,7 +50,7 @@
         android:src="@drawable/close"
         app:tint="?colorOnSurface" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/additional"
         android:layout_width="48dp"
         android:layout_height="48dp"

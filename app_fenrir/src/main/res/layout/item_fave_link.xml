@@ -25,7 +25,7 @@
             android:scaleType="centerCrop"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_fave_link_empty"
             android:layout_width="@dimen/avatar_size_big"
             android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
         android:orientation="vertical"
         android:padding="4dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_fave_link_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
             android:textSize="15sp"
             tools:text="Name" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_fave_link_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
             android:textSize="12sp"
             tools:text="Description" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_fave_link_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

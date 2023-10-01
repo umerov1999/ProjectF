@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/avatar"
             android:layout_width="@dimen/avatar_size_usual"
             android:layout_height="@dimen/avatar_size_usual"
@@ -40,14 +40,14 @@
         android:layout_marginStart="16dp"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             tools:text="Umerov Artem" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/role"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

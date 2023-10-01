@@ -15,7 +15,7 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_user_avatar"
             android:layout_width="@dimen/avatar_size_usual"
             android:layout_height="@dimen/avatar_size_usual"
@@ -42,7 +42,7 @@
         android:layout_toEndOf="@id/item_user_avatar_container"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
             android:textColor="?colorPrimary"
             tools:text="Name" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_user_admin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             tools:text="Admin" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_user_invited_by"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             tools:text="Invited" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_user_domain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             tools:text="\@Domain" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_user_invited_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
 
     </LinearLayout>
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/item_user_remove"
         android:layout_width="28dp"
         android:layout_height="28dp"

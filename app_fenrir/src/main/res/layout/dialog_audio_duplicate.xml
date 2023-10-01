@@ -15,13 +15,13 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/new_track"
                 android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_new_bitrate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -43,13 +43,13 @@
             android:layout_marginTop="4dp"
             android:orientation="horizontal">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/old_track"
                 android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_old_bitrate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

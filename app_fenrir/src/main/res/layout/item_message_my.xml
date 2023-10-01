@@ -30,7 +30,7 @@
         android:paddingEnd="4dp"
         android:paddingBottom="2dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_message_avatar"
             android:layout_width="@dimen/avatar_size_small"
             android:layout_height="@dimen/avatar_size_small"
@@ -114,14 +114,14 @@
                 android:gravity="end|center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/item_message_status_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/font_size_additional"
                     tools:text="time" />
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/item_message_encrypted"
                     android:layout_width="12dp"
                     android:layout_height="12dp"

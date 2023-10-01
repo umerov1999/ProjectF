@@ -21,9 +21,7 @@ class CatalogV2List : Parcelable {
         default_section = object_api.catalog?.default_section
         sections = ArrayList(object_api.catalog?.sections?.size.orZero())
         for (i in object_api.catalog?.sections.orEmpty()) {
-            if (i.title.orEmpty().lowercase().contains(Regex("п[о|а]дкаст")) || i.title.orEmpty()
-                    .lowercase()
-                    .contains("podcast")
+            if (i.url?.contains("?section=podcasts") == true
             ) {
                 continue
             }

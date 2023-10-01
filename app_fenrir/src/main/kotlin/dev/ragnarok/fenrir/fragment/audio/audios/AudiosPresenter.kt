@@ -112,7 +112,7 @@ class AudiosPresenter(
         requestList(offset, playlistId)
     }
 
-    fun requestList(offset: Int, album_id: Int?) {
+    private fun requestList(offset: Int, album_id: Int?) {
         setLoadingNow(true)
         audioListDisposable.add(audioInteractor[accountId, album_id, ownerId, offset, GET_COUNT, accessKey]
             .fromIOToMain()

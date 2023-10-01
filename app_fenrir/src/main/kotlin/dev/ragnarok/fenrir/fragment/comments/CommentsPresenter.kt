@@ -64,7 +64,7 @@ class CommentsPresenter(
     private var directionDesc: Boolean
     private var loadingState = 0
     private var adminLevel = 0
-    private var draftCommentBody: String? = null
+    private var draftCommentText: String? = null
     private var draftCommentAttachmentsCount = 0
     private var draftCommentId: Int? = null
     private var replyTo: Comment? = null
@@ -134,7 +134,7 @@ class CommentsPresenter(
 
     fun resetDraftMessage() {
         draftCommentAttachmentsCount = 0
-        draftCommentBody = null
+        draftCommentText = null
         draftCommentId = null
         replyTo = null
         resolveAttachmentsCounter()
@@ -192,7 +192,7 @@ class CommentsPresenter(
         val draft = interactor.restoreDraftComment(authorId, commented)
             ?.blockingGet()
         if (draft != null) {
-            draftCommentBody = draft.getBody()
+            draftCommentText = draft.getText()
             draftCommentAttachmentsCount = draft.getAttachmentsCount()
             draftCommentId = draft.getId()
         }
@@ -464,11 +464,11 @@ class CommentsPresenter(
         get() = if (data.nonNullNoEmpty()) data[0] else null
 
     private fun resolveBodyView() {
-        view?.displayBody(draftCommentBody)
+        view?.displayBody(draftCommentText)
     }
 
     private fun canSendComment(): Boolean {
-        return draftCommentAttachmentsCount > 0 || draftCommentBody.trimmedNonNullNoEmpty()
+        return draftCommentAttachmentsCount > 0 || draftCommentText.trimmedNonNullNoEmpty()
     }
 
     private fun resolveSendButtonAvailability() {
@@ -484,7 +484,7 @@ class CommentsPresenter(
         return interactor.safeDraftComment(
             accountId,
             commented,
-            draftCommentBody,
+            draftCommentText,
             replyToComment,
             replyToUser
         )
@@ -502,7 +502,7 @@ class CommentsPresenter(
 
     fun fireInputTextChanged(s: String?) {
         val canSend = canSendComment()
-        draftCommentBody = s
+        draftCommentText = s
         if (canSend != canSendComment()) {
             resolveSendButtonAvailability()
         }
@@ -616,12 +616,12 @@ class CommentsPresenter(
             accountId,
             draftCommentId ?: return,
             commented.sourceOwnerId,
-            draftCommentBody
+            draftCommentText
         )
     }
 
-    fun fireEditBodyResult(newBody: String?) {
-        draftCommentBody = newBody
+    fun fireEditBodyResult(newText: String?) {
+        draftCommentText = newText
         resolveSendButtonAvailability()
         resolveBodyView()
     }
@@ -773,7 +773,7 @@ class CommentsPresenter(
         setSendingNow(false)
         handleCommentAdded()
         draftCommentAttachmentsCount = 0
-        draftCommentBody = null
+        draftCommentText = null
         draftCommentId = null
         replyTo = null
         resolveAttachmentsCounter()
@@ -785,7 +785,7 @@ class CommentsPresenter(
 
     private fun createCommentIntent(): CommentIntent {
         val replyToComment = replyTo?.getObjectId()
-        val body = draftCommentBody
+        val body = draftCommentText
         return CommentIntent(authorId)
             .setMessage(body)
             .setReplyToComment(replyToComment)
@@ -932,7 +932,6 @@ class CommentsPresenter(
                 CommentedType.PHOTO -> gotoSourceText = R.string.go_to_photo
                 CommentedType.VIDEO -> gotoSourceText = R.string.go_to_video
                 CommentedType.POST -> gotoSourceText = R.string.go_to_post
-                CommentedType.TOPIC -> {}
             }
         }
         val finalGotoSourceText = gotoSourceText

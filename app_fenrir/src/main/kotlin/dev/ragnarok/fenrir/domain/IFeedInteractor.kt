@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.domain
 
+import dev.ragnarok.fenrir.api.model.response.IgnoreItemResponse
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
 import dev.ragnarok.fenrir.model.FeedList
 import dev.ragnarok.fenrir.model.News
@@ -31,7 +32,13 @@ interface IFeedInteractor {
     fun saveList(accountId: Long, title: String?, listIds: Collection<Long>): Single<Int>
     fun addBan(accountId: Long, listIds: Collection<Long>): Single<Int>
     fun deleteList(accountId: Long, list_id: Int?): Single<Int>
-    fun ignoreItem(accountId: Long, type: String?, owner_id: Long?, item_id: Int?): Single<Int>
+    fun ignoreItem(
+        accountId: Long,
+        type: String?,
+        owner_id: Long?,
+        item_id: Int?
+    ): Single<IgnoreItemResponse>
+
     fun deleteBan(accountId: Long, listIds: Collection<Long>): Single<Int>
     fun getBanned(accountId: Long): Single<List<Owner>>
 }

@@ -11,7 +11,7 @@
         android:layout_toStartOf="@id/backspace"
         android:background="?messages_background_color" />
 
-    <ImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/backspace"
         android:layout_width="48dp"
         android:layout_height="42dp"

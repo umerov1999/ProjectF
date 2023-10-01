@@ -1,13 +1,12 @@
 package dev.ragnarok.fenrir.api.model.response
 
-import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 class GroupWallInfoResponse {
     @SerialName("group_info")
-    var groups: List<VKApiCommunity>? = null
+    var group_info: GroupByIdResponse? = null
 
     @SerialName("all_wall_count")
     var allWallCount: Int? = null

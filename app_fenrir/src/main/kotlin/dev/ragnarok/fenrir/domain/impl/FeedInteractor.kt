@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.domain.impl
 import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiNews
+import dev.ragnarok.fenrir.api.model.response.IgnoreItemResponse
 import dev.ragnarok.fenrir.db.interfaces.IStorages
 import dev.ragnarok.fenrir.db.model.entity.FeedListEntity
 import dev.ragnarok.fenrir.db.model.entity.NewsDboEntity
@@ -285,7 +286,7 @@ class FeedInteractor(
         type: String?,
         owner_id: Long?,
         item_id: Int?
-    ): Single<Int> {
+    ): Single<IgnoreItemResponse> {
         return networker.vkDefault(accountId)
             .newsfeed().ignoreItem(type, owner_id, item_id)
     }

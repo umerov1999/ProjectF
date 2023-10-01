@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.model
 
-class DraftMessage(private val id: Int, private val body: String?) {
+class DraftMessage(private val id: Int, private val text: String?) {
     private var attachmentsCount = 0
     fun getAttachmentsCount(): Int {
         return attachmentsCount
@@ -14,11 +14,11 @@ class DraftMessage(private val id: Int, private val body: String?) {
         return id
     }
 
-    fun getBody(): String? {
-        return body
+    fun getText(): String? {
+        return text
     }
 
     override fun toString(): String {
-        return "id=" + getId() + ", body='" + getBody() + '\'' + ", count=" + attachmentsCount
+        return "id=" + getId() + ", text='" + getText() + '\'' + ", count=" + attachmentsCount
     }
 }

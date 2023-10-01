@@ -33,13 +33,14 @@ object DialogsColumns : BaseColumns {
     const val FULL_MAJOR_ID = "$TABLENAME.$MAJOR_ID"
     const val FULL_MINOR_ID = "$TABLENAME.$MINOR_ID"
     const val FOREIGN_MESSAGE_FROM_ID = "message_from_id"
-    const val FOREIGN_MESSAGE_BODY = "message_body"
+    const val FOREIGN_MESSAGE_TEXT = "message_text"
     const val FOREIGN_MESSAGE_DATE = "message_date"
     const val FOREIGN_MESSAGE_OUT = "message_out"
 
     //public static final String FOREIGN_MESSAGE_READ_STATE = "message_read_state";
     const val FOREIGN_MESSAGE_HAS_ATTACHMENTS = "message_has_attachments"
     const val FOREIGN_MESSAGE_FWD_COUNT = "message_forward_count"
+    const val FOREIGN_MESSAGE_CMID = "message_forward_conversation_message_id"
     const val FOREIGN_MESSAGE_ACTION = "message_action"
     const val FOREIGN_MESSAGE_ENCRYPTED = "message_encrypted"
 

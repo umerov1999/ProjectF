@@ -14,14 +14,14 @@ internal class PushSettings(context: Context) : IPushSettings {
         }
         getPreferences(app)
             .edit()
-            .putStringSet(KEY_REGISTERED_FOR, target)
+            .putStringSet(KEY_REGISTERED, target)
             .apply()
     }
 
     override val registrations: List<VKPushRegistration>
         get() {
             val set = getPreferences(app)
-                .getStringSet(KEY_REGISTERED_FOR, null)
+                .getStringSet(KEY_REGISTERED, null)
             val result: MutableList<VKPushRegistration> = ArrayList(
                 set?.size ?: 0
             )
@@ -36,7 +36,7 @@ internal class PushSettings(context: Context) : IPushSettings {
         }
 
     companion object {
-        private const val KEY_REGISTERED_FOR = "push_registered_for"
+        private const val KEY_REGISTERED = "fcm_push_registered"
     }
 
 }

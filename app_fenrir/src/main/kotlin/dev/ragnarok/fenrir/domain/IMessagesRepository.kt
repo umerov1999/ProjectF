@@ -64,7 +64,7 @@ interface IMessagesRepository {
     fun edit(
         accountId: Long,
         message: Message,
-        body: String?,
+        text: String?,
         attachments: List<AbsModel>,
         keepForwardMessages: Boolean
     ): Single<Message>

@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:padding="4dp">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/post_schedule_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
                     android:text="@string/will_be_posted_at"
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/button_disable_postpone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
 
     <include layout="@layout/attachments_buttons_bar" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/empty_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

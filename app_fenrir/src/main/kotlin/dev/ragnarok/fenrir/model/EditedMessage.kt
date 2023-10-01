@@ -3,8 +3,7 @@ package dev.ragnarok.fenrir.model
 import dev.ragnarok.fenrir.upload.Upload
 
 class EditedMessage(val message: Message) {
-
-    var body: String? = message.body
+    var text: String? = message.text
     val attachments: MutableList<AttachmentEntry>
 
     init {
@@ -23,7 +22,7 @@ class EditedMessage(val message: Message) {
 
     val canSave: Boolean
         get() {
-            if (body.isNullOrBlank()) {
+            if (text.isNullOrBlank()) {
                 for (entry in attachments) {
                     if (entry.attachment is Upload) {
                         continue

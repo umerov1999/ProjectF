@@ -14,14 +14,14 @@
         android:layout_height="@dimen/avatar_size_usual"
         android:layout_marginStart="16dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_group_avatar"
             android:layout_width="@dimen/avatar_size_usual"
             android:layout_height="@dimen/avatar_size_usual"
             android:contentDescription="@null"
             tools:src="@drawable/ic_feedback_invite_group" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_verified"
             android:layout_width="16dp"
             android:layout_height="16dp"
@@ -45,7 +45,7 @@
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_group_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             tools:text="Fenrir for VK" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_group_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             android:textSize="@dimen/font_size_subtitle"
             tools:text="Сообщество" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_group_members"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

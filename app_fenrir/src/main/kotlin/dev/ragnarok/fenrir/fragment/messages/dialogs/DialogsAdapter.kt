@@ -112,14 +112,14 @@ class DialogsAdapter(private val mContext: Context, private var mDialogs: List<D
         val previous = if (position == 0) null else findPreviousUnhidden(position - 1)
         var lastMessage: SpannableStringBuilder
         val query = OwnerLinkSpanFactory.withSpans(
-            if (dialog.lastMessageBody != null) dialog.lastMessageBody else "",
+            if (dialog.lastMessageText != null) dialog.lastMessageText else "",
             owners = true,
             topics = false,
             listener = null
         )
         if (query == null) {
             lastMessage =
-                if (dialog.lastMessageBody != null) SpannableStringBuilder.valueOf(dialog.lastMessageBody) else SpannableStringBuilder()
+                if (dialog.lastMessageText != null) SpannableStringBuilder.valueOf(dialog.lastMessageText) else SpannableStringBuilder()
         } else {
             lastMessage = SpannableStringBuilder()
             lastMessage.append(query)

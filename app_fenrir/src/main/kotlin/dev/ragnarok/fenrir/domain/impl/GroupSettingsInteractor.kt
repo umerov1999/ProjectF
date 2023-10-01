@@ -4,7 +4,6 @@ import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.GroupSettingsDto
 import dev.ragnarok.fenrir.api.model.GroupSettingsDto.PublicCategory
-import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.api.model.VKApiCommunity.Contact
 import dev.ragnarok.fenrir.db.interfaces.IOwnersStorage
 import dev.ragnarok.fenrir.db.model.BanAction
@@ -197,7 +196,7 @@ class GroupSettingsInteractor(
             .getById(setOf(groupId), null, null, "contacts")
             .map { communities ->
                 val temps = listEmptyIfNull(
-                    communities[0].contacts
+                    communities.groups?.get(0)?.contacts
                 )
                 val managers: MutableList<ContactInfo> = ArrayList(temps.size)
                 for (user in temps) {
@@ -222,11 +221,11 @@ class GroupSettingsInteractor(
                 networker.vkDefault(accountId)
                     .groups()
                     .getById(setOf(groupId), null, null, "contacts")
-                    .map { communities: List<VKApiCommunity> ->
-                        if (communities.isEmpty()) {
+                    .map { communities ->
+                        if (communities.groups?.isEmpty() != false) {
                             throw NotFoundException("Group with id $groupId not found")
                         }
-                        listEmptyIfNull(communities[0].contacts)
+                        listEmptyIfNull(communities.groups?.get(0)?.contacts)
                     }
                     .map<List<Manager>> {
                         val users = listEmptyIfNull(

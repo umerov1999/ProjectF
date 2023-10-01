@@ -37,7 +37,7 @@ class SectionsAdapter(private val data: List<AbsSection>, private val mContext: 
                     holder.icon.drawable.setTint(CurrentTheme.getColorPrimary(mContext))
                 } else {
                     with()
-                        .load(stickerSection.stickerSet.getImageUrl(128))
+                        .load(stickerSection.stickerSet.getImageUrl(102))
                         .placeholder(R.drawable.sticker_pack_with_alpha)
                         .into(holder.icon)
                     holder.icon.colorFilter = null

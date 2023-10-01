@@ -33,7 +33,7 @@
             app:radius_top_right="6dp"
             app:view_color="?colorPrimary">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/current_path"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
         app:layout_behavior="dev.ragnarok.fenrir.view.FABBehavior"
         app:maxImageSize="30dp" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -63,8 +63,8 @@ class VKApiStickerSet : Identificable {
         @SerialName("type")
         var type: String? = null
 
-        @SerialName("icon")
-        var icon: List<Image>? = null
+        @SerialName("previews")
+        var previews: List<Image>? = null
 
         @SerialName("stickers")
         var stickers: List<VKApiSticker>? = null

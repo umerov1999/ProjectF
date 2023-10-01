@@ -143,8 +143,8 @@ object Entity2Model {
             .setClosed(dbo.isClosed)
             .setFixed(dbo.isFixed)
             .setCommentsCount(dbo.commentsCount)
-            .setFirstCommentBody(dbo.firstComment)
-            .setLastCommentBody(dbo.lastComment)
+            .setFirstCommentText(dbo.firstComment)
+            .setLastCommentText(dbo.lastComment)
         if (dbo.updatedBy != 0L) {
             topic.setUpdater(owners.getById(dbo.updatedBy))
         }
@@ -625,7 +625,7 @@ object Entity2Model {
     fun message(accountId: Long, dbo: MessageDboEntity, owners: IOwnersBundle): Message {
         val message = Message(dbo.id)
             .setAccountId(accountId)
-            .setBody(dbo.body)
+            .setText(dbo.text)
             .setPeerId(dbo.peerId)
             .setSenderId(dbo.fromId)
             .setOut(dbo.isOut)
@@ -1245,7 +1245,7 @@ object Entity2Model {
             })
     }
 
-    fun buildVideoTimelineFromDbo(entity: VideoDboEntity.VideoDboTimelineEntity): Video.VideoTimeline {
+    private fun buildVideoTimelineFromDbo(entity: VideoDboEntity.VideoDboTimelineEntity): Video.VideoTimeline {
         return Video.VideoTimeline().setCountPerImage(entity.countPerImage)
             .setCountPerRow(entity.countPerRow)
             .setCountTotal(entity.countTotal)

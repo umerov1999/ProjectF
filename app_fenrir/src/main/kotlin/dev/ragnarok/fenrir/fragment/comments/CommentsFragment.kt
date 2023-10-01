@@ -266,10 +266,10 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         }
     }
 
-    override fun displayBody(body: String?) {
-        mInputController?.setTextQuietly(body)
+    override fun displayBody(text: String?) {
+        mInputController?.setTextQuietly(text)
         presenter?.fireTextEdited(
-            body
+            text
         )
     }
 
@@ -285,9 +285,9 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         accountId: Long,
         draftCommentId: Int,
         sourceOwnerId: Long,
-        draftCommentBody: String?
+        draftCommentText: String?
     ) {
-        getCommentCreatePlace(accountId, draftCommentId, sourceOwnerId, draftCommentBody)
+        getCommentCreatePlace(accountId, draftCommentId, sourceOwnerId, draftCommentText)
             .tryOpenWith(requireActivity())
     }
 

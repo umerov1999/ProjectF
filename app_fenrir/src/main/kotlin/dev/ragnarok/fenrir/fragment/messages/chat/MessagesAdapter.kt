@@ -186,10 +186,10 @@ class MessagesAdapter(
             holder.root.alpha = 1f
             holder.Restore.visibility = View.GONE
         }
-        holder.message.visibility = if (message.body.isNullOrEmpty()) View.GONE else View.VISIBLE
+        holder.message.visibility = if (message.text.isNullOrEmpty()) View.GONE else View.VISIBLE
         holder.message.text =
             OwnerLinkSpanFactory.withSpans(
-                message.body,
+                message.text,
                 owners = true,
                 topics = false,
                 listener = ownerLinkAdapter
@@ -346,13 +346,13 @@ class MessagesAdapter(
             holder.root.alpha = 1f
             holder.Restore.visibility = View.GONE
         }
-        holder.body.visibility = if (message.body.isNullOrEmpty()) View.GONE else View.VISIBLE
-        var displayedBody: String? = null
+        holder.body.visibility = if (message.text.isNullOrEmpty()) View.GONE else View.VISIBLE
+        var displayedText: String? = null
         when (message.cryptStatus) {
-            CryptStatus.NO_ENCRYPTION, CryptStatus.ENCRYPTED, CryptStatus.DECRYPT_FAILED -> displayedBody =
-                message.body
+            CryptStatus.NO_ENCRYPTION, CryptStatus.ENCRYPTED, CryptStatus.DECRYPT_FAILED -> displayedText =
+                message.text
 
-            CryptStatus.DECRYPTED -> displayedBody = message.decryptedBody
+            CryptStatus.DECRYPTED -> displayedText = message.decryptedText
         }
         if (!message.isGraffiti) {
             when (message.cryptStatus) {
@@ -399,7 +399,7 @@ class MessagesAdapter(
         }
         holder.body.text =
             OwnerLinkSpanFactory.withSpans(
-                displayedBody,
+                displayedText,
                 owners = true,
                 topics = false,
                 listener = ownerLinkAdapter

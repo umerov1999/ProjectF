@@ -29,14 +29,14 @@
                     android:orientation="vertical"
                     android:padding="8dp">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:labelFor="@+id/address"
                         android:text="@string/proxy_address_helper_text"
                         android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -52,14 +52,14 @@
                     android:orientation="vertical"
                     android:padding="8dp">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:labelFor="@+id/port"
                         android:text="@string/proxy_port_helper_text"
                         android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/port"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -83,14 +83,14 @@
                     android:orientation="vertical"
                     android:padding="8dp">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:labelFor="@+id/username"
                         android:text="@string/proxy_username_helper_text"
                         android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -106,14 +106,14 @@
                     android:orientation="vertical"
                     android:padding="8dp">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:labelFor="@+id/password"
                         android:text="@string/proxy_password_helper_text"
                         android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

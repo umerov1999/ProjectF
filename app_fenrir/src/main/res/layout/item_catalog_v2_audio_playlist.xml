@@ -19,7 +19,7 @@
         android:background="?attr/selectableItemBackground"
         android:orientation="vertical">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_thumb"
             android:layout_width="@dimen/avatar_size_very_big"
             android:layout_height="@dimen/avatar_size_very_big"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
                 android:textSize="14sp"
                 tools:text="Name" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_artist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
                 android:textSize="12sp"
                 tools:text="Artist" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_year"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

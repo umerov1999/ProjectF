@@ -373,7 +373,7 @@ class InputViewController(
 
     interface OnInputActionCallback {
         fun onInputTextChanged(s: String?)
-        fun onSendClicked(body: String?)
+        fun onSendClicked(text: String?)
         fun onAttachClick()
         fun onSaveClick()
     }

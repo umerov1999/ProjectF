@@ -205,7 +205,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             //cv.put(MessageColumns.READ_STATE, patch.isRead());
             cv.put(MessagesColumns.OUT, patch.isOut)
             //cv.put(MessageColumns.TITLE, patch.getTitle());
-            cv.put(MessagesColumns.BODY, patch.body)
+            cv.put(MessagesColumns.TEXT, patch.text)
             cv.put(MessagesColumns.ENCRYPTED, patch.isEncrypted)
             cv.put(MessagesColumns.IMPORTANT, patch.isImportant)
             cv.put(MessagesColumns.DELETED, patch.isDeleted)
@@ -273,7 +273,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                         //cv.put(MessageColumns.READ_STATE, patch.isRead());
                         cv.put(MessagesColumns.OUT, patch.isOut)
                         //cv.put(MessageColumns.TITLE, patch.getTitle());
-                        cv.put(MessagesColumns.BODY, patch.body)
+                        cv.put(MessagesColumns.TEXT, patch.text)
                         cv.put(MessagesColumns.ENCRYPTED, patch.isEncrypted)
                         cv.put(MessagesColumns.IMPORTANT, patch.isImportant)
                         cv.put(MessagesColumns.DELETED, patch.isDeleted)
@@ -357,7 +357,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
 
     override fun findDraftMessage(accountId: Long, peerId: Long): Maybe<DraftMessage> {
         return Maybe.create { e: MaybeEmitter<DraftMessage> ->
-            val columns = arrayOf(MessagesColumns._ID, MessagesColumns.BODY)
+            val columns = arrayOf(MessagesColumns._ID, MessagesColumns.TEXT)
             val uri = getMessageContentUriFor(accountId)
             val cursor = context.contentResolver.query(
                 uri,
@@ -371,7 +371,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             if (cursor != null) {
                 if (cursor.moveToNext()) {
                     val id = cursor.getInt(MessagesColumns._ID)
-                    val body = cursor.getString(MessagesColumns.BODY)
+                    val body = cursor.getString(MessagesColumns.TEXT)
                     message = DraftMessage(id, body)
                 }
                 cursor.close()
@@ -387,12 +387,12 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
         }
     }
 
-    override fun saveDraftMessageBody(accountId: Long, peerId: Long, body: String?): Single<Int> {
+    override fun saveDraftMessageBody(accountId: Long, peerId: Long, text: String?): Single<Int> {
         return Single.create { e: SingleEmitter<Int> ->
             val start = System.currentTimeMillis()
             val uri = getMessageContentUriFor(accountId)
             val cv = ContentValues()
-            cv.put(MessagesColumns.BODY, body)
+            cv.put(MessagesColumns.TEXT, text)
             cv.put(MessagesColumns.PEER_ID, peerId)
             cv.put(MessagesColumns.STATUS, MessageStatus.EDITING)
             val cr = contentResolver
@@ -523,13 +523,17 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
         accountId: Long,
         messageId: Int,
         @MessageStatus status: Int,
-        vkid: Int?
+        vkid: Int?,
+        cmid: Int?
     ): Completable {
         return Completable.create { e: CompletableEmitter ->
             val contentValues = ContentValues()
             contentValues.put(MessagesColumns.STATUS, status)
             if (vkid != null) {
                 contentValues.put(MessagesColumns._ID, vkid)
+            }
+            if (cmid != null) {
+                contentValues.put(MessagesColumns.CONVERSATION_MESSAGE_ID, cmid)
             }
             val uri = getMessageContentUriFor(accountId)
             val count = context.contentResolver.update(
@@ -790,7 +794,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
             //cv.put(MessageColumns.READ_STATE, dbo.isRead());
             cv.put(MessagesColumns.OUT, dbo.isOut)
             //cv.put(MessageColumns.TITLE, dbo.getTitle());
-            cv.put(MessagesColumns.BODY, dbo.body)
+            cv.put(MessagesColumns.TEXT, dbo.text)
             cv.put(MessagesColumns.ENCRYPTED, dbo.isEncrypted)
             cv.put(MessagesColumns.IMPORTANT, dbo.isImportant)
             cv.put(MessagesColumns.DELETED, dbo.isDeleted)
@@ -915,7 +919,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                 .setStatus(status)
                 .setAction(action)
                 .setExtras(extras)
-                .setBody(cursor.getString(MessagesColumns.BODY)) //.setRead(cursor.getBoolean(MessageColumns.READ_STATE))
+                .setText(cursor.getString(MessagesColumns.TEXT)) //.setRead(cursor.getBoolean(MessageColumns.READ_STATE))
                 .setOut(cursor.getBoolean(MessagesColumns.OUT))
                 .setStatus(status)
                 .setDate(cursor.getLong(MessagesColumns.DATE))

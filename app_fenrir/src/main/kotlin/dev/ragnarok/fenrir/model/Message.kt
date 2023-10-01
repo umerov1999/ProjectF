@@ -18,7 +18,7 @@ class Message : AbsModel, Identificable, ISelectable {
     var accountId = 0L
         private set
     private var id: Int
-    var body: String? = null
+    var text: String? = null
         private set
     var peerId = 0L
         private set
@@ -83,7 +83,7 @@ class Message : AbsModel, Identificable, ISelectable {
 
     @CryptStatus
     var cryptStatus = 0
-    var decryptedBody: String? = null
+    var decryptedText: String? = null
     var sender: Owner? = null
         private set
     var forwardMessagesCount = 0
@@ -100,8 +100,8 @@ class Message : AbsModel, Identificable, ISelectable {
     internal constructor(parcel: Parcel) {
         accountId = parcel.readLong()
         id = parcel.readInt()
-        body = parcel.readString()
-        decryptedBody = parcel.readString()
+        text = parcel.readString()
+        decryptedText = parcel.readString()
         peerId = parcel.readLong()
         senderId = parcel.readLong()
         isOut = parcel.getBoolean()
@@ -157,8 +157,8 @@ class Message : AbsModel, Identificable, ISelectable {
         return this
     }
 
-    fun setBody(body: String?): Message {
-        this.body = body
+    fun setText(text: String?): Message {
+        this.text = text
         return this
     }
 
@@ -380,8 +380,8 @@ class Message : AbsModel, Identificable, ISelectable {
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(accountId)
         parcel.writeInt(id)
-        parcel.writeString(body)
-        parcel.writeString(decryptedBody)
+        parcel.writeString(text)
+        parcel.writeString(decryptedText)
         parcel.writeLong(peerId)
         parcel.writeLong(senderId)
         parcel.putBoolean(isOut)
@@ -509,8 +509,8 @@ class Message : AbsModel, Identificable, ISelectable {
         return this
     }
 
-    fun setDecryptedBody(decryptedBody: String?): Message {
-        this.decryptedBody = decryptedBody
+    fun setDecryptedText(decryptedText: String?): Message {
+        this.decryptedText = decryptedText
         return this
     }
 

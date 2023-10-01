@@ -68,7 +68,7 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/fragment_shorted_links_empty_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

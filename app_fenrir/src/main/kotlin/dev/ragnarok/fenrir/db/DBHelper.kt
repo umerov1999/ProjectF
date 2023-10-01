@@ -96,7 +96,7 @@ class DBHelper private constructor(context: Context, aid: Long) :
         createPostAttachmentsTable(db)
         createPostsTable(db)
         createGroupsTable(db)
-        createRelativeshipTable(db)
+        createRelationshipTable(db)
         createCommentsTable(db)
         createCommentsAttachmentsTable(db)
         createPhotoAlbumsTable(db)
@@ -173,16 +173,16 @@ class DBHelper private constructor(context: Context, aid: Long) :
     private fun createKeysTableIfNotExist(db: SQLiteDatabase) {
         val sql =
             "CREATE TABLE IF NOT EXISTS [" + EncryptionKeysForMessagesColumns.TABLENAME + "] (\n" +
-                    "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "  [" + EncryptionKeysForMessagesColumns.VERSION + "] INTEGER, " +
-                    "  [" + EncryptionKeysForMessagesColumns.PEER_ID + "] INTEGER, " +
-                    "  [" + EncryptionKeysForMessagesColumns.SESSION_ID + "] INTEGER, " +
-                    "  [" + EncryptionKeysForMessagesColumns.DATE + "] INTEGER, " +
-                    "  [" + EncryptionKeysForMessagesColumns.START_SESSION_MESSAGE_ID + "] INTEGER, " +
-                    "  [" + EncryptionKeysForMessagesColumns.END_SESSION_MESSAGE_ID + "] INTEGER, " +
-                    "  [" + EncryptionKeysForMessagesColumns.OUT_KEY + "] TEXT, " +
-                    "  [" + EncryptionKeysForMessagesColumns.IN_KEY + "] TEXT," +
-                    "  CONSTRAINT [] UNIQUE ([" + EncryptionKeysForMessagesColumns.SESSION_ID + "]) ON CONFLICT REPLACE);"
+                    " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    " [" + EncryptionKeysForMessagesColumns.VERSION + "] INTEGER, " +
+                    " [" + EncryptionKeysForMessagesColumns.PEER_ID + "] INTEGER, " +
+                    " [" + EncryptionKeysForMessagesColumns.SESSION_ID + "] INTEGER, " +
+                    " [" + EncryptionKeysForMessagesColumns.DATE + "] INTEGER, " +
+                    " [" + EncryptionKeysForMessagesColumns.START_SESSION_MESSAGE_ID + "] INTEGER, " +
+                    " [" + EncryptionKeysForMessagesColumns.END_SESSION_MESSAGE_ID + "] INTEGER, " +
+                    " [" + EncryptionKeysForMessagesColumns.OUT_KEY + "] TEXT, " +
+                    " [" + EncryptionKeysForMessagesColumns.IN_KEY + "] TEXT," +
+                    " CONSTRAINT [] UNIQUE ([" + EncryptionKeysForMessagesColumns.SESSION_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
@@ -211,49 +211,49 @@ class DBHelper private constructor(context: Context, aid: Long) :
 
     private fun createPhotoTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + PhotosColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + PhotosColumns.PHOTO_ID + "] INTEGER, " +
-                "  [" + PhotosColumns.ALBUM_ID + "] INTEGER, " +
-                "  [" + PhotosColumns.OWNER_ID + "] INTEGER, " +
-                "  [" + PhotosColumns.WIDTH + "] INTEGER, " +
-                "  [" + PhotosColumns.HEIGHT + "] INTEGER, " +
-                "  [" + PhotosColumns.TEXT + "] TEXT, " +
-                "  [" + PhotosColumns.DATE + "] INTEGER, " +
-                "  [" + PhotosColumns.SIZES + "] BLOB, " +
-                "  [" + PhotosColumns.USER_LIKES + "] BOOLEAN, " +
-                "  [" + PhotosColumns.CAN_COMMENT + "] BOOLEAN, " +
-                "  [" + PhotosColumns.LIKES + "] INTEGER, " +
-                "  [" + PhotosColumns.REPOSTS + "] INTEGER, " +
-                "  [" + PhotosColumns.COMMENTS + "] INTEGER, " +
-                "  [" + PhotosColumns.TAGS + "] INTEGER, " +
-                "  [" + PhotosColumns.ACCESS_KEY + "] TEXT, " +
-                "  [" + PhotosColumns.DELETED + "] TEXT, " +
-                "  CONSTRAINT [] UNIQUE ([" + PhotosColumns.PHOTO_ID + "], [" + PhotosColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + PhotosColumns.PHOTO_ID + "] INTEGER, " +
+                " [" + PhotosColumns.ALBUM_ID + "] INTEGER, " +
+                " [" + PhotosColumns.OWNER_ID + "] INTEGER, " +
+                " [" + PhotosColumns.ACCESS_KEY + "] TEXT, " +
+                " [" + PhotosColumns.WIDTH + "] INTEGER, " +
+                " [" + PhotosColumns.HEIGHT + "] INTEGER, " +
+                " [" + PhotosColumns.TEXT + "] TEXT, " +
+                " [" + PhotosColumns.DATE + "] INTEGER, " +
+                " [" + PhotosColumns.USER_LIKES + "] BOOLEAN, " +
+                " [" + PhotosColumns.CAN_COMMENT + "] BOOLEAN, " +
+                " [" + PhotosColumns.LIKES + "] INTEGER, " +
+                " [" + PhotosColumns.REPOSTS + "] INTEGER, " +
+                " [" + PhotosColumns.COMMENTS + "] INTEGER, " +
+                " [" + PhotosColumns.TAGS + "] INTEGER, " +
+                " [" + PhotosColumns.DELETED + "] BOOLEAN, " +
+                " [" + PhotosColumns.SIZES + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + PhotosColumns.PHOTO_ID + "], [" + PhotosColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createPhotoExtendedTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + PhotosExtendedColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + PhotosExtendedColumns.DB_OWNER_ID + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.DB_ALBUM_ID + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.PHOTO_ID + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.ALBUM_ID + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.OWNER_ID + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.WIDTH + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.HEIGHT + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.TEXT + "] TEXT, " +
-                "  [" + PhotosExtendedColumns.DATE + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.SIZES + "] BLOB, " +
-                "  [" + PhotosExtendedColumns.USER_LIKES + "] BOOLEAN, " +
-                "  [" + PhotosExtendedColumns.CAN_COMMENT + "] BOOLEAN, " +
-                "  [" + PhotosExtendedColumns.LIKES + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.REPOSTS + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.COMMENTS + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.TAGS + "] INTEGER, " +
-                "  [" + PhotosExtendedColumns.ACCESS_KEY + "] TEXT, " +
-                "  [" + PhotosExtendedColumns.DELETED + "] TEXT, " +
-                "  CONSTRAINT [] UNIQUE ([" + PhotosExtendedColumns.PHOTO_ID + "], [" + PhotosExtendedColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + PhotosExtendedColumns.DB_OWNER_ID + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.DB_ALBUM_ID + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.PHOTO_ID + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.ALBUM_ID + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.OWNER_ID + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.ACCESS_KEY + "] TEXT, " +
+                " [" + PhotosExtendedColumns.WIDTH + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.HEIGHT + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.TEXT + "] TEXT, " +
+                " [" + PhotosExtendedColumns.DATE + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.USER_LIKES + "] BOOLEAN, " +
+                " [" + PhotosExtendedColumns.CAN_COMMENT + "] BOOLEAN, " +
+                " [" + PhotosExtendedColumns.LIKES + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.REPOSTS + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.COMMENTS + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.TAGS + "] INTEGER, " +
+                " [" + PhotosExtendedColumns.DELETED + "] BOOLEAN, " +
+                " [" + PhotosExtendedColumns.SIZES + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + PhotosExtendedColumns.PHOTO_ID + "], [" + PhotosExtendedColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
@@ -280,22 +280,22 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 " [" + CommentsColumns.COMMENT_ID + "] INTEGER, " +
                 " [" + CommentsColumns.FROM_ID + "] INTEGER, " +
+                " [" + CommentsColumns.SOURCE_ID + "] INTEGER, " +
+                " [" + CommentsColumns.SOURCE_OWNER_ID + "] INTEGER, " +
+                " [" + CommentsColumns.SOURCE_TYPE + "] INTEGER, " +
+                " [" + CommentsColumns.SOURCE_ACCESS_KEY + "] TEXT, " +
                 " [" + CommentsColumns.DATE + "] INTEGER, " +
-                " [" + CommentsColumns.TEXT + "] TEXT, " +
                 " [" + CommentsColumns.REPLY_TO_USER + "] INTEGER, " +
                 " [" + CommentsColumns.REPLY_TO_COMMENT + "] INTEGER, " +
                 " [" + CommentsColumns.THREADS_COUNT + "] INTEGER, " +
-                " [" + CommentsColumns.THREADS + "] BLOB, " +
                 " [" + CommentsColumns.LIKES + "] INTEGER, " +
                 " [" + CommentsColumns.USER_LIKES + "] BOOLEAN, " +
                 " [" + CommentsColumns.CAN_LIKE + "] BOOLEAN, " +
                 " [" + CommentsColumns.CAN_EDIT + "] BOOLEAN, " +
                 " [" + CommentsColumns.ATTACHMENTS_COUNT + "] INTEGER, " +
                 " [" + CommentsColumns.DELETED + "] BOOLEAN, " +
-                " [" + CommentsColumns.SOURCE_ID + "] INTEGER, " +
-                " [" + CommentsColumns.SOURCE_OWNER_ID + "] INTEGER, " +
-                " [" + CommentsColumns.SOURCE_TYPE + "] INTEGER, " +
-                " [" + CommentsColumns.SOURCE_ACCESS_KEY + "] TEXT, " +
+                " [" + CommentsColumns.TEXT + "] TEXT, " +
+                " [" + CommentsColumns.THREADS + "] BLOB, " +
                 " CONSTRAINT [] UNIQUE ([" + CommentsColumns.COMMENT_ID + "]," +
                 " [" + CommentsColumns.FROM_ID + "], [" + CommentsColumns.SOURCE_ID + "]," +
                 " [" + CommentsColumns.SOURCE_OWNER_ID + "], [" + CommentsColumns.SOURCE_TYPE + "]) ON CONFLICT REPLACE);"
@@ -444,22 +444,23 @@ class DBHelper private constructor(context: Context, aid: Long) :
     private fun createMessagesTable(db: SQLiteDatabase) {
         val create = "CREATE TABLE [" + MessagesColumns.TABLENAME + "] (\n" +
                 " [" + MessagesColumns._ID + "] INTEGER PRIMARY KEY ON CONFLICT REPLACE AUTOINCREMENT NOT NULL UNIQUE, " +
+                " [" + MessagesColumns.ATTACH_TO + "] INTEGER REFERENCES " + MessagesColumns.TABLENAME + "([" + MessagesColumns._ID + "]) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 " [" + MessagesColumns.ORIGINAL_ID + "] INTEGER, " +
+                " [" + MessagesColumns.CONVERSATION_MESSAGE_ID + "] INTEGER, " +
                 " [" + MessagesColumns.PEER_ID + "] INTEGER, " +
                 " [" + MessagesColumns.FROM_ID + "] INTEGER, " +
+                " [" + MessagesColumns.RANDOM_ID + "] INTEGER, " +
                 " [" + MessagesColumns.DATE + "] INTEGER, " +
-                " [" + MessagesColumns.CONVERSATION_MESSAGE_ID + "] INTEGER, " +
+                " [" + MessagesColumns.UPDATE_TIME + "] INTEGER, " +
                 " [" + MessagesColumns.OUT + "] BOOLEAN, " +
-                " [" + MessagesColumns.BODY + "] TEXT, " +
                 " [" + MessagesColumns.ENCRYPTED + "] BOOLEAN, " +
                 " [" + MessagesColumns.DELETED + "] BOOLEAN, " +
                 " [" + MessagesColumns.DELETED_FOR_ALL + "] BOOLEAN, " +
                 " [" + MessagesColumns.IMPORTANT + "] BOOLEAN, " +
                 " [" + MessagesColumns.FORWARD_COUNT + "] INTEGER, " +
                 " [" + MessagesColumns.HAS_ATTACHMENTS + "] BOOLEAN, " +
-                " [" + MessagesColumns.ATTACH_TO + "] INTEGER REFERENCES " + MessagesColumns.TABLENAME + "([" + MessagesColumns._ID + "]) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 " [" + MessagesColumns.STATUS + "] INTEGER, " +
-                " [" + MessagesColumns.UPDATE_TIME + "] INTEGER, " +
+                " [" + MessagesColumns.REACTION_ID + "] INTEGER, " +
                 " [" + MessagesColumns.ACTION + "] INTEGER, " +
                 " [" + MessagesColumns.ACTION_MID + "] INTEGER, " +
                 " [" + MessagesColumns.ACTION_EMAIL + "] TEXT, " +
@@ -467,11 +468,10 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 " [" + MessagesColumns.PHOTO_50 + "] TEXT, " +
                 " [" + MessagesColumns.PHOTO_100 + "] TEXT, " +
                 " [" + MessagesColumns.PHOTO_200 + "] TEXT, " +
-                " [" + MessagesColumns.RANDOM_ID + "] INTEGER, " +
+                " [" + MessagesColumns.TEXT + "] TEXT, " +
                 " [" + MessagesColumns.EXTRAS + "] BLOB, " +
                 " [" + MessagesColumns.KEYBOARD + "] BLOB, " +
                 " [" + MessagesColumns.REACTIONS + "] BLOB, " +
-                " [" + MessagesColumns.REACTION_ID + "] INTEGER, " +
                 " [" + MessagesColumns.PAYLOAD + "] TEXT);"
         val insertZeroRow =
             "INSERT INTO " + MessagesColumns.TABLENAME + " (" + MessagesColumns._ID + ") VALUES (0)"
@@ -488,124 +488,124 @@ class DBHelper private constructor(context: Context, aid: Long) :
 
     private fun createFriendListsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + FriendListsColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + FriendListsColumns.USER_ID + "] INTEGER, " +
-                "  [" + FriendListsColumns.LIST_ID + "] INTEGER, " +
-                "  [" + FriendListsColumns.NAME + "] TEXT, " +
-                "  CONSTRAINT [] UNIQUE ([" + FriendListsColumns.USER_ID + "], [" + FriendListsColumns.LIST_ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + FriendListsColumns.USER_ID + "] INTEGER, " +
+                " [" + FriendListsColumns.LIST_ID + "] INTEGER, " +
+                " [" + FriendListsColumns.NAME + "] TEXT, " +
+                " CONSTRAINT [] UNIQUE ([" + FriendListsColumns.USER_ID + "], [" + FriendListsColumns.LIST_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createVideosTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + VideosColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + VideosColumns.VIDEO_ID + "] INTEGER, " +
-                "  [" + VideosColumns.OWNER_ID + "] INTEGER, " +
-                "  [" + VideosColumns.ORIGINAL_OWNER_ID + "] INTEGER, " +
-                "  [" + VideosColumns.ALBUM_ID + "] INTEGER, " +
-                "  [" + VideosColumns.TITLE + "] TEXT, " +
-                "  [" + VideosColumns.DESCRIPTION + "] TEXT, " +
-                "  [" + VideosColumns.DURATION + "] INTEGER, " +
-                "  [" + VideosColumns.LINK + "] TEXT, " +
-                "  [" + VideosColumns.DATE + "] INTEGER, " +
-                "  [" + VideosColumns.ADDING_DATE + "] INTEGER, " +
-                "  [" + VideosColumns.VIEWS + "] INTEGER, " +
-                "  [" + VideosColumns.PLAYER + "] TEXT, " +
-                "  [" + VideosColumns.IMAGE + "] TEXT, " +
-                "  [" + VideosColumns.ACCESS_KEY + "] TEXT, " +
-                "  [" + VideosColumns.COMMENTS + "] INTEGER, " +
-                "  [" + VideosColumns.CAN_COMMENT + "] BOOLEAN, " +
-                "  [" + VideosColumns.IS_PRIVATE + "] BOOLEAN, " +
-                "  [" + VideosColumns.IS_FAVORITE + "] BOOLEAN, " +
-                "  [" + VideosColumns.CAN_REPOST + "] BOOLEAN, " +
-                "  [" + VideosColumns.USER_LIKES + "] BOOLEAN, " +
-                "  [" + VideosColumns.REPEAT + "] INTEGER, " +
-                "  [" + VideosColumns.LIKES + "] INTEGER, " +
-                "  [" + VideosColumns.PRIVACY_VIEW + "] BLOB, " +
-                "  [" + VideosColumns.PRIVACY_COMMENT + "] BLOB, " +
-                "  [" + VideosColumns.MP4_240 + "] TEXT, " +
-                "  [" + VideosColumns.MP4_360 + "] TEXT, " +
-                "  [" + VideosColumns.MP4_480 + "] TEXT, " +
-                "  [" + VideosColumns.MP4_720 + "] TEXT, " +
-                "  [" + VideosColumns.MP4_1080 + "] TEXT, " +
-                "  [" + VideosColumns.MP4_1440 + "] TEXT, " +
-                "  [" + VideosColumns.MP4_2160 + "] TEXT, " +
-                "  [" + VideosColumns.EXTERNAL + "] TEXT, " +
-                "  [" + VideosColumns.HLS + "] TEXT, " +
-                "  [" + VideosColumns.LIVE + "] TEXT, " +
-                "  [" + VideosColumns.PLATFORM + "] TEXT, " +
-                "  [" + VideosColumns.CAN_EDIT + "] BOOLEAN, " +
-                "  [" + VideosColumns.CAN_ADD + "] BOOLEAN, " +
-                "  [" + VideosColumns.TRAILER + "] TEXT, " +
-                "  [" + VideosColumns.TIMELINE_THUMBS + "] BLOB, " +
-                "  CONSTRAINT [] UNIQUE ([" + VideosColumns.VIDEO_ID + "], [" + VideosColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + VideosColumns.VIDEO_ID + "] INTEGER, " +
+                " [" + VideosColumns.OWNER_ID + "] INTEGER, " +
+                " [" + VideosColumns.ORIGINAL_OWNER_ID + "] INTEGER, " +
+                " [" + VideosColumns.ALBUM_ID + "] INTEGER, " +
+                " [" + VideosColumns.ACCESS_KEY + "] TEXT, " +
+                " [" + VideosColumns.TITLE + "] TEXT, " +
+                " [" + VideosColumns.DESCRIPTION + "] TEXT, " +
+                " [" + VideosColumns.DURATION + "] INTEGER, " +
+                " [" + VideosColumns.DATE + "] INTEGER, " +
+                " [" + VideosColumns.ADDING_DATE + "] INTEGER, " +
+                " [" + VideosColumns.VIEWS + "] INTEGER, " +
+                " [" + VideosColumns.PLATFORM + "] TEXT, " +
+                " [" + VideosColumns.CAN_EDIT + "] BOOLEAN, " +
+                " [" + VideosColumns.CAN_ADD + "] BOOLEAN, " +
+                " [" + VideosColumns.IMAGE + "] TEXT, " +
+                " [" + VideosColumns.COMMENTS + "] INTEGER, " +
+                " [" + VideosColumns.CAN_COMMENT + "] BOOLEAN, " +
+                " [" + VideosColumns.IS_PRIVATE + "] BOOLEAN, " +
+                " [" + VideosColumns.IS_FAVORITE + "] BOOLEAN, " +
+                " [" + VideosColumns.CAN_REPOST + "] BOOLEAN, " +
+                " [" + VideosColumns.USER_LIKES + "] BOOLEAN, " +
+                " [" + VideosColumns.REPEAT + "] BOOLEAN, " +
+                " [" + VideosColumns.LIKES + "] INTEGER, " +
+                " [" + VideosColumns.LINK + "] TEXT, " +
+                " [" + VideosColumns.PRIVACY_VIEW + "] BLOB, " +
+                " [" + VideosColumns.PRIVACY_COMMENT + "] BLOB, " +
+                " [" + VideosColumns.MP4_240 + "] TEXT, " +
+                " [" + VideosColumns.MP4_360 + "] TEXT, " +
+                " [" + VideosColumns.MP4_480 + "] TEXT, " +
+                " [" + VideosColumns.MP4_720 + "] TEXT, " +
+                " [" + VideosColumns.MP4_1080 + "] TEXT, " +
+                " [" + VideosColumns.MP4_1440 + "] TEXT, " +
+                " [" + VideosColumns.MP4_2160 + "] TEXT, " +
+                " [" + VideosColumns.EXTERNAL + "] TEXT, " +
+                " [" + VideosColumns.PLAYER + "] TEXT, " +
+                " [" + VideosColumns.HLS + "] TEXT, " +
+                " [" + VideosColumns.LIVE + "] TEXT, " +
+                " [" + VideosColumns.TRAILER + "] TEXT, " +
+                " [" + VideosColumns.TIMELINE_THUMBS + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + VideosColumns.VIDEO_ID + "], [" + VideosColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createDocsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + DocsColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + DocsColumns.DOC_ID + "] INTEGER, " +
-                "  [" + DocsColumns.OWNER_ID + "] INTEGER, " +
-                "  [" + DocsColumns.TITLE + "] TEXT, " +
-                "  [" + DocsColumns.SIZE + "] INTEGER, " +
-                "  [" + DocsColumns.EXT + "] TEXT, " +
-                "  [" + DocsColumns.URL + "] TEXT, " +
-                "  [" + DocsColumns.DATE + "] INTEGER, " +
-                "  [" + DocsColumns.TYPE + "] INTEGER, " +
-                "  [" + DocsColumns.PHOTO + "] BLOB, " +
-                "  [" + DocsColumns.GRAFFITI + "] BLOB, " +
-                "  [" + DocsColumns.VIDEO + "] BLOB, " +
-                "  [" + DocsColumns.ACCESS_KEY + "] TEXT, " +
-                "  CONSTRAINT [] UNIQUE ([" + DocsColumns.DOC_ID + "], [" + DocsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + DocsColumns.DOC_ID + "] INTEGER, " +
+                " [" + DocsColumns.OWNER_ID + "] INTEGER, " +
+                " [" + DocsColumns.ACCESS_KEY + "] TEXT, " +
+                " [" + DocsColumns.TITLE + "] TEXT, " +
+                " [" + DocsColumns.SIZE + "] INTEGER, " +
+                " [" + DocsColumns.EXT + "] TEXT, " +
+                " [" + DocsColumns.URL + "] TEXT, " +
+                " [" + DocsColumns.DATE + "] INTEGER, " +
+                " [" + DocsColumns.TYPE + "] INTEGER, " +
+                " [" + DocsColumns.PHOTO + "] BLOB, " +
+                " [" + DocsColumns.GRAFFITI + "] BLOB, " +
+                " [" + DocsColumns.VIDEO + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + DocsColumns.DOC_ID + "], [" + DocsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createDialogTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + DialogsColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY ON CONFLICT REPLACE AUTOINCREMENT NOT NULL UNIQUE, " +
-                "  [" + DialogsColumns.UNREAD + "] INTEGER, " +
-                "  [" + DialogsColumns.TITLE + "] TEXT, " +
-                "  [" + DialogsColumns.IN_READ + "] INTEGER, " +
-                "  [" + DialogsColumns.OUT_READ + "] INTEGER, " +
-                "  [" + DialogsColumns.ACL + "] INTEGER, " +
-                "  [" + DialogsColumns.PHOTO_50 + "] TEXT, " +
-                "  [" + DialogsColumns.PHOTO_100 + "] TEXT, " +
-                "  [" + DialogsColumns.PHOTO_200 + "] TEXT, " +
-                "  [" + DialogsColumns.MAJOR_ID + "] INTEGER, " +
-                "  [" + DialogsColumns.MINOR_ID + "] INTEGER, " +
-                "  [" + DialogsColumns.LAST_MESSAGE_ID + "] INTEGER, " +
-                "  [" + DialogsColumns.IS_GROUP_CHANNEL + "] BOOLEAN);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY ON CONFLICT REPLACE AUTOINCREMENT NOT NULL UNIQUE, " +
+                " [" + DialogsColumns.MAJOR_ID + "] INTEGER, " +
+                " [" + DialogsColumns.MINOR_ID + "] INTEGER, " +
+                " [" + DialogsColumns.LAST_MESSAGE_ID + "] INTEGER, " +
+                " [" + DialogsColumns.UNREAD + "] INTEGER, " +
+                " [" + DialogsColumns.IN_READ + "] INTEGER, " +
+                " [" + DialogsColumns.OUT_READ + "] INTEGER, " +
+                " [" + DialogsColumns.IS_GROUP_CHANNEL + "] BOOLEAN, " +
+                " [" + DialogsColumns.ACL + "] INTEGER, " +
+                " [" + DialogsColumns.TITLE + "] TEXT, " +
+                " [" + DialogsColumns.PHOTO_50 + "] TEXT, " +
+                " [" + DialogsColumns.PHOTO_100 + "] TEXT, " +
+                " [" + DialogsColumns.PHOTO_200 + "] TEXT);"
         db.execSQL(sql)
     }
 
     private fun createPeersTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + PeersColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY ON CONFLICT REPLACE NOT NULL UNIQUE, " +
-                "  [" + PeersColumns.UNREAD + "] INTEGER, " +
-                "  [" + PeersColumns.TITLE + "] TEXT, " +
-                "  [" + PeersColumns.IN_READ + "] INTEGER, " +
-                "  [" + PeersColumns.OUT_READ + "] INTEGER, " +
-                "  [" + PeersColumns.PINNED + "] BLOB, " +
-                "  [" + PeersColumns.LAST_MESSAGE_ID + "] INTEGER, " +
-                "  [" + PeersColumns.ACL + "] INTEGER, " +
-                "  [" + PeersColumns.PHOTO_50 + "] TEXT, " +
-                "  [" + PeersColumns.PHOTO_100 + "] TEXT, " +
-                "  [" + PeersColumns.PHOTO_200 + "] TEXT, " +
-                "  [" + PeersColumns.KEYBOARD + "] BLOB, " +
-                "  [" + PeersColumns.MAJOR_ID + "] INTEGER, " +
-                "  [" + PeersColumns.MINOR_ID + "] INTEGER, " +
-                "  [" + PeersColumns.IS_GROUP_CHANNEL + "] BOOLEAN);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY ON CONFLICT REPLACE NOT NULL UNIQUE, " +
+                " [" + PeersColumns.MAJOR_ID + "] INTEGER, " +
+                " [" + PeersColumns.MINOR_ID + "] INTEGER, " +
+                " [" + PeersColumns.LAST_MESSAGE_ID + "] INTEGER, " +
+                " [" + PeersColumns.UNREAD + "] INTEGER, " +
+                " [" + PeersColumns.IN_READ + "] INTEGER, " +
+                " [" + PeersColumns.OUT_READ + "] INTEGER, " +
+                " [" + PeersColumns.IS_GROUP_CHANNEL + "] BOOLEAN, " +
+                " [" + PeersColumns.ACL + "] INTEGER, " +
+                " [" + PeersColumns.TITLE + "] TEXT, " +
+                " [" + PeersColumns.PHOTO_50 + "] TEXT, " +
+                " [" + PeersColumns.PHOTO_100 + "] TEXT, " +
+                " [" + PeersColumns.PHOTO_200 + "] TEXT, " +
+                " [" + PeersColumns.KEYBOARD + "] BLOB, " +
+                " [" + PeersColumns.PINNED + "] BLOB);"
         db.execSQL(sql)
     }
 
-    private fun createRelativeshipTable(db: SQLiteDatabase) {
+    private fun createRelationshipTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + RelationshipsColumns.TABLENAME + "] (" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + RelationshipsColumns.OBJECT_ID + "] INTEGER NOT NULL, " +
-                "  [" + RelationshipsColumns.SUBJECT_ID + "] INTEGER NOT NULL, " +
-                "  [" + RelationshipsColumns.TYPE + "] INTEGER, " +
-                "  CONSTRAINT [] UNIQUE ([" + RelationshipsColumns.OBJECT_ID + "], [" + RelationshipsColumns.SUBJECT_ID + "], [" + RelationshipsColumns.TYPE + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + RelationshipsColumns.OBJECT_ID + "] INTEGER NOT NULL, " +
+                " [" + RelationshipsColumns.SUBJECT_ID + "] INTEGER NOT NULL, " +
+                " [" + RelationshipsColumns.TYPE + "] INTEGER, " +
+                " CONSTRAINT [] UNIQUE ([" + RelationshipsColumns.OBJECT_ID + "], [" + RelationshipsColumns.SUBJECT_ID + "], [" + RelationshipsColumns.TYPE + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
@@ -614,19 +614,9 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 " [" + BaseColumns._ID + "] INTEGER NOT NULL UNIQUE, " +
                 " [" + UsersColumns.FIRST_NAME + "] TEXT, " +
                 " [" + UsersColumns.LAST_NAME + "] TEXT, " +
-                " [" + UsersColumns.ONLINE + "] BOOLEAN, " +
-                " [" + UsersColumns.ONLINE_MOBILE + "] BOOLEAN, " +
-                " [" + UsersColumns.ONLINE_APP + "] INTEGER, " +
-                " [" + UsersColumns.PHOTO_50 + "] TEXT, " +
-                " [" + UsersColumns.PHOTO_100 + "] TEXT, " +
-                " [" + UsersColumns.PHOTO_200 + "] TEXT, " +
-                " [" + UsersColumns.PHOTO_MAX + "] TEXT, " +
-                " [" + UsersColumns.LAST_SEEN + "] INTEGER, " +
-                " [" + UsersColumns.PLATFORM + "] INTEGER, " +
-                " [" + UsersColumns.USER_STATUS + "] TEXT, " +
-                " [" + UsersColumns.SEX + "] INTEGER, " +
-                " [" + UsersColumns.DOMAIN + "] TEXT, " +
                 " [" + UsersColumns.MAIDEN_NAME + "] TEXT, " +
+                " [" + UsersColumns.DOMAIN + "] TEXT, " +
+                " [" + UsersColumns.SEX + "] INTEGER, " +
                 " [" + UsersColumns.BDATE + "] TEXT, " +
                 " [" + UsersColumns.IS_FRIEND + "] BOOLEAN, " +
                 " [" + UsersColumns.FRIEND_STATUS + "] INTEGER, " +
@@ -635,7 +625,17 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 " [" + UsersColumns.IS_BLACK_LISTED + "] BOOLEAN, " +
                 " [" + UsersColumns.IS_CAN_ACCESS_CLOSED + "] BOOLEAN, " +
                 " [" + UsersColumns.IS_VERIFIED + "] BOOLEAN, " +
+                " [" + UsersColumns.ONLINE + "] BOOLEAN, " +
+                " [" + UsersColumns.ONLINE_MOBILE + "] BOOLEAN, " +
+                " [" + UsersColumns.ONLINE_APP + "] INTEGER, " +
                 " [" + UsersColumns.HAS_UNSEEN_STORIES + "] BOOLEAN, " +
+                " [" + UsersColumns.LAST_SEEN + "] INTEGER, " +
+                " [" + UsersColumns.PLATFORM + "] INTEGER, " +
+                " [" + UsersColumns.USER_STATUS + "] TEXT, " +
+                " [" + UsersColumns.PHOTO_50 + "] TEXT, " +
+                " [" + UsersColumns.PHOTO_100 + "] TEXT, " +
+                " [" + UsersColumns.PHOTO_200 + "] TEXT, " +
+                " [" + UsersColumns.PHOTO_MAX + "] TEXT, " +
                 " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
@@ -673,68 +673,68 @@ class DBHelper private constructor(context: Context, aid: Long) :
 
     private fun createNewsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + NewsColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + NewsColumns.TYPE + "] TEXT, " +
-                "  [" + NewsColumns.SOURCE_ID + "] INTEGER, " +
-                "  [" + NewsColumns.DATE + "] INTEGER, " +
-                "  [" + NewsColumns.POST_ID + "] INTEGER, " +
-                "  [" + NewsColumns.POST_TYPE + "] TEXT, " +
-                "  [" + NewsColumns.FINAL_POST + "] BOOLEAN, " +
-                "  [" + NewsColumns.COPY_OWNER_ID + "] INTEGER, " +
-                "  [" + NewsColumns.COPY_POST_ID + "] INTEGER, " +
-                "  [" + NewsColumns.COPY_POST_DATE + "] INTEGER, " +
-                "  [" + NewsColumns.TEXT + "] TEXT, " +
-                "  [" + NewsColumns.CAN_EDIT + "] BOOLEAN, " +
-                "  [" + NewsColumns.CAN_DELETE + "] BOOLEAN, " +
-                "  [" + NewsColumns.COMMENT_COUNT + "] INTEGER, " +
-                "  [" + NewsColumns.COMMENT_CAN_POST + "] BOOLEAN, " +
-                "  [" + NewsColumns.LIKE_COUNT + "] INTEGER, " +
-                "  [" + NewsColumns.USER_LIKE + "] BOOLEAN, " +
-                "  [" + NewsColumns.CAN_LIKE + "] BOOLEAN, " +
-                "  [" + NewsColumns.CAN_PUBLISH + "] BOOLEAN, " +
-                "  [" + NewsColumns.REPOSTS_COUNT + "] INTEGER, " +
-                "  [" + NewsColumns.USER_REPOSTED + "] BOOLEAN, " +
-                "  [" + NewsColumns.ATTACHMENTS_BLOB + "] BLOB, " +
-                "  [" + NewsColumns.COPYRIGHT_BLOB + "] BLOB, " +
-                "  [" + NewsColumns.IS_DONUT + "] BOOLEAN, " +
-                "  [" + NewsColumns.VIEWS + "] INTEGER, " +
-                "  [" + NewsColumns.TAG_FRIENDS + "] TEXT);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + NewsColumns.TYPE + "] TEXT, " +
+                " [" + NewsColumns.SOURCE_ID + "] INTEGER, " +
+                " [" + NewsColumns.DATE + "] INTEGER, " +
+                " [" + NewsColumns.POST_ID + "] INTEGER, " +
+                " [" + NewsColumns.POST_TYPE + "] TEXT, " +
+                " [" + NewsColumns.FINAL_POST + "] BOOLEAN, " +
+                " [" + NewsColumns.COPY_OWNER_ID + "] INTEGER, " +
+                " [" + NewsColumns.COPY_POST_ID + "] INTEGER, " +
+                " [" + NewsColumns.COPY_POST_DATE + "] INTEGER, " +
+                " [" + NewsColumns.CAN_EDIT + "] BOOLEAN, " +
+                " [" + NewsColumns.CAN_DELETE + "] BOOLEAN, " +
+                " [" + NewsColumns.COMMENT_COUNT + "] INTEGER, " +
+                " [" + NewsColumns.COMMENT_CAN_POST + "] BOOLEAN, " +
+                " [" + NewsColumns.LIKE_COUNT + "] INTEGER, " +
+                " [" + NewsColumns.USER_LIKE + "] BOOLEAN, " +
+                " [" + NewsColumns.CAN_LIKE + "] BOOLEAN, " +
+                " [" + NewsColumns.CAN_PUBLISH + "] BOOLEAN, " +
+                " [" + NewsColumns.REPOSTS_COUNT + "] INTEGER, " +
+                " [" + NewsColumns.USER_REPOSTED + "] BOOLEAN, " +
+                " [" + NewsColumns.IS_DONUT + "] BOOLEAN, " +
+                " [" + NewsColumns.VIEWS + "] INTEGER, " +
+                " [" + NewsColumns.TAG_FRIENDS + "] TEXT, " +
+                " [" + NewsColumns.TEXT + "] TEXT, " +
+                " [" + NewsColumns.COPYRIGHT_BLOB + "] BLOB, " +
+                " [" + NewsColumns.ATTACHMENTS_BLOB + "] BLOB);"
         db.execSQL(sql)
     }
 
     private fun createPostsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + PostsColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + PostsColumns.POST_ID + "] INTEGER, " +
-                "  [" + PostsColumns.OWNER_ID + "] INTEGER, " +
-                "  [" + PostsColumns.FROM_ID + "] INTEGER, " +
-                "  [" + PostsColumns.DATE + "] INTEGER, " +
-                "  [" + PostsColumns.TEXT + "] TEXT, " +
-                "  [" + PostsColumns.REPLY_OWNER_ID + "] INTEGER, " +
-                "  [" + PostsColumns.REPLY_POST_ID + "] INTEGER, " +
-                "  [" + PostsColumns.FRIENDS_ONLY + "] BOOLEAN, " +
-                "  [" + PostsColumns.COMMENTS_COUNT + "] INTEGER, " +
-                "  [" + PostsColumns.CAN_POST_COMMENT + "] BOOLEAN, " +
-                "  [" + PostsColumns.LIKES_COUNT + "] INTEGER, " +
-                "  [" + PostsColumns.USER_LIKES + "] BOOLEAN, " +
-                "  [" + PostsColumns.CAN_LIKE + "] BOOLEAN, " +
-                "  [" + PostsColumns.CAN_PUBLISH + "] BOOLEAN, " +
-                "  [" + PostsColumns.CAN_EDIT + "] BOOLEAN, " +
-                "  [" + PostsColumns.IS_FAVORITE + "] BOOLEAN, " +
-                "  [" + PostsColumns.REPOSTS_COUNT + "] INTEGER, " +
-                "  [" + PostsColumns.USER_REPOSTED + "] BOOLEAN, " +
-                "  [" + PostsColumns.POST_TYPE + "] TEXT, " +
-                "  [" + PostsColumns.ATTACHMENTS_COUNT + "] INTEGER, " +
-                "  [" + PostsColumns.SIGNED_ID + "] INTEGER, " +
-                "  [" + PostsColumns.CREATED_BY + "] INTEGER, " +
-                "  [" + PostsColumns.CAN_PIN + "] BOOLEAN, " +
-                "  [" + PostsColumns.IS_PINNED + "] BOOLEAN, " +
-                "  [" + PostsColumns.IS_DONUT + "] BOOLEAN, " +
-                "  [" + PostsColumns.DELETED + "] BOOLEAN, " +
-                "  [" + PostsColumns.POST_SOURCE + "] BLOB, " +
-                "  [" + PostsColumns.COPYRIGHT_BLOB + "] BLOB, " +
-                "  [" + PostsColumns.VIEWS + "] INTEGER, " +
-                "  CONSTRAINT [] UNIQUE ([" + PostsColumns.POST_ID + "], [" + PostsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + PostsColumns.POST_ID + "] INTEGER, " +
+                " [" + PostsColumns.OWNER_ID + "] INTEGER, " +
+                " [" + PostsColumns.FROM_ID + "] INTEGER, " +
+                " [" + PostsColumns.DATE + "] INTEGER, " +
+                " [" + PostsColumns.REPLY_OWNER_ID + "] INTEGER, " +
+                " [" + PostsColumns.REPLY_POST_ID + "] INTEGER, " +
+                " [" + PostsColumns.FRIENDS_ONLY + "] BOOLEAN, " +
+                " [" + PostsColumns.COMMENTS_COUNT + "] INTEGER, " +
+                " [" + PostsColumns.CAN_POST_COMMENT + "] BOOLEAN, " +
+                " [" + PostsColumns.LIKES_COUNT + "] INTEGER, " +
+                " [" + PostsColumns.USER_LIKES + "] BOOLEAN, " +
+                " [" + PostsColumns.CAN_LIKE + "] BOOLEAN, " +
+                " [" + PostsColumns.CAN_PUBLISH + "] BOOLEAN, " +
+                " [" + PostsColumns.CAN_EDIT + "] BOOLEAN, " +
+                " [" + PostsColumns.IS_FAVORITE + "] BOOLEAN, " +
+                " [" + PostsColumns.REPOSTS_COUNT + "] INTEGER, " +
+                " [" + PostsColumns.USER_REPOSTED + "] BOOLEAN, " +
+                " [" + PostsColumns.POST_TYPE + "] TEXT, " +
+                " [" + PostsColumns.ATTACHMENTS_COUNT + "] INTEGER, " +
+                " [" + PostsColumns.SIGNED_ID + "] INTEGER, " +
+                " [" + PostsColumns.CREATED_BY + "] INTEGER, " +
+                " [" + PostsColumns.CAN_PIN + "] BOOLEAN, " +
+                " [" + PostsColumns.IS_PINNED + "] BOOLEAN, " +
+                " [" + PostsColumns.IS_DONUT + "] BOOLEAN, " +
+                " [" + PostsColumns.VIEWS + "] INTEGER, " +
+                " [" + PostsColumns.DELETED + "] BOOLEAN, " +
+                " [" + PostsColumns.TEXT + "] TEXT, " +
+                " [" + PostsColumns.COPYRIGHT_BLOB + "] BLOB, " +
+                " [" + PostsColumns.POST_SOURCE + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + PostsColumns.POST_ID + "], [" + PostsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
@@ -751,13 +751,13 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 " [" + GroupsColumns.MEMBER_STATUS + "] INTEGER, " +
                 " [" + GroupsColumns.MEMBERS_COUNT + "] INTEGER, " +
                 " [" + GroupsColumns.TYPE + "] INTEGER, " +
-                " [" + GroupsColumns.PHOTO_50 + "] TEXT, " +
-                " [" + GroupsColumns.PHOTO_100 + "] TEXT, " +
-                " [" + GroupsColumns.PHOTO_200 + "] TEXT, " +
                 " [" + GroupsColumns.CAN_ADD_TOPICS + "] BOOLEAN, " +
                 " [" + GroupsColumns.TOPICS_ORDER + "] BOOLEAN, " +
                 " [" + GroupsColumns.IS_BLACK_LISTED + "] BOOLEAN, " +
                 " [" + GroupsColumns.HAS_UNSEEN_STORIES + "] BOOLEAN, " +
+                " [" + GroupsColumns.PHOTO_50 + "] TEXT, " +
+                " [" + GroupsColumns.PHOTO_100 + "] TEXT, " +
+                " [" + GroupsColumns.PHOTO_200 + "] TEXT, " +
                 " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
@@ -780,63 +780,63 @@ class DBHelper private constructor(context: Context, aid: Long) :
 
     private fun createPhotoAlbumsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + PhotoAlbumsColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + PhotoAlbumsColumns.ALBUM_ID + "] INTEGER, " +
-                "  [" + PhotoAlbumsColumns.OWNER_ID + "] INTEGER, " +
-                "  [" + PhotoAlbumsColumns.TITLE + "] TEXT, " +
-                "  [" + PhotoAlbumsColumns.SIZE + "] INTEGER, " +
-                "  [" + PhotoAlbumsColumns.PRIVACY_VIEW + "] BLOB, " +
-                "  [" + PhotoAlbumsColumns.PRIVACY_COMMENT + "] BLOB, " +
-                "  [" + PhotoAlbumsColumns.DESCRIPTION + "] TEXT, " +
-                "  [" + PhotoAlbumsColumns.CAN_UPLOAD + "] BOOLEAN, " +
-                "  [" + PhotoAlbumsColumns.UPDATED + "] INTEGER, " +
-                "  [" + PhotoAlbumsColumns.CREATED + "] INTEGER, " +
-                "  [" + PhotoAlbumsColumns.SIZES + "] BLOB, " +
-                "  [" + PhotoAlbumsColumns.UPLOAD_BY_ADMINS + "] BOOLEAN, " +
-                "  [" + PhotoAlbumsColumns.COMMENTS_DISABLED + "] BOOLEAN, " +
-                "  CONSTRAINT [] UNIQUE ([" + PhotoAlbumsColumns.ALBUM_ID + "], [" + PhotoAlbumsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + PhotoAlbumsColumns.ALBUM_ID + "] INTEGER, " +
+                " [" + PhotoAlbumsColumns.OWNER_ID + "] INTEGER, " +
+                " [" + PhotoAlbumsColumns.TITLE + "] TEXT, " +
+                " [" + PhotoAlbumsColumns.DESCRIPTION + "] TEXT, " +
+                " [" + PhotoAlbumsColumns.SIZE + "] INTEGER, " +
+                " [" + PhotoAlbumsColumns.CAN_UPLOAD + "] BOOLEAN, " +
+                " [" + PhotoAlbumsColumns.UPDATED + "] INTEGER, " +
+                " [" + PhotoAlbumsColumns.CREATED + "] INTEGER, " +
+                " [" + PhotoAlbumsColumns.UPLOAD_BY_ADMINS + "] BOOLEAN, " +
+                " [" + PhotoAlbumsColumns.COMMENTS_DISABLED + "] BOOLEAN, " +
+                " [" + PhotoAlbumsColumns.PRIVACY_VIEW + "] BLOB, " +
+                " [" + PhotoAlbumsColumns.PRIVACY_COMMENT + "] BLOB, " +
+                " [" + PhotoAlbumsColumns.SIZES + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + PhotoAlbumsColumns.ALBUM_ID + "], [" + PhotoAlbumsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createVideoAlbumsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + VideoAlbumsColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + VideoAlbumsColumns.ALBUM_ID + "] INTEGER, " +
-                "  [" + VideoAlbumsColumns.OWNER_ID + "] INTEGER, " +
-                "  [" + VideoAlbumsColumns.TITLE + "] TEXT, " +
-                "  [" + VideoAlbumsColumns.COUNT + "] INTEGER, " +
-                "  [" + VideoAlbumsColumns.IMAGE + "] TEXT, " +
-                "  [" + VideoAlbumsColumns.UPDATE_TIME + "] INTEGER, " +
-                "  [" + VideoAlbumsColumns.PRIVACY + "] BLOB, " +
-                "  CONSTRAINT [] UNIQUE ([" + VideoAlbumsColumns.ALBUM_ID + "], [" + VideoAlbumsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + VideoAlbumsColumns.ALBUM_ID + "] INTEGER, " +
+                " [" + VideoAlbumsColumns.OWNER_ID + "] INTEGER, " +
+                " [" + VideoAlbumsColumns.TITLE + "] TEXT, " +
+                " [" + VideoAlbumsColumns.COUNT + "] INTEGER, " +
+                " [" + VideoAlbumsColumns.IMAGE + "] TEXT, " +
+                " [" + VideoAlbumsColumns.UPDATE_TIME + "] INTEGER, " +
+                " [" + VideoAlbumsColumns.PRIVACY + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + VideoAlbumsColumns.ALBUM_ID + "], [" + VideoAlbumsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createTopicsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + TopicsColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + TopicsColumns.TOPIC_ID + "] INTEGER, " +
-                "  [" + TopicsColumns.OWNER_ID + "] INTEGER, " +
-                "  [" + TopicsColumns.TITLE + "] TEXT, " +
-                "  [" + TopicsColumns.CREATED + "] INTEGER, " +
-                "  [" + TopicsColumns.CREATED_BY + "] INTEGER, " +
-                "  [" + TopicsColumns.UPDATED + "] INTEGER, " +
-                "  [" + TopicsColumns.UPDATED_BY + "] INTEGER, " +
-                "  [" + TopicsColumns.IS_CLOSED + "] BOOLEAN, " +
-                "  [" + TopicsColumns.IS_FIXED + "] BOOLEAN, " +
-                "  [" + TopicsColumns.COMMENTS + "] INTEGER, " +
-                "  [" + TopicsColumns.FIRST_COMMENT + "] TEXT, " +
-                "  [" + TopicsColumns.LAST_COMMENT + "] TEXT, " +
-                "  [" + TopicsColumns.ATTACHED_POLL + "] BLOB, " +
-                "  CONSTRAINT [] UNIQUE ([" + TopicsColumns.TOPIC_ID + "], [" + TopicsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + TopicsColumns.TOPIC_ID + "] INTEGER, " +
+                " [" + TopicsColumns.OWNER_ID + "] INTEGER, " +
+                " [" + TopicsColumns.TITLE + "] TEXT, " +
+                " [" + TopicsColumns.CREATED + "] INTEGER, " +
+                " [" + TopicsColumns.CREATED_BY + "] INTEGER, " +
+                " [" + TopicsColumns.UPDATED + "] INTEGER, " +
+                " [" + TopicsColumns.UPDATED_BY + "] INTEGER, " +
+                " [" + TopicsColumns.IS_CLOSED + "] BOOLEAN, " +
+                " [" + TopicsColumns.IS_FIXED + "] BOOLEAN, " +
+                " [" + TopicsColumns.COMMENTS + "] INTEGER, " +
+                " [" + TopicsColumns.FIRST_COMMENT + "] TEXT, " +
+                " [" + TopicsColumns.LAST_COMMENT + "] TEXT, " +
+                " [" + TopicsColumns.ATTACHED_POLL + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + TopicsColumns.TOPIC_ID + "], [" + TopicsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 
     private fun createNotoficationsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + NotificationsColumns.TABLENAME + "] (\n" +
-                "  [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "  [" + NotificationsColumns.DATE + "] INTEGER, " +
-                "  [" + NotificationsColumns.CONTENT_PACK + "] BLOB);"
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " [" + NotificationsColumns.DATE + "] INTEGER, " +
+                " [" + NotificationsColumns.CONTENT_PACK + "] BLOB);"
         db.execSQL(sql)
     }
 

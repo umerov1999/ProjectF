@@ -5,7 +5,7 @@
     android:background="@android:color/transparent"
     android:padding="2dp">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/image_preview"
         android:layout_width="@dimen/default_preview_image_height"
         android:layout_height="@dimen/default_preview_image_height"

@@ -20,7 +20,7 @@ class MessageDboEntity : DboEntity() {
         private set
     var isOut = false
         private set
-    var body: String? = null
+    var text: String? = null
         private set
     var isEncrypted = false
         private set
@@ -106,8 +106,8 @@ class MessageDboEntity : DboEntity() {
         return this
     }
 
-    fun setBody(body: String?): MessageDboEntity {
-        this.body = body
+    fun setText(text: String?): MessageDboEntity {
+        this.text = text
         return this
     }
 

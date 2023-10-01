@@ -311,6 +311,7 @@ StringList FileRef::defaultFileExtensions()
   l.append("s3m");
   l.append("it");
   l.append("xm");
+  l.append("dsf");
 
   return l;
 }

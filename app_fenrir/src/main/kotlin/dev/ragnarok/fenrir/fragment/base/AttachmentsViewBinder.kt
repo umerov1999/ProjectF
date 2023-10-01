@@ -515,7 +515,7 @@ class AttachmentsViewBinder(
             }
             val tvBody = itemView.findViewById<TextView>(R.id.item_fwd_message_text)
             tvBody.text = OwnerLinkSpanFactory.withSpans(
-                if (message.cryptStatus == CryptStatus.DECRYPTED) message.decryptedBody else message.body,
+                if (message.cryptStatus == CryptStatus.DECRYPTED) message.decryptedText else message.text,
                 owners = true,
                 topics = false,
                 listener = object : LinkActionAdapter() {
@@ -524,7 +524,7 @@ class AttachmentsViewBinder(
                     }
                 })
             tvBody.visibility =
-                if (message.body.isNullOrEmpty()) View.GONE else View.VISIBLE
+                if (message.text.isNullOrEmpty()) View.GONE else View.VISIBLE
             (itemView.findViewById<View>(R.id.item_fwd_message_username) as TextView).text =
                 message.sender?.fullName
             (itemView.findViewById<View>(R.id.item_fwd_message_time) as TextView).text =

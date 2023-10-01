@@ -18,7 +18,7 @@
         android:paddingEnd="16dp"
         android:paddingBottom="8dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
             android:textColor="?icon_color_active"
             tools:text="Title" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,13 +57,13 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_friend_avatar"
                 android:layout_width="@dimen/avatar_size_usual"
                 android:layout_height="@dimen/avatar_size_usual"
                 android:contentDescription="@null" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_verified"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
@@ -89,7 +89,7 @@
             android:layout_toEndOf="@id/item_friend_avatar_container"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_friend_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 tools:text="Name" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_friend_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
 
         </LinearLayout>
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_friend_online"
             android:layout_width="@dimen/online_dot_size"
             android:layout_height="@dimen/online_dot_size"

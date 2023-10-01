@@ -21,7 +21,7 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/pin_title_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/content_large_margin">
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/pincode_digit_0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
                     android:src="@drawable/runic_letter_algis"
                     app:tint="?white_color_contrast_fix" />
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/pincode_digit_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                     android:src="@drawable/runic_letter_manaz"
                     app:tint="?white_color_contrast_fix" />
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/pincode_digit_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
                     android:src="@drawable/runic_letter_naudiz"
                     app:tint="?white_color_contrast_fix" />
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/pincode_digit_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

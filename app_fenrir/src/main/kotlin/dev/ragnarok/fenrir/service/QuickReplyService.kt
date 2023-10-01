@@ -41,9 +41,9 @@ class QuickReplyService : android.app.IntentService(QuickReplyService::class.jav
         }
     }
 
-    private fun addMessage(accountId: Long, peerId: Long, body: String?) {
+    private fun addMessage(accountId: Long, peerId: Long, text: String?) {
         val messagesInteractor = messages
-        val builder = SaveMessageBuilder(accountId, peerId).setBody(body)
+        val builder = SaveMessageBuilder(accountId, peerId).setText(text)
         messagesInteractor.put(builder).blockingSubscribe()
         messages.runSendingQueue()
     }

@@ -153,8 +153,8 @@ class AttachmentsBottomSheetAdapter(
         holder.Retry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         holder.image.setBackgroundResource(R.drawable.background_emails)
-        if (messages.fwds.nonNullNoEmpty() && messages.fwds.size == 1 && messages.fwds[0].body.nonNullNoEmpty()) {
-            holder.title.text = AppTextUtils.reduceText(messages.fwds[0].body, 20)
+        if (messages.fwds.nonNullNoEmpty() && messages.fwds.size == 1 && messages.fwds[0].text.nonNullNoEmpty()) {
+            holder.title.text = AppTextUtils.reduceText(messages.fwds[0].text, 20)
         } else {
             holder.title.setText(R.string.messages)
         }

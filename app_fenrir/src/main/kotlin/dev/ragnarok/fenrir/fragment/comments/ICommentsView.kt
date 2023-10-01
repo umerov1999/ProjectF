@@ -23,14 +23,14 @@ interface ICommentsView : IAttachmentsPlacesView, IMvpView, IErrorView,
     fun notifyDataAddedToBottom(count: Int)
     fun notifyItemChanged(index: Int)
     fun moveFocusTo(index: Int, smooth: Boolean)
-    fun displayBody(body: String?)
+    fun displayBody(text: String?)
     fun displayAttachmentsCount(count: Int)
     fun setButtonSendAvailable(available: Boolean)
     fun openAttachmentsManager(
         accountId: Long,
         draftCommentId: Int,
         sourceOwnerId: Long,
-        draftCommentBody: String?
+        draftCommentText: String?
     )
 
     fun setupReplyViews(replyTo: String?)

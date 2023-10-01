@@ -102,12 +102,12 @@ object CryptHelper {
 
 
     fun encryptWithAes(
-        body: String, key: String, ifError: String, sessionId: Long,
+        text: String, key: String, ifError: String, sessionId: Long,
         @KeyLocationPolicy keyLocationPolicy: Int
     ): String {
         return try {
             ("AES" + keyLocationPolicy + sessionId
-                    + ":" + encrypt(key, body))
+                    + ":" + encrypt(key, text))
         } catch (e: GeneralSecurityException) {
             e.printStackTrace()
             ifError
@@ -116,20 +116,20 @@ object CryptHelper {
 
 
     @Throws(GeneralSecurityException::class)
-    fun decryptWithAes(body: String, key: String): String {
-        return decrypt(key, body)
+    fun decryptWithAes(text: String, key: String): String {
+        return decrypt(key, text)
     }
 
 
     @Throws(EncryptedMessageParseException::class)
-    fun parseEncryptedMessage(body: String?): EncryptedMessage? {
-        return if (body.isNullOrEmpty()) {
+    fun parseEncryptedMessage(text: String?): EncryptedMessage? {
+        return if (text.isNullOrEmpty()) {
             null
         } else try {
-            val dividerLocation = body.indexOf(':')
-            @KeyLocationPolicy val keyLocationPolicy = Character.getNumericValue(body[3])
-            val sessionId = body.substring(4, dividerLocation).toLong()
-            val originalBody = body.substring(dividerLocation + 1)
+            val dividerLocation = text.indexOf(':')
+            @KeyLocationPolicy val keyLocationPolicy = Character.getNumericValue(text[3])
+            val sessionId = text.substring(4, dividerLocation).toLong()
+            val originalBody = text.substring(dividerLocation + 1)
             EncryptedMessage(sessionId, originalBody, keyLocationPolicy)
         } catch (e: Exception) {
             throw EncryptedMessageParseException()

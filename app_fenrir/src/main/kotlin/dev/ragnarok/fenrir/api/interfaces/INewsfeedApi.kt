@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.api.interfaces
 import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiFeedList
+import dev.ragnarok.fenrir.api.model.response.IgnoreItemResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedBanResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedResponse
@@ -73,7 +74,7 @@ interface INewsfeedApi {
     fun addBan(listIds: Collection<Long>): Single<Int>
 
     @CheckResult
-    fun ignoreItem(type: String?, owner_id: Long?, item_id: Int?): Single<Int>
+    fun ignoreItem(type: String?, owner_id: Long?, item_id: Int?): Single<IgnoreItemResponse>
 
     @CheckResult
     fun deleteBan(listIds: Collection<Long>): Single<Int>

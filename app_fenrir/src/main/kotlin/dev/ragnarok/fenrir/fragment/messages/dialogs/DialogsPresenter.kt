@@ -94,7 +94,7 @@ class DialogsPresenter(
             )
         }
         setNetLoadingNow(false)
-        endOfContent = false
+        endOfContent = data.size < COUNT
         dialogs.clear()
         dialogs.addAll(data)
         safeNotifyDataSetChanged()
@@ -156,7 +156,7 @@ class DialogsPresenter(
             )
         }
         setNetLoadingNow(false)
-        endOfContent = dialogs.isEmpty()
+        endOfContent = data.size < COUNT
         val startSize = dialogs.size
         dialogs.addAll(data)
         view?.notifyDataAdded(
@@ -469,6 +469,7 @@ class DialogsPresenter(
         cacheNowLoading = false
         netDisposable.clear()
         netLoadingNow = false
+        endOfContent = false
         requestAtLast()
     }
 
@@ -519,6 +520,17 @@ class DialogsPresenter(
 
     private fun canLoadMore(): Boolean {
         return !cacheNowLoading && !endOfContent && !netLoadingNow && dialogs.isNotEmpty()
+    }
+
+    fun fireScrollToEndConfirmationHidden() {
+        if (canLoadMore()) {
+            if (isHiddenAccount(accountId)) {
+                resolveRefreshingView()
+                view?.askToScrollToEnd()
+            } else {
+                fireScrollToEnd()
+            }
+        }
     }
 
     fun fireScrollToEnd() {

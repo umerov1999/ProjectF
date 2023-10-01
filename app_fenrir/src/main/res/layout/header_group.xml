@@ -48,7 +48,7 @@
                     android:layout_width="@dimen/avatar_size_big"
                     android:layout_height="@dimen/avatar_size_big">
 
-                    <ImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/header_group_avatar"
                         android:layout_width="@dimen/avatar_size_big"
                         android:layout_height="@dimen/avatar_size_big"
@@ -62,7 +62,7 @@
                         android:layout_height="@dimen/avatar_size_big"
                         android:visibility="gone" />
 
-                    <ImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/item_verified"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
@@ -98,7 +98,7 @@
                     android:gravity="end"
                     android:orientation="vertical">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/header_group_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -106,7 +106,7 @@
                         android:maxLines="3"
                         android:textAppearance="@style/ProfileText" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/header_group_id"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -121,7 +121,7 @@
                         android:layout_marginTop="8dp"
                         android:orientation="horizontal">
 
-                        <ImageView
+                        <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/fragment_group_audio"
                             android:layout_width="16dp"
                             android:layout_height="16dp"
@@ -228,13 +228,13 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_bmembers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -254,14 +254,14 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_btopics"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -282,14 +282,14 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_bchats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -310,14 +310,14 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_barticles"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -338,14 +338,14 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_bphotos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -366,14 +366,14 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_bvideos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -394,14 +394,14 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_baudios"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -422,14 +422,14 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_bdocuments"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -450,13 +450,13 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_bproducts"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -477,13 +477,13 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_bservices_products"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -504,13 +504,13 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_bnarratives"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -531,13 +531,13 @@
                 android:padding="8dp"
                 android:stateListAnimator="@animator/clicked">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/header_group_bclips"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/ProfileText" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -547,7 +547,7 @@
 
             </LinearLayout>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/header_group_contacts_container"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -562,7 +562,7 @@
                 app:drawableTopCompat="@drawable/account_circle" />
 
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/header_group_links_container"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -576,7 +576,7 @@
                 app:drawableTint="?android:attr/textColorPrimary"
                 app:drawableTopCompat="@drawable/share" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/header_group_about_container"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

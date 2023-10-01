@@ -696,8 +696,8 @@ class FenrirContentProvider : ContentProvider() {
             //sMessagesProjectionMap.put(MessageColumns.READ_STATE, MessageColumns.FULL_READ_STATE);
             sMessagesProjectionMap[MessagesColumns.OUT] = MessagesColumns.FULL_OUT
             //sMessagesProjectionMap.put(MessageColumns.TITLE, MessageColumns.FULL_TITLE);
-            sMessagesProjectionMap[MessagesColumns.BODY] =
-                MessagesColumns.FULL_BODY
+            sMessagesProjectionMap[MessagesColumns.TEXT] =
+                MessagesColumns.FULL_TEXT
             sMessagesProjectionMap[MessagesColumns.ENCRYPTED] =
                 MessagesColumns.FULL_ENCRYPTED
             sMessagesProjectionMap[MessagesColumns.DELETED] = MessagesColumns.FULL_DELETED
@@ -836,8 +836,8 @@ class FenrirContentProvider : ContentProvider() {
                 DialogsColumns.FULL_MINOR_ID
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_FROM_ID] =
                 MessagesColumns.FULL_FROM_ID + " AS " + DialogsColumns.FOREIGN_MESSAGE_FROM_ID
-            sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_BODY] =
-                MessagesColumns.FULL_BODY + " AS " + DialogsColumns.FOREIGN_MESSAGE_BODY
+            sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_TEXT] =
+                MessagesColumns.FULL_TEXT + " AS " + DialogsColumns.FOREIGN_MESSAGE_TEXT
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_DATE] =
                 MessagesColumns.FULL_DATE + " AS " + DialogsColumns.FOREIGN_MESSAGE_DATE
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_OUT] =
@@ -847,6 +847,8 @@ class FenrirContentProvider : ContentProvider() {
                 MessagesColumns.FULL_HAS_ATTACHMENTS + " AS " + DialogsColumns.FOREIGN_MESSAGE_HAS_ATTACHMENTS
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_FWD_COUNT] =
                 MessagesColumns.FULL_FORWARD_COUNT + " AS " + DialogsColumns.FOREIGN_MESSAGE_FWD_COUNT
+            sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_CMID] =
+                MessagesColumns.FULL_CONVERSATION_MESSAGE_ID + " AS " + DialogsColumns.FOREIGN_MESSAGE_CMID
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_ACTION] =
                 MessagesColumns.FULL_ACTION + " AS " + DialogsColumns.FOREIGN_MESSAGE_ACTION
             sDialogsProjectionMap[DialogsColumns.FOREIGN_MESSAGE_ENCRYPTED] =

@@ -30,7 +30,7 @@
             android:layout_marginEnd="8dp"
             android:orientation="vertical">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/toolbar_avatar"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -39,7 +39,7 @@
                 android:contentDescription="@null"
                 android:stateListAnimator="@animator/clicked" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_story_expires"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                 android:textSize="12sp"
                 tools:text="Expires" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_story_duration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
                 tools:text="Expires" />
         </LinearLayout>
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/toolbar_play_speed"
             android:layout_width="28dp"
             android:layout_height="28dp"

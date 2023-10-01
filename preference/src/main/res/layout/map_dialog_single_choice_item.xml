@@ -22,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@android:id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
         app:layout_goneMarginBottom="12dp"
         tools:text="Title" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@android:id/summary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

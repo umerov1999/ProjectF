@@ -343,7 +343,7 @@ object Dto2Model {
                     update.peerId
                 )
             ) update.from else update.peerId
-        message.body = unescape(update.text)
+        message.text = unescape(update.text)
         //message.title = update.subject;
         message.date = update.timestamp
         message.action_mid = update.sourceMid
@@ -551,10 +551,10 @@ object Dto2Model {
     }
 
     fun transform(aid: Long, message: VKApiMessage, owners: IOwnersBundle): Message {
-        val encrypted = analizeMessageBody(message.body) == MessageType.CRYPTED
+        val encrypted = analizeMessageBody(message.text) == MessageType.CRYPTED
         val appMessage = Message(message.id)
             .setAccountId(aid)
-            .setBody(message.body) //.setTitle(message.title)
+            .setText(message.text) //.setTitle(message.title)
             .setPeerId(message.peer_id)
             .setSenderId(message.from_id) //.setRead(message.read_state)
             .setOut(message.out)
@@ -760,8 +760,8 @@ object Dto2Model {
             .setClosed(dto.is_closed)
             .setFixed(dto.is_fixed)
             .setCommentsCount(dto.comments?.count.orZero())
-            .setFirstCommentBody(dto.first_comment)
-            .setLastCommentBody(dto.last_comment)
+            .setFirstCommentText(dto.first_comment)
+            .setLastCommentText(dto.last_comment)
         if (dto.updated_by != 0L) {
             topic.setUpdater(owners.getById(dto.updated_by))
         }
@@ -1314,6 +1314,9 @@ object Dto2Model {
 
                 VKApiAttachment.TYPE_POST -> attachments.preparePosts()
                     .add(transform(attachment as VKApiPost, owners))
+
+                VKApiAttachment.TYPE_GIFT -> attachments.prepareGifts()
+                    .add(transform(attachment as VKApiGiftItem))
             }
         }
         return attachments

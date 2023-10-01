@@ -7,7 +7,7 @@
     android:gravity="center_vertical"
     android:minHeight="48dp">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/buttonClose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         android:src="@drawable/close"
         app:tint="?colorOnSurface" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/actionModeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
         android:animateLayoutChanges="true"
         android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonForward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
             android:src="@drawable/ic_outline_forward"
             app:tint="?colorOnSurface" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
             android:src="@drawable/pencil"
             app:tint="?colorOnSurface" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonCopy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
             android:src="@drawable/content_copy"
             app:tint="?colorOnSurface" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonPin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
             android:src="@drawable/pin"
             app:tint="?colorOnSurface" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonStar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
             android:src="@drawable/star"
             app:tint="?colorOnSurface" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
             android:src="@drawable/ic_outline_delete"
             app:tint="?colorOnSurface" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonSpam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -1,18 +1,18 @@
 package dev.ragnarok.fenrir.model
 
 class DraftComment(private val id: Int) {
-    private var body: String? = null
+    private var text: String? = null
     private var attachmentsCount = 0
     fun getId(): Int {
         return id
     }
 
-    fun getBody(): String? {
-        return body
+    fun getText(): String? {
+        return text
     }
 
-    fun setBody(body: String?): DraftComment {
-        this.body = body
+    fun setText(text: String?): DraftComment {
+        this.text = text
         return this
     }
 

@@ -9,7 +9,7 @@
     android:paddingStart="12dp"
     android:paddingEnd="12dp">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_document_big_ext"
         android:layout_width="45dp"
         android:layout_height="45dp"
@@ -45,7 +45,7 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_document_big_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
             android:textSize="15sp"
             tools:text="Title" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_document_big_size"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

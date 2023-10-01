@@ -390,7 +390,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         editMessageGroup?.visibility = if (message == null) View.GONE else View.VISIBLE
         message?.run {
             editMessageText?.text =
-                if (body.isNullOrEmpty()) getString(R.string.attachments) else body
+                if (text.isNullOrEmpty()) getString(R.string.attachments) else text
         }
     }
 
@@ -939,11 +939,11 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 )
 
                 pinnedTitle?.text = sender?.fullName
-                if (body.isNullOrEmpty() && pinned.isHasAttachments) {
-                    setBody(getString(R.string.attachments))
+                if (text.isNullOrEmpty() && pinned.isHasAttachments) {
+                    setText(getString(R.string.attachments))
                 }
                 pinnedSubtitle?.text = OwnerLinkSpanFactory.withSpans(
-                    body,
+                    text,
                     owners = true,
                     topics = false,
                     listener = object : OwnerLinkSpanFactory.ActionListener {
@@ -1220,7 +1220,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
     override fun goToMessageAttachmentsEditor(
         accountId: Long, messageOwnerId: Long, destination: UploadDestination,
-        body: String?, attachments: ModelsBundle?, isGroupChat: Boolean
+        text: String?, attachments: ModelsBundle?, isGroupChat: Boolean
     ) {
         val fragment = MessageAttachmentsFragment.newInstance(
             accountId,
@@ -2034,7 +2034,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
             R.id.action_attachments_in_conversation -> presenter?.fireDialogAttachmentsClick()
             R.id.messages_search -> presenter?.fireSearchClick()
-            R.id.crypt_state -> presenter?.fireEncriptionStatusClick()
+            R.id.crypt_state -> presenter?.fireEncryptionStatusClick()
             R.id.action_key_exchange -> presenter?.fireKeyExchangeClick()
             R.id.action_invite_link -> presenter?.fireGenerateInviteLink()
         }
@@ -2051,7 +2051,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         presenter?.fireTextEdited(s)
     }
 
-    override fun onSendClicked(body: String?) {
+    override fun onSendClicked(text: String?) {
         presenter?.fireSendClick()
     }
 

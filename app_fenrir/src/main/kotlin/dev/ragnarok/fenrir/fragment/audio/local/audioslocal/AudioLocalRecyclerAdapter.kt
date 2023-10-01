@@ -105,7 +105,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
     }
 
     @Suppress("DEPRECATION")
-    internal fun stripMetadata(url: String): Completable {
+    private fun stripMetadata(url: String): Completable {
         return Completable.create {
             try {
                 val cursor = mContext.contentResolver.query(
@@ -138,7 +138,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
         }
     }
 
-    internal fun getLocalBitrate(url: String?) {
+    private fun getLocalBitrate(url: String?) {
         if (url.isNullOrEmpty()) {
             return
         }
@@ -439,7 +439,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
         val play_cover: ImageView = itemView.findViewById(R.id.item_audio_play_cover)
         val Track: View = itemView.findViewById(R.id.track_option)
         val selectionView: MaterialCardView = itemView.findViewById(R.id.item_audio_selection)
-        val animationAdapter: Animator.AnimatorListener
+        private val animationAdapter: Animator.AnimatorListener
         val visual: RLottieImageView = itemView.findViewById(R.id.item_audio_visual)
         val time: TextView = itemView.findViewById(R.id.item_audio_time)
         var animator: ObjectAnimator? = null

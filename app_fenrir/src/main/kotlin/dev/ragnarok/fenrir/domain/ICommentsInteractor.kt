@@ -35,7 +35,7 @@ interface ICommentsInteractor {
     fun safeDraftComment(
         accountId: Long,
         commented: Commented,
-        body: String?,
+        text: String?,
         replyToCommentId: Int,
         replyToUserId: Long
     ): Single<Int>
@@ -69,7 +69,7 @@ interface ICommentsInteractor {
         accountId: Long,
         commented: Commented,
         commentId: Int,
-        body: String?,
+        text: String?,
         commentThread: Int?,
         attachments: List<AbsModel>?
     ): Single<Comment>

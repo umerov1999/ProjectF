@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.crypt
 
 class EncryptedMessage(
-    val sessionId: Long, val originalBody: String, @KeyLocationPolicy val
+    val sessionId: Long, val originalText: String, @KeyLocationPolicy val
     KeyLocationPolicy: Int
 )

@@ -25,6 +25,7 @@ interface IDialogsView : IMvpView, IErrorView, IToastView {
     fun goToImportant(accountId: Long)
     fun showSnackbar(@StringRes res: Int, isLong: Boolean)
     fun askToReload()
+    fun askToScrollToEnd()
     fun showEnterNewGroupChatTitle(users: List<User>)
     fun showNotificationSettings(accountId: Long, peerId: Long)
     fun goToOwnerWall(accountId: Long, ownerId: Long, owner: Owner?)

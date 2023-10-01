@@ -24,7 +24,7 @@
         android:paddingEnd="8dp"
         android:paddingBottom="8dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_poll_answer_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
                 android:progress="80"
                 android:progressDrawable="@drawable/progress_drawable" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_poll_answer_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

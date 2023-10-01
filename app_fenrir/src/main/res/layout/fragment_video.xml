@@ -39,14 +39,14 @@
                         android:paddingEnd="16dp"
                         android:visibility="gone">
 
-                        <ImageView
+                        <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/item_owner_avatar"
                             android:layout_width="@dimen/avatar_size_usual"
                             android:layout_height="@dimen/avatar_size_usual"
                             android:contentDescription="@null"
                             android:visibility="gone" />
 
-                        <TextView
+                        <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/item_owner_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
                             app:aspectRatioW="16"
                             app:dominantMeasurement="width" />
 
-                        <ImageView
+                        <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="56dp"
                             android:layout_height="56dp"
                             android:layout_gravity="center"
@@ -97,7 +97,7 @@
                             android:contentDescription="@string/play"
                             android:stateListAnimator="@animator/clicked" />
 
-                        <ImageView
+                        <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_gravity="center"
@@ -118,7 +118,7 @@
                         android:textSize="14sp"
                         tools:text="Subvideo" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/item_upload_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -130,7 +130,7 @@
                         android:visibility="gone"
                         tools:text="Uploaded Date" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/item_added_time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -203,7 +203,7 @@
                 android:layout_height="wrap_content"
                 android:indeterminate="true" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/post_loading_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

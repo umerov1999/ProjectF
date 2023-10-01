@@ -29,7 +29,7 @@
             app:hashTagColor="?attr/colorAccent"
             tools:text="Message" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_post_show_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
 
     </LinearLayout>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_post_copyright"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
         android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
         android:textColor="?attr/colorAccent" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_need_donate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -90,14 +90,14 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_post_signer_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:contentDescription="@null"
             android:src="@drawable/person" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_post_signer_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

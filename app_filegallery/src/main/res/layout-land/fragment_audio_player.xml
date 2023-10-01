@@ -18,7 +18,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/player_handler"
             android:layout_width="40dp"
             android:layout_height="3dp"
@@ -29,7 +29,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/goto_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
             android:padding="12dp"
             app:layout_constraintTop_toBottomOf="@id/goto_button_header">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/audio_player_current_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
                 android:textSize="11sp"
                 tools:ignore="SmallSp" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/audio_player_total_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
             android:padding="8dp"
             app:layout_constraintTop_toBottomOf="@id/seekbar_container">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/volume_minus"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -149,7 +149,7 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/audio_player_subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -163,7 +163,7 @@
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     tools:text="Jara" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/audio_player_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -189,7 +189,7 @@
 
             </LinearLayout>
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/volume_plus"
                 android:layout_width="48dp"
                 android:layout_height="48dp"

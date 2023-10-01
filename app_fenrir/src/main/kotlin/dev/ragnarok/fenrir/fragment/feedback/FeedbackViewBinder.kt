@@ -40,7 +40,7 @@ class FeedbackViewBinder(
     private val attachmentsActionCallback: OnAttachmentsActionCallback
 ) {
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
-    private val linkColor: Int = TextView(context).linkTextColors.defaultColor
+    private val linkColor: Int = CurrentTheme.getColorPrimary(context)
     private val attachmentsViewBinder: AttachmentsViewBinder =
         AttachmentsViewBinder(context, attachmentsActionCallback)
     private val mLinkActionAdapter: LinkActionAdapter

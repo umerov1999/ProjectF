@@ -43,7 +43,7 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
 
     fun goToMessageAttachmentsEditor(
         accountId: Long, messageOwnerId: Long, destination: UploadDestination,
-        body: String?, attachments: ModelsBundle?, isGroupChat: Boolean
+        text: String?, attachments: ModelsBundle?, isGroupChat: Boolean
     )
 
     fun showErrorSendDialog(message: Message)

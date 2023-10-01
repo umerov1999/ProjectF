@@ -17,7 +17,7 @@
         app:contentPadding="8dp"
         tools:ignore="UnusedAttribute">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_feedback_header_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
                 android:layout_alignTop="@id/item_comment_top_container"
                 android:layout_alignParentStart="true">
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/item_comment_owner_avatar"
                     android:layout_width="@dimen/avatar_size_small"
                     android:layout_height="@dimen/avatar_size_small"
@@ -73,7 +73,7 @@
                     app:stroke_color="?android:colorBackground" />
             </RelativeLayout>
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_feedback_comment_attachment"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -94,7 +94,7 @@
                 android:paddingBottom="2dp"
                 android:weightSum="1">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/item_comment_owner_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -131,7 +131,7 @@
 
                 </LinearLayout>
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/item_comment_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -154,7 +154,7 @@
             android:background="@drawable/background_gray_round"
             android:padding="8dp">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_comment_reply_owner_avatar"
                 android:layout_width="@dimen/avatar_size_small"
                 android:layout_height="@dimen/avatar_size_small"
@@ -184,7 +184,7 @@
                 android:paddingEnd="0dp"
                 android:weightSum="1">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/item_comment_reply_owner_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -217,7 +217,7 @@
                         android:layout_height="wrap_content" />
                 </LinearLayout>
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/item_comment_reply_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

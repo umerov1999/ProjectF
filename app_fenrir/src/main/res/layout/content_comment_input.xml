@@ -20,7 +20,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/buttonAttach"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
                 android:src="@drawable/attachment"
                 app:tint="?colorOnSurface" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/fragment_input_att_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <ImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/buttonEmoji"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
             android:layout_alignBottom="@id/message_input_container"
             android:layout_alignParentEnd="true">
 
-            <ImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/buttonSend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
                 android:src="@drawable/send"
                 app:tint="?colorOnSurface" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/author_avatar"
                 android:layout_width="18dp"
                 android:layout_height="18dp"

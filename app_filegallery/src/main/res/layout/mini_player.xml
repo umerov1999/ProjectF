@@ -17,7 +17,7 @@
         android:layout_marginStart="8dp"
         android:stateListAnimator="@animator/clicked">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_audio_play_cover"
             android:layout_width="42dp"
             android:layout_height="42dp"
@@ -37,7 +37,7 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/mini_artist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
             app:progressColor="?colorPrimary" />
     </LinearLayout>
 
-    <ImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/open_player"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
         android:src="@drawable/ic_outline_keyboard_arrow_up"
         app:tint="?colorPrimary" />
 
-    <ImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/close_player"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

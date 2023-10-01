@@ -23,7 +23,7 @@
             app:resize_mode="fit"
             app:useAspect="true" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/no_attachments_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
         android:orientation="horizontal"
         android:padding="8dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/button_photo_settings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
             android:src="@drawable/photo_sizes"
             app:tint="?attr/colorSecondary" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/button_camera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
             android:src="@drawable/ic_outline_camera"
             app:tint="?attr/colorOnSurface" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/button_video"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
             android:src="@drawable/ic_outline_video_library"
             app:tint="?attr/colorOnSurface" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/button_audio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
             android:src="@drawable/ic_outline_library_music"
             app:tint="?attr/colorOnSurface" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/button_doc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
             android:src="@drawable/ic_outline_library_books"
             app:tint="?attr/colorOnSurface" />
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/button_hide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

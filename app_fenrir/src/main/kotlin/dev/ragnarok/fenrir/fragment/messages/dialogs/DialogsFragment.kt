@@ -114,7 +114,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         }
     }
 
-    internal fun reconfigureOptionsHide(isShowHidden: Boolean) {
+    private fun reconfigureOptionsHide(isShowHidden: Boolean) {
         mAdapter?.updateShowHidden(isShowHidden)
         if (!Settings.get().security().hasHiddenDialogs) {
             mFab?.setImageResource(R.drawable.pencil)
@@ -206,7 +206,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         PicassoPauseOnScrollListener.addListener(mRecyclerView, DialogsAdapter.PICASSO_TAG)
         mRecyclerView?.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {
             override fun onScrollToLastElement() {
-                presenter?.fireScrollToEnd()
+                presenter?.fireScrollToEndConfirmationHidden()
             }
         })
         mSwipeRefreshLayout = root.findViewById(R.id.swipeRefreshLayout)
@@ -414,6 +414,14 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
             ?.setDurationSnack(Snackbar.LENGTH_LONG)?.defaultSnack(R.string.update_dialogs)
             ?.setAction(R.string.button_yes) {
                 presenter?.fireRefresh()
+            }?.show()
+    }
+
+    override fun askToScrollToEnd() {
+        CustomSnackbars.createCustomSnackbars(view, null, true)
+            ?.setDurationSnack(Snackbar.LENGTH_LONG)?.defaultSnack(R.string.load_next_dialogs)
+            ?.setAction(R.string.button_yes) {
+                presenter?.fireScrollToEnd()
             }?.show()
     }
 

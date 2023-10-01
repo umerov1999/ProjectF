@@ -16,7 +16,6 @@
         <item>По умолчанию</item>
         <item>Английский</item>
         <item>Русский</item>
-        <item>Белорусский</item>
     </string-array>
 
     <string-array name="night_mode_names">

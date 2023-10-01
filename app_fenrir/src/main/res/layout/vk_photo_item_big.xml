@@ -25,7 +25,7 @@
             app:aspectRatioW="1"
             app:dominantMeasurement="width" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/is_downloaded"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -60,7 +60,7 @@
             android:background="#60000000"
             android:gravity="center">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_photo_index"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
             android:paddingStart="4dp"
             android:paddingEnd="8dp">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/vk_photo_item_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
             android:paddingStart="4dp"
             android:paddingEnd="8dp">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/vk_photo_item_like_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -113,7 +113,7 @@
                 android:textStyle="bold"
                 tools:text="4000" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/vk_photo_item_comment_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -124,7 +124,7 @@
                 android:textStyle="bold"
                 tools:text="1.5K" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/vk_photo_item_comment"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
@@ -137,7 +137,7 @@
                 android:src="@drawable/comment"
                 app:tint="?white_color_contrast_fix" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/vk_photo_item_like"
                 android:layout_width="18dp"
                 android:layout_height="18dp"

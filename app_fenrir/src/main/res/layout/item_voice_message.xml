@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_voice_duration"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
         android:layout_below="@id/item_voice_duration"
         android:orientation="vertical">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_voice_button_play"
             android:layout_width="35dp"
             android:layout_height="35dp"
@@ -37,7 +37,7 @@
             android:stateListAnimator="@animator/clicked"
             app:tint="?colorPrimary" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_voice_translate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
             android:textColor="?colorPrimary"
             android:textStyle="bold" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_voice_speed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
         app:waveform_active_color="?attr/colorPrimary"
         app:waveform_noactive_color="?attr/colorOnSurface" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/transcription_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

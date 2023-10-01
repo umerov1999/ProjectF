@@ -14,7 +14,7 @@
         android:gravity="bottom"
         android:orientation="vertical">
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/ib_clip_rotate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
             android:paddingTop="16dp"
             android:paddingBottom="20dp">
 
-            <ImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/ib_clip_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
                 android:contentDescription="@string/image_cancel"
                 android:src="@drawable/image_btn_cancel" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_clip_reset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                 android:textColor="@color/image_color_text"
                 android:textSize="16sp" />
 
-            <ImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/ib_clip_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -10,21 +10,21 @@
     android:paddingEnd="16dp"
     android:paddingBottom="8dp">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         tools:text="City title" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/area"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
         tools:text="Area" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/region"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

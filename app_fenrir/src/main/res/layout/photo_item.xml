@@ -33,7 +33,7 @@
             android:background="#60000000"
             android:gravity="center">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_photo_index"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

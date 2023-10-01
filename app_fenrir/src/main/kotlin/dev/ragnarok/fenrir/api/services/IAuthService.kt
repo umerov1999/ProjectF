@@ -107,4 +107,63 @@ class IAuthService : IServiceRest() {
             base(VKApiValidationResponse.serializer())
         )
     }
+
+    /*
+    fun refreshTokens(
+        clientId: Int,
+        apiId: Int,
+        clientSecret: String,
+        device_id: String,
+        lang: String?,
+        scope: String,
+        initiator: String?,
+        exchange_token: String,
+        active_index: Int?,
+        v: String?
+    ): Single<LoginResponse> {
+        return rest.request(
+            "auth.refreshTokens",
+            form(
+                "v" to v,
+                "scope" to scope,
+                "client_secret" to clientSecret,
+                "client_id" to clientId,
+                "apiId" to apiId,
+                "initiator" to initiator,
+                "device_id" to device_id,
+                "exchange_tokens" to exchange_token,
+                "active_index" to active_index,
+                "lang" to lang,
+                "https" to 1
+            ), RefreshExpiredTokenResponse.serializer(), false
+        )
+    }
+
+    {
+    "response": {
+        "success": [{
+            "index": 0,
+            "user_id": 22*,
+            "banned": false,
+            "access_token": {
+                "token": "vk1.a.",
+                "expires_in": 0
+            },
+            "webview_access_token": {
+                "token": "",
+                "expires_in": 1695726230
+            },
+            "webview_refresh_token": {
+                "token": "",
+                "expires_in": 1698231830
+            }
+        }],
+        "errors": [{
+            "index": 1,
+            "code": 5,
+            "description": "User authorization failed"
+        }]
+    }
+}
+     */
 }

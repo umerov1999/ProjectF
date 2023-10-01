@@ -42,7 +42,7 @@
                             android:orientation="vertical"
                             android:padding="8dp">
 
-                            <TextView
+                            <com.google.android.material.textview.MaterialTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:labelFor="@+id/address"
@@ -68,7 +68,7 @@
                             android:orientation="vertical"
                             android:padding="8dp">
 
-                            <TextView
+                            <com.google.android.material.textview.MaterialTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:labelFor="@+id/port"
@@ -109,7 +109,7 @@
                             android:orientation="vertical"
                             android:padding="8dp">
 
-                            <TextView
+                            <com.google.android.material.textview.MaterialTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:labelFor="@+id/username"
@@ -135,7 +135,7 @@
                             android:orientation="vertical"
                             android:padding="8dp">
 
-                            <TextView
+                            <com.google.android.material.textview.MaterialTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:labelFor="@+id/password"

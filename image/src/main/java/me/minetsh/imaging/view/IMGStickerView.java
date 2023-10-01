@@ -14,6 +14,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.AppCompatImageView;
+
 import me.minetsh.imaging.R;
 import me.minetsh.imaging.core.sticker.IMGSticker;
 import me.minetsh.imaging.core.sticker.IMGStickerAdjustHelper;
@@ -70,13 +72,13 @@ public abstract class IMGStickerView extends ViewGroup implements IMGSticker, Vi
         mContentView = onCreateContentView(context);
         addView(mContentView, getContentLayoutParams());
 
-        mRemoveView = new ImageView(context);
+        mRemoveView = new AppCompatImageView(context);
         mRemoveView.setScaleType(ImageView.ScaleType.FIT_XY);
         mRemoveView.setImageResource(R.drawable.image_ic_delete);
         addView(mRemoveView, getAnchorLayoutParams());
         mRemoveView.setOnClickListener(this);
 
-        mAdjustView = new ImageView(context);
+        mAdjustView = new AppCompatImageView(context);
         mAdjustView.setScaleType(ImageView.ScaleType.FIT_XY);
         mAdjustView.setImageResource(R.drawable.image_ic_adjust);
         addView(mAdjustView, getAnchorLayoutParams());

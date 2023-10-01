@@ -3,14 +3,14 @@ package dev.ragnarok.fenrir.view
 import android.content.Context
 import android.text.Layout
 import android.util.AttributeSet
-import androidx.appcompat.widget.AppCompatTextView
+import com.google.android.material.textview.MaterialTextView
 import dev.ragnarok.fenrir.R
 import kotlin.math.ceil
 
 open class WrapWidthTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : AppCompatTextView(context, attrs) {
+) : MaterialTextView(context, attrs) {
     private var mFixWrapText = false
     private fun init(context: Context, attributeSet: AttributeSet?) {
         val a =

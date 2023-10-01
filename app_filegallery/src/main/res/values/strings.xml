@@ -16,14 +16,12 @@
         <item>Default</item>
         <item>English</item>
         <item>Russian</item>
-        <item>Belorussian</item>
     </string-array>
 
     <string-array name="array_language_items" translatable="false">
         <item>0</item>
         <item>1</item>
         <item>2</item>
-        <item>3</item>
     </string-array>
 
     <string-array name="night_mode_values" translatable="false">

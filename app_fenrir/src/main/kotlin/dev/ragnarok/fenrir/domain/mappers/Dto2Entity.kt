@@ -1288,7 +1288,7 @@ object Dto2Entity {
             .setPurchased(dto.purchased)
             .setIcon(
                 mapAll(
-                    dto.icon
+                    dto.previews
                 ) {
                     map(it)
                 }
@@ -1502,7 +1502,7 @@ object Dto2Entity {
 
 
     fun mapMessage(dto: VKApiMessage): MessageDboEntity {
-        val encrypted = analizeMessageBody(dto.body) == MessageType.CRYPTED
+        val encrypted = analizeMessageBody(dto.text) == MessageType.CRYPTED
         var randomId: Long = 0
         dto.random_id.nonNullNoEmpty {
             try {
@@ -1513,7 +1513,7 @@ object Dto2Entity {
         val entity = MessageDboEntity().set(dto.id, dto.peer_id, dto.from_id)
             .setDate(dto.date)
             .setOut(dto.out)
-            .setBody(dto.body)
+            .setText(dto.text)
             .setEncrypted(encrypted)
             .setImportant(dto.important)
             .setKeyboard(mapKeyboard(dto.keyboard))
@@ -1561,7 +1561,7 @@ object Dto2Entity {
         return entity
     }
 
-    fun mapVideoTimeline(dto: VKApiVideo.VKApiVideoTimeline): VideoDboEntity.VideoDboTimelineEntity {
+    private fun mapVideoTimeline(dto: VKApiVideo.VKApiVideoTimeline): VideoDboEntity.VideoDboTimelineEntity {
         return VideoDboEntity.VideoDboTimelineEntity().setCountPerImage(dto.count_per_image)
             .setCountPerRow(dto.count_per_row)
             .setCountTotal(dto.count_total)

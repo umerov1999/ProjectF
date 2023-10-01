@@ -27,7 +27,7 @@ class MessagesDecryptor(private val store: IStorages) : IMessagesDecryptor {
                             continue
                         }
                         try {
-                            val em = parseEncryptedMessage(message.body)
+                            val em = parseEncryptedMessage(message.text)
                             if (em != null) {
                                 needDecryption.add(create(message, em))
                                 sessions.add(create(em.KeyLocationPolicy, em.sessionId))
@@ -54,8 +54,8 @@ class MessagesDecryptor(private val store: IStorages) : IMessagesDecryptor {
                                     }
                                     val key =
                                         if (message.isOut) keyPair.myAesKey else keyPair.hisAesKey
-                                    val decryptedBody = decryptWithAes(em.originalBody, key)
-                                    message.decryptedBody = decryptedBody
+                                    val decryptedText = decryptWithAes(em.originalText, key)
+                                    message.decryptedText = decryptedText
                                     message.cryptStatus = CryptStatus.DECRYPTED
                                 } catch (e: Exception) {
                                     message.cryptStatus = CryptStatus.DECRYPT_FAILED

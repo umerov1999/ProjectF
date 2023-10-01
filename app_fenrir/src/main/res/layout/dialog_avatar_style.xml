@@ -4,14 +4,14 @@
     android:layout_height="wrap_content"
     android:gravity="center">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/circle_avatar"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_margin="18dp"
         android:contentDescription="@null" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/circle_avatar_selected"
         android:layout_width="24dp"
         android:layout_height="24dp"
@@ -21,7 +21,7 @@
         android:contentDescription="@null"
         android:src="@drawable/check" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/oval_avatar"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -29,7 +29,7 @@
         android:layout_toEndOf="@id/circle_avatar"
         android:contentDescription="@null" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/oval_avatar_selected"
         android:layout_width="24dp"
         android:layout_height="24dp"

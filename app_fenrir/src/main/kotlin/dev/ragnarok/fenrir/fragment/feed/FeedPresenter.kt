@@ -445,7 +445,13 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
         val type = if ("post" == news.type) "wall" else news.type
         appendDisposable(feedInteractor.ignoreItem(accountId, type, news.sourceId, news.postId)
             .fromIOToMain()
-            .subscribe({ fireRefresh() }) { t -> onActualFeedGetError(t) })
+            .subscribe({
+                if (it.status) {
+                    fireRefresh()
+                } else {
+                    view?.showError(it.message)
+                }
+            }) { t -> onActualFeedGetError(t) })
     }
 
     fun fireNewsBodyClick(news: News) {

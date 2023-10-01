@@ -33,7 +33,7 @@
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/tint_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -46,7 +46,7 @@
                 android:layout_height="match_parent"
                 android:layout_above="@id/title">
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
@@ -70,7 +70,7 @@
 
             </FrameLayout>
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/retry_upload"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -82,7 +82,7 @@
                 android:src="@drawable/refresh"
                 app:tint="?white_color_contrast_fix" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

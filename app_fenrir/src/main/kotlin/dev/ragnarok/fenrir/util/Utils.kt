@@ -1507,11 +1507,6 @@ object Utils {
                 return Locale("ru", "RU")
             }
 
-            Lang.BELORUSSIAN -> {
-                Constants.DEVICE_COUNTRY_CODE = "be"
-                return Locale("be", "BY")
-            }
-
             Lang.DEFAULT -> {}
         }
         Constants.DEVICE_COUNTRY_CODE = "ru"

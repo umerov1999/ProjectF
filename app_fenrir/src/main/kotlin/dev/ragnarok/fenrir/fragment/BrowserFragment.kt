@@ -134,7 +134,7 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
         return root
     }
 
-    internal fun downloadResult(Prefix: String?, dirL: File, url: String, type: String) {
+    private fun downloadResult(Prefix: String?, dirL: File, url: String, type: String) {
         var dir = dirL
         if (Prefix != null && Settings.get().main().isPhoto_to_user_dir) {
             val dir_final = File(dir.absolutePath + "/" + Prefix)

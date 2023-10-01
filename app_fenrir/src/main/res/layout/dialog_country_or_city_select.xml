@@ -24,7 +24,7 @@
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="@dimen/font_size_title" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="8dp"

@@ -13,7 +13,7 @@
         android:scaleType="centerCrop"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/item_video_play"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -27,7 +27,7 @@
         android:visibility="gone"
         app:tint="?white_color_contrast_fix" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_video_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

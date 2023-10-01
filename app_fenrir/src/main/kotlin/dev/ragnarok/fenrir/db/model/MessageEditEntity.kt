@@ -22,13 +22,13 @@ class MessageEditEntity(val status: Int, val senderId: Long) {
         private set
     var payload: String? = null
         private set
-    var body: String? = null
+    var text: String? = null
         private set
     var extras: Map<Int, String>? = null
         private set
 
-    fun setBody(body: String?): MessageEditEntity {
-        this.body = body
+    fun setText(text: String?): MessageEditEntity {
+        this.text = text
         return this
     }
 

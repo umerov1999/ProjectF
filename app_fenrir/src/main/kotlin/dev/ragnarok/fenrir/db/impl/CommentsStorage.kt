@@ -187,8 +187,8 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
             if (cursor != null) {
                 if (cursor.moveToNext()) {
                     val dbid = cursor.getInt(BaseColumns._ID)
-                    val body = cursor.getString(CommentsColumns.TEXT)
-                    comment = DraftComment(dbid).setBody(body)
+                    val text = cursor.getString(CommentsColumns.TEXT)
+                    comment = DraftComment(dbid).setText(text)
                 }
                 cursor.close()
             }

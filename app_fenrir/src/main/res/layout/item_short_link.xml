@@ -10,7 +10,7 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_short_link"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
         android:textSize="15sp"
         tools:text="Short" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_link"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
         android:textSize="12sp"
         tools:text="Original" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -53,14 +53,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:contentDescription="@null"
             android:src="@drawable/view"
             app:tint="?colorPrimary" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_views"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_copy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
             android:stateListAnimator="@animator/clicked"
             app:tint="?colorPrimary" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

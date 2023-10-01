@@ -47,7 +47,7 @@ android {
             //noinspection ChromeOsAbiSupport
             abiFilters = targetAbi
         }
-        resConfigs "en", "ru", "be"
+        resConfigs "en", "ru"
     }
 
     lint {

@@ -44,10 +44,10 @@ class CommunityLinksPresenter(
             .groups()
             .getById(listOf(groupId), null, null, "links")
             .map { dtos ->
-                if (dtos.size != 1) {
+                if (dtos.groups.isNullOrEmpty()) {
                     throw NotFoundException()
                 }
-                val links = dtos[0].links
+                val links = dtos.groups?.get(0)?.links
                 links ?: emptyList()
             }
             .fromIOToMain()

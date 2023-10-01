@@ -30,7 +30,7 @@
                 app:dominantMeasurement="width"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_attachment_tint"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center">
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
@@ -82,7 +82,7 @@
             android:layout_gravity="center"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_attachment_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

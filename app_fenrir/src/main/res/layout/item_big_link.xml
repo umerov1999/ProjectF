@@ -37,7 +37,7 @@
             android:gravity="center_vertical"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_big_link_caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                 app:iconTint="@android:color/black" />
         </LinearLayout>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_big_link_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
             android:textStyle="bold"
             tools:text="Take Me To Church - Hozier Cover Sofia Karlberg" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_big_link_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

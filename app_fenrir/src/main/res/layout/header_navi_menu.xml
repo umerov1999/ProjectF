@@ -20,7 +20,7 @@
         android:orientation="horizontal"
         android:stateListAnimator="@animator/clicked">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/header_navi_menu_avatar"
             android:layout_width="@dimen/avatar_size_usual"
             android:layout_height="@dimen/avatar_size_usual"
@@ -34,7 +34,7 @@
             android:gravity="center_vertical"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/header_navi_menu_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 tools:text="User name" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/header_navi_menu_usernick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/header_navi_menu_notifications"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
         android:stateListAnimator="@animator/clicked"
         app:tint="?android:attr/textColorSecondary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/header_navi_menu_day_night"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

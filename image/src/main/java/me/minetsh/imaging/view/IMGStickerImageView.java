@@ -5,6 +5,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.AppCompatImageView;
+
 import me.minetsh.imaging.R;
 
 /**
@@ -27,7 +29,7 @@ public class IMGStickerImageView extends IMGStickerView {
 
     @Override
     public View onCreateContentView(Context context) {
-        ImageView mImageView = new ImageView(context);
+        ImageView mImageView = new AppCompatImageView(context);
         mImageView.setImageResource(R.drawable.image_album_photo);
         return mImageView;
     }

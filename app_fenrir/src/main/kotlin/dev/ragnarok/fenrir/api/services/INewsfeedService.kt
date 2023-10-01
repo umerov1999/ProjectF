@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.api.services
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiFeedList
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.IgnoreItemResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedBanResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedResponse
@@ -130,13 +131,13 @@ class INewsfeedService : IServiceRest() {
         type: String?,
         owner_id: Long?,
         item_id: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Single<BaseResponse<IgnoreItemResponse>> {
         return rest.request(
             "newsfeed.ignoreItem", form(
                 "type" to type,
                 "owner_id" to owner_id,
                 "item_id" to item_id
-            ), baseInt
+            ), base(IgnoreItemResponse.serializer())
         )
     }
 

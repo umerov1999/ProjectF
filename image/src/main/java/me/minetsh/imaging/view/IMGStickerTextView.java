@@ -7,6 +7,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.material.textview.MaterialTextView;
+
 import me.minetsh.imaging.IMGTextEditDialog;
 import me.minetsh.imaging.core.IMGText;
 
@@ -46,7 +48,7 @@ public class IMGStickerTextView extends IMGStickerView implements IMGTextEditDia
 
     @Override
     public View onCreateContentView(Context context) {
-        mTextView = new TextView(context);
+        mTextView = new MaterialTextView(context);
         mTextView.setTextSize(mBaseTextSize);
         mTextView.setPadding(PADDING, PADDING, PADDING, PADDING);
         mTextView.setTextColor(Color.WHITE);

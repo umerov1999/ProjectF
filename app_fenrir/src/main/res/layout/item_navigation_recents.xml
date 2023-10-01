@@ -17,14 +17,14 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/avatar"
             android:layout_width="@dimen/navi_drawer_icon_size"
             android:layout_height="@dimen/navi_drawer_icon_size"
             android:contentDescription="@null"
             tools:src="@drawable/google_circles" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

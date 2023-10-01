@@ -9,7 +9,7 @@
     android:paddingEnd="16dp"
     android:paddingBottom="10dp">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/item_post_avatar"
         android:layout_width="@dimen/avatar_size_small"
         android:layout_height="@dimen/avatar_size_small"
@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_post_owner_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Umerov Artem" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_post_time"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
         tools:text="Today 19:26" />
 
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/item_post_friends_only"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="?colorOnSurface" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/post_views_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -170,7 +170,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             )
         )
         val message =
-            StringBuilder(if (i.cryptStatus != CryptStatus.DECRYPTED) i.body.orEmpty() else i.decryptedBody.orEmpty())
+            StringBuilder(if (i.cryptStatus != CryptStatus.DECRYPTED) i.text.orEmpty() else i.decryptedText.orEmpty())
         if (!isSub && i.forwardMessagesCount > 0) {
             for (s in i.fwd.orEmpty()) {
                 val fwd = Build_Message(s, true)
@@ -189,6 +189,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             var HasDocs = false
             var HasLinks = false
             var HasPosts = false
+            var HasNarative = false
             if (i.attachments?.photos.nonNullNoEmpty()) HasPhotos = true
             if (i.attachments?.videos.nonNullNoEmpty()) HasVideos = true
             if (i.attachments?.docs.nonNullNoEmpty()) HasDocs = true
@@ -197,8 +198,9 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             if (i.attachments?.articles.nonNullNoEmpty()) HasArticle = true
             if (i.attachments?.links.nonNullNoEmpty()) HasLinks = true
             if (i.attachments?.posts.nonNullNoEmpty()) HasPosts = true
+            if (i.attachments?.narratives.nonNullNoEmpty()) HasNarative = true
             AttacmentHeader =
-                if (!HasPhotos && !HasVideos && !HasStory && !HasAlbum && !HasArticle && !HasDocs && !HasLinks && !HasPosts) Apply(
+                if (!HasPhotos && !HasVideos && !HasStory && !HasAlbum && !HasArticle && !HasDocs && !HasLinks && !HasPosts && !HasNarative) Apply(
                     "<#ATTACHMENT_TYPE#>",
                     " !ИНОЕ!",
                     AttacmentHeader
@@ -212,6 +214,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     if (HasVideos) Type.append(" !ВИДЕО!")
                     if (HasLinks) Type.append(" !ССЫЛКА!")
                     if (HasPosts) Type.append(" !ПОСТ!")
+                    if (HasNarative) Type.append(" !СЮЖЕТ!")
                     Apply("<#ATTACHMENT_TYPE#>", Type.toString(), AttacmentHeader)
                 }
             message.append(AttacmentHeader)
@@ -347,6 +350,18 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                         atcontent
                     )
                     atcontent = Apply("<#IMAGE_LINK#>", att.image, atcontent)
+                    Attachments.append(atcontent)
+                }
+            }
+            i.attachments?.narratives.nonNullNoEmpty {
+                for (att in it) {
+                    var atcontent = Image
+                    atcontent = Apply(
+                        "<#ORIGINAL_IMAGE_LINK#>",
+                        "https://vk.com/narrative" + att.owner_id + "_" + att.id,
+                        atcontent
+                    )
+                    atcontent = Apply("<#IMAGE_LINK#>", att.cover, atcontent)
                     Attachments.append(atcontent)
                 }
             }

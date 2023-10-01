@@ -876,9 +876,9 @@ class ChatPresenter(
             }
         }
         edited?.run {
-            val wasEmpty = body.isNullOrBlank()
-            body = s
-            if (wasEmpty != body.isNullOrBlank()) {
+            val wasEmpty = text.isNullOrBlank()
+            text = s
+            if (wasEmpty != text.isNullOrBlank()) {
                 resolvePrimaryButton()
             }
             return
@@ -909,7 +909,7 @@ class ChatPresenter(
     private fun sendImpl() {
         val securitySettings = Settings.get().security()
 
-        val trimmedBody = AppTextUtils.safeTrim(draftMessageText, null)
+        val trimmedText = AppTextUtils.safeTrim(draftMessageText, null)
         val encryptionEnabled = securitySettings.isMessageEncryptionEnabled(messagesOwnerId, peerId)
 
         @KeyLocationPolicy
@@ -921,7 +921,7 @@ class ChatPresenter(
 
         val builder = SaveMessageBuilder(messagesOwnerId, peer.id)
             .also {
-                it.setBody(trimmedBody)
+                it.setText(trimmedText)
                 it.setDraftMessageId(draftMessageId)
                 it.setRequireEncryption(encryptionEnabled)
                 it.setKeyLocationPolicy(keyLocationPolicy)
@@ -1057,7 +1057,7 @@ class ChatPresenter(
 
     private fun resolveDraftMessageText() {
         edited?.run {
-            view?.displayDraftMessageText(body)
+            view?.displayDraftMessageText(text)
         } ?: run {
             view?.displayDraftMessageText(draftMessageText)
         }
@@ -1620,7 +1620,7 @@ class ChatPresenter(
             draftMessageId = message.getId()
 
             if (!ignoreBody) {
-                draftMessageText = message.getBody()
+                draftMessageText = message.getText()
             }
         }
 
@@ -2198,7 +2198,7 @@ class ChatPresenter(
         )
     }
 
-    fun fireEncriptionStatusClick() {
+    fun fireEncryptionStatusClick() {
         if (!isEncryptionEnabled && !Settings.get().security().isKeyEncryptionPolicyAccepted) {
             view?.showEncryptionDisclaimerDialog(REQUEST_CODE_ENABLE_ENCRYPTION)
             return
@@ -2410,7 +2410,7 @@ class ChatPresenter(
         }
         view?.scrollTo(0)
         val builder =
-            SaveMessageBuilder(messagesOwnerId, peerId).setPayload(item.payload).setBody(item.label)
+            SaveMessageBuilder(messagesOwnerId, peerId).setPayload(item.payload).setText(item.label)
         sendMessage(builder)
     }
 
@@ -2507,7 +2507,7 @@ class ChatPresenter(
             }
 
             appendDisposable(
-                messagesRepository.edit(accountId, message, body, models, keepForward)
+                messagesRepository.edit(accountId, message, text, models, keepForward)
                     .fromIOToMain()
                     .subscribe({ onMessageEdited(it) }, { t -> onMessageEditFail(t) })
             )

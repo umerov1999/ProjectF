@@ -1,9 +1,9 @@
 package dev.ragnarok.fenrir.api.services
 
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.IsLikeResponse
 import dev.ragnarok.fenrir.api.model.response.LikeResponse
 import dev.ragnarok.fenrir.api.model.response.LikesListResponse
-import dev.ragnarok.fenrir.api.model.response.isLikeResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
 
@@ -78,13 +78,13 @@ class ILikesService : IServiceRest() {
         type: String?,
         ownerId: Long?,
         itemId: Int
-    ): Single<BaseResponse<isLikeResponse>> {
+    ): Single<BaseResponse<IsLikeResponse>> {
         return rest.request(
             "likes.isLiked", form(
                 "type" to type,
                 "owner_id" to ownerId,
                 "item_id" to itemId
-            ), base(isLikeResponse.serializer())
+            ), base(IsLikeResponse.serializer())
         )
     }
 

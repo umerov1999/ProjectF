@@ -16,7 +16,7 @@
         android:paddingEnd="12dp"
         android:paddingBottom="4dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_comment_owner_avatar"
             android:layout_width="@dimen/avatar_size_small"
             android:layout_height="@dimen/avatar_size_small"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_comment_owner_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/item_comment_like_counter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
                     app:drawableTint="?colorOnSurface"
                     tools:text="58" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/item_comment_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

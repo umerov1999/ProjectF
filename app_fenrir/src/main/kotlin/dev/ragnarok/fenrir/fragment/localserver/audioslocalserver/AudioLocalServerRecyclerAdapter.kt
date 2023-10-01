@@ -90,7 +90,7 @@ class AudioLocalServerRecyclerAdapter(
         }
     }
 
-    internal fun getBitrate(url: String?, size: Int) {
+    private fun getBitrate(url: String?, size: Int) {
         if (url.isNullOrEmpty()) {
             return
         }
@@ -137,7 +137,7 @@ class AudioLocalServerRecyclerAdapter(
         }
     }
 
-    internal fun updateDownloadState(holder: AudioHolder, audio: Audio) {
+    private fun updateDownloadState(holder: AudioHolder, audio: Audio) {
         if (audio.downloadIndicator == 2) {
             holder.saved.setImageResource(R.drawable.remote_cloud)
             Utils.setColorFilter(holder.saved, CurrentTheme.getColorSecondary(mContext))
@@ -558,7 +558,7 @@ class AudioLocalServerRecyclerAdapter(
         val Track: View = itemView.findViewById(R.id.track_option)
         val saved: ImageView = itemView.findViewById(R.id.saved)
         val selectionView: MaterialCardView = itemView.findViewById(R.id.item_audio_selection)
-        val animationAdapter: Animator.AnimatorListener
+        private val animationAdapter: Animator.AnimatorListener
         val visual: RLottieImageView = itemView.findViewById(R.id.item_audio_visual)
         val time: TextView = itemView.findViewById(R.id.item_audio_time)
         var animator: ObjectAnimator? = null

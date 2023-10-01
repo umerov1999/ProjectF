@@ -19,6 +19,7 @@ import dev.ragnarok.fenrir.api.model.response.ItemsProfilesGroupsResponse
 import dev.ragnarok.fenrir.api.model.response.LongpollHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
+import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
@@ -115,7 +116,7 @@ interface IMessagesApi {
         randomId: Long?, peerId: Long?, domain: String?, message: String?,
         latitude: Double?, longitude: Double?, attachments: Collection<IAttachmentToken>?,
         forwardMessages: Collection<Int>?, stickerId: Int?, payload: String?, reply_to: Int?
-    ): Single<Int>
+    ): Single<SendMessageResponse>
 
     @CheckResult
     fun getDialogs(

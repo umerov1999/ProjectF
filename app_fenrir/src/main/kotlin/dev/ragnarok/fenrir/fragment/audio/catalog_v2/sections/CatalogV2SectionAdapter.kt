@@ -348,7 +348,7 @@ class CatalogV2SectionAdapter(
         val name: TextView
         val year: TextView
         val artist: TextView
-        val playlist_container: View
+        private val playlist_container: View
         override fun onCreateContextMenu(
             menu: ContextMenu,
             v: View,
@@ -421,11 +421,11 @@ class CatalogV2SectionAdapter(
     inner class RecommendationPlaylistHolder(itemView: View) : IViewHolder(itemView),
         View.OnCreateContextMenuListener {
         val percentage: TextView
-        val percentageTitle: TextView
+        private val percentageTitle: TextView
         val title: TextView
         val subtitle: TextView
         val audios: AudioContainer
-        val playlist_container: View
+        private val playlist_container: View
         override fun onCreateContextMenu(
             menu: ContextMenu,
             v: View,
@@ -582,7 +582,7 @@ class CatalogV2SectionAdapter(
     }
 
 
-    internal fun deleteTrack(accountId: Long, audio: Audio, position: Int) {
+    private fun deleteTrack(accountId: Long, audio: Audio, position: Int) {
         audioListDisposable =
             mAudioInteractor.delete(accountId, audio.id, audio.ownerId).fromIOToMain().subscribe(
                 {
@@ -592,14 +592,14 @@ class CatalogV2SectionAdapter(
                 }) { t -> CustomToast.createCustomToast(mContext).showToastThrowable(t) }
     }
 
-    internal fun addTrack(accountId: Long, audio: Audio) {
+    private fun addTrack(accountId: Long, audio: Audio) {
         audioListDisposable = mAudioInteractor.add(accountId, audio, null).fromIOToMain().subscribe(
             { CustomToast.createCustomToast(mContext).showToast(R.string.added) }) { t ->
             CustomToast.createCustomToast(mContext).showToastThrowable(t)
         }
     }
 
-    internal fun getMp3AndBitrate(accountId: Long, audio: Audio) {
+    private fun getMp3AndBitrate(accountId: Long, audio: Audio) {
         val mode = audio.needRefresh()
         if (mode.first) {
             audioListDisposable =
@@ -648,7 +648,7 @@ class CatalogV2SectionAdapter(
         }
     }
 
-    internal fun get_lyrics(audio: Audio) {
+    private fun get_lyrics(audio: Audio) {
         audioListDisposable =
             mAudioInteractor.getLyrics(Settings.get().accounts().current, audio)
                 .fromIOToMain()
@@ -1117,15 +1117,16 @@ class CatalogV2SectionAdapter(
         val visual: RLottieImageView = itemView.findViewById(R.id.item_audio_visual)
         val time: TextView = itemView.findViewById(R.id.item_audio_time)
         val saved: ImageView = itemView.findViewById(R.id.saved)
-        val lyric: ImageView = itemView.findViewById(R.id.lyric)
+        private val lyric: ImageView = itemView.findViewById(R.id.lyric)
         val my: ImageView = itemView.findViewById(R.id.my)
-        val quality: ImageView = itemView.findViewById(R.id.quality)
-        val Track: View = itemView.findViewById(R.id.track_option)
+        private val quality: ImageView = itemView.findViewById(R.id.quality)
+        private val Track: View = itemView.findViewById(R.id.track_option)
         val selectionView: MaterialCardView = itemView.findViewById(R.id.item_audio_selection)
-        val isSelectedView: MaterialCardView = itemView.findViewById(R.id.item_audio_select_add)
-        val animationAdapter: Animator.AnimatorListener
+        private val isSelectedView: MaterialCardView =
+            itemView.findViewById(R.id.item_audio_select_add)
+        private val animationAdapter: Animator.AnimatorListener
         var animator: ObjectAnimator? = null
-        fun startSelectionAnimation() {
+        private fun startSelectionAnimation() {
             selectionView.setCardBackgroundColor(CurrentTheme.getColorPrimary(mContext))
             selectionView.alpha = 0.5f
             animator = ObjectAnimator.ofFloat(selectionView, View.ALPHA, 0.0f)
@@ -1134,7 +1135,7 @@ class CatalogV2SectionAdapter(
             animator?.start()
         }
 
-        fun startSomeAnimation() {
+        private fun startSomeAnimation() {
             selectionView.setCardBackgroundColor(CurrentTheme.getColorSecondary(mContext))
             selectionView.alpha = 0.5f
             animator = ObjectAnimator.ofFloat(selectionView, View.ALPHA, 0.0f)
@@ -1143,7 +1144,7 @@ class CatalogV2SectionAdapter(
             animator?.start()
         }
 
-        fun cancelSelectionAnimation() {
+        private fun cancelSelectionAnimation() {
             animator?.cancel()
             animator = null
             selectionView.visibility = View.INVISIBLE

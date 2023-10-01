@@ -11,7 +11,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginBottom="0dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/ucrop_wrapper_controls_shape"
@@ -34,7 +34,7 @@
 
     </FrameLayout>
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/controls_shadow"
         android:layout_width="match_parent"
         android:layout_height="8dp"
@@ -56,7 +56,7 @@
             android:id="@+id/state_aspect_ratio"
             style="@style/ucrop_WrapperIconState">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/image_view_state_aspect_ratio"
                 style="@style/ucrop_ImageViewWidgetIcon"
                 android:contentDescription="@null"
@@ -64,7 +64,7 @@
                 android:orientation="vertical"
                 android:src="@drawable/ucrop_crop" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/text_view_crop"
                 style="@style/ucrop_TextViewWidget"
                 android:text="@string/ucrop_crop" />
@@ -75,13 +75,13 @@
             android:id="@+id/state_rotate"
             style="@style/ucrop_WrapperIconState">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/image_view_state_rotate"
                 style="@style/ucrop_ImageViewWidgetIcon"
                 android:contentDescription="@null"
                 android:src="@drawable/ucrop_rotate" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/text_view_rotate_info"
                 style="@style/ucrop_TextViewWidget"
                 android:text="@string/ucrop_rotate" />
@@ -92,13 +92,13 @@
             android:id="@+id/state_scale"
             style="@style/ucrop_WrapperIconState">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/image_view_state_scale"
                 style="@style/ucrop_ImageViewWidgetIcon"
                 android:contentDescription="@null"
                 android:src="@drawable/ucrop_scale" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/text_view_scale_info"
                 style="@style/ucrop_TextViewWidget"
                 android:text="@string/ucrop_scale" />

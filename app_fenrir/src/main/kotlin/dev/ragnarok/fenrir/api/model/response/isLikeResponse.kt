@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class isLikeResponse {
+class IsLikeResponse {
     @SerialName("liked")
     var liked = 0
 

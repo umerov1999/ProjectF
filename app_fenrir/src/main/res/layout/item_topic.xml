@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/item_topicstarter_avatar"
         android:layout_width="42dp"
         android:layout_height="42dp"
@@ -23,7 +23,7 @@
         android:paddingTop="12dp"
         android:paddingBottom="12dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_topic_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             tools:text="Music Plug-in" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_topic_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

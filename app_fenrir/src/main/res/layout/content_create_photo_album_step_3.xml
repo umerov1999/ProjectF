@@ -6,23 +6,23 @@
     android:background="?attr/selectableItemBackgroundBorderless"
     android:orientation="vertical">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/who_is_allowed_to_view_this_album" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/view_allowed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="?attr/colorAccent" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/who_is_not_allowed_to_view_this_album" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/view_disabled"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

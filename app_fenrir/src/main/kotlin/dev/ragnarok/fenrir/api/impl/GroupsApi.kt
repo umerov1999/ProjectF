@@ -13,6 +13,7 @@ import dev.ragnarok.fenrir.api.model.VKApiGroupChats
 import dev.ragnarok.fenrir.api.model.VKApiMarket
 import dev.ragnarok.fenrir.api.model.VKApiMarketAlbum
 import dev.ragnarok.fenrir.api.model.VKApiUser
+import dev.ragnarok.fenrir.api.model.response.GroupByIdResponse
 import dev.ragnarok.fenrir.api.model.response.GroupLongpollServer
 import dev.ragnarok.fenrir.api.model.response.GroupWallInfoResponse
 import dev.ragnarok.fenrir.api.services.IGroupsService
@@ -203,7 +204,7 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
                     .map(extractResponseWithErrorHandling())
             }
             .map { response ->
-                if (safeCountOf(response.groups) != 1) {
+                if (safeCountOf(response.group_info?.groups) != 1) {
                     throw NotFoundException()
                 }
                 createFrom(response)
@@ -300,7 +301,7 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         domains: Collection<String>?,
         groupId: String?,
         fields: String?
-    ): Single<List<VKApiCommunity>> {
+    ): Single<GroupByIdResponse> {
         val pds: ArrayList<String> = ArrayList(1)
         join(ids, ",")?.let { pds.add(it) }
         join(domains, ",")?.let { pds.add(it) }
@@ -332,7 +333,7 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
 
     companion object {
         internal fun createFrom(info: GroupWallInfoResponse): VKApiCommunity {
-            val community = info.groups?.get(0) ?: throw NotFoundException()
+            val community = info.group_info?.groups?.get(0) ?: throw NotFoundException()
             if (community.counters == null) {
                 community.counters = VKApiCommunity.Counters()
             }

@@ -1,9 +1,11 @@
 package dev.ragnarok.fenrir.api.impl
 
+import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IMessagesApi
 import dev.ragnarok.fenrir.api.model.Assets
+import dev.ragnarok.fenrir.api.model.Error
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiChat
 import dev.ragnarok.fenrir.api.model.VKApiConversation
@@ -21,6 +23,7 @@ import dev.ragnarok.fenrir.api.model.response.ItemsProfilesGroupsResponse
 import dev.ragnarok.fenrir.api.model.response.LongpollHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
+import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
 import dev.ragnarok.fenrir.api.services.IMessageService
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import io.reactivex.rxjava3.core.Completable
@@ -290,7 +293,7 @@ internal class MessagesApi(accountId: Long, provider: IServiceProvider) :
         randomId: Long?, peerId: Long?, domain: String?, message: String?,
         latitude: Double?, longitude: Double?, attachments: Collection<IAttachmentToken>?,
         forwardMessages: Collection<Int>?, stickerId: Int?, payload: String?, reply_to: Int?
-    ): Single<Int> {
+    ): Single<SendMessageResponse> {
         val atts = join(attachments, ",") {
             formatAttachmentToken(it)
         }
@@ -298,10 +301,31 @@ internal class MessagesApi(accountId: Long, provider: IServiceProvider) :
             .flatMap { service ->
                 service
                     .send(
-                        randomId, peerId, domain, message, latitude, longitude, atts,
-                        join(forwardMessages, ","), stickerId, payload, reply_to
+                        randomId,
+                        join(listOf(peerId), ","),
+                        domain,
+                        message,
+                        latitude,
+                        longitude,
+                        atts,
+                        join(forwardMessages, ","),
+                        stickerId,
+                        payload,
+                        reply_to
                     )
                     .map(extractResponseWithErrorHandling())
+                    .map {
+                        if (it.isEmpty()) {
+                            throw NullPointerException("VK return null response")
+                        }
+                        it[0].error?.let { err ->
+                            val error = Error()
+                            error.errorCode = err.errorCode
+                            error.errorMsg = err.description
+                            throw ApiException(error)
+                        }
+                        it[0]
+                    }
             }
     }
 

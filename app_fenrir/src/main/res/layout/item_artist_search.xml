@@ -12,7 +12,7 @@
     android:stateListAnimator="@animator/clicked">
 
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="@dimen/avatar_size_big"
         android:layout_height="@dimen/avatar_size_big"
         android:layout_gravity="center"
@@ -28,7 +28,7 @@
         android:orientation="vertical"
         android:padding="4dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_artist_search_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
             android:textStyle="bold"
             tools:text="Name" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_artist_search_domain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
             android:textSize="13sp"
             tools:text="\@domain" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_artist_search_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

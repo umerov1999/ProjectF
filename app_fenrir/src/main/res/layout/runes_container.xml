@@ -7,7 +7,7 @@
     android:orientation="horizontal"
     android:padding="4dp">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -15,7 +15,7 @@
         android:src="@drawable/runic_letter_fehu"
         app:tint="?colorPrimary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -23,7 +23,7 @@
         android:src="@drawable/runic_letter_ehwaz"
         app:tint="?colorSecondary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -31,7 +31,7 @@
         android:src="@drawable/runic_letter_naudiz"
         app:tint="?colorPrimary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -39,7 +39,7 @@
         android:src="@drawable/runic_letter_raido"
         app:tint="?colorSecondary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -47,7 +47,7 @@
         android:src="@drawable/runic_letter_isaz"
         app:tint="?colorPrimary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -55,7 +55,7 @@
         android:src="@drawable/runic_letter_raido"
         app:tint="?colorPrimary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -63,7 +63,7 @@
         android:src="@drawable/runic_letter_space"
         app:tint="?colorSecondary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -71,7 +71,7 @@
         android:src="@drawable/runic_letter_fehu"
         app:tint="?colorPrimary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -79,7 +79,7 @@
         android:src="@drawable/runic_letter_kauna"
         app:tint="?colorSecondary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -87,7 +87,7 @@
         android:src="@drawable/runic_letter_manaz"
         app:tint="?colorPrimary" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

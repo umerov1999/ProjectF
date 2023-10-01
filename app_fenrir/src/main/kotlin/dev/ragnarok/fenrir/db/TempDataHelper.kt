@@ -54,10 +54,10 @@ class TempDataHelper(context: Context) :
                 " [" + StickerSetsColumns.ACCOUNT_ID + "] INTEGER, " +
                 " [" + StickerSetsColumns.POSITION + "] INTEGER, " +
                 " [" + StickerSetsColumns.TITLE + "] TEXT, " +
-                " [" + StickerSetsColumns.ICON + "] BLOB, " +
                 " [" + StickerSetsColumns.PURCHASED + "] BOOLEAN, " +
                 " [" + StickerSetsColumns.PROMOTED + "] BOOLEAN, " +
                 " [" + StickerSetsColumns.ACTIVE + "] BOOLEAN, " +
+                " [" + StickerSetsColumns.ICON + "] BLOB, " +
                 " [" + StickerSetsColumns.STICKERS + "] BLOB, " +
                 " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
@@ -69,10 +69,10 @@ class TempDataHelper(context: Context) :
                 " [" + StickerSetsCustomColumns.ACCOUNT_ID + "] INTEGER, " +
                 " [" + StickerSetsCustomColumns.POSITION + "] INTEGER, " +
                 " [" + StickerSetsCustomColumns.TITLE + "] TEXT, " +
-                " [" + StickerSetsCustomColumns.ICON + "] BLOB, " +
                 " [" + StickerSetsCustomColumns.PURCHASED + "] BOOLEAN, " +
                 " [" + StickerSetsCustomColumns.PROMOTED + "] BOOLEAN, " +
                 " [" + StickerSetsCustomColumns.ACTIVE + "] BOOLEAN, " +
+                " [" + StickerSetsCustomColumns.ICON + "] BLOB, " +
                 " [" + StickerSetsCustomColumns.STICKERS + "] BLOB, " +
                 " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
@@ -150,8 +150,8 @@ class TempDataHelper(context: Context) :
                 " [" + AudiosColumns.THUMB_IMAGE_VERY_BIG + "] TEXT, " +
                 " [" + AudiosColumns.THUMB_IMAGE_LITTLE + "] TEXT, " +
                 " [" + AudiosColumns.ALBUM_TITLE + "] TEXT, " +
-                " [" + AudiosColumns.MAIN_ARTISTS + "] BLOB, " +
                 " [" + AudiosColumns.IS_HQ + "] BOOLEAN, " +
+                " [" + AudiosColumns.MAIN_ARTISTS + "] BLOB, " +
                 " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }

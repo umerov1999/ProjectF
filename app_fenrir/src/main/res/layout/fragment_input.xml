@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/buttonSend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/buttonAttach"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
                 android:src="@drawable/attachment"
                 app:tint="?colorOnSurface" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/fragment_input_att_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/buttonEmoji"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
                     android:textColorHint="?android:textColorHint"
                     app:emojiconSize="20sp" />
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/buttonBotKeyboard"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
             android:orientation="horizontal"
             android:visibility="gone">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/cancel_voice_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -136,7 +136,7 @@
                 android:src="@drawable/close"
                 app:tint="?attr/colorOnSurface" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/pause_voice_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -147,7 +147,7 @@
                 android:src="@drawable/pause"
                 app:tint="?colorOnSurface" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/recording_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

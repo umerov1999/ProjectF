@@ -171,7 +171,7 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
         )
     }
 
-    fun requestList() {
+    private fun requestList() {
         setLoadingNow(true)
         if (bucket_id == 0) {
             audioListDisposable.add(Stores.instance

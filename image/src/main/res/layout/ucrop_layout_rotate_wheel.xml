@@ -8,7 +8,7 @@
     tools:showIn="@layout/ucrop_controls"
     tools:visibility="visible">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/text_view_rotate"
         style="@style/ucrop_TextViewWidgetText"
         tools:text="100°" />
@@ -27,7 +27,7 @@
         android:layout_centerVertical="true"
         android:background="?attr/selectableItemBackground">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             style="@style/ucrop_ImageViewWidgetIcon"
             android:contentDescription="@null"
             app:srcCompat="@drawable/ucrop_ic_reset" />
@@ -41,7 +41,7 @@
         android:layout_centerVertical="true"
         android:background="?attr/selectableItemBackground">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             style="@style/ucrop_ImageViewWidgetIcon"
             android:contentDescription="@null"
             android:src="@drawable/ucrop_ic_angle"

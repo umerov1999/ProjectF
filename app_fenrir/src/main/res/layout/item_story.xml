@@ -23,13 +23,13 @@
             android:layout_width="64dp"
             android:layout_height="64dp">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_story_pic"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:contentDescription="@null" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_story_empty"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
@@ -40,7 +40,7 @@
                 app:tint="?icon_color_inactive" />
         </FrameLayout>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_story_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
             android:textSize="11sp"
             tools:text="Name" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_story_expires"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -15,9 +15,9 @@ import android.view.Gravity;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.textview.MaterialTextView;
 import com.yalantis.ucrop.model.AspectRatio;
 import com.yalantis.ucrop.view.CropImageView;
 
@@ -28,7 +28,7 @@ import me.minetsh.imaging.R;
 /**
  * Created by Oleksii Shliama (https://github.com/shliama).
  */
-public class AspectRatioTextView extends AppCompatTextView {
+public class AspectRatioTextView extends MaterialTextView {
 
     private final Rect mCanvasClipBounds = new Rect();
     private Paint mDotPaint;

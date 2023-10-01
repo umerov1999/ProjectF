@@ -15,7 +15,7 @@
         android:background="@drawable/background_lock"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -25,7 +25,7 @@
             android:textColor="?android:textColorSecondary"
             android:textSize="14sp" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/avatar"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -34,7 +34,7 @@
             android:contentDescription="@null"
             tools:src="@drawable/ic_avatar_unknown" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

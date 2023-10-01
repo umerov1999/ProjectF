@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -16,7 +16,7 @@
         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:textSize="18sp" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -29,7 +29,7 @@
         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:textSize="14sp" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/default_icon"
         android:layout_width="60dp"
         android:layout_height="60dp"
@@ -39,7 +39,7 @@
         android:src="@mipmap/ic_launcher"
         android:stateListAnimator="@animator/clicked" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -58,7 +58,7 @@
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/black_icon"
             android:layout_width="0dp"
             android:layout_height="60dp"
@@ -69,7 +69,7 @@
             android:src="@mipmap/fenrir_black"
             android:stateListAnimator="@animator/clicked" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/white_icon"
             android:layout_width="0dp"
             android:layout_height="60dp"
@@ -79,7 +79,7 @@
             android:src="@mipmap/fenrir_white"
             android:stateListAnimator="@animator/clicked" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/blue_icon"
             android:layout_width="0dp"
             android:layout_height="60dp"
@@ -91,7 +91,7 @@
 
     </LinearLayout>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -110,7 +110,7 @@
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/green_icon"
             android:layout_width="0dp"
             android:layout_height="60dp"
@@ -120,7 +120,7 @@
             android:src="@mipmap/fenrir_green"
             android:stateListAnimator="@animator/clicked" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/violet_icon"
             android:layout_width="0dp"
             android:layout_height="60dp"
@@ -130,7 +130,7 @@
             android:src="@mipmap/fenrir_violet"
             android:stateListAnimator="@animator/clicked" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/yellow_icon"
             android:layout_width="0dp"
             android:layout_height="60dp"
@@ -148,7 +148,7 @@
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/red_icon"
             android:layout_width="0dp"
             android:layout_height="60dp"
@@ -158,7 +158,7 @@
             android:src="@mipmap/fenrir_red"
             android:stateListAnimator="@animator/clicked" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/lineage_icon"
             android:layout_width="0dp"
             android:layout_height="60dp"
@@ -168,7 +168,7 @@
             android:src="@mipmap/fenrir_lineage"
             android:stateListAnimator="@animator/clicked" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/vk_official"
             android:layout_width="0dp"
             android:layout_height="60dp"

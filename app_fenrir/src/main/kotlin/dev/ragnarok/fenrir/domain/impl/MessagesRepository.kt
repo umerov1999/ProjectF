@@ -14,6 +14,7 @@ import dev.ragnarok.fenrir.api.model.*
 import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.local_json.ChatJsonResponse
 import dev.ragnarok.fenrir.api.model.longpoll.*
+import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
 import dev.ragnarok.fenrir.crypt.CryptHelper.encryptWithAes
 import dev.ragnarok.fenrir.crypt.KeyLocationPolicy
 import dev.ragnarok.fenrir.crypt.KeyPairDoesNotExistException
@@ -214,7 +215,7 @@ class MessagesRepository(
                                 accountId,
                                 messagesId,
                                 MessageStatus.QUEUE,
-                                null
+                                null, null
                             ).andThen(Single.just(true))
                         }
                     }
@@ -533,7 +534,7 @@ class MessagesRepository(
     override fun edit(
         accountId: Long,
         message: Message,
-        body: String?,
+        text: String?,
         attachments: List<AbsModel>,
         keepForwardMessages: Boolean
     ): Single<Message> {
@@ -543,7 +544,7 @@ class MessagesRepository(
             .edit(
                 message.peerId,
                 message.getObjectId(),
-                body,
+                text,
                 attachmentTokens,
                 keepForwardMessages,
                 null
@@ -1053,7 +1054,7 @@ class MessagesRepository(
                 }
                 getFinalMessagesBody(builder)
                     .flatMap { body ->
-                        patch.setBody(body.get())
+                        patch.setText(body.get())
                         val storeSingle: Single<Int> = if (draftMessageId != null) {
                             storages.messages().applyPatch(accountId, draftMessageId, patch)
                         } else {
@@ -1073,7 +1074,7 @@ class MessagesRepository(
                                         }
                                         val message = messages[0]
                                         if (builder.isRequireEncryption()) {
-                                            message.decryptedBody = builder.getBody()
+                                            message.decryptedText = builder.getText()
                                             message.cryptStatus = CryptStatus.DECRYPTED
                                         }
                                         message
@@ -1087,12 +1088,13 @@ class MessagesRepository(
         accountId: Long,
         messageId: Int,
         @MessageStatus status: Int,
-        vkid: Int?
+        vkid: Int?,
+        cmid: Int?
     ): Completable {
         val update = MessageUpdate(accountId, messageId)
         update.setStatusUpdate(StatusUpdate(status, vkid))
         return storages.messages()
-            .changeMessageStatus(accountId, messageId, status, vkid)
+            .changeMessageStatus(accountId, messageId, status, vkid, cmid)
             .onErrorComplete()
             .doOnComplete { messageUpdatesPublisher.onNext(listOf(update)) }
     }
@@ -1111,7 +1113,7 @@ class MessagesRepository(
     }
 
     override fun enqueueAgain(accountId: Long, messageId: Int): Completable {
-        return changeMessageStatus(accountId, messageId, MessageStatus.QUEUE, null)
+        return changeMessageStatus(accountId, messageId, MessageStatus.QUEUE, null, null)
     }
 
     override fun sendUnsentMessage(accountIds: Collection<Long>): Single<SentMsg> {
@@ -1126,22 +1128,38 @@ class MessagesRepository(
                 val accountId = optional.get()!!.first
                 val dbid = entity.id
                 val peerId = entity.peerId
-                changeMessageStatus(accountId, dbid, MessageStatus.SENDING, null)
+                changeMessageStatus(accountId, dbid, MessageStatus.SENDING, null, null)
                     .andThen(internalSend(accountId, entity)
                         .flatMap { vkid ->
                             val patch = PeerPatch(entity.peerId)
-                                .withLastMessage(vkid)
+                                .withLastMessage(vkid.message_id)
                                 .withUnreadCount(0)
-                            changeMessageStatus(accountId, dbid, MessageStatus.SENT, vkid)
+                            changeMessageStatus(
+                                accountId,
+                                dbid,
+                                MessageStatus.SENT,
+                                vkid.message_id,
+                                vkid.conversation_message_id
+                            )
                                 .andThen(applyPeerUpdatesAndPublish(accountId, listOf(patch)))
-                                .andThen(Single.just(SentMsg(dbid, vkid, peerId, accountId)))
+                                .andThen(
+                                    Single.just(
+                                        SentMsg(
+                                            dbid,
+                                            vkid.message_id,
+                                            peerId,
+                                            vkid.conversation_message_id,
+                                            accountId
+                                        )
+                                    )
+                                )
                         }
                         .onErrorResumeNext {
                             changeMessageStatus(
                                 accountId,
                                 dbid,
                                 MessageStatus.ERROR,
-                                null
+                                null, null
                             ).andThen(
                                 Single.error(it)
                             )
@@ -1554,7 +1572,7 @@ class MessagesRepository(
             .doOnComplete { peerUpdatePublisher.onNext(listOf(update)) }
     }
 
-    private fun internalSend(accountId: Long, dbo: MessageDboEntity): Single<Int> {
+    private fun internalSend(accountId: Long, dbo: MessageDboEntity): Single<SendMessageResponse> {
         if (dbo.extras.isNullOrEmpty() && dbo.getAttachments()
                 .isNullOrEmpty() && dbo.forwardCount == 0
         ) {
@@ -1564,7 +1582,7 @@ class MessagesRepository(
                     dbo.id.toLong(),
                     dbo.peerId,
                     null,
-                    dbo.body,
+                    dbo.text,
                     null,
                     null,
                     null,
@@ -1618,7 +1636,7 @@ class MessagesRepository(
                                 dbo.id.toLong(),
                                 dbo.peerId,
                                 null,
-                                dbo.body,
+                                dbo.text,
                                 null,
                                 null,
                                 attachments,
@@ -1695,10 +1713,10 @@ class MessagesRepository(
     }
 
     private fun getFinalMessagesBody(builder: SaveMessageBuilder): Single<Optional<String>> {
-        if (builder.getBody().isNullOrEmpty() || !builder.isRequireEncryption()) {
+        if (builder.getText().isNullOrEmpty() || !builder.isRequireEncryption()) {
             return Single.just(
                 wrap(
-                    builder.getBody()
+                    builder.getText()
                 )
             )
         }
@@ -1711,9 +1729,9 @@ class MessagesRepository(
                 }
                 val pair = it.requireNonEmpty()
                 val encrypted = encryptWithAes(
-                    builder.getBody().orEmpty(),
+                    builder.getText().orEmpty(),
                     pair.myAesKey,
-                    builder.getBody().orEmpty(),
+                    builder.getText().orEmpty(),
                     pair.sessionId,
                     builder.getKeyLocationPolicy()
                 )

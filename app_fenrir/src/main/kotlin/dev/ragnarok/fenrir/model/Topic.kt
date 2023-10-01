@@ -26,9 +26,9 @@ class Topic : AbsModel {
         private set
     var commentsCount = 0
         private set
-    var firstCommentBody: String? = null
+    var firstCommentText: String? = null
         private set
-    var lastCommentBody: String? = null
+    var lastCommentText: String? = null
         private set
     var creator: Owner? = null
         private set
@@ -51,8 +51,8 @@ class Topic : AbsModel {
         isClosed = parcel.getBoolean()
         isFixed = parcel.getBoolean()
         commentsCount = parcel.readInt()
-        firstCommentBody = parcel.readString()
-        lastCommentBody = parcel.readString()
+        firstCommentText = parcel.readString()
+        lastCommentText = parcel.readString()
         creator = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.get()
         updater = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.get()
     }
@@ -102,13 +102,13 @@ class Topic : AbsModel {
         return this
     }
 
-    fun setFirstCommentBody(firstCommentBody: String?): Topic {
-        this.firstCommentBody = firstCommentBody
+    fun setFirstCommentText(firstCommentText: String?): Topic {
+        this.firstCommentText = firstCommentText
         return this
     }
 
-    fun setLastCommentBody(lastCommentBody: String?): Topic {
-        this.lastCommentBody = lastCommentBody
+    fun setLastCommentText(lastCommentText: String?): Topic {
+        this.lastCommentText = lastCommentText
         return this
     }
 
@@ -133,8 +133,8 @@ class Topic : AbsModel {
         parcel.putBoolean(isClosed)
         parcel.putBoolean(isFixed)
         parcel.writeInt(commentsCount)
-        parcel.writeString(firstCommentBody)
-        parcel.writeString(lastCommentBody)
+        parcel.writeString(firstCommentText)
+        parcel.writeString(lastCommentText)
         parcel.writeTypedObjectCompat(ParcelableOwnerWrapper(creator), flags)
         parcel.writeTypedObjectCompat(ParcelableOwnerWrapper(updater), flags)
     }

@@ -23,7 +23,7 @@
             app:titleTextAppearance="@style/TextAppearance.Toolbar.Title" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/fragment_audio_catalog_empty_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

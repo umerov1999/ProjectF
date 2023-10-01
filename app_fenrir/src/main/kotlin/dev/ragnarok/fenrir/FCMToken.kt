@@ -10,7 +10,7 @@ object FCMToken {
     val fcmToken: Single<String>
         get() = Single.create { emitter: SingleEmitter<String> ->
             val listener = OnCompleteListener { task: Task<String> ->
-                if (task.isSuccessful) {
+                if (task.isSuccessful && task.result.nonNullNoEmpty()) {
                     emitter.onSuccess(task.result)
                 } else {
                     emitter.tryOnError(task.exception ?: Throwable("fcmToken!!!"))

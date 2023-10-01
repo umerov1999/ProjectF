@@ -295,7 +295,7 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
     }
 
     companion object {
-        const val ACTION_OPEN =
+        private const val ACTION_OPEN =
             "dev.ragnarok.fenrir.activity.gifpager.GifPagerActivity"
 
         fun newInstance(context: Context, args: Bundle?): Intent {

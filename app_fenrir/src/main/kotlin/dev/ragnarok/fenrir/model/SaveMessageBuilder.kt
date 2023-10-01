@@ -6,7 +6,7 @@ import java.io.File
 class SaveMessageBuilder(private val accountId: Long, private val peerId: Long) {
     private var attachments: MutableList<AbsModel>? = null
     private var forwardMessages: List<Message>? = null
-    private var body: String? = null
+    private var text: String? = null
     private var voiceMessageFile: File? = null
     private var requireEncryption = false
     private var draftMessageId: Int? = null
@@ -63,12 +63,12 @@ class SaveMessageBuilder(private val accountId: Long, private val peerId: Long) 
         return this
     }
 
-    fun getBody(): String? {
-        return body
+    fun getText(): String? {
+        return text
     }
 
-    fun setBody(body: String?): SaveMessageBuilder {
-        this.body = body
+    fun setText(text: String?): SaveMessageBuilder {
+        this.text = text
         return this
     }
 

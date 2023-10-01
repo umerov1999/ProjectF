@@ -15,6 +15,7 @@ import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.activity.KeyExchangeCommitActivity.Companion.createIntent
 import dev.ragnarok.fenrir.api.Apis.get
 import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
 import dev.ragnarok.fenrir.crypt.CryptHelper.analizeMessageBody
 import dev.ragnarok.fenrir.crypt.CryptHelper.createRsaPublicKeyFromString
 import dev.ragnarok.fenrir.crypt.CryptHelper.decryptRsa
@@ -665,10 +666,10 @@ class KeyExchangeService : Service() {
         d(TAG, "sendMessage, message: $message")
         sendMessageImpl(accountId, peerId, message)
             .fromIOToMain()
-            .subscribe({ integer ->
+            .subscribe({
                 onMessageSent(
                     message,
-                    integer
+                    it
                 )
             }) { throwable ->
                 showError(throwable.toString())
@@ -712,12 +713,12 @@ class KeyExchangeService : Service() {
         refreshSessionNotification(session)
     }
 
-    private fun onMessageSent(message: ExchangeMessage, id: Int) {
-        d(TAG, "onMessageSent, result_id: $id, message: $message")
+    private fun onMessageSent(message: ExchangeMessage, resp: SendMessageResponse) {
+        d(TAG, "onMessageSent, result_id: ${resp.message_id}, message: $message")
         val session = mCurrentActiveSessions[message.sessionId]
         if (session != null) {
             session.localSessionState = message.senderSessionState
-            session.appendMessageId(id)
+            session.appendMessageId(resp.message_id)
             fireSessionStateChanged(session)
         }
         toggleServiceLiveHandler()
@@ -741,7 +742,7 @@ class KeyExchangeService : Service() {
                 accountId,
                 dto.peer_id,
                 dto.id,
-                dto.body,
+                dto.text,
                 dto.out
             )
         }
@@ -751,14 +752,14 @@ class KeyExchangeService : Service() {
             accountId: Long,
             peerId: Long,
             messageId: Int,
-            messageBody: String?,
+            messageText: String?,
             out: Boolean
         ): Boolean {
-            messageBody ?: return false
-            @MessageType val type = analizeMessageBody(messageBody)
+            messageText ?: return false
+            @MessageType val type = analizeMessageBody(messageText)
             return if (type == MessageType.KEY_EXCHANGE) {
                 try {
-                    val exchangeMessageBody = messageBody.substring(3) // without RSA on start
+                    val exchangeMessageBody = messageText.substring(3) // without RSA on start
                     val message: ExchangeMessage =
                         kJson.decodeFromString(
                             ExchangeMessage.serializer(),
@@ -789,7 +790,7 @@ class KeyExchangeService : Service() {
             accountId: Long,
             peerId: Long,
             message: ExchangeMessage
-        ): Single<Int> {
+        ): Single<SendMessageResponse> {
             return Single.just(Any())
                 .delay(1, TimeUnit.SECONDS)
                 .flatMap {

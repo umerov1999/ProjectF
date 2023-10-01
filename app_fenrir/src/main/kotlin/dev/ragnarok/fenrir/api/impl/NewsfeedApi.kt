@@ -6,6 +6,7 @@ import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.INewsfeedApi
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiFeedList
+import dev.ragnarok.fenrir.api.model.response.IgnoreItemResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedBanResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedResponse
@@ -57,7 +58,11 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
             }
     }
 
-    override fun ignoreItem(type: String?, owner_id: Long?, item_id: Int?): Single<Int> {
+    override fun ignoreItem(
+        type: String?,
+        owner_id: Long?,
+        item_id: Int?
+    ): Single<IgnoreItemResponse> {
         return provideService(INewsfeedService(), TokenType.USER)
             .flatMap { service ->
                 service.ignoreItem(type, owner_id, item_id)

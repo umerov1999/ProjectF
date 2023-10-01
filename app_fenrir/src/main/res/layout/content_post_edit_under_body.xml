@@ -37,13 +37,13 @@
         android:gravity="center_vertical"
         android:padding="4dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/signer_avatar"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:contentDescription="@null" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/signer_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

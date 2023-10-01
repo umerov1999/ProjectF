@@ -31,7 +31,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true">
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/avatar"
                     android:layout_width="@dimen/avatar_size_big"
                     android:layout_height="@dimen/avatar_size_big"
@@ -65,7 +65,7 @@
                 android:paddingBottom="12dp">
 
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                     android:textSize="@dimen/font_size_big_title"
                     tools:text="Umerov Artem" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/domain"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                     android:textSize="@dimen/font_size_subtitle"
                     tools:text="id98464648" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -114,7 +114,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -130,7 +130,7 @@
                 app:spinner_icon_color="?attr/colorAccent"
                 app:spinner_text_color="?android:textColorPrimary" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -146,7 +146,7 @@
                 app:spinner_icon_color="?attr/colorAccent"
                 app:spinner_text_color="?android:textColorPrimary" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"

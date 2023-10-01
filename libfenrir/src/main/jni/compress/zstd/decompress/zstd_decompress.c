@@ -1058,7 +1058,9 @@ static size_t ZSTD_decompressFrame(ZSTD_DCtx* dctx,
     return (size_t)(op-ostart);
 }
 
-static size_t ZSTD_decompressMultiFrame(ZSTD_DCtx* dctx,
+static
+ZSTD_ALLOW_POINTER_OVERFLOW_ATTR
+size_t ZSTD_decompressMultiFrame(ZSTD_DCtx* dctx,
                                         void* dst, size_t dstCapacity,
                                   const void* src, size_t srcSize,
                                   const void* dict, size_t dictSize,
@@ -1548,12 +1550,6 @@ size_t ZSTD_decompressBegin(ZSTD_DCtx* dctx)
     dctx->stage = ZSTDds_getFrameHeaderSize;
     dctx->processedCSize = 0;
     dctx->decodedSize = 0;
-    /* Set to non-null because ZSTD_prefetchMatch() may end up doing addition
-     * with this value for corrupted frames. However, it then just passes the
-     * pointer to PREFETCH_L1(), which doesn't require valid pointers. But,
-     * if it is NULL we get nullptr-with-nonzero-offset UBSAN warnings.
-     */
-    dctx->previousDstEnd = "";
     dctx->previousDstEnd = NULL;
     dctx->prefixStart = NULL;
     dctx->virtualStart = NULL;

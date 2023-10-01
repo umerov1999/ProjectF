@@ -39,9 +39,9 @@ class VKApiMessage
     var out = false
 
     /**
-     * Body of the message.
+     * Text of the message.
      */
-    var body: String? = null
+    var text: String? = null
 
     /**
      * List of media-attachments;

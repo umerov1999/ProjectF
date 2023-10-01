@@ -31,7 +31,7 @@
                 android:layout_gravity="start"
                 android:layout_marginEnd="8dp">
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/toolbar_avatar"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -39,7 +39,7 @@
                     android:scaleType="centerCrop"
                     android:stateListAnimator="@animator/clicked" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/empty_avatar_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                 android:layout_toStartOf="@id/avatar_root"
                 android:orientation="vertical">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/delta_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                     android:textSize="16sp"
                     tools:text="Name" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/delta_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

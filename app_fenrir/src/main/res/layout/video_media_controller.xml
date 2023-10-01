@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/time_current"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
             android:textSize="@dimen/font_size_subtitle"
             android:textStyle="bold" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
             android:orientation="horizontal">
 
 
-            <ImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/prev"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -75,7 +75,7 @@
                 android:src="@drawable/page_first"
                 android:visibility="gone" />
 
-            <ImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/rew"
                 android:layout_width="@dimen/audio_player_controls_main_button_width"
                 android:layout_height="@dimen/audio_player_controls_main_button_height"
@@ -95,7 +95,7 @@
                 android:elevation="2dp"
                 android:focusable="true" />
 
-            <ImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/ffwd"
                 android:layout_width="@dimen/audio_player_controls_main_button_width"
                 android:layout_height="@dimen/audio_player_controls_main_button_height"
@@ -106,7 +106,7 @@
                 android:scaleType="centerInside"
                 android:src="@drawable/page_last" />
 
-            <ImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/next"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -118,7 +118,7 @@
 
         </LinearLayout>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -145,7 +145,7 @@
             android:layout_centerVertical="true"
             android:orientation="horizontal">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/pip_screen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
                 app:drawableTopCompat="@drawable/ic_picture_in_picture"
                 tools:ignore="SmallSp" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/fullscreen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

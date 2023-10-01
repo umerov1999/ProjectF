@@ -41,7 +41,7 @@
             android:paddingEnd="16dp"
             android:paddingBottom="12dp">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_local_album_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                 android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                 tools:text="Album Name" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -123,7 +123,7 @@ class QuickAnswerActivity : AppCompatActivity() {
         val messageTime = AppTextUtils.getDateFromUnixTime(this, msg.date)
         val title = intent.getStringExtra(Extra.TITLE)
         supportActionBar?.title = title
-        tvMessage.setText(intent.getStringExtra(PARAM_BODY), TextView.BufferType.SPANNABLE)
+        tvMessage.setText(intent.getStringExtra(PARAM_TEXT), TextView.BufferType.SPANNABLE)
         tvTime.text = messageTime
         val transformation = CurrentTheme.createTransformationForAvatar()
         val imgUrl = intent.getStringExtra(Extra.IMAGE)
@@ -157,7 +157,7 @@ class QuickAnswerActivity : AppCompatActivity() {
                         return
                     }
                     val builder = SaveMessageBuilder(accountId, msg.peerId)
-                        .setPayload(button.payload).setBody(button.label)
+                        .setPayload(button.payload).setText(button.label)
                     compositeDisposable.add(
                         messagesRepository.put(builder)
                             .fromIOToMain()
@@ -330,7 +330,7 @@ class QuickAnswerActivity : AppCompatActivity() {
                 .getEncryptionLocationPolicy(accountId, msg.peerId)
         }
         val builder = SaveMessageBuilder(accountId, msg.peerId)
-            .setBody(trimmed_text)
+            .setText(trimmed_text)
             .setForwardMessages(ArrayList(setOf(msg)))
             .setRequireEncryption(requireEncryption)
             .setKeyLocationPolicy(policy)
@@ -363,7 +363,7 @@ class QuickAnswerActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val PARAM_BODY = "body"
+        const val PARAM_TEXT = "text"
         const val EXTRA_FOCUS_TO_FIELD = "focus_to_field"
         const val EXTRA_LIVE_DELAY = "live_delay"
 
@@ -372,12 +372,12 @@ class QuickAnswerActivity : AppCompatActivity() {
             context: Context?,
             accountId: Long,
             msg: Message?,
-            body: String?,
+            text: String?,
             imgUrl: String?,
             title: String?
         ): Intent {
             val intent = Intent(context, QuickAnswerActivity::class.java)
-            intent.putExtra(PARAM_BODY, body)
+            intent.putExtra(PARAM_TEXT, text)
             intent.putExtra(Extra.ACCOUNT_ID, accountId)
             intent.putExtra(Extra.MESSAGE, msg)
             intent.putExtra(Extra.TITLE, title)

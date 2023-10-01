@@ -55,7 +55,7 @@ class AudiosByArtistPresenter(
         requestList(offset)
     }
 
-    fun requestList(offset: Int) {
+    private fun requestList(offset: Int) {
         setLoadingNow(true)
         audioListDisposable.add(audioInteractor.getAudiosByArtist(
             accountId,

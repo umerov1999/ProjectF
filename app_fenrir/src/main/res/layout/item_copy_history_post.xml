@@ -14,7 +14,7 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_copy_history_post_avatar"
             android:layout_width="@dimen/avatar_size_tiny"
             android:layout_height="@dimen/avatar_size_tiny"
@@ -22,7 +22,7 @@
             android:layout_marginStart="8dp"
             android:contentDescription="@null" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_post_copy_owner_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
             android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
             tools:text="Post owner" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_copy_history_post_dots"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                 app:hashTagColor="?attr/colorAccent"
                 tools:text="Message" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_post_copy_show_more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

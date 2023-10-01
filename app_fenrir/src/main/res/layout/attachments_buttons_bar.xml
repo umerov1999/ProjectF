@@ -68,7 +68,7 @@
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"/>-->
 
-    <!--<ImageButton android:contentDescription="@null"
+    <!--<androidx.appcompat.widget.AppCompatImageButton android:contentDescription="@null"
         android:id="@+id/button_expand"
         android:layout_width="@dimen/attachment_manager_button_size"
         android:layout_height="@dimen/attachment_manager_button_size"

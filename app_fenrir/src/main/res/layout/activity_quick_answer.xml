@@ -36,7 +36,7 @@
                     android:layout_marginTop="4dp"
                     android:padding="4dp">
 
-                    <ImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/avatar"
                         android:layout_width="@dimen/message_author_avatar_size"
                         android:layout_height="@dimen/message_author_avatar_size"
@@ -90,7 +90,7 @@
                             android:visibility="gone"
                             app:track_keyboard_height="false" />
 
-                        <TextView
+                        <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/item_message_time"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
                     android:background="?attr/colorSurface"
                     android:padding="4dp">
 
-                    <ImageButton
+                    <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/activity_quick_answer_to_dialog"
                         style="?android:attr/borderlessButtonStyle"
                         android:layout_width="48dp"
@@ -142,7 +142,7 @@
                         android:textColorHint="?android:textColorSecondary"
                         android:textSize="@dimen/font_size_title" />
 
-                    <ImageButton
+                    <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/activity_quick_answer_send"
                         style="?android:attr/borderlessButtonStyle"
                         android:layout_width="42dp"

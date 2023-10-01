@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.domain.impl
 import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.AccessIdPair
-import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.api.model.longpoll.UserIsOfflineUpdate
 import dev.ragnarok.fenrir.api.model.longpoll.UserIsOnlineUpdate
 import dev.ragnarok.fenrir.db.interfaces.IOwnersStorage
@@ -279,10 +278,10 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
                 networker.vkDefault(accountId)
                     .groups()
                     .getById(dividedIds.gids, null, null, Fields.FIELDS_BASE_GROUP)
-                    .flatMapCompletable { communities: List<VKApiCommunity>? ->
+                    .flatMapCompletable {
                         cache.storeCommunityDbos(
                             accountId,
-                            mapCommunities(communities)
+                            mapCommunities(it.groups)
                         )
                     })
         }
@@ -634,8 +633,8 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             .groups()
             .getById(gids, null, null, Fields.FIELDS_BASE_GROUP)
             .flatMap { dtos ->
-                val communityEntities = mapCommunities(dtos)
-                val communities = transformCommunities(dtos)
+                val communityEntities = mapCommunities(dtos.groups)
+                val communities = transformCommunities(dtos.groups)
                 cache.storeCommunityDbos(accountId, communityEntities)
                     .andThen(Single.just(communities))
             }

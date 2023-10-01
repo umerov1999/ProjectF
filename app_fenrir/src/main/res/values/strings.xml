@@ -6,14 +6,12 @@
         <item>Default</item>
         <item>English</item>
         <item>Russian</item>
-        <item>Belorussian</item>
     </string-array>
 
     <string-array name="array_language_items" translatable="false">
         <item>0</item>
         <item>1</item>
         <item>2</item>
-        <item>3</item>
     </string-array>
 
     <string-array name="array_parser_names" translatable="false">
@@ -568,6 +566,7 @@
     <string name="api_error_42">IP is not allowed</string>
     <string name="api_error_101">Invalid API Application ID</string>
     <string name="api_error_103">Limit on number of arrivals exceeded</string>
+    <string name="api_error_104">Not Found</string>
     <string name="api_error_105">Unable to save file</string>
     <string name="api_error_113">Invalid user ID</string>
     <string name="api_error_114">Invalid album ID</string>
@@ -589,6 +588,15 @@
     <string name="api_error_500">Action prohibited. You must enable voice translations in the app settings</string>
     <string name="api_error_600">There are no rights to perform these operations with an advertising account</string>
     <string name="api_error_603">An error occurred while working with an ad account</string>
+    <string name="api_error_701">User must be a member of the community</string>
+    <string name="api_error_800">This video has already been added</string>
+    <string name="api_error_900">Can\'t send message to blacklisted user</string>
+    <string name="api_error_901">You cannot be the first to write to the user on behalf of the community</string>
+    <string name="api_error_902">You cannot send messages to this user due to privacy settings</string>
+    <string name="api_error_909">This message cannot be edited because it is too old.</string>
+    <string name="api_error_914">Too many forwarded messages</string>
+    <string name="api_error_913">The message is too long</string>
+    <string name="api_error_921">Unable to forward selected messages</string>
     <string name="api_error_1150">Invalid document ID</string>
     <string name="api_error_1151">No access to delete documents</string>
     <string name="api_error_1170">Too many news lists (maximum 10)</string>
@@ -1382,7 +1390,6 @@
     <string name="community_manager_email">Email</string>
     <string name="community_manager_phone">Phone</string>
     <string name="edit_manager_title">Leader</string>
-    <string name="api_error_701">User must be a member of the community</string>
     <string name="ban_author">Block author</string>
     <string name="author">Author</string>
     <string name="not_interested">Not interested</string>
@@ -1402,7 +1409,6 @@
     <string name="getting_list_loading_message">Getting the list</string>
     <string name="select_comment_author">Select author</string>
     <string name="add_to_my_videos">Add to my videos</string>
-    <string name="api_error_800">This video has already been added</string>
     <string name="user_blacklist_title">Blacklist</string>
     <string name="add_to_blacklist">Add to the blacklist</string>
     <string name="report">Report</string>
@@ -1461,14 +1467,6 @@
     <string name="group_invites_channel">Group invitations</string>
     <string name="likes_channel">Like this</string>
     <string name="new_posts_channel">New post</string>
-
-    <string name="api_error_900">Can\'t send message to blacklisted user</string>
-    <string name="api_error_901">You cannot be the first to write to the user on behalf of the community</string>
-    <string name="api_error_902">You cannot send messages to this user due to privacy settings</string>
-    <string name="api_error_909">This message cannot be edited because it is too old.</string>
-    <string name="api_error_914">Too many forwarded messages</string>
-    <string name="api_error_913">The message is too long</string>
-    <string name="api_error_921">Unable to forward selected messages</string>
     <string name="allow_fingerprint_title">Allow fingerprint</string>
     <string name="error_login_by_fingerprint_not_allowed">Fingerprint login not allowed</string>
     <string name="birthdays">Birthdays</string>
@@ -1703,6 +1701,7 @@
     <string name="mention_user">Mention</string>
     <string name="update_news">New news available</string>
     <string name="update_dialogs">Refresh dialogs?</string>
+    <string name="load_next_dialogs">Load next dialogs?</string>
     <string name="to_html">To HTML</string>
     <string name="to_json">To JSON</string>
     <string name="select_type">Choose format:</string>

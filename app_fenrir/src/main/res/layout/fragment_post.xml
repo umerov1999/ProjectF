@@ -69,14 +69,14 @@
                         android:paddingEnd="16dp"
                         android:paddingBottom="8dp">
 
-                        <ImageView
+                        <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/item_post_signer_icon"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:contentDescription="@null"
                             android:src="@drawable/person" />
 
-                        <TextView
+                        <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/item_post_signer_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
 
                     </LinearLayout>
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/item_post_copyright"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
                         android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                         android:textColor="?attr/colorAccent" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/item_need_donate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -179,7 +179,7 @@
             android:layout_gravity="center"
             android:visibility="gone">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/deleted_post" />
@@ -204,7 +204,7 @@
                 android:visibility="gone"
                 app:loopAnimation="true" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/post_loading_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

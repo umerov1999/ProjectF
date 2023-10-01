@@ -134,7 +134,7 @@ object Model2Entity {
         return MessageDboEntity().set(message.getObjectId(), message.peerId, message.senderId)
             .setDate(message.date)
             .setOut(message.isOut)
-            .setBody(message.body)
+            .setText(message.text)
             .setEncrypted(message.cryptStatus != CryptStatus.NO_ENCRYPTION)
             .setImportant(message.isImportant)
             .setDeleted(message.isDeleted)

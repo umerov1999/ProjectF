@@ -24,13 +24,13 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -492,8 +492,15 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.faves_sync
                 iconRes = R.drawable.sync_settings
                 onClick {
-                    val faveWork = OneTimeWorkRequest.Builder(FaveSyncWorker::class.java)
-                    WorkManager.getInstance(requireActivity()).enqueue(faveWork.build())
+                    CustomSnackbars.createCustomSnackbars(view)
+                        ?.setDurationSnack(Snackbar.LENGTH_LONG)
+                        ?.themedSnack(R.string.faves_sync)
+                        ?.setAction(
+                            R.string.button_yes
+                        ) {
+                            val faveWork = OneTimeWorkRequest.Builder(FaveSyncWorker::class.java)
+                            WorkManager.getInstance(requireActivity()).enqueue(faveWork.build())
+                        }?.show()
                     true
                 }
             }
@@ -2404,14 +2411,14 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 view.findViewById(R.id.edit_invert_rotation)
             val fadeSaturation: MaterialSwitch =
                 view.findViewById(R.id.edit_fade_saturation)
-            val rotationSpeed = view.findViewById<SeekBar>(R.id.edit_rotation_speed)
-            val zoom = view.findViewById<SeekBar>(R.id.edit_zoom)
-            val blur = view.findViewById<SeekBar>(R.id.edit_blur)
+            val rotationSpeed = view.findViewById<AppCompatSeekBar>(R.id.edit_rotation_speed)
+            val zoom = view.findViewById<AppCompatSeekBar>(R.id.edit_zoom)
+            val blur = view.findViewById<AppCompatSeekBar>(R.id.edit_blur)
             val textRotationSpeed: MaterialTextView =
                 view.findViewById(R.id.text_rotation_speed)
             val textZoom: MaterialTextView = view.findViewById(R.id.text_zoom)
             val textBlur: MaterialTextView = view.findViewById(R.id.text_blur)
-            zoom.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            zoom.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
@@ -2423,7 +2430,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
-            rotationSpeed.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            rotationSpeed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
@@ -2435,7 +2442,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 override fun onStartTrackingTouch(seekBar: SeekBar) {}
                 override fun onStopTrackingTouch(seekBar: SeekBar) {}
             })
-            blur.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            blur.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
@@ -2557,33 +2564,34 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val view = View.inflate(requireActivity(), R.layout.entry_slidr_settings, null)
 
-            val verticalSensitive = view.findViewById<SeekBar>(R.id.edit_vertical_sensitive)
+            val verticalSensitive =
+                view.findViewById<AppCompatSeekBar>(R.id.edit_vertical_sensitive)
             val horizontalSensitive =
-                view.findViewById<SeekBar>(R.id.edit_horizontal_sensitive)
+                view.findViewById<AppCompatSeekBar>(R.id.edit_horizontal_sensitive)
             val textHorizontalSensitive: MaterialTextView =
                 view.findViewById(R.id.text_horizontal_sensitive)
             val textVerticalSensitive: MaterialTextView =
                 view.findViewById(R.id.text_vertical_sensitive)
 
             val verticalVelocityThreshold =
-                view.findViewById<SeekBar>(R.id.edit_vertical_velocity_threshold)
+                view.findViewById<AppCompatSeekBar>(R.id.edit_vertical_velocity_threshold)
             val horizontalVelocityThreshold =
-                view.findViewById<SeekBar>(R.id.edit_horizontal_velocity_threshold)
+                view.findViewById<AppCompatSeekBar>(R.id.edit_horizontal_velocity_threshold)
             val textHorizontalVelocityThreshold: MaterialTextView =
                 view.findViewById(R.id.text_horizontal_velocity_threshold)
             val textVerticalVelocityThreshold: MaterialTextView =
                 view.findViewById(R.id.text_vertical_velocity_threshold)
 
             val verticalDistanceThreshold =
-                view.findViewById<SeekBar>(R.id.edit_vertical_distance_threshold)
+                view.findViewById<AppCompatSeekBar>(R.id.edit_vertical_distance_threshold)
             val horizontalDistanceThreshold =
-                view.findViewById<SeekBar>(R.id.edit_horizontal_distance_threshold)
+                view.findViewById<AppCompatSeekBar>(R.id.edit_horizontal_distance_threshold)
             val textHorizontalDistanceThreshold: MaterialTextView =
                 view.findViewById(R.id.text_horizontal_distance_threshold)
             val textVerticalDistanceThreshold: MaterialTextView =
                 view.findViewById(R.id.text_vertical_distance_threshold)
 
-            verticalSensitive.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            verticalSensitive.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
@@ -2601,7 +2609,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
             horizontalSensitive.setOnSeekBarChangeListener(object :
-                OnSeekBarChangeListener {
+                SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
@@ -2619,7 +2627,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 override fun onStopTrackingTouch(seekBar: SeekBar) {}
             })
             verticalVelocityThreshold.setOnSeekBarChangeListener(object :
-                OnSeekBarChangeListener {
+                SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
@@ -2639,7 +2647,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
             horizontalVelocityThreshold.setOnSeekBarChangeListener(object :
-                OnSeekBarChangeListener {
+                SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
@@ -2659,7 +2667,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 override fun onStopTrackingTouch(seekBar: SeekBar) {}
             })
             verticalDistanceThreshold.setOnSeekBarChangeListener(object :
-                OnSeekBarChangeListener {
+                SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,
@@ -2679,7 +2687,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
             horizontalDistanceThreshold.setOnSeekBarChangeListener(object :
-                OnSeekBarChangeListener {
+                SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
                     progress: Int,

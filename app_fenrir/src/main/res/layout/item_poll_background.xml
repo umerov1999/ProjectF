@@ -19,7 +19,7 @@
         android:orientation="vertical"
         tools:ignore="UseCompoundDrawables">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_background_poll_gradient"
             android:layout_width="120dp"
             android:layout_height="80dp"

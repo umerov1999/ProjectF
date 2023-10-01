@@ -477,11 +477,12 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         val fromId =
             cursor.getLong(DialogsColumns.FOREIGN_MESSAGE_FROM_ID)
         val message = MessageDboEntity().set(messageId, peerId, fromId)
-            .setBody(cursor.getString(DialogsColumns.FOREIGN_MESSAGE_BODY))
+            .setText(cursor.getString(DialogsColumns.FOREIGN_MESSAGE_TEXT))
             .setDate(cursor.getLong(DialogsColumns.FOREIGN_MESSAGE_DATE))
             .setOut(cursor.getBoolean(DialogsColumns.FOREIGN_MESSAGE_OUT))
             .setHasAttachments(cursor.getBoolean(DialogsColumns.FOREIGN_MESSAGE_HAS_ATTACHMENTS))
             .setForwardCount(cursor.getInt(DialogsColumns.FOREIGN_MESSAGE_FWD_COUNT))
+            .setConversationMessageId(cursor.getInt(DialogsColumns.FOREIGN_MESSAGE_CMID))
             .setAction(action)
             .setEncrypted(encrypted)
         return DialogDboEntity(peerId)

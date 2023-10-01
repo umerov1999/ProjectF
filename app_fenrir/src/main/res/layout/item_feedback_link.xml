@@ -10,7 +10,7 @@
     android:paddingEnd="16dp"
     android:paddingBottom="10dp">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/item_feedback_link_image"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -27,7 +27,7 @@
         android:layout_toEndOf="@id/item_feedback_link_image"
         android:orientation="vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_feedback_link_text2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
 
     </LinearLayout>
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/item_feedback_link_forward"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

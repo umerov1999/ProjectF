@@ -295,7 +295,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         }
     }
 
-    internal fun setProgress(): Long {
+    private fun setProgress(): Long {
         if (mPlayer == null || mDragging) {
             return 0
         }

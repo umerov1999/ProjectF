@@ -13,13 +13,13 @@
     android:orientation="horizontal"
     android:padding="4dp">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/avatar"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:contentDescription="@null" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         tools:text="User.Name" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/button_remove"
         android:layout_width="24dp"
         android:layout_height="24dp"

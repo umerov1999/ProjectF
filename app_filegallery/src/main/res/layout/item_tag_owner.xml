@@ -19,13 +19,13 @@
         android:layout_gravity="start"
         android:layout_marginEnd="8dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/tag_background"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:contentDescription="@string/tags" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tag_background_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
         android:orientation="vertical"
         android:padding="4dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_tag_owner_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
             android:textStyle="bold"
             tools:text="Name" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_tag_owner_path"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

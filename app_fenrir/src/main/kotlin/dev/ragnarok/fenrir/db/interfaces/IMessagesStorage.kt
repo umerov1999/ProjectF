@@ -35,7 +35,7 @@ interface IMessagesStorage : IStorage {
     fun findDraftMessage(accountId: Long, peerId: Long): Maybe<DraftMessage>
 
     @CheckResult
-    fun saveDraftMessageBody(accountId: Long, peerId: Long, body: String?): Single<Int>
+    fun saveDraftMessageBody(accountId: Long, peerId: Long, text: String?): Single<Int>
 
     //@CheckResult
     //Maybe<Integer> getDraftMessageId(int accountId, int peerId);
@@ -47,7 +47,8 @@ interface IMessagesStorage : IStorage {
         accountId: Long,
         messageId: Int,
         @MessageStatus status: Int,
-        vkid: Int?
+        vkid: Int?,
+        cmid: Int?
     ): Completable
 
     @CheckResult

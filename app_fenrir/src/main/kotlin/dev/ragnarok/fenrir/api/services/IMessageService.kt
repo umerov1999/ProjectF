@@ -18,6 +18,7 @@ import dev.ragnarok.fenrir.api.model.response.ItemsProfilesGroupsResponse
 import dev.ragnarok.fenrir.api.model.response.LongpollHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
+import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
 import dev.ragnarok.fenrir.api.model.response.UploadChatPhotoResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
@@ -427,7 +428,7 @@ class IMessageService : IServiceRest() {
      * Sends a message.
      *
      * @param randomId        Unique identifier to avoid resending the message
-     * @param peerId          Destination ID
+     * @param peerIds         Destination IDs
      * @param domain          User's short address (for example, illarionov).
      * @param message         (Required if attachments is not set.) Text of the message
      * @param latitude        Geographical latitude of a check-in, in degrees (from -90 to 90).
@@ -441,7 +442,7 @@ class IMessageService : IServiceRest() {
      */
     fun send(
         randomId: Long?,
-        peerId: Long?,
+        peerIds: String?,
         domain: String?,
         message: String?,
         latitude: Double?,
@@ -451,11 +452,11 @@ class IMessageService : IServiceRest() {
         stickerId: Int?,
         payload: String?,
         reply_to: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Single<BaseResponse<List<SendMessageResponse>>> {
         return rest.request(
             "messages.send", form(
                 "random_id" to randomId,
-                "peer_id" to peerId,
+                "peer_ids" to peerIds,
                 "domain" to domain,
                 "message" to message,
                 "lat" to latitude,
@@ -465,7 +466,7 @@ class IMessageService : IServiceRest() {
                 "sticker_id" to stickerId,
                 "payload" to payload,
                 "reply_to" to reply_to
-            ), baseInt
+            ), baseList(SendMessageResponse.serializer())
         )
     }
 

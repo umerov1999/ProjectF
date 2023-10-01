@@ -18,7 +18,7 @@
         app:contentPadding="8dp"
         tools:ignore="UnusedAttribute">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_feedback_header_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
             android:layout_alignTop="@id/relativeLayout"
             android:layout_alignParentStart="true">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_friend_avatar"
                 android:layout_width="@dimen/avatar_size_small"
                 android:layout_height="@dimen/avatar_size_small"
@@ -67,7 +67,7 @@
                 app:stroke_color="?android:colorBackground" />
         </RelativeLayout>
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_feedback_user_attachment"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -86,21 +86,21 @@
             android:paddingStart="0dp"
             android:paddingEnd="8dp">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_friend_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                 tools:text="Name" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_additional_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                 tools:text="comment for post..." />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_friend_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

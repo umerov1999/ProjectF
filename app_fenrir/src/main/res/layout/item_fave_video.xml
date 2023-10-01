@@ -30,7 +30,7 @@
                 app:dominantMeasurement="width"
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/video_lenght"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
                 android:textColor="#ffffff"
                 tools:text="3:28" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/video_service"
                 android:layout_width="60dp"
                 android:layout_height="40dp"
@@ -55,7 +55,7 @@
         </FrameLayout>
 
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
             android:background="@drawable/dotted_back"
             android:visibility="visible" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/view_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

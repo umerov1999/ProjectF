@@ -34,13 +34,13 @@
                     android:paddingEnd="16dp"
                     android:paddingBottom="8dp">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/request_params_title"
                         android:textSize="24sp" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
@@ -66,7 +66,7 @@
                             tools:ignore="HardcodedText" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
@@ -125,7 +125,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <TextView
+                        <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
 
@@ -145,7 +145,7 @@
                             android:layout_centerVertical="true"
                             android:orientation="horizontal">
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:id="@+id/button_copy"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -155,7 +155,7 @@
                                 android:src="@drawable/content_copy"
                                 app:tint="?attr/colorAccent" />
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:id="@+id/button_save"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"

@@ -46,7 +46,7 @@ internal class CommentsApi(accountId: Long, provider: IServiceProvider) :
                         "var admin_level = 0;\n" +
                         "if(owner_id < 0){\n" +
                         "    admin_level = API.groups.getById({\"v\":\"" + Constants.API_VERSION + "\",\"group_id\":positive_group_id,\n" +
-                        "        \"fields\":\"admin_level\"})[0].admin_level;\n" +
+                        "        \"fields\":\"admin_level\"}).groups[0].admin_level;\n" +
                         "}\n" +
                         "\n" +
                         "var result;\n" +

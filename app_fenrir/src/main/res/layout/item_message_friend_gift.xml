@@ -29,7 +29,7 @@
         android:paddingEnd="4dp"
         android:paddingBottom="2dp">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_message_avatar"
             android:layout_width="@dimen/avatar_size_small"
             android:layout_height="@dimen/avatar_size_small"
@@ -86,7 +86,7 @@
                     android:scaleType="centerCrop"
                     app:shapeAppearance="@style/ShapeAppearance.MediumRoundedPictures" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -104,7 +104,7 @@
 
             </LinearLayout>
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_message_status_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -9,6 +9,7 @@ import dev.ragnarok.fenrir.api.model.VKApiMarket
 import dev.ragnarok.fenrir.api.model.VKApiMarketAlbum
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.GroupByIdResponse
 import dev.ragnarok.fenrir.api.model.response.GroupLongpollServer
 import dev.ragnarok.fenrir.api.model.response.GroupWallInfoResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
@@ -311,13 +312,13 @@ class IGroupsService : IServiceRest() {
         groupIds: String?,
         groupId: String?,
         fields: String?
-    ): Single<BaseResponse<List<VKApiCommunity>>> {
+    ): Single<BaseResponse<GroupByIdResponse>> {
         return rest.request(
             "groups.getById", form(
                 "group_ids" to groupIds,
                 "group_id" to groupId,
                 "fields" to fields
-            ), baseList(VKApiCommunity.serializer())
+            ), base(GroupByIdResponse.serializer())
         )
     }
 

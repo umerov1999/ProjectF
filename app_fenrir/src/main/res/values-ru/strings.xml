@@ -4,7 +4,6 @@
         <item>По умолчанию</item>
         <item>Английский</item>
         <item>Русский</item>
-        <item>Белорусский</item>
     </string-array>
 
     <string-array name="array_rendering_mode_names">
@@ -372,6 +371,7 @@
     <string name="api_error_42">Ваш IP адрес запрещён</string>
     <string name="api_error_101">Неверный API ID приложения</string>
     <string name="api_error_103">Превышено ограничение на количество вступлений</string>
+    <string name="api_error_104">Не найдено</string>
     <string name="api_error_105">Невозможно сохранить файл</string>
     <string name="api_error_113">Неверный идентификатор пользователя</string>
     <string name="api_error_114">Недопустимый идентификатор альбома</string>
@@ -393,6 +393,15 @@
     <string name="api_error_500">Действие запрещено. Вы должны включить переводы голосов в настройках приложения</string>
     <string name="api_error_600">Нет прав на выполнение данных операций с рекламным кабинетом</string>
     <string name="api_error_603">Произошла ошибка при работе с рекламным кабинетом</string>
+    <string name="api_error_701">Пользователь должен быть участником сообщества</string>
+    <string name="api_error_800">Это видео уже добавлено</string>
+    <string name="api_error_900">Нельзя отправлять сообщение пользователю из черного списка</string>
+    <string name="api_error_901">Нельзя первым писать пользователю от имени сообщества</string>
+    <string name="api_error_902">Нельзя отправлять сообщения этому пользователю в связи с настройками приватности</string>
+    <string name="api_error_909">Нельзя редактировать это сообщение, так как оно слишком устарело</string>
+    <string name="api_error_914">Слишком много пересланных сообщений</string>
+    <string name="api_error_913">Сообщение слишком длинное</string>
+    <string name="api_error_921">Невозможно переслать выбранные сообщения</string>
     <string name="api_error_1150">Неверный идентификатор документа</string>
     <string name="api_error_1151">Нет доступа к удалению документов</string>
     <string name="api_error_1170">Слишком много списков новостей (максимум 10)</string>
@@ -1151,7 +1160,6 @@
     <string name="community_manager_email">Email</string>
     <string name="community_manager_phone">Телефон</string>
     <string name="edit_manager_title">Руководитель</string>
-    <string name="api_error_701">Пользователь должен быть участником сообщества</string>
     <string name="ban_author">Заблокировать автора</string>
     <string name="author">Автор</string>
     <string name="not_interested">Неинтересно</string>
@@ -1171,9 +1179,8 @@
     <string name="getting_list_loading_message">Получение списка</string>
     <string name="select_comment_author">Выберите автора</string>
     <string name="add_to_my_videos">Добавить себе</string>
-    <string name="api_error_800">Это видео уже добавлено</string>
     <string name="user_blacklist_title">Чёрный список</string>
-    <string name="add_to_blacklist">В чёрный список</string>
+    <string name="add_to_blacklist">Заблокировать</string>
     <string name="report">Жалоба</string>
     <string name="rename">Переименовать</string>
     <string name="rename_local">Переименовать локально</string>
@@ -1225,14 +1232,6 @@
     <string name="group_invites_channel">Приглашения в группы</string>
     <string name="likes_channel">Мне нравится</string>
     <string name="new_posts_channel">Новые записи</string>
-
-    <string name="api_error_900">Нельзя отправлять сообщение пользователю из черного списка</string>
-    <string name="api_error_901">Нельзя первым писать пользователю от имени сообщества</string>
-    <string name="api_error_902">Нельзя отправлять сообщения этому пользователю в связи с настройками приватности</string>
-    <string name="api_error_909">Нельзя редактировать это сообщение, так как оно слишком устарело</string>
-    <string name="api_error_914">Слишком много пересланных сообщений</string>
-    <string name="api_error_913">Сообщение слишком длинное</string>
-    <string name="api_error_921">Невозможно переслать выбранные сообщения</string>
     <string name="allow_fingerprint_title">Разрешить отпечаток пальца</string>
     <string name="error_login_by_fingerprint_not_allowed">Вход с помощью отпечатка пальца не разрешен</string>
     <string name="birthdays">Дни рождения</string>
@@ -1456,6 +1455,7 @@
     <string name="mention_user">Упомянуть</string>
     <string name="update_news">Доступны новые новости</string>
     <string name="update_dialogs">Обновить диалоги?</string>
+    <string name="load_next_dialogs">Прогрузить диалоги дальше?</string>
     <string name="to_html">В Html</string>
     <string name="to_json">В Json</string>
     <string name="select_type">Выберите формат:</string>

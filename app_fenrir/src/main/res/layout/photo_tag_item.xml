@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_ph_tag_border"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -12,7 +12,7 @@
         android:scaleType="fitXY"
         android:src="@drawable/photo_tag_border" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_ph_tag_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

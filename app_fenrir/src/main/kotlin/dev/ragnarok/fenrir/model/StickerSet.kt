@@ -35,7 +35,7 @@ class StickerSet(
         }
         return if (result == null) {
             // default
-            icon[0].url
+            icon[icon.size - 1].url
         } else result.url
     }
 

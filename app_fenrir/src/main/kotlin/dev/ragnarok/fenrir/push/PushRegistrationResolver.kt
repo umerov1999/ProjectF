@@ -58,7 +58,7 @@ class PushRegistrationResolver(
                 var hasOk = false
                 var hasRemove = false
                 for (registered in available) {
-                    val reason = analizeRegistration(registered, data, optionalAccountId)
+                    val reason = analyzeRegistration(registered, data, optionalAccountId)
                     d(TAG, "Reason: $reason")
                     when (reason) {
                         Reason.UNREGISTER_AND_REMOVE -> needUnregister.add(registered)
@@ -81,7 +81,7 @@ class PushRegistrationResolver(
                     val current =
                         VKPushRegistration().set(
                             accountId,
-                            data.deviceId ?: "",
+                            data.deviceId,
                             vkToken,
                             data.fcmToken
                         )
@@ -131,7 +131,7 @@ class PushRegistrationResolver(
         val deviceModel = deviceName
         //String osVersion = Utils.getAndroidVersion();
         return if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.KATE) {
-            networker.vkManual(registration.userId, registration.vkToken)
+            networker.vkManual(registration.userId, registration.vkAccessToken)
                 .account()
                 .registerDevice(
                     registration.fcmToken,
@@ -147,7 +147,7 @@ class PushRegistrationResolver(
                 )
                 .ignoreElement()
         } else {
-            networker.vkManual(registration.userId, registration.vkToken)
+            networker.vkManual(registration.userId, registration.vkAccessToken)
                 .account()
                 .registerDevice(
                     registration.fcmToken,
@@ -169,7 +169,7 @@ class PushRegistrationResolver(
     }
 
     private fun unregister(registration: VKPushRegistration): Completable {
-        return networker.vkManual(registration.userId, registration.vkToken)
+        return networker.vkManual(registration.userId, registration.vkAccessToken)
             .account()
             .unregisterDevice(registration.deviceId)
             .ignoreElement()
@@ -182,7 +182,7 @@ class PushRegistrationResolver(
             }
     }
 
-    private fun analizeRegistration(
+    private fun analyzeRegistration(
         available: VKPushRegistration,
         data: Data,
         optionAccountId: Optional<Long>
@@ -201,7 +201,7 @@ class PushRegistrationResolver(
             return Reason.UNREGISTER_AND_REMOVE
         }
         val currentVkToken = settings.accounts().getAccessToken(currentAccountId)
-        return if (available.vkToken != currentVkToken) {
+        return if (available.vkAccessToken != currentVkToken) {
             Reason.REMOVE
         } else Reason.OK
     }
@@ -216,7 +216,7 @@ class PushRegistrationResolver(
         OK, REMOVE, UNREGISTER_AND_REMOVE
     }
 
-    private class Data(val fcmToken: String, val deviceId: String?)
+    private class Data(val fcmToken: String, val deviceId: String)
     companion object {
         private val TAG = PushRegistrationResolver::class.java.simpleName
     }

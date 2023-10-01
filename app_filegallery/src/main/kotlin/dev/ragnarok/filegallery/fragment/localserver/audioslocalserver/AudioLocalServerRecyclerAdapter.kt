@@ -84,7 +84,7 @@ class AudioLocalServerRecyclerAdapter(
         }
     }
 
-    internal fun getBitrate(url: String?, size: Int) {
+    private fun getBitrate(url: String?, size: Int) {
         if (url.isNullOrEmpty()) {
             return
         }
@@ -136,7 +136,7 @@ class AudioLocalServerRecyclerAdapter(
         }
     }
 
-    internal fun updateDownloadState(holder: AudioHolder, audio: Audio) {
+    private fun updateDownloadState(holder: AudioHolder, audio: Audio) {
         holder.saved.visibility =
             if (audio.downloadIndicator) View.VISIBLE else View.GONE
     }

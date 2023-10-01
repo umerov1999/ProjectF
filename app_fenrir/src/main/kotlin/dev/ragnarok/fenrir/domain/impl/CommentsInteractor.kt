@@ -220,12 +220,12 @@ class CommentsInteractor(
     override fun safeDraftComment(
         accountId: Long,
         commented: Commented,
-        body: String?,
+        text: String?,
         replyToCommentId: Int,
         replyToUserId: Long
     ): Single<Int> {
         return cache.comments()
-            .saveDraftComment(accountId, commented, body, replyToUserId, replyToCommentId)
+            .saveDraftComment(accountId, commented, text, replyToUserId, replyToCommentId)
     }
 
     override fun isLiked(accountId: Long, commented: Commented, commentId: Int): Single<Boolean> {
@@ -450,7 +450,7 @@ class CommentsInteractor(
         accountId: Long,
         commented: Commented,
         commentId: Int,
-        body: String?,
+        text: String?,
         commentThread: Int?,
         attachments: List<AbsModel>?
     ): Single<Comment> {
@@ -466,12 +466,12 @@ class CommentsInteractor(
             CommentedType.POST -> networker
                 .vkDefault(accountId)
                 .wall()
-                .editComment(commented.sourceOwnerId, commentId, body, tokens)
+                .editComment(commented.sourceOwnerId, commentId, text, tokens)
 
             CommentedType.PHOTO -> networker
                 .vkDefault(accountId)
                 .photos()
-                .editComment(commented.sourceOwnerId, commentId, body, tokens)
+                .editComment(commented.sourceOwnerId, commentId, text, tokens)
 
             CommentedType.TOPIC -> {
                 val groupId = abs(commented.sourceOwnerId)
@@ -479,13 +479,13 @@ class CommentsInteractor(
                 networker
                     .vkDefault(accountId)
                     .board()
-                    .editComment(groupId, topicId, commentId, body, tokens)
+                    .editComment(groupId, topicId, commentId, text, tokens)
             }
 
             CommentedType.VIDEO -> networker
                 .vkDefault(accountId)
                 .video()
-                .editComment(commented.sourceOwnerId, commentId, body, tokens)
+                .editComment(commented.sourceOwnerId, commentId, text, tokens)
 
             else -> return Single.error(IllegalArgumentException("Unknown commented source type"))
         }

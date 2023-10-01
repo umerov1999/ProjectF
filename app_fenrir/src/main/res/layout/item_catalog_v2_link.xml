@@ -20,14 +20,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_link_pic"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:contentDescription="@null"
             android:scaleType="centerCrop" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_link_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
             android:textSize="12sp"
             tools:text="Name" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/item_link_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

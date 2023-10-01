@@ -170,7 +170,7 @@ class AudioRecyclerAdapter(
         this.iSSelectMode = iSSelectMode
     }
 
-    internal fun get_lyrics(audio: Audio) {
+    private fun get_lyrics(audio: Audio) {
         audioListDisposable =
             mAudioInteractor.getLyrics(Settings.get().accounts().current, audio)
                 .fromIOToMain()

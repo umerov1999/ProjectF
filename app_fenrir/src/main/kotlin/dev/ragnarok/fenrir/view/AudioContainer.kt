@@ -125,7 +125,7 @@ class AudioContainer : LinearLayout {
         }
     }
 
-    internal fun deleteTrack(accountId: Long, audio: Audio) {
+    private fun deleteTrack(accountId: Long, audio: Audio) {
         audioListDisposable =
             mAudioInteractor.delete(accountId, audio.id, audio.ownerId).fromIOToMain().subscribe(
                 { createCustomToast(context).showToast(R.string.deleted) }) { t ->
@@ -133,14 +133,14 @@ class AudioContainer : LinearLayout {
             }
     }
 
-    internal fun addTrack(accountId: Long, audio: Audio) {
+    private fun addTrack(accountId: Long, audio: Audio) {
         audioListDisposable = mAudioInteractor.add(accountId, audio, null).fromIOToMain().subscribe(
             { createCustomToast(context).showToast(R.string.added) }) { t ->
             createCustomToast(context).showToastThrowable(t)
         }
     }
 
-    internal fun getMp3AndBitrate(accountId: Long, audio: Audio) {
+    private fun getMp3AndBitrate(accountId: Long, audio: Audio) {
         val mode = audio.needRefresh()
         if (mode.first) {
             audioListDisposable =
@@ -189,7 +189,7 @@ class AudioContainer : LinearLayout {
         }
     }
 
-    internal fun get_lyrics(audio: Audio) {
+    private fun get_lyrics(audio: Audio) {
         audioListDisposable =
             mAudioInteractor.getLyrics(Settings.get().accounts().current, audio)
                 .fromIOToMain()
@@ -222,7 +222,7 @@ class AudioContainer : LinearLayout {
         audios = emptyList()
     }
 
-    internal fun updateDownloadState(holder: AudioHolder, audio: Audio) {
+    private fun updateDownloadState(holder: AudioHolder, audio: Audio) {
         if (audio.downloadIndicator == 2) {
             holder.saved.setImageResource(R.drawable.remote_cloud)
             Utils.setColorFilter(
@@ -784,8 +784,8 @@ class AudioContainer : LinearLayout {
         val quality: ImageView
         val Track: View = root.findViewById(R.id.track_option)
         val selectionView: MaterialCardView = root.findViewById(R.id.item_audio_selection)
-        val isSelectedView: MaterialCardView = root.findViewById(R.id.item_audio_select_add)
-        val animationAdapter: Animator.AnimatorListener
+        private val isSelectedView: MaterialCardView = root.findViewById(R.id.item_audio_select_add)
+        private val animationAdapter: Animator.AnimatorListener
         val visual: RLottieImageView
         var animator: ObjectAnimator? = null
         fun startSomeAnimation() {
