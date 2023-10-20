@@ -696,6 +696,7 @@
     </style>
 
     <style name="Theme.BadgeStyle" parent="Widget.Material3.Badge.AdjustToBounds">
+        <item name="verticalOffsetWithText">@dimen/m3_nav_badge_with_text_vertical_offset</item>
         <item name="backgroundColor">?colorPrimary</item>
         <item name="badgeTextColor">?colorOnPrimary</item>
     </style>

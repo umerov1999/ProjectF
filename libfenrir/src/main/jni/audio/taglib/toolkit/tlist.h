@@ -27,6 +27,7 @@
 #define TAGLIB_LIST_H
 
 #include <list>
+#include <initializer_list>
 #include <memory>
 
 #include "taglib.h"
@@ -70,6 +71,11 @@ namespace TagLib {
      * pass-by-value usage.
      */
     List(const List<T> &l);
+
+    /*!
+     * Construct a List with the contents of the braced initializer list.
+     */
+    List(std::initializer_list<T> init);
 
     /*!
      * Destroys this List instance.  If auto deletion is enabled and this list
@@ -248,6 +254,13 @@ namespace TagLib {
     List<T> &operator=(const List<T> &l);
 
     /*!
+     * Replace the contents of the list with those of the braced initializer list.
+     *
+     * If auto deletion is enabled and the list contains a pointer type, the members are also deleted
+     */
+    List<T> &operator=(std::initializer_list<T> init);
+
+    /*!
      * Exchanges the content of this list by the content of \a l.
      */
     void swap(List<T> &l);
@@ -262,6 +275,19 @@ namespace TagLib {
      * Compares this list with \a l and returns true if the lists differ.
      */
     bool operator!=(const List<T> &l) const;
+
+    /*!
+     * Sorts this list in ascending order using operator< of T.
+     */
+    void sort();
+
+    /*!
+     * Sorts this list in ascending order using the comparison
+     * function object \a comp which returns true if the first argument is
+     * less than the second.
+     */
+    template<class Compare>
+    void sort(Compare&& comp);
 
   protected:
     /*

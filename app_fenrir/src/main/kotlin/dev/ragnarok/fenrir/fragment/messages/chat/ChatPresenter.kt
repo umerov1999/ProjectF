@@ -961,6 +961,10 @@ class ChatPresenter(
 
     @SuppressLint("CheckResult")
     private fun sendMessage(builder: SaveMessageBuilder) {
+        if (isHiddenAccount(builder.getAccountId())) {
+            view?.showSnackbar(R.string.read_only_account, true)
+            return
+        }
         messagesRepository.put(builder)
             .fromIOToMain()
             .doOnSuccess {

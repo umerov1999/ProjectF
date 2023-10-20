@@ -1726,4 +1726,7 @@
     <string name="select_more">Выбрать больше…</string>
     <string name="chat_popup_menu">Контекстное меню в чате</string>
     <string name="reactions">Реакции</string>
+    <string name="subscribe_to_community">Подписаться на сообщество?</string>
+    <string name="unsubscribe_from_community">Отписаться от сообщества?</string>
+    <string name="read_only_account">Аккаунт только для чтения!</string>
 </resources>

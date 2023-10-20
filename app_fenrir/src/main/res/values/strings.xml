@@ -1973,4 +1973,7 @@
     <string name="select_more">Select More…</string>
     <string name="chat_popup_menu">Popup Menu in chat</string>
     <string name="reactions">Reactions</string>
+    <string name="subscribe_to_community">Subscribe to community?</string>
+    <string name="unsubscribe_from_community">Unsubscribe from community?</string>
+    <string name="read_only_account">Read only account!</string>
 </resources>

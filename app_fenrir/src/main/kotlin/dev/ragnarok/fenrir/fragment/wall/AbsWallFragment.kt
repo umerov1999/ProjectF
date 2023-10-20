@@ -781,19 +781,10 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
             return fragment
         }
 
-
         fun setupCounter(view: TextView?, count: Int) {
             view?.text = if (count > 0) getCounterWithK(count) else "-"
             view?.isEnabled = count > 0
         }
-
-
-        fun setupCounterFlow(view: TextView?, container: ViewGroup?, count: Int) {
-            view?.text = if (count > 0) getCounterWithK(count) else "-"
-            view?.isEnabled = count > 0
-            container?.visibility = if (count > 0) View.VISIBLE else View.GONE
-        }
-
 
         @SuppressLint("SetTextI18n")
         fun setupCounterWith(view: TextView?, count: Int, with: Int) {

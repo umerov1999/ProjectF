@@ -57,6 +57,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -197,7 +198,7 @@ import java.util.LinkedHashSet;
  * developer guidance</a> and <a href="https://material.io/components/text-fields/overview">design
  * guidelines</a>.
  */
-public class TextInputLayout extends LinearLayout {
+public class TextInputLayout extends LinearLayout implements OnGlobalLayoutListener {
 
   private static final int DEF_STYLE_RES = R.style.Widget_Design_TextInputLayout;
 
@@ -451,6 +452,8 @@ public class TextInputLayout extends LinearLayout {
   private boolean inDrawableStateChanged;
 
   private boolean restoringSavedState;
+
+  private boolean globalLayoutListenerAdded = false;
 
   public TextInputLayout(@NonNull Context context) {
     this(context, null);
@@ -716,6 +719,21 @@ public class TextInputLayout extends LinearLayout {
   }
 
   @Override
+  public void onGlobalLayout() {
+    if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN) {
+      endLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+    } else {
+      endLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    }
+    globalLayoutListenerAdded = false;
+    boolean updatedHeight = updateEditTextHeightBasedOnIcon();
+    boolean updatedIcon = updateDummyDrawables();
+    if (updatedHeight || updatedIcon) {
+      editText.post(() -> editText.requestLayout());
+    }
+  }
+
+  @Override
   public void addView(
       @NonNull View child, int index, @NonNull final ViewGroup.LayoutParams params) {
     if (child instanceof EditText) {
@@ -828,8 +846,28 @@ public class TextInputLayout extends LinearLayout {
         || boxBackgroundMode == BOX_BACKGROUND_NONE) {
       return;
     }
-    ViewCompat.setBackground(editText, getEditTextBoxBackground());
+    updateEditTextBoxBackground();
     boxBackgroundApplied = true;
+  }
+
+  private void updateEditTextBoxBackground() {
+    Drawable editTextBoxBackground = getEditTextBoxBackground();
+
+    // On pre-Lollipop, setting a LayerDrawable as a background always replaces the original view
+    // paddings with its own, so we preserve the original paddings and restore them after setting
+    // a new background.
+    if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP
+        && editTextBoxBackground instanceof LayerDrawable) {
+      int paddingLeft = editText.getPaddingLeft();
+      int paddingTop = editText.getPaddingTop();
+      int paddingRight = editText.getPaddingRight();
+      int paddingBottom = editText.getPaddingBottom();
+
+      ViewCompat.setBackground(editText, editTextBoxBackground);
+      editText.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+    } else {
+      ViewCompat.setBackground(editText, editTextBoxBackground);
+    }
   }
 
   @Nullable
@@ -3247,16 +3285,9 @@ public class TextInputLayout extends LinearLayout {
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-    boolean updatedHeight = updateEditTextHeightBasedOnIcon();
-    boolean updatedIcon = updateDummyDrawables();
-    if (updatedHeight || updatedIcon) {
-      editText.post(
-          new Runnable() {
-            @Override
-            public void run() {
-              editText.requestLayout();
-            }
-          });
+    if (!globalLayoutListenerAdded) {
+      endLayout.getViewTreeObserver().addOnGlobalLayoutListener(this);
+      globalLayoutListenerAdded = true;
     }
     updatePlaceholderMeasurementsBasedOnEditText();
     endLayout.updateSuffixTextViewPadding();

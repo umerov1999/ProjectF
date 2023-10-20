@@ -213,7 +213,8 @@ enum class BlendMethod : uint8_t
 enum class CanvasEngine
 {
     Sw = (1 << 1), ///< CPU rasterizer.
-    Gl = (1 << 2)  ///< OpenGL rasterizer.
+    Gl = (1 << 2), ///< OpenGL rasterizer.
+    Wg = (1 << 3), ///< WebGPU rasterizer. @BETA_API
 };
 
 
@@ -1594,6 +1595,42 @@ public:
 
 
 /**
+ * @class WgCanvas
+ *
+ * @brief A class for the rendering graphic elements with a WebGPU raster engine.
+ *
+ * @warning Please do not use it. This class is not fully supported yet.
+ *
+ * @BETA_API
+ */
+class TVG_API WgCanvas final : public Canvas
+{
+public:
+    ~WgCanvas();
+
+    /**
+     * @brief Sets the target window for the rasterization.
+     *
+     * @warning Please do not use it, this API is not official one. It could be modified in the next version.
+     *
+     * @BETA_API
+     */
+    Result target(void* window, uint32_t w, uint32_t h) noexcept;
+
+    /**
+     * @brief Creates a new WgCanvas object.
+     *
+     * @return A new WgCanvas object.
+     *
+     * @BETA_API
+     */
+    static std::unique_ptr<WgCanvas> gen() noexcept;
+
+    _TVG_DECLARE_PRIVATE(WgCanvas);
+};
+
+
+/**
  * @class Initializer
  *
  * @brief A class that enables initialization and termination of the TVG engines.
@@ -1857,7 +1894,7 @@ public:
  * @brief The cast() function is a utility function used to cast a 'Paint' to type 'T'.
  * @since 0.11
  */
-template<typename T>
+template<typename T = tvg::Paint>
 std::unique_ptr<T> cast(Paint* paint)
 {
     return std::unique_ptr<T>(static_cast<T*>(paint));
@@ -1868,7 +1905,7 @@ std::unique_ptr<T> cast(Paint* paint)
  * @brief The cast() function is a utility function used to cast a 'Fill' to type 'T'.
  * @since 0.11
  */
-template<typename T>
+template<typename T = tvg::Fill>
 std::unique_ptr<T> cast(Fill* fill)
 {
     return std::unique_ptr<T>(static_cast<T*>(fill));

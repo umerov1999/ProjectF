@@ -28,6 +28,8 @@
 
 #include <map>
 #include <memory>
+#include <initializer_list>
+#include <utility>
 
 #include "taglib.h"
 
@@ -73,6 +75,11 @@ namespace TagLib {
      * pass-by-value usage.
      */
     Map(const Map<Key, T> &m);
+
+    /*!
+     * Constructs a Map with the contents of the braced initializer list.
+     */
+    Map(std::initializer_list<std::pair<const Key, T>> init);
 
     /*!
      * Destroys this instance of the Map.
@@ -196,9 +203,25 @@ namespace TagLib {
     Map<Key, T> &operator=(const Map<Key, T> &m);
 
     /*!
+     * Replace the contents of the map with those of the braced initializer list
+     */
+    Map<Key, T> &operator=(std::initializer_list<std::pair<const Key, T>> init);
+
+    /*!
      * Exchanges the content of this map by the content of \a m.
      */
     void swap(Map<Key, T> &m);
+
+    /*!
+     * Compares this map with \a m and returns true if all of the elements are
+     * the same.
+     */
+    bool operator==(const Map<Key, T> &m) const;
+
+    /*!
+     * Compares this map with \a m and returns true if the maps differ.
+     */
+    bool operator!=(const Map<Key, T> &m) const;
 
   protected:
     /*

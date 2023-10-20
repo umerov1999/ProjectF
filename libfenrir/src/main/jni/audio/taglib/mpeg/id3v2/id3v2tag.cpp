@@ -26,6 +26,7 @@
 #include "id3v2tag.h"
 
 #include <algorithm>
+#include <array>
 #include <utility>
 
 #include "tdebug.h"
@@ -36,6 +37,8 @@
 #include "id3v2footer.h"
 #include "id3v2synchdata.h"
 #include "id3v1genres.h"
+#include "frames/attachedpictureframe.h"
+#include "frames/generalencapsulatedobjectframe.h"
 #include "frames/textidentificationframe.h"
 #include "frames/commentsframe.h"
 #include "frames/urllinkframe.h"
@@ -53,16 +56,6 @@ namespace
 
   const long MinPaddingSize = 1024;
   const long MaxPaddingSize = 1024 * 1024;
-
-  bool contains(const char **a, const ByteVector &v)
-  {
-    for(int i = 0; a[i]; i++)
-    {
-      if(v == a[i])
-        return true;
-    }
-    return false;
-  }
 }  // namespace
 
 class ID3v2::Tag::TagPrivate
@@ -182,7 +175,7 @@ String ID3v2::Tag::genre() const
 
   // ID3v2.4 lists genres as the fields in its frames field list.  If the field
   // is simply a number it can be assumed that it is an ID3v1 genre number.
-  // Here was assume that if an ID3v1 string is present that it should be
+  // Here was assumed that if an ID3v1 string is present then it should be
   // appended to the genre string.  Multiple fields will be appended as the
   // string is built.
 
@@ -460,6 +453,84 @@ PropertyMap ID3v2::Tag::setProperties(const PropertyMap &origProps)
   return PropertyMap(); // ID3 implements the complete PropertyMap interface, so an empty map is returned
 }
 
+StringList ID3v2::Tag::complexPropertyKeys() const
+{
+  StringList keys;
+  if(d->frameListMap.contains("APIC")) {
+    keys.append("PICTURE");
+  }
+  if(d->frameListMap.contains("GEOB")) {
+    keys.append("GENERALOBJECT");
+  }
+  return keys;
+}
+
+List<VariantMap> ID3v2::Tag::complexProperties(const String &key) const
+{
+  List<VariantMap> properties;
+  const String uppercaseKey = key.upper();
+  if(uppercaseKey == "PICTURE") {
+    const FrameList pictures = d->frameListMap.value("APIC");
+    for(const Frame *frame : pictures) {
+      auto picture = static_cast<const AttachedPictureFrame *>(frame);
+      VariantMap property;
+      property.insert("data", picture->picture());
+      property.insert("mimeType", picture->mimeType());
+      property.insert("description", picture->description());
+      property.insert("pictureType",
+        AttachedPictureFrame::typeToString(picture->type()));
+      properties.append(property);
+    }
+  }
+  else if(uppercaseKey == "GENERALOBJECT") {
+    const FrameList geobs = d->frameListMap.value("GEOB");
+    for(const Frame *frame : geobs) {
+      auto geob = static_cast<const GeneralEncapsulatedObjectFrame *>(frame);
+      VariantMap property;
+      property.insert("data", geob->object());
+      property.insert("mimeType", geob->mimeType());
+      property.insert("description", geob->description());
+      property.insert("fileName", geob->fileName());
+      properties.append(property);
+    }
+  }
+  return properties;
+}
+
+bool ID3v2::Tag::setComplexProperties(const String &key, const List<VariantMap> &value)
+{
+  const String uppercaseKey = key.upper();
+  if(uppercaseKey == "PICTURE") {
+    removeFrames("APIC");
+
+    for(auto property : value) {
+      auto picture = new AttachedPictureFrame;
+      picture->setPicture(property.value("data").value<ByteVector>());
+      picture->setMimeType(property.value("mimeType").value<String>());
+      picture->setDescription(property.value("description").value<String>());
+      picture->setType(AttachedPictureFrame::typeFromString(
+        property.value("pictureType").value<String>()));
+      addFrame(picture);
+    }
+  }
+  else if(uppercaseKey == "GENERALOBJECT") {
+    removeFrames("GEOB");
+
+    for(auto property : value) {
+      auto geob = new GeneralEncapsulatedObjectFrame;
+      geob->setObject(property.value("data").value<ByteVector>());
+      geob->setMimeType(property.value("mimeType").value<String>());
+      geob->setDescription(property.value("description").value<String>());
+      geob->setFileName(property.value("fileName").value<String>());
+      addFrame(geob);
+    }
+  }
+  else {
+    return false;
+  }
+  return true;
+}
+
 ByteVector ID3v2::Tag::render() const
 {
   return render(ID3v2::v4);
@@ -468,15 +539,15 @@ ByteVector ID3v2::Tag::render() const
 void ID3v2::Tag::downgradeFrames(FrameList *frames, FrameList *newFrames) const
 {
 #ifdef NO_ITUNES_HACKS
-  static const char *unsupportedFrames[] = {
+  static constexpr std::array unsupportedFrames {
     "ASPI", "EQU2", "RVA2", "SEEK", "SIGN", "TDRL", "TDTG",
-    "TMOO", "TPRO", "TSOA", "TSOT", "TSST", "TSOP", 0
+    "TMOO", "TPRO", "TSOA", "TSOT", "TSST", "TSOP"
   };
 #else
   // iTunes writes and reads TSOA, TSOT, TSOP to ID3v2.3.
-  static const char *unsupportedFrames[] = {
+  static constexpr std::array unsupportedFrames {
     "ASPI", "EQU2", "RVA2", "SEEK", "SIGN", "TDRL", "TDTG",
-    "TMOO", "TPRO", "TSST", nullptr
+    "TMOO", "TPRO", "TSST"
   };
 #endif
   ID3v2::TextIdentificationFrame *frameTDOR = nullptr;
@@ -488,7 +559,8 @@ void ID3v2::Tag::downgradeFrames(FrameList *frames, FrameList *newFrames) const
   for(const auto &frame : std::as_const(d->frameList)) {
     ByteVector frameID = frame->header()->frameID();
 
-    if(contains(unsupportedFrames, frameID)) {
+    if(std::any_of(unsupportedFrames.begin(), unsupportedFrames.end(),
+                   [&frameID](auto m){ return frameID == m; })) {
       debug("A frame that is not supported in ID3v2.3 \'" + String(frameID) +
             "\' has been discarded");
       continue;

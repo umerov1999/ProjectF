@@ -484,6 +484,16 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
             .show()
     }
 
+    override fun showCommunityMemberStatusChangeDialog(isAdd: Boolean) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(if (isAdd) R.string.subscribe_to_community else R.string.unsubscribe_from_community)
+            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                presenter?.firePrimaryButtonRequest()
+            }
+            .setNegativeButton(R.string.cancel) { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
+            .show()
+    }
+
     override fun goToGroupChats(accountId: Long, community: Community) {
         getGroupChatsPlace(accountId, abs(community.id)).tryOpenWith(requireActivity())
     }
@@ -528,7 +538,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         setupCounter(mHeaderHolder?.bProductServices, products_services)
         setupCounter(mHeaderHolder?.bNarratives, narratives)
         setupCounter(mHeaderHolder?.bClips, clips)
-        setupCounterFlow(mHeaderHolder?.bChats, mHeaderHolder?.bChatsContainer, chats)
+        setupCounter(mHeaderHolder?.bChats, chats)
     }
 
     override fun onPrepareMenu(menu: Menu) {

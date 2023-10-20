@@ -183,12 +183,16 @@ class GroupWallPresenter(
         view?.onSinglePhoto(url ?: (community.originalAvatar ?: return), prefix, community)
     }
 
-    fun firePrimaryButtonClick() {
+    fun firePrimaryButtonRequest() {
         if (community.memberStatus == VKApiCommunity.MemberStatus.IS_MEMBER || community.memberStatus == VKApiCommunity.MemberStatus.SENT_REQUEST) {
             leaveCommunity()
         } else {
             joinCommunity()
         }
+    }
+
+    fun firePrimaryButtonClick() {
+        view?.showCommunityMemberStatusChangeDialog(community.memberStatus != VKApiCommunity.MemberStatus.IS_MEMBER && community.memberStatus != VKApiCommunity.MemberStatus.SENT_REQUEST)
     }
 
     fun fireSecondaryButtonClick() {

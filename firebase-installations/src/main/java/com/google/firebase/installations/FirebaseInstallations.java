@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -276,7 +277,18 @@ public class FirebaseInstallations implements FirebaseInstallationsApi {
     @NonNull
     @Override
     public Task<Void> delete() {
-        return Tasks.call(backgroundExecutor, this::deleteFirebaseInstallationId);
+        TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+        Callable<Void> callable = this::deleteFirebaseInstallationId;
+        backgroundExecutor.execute(() -> {
+            try {
+                taskCompletionSource.setResult(callable.call());
+            } catch (Exception e) {
+                taskCompletionSource.trySetException(e);
+            } catch (Throwable t) {
+                taskCompletionSource.trySetException(new RuntimeException(t));
+            }
+        });
+        return taskCompletionSource.getTask();
     }
 
     /**

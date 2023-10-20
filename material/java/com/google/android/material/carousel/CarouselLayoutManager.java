@@ -22,6 +22,7 @@ import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
 import static com.google.android.material.animation.AnimationUtils.lerp;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -130,6 +131,8 @@ public class CarouselLayoutManager extends LayoutManager
 
   /** Aligns large items to the center of the carousel. */
   public static final int ALIGNMENT_CENTER = 1;
+
+  private int lastItemCount;
 
   /**
    * An estimation of the current focused position, determined by which item center is closest to
@@ -251,7 +254,7 @@ public class CarouselLayoutManager extends LayoutManager
 
   @Override
   public void onLayoutChildren(Recycler recycler, State state) {
-    if (state.getItemCount() <= 0) {
+    if (state.getItemCount() <= 0 || getContainerSize() <= 0f) {
       removeAndRecycleAllViews(recycler);
       currentFillStartPosition = 0;
       return;
@@ -300,6 +303,7 @@ public class CarouselLayoutManager extends LayoutManager
 
     detachAndScrapAttachedViews(recycler);
     fill(recycler, state);
+    lastItemCount = getItemCount();
   }
 
   private void recalculateKeylineStateList(Recycler recycler) {
@@ -395,6 +399,24 @@ public class CarouselLayoutManager extends LayoutManager
       // Add this child to the first index of the RecyclerView.
       addAndLayoutView(calculations.child, /* index= */ 0, calculations);
     }
+  }
+
+  /**
+   * Adds a child view to the RecyclerView at the given {@code childIndex}, regardless of whether or
+   * not the view is in bounds.
+   *
+   * @param recycler current recycler that is attached to the {@link RecyclerView}
+   * @param startPosition the position of the adapter whose view is to be added
+   * @param childIndex the index of the RecyclerView's children that the view should be added at
+   */
+  private void addViewAtPosition(@NonNull Recycler recycler, int startPosition, int childIndex) {
+    if (startPosition < 0 || startPosition >= getItemCount()) {
+      return;
+    }
+    float start = calculateChildStartForFill(startPosition);
+    ChildCalculations calculations = makeChildCalculations(recycler, start, startPosition);
+    // Add this child to the given child index of the RecyclerView.
+    addAndLayoutView(calculations.child, /* index= */ childIndex, calculations);
   }
 
   /**
@@ -785,19 +807,20 @@ public class CarouselLayoutManager extends LayoutManager
     float lastItemDistanceFromFirstItem =
         (((state.getItemCount() - 1) * endState.getItemSize()) + getPaddingEnd())
             * (isRtl ? -1F : 1F);
+
+    float endFocalLocDistanceFromStart = endFocalKeyline.loc - getParentStart();
+    float endFocalLocDistanceFromEnd = getParentEnd() - endFocalKeyline.loc;
+
     // We want the last item in the list to only be able to scroll to the end of the list. Subtract
     // the distance to the end focal keyline and then add the distance needed to let the last
     // item hit the center of the end focal keyline.
-    float endFocalLocDistanceFromStart = endFocalKeyline.loc - getParentStart();
-    float endFocalLocDistanceFromEnd = getParentEnd() - endFocalKeyline.loc;
-    if (abs(endFocalLocDistanceFromStart) > abs(lastItemDistanceFromFirstItem)) {
-      // The last item comes before the last focal keyline which means all items should be within
-      // the focal range and there is nowhere to scroll.
-      return 0;
-    }
+    int endScroll =
+        (int)
+            (lastItemDistanceFromFirstItem
+                - endFocalLocDistanceFromStart
+                + endFocalLocDistanceFromEnd);
 
-    return (int)
-        (lastItemDistanceFromFirstItem - endFocalLocDistanceFromStart + endFocalLocDistanceFromEnd);
+    return isRtl ? min(0, endScroll) : max(0, endScroll);
   }
 
   /**
@@ -1068,6 +1091,27 @@ public class CarouselLayoutManager extends LayoutManager
     }
   }
 
+  private int getSmallestScrollOffsetToFocalKeyline(
+      int position, @NonNull KeylineState keylineState) {
+    int smallestScrollOffset = Integer.MAX_VALUE;
+    for (Keyline keyline : keylineState.getFocalKeylines()) {
+      float offsetWithoutKeylines = position * keylineState.getItemSize();
+      float halfFocalKeylineSize = keylineState.getItemSize() / 2F;
+      float offsetWithKeylines = offsetWithoutKeylines + halfFocalKeylineSize;
+
+      int positionOffsetDistanceFromKeyline =
+          isLayoutRtl()
+              ? (int) ((getContainerSize() - keyline.loc) - offsetWithKeylines)
+              : (int) (offsetWithKeylines - keyline.loc);
+      positionOffsetDistanceFromKeyline -= scrollOffset;
+
+      if (Math.abs(smallestScrollOffset) > Math.abs(positionOffsetDistanceFromKeyline)) {
+        smallestScrollOffset = positionOffsetDistanceFromKeyline;
+      }
+    }
+    return smallestScrollOffset;
+  }
+
   @Nullable
   @Override
   public PointF computeScrollVectorForPosition(int targetPosition) {
@@ -1209,6 +1253,111 @@ public class CarouselLayoutManager extends LayoutManager
     return canScrollVertically() ? scrollBy(dy, recycler, state) : 0;
   }
 
+  /**
+   * Helper class to encapsulate information about the layout direction in relation to the focus
+   * direction.
+   */
+  private static class LayoutDirection {
+    private static final int LAYOUT_START = -1;
+
+    private static final int LAYOUT_END = 1;
+
+    private static final int INVALID_LAYOUT = Integer.MIN_VALUE;
+  }
+
+  /**
+   * Converts a focusDirection to a layout direction.
+   *
+   * @param focusDirection One of {@link View#FOCUS_UP}, {@link View#FOCUS_DOWN}, {@link
+   *     View#FOCUS_LEFT}, {@link View#FOCUS_RIGHT}, {@link View#FOCUS_BACKWARD}, {@link
+   *     View#FOCUS_FORWARD} or 0 for not applicable
+   * @return {@link LayoutDirection#LAYOUT_START} or {@link LayoutDirection#LAYOUT_END} if focus
+   *     direction is applicable to current state, {@link LayoutDirection#INVALID_LAYOUT} otherwise.
+   */
+  private int convertFocusDirectionToLayoutDirection(int focusDirection) {
+    int orientation = getOrientation();
+    switch (focusDirection) {
+      case View.FOCUS_BACKWARD:
+        return LayoutDirection.LAYOUT_START;
+      case View.FOCUS_FORWARD:
+        return LayoutDirection.LAYOUT_END;
+      case View.FOCUS_UP:
+        return orientation == VERTICAL
+            ? LayoutDirection.LAYOUT_START
+            : LayoutDirection.INVALID_LAYOUT;
+      case View.FOCUS_DOWN:
+        return orientation == VERTICAL
+            ? LayoutDirection.LAYOUT_END
+            : LayoutDirection.INVALID_LAYOUT;
+      case View.FOCUS_LEFT:
+        if (orientation == HORIZONTAL) {
+          return isLayoutRtl() ? LayoutDirection.LAYOUT_END : LayoutDirection.LAYOUT_START;
+        }
+        return LayoutDirection.INVALID_LAYOUT;
+      case View.FOCUS_RIGHT:
+        if (orientation == HORIZONTAL) {
+          return isLayoutRtl() ? LayoutDirection.LAYOUT_START : LayoutDirection.LAYOUT_END;
+        }
+        return LayoutDirection.INVALID_LAYOUT;
+      default:
+        Log.d(TAG, "Unknown focus request:" + focusDirection);
+        return LayoutDirection.INVALID_LAYOUT;
+    }
+  }
+
+  @Nullable
+  @Override
+  public View onFocusSearchFailed(
+      @NonNull View focused, int focusDirection, @NonNull Recycler recycler, @NonNull State state) {
+    if (getChildCount() == 0) {
+      return null;
+    }
+
+    final int layoutDir = convertFocusDirectionToLayoutDirection(focusDirection);
+    if (layoutDir == LayoutDirection.INVALID_LAYOUT) {
+      return null;
+    }
+
+    final View nextFocus;
+    if (layoutDir == LayoutDirection.LAYOUT_START) {
+      if (getPosition(focused) == 0) {
+        return null;
+      }
+      int firstPosition = getPosition(getChildAt(0));
+      addViewAtPosition(recycler, firstPosition - 1, 0);
+      nextFocus = getChildClosestToStart();
+    } else {
+      if (getPosition(focused) == getItemCount() - 1) {
+        return null;
+      }
+      int lastPosition = getPosition(getChildAt(getChildCount() - 1));
+      addViewAtPosition(recycler, lastPosition + 1, -1);
+      nextFocus = getChildClosestToEnd();
+    }
+
+    return nextFocus;
+  }
+
+  /**
+   * Convenience method to find the child closes to start. Caller should check if it has enough
+   * children.
+   *
+   * @return The child closest to start of the layout from user's perspective.
+   */
+  private View getChildClosestToStart() {
+    return getChildAt(isLayoutRtl() ? getChildCount() - 1 : 0);
+  }
+
+  /**
+   * Convenience method to find the child closes to end. Caller should check if it has enough
+   * children.
+   *
+   * @return The child closest to end of the layout from user's perspective.
+   */
+  private View getChildClosestToEnd() {
+    return getChildAt(isLayoutRtl() ? 0 : getChildCount() - 1);
+  }
+
   @Override
   public boolean requestChildRectangleOnScreen(
       @NonNull RecyclerView parent,
@@ -1216,25 +1365,33 @@ public class CarouselLayoutManager extends LayoutManager
       @NonNull Rect rect,
       boolean immediate,
       boolean focusedChildVisible) {
+
     if (keylineStateList == null) {
       return false;
     }
-
     int delta =
-        getOffsetToScrollToPosition(
+        getSmallestScrollOffsetToFocalKeyline(
             getPosition(child), getKeylineStateForPosition(getPosition(child)));
-    if (!focusedChildVisible) {
       // TODO(b/266816148): Implement smoothScrollBy when immediate is false.
-      if (delta != 0) {
-        if (isHorizontal()) {
-          parent.scrollBy(delta, 0);
-        } else {
-          parent.scrollBy(0, delta);
-        }
-        return true;
-      }
+    if (delta == 0) {
+      return false;
     }
-    return false;
+    // Get the keyline state at the scroll offset, and scroll based on that.
+    int realDelta = calculateShouldScrollBy(delta, scrollOffset, minScroll, maxScroll);
+    KeylineState scrolledKeylineState =
+        keylineStateList.getShiftedState(scrollOffset + realDelta, minScroll, maxScroll);
+
+    delta = getSmallestScrollOffsetToFocalKeyline(getPosition(child), scrolledKeylineState);
+    scrollBy(parent, delta);
+    return true;
+  }
+
+  private void scrollBy(RecyclerView recyclerView, int delta) {
+    if (isHorizontal()) {
+      recyclerView.scrollBy(delta, 0);
+    } else {
+      recyclerView.scrollBy(0, delta);
+    }
   }
 
   /**
@@ -1403,6 +1560,30 @@ public class CarouselLayoutManager extends LayoutManager
       orientationHelper = CarouselOrientationHelper.createOrientationHelper(this, orientation);
       refreshKeylineState();
     }
+  }
+
+  @Override
+  public void onItemsAdded(@NonNull RecyclerView recyclerView, int positionStart, int itemCount) {
+    super.onItemsAdded(recyclerView, positionStart, itemCount);
+    updateItemCount();
+  }
+
+  @Override
+  public void onItemsRemoved(@NonNull RecyclerView recyclerView, int positionStart, int itemCount) {
+    super.onItemsRemoved(recyclerView, positionStart, itemCount);
+    updateItemCount();
+  }
+
+  private void updateItemCount() {
+    int newItemCount = getItemCount();
+
+    if (newItemCount == this.lastItemCount || keylineStateList == null) {
+      return;
+    }
+    if (carouselStrategy.shouldRefreshKeylineState(this, this.lastItemCount)) {
+      refreshKeylineState();
+    }
+    this.lastItemCount = newItemCount;
   }
 
   /**

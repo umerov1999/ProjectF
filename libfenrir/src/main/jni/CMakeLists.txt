@@ -61,6 +61,7 @@ add_library(thorvg STATIC
         thorvg/src/renderer/tvgShape.cpp
         thorvg/src/renderer/tvgSwCanvas.cpp
         thorvg/src/renderer/tvgTaskScheduler.cpp
+        thorvg/src/renderer/tvgWgCanvas.cpp
         thorvg/src/loaders/raw/tvgRawLoader.cpp
         thorvg/src/loaders/svg/tvgSvgCssStyle.cpp
         thorvg/src/loaders/svg/tvgSvgLoader.cpp
@@ -394,9 +395,12 @@ add_library(common STATIC
         audio/taglib/toolkit/tfile.cpp
         audio/taglib/toolkit/tfilestream.cpp
         audio/taglib/toolkit/tiostream.cpp
+        audio/taglib/toolkit/tpicturetype.cpp
         audio/taglib/toolkit/tpropertymap.cpp
         audio/taglib/toolkit/tstring.cpp
         audio/taglib/toolkit/tstringlist.cpp
+        audio/taglib/toolkit/tvariant.cpp
+        audio/taglib/toolkit/tversionnumber.cpp
         audio/taglib/toolkit/tzlib.cpp
         compress/lz4/lz4.c
         compress/zlib/adler32.c

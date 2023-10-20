@@ -50,6 +50,10 @@ public class HeroCarouselStrategy extends CarouselStrategy {
   private static final int[] SMALL_COUNTS = new int[] {1};
   private static final int[] MEDIUM_COUNTS = new int[] {0, 1};
 
+  // Current count of number of keylines. We want to refresh the strategy if there are less items
+  // than this number.
+  private int keylineCount = 0;
+
   @Override
   @NonNull
   KeylineState onFirstChildMeasuredWithMargins(@NonNull Carousel carousel, @NonNull View child) {
@@ -113,12 +117,40 @@ public class HeroCarouselStrategy extends CarouselStrategy {
                 : MEDIUM_COUNTS,
             targetLargeChildSize,
             largeCounts);
+
+    keylineCount = arrangement.getItemCount();
+
+    // If there's less items than keylines, force it to be start-aligned.
+    if (arrangement.getItemCount() > carousel.getItemCount()) {
+      isCenterAligned = false;
+      arrangement =
+          Arrangement.findLowestCostArrangement(
+              availableSpace,
+              targetSmallChildSize,
+              smallChildSizeMin,
+              smallChildSizeMax,
+              smallCounts,
+              targetMediumChildSize,
+              MEDIUM_COUNTS,
+              targetLargeChildSize,
+              largeCounts);
+    }
+
     return createKeylineState(
         child.getContext(),
         childMargins,
         availableSpace,
         arrangement,
-        carousel.getCarouselAlignment());
+        isCenterAligned
+            ? CarouselLayoutManager.ALIGNMENT_CENTER
+            : CarouselLayoutManager.ALIGNMENT_START);
     }
+
+  @Override
+  boolean shouldRefreshKeylineState(@NonNull Carousel carousel, int oldItemCount) {
+    return carousel.getCarouselAlignment() == CarouselLayoutManager.ALIGNMENT_CENTER
+        && ((oldItemCount < keylineCount && carousel.getItemCount() >= keylineCount)
+            || (oldItemCount >= keylineCount && carousel.getItemCount() < keylineCount));
+  }
 }
 
