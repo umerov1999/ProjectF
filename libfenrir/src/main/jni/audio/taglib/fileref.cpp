@@ -33,8 +33,10 @@
 #include <utility>
 
 #include "tfilestream.h"
+#include "tpropertymap.h"
+#include "tstringlist.h"
+#include "tvariant.h"
 #include "tdebug.h"
-
 #include "mpegfile.h"
 #include "id3v2framefactory.h"
 #include "apefile.h"
@@ -115,7 +117,7 @@ namespace
 
     File *file = nullptr;
 
-    if(ext == "MP3")
+    if(ext == "MP3" || ext == "MP2" || ext == "AAC")
       file = new MPEG::File(stream, ID3v2::FrameFactory::instance(), readAudioProperties, audioPropertiesStyle);
     else if(ext == "APE")
       file = new APE::File(stream, readAudioProperties, audioPropertiesStyle);
@@ -155,38 +157,6 @@ namespace
     return nullptr;
   }
 
-  // Internal function that supports FileRef::create().
-  // This looks redundant, but necessary in order not to change the previous
-  // behavior of FileRef::create().
-
-  File* createInternal(FileName fileName, bool readAudioProperties,
-                       AudioProperties::ReadStyle audioPropertiesStyle)
-  {
-    if(auto file = detectByResolvers(fileName, readAudioProperties, audioPropertiesStyle))
-      return file;
-
-#ifdef _WIN32
-    const String s = fileName.toString();
-#else
-    const String s(fileName);
-#endif
-
-    String ext;
-    const int pos = s.rfind(".");
-    if(pos != -1)
-      ext = s.substr(pos + 1).upper();
-
-    if(ext.isEmpty())
-      return nullptr;
-
-    if(ext == "MP3")
-      return new MPEG::File(fileName, ID3v2::FrameFactory::instance(), readAudioProperties, audioPropertiesStyle);
-    if(ext == "APE")
-      return new APE::File(fileName, readAudioProperties, audioPropertiesStyle);
-    // module, nst and wow are possible but uncommon extensions
-
-    return nullptr;
-  }
 }  // namespace
 
 class FileRef::FileRefPrivate
@@ -201,6 +171,20 @@ public:
 
   FileRefPrivate(const FileRefPrivate &) = delete;
   FileRefPrivate &operator=(const FileRefPrivate &) = delete;
+
+  bool isNull() const
+  {
+    return !file || !file->isValid();
+  }
+
+  bool isNullWithDebugMessage(const String &methodName) const
+  {
+    if(isNull()) {
+      debug("FileRef::" + methodName + "() - Called without a valid file.");
+      return true;
+    }
+    return false;
+  }
 
   File *file { nullptr };
   IOStream *stream { nullptr };
@@ -240,17 +224,63 @@ FileRef::~FileRef() = default;
 
 Tag *FileRef::tag() const
 {
-  if(isNull()) {
-    debug("FileRef::tag() - Called without a valid file.");
+  if(d->isNullWithDebugMessage(__func__)) {
     return nullptr;
   }
   return d->file->tag();
 }
 
+PropertyMap FileRef::properties() const
+{
+  if(d->isNullWithDebugMessage(__func__)) {
+    return PropertyMap();
+  }
+  return d->file->properties();
+}
+
+void FileRef::removeUnsupportedProperties(const StringList& properties)
+{
+  if(d->isNullWithDebugMessage(__func__)) {
+    return;
+  }
+  return d->file->removeUnsupportedProperties(properties);
+}
+
+PropertyMap FileRef::setProperties(const PropertyMap &properties)
+{
+  if(d->isNullWithDebugMessage(__func__)) {
+    return PropertyMap();
+  }
+  return d->file->setProperties(properties);
+}
+
+StringList FileRef::complexPropertyKeys() const
+{
+  if(d->isNullWithDebugMessage(__func__)) {
+    return StringList();
+  }
+  return d->file->complexPropertyKeys();
+}
+
+List<VariantMap> FileRef::complexProperties(const String &key) const
+{
+  if(d->isNullWithDebugMessage(__func__)) {
+    return List<VariantMap>();
+  }
+  return d->file->complexProperties(key);
+}
+
+bool FileRef::setComplexProperties(const String &key, const List<VariantMap> &value)
+{
+  if(d->isNullWithDebugMessage(__func__)) {
+    return false;
+  }
+  return d->file->setComplexProperties(key, value);
+}
+
 AudioProperties *FileRef::audioProperties() const
 {
-  if(isNull()) {
-    debug("FileRef::audioProperties() - Called without a valid file.");
+  if(d->isNullWithDebugMessage(__func__)) {
     return nullptr;
   }
   return d->file->audioProperties();
@@ -263,8 +293,7 @@ File *FileRef::file() const
 
 bool FileRef::save()
 {
-  if(isNull()) {
-    debug("FileRef::save() - Called without a valid file.");
+  if(d->isNullWithDebugMessage(__func__)) {
     return false;
   }
   return d->file->save();
@@ -276,6 +305,11 @@ const FileRef::FileTypeResolver *FileRef::addFileTypeResolver(const FileRef::Fil
   return resolver;
 }
 
+void FileRef::clearFileTypeResolvers() // static
+{
+  fileTypeResolvers.clear();
+}
+
 StringList FileRef::defaultFileExtensions()
 {
   StringList l;
@@ -285,10 +319,12 @@ StringList FileRef::defaultFileExtensions()
   l.append("oga");
   l.append("opus");
   l.append("mp3");
+  l.append("mp2");
   l.append("mpc");
   l.append("wv");
   l.append("spx");
   l.append("tta");
+  l.append("aac");
   l.append("m4a");
   l.append("m4r");
   l.append("m4b");
@@ -312,13 +348,15 @@ StringList FileRef::defaultFileExtensions()
   l.append("it");
   l.append("xm");
   l.append("dsf");
+  l.append("dff");
+  l.append("dsdiff"); // alias for "dff"
 
   return l;
 }
 
 bool FileRef::isNull() const
 {
-  return (!d->file || !d->file->isValid());
+  return d->isNull();
 }
 
 FileRef &FileRef::operator=(const FileRef &) = default;
@@ -338,12 +376,6 @@ bool FileRef::operator==(const FileRef &ref) const
 bool FileRef::operator!=(const FileRef &ref) const
 {
   return (ref.d->file != d->file);
-}
-
-File *FileRef::create(FileName fileName, bool readAudioProperties,
-                      AudioProperties::ReadStyle audioPropertiesStyle) // static
-{
-  return createInternal(fileName, readAudioProperties, audioPropertiesStyle);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

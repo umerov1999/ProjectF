@@ -84,6 +84,20 @@ class IFaveService : IServiceRest() {
         )
     }
 
+    fun getByLinksArticles(
+        links: String?,
+        extended: Int?,
+        fields: String?
+    ): Single<BaseResponse<Items<VKApiArticle>>> {
+        return rest.request(
+            "articles.getByLink", form(
+                "links" to links,
+                "extended" to extended,
+                "fields" to fields
+            ), items(VKApiArticle.serializer())
+        )
+    }
+
     fun getPosts(
         offset: Int?,
         count: Int?,

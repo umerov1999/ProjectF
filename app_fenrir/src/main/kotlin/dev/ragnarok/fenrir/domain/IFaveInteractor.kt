@@ -51,4 +51,8 @@ interface IFaveInteractor {
     fun addVideo(accountId: Long, owner_id: Long?, id: Int?, access_key: String?): Completable
     fun addArticle(accountId: Long, url: String?): Completable
     fun addPost(accountId: Long, owner_id: Long?, id: Int?, access_key: String?): Completable
+    fun getByLinksArticles(
+        accountId: Long,
+        links: String?
+    ): Single<List<Article>>
 }

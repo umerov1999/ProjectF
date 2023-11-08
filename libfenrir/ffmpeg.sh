@@ -3,7 +3,7 @@ SCRIPT_DIR=${PWD}
 cd ~/
 git clone https://git.videolan.org/git/ffmpeg.git
 cd ffmpeg
-git checkout release/6.0
+git checkout release/6.1
 rm -r -f ".git"
 
 ENABLED_DECODERS=(gif mpeg4 h264 hevc mp3 aac ac3 eac3 flac vorbis alac)

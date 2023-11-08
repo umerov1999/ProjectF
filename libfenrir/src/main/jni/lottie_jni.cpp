@@ -9,14 +9,13 @@
 #include <sys/stat.h>
 #include <utime.h>
 #include "fenrir_native.h"
-#include "gif.h"
+#include "gif_builder.h"
 
 using namespace rlottie;
 
 class LottieInfo {
 public:
     std::unique_ptr<Animation> animation;
-    size_t frameCount = 0;
     std::string path;
 };
 
@@ -125,17 +124,10 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_create(JNIEnv *env, jobj
         delete info;
         return 0;
     }
-    info->frameCount = info->animation->totalFrame();
-    /*
-    if (info->animation->frameRate() > 60 || info->frameCount > 600) {
-        delete info;
-        return 0;
-    }
-    */
 
     jint *dataArr = env->GetIntArrayElements(data, nullptr);
     if (dataArr != nullptr) {
-        dataArr[0] = (jint) info->frameCount;
+        dataArr[0] = (jint) info->animation->totalFrame();
         dataArr[1] = (jint) info->animation->frameRate();
         env->ReleaseIntArrayElements(data, dataArr, 0);
     }
@@ -176,11 +168,10 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_createWithJson(JNIEnv *e
         delete info;
         return 0;
     }
-    info->frameCount = info->animation->totalFrame();
 
     jint *dataArr = env->GetIntArrayElements(data, nullptr);
     if (dataArr != nullptr) {
-        dataArr[0] = (int) info->frameCount;
+        dataArr[0] = (int) info->animation->totalFrame();
         dataArr[1] = (int) info->animation->frameRate();
         env->ReleaseIntArrayElements(data, dataArr, 0);
     }
@@ -290,7 +281,8 @@ public:
                     rlottie::Surface surface((uint32_t *) pixels, (size_t) w, (size_t) h,
                                              (size_t) stride);
                     player->animation->renderSync(i, surface, true);
-                    builder.addFrame(surface, transparent, delay, bitDepth, dither);
+                    builder.addFrame(surface.buffer(), surface.width(), surface.height(),
+                                     surface.bytesPerLine(), transparent, delay, bitDepth, dither);
 
                     env->CallVoidMethod(store_Wlistener, mth_update, (jint) (i + 1),
                                         (jint) frameCount);
@@ -302,7 +294,8 @@ public:
                     rlottie::Surface surface((uint32_t *) pixels, (size_t) w, (size_t) h,
                                              (size_t) stride);
                     player->animation->renderSync(i, surface, true);
-                    builder.addFrame(surface, transparent, delay, bitDepth, dither);
+                    builder.addFrame(surface.buffer(), surface.width(), surface.height(),
+                                     surface.bytesPerLine(), transparent, delay, bitDepth, dither);
                 }
             }
 
@@ -340,7 +333,6 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottie2Gif_lottie2gif(JNIEnv *env, jobj
         delete info;
         return 0;
     }
-    info->frameCount = info->animation->totalFrame();
 
     char const *name = SafeGetStringUTFChars(env, gifName, nullptr);
     return Lottie2Gif::render(info, bitmap, w, h, stride, bgColor, (bool) transparent, name,

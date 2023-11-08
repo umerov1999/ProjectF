@@ -1,5 +1,5 @@
-#ifndef gif_h
-#define gif_h
+#ifndef gif_builder_h
+#define gif_builder_h
 
 #include <stdio.h>
 #include <string.h>
@@ -38,17 +38,6 @@
 #include <string>
 #include <vector>
 #include <array>
-#include <jni.h>
-#include <rlottie.h>
-
-#ifndef _WIN32
-
-#include <libgen.h>
-
-#else
-#include <windows.h>
-#include <stdlib.h>
-#endif
 
 const int kGifTransIndex = 0;
 
@@ -326,7 +315,7 @@ GifMakePalette(const uint8_t *lastFrame, const uint8_t *nextFrame, uint32_t widt
 
     // SplitPalette is destructive (it sorts the pixels by color) so
     // we must create a copy of the image for it to destroy
-    size_t imageSize = (size_t) (width * height * 4 * sizeof(uint8_t));
+    size_t imageSize = (size_t)(width * height * 4 * sizeof(uint8_t));
     uint8_t *destroyableImage = (uint8_t *) GIF_TEMP_MALLOC(imageSize);
     memcpy(destroyableImage, nextFrame, imageSize);
 
@@ -362,7 +351,7 @@ void GifDitherImage(const uint8_t *lastFrame, const uint8_t *nextFrame, uint8_t 
 
     for (int ii = 0; ii < numPixels * 4; ++ii) {
         uint8_t pix = nextFrame[ii];
-        int32_t pix16 = (int32_t) (pix) * 256;
+        int32_t pix16 = (int32_t)(pix) * 256;
         quantPixels[ii] = pix16;
     }
 
@@ -396,9 +385,9 @@ void GifDitherImage(const uint8_t *lastFrame, const uint8_t *nextFrame, uint8_t 
             GifGetClosestPaletteColor(pPal, rr, gg, bb, &bestInd, &bestDiff, 1);
 
             // Write the result to the temp buffer
-            int32_t r_err = nextPix[0] - (int32_t) (pPal->r[bestInd]) * 256;
-            int32_t g_err = nextPix[1] - (int32_t) (pPal->g[bestInd]) * 256;
-            int32_t b_err = nextPix[2] - (int32_t) (pPal->b[bestInd]) * 256;
+            int32_t r_err = nextPix[0] - (int32_t)(pPal->r[bestInd]) * 256;
+            int32_t g_err = nextPix[1] - (int32_t)(pPal->g[bestInd]) * 256;
+            int32_t b_err = nextPix[2] - (int32_t)(pPal->b[bestInd]) * 256;
 
             nextPix[0] = pPal->r[bestInd];
             nextPix[1] = pPal->g[bestInd];
@@ -630,8 +619,8 @@ void GifWriteLzwImage(FILE *f, uint8_t *image, uint32_t left, uint32_t top, uint
                 GifWriteCode(f, &stat, (uint32_t) curCode, codeSize);
 
                 // insert the new run into the dictionary
-                codetree[curCode].m_next[nextValue] = (uint16_t) ++
-                        maxCode;
+                codetree[curCode].m_next[nextValue] = (uint16_t)++
+                maxCode;
 
                 if (maxCode >= (1ul << codeSize)) {
                     // dictionary entry count has broken a size barrier,
@@ -643,7 +632,7 @@ void GifWriteLzwImage(FILE *f, uint8_t *image, uint32_t left, uint32_t top, uint
                     GifWriteCode(f, &stat, clearCode, codeSize); // clear tree
 
                     memset(codetree, 0, sizeof(GifLzwNode) * 4096);
-                    codeSize = (uint32_t) (minCodeSize + 1);
+                    codeSize = (uint32_t)(minCodeSize + 1);
                     maxCode = clearCode + 1;
                 }
 
@@ -780,28 +769,32 @@ public:
                         const uint32_t delay = 2, const int32_t bitDepth = 8,
                         const bool dither = false) {
         GifBegin(&handle, fileName.c_str(), width, height, delay, bitDepth, dither);
-        bgColorR = (uint8_t) ((bgColor & 0xff0000) >> 16);
-        bgColorG = (uint8_t) ((bgColor & 0x00ff00) >> 8);
-        bgColorB = (uint8_t) ((bgColor & 0x0000ff));
+        bgColorR = (uint8_t)((bgColor & 0xff0000) >> 16);
+        bgColorG = (uint8_t)((bgColor & 0x00ff00) >> 8);
+        bgColorB = (uint8_t)((bgColor & 0x0000ff));
     }
 
     ~GifBuilder() {
         GifEnd(&handle);
     }
 
-    void addFrame(rlottie::Surface &s, bool transparent, uint32_t delay = 2, int32_t bitDepth = 8,
-                  bool dither = false) {
-        if (!transparent) argbTorgba(s);
+    void
+    addFrame(uint32_t *buffer, size_t width, size_t height, size_t bytesPerLine, bool transparent,
+             uint32_t delay = 2, int32_t bitDepth = 8, bool dither = false) {
+        if (!transparent) {
+            argbToRGBA(buffer, height, bytesPerLine);
+        }
         GifWriteFrame(&handle,
-                      reinterpret_cast<uint8_t *>(s.buffer()),
-                      s.width(),
-                      s.height(),
+                      reinterpret_cast<uint8_t *>(buffer),
+                      width,
+                      height,
                       delay, bitDepth, dither);
     }
 
-    void argbTorgba(rlottie::Surface &s) {
-        uint8_t *buffer = reinterpret_cast<uint8_t *>(s.buffer());
-        uint32_t totalBytes = s.height() * s.bytesPerLine();
+private:
+    void argbToRGBA(uint32_t *bufferMP, size_t height, size_t bytesPerLine) {
+        uint8_t *buffer = reinterpret_cast<uint8_t *>(bufferMP);
+        uint32_t totalBytes = height * bytesPerLine;
 
         for (uint32_t i = 0; i < totalBytes; i += 4) {
             unsigned char a = buffer[i + 3];
@@ -836,7 +829,6 @@ public:
         }
     }
 
-private:
     GifWriter handle;
     uint8_t bgColorR, bgColorG, bgColorB;
 };

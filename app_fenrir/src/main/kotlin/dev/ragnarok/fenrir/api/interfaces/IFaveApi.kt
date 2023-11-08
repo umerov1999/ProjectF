@@ -40,6 +40,11 @@ interface IFaveApi {
     ): Single<Items<VKApiArticle>>
 
     @CheckResult
+    fun getByLinksArticles(
+        links: String?
+    ): Single<List<VKApiArticle>>
+
+    @CheckResult
     fun getPosts(offset: Int?, count: Int?): Single<FavePostsResponse>
 
     @CheckResult

@@ -492,7 +492,10 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
             curr++
             val id = i.owner?.ownerId ?: continue
             fetchInfo(id, accountId, log)
-
+            mBuilder.setContentTitle(
+                applicationContext.getString(R.string.sync) + " " + (curr.toDouble() / alls * 100).toInt()
+                    .toString() + "%"
+            )
             mBuilder.setProgress(
                 100,
                 (curr.toDouble() / alls * 100).toInt(),
@@ -526,6 +529,10 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                 continue
             }
             fetchInfo(sid, saccount_id, log)
+            mBuilder.setContentTitle(
+                applicationContext.getString(R.string.sync) + " " + (curr.toDouble() / alls * 100).toInt()
+                    .toString() + "%"
+            )
             mBuilder.setProgress(
                 100,
                 (curr.toDouble() / alls * 100).toInt(),

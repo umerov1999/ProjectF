@@ -39,14 +39,15 @@ object DownloadWorkUtils {
 
     internal fun createNotification(
         context: Context,
-        Title: String?,
-        Text: String?,
+        title: String?,
+        text: String?,
         icon: Int,
         fin: Boolean
     ): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, AppNotificationChannels.DOWNLOAD_CHANNEL_ID)
-            .setContentTitle(Title)
-            .setContentText(Text)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setSmallIcon(icon)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(fin)
@@ -373,8 +374,35 @@ object DownloadWorkUtils {
                     if (cntlength.isNullOrEmpty()) {
                         cntlength = response.header("Compressed-Content-Length")
                     }
-                    var totalSize = 1L
-                    if (cntlength.nonNullNoEmpty()) totalSize = cntlength.toLong()
+                    var totalSize = 0L
+
+                    @Suppress("UNUSED_VARIABLE")
+                    var currentProgress = -1
+
+                    if (cntlength.nonNullNoEmpty()) {
+                        totalSize = cntlength.toLong()
+                        if (totalSize <= 0L) {
+                            totalSize = 0L
+                        } else {
+                            mBuilder.setContentText(
+                                applicationContext.getString(R.string.downloading) + " " + file_v.buildFilename() + " [" + Utils.BytesToSize(
+                                    totalSize
+                                ) + "]"
+                            )
+                            mBuilder.setStyle(
+                                NotificationCompat.BigTextStyle().bigText(
+                                    applicationContext.getString(R.string.downloading) + " " + file_v.buildFilename() + " [" + Utils.BytesToSize(
+                                        totalSize
+                                    ) + "]"
+                                )
+                            )
+                            show_notification(
+                                mBuilder,
+                                NotificationHelper.NOTIFICATION_DOWNLOADING,
+                                null
+                            )
+                        }
+                    }
                     while (input.read(data).also { bufferLength = it } != -1) {
                         if (isStopped) {
                             output.flush()
@@ -390,16 +418,22 @@ object DownloadWorkUtils {
                         }
                         output.write(data, 0, bufferLength)
                         downloadedSize += bufferLength
-                        mBuilder.setProgress(
-                            100,
-                            (downloadedSize.toDouble() / totalSize * 100).toInt(),
-                            false
-                        )
-                        show_notification(
-                            mBuilder,
-                            NotificationHelper.NOTIFICATION_DOWNLOADING,
-                            null
-                        )
+                        if (totalSize > 0L) {
+                            val tmpProgress = (downloadedSize.toDouble() / totalSize * 100).toInt()
+                            if (currentProgress != tmpProgress) {
+                                currentProgress = tmpProgress
+                                mBuilder.setProgress(
+                                    100, currentProgress,
+                                    false
+                                )
+                                mBuilder.setContentTitle(applicationContext.getString(R.string.downloading) + " " + currentProgress.toString() + "%")
+                                show_notification(
+                                    mBuilder,
+                                    NotificationHelper.NOTIFICATION_DOWNLOADING,
+                                    null
+                                )
+                            }
+                        }
                     }
                     output.flush()
                     output.close()

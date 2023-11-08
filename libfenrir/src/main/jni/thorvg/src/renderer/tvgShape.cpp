@@ -35,7 +35,6 @@ constexpr auto PATH_KAPPA = 0.552284f;
 Shape :: Shape() : pImpl(new Impl(this))
 {
     Paint::pImpl->id = TVG_CLASS_ID_SHAPE;
-    Paint::pImpl->method(new PaintMethod<Shape::Impl>(pImpl));
 }
 
 
@@ -62,7 +61,7 @@ Result Shape::reset() noexcept
     pImpl->rs.path.cmds.clear();
     pImpl->rs.path.pts.clear();
 
-    pImpl->flag = RenderUpdateFlag::Path;
+    pImpl->flag |= RenderUpdateFlag::Path;
 
     return Result::Success;
 }
@@ -70,18 +69,14 @@ Result Shape::reset() noexcept
 
 uint32_t Shape::pathCommands(const PathCommand** cmds) const noexcept
 {
-    if (!cmds) return 0;
-
-    *cmds = pImpl->rs.path.cmds.data;
+    if (cmds) *cmds = pImpl->rs.path.cmds.data;
     return pImpl->rs.path.cmds.count;
 }
 
 
 uint32_t Shape::pathCoords(const Point** pts) const noexcept
 {
-    if (!pts) return 0;
-
-    *pts = pImpl->rs.path.pts.data;
+    if (pts) *pts = pImpl->rs.path.pts.data;
     return pImpl->rs.path.pts.count;
 }
 
@@ -298,7 +293,7 @@ Result Shape::order(bool strokeFirst) noexcept
 }
 
 
-Result Shape::stroke(float width) noexcept
+Result Shape::strokeWidth(float width) noexcept
 {
     if (!pImpl->strokeWidth(width)) return Result::FailedAllocation;
 
@@ -312,23 +307,23 @@ float Shape::strokeWidth() const noexcept
 }
 
 
-Result Shape::stroke(uint8_t r, uint8_t g, uint8_t b, uint8_t a) noexcept
+Result Shape::strokeFill(uint8_t r, uint8_t g, uint8_t b, uint8_t a) noexcept
 {
-    if (!pImpl->strokeColor(r, g, b, a)) return Result::FailedAllocation;
+    if (!pImpl->strokeFill(r, g, b, a)) return Result::FailedAllocation;
 
     return Result::Success;
 }
 
 
-Result Shape::strokeColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const noexcept
+Result Shape::strokeFill(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const noexcept
 {
-    if (!pImpl->rs.strokeColor(r, g, b, a)) return Result::InsufficientCondition;
+    if (!pImpl->rs.strokeFill(r, g, b, a)) return Result::InsufficientCondition;
 
     return Result::Success;
 }
 
 
-Result Shape::stroke(unique_ptr<Fill> f) noexcept
+Result Shape::strokeFill(unique_ptr<Fill> f) noexcept
 {
     return pImpl->strokeFill(std::move(f));
 }
@@ -340,19 +335,19 @@ const Fill* Shape::strokeFill() const noexcept
 }
 
 
-Result Shape::stroke(const float* dashPattern, uint32_t cnt) noexcept
+Result Shape::strokeDash(const float* dashPattern, uint32_t cnt, float offset) noexcept
 {
-    return pImpl->strokeDash(dashPattern, cnt, 0);
+    return pImpl->strokeDash(dashPattern, cnt, offset);
 }
 
 
-uint32_t Shape::strokeDash(const float** dashPattern) const noexcept
+uint32_t Shape::strokeDash(const float** dashPattern, float* offset) const noexcept
 {
-    return pImpl->rs.strokeDash(dashPattern, nullptr);
+    return pImpl->rs.strokeDash(dashPattern, offset);
 }
 
 
-Result Shape::stroke(StrokeCap cap) noexcept
+Result Shape::strokeCap(StrokeCap cap) noexcept
 {
     if (!pImpl->strokeCap(cap)) return Result::FailedAllocation;
 
@@ -360,7 +355,7 @@ Result Shape::stroke(StrokeCap cap) noexcept
 }
 
 
-Result Shape::stroke(StrokeJoin join) noexcept
+Result Shape::strokeJoin(StrokeJoin join) noexcept
 {
     if (!pImpl->strokeJoin(join)) return Result::FailedAllocation;
 

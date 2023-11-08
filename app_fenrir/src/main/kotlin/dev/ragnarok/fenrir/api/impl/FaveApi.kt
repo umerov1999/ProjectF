@@ -91,6 +91,30 @@ internal class FaveApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
             }
     }
 
+    override fun getByLinksArticles(
+        links: String?
+    ): Single<List<VKApiArticle>> {
+        return provideService(IFaveService(), TokenType.USER, TokenType.COMMUNITY)
+            .flatMap { service ->
+                service.getByLinksArticles(
+                    links,
+                    1,
+                    Fields.FIELDS_BASE_OWNER
+                )
+                    .map(extractResponseWithErrorHandling())
+                    .flatMap {
+                        val res = listEmptyIfNull(it.items)
+                        val ret = ArrayList<VKApiArticle>()
+                        for (i in res) {
+                            if (i.owner_id != 0L) {
+                                ret.add(i)
+                            }
+                        }
+                        Single.just(ret)
+                    }
+            }
+    }
+
     override fun getPosts(offset: Int?, count: Int?): Single<FavePostsResponse> {
         return provideService(IFaveService(), TokenType.USER)
             .flatMap { service ->

@@ -38,7 +38,7 @@ struct Shape::Impl
     Shape* shape;
     uint8_t flag = RenderUpdateFlag::None;
     uint8_t opacity;                    //for composition
-    bool needComp;                      //composite or not
+    bool needComp = false;              //composite or not
 
     Impl(Shape* s) : shape(s)
     {
@@ -59,6 +59,7 @@ struct Shape::Impl
         if (needComp) {
             cmp = renderer.target(bounds(renderer), renderer.colorSpace());
             renderer.beginComposite(cmp, CompositeMethod::None, opacity);
+            needComp = false;
         }
         ret = renderer.renderShape(rd);
         if (cmp) renderer.endComposite(cmp);
@@ -249,7 +250,7 @@ struct Shape::Impl
         return true;
     }
 
-    bool strokeColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+    bool strokeFill(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     {
         if (!rs.stroke) rs.stroke = new RenderStroke();
         if (rs.stroke->fill) {

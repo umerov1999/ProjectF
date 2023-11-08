@@ -62,7 +62,7 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_createBitmapNative(JNIEnv *e
     //Threads Count
     auto threads = std::thread::hardware_concurrency();
     //Initialize ThorVG Engine
-    if (tvg::Initializer::init(tvgEngine, threads) != tvg::Result::Success) {
+    if (tvg::Initializer::init(threads, tvgEngine) != tvg::Result::Success) {
         return;
     }
     //Create a Canvas

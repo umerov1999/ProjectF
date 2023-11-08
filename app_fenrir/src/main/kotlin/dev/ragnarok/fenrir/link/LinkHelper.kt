@@ -128,7 +128,21 @@ object LinkHelper {
 
             AbsLink.ARTICLE_LINK -> {
                 val articleLink = link as ArticleLink
-                getExternalLinkPlace(accountId, articleLink.url).tryOpenWith(context)
+                InteractorFactory.createFaveInteractor()
+                    .getByLinksArticles(accountId, articleLink.url).fromIOToMain().subscribe({
+                        if (it.isEmpty()) {
+                            getExternalLinkPlace(accountId, articleLink.url).tryOpenWith(context)
+                        } else {
+                            getExternalLinkPlace(
+                                accountId,
+                                articleLink.url,
+                                it[0].ownerName,
+                                "article_" + it[0].ownerId + "_" + it[0].id
+                            ).tryOpenWith(context)
+                        }
+                    }, {
+                        getExternalLinkPlace(accountId, articleLink.url).tryOpenWith(context)
+                    })
             }
 
             AbsLink.WALL_COMMENT_THREAD -> {

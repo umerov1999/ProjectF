@@ -117,7 +117,7 @@ enum class PathCommand
 /**
  * @brief Enumeration determining the ending type of a stroke in the open sub-paths.
  */
-enum class StrokeCap
+enum class StrokeCap : uint8_t
 {
     Square = 0, ///< The stroke is extended in both end-points of a sub-path by a rectangle, with the width equal to the stroke width and the length equal to the half of the stroke width. For zero length sub-paths the square is rendered with the size of the stroke width.
     Round,      ///< The stroke is extended in both end-points of a sub-path by a half circle, with a radius equal to the half of a stroke width. For zero length sub-paths a full circle is rendered.
@@ -128,7 +128,7 @@ enum class StrokeCap
 /**
  * @brief Enumeration determining the style used at the corners of joined stroked path segments.
  */
-enum class StrokeJoin
+enum class StrokeJoin : uint8_t
 {
     Bevel = 0, ///< The outer corner of the joined path segments is bevelled at the join point. The triangular region of the corner is enclosed by a straight line between the outer corners of each stroke.
     Round,     ///< The outer corner of the joined path segments is rounded. The circular region is centered at the join point.
@@ -139,7 +139,7 @@ enum class StrokeJoin
 /**
  * @brief Enumeration specifying how to fill the area outside the gradient bounds.
  */
-enum class FillSpread
+enum class FillSpread : uint8_t
 {
     Pad = 0, ///< The remaining area is filled with the closest stop color.
     Reflect, ///< The gradient pattern is reflected outside the gradient area until the expected region is filled.
@@ -150,7 +150,7 @@ enum class FillSpread
 /**
  * @brief Enumeration specifying the algorithm used to establish which parts of the shape are treated as the inside of the shape.
  */
-enum class FillRule
+enum class FillRule : uint8_t
 {
     Winding = 0, ///< A line from the point to a location outside the shape is drawn. The intersections of the line with the path segment of the shape are counted. Starting from zero, if the path segment of the shape crosses the line clockwise, one is added, otherwise one is subtracted. If the resulting sum is non zero, the point is inside the shape.
     EvenOdd      ///< A line from the point to a location outside the shape is drawn and its intersections with the path segments of the shape are counted. If the number of intersections is an odd number, the point is inside the shape.
@@ -164,7 +164,7 @@ enum class FillRule
  *
  * @see Paint::composite()
  */
-enum class CompositeMethod
+enum class CompositeMethod : uint8_t
 {
     None = 0,           ///< No composition is applied.
     ClipPath,           ///< The intersection of the source and the target is determined and only the resulting pixels from the source are rendered.
@@ -172,10 +172,10 @@ enum class CompositeMethod
     InvAlphaMask,       ///< Alpha Masking using the complement to the compositing target's pixels as an alpha value.
     LumaMask,           ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the compositing target's pixels. @since 0.9
     InvLumaMask,        ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the complement to the compositing target's pixels.
-    AddMask,            ///< Combines the target and source objects pixels using target alpha. (T * TA) + (S * (255 - TA)) @BETA_API
-    SubtractMask,       ///< Subtracts the source color from the target color while considering their respective target alpha. (T * TA) - (S * (255 - TA)) @BETA_API
-    IntersectMask,      ///< Computes the result by taking the minimum value between the target alpha and the source alpha and multiplies it with the target color. (T * min(TA, SA)) @BETA_API
-    DifferenceMask      ///< Calculates the absolute difference between the target color and the source color multiplied by the complement of the target alpha. abs(T - S * (255 - TA)) @BETA_API
+    AddMask,            ///< Combines the target and source objects pixels using target alpha. (T * TA) + (S * (255 - TA)) (Experimental API)
+    SubtractMask,       ///< Subtracts the source color from the target color while considering their respective target alpha. (T * TA) - (S * (255 - TA)) (Experimental API)
+    IntersectMask,      ///< Computes the result by taking the minimum value between the target alpha and the source alpha and multiplies it with the target color. (T * min(TA, SA)) (Experimental API)
+    DifferenceMask      ///< Calculates the absolute difference between the target color and the source color multiplied by the complement of the target alpha. abs(T - S * (255 - TA)) (Experimental API)
 };
 
 
@@ -186,7 +186,7 @@ enum class CompositeMethod
  *
  * @see Paint::blend()
  *
- * @BETA_API
+ * @note Experimental API
  */
 enum class BlendMethod : uint8_t
 {
@@ -210,11 +210,12 @@ enum class BlendMethod : uint8_t
 /**
  * @brief Enumeration specifying the engine type used for the graphics backend. For multiple backends bitwise operation is allowed.
  */
-enum class CanvasEngine
+enum class CanvasEngine : uint8_t
 {
+    All = 0,       ///< All feasible rasterizers.
     Sw = (1 << 1), ///< CPU rasterizer.
     Gl = (1 << 2), ///< OpenGL rasterizer.
-    Wg = (1 << 3), ///< WebGPU rasterizer. @BETA_API
+    Wg = (1 << 3), ///< WebGPU rasterizer. (Experimental API)
 };
 
 
@@ -248,7 +249,7 @@ struct Matrix
  * @param pt The vertex coordinate
  * @param uv The normalized texture coordinate in the range (0.0..1.0, 0.0..1.0)
  *
- * @BETA_API
+ * @note Experimental API
  */
 struct Vertex
 {
@@ -262,7 +263,7 @@ struct Vertex
  *
  * @param vertex The three vertices that make up the polygon
  *
- * @BETA_API
+ * @note Experimental API
  */
 struct Polygon
 {
@@ -374,25 +375,9 @@ public:
      *
      * @return Result::Success when the blending method is successfully set.
      *
-     * @BETA_API
+     * @note Experimental API
      */
     Result blend(BlendMethod method) const noexcept;
-
-    /**
-     * @brief Gets the bounding box of the paint object before any transformation.
-     *
-     * @param[out] x The x coordinate of the upper left corner of the object.
-     * @param[out] y The y coordinate of the upper left corner of the object.
-     * @param[out] w The width of the object.
-     * @param[out] h The height of the object.
-     *
-     * @return Result::Success when succeed, Result::InsufficientCondition otherwise.
-     *
-     * @note The bounding box doesn't indicate the final rendered region. It's the smallest rectangle that encloses the object.
-     * @see Paint::bounds(float* x, float* y, float* w, float* h, bool transformed);
-     * @deprecated Use bounds(float* x, float* y, float* w, float* h, bool transformed) instead
-     */
-    TVG_DEPRECATED Result bounds(float* x, float* y, float* w, float* h) const noexcept;
 
     /**
      * @brief Gets the axis-aligned bounding box of the paint object.
@@ -409,7 +394,7 @@ public:
      *
      * @note The bounding box doesn't indicate the actual drawing region. It's the smallest rectangle that encloses the object.
      */
-    Result bounds(float* x, float* y, float* w, float* h, bool transformed) const noexcept;
+    Result bounds(float* x, float* y, float* w, float* h, bool transformed = false) const noexcept;
 
     /**
      * @brief Duplicates the object.
@@ -443,7 +428,7 @@ public:
      *
      * @return The blending method
      *
-     * @BETA_API
+     * @note Experimental API
      */
     BlendMethod blend() const noexcept;
 
@@ -582,18 +567,6 @@ public:
     virtual ~Canvas();
 
     /**
-     * @brief Sets the size of the container, where all the paints pushed into the Canvas are stored.
-     *
-     * If the number of objects pushed into the Canvas is known in advance, calling the function
-     * prevents multiple memory reallocation, thus improving the performance.
-     *
-     * @param[in] n The number of objects for which the memory is to be reserved.
-     *
-     * @return Result::Success when succeed.
-     */
-    TVG_DEPRECATED Result reserve(uint32_t n) noexcept;
-
-    /**
      * @brief Returns the list of the paints that currently held by the Canvas.
      *
      * This function provides the list of paint nodes, allowing users a direct opportunity to modify the scene tree.
@@ -601,7 +574,7 @@ public:
      * @warning  Please avoid accessing the paints during Canvas update/draw. You can access them after calling sync().
      * @see Canvas::sync()
      *
-     * @BETA_API
+     * @note Experimental API
      */
     std::list<Paint*>& paints() noexcept;
 
@@ -974,7 +947,7 @@ public:
      *
      * @return Result::Success when succeed, Result::FailedAllocation otherwise.
      */
-    Result stroke(float width) noexcept;
+    Result strokeWidth(float width) noexcept;
 
     /**
      * @brief Sets the color of the stroke for all of the figures from the path.
@@ -986,7 +959,7 @@ public:
      *
      * @return Result::Success when succeed, Result::FailedAllocation otherwise.
      */
-    Result stroke(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) noexcept;
+    Result strokeFill(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) noexcept;
 
     /**
      * @brief Sets the gradient fill of the stroke for all of the figures from the path.
@@ -997,13 +970,14 @@ public:
      * @retval Result::FailedAllocation An internal error with a memory allocation for an object to be filled.
      * @retval Result::MemoryCorruption In case a @c nullptr is passed as the argument.
      */
-    Result stroke(std::unique_ptr<Fill> f) noexcept;
+    Result strokeFill(std::unique_ptr<Fill> f) noexcept;
 
     /**
      * @brief Sets the dash pattern of the stroke.
      *
      * @param[in] dashPattern The array of consecutive pair values of the dash length and the gap length.
      * @param[in] cnt The length of the @p dashPattern array.
+     * @param[in] offset The shift of the starting point within the repeating dash pattern from which the path's dashing begins.
      *
      * @retval Result::Success When succeed.
      * @retval Result::FailedAllocation An internal error with a memory allocation for an object to be dashed.
@@ -1011,8 +985,10 @@ public:
      *
      * @note To reset the stroke dash pattern, pass @c nullptr to @p dashPattern and zero to @p cnt.
      * @warning @p cnt must be greater than 1 if the dash pattern is valid.
+     *
+     * @since 1.0
      */
-    Result stroke(const float* dashPattern, uint32_t cnt) noexcept;
+    Result strokeDash(const float* dashPattern, uint32_t cnt, float offset = 0.0f) noexcept;
 
     /**
      * @brief Sets the cap style of the stroke in the open sub-paths.
@@ -1021,7 +997,7 @@ public:
      *
      * @return Result::Success when succeed, Result::FailedAllocation otherwise.
      */
-    Result stroke(StrokeCap cap) noexcept;
+    Result strokeCap(StrokeCap cap) noexcept;
 
     /**
      * @brief Sets the join style for stroked path segments.
@@ -1032,7 +1008,7 @@ public:
      *
      * @return Result::Success when succeed, Result::FailedAllocation otherwise.
      */
-    Result stroke(StrokeJoin join) noexcept;
+    Result strokeJoin(StrokeJoin join) noexcept;
 
 
     /**
@@ -1159,7 +1135,7 @@ public:
      *
      * @return Result::Success when succeed, Result::InsufficientCondition otherwise.
      */
-    Result strokeColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a = nullptr) const noexcept;
+    Result strokeFill(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a = nullptr) const noexcept;
 
     /**
      * @brief Gets the pointer to the gradient fill of the stroke.
@@ -1172,10 +1148,13 @@ public:
      * @brief Gets the dash pattern of the stroke.
      *
      * @param[out] dashPattern The pointer to the memory, where the dash pattern array is stored.
+     * @param[out] offset The shift of the starting point within the repeating dash pattern.
      *
      * @return The length of the @p dashPattern array.
+     *
+     * @since 1.0
      */
-    uint32_t strokeDash(const float** dashPattern) const noexcept;
+    uint32_t strokeDash(const float** dashPattern, float* offset = nullptr) const noexcept;
 
     /**
      * @brief Gets the cap style used for stroking the path.
@@ -1254,24 +1233,6 @@ public:
      *
      * @param[in] data A pointer to a memory location where the content of the picture file is stored.
      * @param[in] size The size in bytes of the memory occupied by the @p data.
-     * @param[in] copy Decides whether the data should be copied into the engine local buffer.
-     *
-     * @retval Result::Success When succeed.
-     * @retval Result::InvalidArguments In case no data are provided or the @p size is zero or less.
-     * @retval Result::NonSupport When trying to load a file with an unknown extension.
-     * @retval Result::Unknown If an error occurs at a later stage.
-     *
-     * @warning: you have responsibility to release the @p data memory if the @p copy is true
-     * @deprecated Use load(const char* data, uint32_t size, const std::string& mimeType, bool copy) instead.
-     * @see Result load(const char* data, uint32_t size, const std::string& mimeType, bool copy = false) noexcept
-     */
-    TVG_DEPRECATED Result load(const char* data, uint32_t size, bool copy = false) noexcept;
-
-    /**
-     * @brief Loads a picture data from a memory block of a given size.
-     *
-     * @param[in] data A pointer to a memory location where the content of the picture file is stored.
-     * @param[in] size The size in bytes of the memory occupied by the @p data.
      * @param[in] mimeType Mimetype or extension of data such as "jpg", "jpeg", "lottie", "svg", "svg+xml", "png", etc. In case an empty string or an unknown type is provided, the loaders will be tried one by one.
      * @param[in] copy If @c true the data are copied into the engine local buffer, otherwise they are not.
      *
@@ -1280,7 +1241,7 @@ public:
      * @retval Result::NonSupport When trying to load a file with an unknown extension.
      * @retval Result::Unknown If an error occurs at a later stage.
      *
-     * @warning: It's the user responsibility to release the @p data memory if the @p copy is @c true.
+     * @warning: It's the user responsibility to release the @p data memory.
      *
      * @note If you are unsure about the MIME type, you can provide an empty value like @c "", and thorvg will attempt to figure it out.
      * @since 0.5
@@ -1318,7 +1279,7 @@ public:
      *
      * @since 0.9
      */
-    Result load(uint32_t* data, uint32_t w, uint32_t h, bool copy) noexcept;
+    Result load(uint32_t* data, uint32_t w, uint32_t h, bool premultiplied, bool copy) noexcept;
 
     /**
      * @brief Sets or removes the triangle mesh to deform the image.
@@ -1340,7 +1301,7 @@ public:
      * @note The Polygons are copied internally, so modifying them after calling Mesh::mesh has no affect.
      * @warning Please do not use it, this API is not official one. It could be modified in the next version.
      *
-     * @BETA_API
+     * @note Experimental API
      */
     Result mesh(const Polygon* triangles, uint32_t triangleCnt) noexcept;
 
@@ -1354,7 +1315,7 @@ public:
      * @note Modifying the triangles returned by this method will modify them directly within the mesh.
      * @warning Please do not use it, this API is not official one. It could be modified in the next version.
      *
-     * @BETA_API
+     * @note Experimental API
      */
     uint32_t mesh(const Polygon** triangles) const noexcept;
 
@@ -1412,18 +1373,6 @@ public:
     Result push(std::unique_ptr<Paint> paint) noexcept;
 
     /**
-     * @brief Sets the size of the container, where all the paints pushed into the Scene are stored.
-     *
-     * If the number of objects pushed into the scene is known in advance, calling the function
-     * prevents multiple memory reallocation, thus improving the performance.
-     *
-     * @param[in] size The number of objects for which the memory is to be reserved.
-     *
-     * @return Result::Success when succeed, Result::FailedAllocation otherwise.
-     */
-    TVG_DEPRECATED Result reserve(uint32_t size) noexcept;
-
-    /**
      * @brief Returns the list of the paints that currently held by the Scene.
      *
      * This function provides the list of paint nodes, allowing users a direct opportunity to modify the scene tree.
@@ -1433,7 +1382,7 @@ public:
      * @see Scene::push()
      * @see Scene::clear()
      *
-     * @BETA_API
+     * @note Experimental API
      */
     std::list<Paint*>& paints() noexcept;
 
@@ -1484,19 +1433,19 @@ public:
     /**
      * @brief Enumeration specifying the methods of combining the 8-bit color channels into 32-bit color.
      */
-    enum Colorspace
+    enum Colorspace : uint8_t
     {
         ABGR8888 = 0,      ///< The channels are joined in the order: alpha, blue, green, red. Colors are alpha-premultiplied. (a << 24 | b << 16 | g << 8 | r)
         ARGB8888,          ///< The channels are joined in the order: alpha, red, green, blue. Colors are alpha-premultiplied. (a << 24 | r << 16 | g << 8 | b)
-        ABGR8888S,         ///< @BETA_API The channels are joined in the order: alpha, blue, green, red. Colors are un-alpha-premultiplied.
-        ARGB8888S,         ///< @BETA_API The channels are joined in the order: alpha, red, green, blue. Colors are un-alpha-premultiplied.
+        ABGR8888S,         ///< The channels are joined in the order: alpha, blue, green, red. Colors are un-alpha-premultiplied. (Experimental API)
+        ARGB8888S,         ///< The channels are joined in the order: alpha, red, green, blue. Colors are un-alpha-premultiplied. (Experimental API)
     };
 
     /**
      * @brief Enumeration specifying the methods of Memory Pool behavior policy.
      * @since 0.4
      */
-    enum MempoolPolicy
+    enum MempoolPolicy : uint8_t
     {
         Default = 0, ///< Default behavior that ThorVG is designed to.
         Shareable,   ///< Memory Pool is shared among the SwCanvases.
@@ -1565,7 +1514,7 @@ public:
  *
  * @warning Please do not use it. This class is not fully supported yet.
  *
- * @BETA_API
+ * @note Experimental API
  */
 class TVG_API GlCanvas final : public Canvas
 {
@@ -1577,7 +1526,7 @@ public:
      *
      * @warning Please do not use it, this API is not official one. It could be modified in the next version.
      *
-     * @BETA_API
+     * @note Experimental API
      */
     Result target(uint32_t* buffer, uint32_t stride, uint32_t w, uint32_t h) noexcept;
 
@@ -1586,7 +1535,7 @@ public:
      *
      * @return A new GlCanvas object.
      *
-     * @BETA_API
+     * @note Experimental API
      */
     static std::unique_ptr<GlCanvas> gen() noexcept;
 
@@ -1601,7 +1550,7 @@ public:
  *
  * @warning Please do not use it. This class is not fully supported yet.
  *
- * @BETA_API
+ * @note Experimental API
  */
 class TVG_API WgCanvas final : public Canvas
 {
@@ -1613,7 +1562,7 @@ public:
      *
      * @warning Please do not use it, this API is not official one. It could be modified in the next version.
      *
-     * @BETA_API
+     * @note Experimental API
      */
     Result target(void* window, uint32_t w, uint32_t h) noexcept;
 
@@ -1622,7 +1571,7 @@ public:
      *
      * @return A new WgCanvas object.
      *
-     * @BETA_API
+     * @note Experimental API
      */
     static std::unique_ptr<WgCanvas> gen() noexcept;
 
@@ -1646,19 +1595,18 @@ public:
      * You can indicate the number of threads, the count of which is designated @p threads.
      * In the initialization step, TVG will generate/spawn the threads as set by @p threads count.
      *
-     * @param[in] engine The engine types to initialize. This is relative to the Canvas types, in which it will be used. For multiple backends bitwise operation is allowed.
      * @param[in] threads The number of additional threads. Zero indicates only the main thread is to be used.
+     * @param[in] engine The engine types to initialize. This is relative to the Canvas types, in which it will be used. For multiple backends bitwise operation is allowed.
      *
      * @retval Result::Success When succeed.
      * @retval Result::FailedAllocation An internal error possibly with memory allocation.
-     * @retval Result::InvalidArguments If unknown engine type chosen.
      * @retval Result::NonSupport In case the engine type is not supported on the system.
      * @retval Result::Unknown Others.
      *
      * @note The Initializer keeps track of the number of times it was called. Threads count is fixed at the first init() call.
      * @see Initializer::term()
      */
-    static Result init(CanvasEngine engine, uint32_t threads) noexcept;
+    static Result init(uint32_t threads, CanvasEngine engine = tvg::CanvasEngine::All) noexcept;
 
     /**
      * @brief Terminates TVG engines.
@@ -1667,14 +1615,13 @@ public:
      *
      * @retval Result::Success When succeed.
      * @retval Result::InsufficientCondition In case there is nothing to be terminated.
-     * @retval Result::InvalidArguments If unknown engine type chosen.
      * @retval Result::NonSupport In case the engine type is not supported on the system.
      * @retval Result::Unknown Others.
      *
      * @note Initializer does own reference counting for multiple calls.
      * @see Initializer::init()
      */
-    static Result term(CanvasEngine engine) noexcept;
+    static Result term(CanvasEngine engine = tvg::CanvasEngine::All) noexcept;
 
     _TVG_DISABLE_CTOR(Initializer);
 };
@@ -1687,7 +1634,7 @@ public:
  *
  * This class supports the display and control of animation frames.
  *
- * @BETA_API
+ * @note Experimental API
  */
 
 class TVG_API Animation
@@ -1701,14 +1648,14 @@ public:
      * @param[in] no The index of the animation frame to be displayed. The index should be less than the totalFrame().
      *
      * @retval Result::Success Successfully set the frame.
-     * @retval Result::InsufficientCondition No animatable data loaded from the Picture.
-     * @retval Result::NonSupport The Picture data does not support animations.
+     * @retval Result::InsufficientCondition if the given @p no is the same as the current frame value.
+     * @retval Result::NonSupport The current Picture data does not support animations.
      *
      * @see totalFrame()
      *
-     * @BETA_API
+     * @note Experimental API
      */
-    Result frame(uint32_t no) noexcept;
+    Result frame(float no) noexcept;
 
     /**
      * @brief Retrieves a picture instance associated with this animation instance.
@@ -1721,7 +1668,7 @@ public:
      *
      * @warning The picture instance is owned by Animation. It should not be deleted manually.
      *
-     * @BETA_API
+     * @note Experimental API
      */
     Picture* picture() const noexcept;
 
@@ -1732,12 +1679,12 @@ public:
      *
      * @note If the Picture is not properly configured, this function will return 0.
      *
-     * @see Animation::frame(uint32_t no)
+     * @see Animation::frame(float no)
      * @see Animation::totalFrame()
      *
-     * @BETA_API
+     * @note Experimental API
      */
-    uint32_t curFrame() const noexcept;
+    float curFrame() const noexcept;
 
     /**
      * @brief Retrieves the total number of frames in the animation.
@@ -1747,9 +1694,9 @@ public:
      * @note Frame numbering starts from 0.
      * @note If the Picture is not properly configured, this function will return 0.
      *
-     * @BETA_API
+     * @note Experimental API
      */
-    uint32_t totalFrame() const noexcept;
+    float totalFrame() const noexcept;
 
     /**
      * @brief Retrieves the duration of the animation in seconds.
@@ -1758,7 +1705,7 @@ public:
      *
      * @note If the Picture is not properly configured, this function will return 0.
      *
-     * @BETA_API
+     * @% Experimental API
      */
     float duration() const noexcept;
 
@@ -1767,7 +1714,7 @@ public:
      *
      * @return A new Animation object.
      *
-     * @BETA_API
+     * @note Experimental API
      */
     static std::unique_ptr<Animation> gen() noexcept;
 
@@ -1806,7 +1753,7 @@ public:
      *
      * @param[in] paint The paint to be saved with all its associated properties.
      * @param[in] path A path to the file, in which the paint data is to be saved.
-     * @param[in] compress If @c true then compress data if possible.
+     * @param[in] quality The encoded quality level. @c 0 is the minimum, @c 100 is the maximum value(recommended).
      *
      * @retval Result::Success When succeed.
      * @retval Result::InsufficientCondition If currently saving other resources.
@@ -1819,7 +1766,32 @@ public:
      *
      * @since 0.5
      */
-    Result save(std::unique_ptr<Paint> paint, const std::string& path, bool compress = true) noexcept;
+    Result save(std::unique_ptr<Paint> paint, const std::string& path, uint32_t quality = 100) noexcept;
+
+    /**
+     * @brief Export the provided animation data to the specified file path.
+     *
+     * This function exports the given animation data to the provided file path. You can also specify the desired frame rate in frames per second (FPS) by providing the fps parameter.
+     *
+     * @param[in] animation The animation to be saved, including all associated properties.
+     * @param[in] path The path to the file where the animation will be saved.
+     * @param[in] quality The encoded quality level. @c 0 is the minimum, @c 100 is the maximum value(recommended).
+     * @param[in] fps The desired frames per second (FPS). For example, to encode data at 60 FPS, pass 60. Pass 0 to keep the original frame data.
+     *
+     * @return Result::Success if the export succeeds.
+     * @return Result::InsufficientCondition if there are ongoing resource-saving operations.
+     * @return Result::NonSupport if an attempt is made to save the file with an unknown extension or in an unsupported format.
+     * @return Result::MemoryCorruption in case of an internal error.
+     * @return Result::Unknown if attempting to save an empty paint.
+     *
+     * @note A higher frames per second (FPS) would result in a larger file size. It is recommended to use the default value.
+     * @note Saving can be asynchronous if the assigned thread number is greater than zero. To guarantee the saving is done, call sync() afterwards.
+     *
+     * @see Saver::sync()
+     *
+     * @note Experimental API
+     */
+    Result save(std::unique_ptr<Animation> animation, const std::string& path, uint32_t quality = 100, uint32_t fps = 0) noexcept;
 
     /**
      * @brief Guarantees that the saving task is finished.

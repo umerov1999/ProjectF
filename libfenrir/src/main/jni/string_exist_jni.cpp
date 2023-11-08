@@ -9,8 +9,8 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <utility>
-#include "sha1.hpp"
-#include "crc32.hpp"
+#include "hash/sha1.hpp"
+#include "hash/crc32.hpp"
 #include "fenrir_native.h"
 
 using namespace std;

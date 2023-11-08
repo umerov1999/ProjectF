@@ -85,7 +85,7 @@ make clean
 ./configure \
   --libdir=android-libs/x86_64 \
   --arch=x86_64 \
-  --cpu=x86_64 \
+  --cpu=x86-64 \
   --cross-prefix="${TOOLCHAIN_PREFIX}/x86_64-linux-android${ANDROID_PLATFORM}-" \
   --nm="${TOOLCHAIN_PREFIX}/llvm-nm" \
   --ar="${TOOLCHAIN_PREFIX}/llvm-ar" \

@@ -54,18 +54,25 @@ static int I4xxToI420(const uint8_t* src_y,
   const int dst_y_height = Abs(src_y_height);
   const int dst_uv_width = SUBSAMPLE(dst_y_width, 1, 1);
   const int dst_uv_height = SUBSAMPLE(dst_y_height, 1, 1);
+  int r;
   if (src_uv_width <= 0 || src_uv_height == 0) {
     return -1;
   }
   if (dst_y) {
-    ScalePlane(src_y, src_stride_y, src_y_width, src_y_height, dst_y,
-               dst_stride_y, dst_y_width, dst_y_height, kFilterBilinear);
+    r = ScalePlane(src_y, src_stride_y, src_y_width, src_y_height, dst_y,
+                   dst_stride_y, dst_y_width, dst_y_height, kFilterBilinear);
+    if (r != 0) {
+      return r;
+    }
   }
-  ScalePlane(src_u, src_stride_u, src_uv_width, src_uv_height, dst_u,
-             dst_stride_u, dst_uv_width, dst_uv_height, kFilterBilinear);
-  ScalePlane(src_v, src_stride_v, src_uv_width, src_uv_height, dst_v,
-             dst_stride_v, dst_uv_width, dst_uv_height, kFilterBilinear);
-  return 0;
+  r = ScalePlane(src_u, src_stride_u, src_uv_width, src_uv_height, dst_u,
+                 dst_stride_u, dst_uv_width, dst_uv_height, kFilterBilinear);
+  if (r != 0) {
+    return r;
+  }
+  r = ScalePlane(src_v, src_stride_v, src_uv_width, src_uv_height, dst_v,
+                 dst_stride_v, dst_uv_width, dst_uv_height, kFilterBilinear);
+  return r;
 }
 
 // Copy I420 with optional flipping.
@@ -526,18 +533,25 @@ static int Ix10ToI010(const uint16_t* src_y,
   const int src_uv_height = SUBSAMPLE(height, subsample_y, subsample_y);
   const int dst_uv_width = SUBSAMPLE(dst_y_width, 1, 1);
   const int dst_uv_height = SUBSAMPLE(dst_y_height, 1, 1);
+  int r;
   if (width <= 0 || height == 0) {
     return -1;
   }
   if (dst_y) {
-    ScalePlane_12(src_y, src_stride_y, width, height, dst_y, dst_stride_y,
-                  dst_y_width, dst_y_height, kFilterBilinear);
+    r = ScalePlane_12(src_y, src_stride_y, width, height, dst_y, dst_stride_y,
+                      dst_y_width, dst_y_height, kFilterBilinear);
+    if (r != 0) {
+      return r;
+    }
   }
-  ScalePlane_12(src_u, src_stride_u, src_uv_width, src_uv_height, dst_u,
-                dst_stride_u, dst_uv_width, dst_uv_height, kFilterBilinear);
-  ScalePlane_12(src_v, src_stride_v, src_uv_width, src_uv_height, dst_v,
-                dst_stride_v, dst_uv_width, dst_uv_height, kFilterBilinear);
-  return 0;
+  r = ScalePlane_12(src_u, src_stride_u, src_uv_width, src_uv_height, dst_u,
+                    dst_stride_u, dst_uv_width, dst_uv_height, kFilterBilinear);
+  if (r != 0) {
+    return r;
+  }
+  r = ScalePlane_12(src_v, src_stride_v, src_uv_width, src_uv_height, dst_v,
+                    dst_stride_v, dst_uv_width, dst_uv_height, kFilterBilinear);
+  return r;
 }
 
 LIBYUV_API
@@ -776,6 +790,7 @@ int I422ToNV21(const uint8_t* src_y,
 
   // Allocate u and v buffers
   align_buffer_64(plane_u, halfwidth * halfheight * 2);
+  if (!plane_u) return 1;
   uint8_t* plane_v = plane_u + halfwidth * halfheight;
 
   I422ToI420(src_y, src_stride_y, src_u, src_stride_u, src_v, src_stride_v,
@@ -892,6 +907,7 @@ int MT2TToP010(const uint8_t* src_y,
     void (*UnpackMT2T)(const uint8_t* src, uint16_t* dst, size_t size) =
         UnpackMT2T_C;
     align_buffer_64(row_buf, row_buf_size);
+    if (!row_buf) return 1;
 
 #if defined(HAS_UNPACKMT2T_NEON)
     if (TestCpuFlag(kCpuHasNEON)) {
@@ -1091,6 +1107,7 @@ int I422ToNV21(const uint8_t* src_y,
     // Allocate 2 rows of vu.
     int awidth = halfwidth * 2;
     align_buffer_64(row_vu_0, awidth * 2);
+    if (!row_vu_0) return 1;
     uint8_t* row_vu_1 = row_vu_0 + awidth;
 
     for (y = 0; y < height - 1; y += 2) {
@@ -1330,18 +1347,22 @@ int NV12ToNV24(const uint8_t* src_y,
                int dst_stride_uv,
                int width,
                int height) {
+  int r;
   if (width <= 0 || height == 0) {
     return -1;
   }
 
   if (dst_y) {
-    ScalePlane(src_y, src_stride_y, width, height, dst_y, dst_stride_y,
-               Abs(width), Abs(height), kFilterBilinear);
+    r = ScalePlane(src_y, src_stride_y, width, height, dst_y, dst_stride_y,
+                   Abs(width), Abs(height), kFilterBilinear);
+    if (r != 0) {
+      return r;
+    }
   }
-  UVScale(src_uv, src_stride_uv, SUBSAMPLE(width, 1, 1),
-          SUBSAMPLE(height, 1, 1), dst_uv, dst_stride_uv, Abs(width),
-          Abs(height), kFilterBilinear);
-  return 0;
+  r = UVScale(src_uv, src_stride_uv, SUBSAMPLE(width, 1, 1),
+              SUBSAMPLE(height, 1, 1), dst_uv, dst_stride_uv, Abs(width),
+              Abs(height), kFilterBilinear);
+  return r;
 }
 
 LIBYUV_API
@@ -1355,17 +1376,21 @@ int NV16ToNV24(const uint8_t* src_y,
                int dst_stride_uv,
                int width,
                int height) {
+  int r;
   if (width <= 0 || height == 0) {
     return -1;
   }
 
   if (dst_y) {
-    ScalePlane(src_y, src_stride_y, width, height, dst_y, dst_stride_y,
-               Abs(width), Abs(height), kFilterBilinear);
+    r = ScalePlane(src_y, src_stride_y, width, height, dst_y, dst_stride_y,
+                   Abs(width), Abs(height), kFilterBilinear);
+    if (r != 0) {
+      return r;
+    }
   }
-  UVScale(src_uv, src_stride_uv, SUBSAMPLE(width, 1, 1), height, dst_uv,
-          dst_stride_uv, Abs(width), Abs(height), kFilterBilinear);
-  return 0;
+  r = UVScale(src_uv, src_stride_uv, SUBSAMPLE(width, 1, 1), height, dst_uv,
+              dst_stride_uv, Abs(width), Abs(height), kFilterBilinear);
+  return r;
 }
 
 // Any P[420]1[02] to I[420]1[02] format with mirroring.
@@ -1443,18 +1468,22 @@ int P010ToP410(const uint16_t* src_y,
                int dst_stride_uv,
                int width,
                int height) {
+  int r;
   if (width <= 0 || height == 0) {
     return -1;
   }
 
   if (dst_y) {
-    ScalePlane_16(src_y, src_stride_y, width, height, dst_y, dst_stride_y,
-                  Abs(width), Abs(height), kFilterBilinear);
+    r = ScalePlane_16(src_y, src_stride_y, width, height, dst_y, dst_stride_y,
+                      Abs(width), Abs(height), kFilterBilinear);
+    if (r != 0) {
+      return r;
+    }
   }
-  UVScale_16(src_uv, src_stride_uv, SUBSAMPLE(width, 1, 1),
-             SUBSAMPLE(height, 1, 1), dst_uv, dst_stride_uv, Abs(width),
-             Abs(height), kFilterBilinear);
-  return 0;
+  r = UVScale_16(src_uv, src_stride_uv, SUBSAMPLE(width, 1, 1),
+                 SUBSAMPLE(height, 1, 1), dst_uv, dst_stride_uv, Abs(width),
+                 Abs(height), kFilterBilinear);
+  return r;
 }
 
 LIBYUV_API
@@ -1468,17 +1497,21 @@ int P210ToP410(const uint16_t* src_y,
                int dst_stride_uv,
                int width,
                int height) {
+  int r;
   if (width <= 0 || height == 0) {
     return -1;
   }
 
   if (dst_y) {
-    ScalePlane_16(src_y, src_stride_y, width, height, dst_y, dst_stride_y,
-                  Abs(width), Abs(height), kFilterBilinear);
+    r = ScalePlane_16(src_y, src_stride_y, width, height, dst_y, dst_stride_y,
+                      Abs(width), Abs(height), kFilterBilinear);
+    if (r != 0) {
+      return r;
+    }
   }
-  UVScale_16(src_uv, src_stride_uv, SUBSAMPLE(width, 1, 1), height, dst_uv,
-             dst_stride_uv, Abs(width), Abs(height), kFilterBilinear);
-  return 0;
+  r = UVScale_16(src_uv, src_stride_uv, SUBSAMPLE(width, 1, 1), height, dst_uv,
+                 dst_stride_uv, Abs(width), Abs(height), kFilterBilinear);
+  return r;
 }
 
 // Convert YUY2 to I420.
@@ -2660,6 +2693,7 @@ int RGB24ToI420(const uint8_t* src_rgb24,
     // Allocate 2 rows of ARGB.
     const int row_size = (width * 4 + 31) & ~31;
     align_buffer_64(row, row_size * 2);
+    if (!row) return 1;
 #endif
 
     for (y = 0; y < height - 1; y += 2) {
@@ -2836,6 +2870,7 @@ int RGB24ToJ420(const uint8_t* src_rgb24,
     // Allocate 2 rows of ARGB.
     const int row_size = (width * 4 + 31) & ~31;
     align_buffer_64(row, row_size * 2);
+    if (!row) return 1;
 #endif
 
     for (y = 0; y < height - 1; y += 2) {
@@ -3015,6 +3050,7 @@ int RAWToI420(const uint8_t* src_raw,
     // Allocate 2 rows of ARGB.
     const int row_size = (width * 4 + 31) & ~31;
     align_buffer_64(row, row_size * 2);
+    if (!row) return 1;
 #endif
 
     for (y = 0; y < height - 1; y += 2) {
@@ -3191,6 +3227,7 @@ int RAWToJ420(const uint8_t* src_raw,
     // Allocate 2 rows of ARGB.
     const int row_size = (width * 4 + 31) & ~31;
     align_buffer_64(row, row_size * 2);
+    if (!row) return 1;
 #endif
 
     for (y = 0; y < height - 1; y += 2) {
@@ -3369,6 +3406,7 @@ int RGB565ToI420(const uint8_t* src_rgb565,
     // Allocate 2 rows of ARGB.
     const int row_size = (width * 4 + 31) & ~31;
     align_buffer_64(row, row_size * 2);
+    if (!row) return 1;
 #endif
     for (y = 0; y < height - 1; y += 2) {
 #if (defined(HAS_RGB565TOYROW_NEON) || defined(HAS_RGB565TOYROW_MSA) || \
@@ -3549,6 +3587,7 @@ int ARGB1555ToI420(const uint8_t* src_argb1555,
     // Allocate 2 rows of ARGB.
     const int row_size = (width * 4 + 31) & ~31;
     align_buffer_64(row, row_size * 2);
+    if (!row) return 1;
 #endif
 
     for (y = 0; y < height - 1; y += 2) {
@@ -3762,6 +3801,7 @@ int ARGB4444ToI420(const uint8_t* src_argb4444,
     // Allocate 2 rows of ARGB.
     const int row_size = (width * 4 + 31) & ~31;
     align_buffer_64(row, row_size * 2);
+    if (!row) return 1;
 #endif
 
     for (y = 0; y < height - 1; y += 2) {

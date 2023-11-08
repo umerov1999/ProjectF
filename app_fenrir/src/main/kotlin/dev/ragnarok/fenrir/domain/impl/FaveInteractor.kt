@@ -273,6 +273,20 @@ class FaveInteractor(
         }
     }
 
+    override fun getByLinksArticles(
+        accountId: Long,
+        links: String?
+    ): Single<List<Article>> {
+        return networker.vkDefault(accountId)
+            .fave().getByLinksArticles(links).map { items ->
+                val articles = ArrayList<Article>(items.size)
+                for (dto in items) {
+                    articles.add(transform(dto))
+                }
+                articles
+            }
+    }
+
     override fun getPages(
         accountId: Long,
         count: Int,

@@ -32,11 +32,11 @@ namespace tvg
 using RenderData = void*;
 using pixel_t = uint32_t;
 
-enum RenderUpdateFlag : uint8_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, All = 255};
+enum RenderUpdateFlag : uint8_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, Blend = 128, All = 255};
 
 struct Surface;
 
-enum ColorSpace
+enum ColorSpace : uint8_t
 {
     ABGR8888 = 0,      //The channels are joined in the order: alpha, blue, green, red. Colors are alpha-premultiplied.
     ARGB8888,          //The channels are joined in the order: alpha, red, green, blue. Colors are alpha-premultiplied.
@@ -123,10 +123,10 @@ struct RenderTransform
     float scale = 1.0f;   //scale factor
     bool overriding = false;  //user transform?
 
-    bool update();
+    void update();
     void override(const Matrix& m);
 
-    RenderTransform();
+    RenderTransform() {}
     RenderTransform(const RenderTransform* lhs, const RenderTransform* rhs);
 };
 
@@ -138,9 +138,9 @@ struct RenderStroke
     float* dashPattern = nullptr;
     uint32_t dashCnt = 0;
     float dashOffset = 0.0f;
+    float miterlimit = 4.0f;
     StrokeCap cap = StrokeCap::Square;
     StrokeJoin join = StrokeJoin::Bevel;
-    float miterlimit = 4.0f;
     bool strokeFirst = false;
 
     struct {
@@ -164,8 +164,8 @@ struct RenderShape
     } path;
 
     Fill *fill = nullptr;
-    RenderStroke *stroke = nullptr;
     uint8_t color[4] = {0, 0, 0, 0};    //r, g, b, a
+    RenderStroke *stroke = nullptr;
     FillRule rule = FillRule::Winding;
 
     ~RenderShape()
@@ -196,7 +196,7 @@ struct RenderShape
         return true;
     }
 
-    bool strokeColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
+    bool strokeFill(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
     {
         if (!stroke) return false;
 

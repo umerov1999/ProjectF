@@ -602,7 +602,6 @@ public class Zstd {
      *
      * @param src the compressed buffer
      * @param srcPosition offset of the compressed data inside the src buffer
-     * @param srcSize length of the compressed data inside the src buffer
      * @return the number of bytes of the original buffer
      *         0 if the original size is not known,
      *         negative if there is an error decoding the frame header
@@ -630,8 +629,6 @@ public class Zstd {
      * Return the original size of a compressed buffer (if known)
      *
      * @param src the compressed buffer
-     * @param srcPosition offset of the compressed data inside the src buffer
-     * @param srcSize length of the compressed data inside the src buffer
      * @return the number of bytes of the original buffer
      *         0 if the original size is not known,
      *         negative if there is an error decoding the frame header

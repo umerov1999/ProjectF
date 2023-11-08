@@ -136,7 +136,7 @@ static LoadModule* _find(FileType type)
             break;
         }
     }
-    TVGLOG("LOADER", "%s format is not supported", format);
+    TVGLOG("RENDERER", "%s format is not supported", format);
 #endif
     return nullptr;
 }
@@ -170,7 +170,7 @@ static LoadModule* _findByType(const string& mimeType)
     else if (mimeType == "jpg" || mimeType == "jpeg") type = FileType::Jpg;
     else if (mimeType == "webp") type = FileType::Webp;
     else {
-        TVGLOG("LOADER", "Given mimetype is unknown = \"%s\".", mimeType.c_str());
+        TVGLOG("RENDERER", "Given mimetype is unknown = \"%s\".", mimeType.c_str());
         return nullptr;
     }
 
@@ -238,11 +238,11 @@ shared_ptr<LoadModule> LoaderMgr::loader(const char* data, uint32_t size, const 
 }
 
 
-shared_ptr<LoadModule> LoaderMgr::loader(const uint32_t *data, uint32_t w, uint32_t h, bool copy)
+shared_ptr<LoadModule> LoaderMgr::loader(const uint32_t *data, uint32_t w, uint32_t h, bool premultiplied, bool copy)
 {
     //function is dedicated for raw images only
     auto loader = new RawLoader;
-    if (loader->open(data, w, h, copy)) return shared_ptr<LoadModule>(loader);
+    if (loader->open(data, w, h, premultiplied, copy)) return shared_ptr<LoadModule>(loader);
     else delete(loader);
 
     return nullptr;
