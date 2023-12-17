@@ -72,6 +72,11 @@ namespace TagLib {
       String toString() const override;
 
       /*!
+       * Returns email, rating and counter.
+       */
+      StringList toStringList() const override;
+
+      /*!
        * Returns the email.
        *
        * \see setEmail()
@@ -126,6 +131,7 @@ namespace TagLib {
       PopularimeterFrame(const ByteVector &data, Header *h);
 
       class PopularimeterFramePrivate;
+      TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
       std::unique_ptr<PopularimeterFramePrivate> d;
     };
 

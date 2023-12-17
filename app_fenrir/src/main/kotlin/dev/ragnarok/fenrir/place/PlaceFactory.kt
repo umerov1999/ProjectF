@@ -329,6 +329,11 @@ object PlaceFactory {
             .setArguments(buildArgsForFave(accountId, photos, position))
     }
 
+    fun getFavePhotosGallery(accountId: Long, photos: Long, position: Int): Place {
+        Utils.registerParcelNative(photos)
+        return Place(Place.FAVE_PHOTOS_GALLERY)
+            .setArguments(buildArgsForFave(accountId, photos, position))
+    }
 
     fun getCreatePollPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.CREATE_POLL).setArguments(

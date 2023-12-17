@@ -24,21 +24,30 @@
 #define _TVG_LOAD_MODULE_H_
 
 #include "tvgRender.h"
+#include "tvgInlist.h"
 
 namespace tvg
 {
 
-class LoadModule
+struct LoadModule
 {
-public:
+    INLIST_ITEM(LoadModule);
+
+    //Use either hashkey(data) or hashpath(path)
+    uint64_t hashkey;
+    string hashpath;
+
     float w = 0, h = 0;                             //default image size
     ColorSpace cs = ColorSpace::Unsupported;        //must be clarified at open()
+    FileType type;                                  //current loader file type
+    uint16_t sharing = 0;                           //reference count
+    bool readied = false;                           //read done already.
 
+    LoadModule(FileType type) : type(type) {}
     virtual ~LoadModule() {}
 
     virtual bool open(const string& path) { return false; }
-    virtual bool open(const char* data, uint32_t size, bool copy) { return false; }
-    virtual bool open(const uint32_t* data, uint32_t w, uint32_t h, bool premultiplied, bool copy) { return false; }
+    virtual bool open(const char* data, uint32_t size, const string& rpath, bool copy) { return false; }
 
     //Override this if the vector-format has own resizing policy.
     virtual bool resize(Paint* paint, float w, float h) { return false; }
@@ -46,11 +55,22 @@ public:
     virtual bool animatable() { return false; }  //true if this loader supports animation.
     virtual void sync() {};  //finish immediately if any async update jobs.
 
-    virtual bool read() = 0;
-    virtual bool close() = 0;
+    virtual bool read()
+    {
+        if (readied) return false;
+        readied = true;
+        return true;
+    }
+
+    virtual bool close()
+    {
+        if (sharing == 0) return true;
+        --sharing;
+        return false;
+    }
 
     virtual unique_ptr<Surface> bitmap() { return nullptr; }
-    virtual unique_ptr<Paint> paint() { return nullptr; }
+    virtual Paint* paint() { return nullptr; }
 };
 
 }

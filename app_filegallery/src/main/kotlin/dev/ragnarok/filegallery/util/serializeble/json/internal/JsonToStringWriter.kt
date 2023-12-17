@@ -25,7 +25,7 @@ package dev.ragnarok.filegallery.util.serializeble.json.internal
  * 3) We pool char arrays in order to save excess resizes, allocations
  *    and nulls-out of arrays.
  */
-internal class JsonToStringWriter : JsonWriter {
+internal class JsonToStringWriter : InternalJsonWriter {
     private var array: CharArray = CharArrayPool.take()
     private var size = 0
 

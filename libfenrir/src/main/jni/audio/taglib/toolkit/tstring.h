@@ -379,6 +379,11 @@ namespace TagLib {
     static String number(int n);
 
     /*!
+     * Converts the base-10 integer \a n to a string.
+     */
+    static String fromLongLong(long long n);
+
+    /*!
      * Returns a reference to the character at position \a i.
      */
     wchar_t &operator[](int i);
@@ -493,7 +498,7 @@ namespace TagLib {
     /*!
      * Exchanges the content of the String by the content of \a s.
      */
-    void swap(String &s);
+    void swap(String &s) noexcept;
 
     /*!
      * To be able to use this class in a Map, this operator needed to be
@@ -512,6 +517,7 @@ namespace TagLib {
 
   private:
     class StringPrivate;
+    TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
     std::shared_ptr<StringPrivate> d;
   };
 }  // namespace TagLib

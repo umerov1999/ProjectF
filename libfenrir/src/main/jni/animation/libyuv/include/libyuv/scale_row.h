@@ -180,6 +180,8 @@ extern "C" {
 
 #if !defined(LIBYUV_DISABLE_RVV) && defined(__riscv_vector)
 #define HAS_SCALEADDROW_RVV
+// TODO: Test ScaleARGBRowDownEven_RVV and enable it
+// #define HAS_SCALEARGBROWDOWNEVEN_RVV
 #define HAS_SCALEUVROWDOWN4_RVV
 #define HAS_SCALEUVROWDOWNEVEN_RVV
 #if __riscv_v_intrinsic == 11000

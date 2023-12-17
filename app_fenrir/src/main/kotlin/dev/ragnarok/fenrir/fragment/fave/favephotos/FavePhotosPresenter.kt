@@ -6,7 +6,13 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.module.parcel.ParcelFlags
+import dev.ragnarok.fenrir.module.parcel.ParcelNative
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class FavePhotosPresenter(accountId: Long, savedInstanceState: Bundle?) :
@@ -129,11 +135,39 @@ class FavePhotosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun firePhotoClick(position: Int) {
-        view?.goToGallery(
-            accountId,
-            mPhotos,
-            position
-        )
+        if (FenrirNative.isNativeLoaded && Settings.get().main().isNative_parcel_photo) {
+            appendDisposable(
+                Single.create { v: SingleEmitter<Long> ->
+                    val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
+                    mem.writeInt(mPhotos.size)
+                    for (i in mPhotos.indices) {
+                        if (v.isDisposed) {
+                            mem.forceDestroy()
+                            return@create
+                        }
+                        val photo = mPhotos[i]
+                        mem.writeParcelable(photo)
+                    }
+                    if (v.isDisposed) {
+                        mem.forceDestroy()
+                    } else {
+                        v.onSuccess(mem.nativePointer)
+                    }
+                }.fromIOToMain()
+                    .subscribe({
+                        view?.goToGalleryNative(
+                            accountId,
+                            it,
+                            position
+                        )
+                    }) { obj -> obj.printStackTrace() })
+        } else {
+            view?.goToGallery(
+                accountId,
+                mPhotos,
+                position
+            )
+        }
     }
 
     fun fireScrollToEnd() {

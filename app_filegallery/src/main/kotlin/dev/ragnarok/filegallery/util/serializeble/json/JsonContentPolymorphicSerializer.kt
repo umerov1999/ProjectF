@@ -6,7 +6,6 @@ package dev.ragnarok.filegallery.util.serializeble.json
 
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SealedClassSerializer
@@ -86,14 +85,12 @@ abstract class JsonContentPolymorphicSerializer<T : Any>(private val baseClass: 
      * However, this descriptor can be overridden to achieve better representation of custom transformed JSON shape
      * for schema generating/introspection purposes.
      */
-    @OptIn(InternalSerializationApi::class)
     override val descriptor: SerialDescriptor =
         buildSerialDescriptor(
             "JsonContentPolymorphicSerializer<${baseClass.simpleName}>",
             PolymorphicKind.SEALED
         )
 
-    @OptIn(InternalSerializationApi::class)
     final override fun serialize(encoder: Encoder, value: T) {
         val actualSerializer =
             encoder.serializersModule.getPolymorphic(baseClass, value)

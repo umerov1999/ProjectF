@@ -11,8 +11,8 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 else ()
     #set(LTO_LINK "-flto=thin")
     set(LTO_LINK "")
-    set(CMAKE_CXX_FLAGS "-std=c++2a -DANDROID -ffunction-sections -fdata-sections -fmerge-all-constants ${LTO_LINK}")
-    set(CMAKE_C_FLAGS "-w -DANDROID -D_LARGEFILE_SOURCE=1 -ffunction-sections -fdata-sections -fmerge-all-constants ${LTO_LINK}")
+    set(CMAKE_CXX_FLAGS "-std=c++2a -DANDROID -DFENRIR_NATIVE_LOG_DISABLED -ffunction-sections -fdata-sections -fmerge-all-constants ${LTO_LINK}")
+    set(CMAKE_C_FLAGS "-w -DANDROID -DFENRIR_NATIVE_LOG_DISABLED -D_LARGEFILE_SOURCE=1 -ffunction-sections -fdata-sections -fmerge-all-constants ${LTO_LINK}")
     set(OPTIMIZE_NORMAL "-Os")
     set(OPTIMIZE_FAST "-O3")
     set(SYM_VISIBILITY "-fvisibility=hidden")
@@ -481,6 +481,7 @@ target_compile_options(common PRIVATE
 
 add_library(fenrir_jni
         SHARED
+        jni_call.cpp
         lottie_jni.cpp
         thorvg_jni.cpp
         audio/ffmpeg/ffmpeg_jni.cpp

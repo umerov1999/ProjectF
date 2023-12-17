@@ -85,7 +85,7 @@ namespace TagLib {
       /*!
        * Exchanges the content of this item by the content of \a item.
        */
-      void swap(Item &item);
+      void swap(Item &item) noexcept;
 
       /*!
        * Returns the key.
@@ -104,11 +104,6 @@ namespace TagLib {
       */
       void setBinaryData(const ByteVector &value);
 
-#ifndef DO_NOT_DOCUMENT
-      /* Remove in next binary incompatible release */
-      ByteVector value() const;
-#endif
-
       /*!
        * Sets the key for the item to \a key.
        */
@@ -125,7 +120,7 @@ namespace TagLib {
        * Sets the text value of the item to the list of values in \a value and clears
        * any previous contents.
        *
-       * \see toStringList()
+       * \see values()
        */
       void setValues(const StringList &values);
 
@@ -139,7 +134,7 @@ namespace TagLib {
       /*!
        * Appends \a values to extend the current list of text values.
        *
-       * \see toStringList()
+       * \see values()
        */
       void appendValues(const StringList &values);
 
@@ -154,11 +149,6 @@ namespace TagLib {
        * an empty String.
        */
       String toString() const;
-
-#ifndef DO_NOT_DOCUMENT
-      /* Remove in next binary incompatible release */
-      StringList toStringList() const;
-#endif
 
       /*!
        * Returns the list of text values.  If the data type is not \a Text, always
@@ -205,6 +195,7 @@ namespace TagLib {
 
     private:
       class ItemPrivate;
+      TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
       std::unique_ptr<ItemPrivate> d;
     };
   }  // namespace APE

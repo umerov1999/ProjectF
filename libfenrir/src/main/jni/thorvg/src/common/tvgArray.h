@@ -25,6 +25,7 @@
 
 #include <memory.h>
 #include <cstdint>
+#include <cstdlib>
 
 namespace tvg
 {
@@ -37,6 +38,11 @@ struct Array
     uint32_t reserved = 0;
 
     Array(){}
+
+    Array(int32_t size)
+    {
+        reserve(size);
+    }
 
     Array(const Array& rhs)
     {

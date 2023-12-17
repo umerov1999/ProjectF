@@ -80,6 +80,11 @@ namespace TagLib {
       String toString() const override;
 
       /*!
+       * Returns a string list containing the description and mime-type.
+       */
+      StringList toStringList() const override;
+
+      /*!
        * Returns the text encoding used for the description.
        *
        * \see setTextEncoding()
@@ -167,6 +172,7 @@ namespace TagLib {
       void parseFields(const ByteVector &data) override;
       ByteVector renderFields() const override;
       class AttachedPictureFramePrivate;
+      TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
       std::unique_ptr<AttachedPictureFramePrivate> d;
 
     private:

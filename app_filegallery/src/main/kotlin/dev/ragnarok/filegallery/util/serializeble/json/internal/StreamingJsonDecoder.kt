@@ -13,8 +13,8 @@ import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.StringJson
 import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.TC_COMMA
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.MissingFieldException
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.ChunkedDecoder
@@ -22,6 +22,7 @@ import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.CompositeDecoder.Companion.DECODE_DONE
 import kotlinx.serialization.encoding.CompositeDecoder.Companion.UNKNOWN_NAME
 import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.findPolymorphicSerializer
 import kotlinx.serialization.internal.AbstractPolymorphicSerializer
 import kotlinx.serialization.modules.SerializersModule
 
@@ -60,8 +61,6 @@ internal open class StreamingJsonDecoder(
 
     override fun decodeJsonElement(): JsonElement = JsonTreeReader(json.configuration, lexer).read()
 
-    @OptIn(InternalSerializationApi::class)
-    @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
     override fun <T> decodeSerializableValue(deserializer: DeserializationStrategy<T>): T {
         try {
             /*
@@ -84,18 +83,22 @@ internal open class StreamingJsonDecoder(
 
             val discriminator = deserializer.descriptor.classDiscriminator(json)
             val type = lexer.peekLeadingMatchingValue(discriminator, configuration.isLenient)
-            var actualSerializer: DeserializationStrategy<Any>? = null
-            if (type != null) {
-                actualSerializer = deserializer.findPolymorphicSerializerOrNull(this, type)
-            }
-            if (actualSerializer == null) {
-                // Fallback if we haven't found discriminator or serializer
+                ?: // Fallback to slow path if we haven't found discriminator on first try
                 return decodeSerializableValuePolymorphic(deserializer as DeserializationStrategy<T>)
-            }
+
+            @Suppress("UNCHECKED_CAST")
+            val actualSerializer = try {
+                deserializer.findPolymorphicSerializer(this, type)
+            } catch (it: SerializationException) { // Wrap SerializationException into JsonDecodingException to preserve position, path, and input.
+                // Split multiline message from private core function:
+                // core/commonMain/src/kotlinx/serialization/internal/AbstractPolymorphicSerializer.kt:102
+                val message = it.message?.substringBefore('\n')?.removeSuffix(".").orEmpty()
+                val hint = it.message?.substringAfter('\n', missingDelimiterValue = "").orEmpty()
+                lexer.fail(message, hint = hint)
+            } as DeserializationStrategy<T>
 
             discriminatorHolder = DiscriminatorHolder(discriminator)
-            @Suppress("UNCHECKED_CAST")
-            return actualSerializer.deserialize(this) as T
+            return actualSerializer.deserialize(this)
 
         } catch (e: MissingFieldException) {
             // Add "at path" if and only if we've just caught an exception and it hasn't been augmented yet
@@ -139,6 +142,9 @@ internal open class StreamingJsonDecoder(
         if (json.configuration.ignoreUnknownKeys && descriptor.elementsCount == 0) {
             skipLeftoverElements(descriptor)
         }
+        if (lexer.tryConsumeComma() && !json.configuration.allowTrailingComma) lexer.invalidTrailingComma(
+            ""
+        )
         // First consume the object so we know it's correct
         lexer.consumeNextToken(mode.end)
         // Then cleanup the path
@@ -212,12 +218,12 @@ internal open class StreamingJsonDecoder(
 
         return if (lexer.canConsumeValue()) {
             if (decodingKey) {
-                if (currentIndex == -1) lexer.require(!hasComma) { "Unexpected trailing comma" }
+                if (currentIndex == -1) lexer.require(!hasComma) { "Unexpected leading comma" }
                 else lexer.require(hasComma) { "Expected comma after the key-value pair" }
             }
             ++currentIndex
         } else {
-            if (hasComma) lexer.fail("Expected '}', but had ',' instead")
+            if (hasComma && !json.configuration.allowTrailingComma) lexer.invalidTrailingComma()
             DECODE_DONE
         }
     }
@@ -257,7 +263,7 @@ internal open class StreamingJsonDecoder(
                 hasComma = handleUnknown(key)
             }
         }
-        if (hasComma) lexer.fail("Unexpected trailing comma")
+        if (hasComma && !json.configuration.allowTrailingComma) lexer.invalidTrailingComma()
 
         return elementMarker?.nextUnmarkedIndex() ?: DECODE_DONE
     }
@@ -280,28 +286,19 @@ internal open class StreamingJsonDecoder(
             if (currentIndex != -1 && !hasComma) lexer.fail("Expected end of the array or comma")
             ++currentIndex
         } else {
-            if (hasComma) lexer.fail("Unexpected trailing comma")
+            if (hasComma && !json.configuration.allowTrailingComma) lexer.invalidTrailingComma("array")
             DECODE_DONE
         }
     }
 
-
+    /*
+     * The primitives are allowed to be quoted and unquoted
+     * to simplify map key parsing and integrations with third-party API.
+     */
     override fun decodeBoolean(): Boolean {
-        /*
-         * We prohibit any boolean literal that is not strictly 'true' or 'false' as it is considered way too
-         * error-prone, but allow quoted literal in relaxed mode for booleans.
-         */
-        return if (configuration.isLenient) {
-            lexer.consumeBooleanLenient()
-        } else {
-            lexer.consumeBoolean()
-        }
+        return lexer.consumeBooleanLenient()
     }
 
-    /*
-     * The rest of the primitives are allowed to be quoted and unquoted
-     * to simplify integrations with third-party API.
-     */
     override fun decodeByte(): Byte {
         val value = lexer.consumeNumericLiteral()
         // Check for overflow
@@ -382,13 +379,14 @@ internal open class StreamingJsonDecoder(
     }
 }
 
-@InternalSerializationApi
-fun <T> Json.decodeStringToJsonTree(
+@JsonFriendModuleApi // used in json-tests
+fun <T> decodeStringToJsonTree(
+    json: Json,
     deserializer: DeserializationStrategy<T>,
     source: String
 ): JsonElement {
     val lexer = StringJsonLexer(source)
-    val input = StreamingJsonDecoder(this, WriteMode.OBJ, lexer, deserializer.descriptor, null)
+    val input = StreamingJsonDecoder(json, WriteMode.OBJ, lexer, deserializer.descriptor, null)
     val tree = input.decodeJsonElement()
     lexer.expectEof()
     return tree
@@ -408,7 +406,7 @@ internal class JsonDecoderForUnsignedTypes(
     override fun decodeShort(): Short = lexer.parseString("UShort") { toUShort().toShort() }
 }
 
-internal inline fun <T> AbstractJsonLexer.parseString(
+private inline fun <T> AbstractJsonLexer.parseString(
     expectedType: String,
     block: String.() -> T
 ): T {

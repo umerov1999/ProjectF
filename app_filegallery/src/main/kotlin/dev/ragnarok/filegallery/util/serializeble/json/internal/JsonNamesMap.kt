@@ -18,6 +18,7 @@ import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeDecoder
 
 internal val JsonDeserializationNamesKey = DescriptorSchemaCache.Key<Map<String, Int>>()
+
 internal val JsonSerializationNamesKey = DescriptorSchemaCache.Key<Array<String>>()
 
 private fun SerialDescriptor.buildDeserializationNamesMap(json: Json): Map<String, Int> {

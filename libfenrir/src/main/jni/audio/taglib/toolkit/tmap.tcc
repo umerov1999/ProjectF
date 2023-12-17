@@ -148,7 +148,6 @@ bool Map<Key, T>::contains(const Key &key) const
 template <class Key, class T>
 Map<Key, T> &Map<Key,T>::erase(Iterator it)
 {
-  detach();
   d->map.erase(it);
   return *this;
 }
@@ -198,7 +197,7 @@ Map<Key, T> &Map<Key, T>::operator=(std::initializer_list<std::pair<const Key, T
 }
 
 template <class Key, class T>
-void Map<Key, T>::swap(Map<Key, T> &m)
+void Map<Key, T>::swap(Map<Key, T> &m) noexcept
 {
   using std::swap;
 

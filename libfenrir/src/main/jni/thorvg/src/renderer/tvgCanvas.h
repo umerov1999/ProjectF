@@ -20,14 +20,11 @@
  * SOFTWARE.
  */
 
-#ifndef _TVG_CANVAS_IMPL_H_
-#define _TVG_CANVAS_IMPL_H_
+#ifndef _TVG_CANVAS_H_
+#define _TVG_CANVAS_H_
 
 #include "tvgPaint.h"
 
-/************************************************************************/
-/* Internal Class Implementation                                        */
-/************************************************************************/
 
 struct Canvas::Impl
 {
@@ -42,8 +39,22 @@ struct Canvas::Impl
 
     ~Impl()
     {
-        clear(true);
+        //make it sure any deffered jobs
+        if (renderer) renderer->sync();
+
+        clearPaints();
         delete(renderer);
+    }
+
+    void clearPaints()
+    {
+        for (auto paint : paints) {
+            P(paint)->unref();
+            if (paint->pImpl->dispose(*renderer) && P(paint)->refCnt == 0) {
+                delete(paint);
+            }
+        }
+        paints.clear();
     }
 
     Result push(unique_ptr<Paint> paint)
@@ -59,22 +70,16 @@ struct Canvas::Impl
         return update(p, true);
     }
 
-    Result clear(bool free)
+    Result clear(bool paints, bool buffer)
     {
-        //Clear render target before drawing
-        if (!renderer || !renderer->clear()) return Result::InsufficientCondition;
+        if (drawing) return Result::InsufficientCondition;
 
-        //Free paints
-        if (free) {
-            for (auto paint : paints) {
-                P(paint)->unref();
-                if (paint->pImpl->dispose(*renderer) && P(paint)->refCnt == 0) {
-                    delete(paint);
-                }
-            }
-            paints.clear();
+        //Clear render target
+        if (buffer) {
+            if (!renderer || !renderer->clear()) return Result::InsufficientCondition;
         }
-        drawing = false;
+
+        if (paints) clearPaints();
 
         return Result::Success;
     }
@@ -143,4 +148,4 @@ struct Canvas::Impl
     }
 };
 
-#endif /* _TVG_CANVAS_IMPL_H_ */
+#endif /* _TVG_CANVAS_H_ */

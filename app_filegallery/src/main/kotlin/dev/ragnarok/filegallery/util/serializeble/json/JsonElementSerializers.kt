@@ -8,7 +8,6 @@ package dev.ragnarok.filegallery.util.serializeble.json
 import dev.ragnarok.filegallery.util.serializeble.json.internal.JsonDecodingException
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.builtins.ListSerializer
@@ -37,7 +36,6 @@ import kotlinx.serialization.encoding.Encoder
  */
 @PublishedApi
 internal object JsonElementSerializer : KSerializer<JsonElement> {
-    @OptIn(InternalSerializationApi::class)
     override val descriptor: SerialDescriptor =
         buildSerialDescriptor(
             "dev.ragnarok.filegallery.util.serializeble.json.JsonElement",
@@ -72,7 +70,6 @@ internal object JsonElementSerializer : KSerializer<JsonElement> {
  */
 @PublishedApi
 internal object JsonPrimitiveSerializer : KSerializer<JsonPrimitive> {
-    @OptIn(InternalSerializationApi::class)
     override val descriptor: SerialDescriptor =
         buildSerialDescriptor(
             "dev.ragnarok.filegallery.util.serializeble.json.JsonPrimitive",
@@ -106,7 +103,6 @@ internal object JsonPrimitiveSerializer : KSerializer<JsonPrimitive> {
 @PublishedApi
 internal object JsonNullSerializer : KSerializer<JsonNull> {
     // technically, JsonNull is an object, but it does not call beginStructure/endStructure at all
-    @OptIn(InternalSerializationApi::class)
     override val descriptor: SerialDescriptor =
         buildSerialDescriptor(
             "dev.ragnarok.filegallery.util.serializeble.json.JsonNull",

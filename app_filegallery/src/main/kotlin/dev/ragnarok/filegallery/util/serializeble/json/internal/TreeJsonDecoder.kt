@@ -26,7 +26,6 @@ import dev.ragnarok.filegallery.util.serializeble.json.long
 import dev.ragnarok.filegallery.util.serializeble.json.schemaCache
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.descriptors.PolymorphicKind
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
@@ -36,12 +35,12 @@ import kotlinx.serialization.internal.NamedValueDecoder
 import kotlinx.serialization.internal.jsonCachedSerialNames
 import kotlinx.serialization.modules.SerializersModule
 
-@InternalSerializationApi
-fun <T> Json.readJson(element: JsonElement, deserializer: DeserializationStrategy<T>): T {
+@JsonFriendModuleApi
+fun <T> readJson(json: Json, element: JsonElement, deserializer: DeserializationStrategy<T>): T {
     val input = when (element) {
-        is JsonObject -> JsonTreeDecoder(this, element)
-        is JsonArray -> JsonTreeListDecoder(this, element)
-        is JsonLiteral, JsonNull -> JsonPrimitiveDecoder(this, element as JsonPrimitive)
+        is JsonObject -> JsonTreeDecoder(json, element)
+        is JsonArray -> JsonTreeListDecoder(json, element)
+        is JsonLiteral, JsonNull -> JsonPrimitiveDecoder(json, element as JsonPrimitive)
     }
     return input.decodeSerializableValue(deserializer)
 }
@@ -59,7 +58,6 @@ internal fun <T> Json.readPolymorphicJson(
     ).decodeSerializableValue(deserializer)
 }
 
-@OptIn(InternalSerializationApi::class)
 private sealed class AbstractJsonTreeDecoder(
     override val json: Json,
     open val value: JsonElement
@@ -123,18 +121,7 @@ private sealed class AbstractJsonTreeDecoder(
     override fun decodeTaggedNotNullMark(tag: String): Boolean = currentElement(tag) !== JsonNull
 
     override fun decodeTaggedBoolean(tag: String): Boolean {
-        val value = getPrimitiveValue(tag)
-        if (!json.configuration.isLenient) {
-            val literal = value.asLiteral("boolean")
-            if (literal.isString) throw JsonDecodingException(
-                -1,
-                "Boolean literal for key '$tag' should be unquoted.\n$lenientHint",
-                currentObject().toString()
-            )
-        }
-        return value.primitive("boolean") {
-            booleanOrNull ?: throw IllegalArgumentException() /* Will be handled by 'primitive' */
-        }
+        return getPrimitiveValue(tag).primitive("boolean", JsonPrimitive::booleanOrNull)
     }
 
     override fun decodeTaggedByte(tag: String) = getPrimitiveValue(tag).primitive("byte") {
@@ -324,7 +311,6 @@ private open class JsonTreeDecoder(
         return super.beginStructure(descriptor)
     }
 
-    @OptIn(InternalSerializationApi::class)
     override fun endStructure(descriptor: SerialDescriptor) {
         if (configuration.ignoreUnknownKeys || descriptor.kind is PolymorphicKind) return
         // Validate keys

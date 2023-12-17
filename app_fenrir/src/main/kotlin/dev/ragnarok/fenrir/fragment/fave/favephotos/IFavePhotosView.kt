@@ -10,4 +10,5 @@ interface IFavePhotosView : IMvpView, IErrorView {
     fun notifyDataAdded(position: Int, count: Int)
     fun showRefreshing(refreshing: Boolean)
     fun goToGallery(accountId: Long, photos: ArrayList<Photo>, position: Int)
+    fun goToGalleryNative(accountId: Long, photos: Long, position: Int)
 }

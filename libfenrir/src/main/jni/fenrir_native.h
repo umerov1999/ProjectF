@@ -1,8 +1,7 @@
 #ifndef fenrir_native_h
 #define fenrir_native_h
 
-#ifndef LOG_DISABLED
-
+#ifndef FENRIR_NATIVE_LOG_DISABLED
 #include <android/log.h>
 
 #define FENRIR_NATIVE_LOG_TAG "fenrir_native_lib"

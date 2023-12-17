@@ -114,8 +114,13 @@ class FavePhotosFragment : BaseMvpFragment<FavePhotosPresenter, IFavePhotosView>
     override fun goToGallery(accountId: Long, photos: ArrayList<Photo>, position: Int) {
         getFavePhotosGallery(accountId, photos, position).setActivityResultLauncher(
             requestPhotoUpdate
-        )
-            .tryOpenWith(requireActivity())
+        ).tryOpenWith(requireActivity())
+    }
+
+    override fun goToGalleryNative(accountId: Long, photos: Long, position: Int) {
+        getFavePhotosGallery(accountId, photos, position).setActivityResultLauncher(
+            requestPhotoUpdate
+        ).tryOpenWith(requireActivity())
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FavePhotosPresenter> {

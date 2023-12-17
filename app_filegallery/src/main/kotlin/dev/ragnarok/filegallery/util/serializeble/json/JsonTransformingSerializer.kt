@@ -7,7 +7,6 @@
 package dev.ragnarok.filegallery.util.serializeble.json
 
 import dev.ragnarok.filegallery.util.serializeble.json.internal.writeJson
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -67,10 +66,9 @@ abstract class JsonTransformingSerializer<T : Any>(
      */
     override val descriptor: SerialDescriptor get() = tSerializer.descriptor
 
-    @OptIn(InternalSerializationApi::class)
     final override fun serialize(encoder: Encoder, value: T) {
         val output = encoder.asJsonEncoder()
-        var element = output.json.writeJson(value, tSerializer)
+        var element = writeJson(output.json, value, tSerializer)
         element = transformSerialize(element)
         output.encodeJsonElement(element)
     }

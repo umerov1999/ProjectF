@@ -9,10 +9,10 @@ package dev.ragnarok.filegallery.util.serializeble.json.internal
 import dev.ragnarok.filegallery.util.serializeble.json.Json
 import kotlinx.serialization.ExperimentalSerializationApi
 
-internal fun Composer(sb: JsonWriter, json: Json): Composer =
+internal fun Composer(sb: InternalJsonWriter, json: Json): Composer =
     if (json.configuration.prettyPrint) ComposerWithPrettyPrint(sb, json) else Composer(sb)
 
-internal open class Composer(@JvmField internal val writer: JsonWriter) {
+internal open class Composer(@JvmField internal val writer: InternalJsonWriter) {
     var writingFirst = true
         protected set
 
@@ -41,8 +41,10 @@ internal open class Composer(@JvmField internal val writer: JsonWriter) {
 }
 
 @SuppressAnimalSniffer // Long(Integer).toUnsignedString(long)
-internal class ComposerForUnsignedNumbers(writer: JsonWriter, private val forceQuoting: Boolean) :
-    Composer(writer) {
+internal class ComposerForUnsignedNumbers(
+    writer: InternalJsonWriter,
+    private val forceQuoting: Boolean
+) : Composer(writer) {
     override fun print(v: Int) {
         if (forceQuoting) printQuoted(v.toUInt().toString()) else print(v.toUInt().toString())
     }
@@ -61,15 +63,17 @@ internal class ComposerForUnsignedNumbers(writer: JsonWriter, private val forceQ
 }
 
 @SuppressAnimalSniffer
-internal class ComposerForUnquotedLiterals(writer: JsonWriter, private val forceQuoting: Boolean) :
-    Composer(writer) {
+internal class ComposerForUnquotedLiterals(
+    writer: InternalJsonWriter,
+    private val forceQuoting: Boolean
+) : Composer(writer) {
     override fun printQuoted(value: String) {
         if (forceQuoting) super.printQuoted(value) else super.print(value)
     }
 }
 
 internal class ComposerWithPrettyPrint(
-    writer: JsonWriter,
+    writer: InternalJsonWriter,
     private val json: Json
 ) : Composer(writer) {
     private var level = 0

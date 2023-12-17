@@ -31,10 +31,10 @@ import kotlinx.serialization.internal.NamedValueEncoder
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.collections.set
 
-@InternalSerializationApi
-fun <T> Json.writeJson(value: T, serializer: SerializationStrategy<T>): JsonElement {
+@JsonFriendModuleApi
+fun <T> writeJson(json: Json, value: T, serializer: SerializationStrategy<T>): JsonElement {
     lateinit var result: JsonElement
-    val encoder = JsonTreeEncoder(this) { result = it }
+    val encoder = JsonTreeEncoder(json) { result = it }
     encoder.encodeSerializableValue(serializer, value)
     return result
 }
@@ -196,7 +196,7 @@ private sealed class AbstractJsonTreeEncoder(
     }
 }
 
-internal val SerialDescriptor.requiresTopLevelTag: Boolean
+private val SerialDescriptor.requiresTopLevelTag: Boolean
     get() = kind is PrimitiveKind || kind === SerialKind.ENUM
 
 internal const val PRIMITIVE_TAG = "primitive" // also used in JsonPrimitiveInput

@@ -8,6 +8,7 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
@@ -56,6 +57,9 @@ class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) 
     }
 
     fun hideNotification(position: Int, query: String?) {
+        if (Utils.isHiddenAccount(accountId)) {
+            return
+        }
         actualDataDisposable.add(fInteractor.hide(accountId, query)
             .fromIOToMain()
             .subscribe({

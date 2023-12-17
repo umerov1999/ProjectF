@@ -26,6 +26,7 @@
 #include "apeitem.h"
 
 #include <utility>
+#include <numeric>
 
 #include "tdebug.h"
 
@@ -84,7 +85,7 @@ Item &APE::Item::operator=(const Item &item)
   return *this;
 }
 
-void APE::Item::swap(Item &item)
+void APE::Item::swap(Item &item) noexcept
 {
   using std::swap;
 
@@ -128,14 +129,6 @@ void APE::Item::setBinaryData(const ByteVector &value)
   d->text.clear();
 }
 
-ByteVector APE::Item::value() const
-{
-  // This seems incorrect as it won't be actually rendering the value to keep it
-  // up to date.
-
-  return d->value;
-}
-
 void APE::Item::setKey(const String &key)
 {
   d->key = key;
@@ -175,9 +168,10 @@ int APE::Item::size() const
   switch(d->type) {
     case Text:
       if(!d->text.isEmpty()) {
-        for(const auto &t : std::as_const(d->text))
-          result += 1 + t.data(String::UTF8).size();
-        result -= 1;
+        result = std::accumulate(d->text.cbegin(), d->text.cend(), result,
+            [](int sz, const String &t) {
+          return sz + 1 + t.data(String::UTF8).size();
+        }) - 1;
       }
       break;
 
@@ -187,11 +181,6 @@ int APE::Item::size() const
       break;
   }
   return result;
-}
-
-StringList APE::Item::toStringList() const
-{
-  return d->text;
 }
 
 StringList APE::Item::values() const
@@ -238,22 +227,22 @@ void APE::Item::parse(const ByteVector &data)
 
   d->key = String(&data[8], String::Latin1);
 
-  const ByteVector value = data.mid(8 + d->key.size() + 1, valueLength);
+  const ByteVector val = data.mid(8 + d->key.size() + 1, valueLength);
 
   setReadOnly(flags & 1);
   setType(static_cast<ItemTypes>((flags >> 1) & 3));
 
   if(Text == d->type)
-    d->text = StringList(ByteVectorList::split(value, '\0'), String::UTF8);
+    d->text = StringList(ByteVectorList::split(val, '\0'), String::UTF8);
   else
-    d->value = value;
+    d->value = val;
 }
 
 ByteVector APE::Item::render() const
 {
   ByteVector data;
   unsigned int flags = ((d->readOnly) ? 1 : 0) | (d->type << 1);
-  ByteVector value;
+  ByteVector val;
 
   if(isEmpty())
     return data;
@@ -261,21 +250,21 @@ ByteVector APE::Item::render() const
   if(d->type == Text) {
     auto it = d->text.cbegin();
 
-    value.append(it->data(String::UTF8));
+    val.append(it->data(String::UTF8));
     for(it = std::next(it); it != d->text.cend(); ++it) {
-      value.append('\0');
-      value.append(it->data(String::UTF8));
+      val.append('\0');
+      val.append(it->data(String::UTF8));
     }
-    d->value = value;
+    d->value = val;
   }
   else
-    value.append(d->value);
+    val.append(d->value);
 
-  data.append(ByteVector::fromUInt(value.size(), false));
+  data.append(ByteVector::fromUInt(val.size(), false));
   data.append(ByteVector::fromUInt(flags, false));
   data.append(d->key.data(String::Latin1));
   data.append(ByteVector('\0'));
-  data.append(value);
+  data.append(val);
 
   return data;
 }

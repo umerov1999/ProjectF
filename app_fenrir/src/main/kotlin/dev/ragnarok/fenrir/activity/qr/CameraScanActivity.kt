@@ -58,12 +58,7 @@ class CameraScanActivity : NoMainActivity() {
         hints[DecodeHintType.POSSIBLE_FORMATS] = EnumSet.of(
             BarcodeFormat.QR_CODE,
             BarcodeFormat.EAN_13,
-            BarcodeFormat.EAN_8,
-            BarcodeFormat.RSS_14,
-            BarcodeFormat.CODE_39,
-            BarcodeFormat.CODE_93,
-            BarcodeFormat.CODE_128,
-            BarcodeFormat.ITF
+            BarcodeFormat.CODE_128
         )
         reader.setHints(hints)
     }
@@ -143,10 +138,10 @@ class CameraScanActivity : NoMainActivity() {
                 ResolutionSelector.Builder()
                     .setResolutionStrategy(
                         ResolutionStrategy(
-                            Size.parseSize("1200x1200"),
-                            ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER
+                            Size(1280, 960),
+                            ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
                         )
-                    ).setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+                    ).setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
                     .build()
             )
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)

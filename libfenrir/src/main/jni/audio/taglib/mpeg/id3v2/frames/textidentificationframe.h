@@ -162,6 +162,7 @@ namespace TagLib {
 
       void setText(const String &s) override;
       String toString() const override;
+      StringList toStringList() const override;
 
       /*!
        * Returns the text encoding that will be used in rendering this frame.
@@ -222,6 +223,7 @@ namespace TagLib {
        */
       PropertyMap makeTMCLProperties() const;
       class TextIdentificationFramePrivate;
+      TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
       std::unique_ptr<TextIdentificationFramePrivate> d;
     };
 
@@ -276,7 +278,6 @@ namespace TagLib {
        */
       void setDescription(const String &s);
 
-      StringList fieldList() const;
       void setText(const String &text) override;
       void setText(const StringList &fields);
 
@@ -301,6 +302,16 @@ namespace TagLib {
        */
       static UserTextIdentificationFrame *find(Tag *tag, const String &description);
 
+      /*!
+       * Returns an appropriate TXXX frame description for the given free-form tag key.
+       */
+      static String keyToTXXX(const String &);
+
+      /*!
+       * Returns a free-form tag name for the given ID3 frame description.
+       */
+      static String txxxToKey(const String &);
+
     private:
       UserTextIdentificationFrame(const ByteVector &data, Header *h);
       UserTextIdentificationFrame(const TextIdentificationFrame &);
@@ -308,6 +319,7 @@ namespace TagLib {
       void checkFields();
 
       class UserTextIdentificationFramePrivate;
+      TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
       std::unique_ptr<UserTextIdentificationFramePrivate> d;
     };
 

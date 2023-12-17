@@ -361,7 +361,7 @@ bool FileRef::isNull() const
 
 FileRef &FileRef::operator=(const FileRef &) = default;
 
-void FileRef::swap(FileRef &ref)
+void FileRef::swap(FileRef &ref) noexcept
 {
   using std::swap;
 

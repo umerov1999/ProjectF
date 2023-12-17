@@ -4,16 +4,70 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AccessIdPair
 import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.module.parcel.ParcelFlags
+import dev.ragnarok.fenrir.module.parcel.ParcelNative
+import dev.ragnarok.fenrir.util.PersistentLogger
 import dev.ragnarok.fenrir.util.Utils
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
 
-class FavePhotoPagerPresenter(
-    photos: ArrayList<Photo>,
-    index: Int,
-    accountId: Long,
-    savedInstanceState: Bundle?
-) : PhotoPagerPresenter(photos, accountId, false, savedInstanceState) {
-    private val mUpdated: BooleanArray = BooleanArray(photos.size)
-    private val refreshing: BooleanArray = BooleanArray(photos.size)
+class FavePhotoPagerPresenter : PhotoPagerPresenter {
+    private var mUpdated: BooleanArray
+    private var refreshing: BooleanArray
+
+    constructor(
+        photos: ArrayList<Photo>,
+        index: Int,
+        accountId: Long,
+        savedInstanceState: Bundle?
+    ) : super(photos, accountId, false, savedInstanceState) {
+        mUpdated = BooleanArray(photos.size)
+        refreshing = BooleanArray(photos.size)
+        currentIndex = index
+        refresh(index)
+    }
+
+    constructor(
+        parcelNative: Long,
+        index: Int,
+        accountId: Long,
+        savedInstanceState: Bundle?
+    ) : super(ArrayList<Photo>(0), accountId, false, savedInstanceState) {
+        mUpdated = BooleanArray(1)
+        refreshing = BooleanArray(1)
+        currentIndex = index
+        loadDataFromParcelNative(parcelNative)
+    }
+
+    private fun loadDataFromParcelNative(parcelNative: Long) {
+        changeLoadingNowState(true)
+        appendDisposable(
+            Single.create { v: SingleEmitter<ArrayList<Photo>> ->
+                v.onSuccess(
+                    ParcelNative.loadParcelableArrayList(
+                        parcelNative, Photo.NativeCreator, ParcelFlags.MUTABLE_LIST
+                    ) ?: ArrayList()
+                )
+            }
+                .fromIOToMain()
+                .subscribe({ onInitialLoadingFinished(it) }) {
+                    PersistentLogger.logThrowable("PhotoAlbumPagerPresenter", it)
+                })
+    }
+
+    private fun onInitialLoadingFinished(photos: List<Photo>) {
+        mUpdated = BooleanArray(photos.size)
+        refreshing = BooleanArray(photos.size)
+
+        changeLoadingNowState(false)
+        mPhotos.addAll(photos)
+        refreshPagerView()
+        resolveButtonsBarVisible()
+        resolveToolbarVisibility()
+        refreshInfoViews(true)
+        refresh(currentIndex)
+    }
+
     override fun close() {
         view?.returnOnlyPos(currentIndex)
     }
@@ -60,10 +114,5 @@ class FavePhotoPagerPresenter(
     override fun afterPageChangedFromUi(oldPage: Int, newPage: Int) {
         super.afterPageChangedFromUi(oldPage, newPage)
         refresh(newPage)
-    }
-
-    init {
-        currentIndex = index
-        refresh(index)
     }
 }

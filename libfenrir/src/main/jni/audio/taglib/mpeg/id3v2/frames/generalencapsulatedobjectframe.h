@@ -83,6 +83,11 @@ namespace TagLib {
       String toString() const override;
 
       /*!
+       * Returns a string list containing the description, file name and mime-type.
+       */
+      StringList toStringList() const override;
+
+      /*!
        * Returns the text encoding used for the description and file name.
        *
        * \see setTextEncoding()
@@ -172,6 +177,7 @@ namespace TagLib {
       GeneralEncapsulatedObjectFrame(const ByteVector &data, Header *h);
 
       class GeneralEncapsulatedObjectFramePrivate;
+      TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
       std::unique_ptr<GeneralEncapsulatedObjectFramePrivate> d;
     };
   }  // namespace ID3v2

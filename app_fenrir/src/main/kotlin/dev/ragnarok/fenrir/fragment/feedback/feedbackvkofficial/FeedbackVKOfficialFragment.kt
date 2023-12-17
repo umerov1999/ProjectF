@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.fragment.feedback.feedbackvkofficial
 
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -62,18 +64,26 @@ class FeedbackVKOfficialFragment :
         })
         ItemTouchHelper(MessagesReplyItemCallback { o: Int ->
             if (mAdapter?.checkPosition(o) == true) {
-                val notification = mAdapter?.getByPosition(o)
-                if (notification != null && !notification.hide_query.isNullOrEmpty()) {
-                    presenter?.hideNotification(
-                        o,
-                        notification.hide_query
-                    )
-                } else {
-                    CustomSnackbars.createCustomSnackbars(recyclerView)
-                        ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
-                        ?.coloredSnack(R.string.error_hiding, Color.RED)
-                        ?.show()
-                }
+                MaterialAlertDialogBuilder(requireActivity())
+                    .setMessage(R.string.remove_feedback)
+                    .setTitle(R.string.confirmation)
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                        val notification = mAdapter?.getByPosition(o)
+                        if (notification != null && !notification.hide_query.isNullOrEmpty()) {
+                            presenter?.hideNotification(
+                                o,
+                                notification.hide_query
+                            )
+                        } else {
+                            CustomSnackbars.createCustomSnackbars(recyclerView)
+                                ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
+                                ?.coloredSnack(R.string.error_hiding, Color.RED)
+                                ?.show()
+                        }
+                    }
+                    .setNegativeButton(R.string.button_cancel, null)
+                    .show()
             }
         }).attachToRecyclerView(recyclerView)
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)

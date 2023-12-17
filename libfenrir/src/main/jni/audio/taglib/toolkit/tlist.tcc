@@ -148,7 +148,6 @@ typename List<T>::ConstIterator List<T>::cend() const
 template <class T>
 typename List<T>::Iterator List<T>::insert(Iterator it, const T &item)
 {
-  detach();
   return d->list.insert(it, item);
 }
 
@@ -270,7 +269,14 @@ const T &List<T>::back() const
 template <class T>
 void List<T>::setAutoDelete(bool autoDelete)
 {
+  detach();
   d->autoDelete = autoDelete;
+}
+
+template <class T>
+bool List<T>::autoDelete() const
+{
+  return d->autoDelete;
 }
 
 template <class T>
@@ -304,14 +310,14 @@ List<T> &List<T>::operator=(const List<T> &) = default;
 template <class T>
 List<T> &List<T>::operator=(std::initializer_list<T> init)
 {
-  bool autoDelete = d->autoDelete;
+  bool autoDeleteEnabled = d->autoDelete;
   List(init).swap(*this);
-  setAutoDelete(autoDelete);
+  setAutoDelete(autoDeleteEnabled);
   return *this;
 }
 
 template <class T>
-void List<T>::swap(List<T> &l)
+void List<T>::swap(List<T> &l) noexcept
 {
   using std::swap;
 

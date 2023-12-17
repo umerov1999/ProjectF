@@ -110,6 +110,11 @@ String TextIdentificationFrame::toString() const
   return d->fieldList.toString();
 }
 
+StringList TextIdentificationFrame::toStringList() const
+{
+  return d->fieldList;
+}
+
 StringList TextIdentificationFrame::fieldList() const
 {
   return d->fieldList;
@@ -135,6 +140,21 @@ namespace
     std::pair("DJ-MIX", "DJMIXER"),
     std::pair("MIX", "MIXER"),
   };
+
+  constexpr std::array txxxFrameTranslation {
+    std::pair("MUSICBRAINZ ALBUM ID", "MUSICBRAINZ_ALBUMID"),
+    std::pair("MUSICBRAINZ ARTIST ID", "MUSICBRAINZ_ARTISTID"),
+    std::pair("MUSICBRAINZ ALBUM ARTIST ID", "MUSICBRAINZ_ALBUMARTISTID"),
+    std::pair("MUSICBRAINZ ALBUM RELEASE COUNTRY", "RELEASECOUNTRY"),
+    std::pair("MUSICBRAINZ ALBUM STATUS", "RELEASESTATUS"),
+    std::pair("MUSICBRAINZ ALBUM TYPE", "RELEASETYPE"),
+    std::pair("MUSICBRAINZ RELEASE GROUP ID", "MUSICBRAINZ_RELEASEGROUPID"),
+    std::pair("MUSICBRAINZ RELEASE TRACK ID", "MUSICBRAINZ_RELEASETRACKID"),
+    std::pair("MUSICBRAINZ WORK ID", "MUSICBRAINZ_WORKID"),
+    std::pair("ACOUSTID ID", "ACOUSTID_ID"),
+    std::pair("ACOUSTID FINGERPRINT", "ACOUSTID_FINGERPRINT"),
+    std::pair("MUSICIP PUID", "MUSICIP_PUID"),
+  };
 }  // namespace
 
 const KeyConversionMap &TextIdentificationFrame::involvedPeopleMap() // static
@@ -156,7 +176,7 @@ PropertyMap TextIdentificationFrame::asProperties() const
   PropertyMap map;
   String tagName = frameIDToKey(frameID());
   if(tagName.isEmpty()) {
-    map.unsupportedData().append(frameID());
+    map.addUnsupportedData(frameID());
     return map;
   }
   StringList values = fieldList();
@@ -289,7 +309,7 @@ PropertyMap TextIdentificationFrame::makeTIPLProperties() const
   PropertyMap map;
   if(fieldList().size() % 2 != 0){
     // according to the ID3 spec, TIPL must contain an even number of entries
-    map.unsupportedData().append(frameID());
+    map.addUnsupportedData(frameID());
     return map;
   }
   const StringList l = fieldList();
@@ -302,7 +322,7 @@ PropertyMap TextIdentificationFrame::makeTIPLProperties() const
     else {
       // invalid involved role -> mark whole frame as unsupported in order to be consistent with writing
       map.clear();
-      map.unsupportedData().append(frameID());
+      map.addUnsupportedData(frameID());
       return map;
     }
   }
@@ -314,19 +334,21 @@ PropertyMap TextIdentificationFrame::makeTMCLProperties() const
   PropertyMap map;
   if(fieldList().size() % 2 != 0){
     // according to the ID3 spec, TMCL must contain an even number of entries
-    map.unsupportedData().append(frameID());
+    map.addUnsupportedData(frameID());
     return map;
   }
   const StringList l = fieldList();
   for(auto it = l.begin(); it != l.end(); ++it) {
     String instrument = it->upper();
-    if(instrument.isEmpty()) {
+    // ++it == l.end() is not possible with size check above,
+    // verified to silence cppcheck.
+    if(instrument.isEmpty() || ++it == l.end()) {
       // instrument is not a valid key -> frame unsupported
       map.clear();
-      map.unsupportedData().append(frameID());
+      map.addUnsupportedData(frameID());
       return map;
     }
-    map.insert(L"PERFORMER:" + instrument, (++it)->split(","));
+    map.insert(L"PERFORMER:" + instrument, it->split(","));
   }
   return map;
 }
@@ -376,13 +398,6 @@ String UserTextIdentificationFrame::description() const
     : String();
 }
 
-StringList UserTextIdentificationFrame::fieldList() const
-{
-  // TODO: remove this function
-
-  return TextIdentificationFrame::fieldList();
-}
-
 void UserTextIdentificationFrame::setText(const String &text)
 {
   if(description().isEmpty())
@@ -430,6 +445,26 @@ UserTextIdentificationFrame *UserTextIdentificationFrame::find(
       return f;
   }
   return nullptr;
+}
+
+String UserTextIdentificationFrame::txxxToKey(const String &description)
+{
+  const String d = description.upper();
+  for(const auto &[o, t] : txxxFrameTranslation) {
+    if(d == o)
+      return t;
+  }
+  return d;
+}
+
+String UserTextIdentificationFrame::keyToTXXX(const String &s)
+{
+  const String key = s.upper();
+  for(const auto &[o, t] : txxxFrameTranslation) {
+    if(key == t)
+      return o;
+  }
+  return s;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

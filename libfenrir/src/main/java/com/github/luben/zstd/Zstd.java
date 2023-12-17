@@ -4,6 +4,36 @@ import java.nio.ByteBuffer;
 
 public class Zstd {
     /**
+     * Note: This enum controls features which are conditionally beneficial.
+     * Zstd typically will make a final decision on whether or not to enable the
+     * feature ({AUTO}), but setting the switch to {ENABLE} or
+     * {DISABLE} allows for force enabling/disabling the feature.
+     */
+    public enum ParamSwitch {
+        /**
+         * Let the library automatically determine whether the feature shall be enabled
+         */
+        AUTO(0),
+        /**
+         * Force-enable the feature
+         */
+        ENABLE(1),
+        /**
+         * Do not use the feature
+         */
+        DISABLE(2);
+
+        private final int val;
+        ParamSwitch(int val) {
+            this.val = val;
+        }
+
+        public int getValue() {
+            return val;
+        }
+    }
+
+    /**
      * Compresses buffer 'src' into buffer 'dst'.
      * <p>
      * Destination buffer should be sized to handle worst cases situations (input
@@ -500,6 +530,9 @@ public class Zstd {
     public static native int loadFastDictDecompress(long stream, ZstdDictDecompress dict);
     public static native int loadDictCompress(long stream, byte[] dict, int dict_size);
     public static native int loadFastDictCompress(long stream, ZstdDictCompress dict);
+    public static native void registerSequenceProducer(long stream, long seqProdState, long seqProdFunction);
+    static native long getBuiltinSequenceProducer(); // Used in tests
+    static native long getStubSequenceProducer();    // Used in tests
     public static native int setCompressionChecksums(long stream, boolean useChecksums);
     public static native int setCompressionMagicless(long stream, boolean useMagicless);
     public static native int setCompressionLevel(long stream, int level);
@@ -517,6 +550,10 @@ public class Zstd {
     public static native int setDecompressionLongMax(long stream, int windowLogMax);
     public static native int setDecompressionMagicless(long stream, boolean useMagicless);
     public static native int setRefMultipleDDicts(long stream, boolean useMultiple);
+    public static native int setValidateSequences(long stream, int validateSequences);
+    public static native int setSequenceProducerFallback(long stream, boolean fallbackFlag);
+    public static native int setSearchForExternalRepcodes(long stream, int searchRepcodes);
+    public static native int setEnableLongDistanceMatching(long stream, int enableLDM);
 
     /* Utility methods */
     /**
@@ -1377,7 +1414,7 @@ public class Zstd {
         }
     }
 
-    static final byte[] extractArray(ByteBuffer buffer) {
+    static byte[] extractArray(ByteBuffer buffer) {
         if (!buffer.hasArray() || buffer.arrayOffset() != 0) {
             throw new IllegalArgumentException("provided ByteBuffer lacks array or has non-zero arrayOffset");
         }

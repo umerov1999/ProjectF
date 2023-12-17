@@ -27,10 +27,6 @@ public class FirebaseInstallationsException extends FirebaseException {
     @NonNull
     private final Status status;
 
-    public FirebaseInstallationsException(@NonNull Status status) {
-        this.status = status;
-    }
-
     public FirebaseInstallationsException(@NonNull String message, @NonNull Status status) {
         super(message);
         this.status = status;

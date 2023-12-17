@@ -157,6 +157,14 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             return args
         }
 
+        fun buildArgsForFave(aid: Long, photos: Long, index: Int): Bundle {
+            val args = Bundle()
+            args.putLong(Extra.ACCOUNT_ID, aid)
+            args.putLong(EXTRA_PHOTOS, photos)
+            args.putInt(Extra.INDEX, index)
+            return args
+        }
+
         private var mLastBackPressedTime: Long = 0
 
         fun newInstance(context: Context, placeType: Int, args: Bundle?): Intent? {
@@ -509,14 +517,31 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
 
                     Place.FAVE_PHOTOS_GALLERY -> {
                         val findex = requireArguments().getInt(Extra.INDEX)
-                        val favePhotos: ArrayList<Photo> =
-                            requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
-                        return FavePhotoPagerPresenter(
-                            favePhotos,
-                            findex,
-                            aid,
-                            saveInstanceState
-                        )
+                        if (!FenrirNative.isNativeLoaded || !Settings.get()
+                                .main().isNative_parcel_photo
+                        ) {
+                            val favePhotos: ArrayList<Photo> =
+                                requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
+                            return FavePhotoPagerPresenter(
+                                favePhotos,
+                                findex,
+                                aid,
+                                saveInstanceState
+                            )
+                        } else {
+                            var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
+                            requireArguments().putLong(EXTRA_PHOTOS, 0)
+                            if (!Utils.isParcelNativeRegistered(source)) {
+                                source = 0
+                            }
+                            Utils.unregisterParcelNative(source)
+                            return FavePhotoPagerPresenter(
+                                source,
+                                findex,
+                                aid,
+                                saveInstanceState
+                            )
+                        }
                     }
 
                     Place.VK_PHOTO_TMP_SOURCE -> {

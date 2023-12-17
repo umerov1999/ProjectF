@@ -64,11 +64,16 @@ namespace TagLib {
       OwnershipFrame &operator=(const OwnershipFrame &) = delete;
 
       /*!
-       * Returns the text of this popularimeter.
+       * Returns price paid, date purchased and seller.
        *
        * \see text()
        */
       String toString() const override;
+
+      /*!
+       * Returns price paid, date purchased and seller.
+       */
+      StringList toStringList() const override;
 
       /*!
        * Returns the date purchased.
@@ -144,6 +149,7 @@ namespace TagLib {
       OwnershipFrame(const ByteVector &data, Header *h);
 
       class OwnershipFramePrivate;
+      TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
       std::unique_ptr<OwnershipFramePrivate> d;
     };
 

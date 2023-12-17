@@ -631,6 +631,11 @@
             android:theme="@style/App.DayNight.Swipes" />
 
         <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
+
+        <service
             android:name="dev.ragnarok.fenrir.service.KeepLongpollService"
             android:exported="false"
             android:foregroundServiceType="specialUse">

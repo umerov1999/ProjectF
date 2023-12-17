@@ -145,7 +145,7 @@ class OpusDecoder(
             val skipBytes = skipSamples * bytesPerSample
             if (result <= skipBytes) {
                 skipSamples -= result / bytesPerSample
-                outputBuffer.addFlag(C.BUFFER_FLAG_DECODE_ONLY)
+                outputBuffer.shouldBeSkipped = true
                 outputData.position(result)
             } else {
                 skipSamples = 0

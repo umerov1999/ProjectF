@@ -18,6 +18,9 @@ package com.squareup.picasso3
 import android.content.Context
 import android.os.Handler
 import com.squareup.picasso3.Dispatcher.Companion.RETRY_DELAY
+import com.squareup.picasso3.Utils.OWNER_DISPATCHER
+import com.squareup.picasso3.Utils.VERB_CANCELED
+import com.squareup.picasso3.Utils.log
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -28,6 +31,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 @OptIn(DelicateCoroutinesApi::class)
 internal class InternalCoroutineDispatcher internal constructor(
@@ -126,8 +130,22 @@ internal class InternalCoroutineDispatcher internal constructor(
     }
 
     override fun dispatchSubmit(hunter: BitmapHunter) {
-        hunter.job = scope.launch(CoroutineName(hunter.getName())) {
-            hunter.run()
+        val highPriority = hunter.action?.request?.priority == Picasso.Priority.HIGH
+        val context = if (highPriority) EmptyCoroutineContext else mainContext
+
+        scope.launch(context) {
+            channel.trySend {
+                if (hunter.action != null) {
+                    hunter.job = scope.launch(CoroutineName(hunter.getName())) {
+                        hunter.run()
+                    }
+                } else {
+                    hunterMap.remove(hunter.key)
+                    if (hunter.picasso.isLoggingEnabled) {
+                        log(OWNER_DISPATCHER, VERB_CANCELED, hunter.key)
+                    }
+                }
+            }
         }
     }
 

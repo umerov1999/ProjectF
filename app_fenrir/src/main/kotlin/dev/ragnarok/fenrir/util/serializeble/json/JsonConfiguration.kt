@@ -28,8 +28,8 @@ class JsonConfiguration @OptIn(ExperimentalSerializationApi::class) internal con
     val allowSpecialFloatingPointValues: Boolean = false,
     val useAlternativeNames: Boolean = true,
     @ExperimentalSerializationApi val namingStrategy: JsonNamingStrategy? = null,
-    @ExperimentalSerializationApi
-    val decodeEnumsCaseInsensitive: Boolean = false
+    @ExperimentalSerializationApi val decodeEnumsCaseInsensitive: Boolean = false,
+    @ExperimentalSerializationApi val allowTrailingComma: Boolean = false,
 ) {
 
     /** @suppress Dokka **/
@@ -39,6 +39,6 @@ class JsonConfiguration @OptIn(ExperimentalSerializationApi::class) internal con
                 "allowStructuredMapKeys=$allowStructuredMapKeys, prettyPrint=$prettyPrint, explicitNulls=$explicitNulls, " +
                 "prettyPrintIndent='$prettyPrintIndent', coerceInputValues=$coerceInputValues, useArrayPolymorphism=$useArrayPolymorphism, " +
                 "classDiscriminator='$classDiscriminator', allowSpecialFloatingPointValues=$allowSpecialFloatingPointValues, useAlternativeNames=$useAlternativeNames, " +
-                "namingStrategy=$namingStrategy, decodeEnumsCaseInsensitive=$decodeEnumsCaseInsensitive)"
+                "namingStrategy=$namingStrategy, decodeEnumsCaseInsensitive=$decodeEnumsCaseInsensitive, allowTrailingComma=$allowTrailingComma)"
     }
 }

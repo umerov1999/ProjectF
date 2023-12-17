@@ -1729,4 +1729,5 @@
     <string name="subscribe_to_community">Подписаться на сообщество?</string>
     <string name="unsubscribe_from_community">Отписаться от сообщества?</string>
     <string name="read_only_account">Аккаунт только для чтения!</string>
+    <string name="remove_feedback">Удалить уведомление?</string>
 </resources>

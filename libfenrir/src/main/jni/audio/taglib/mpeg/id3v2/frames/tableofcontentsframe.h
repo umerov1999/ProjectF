@@ -70,8 +70,8 @@ namespace TagLib {
       TableOfContentsFrame &operator=(const TableOfContentsFrame &) = delete;
 
       /*!
-       * Returns the elementID of the frame. Element ID
-       * is a null terminated string, however it's not human-readable.
+       * Returns the elementID of the frame.
+       * Element ID is not intended to be human readable.
        *
        * \see setElementID()
        */
@@ -109,8 +109,7 @@ namespace TagLib {
       ByteVectorList childElements() const;
 
       /*!
-       * Sets the elementID of the frame to \a eID. If \a eID isn't
-       * null terminated, a null char is appended automatically.
+       * Sets the elementID of the frame to \a eID.
        *
        * \see elementID()
        */
@@ -252,6 +251,7 @@ namespace TagLib {
       TableOfContentsFrame(const ID3v2::Header *tagHeader, const ByteVector &data, Header *h);
 
       class TableOfContentsFramePrivate;
+      TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
       std::unique_ptr<TableOfContentsFramePrivate> d;
     };
   }  // namespace ID3v2

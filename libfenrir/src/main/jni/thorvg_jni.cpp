@@ -14,6 +14,8 @@ static std::map<std::string, uint32_t> customColorsTable;
 
 extern std::string doDecompressResource(size_t length, char *bytes, bool &orig);
 
+extern bool fenrirNativeThorVGInited;
+
 void getCustomColor(const std::string &name, uint8_t *r, uint8_t *g, uint8_t *b) {
     if (!lockMutex) {
         lockMutex = new pthread_mutex_t();
@@ -31,7 +33,7 @@ extern "C" JNIEXPORT void
 Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_registerColorsNative(JNIEnv *env, jobject,
                                                                          jstring name,
                                                                          jint value) {
-    if (name == nullptr) {
+    if (!fenrirNativeThorVGInited || !name) {
         return;
     }
     char const *nameString = SafeGetStringUTFChars(env, name, nullptr);
@@ -57,30 +59,19 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_createBitmapNative(JNIEnv *e
     }
     auto u = ((std::vector<char> *) (intptr_t)
             res);
-    //Canvas Engine
-    tvg::CanvasEngine tvgEngine = tvg::CanvasEngine::Sw;
-    //Threads Count
-    auto threads = std::thread::hardware_concurrency();
-    //Initialize ThorVG Engine
-    if (tvg::Initializer::init(threads, tvgEngine) != tvg::Result::Success) {
-        return;
-    }
-    //Create a Canvas
     auto canvas = tvg::SwCanvas::gen();
     if (!canvas) {
-        tvg::Initializer::term(tvgEngine);
         return;
     }
 
     auto picture = tvg::Picture::gen();
     bool orig;
     std::string jsonString = doDecompressResource(u->size(), u->data(), orig);
-    tvg::Result result = orig ? picture->load((const char *) u->data(), u->size(), "svg", false)
+    tvg::Result result = orig ? picture->load((const char *) u->data(), u->size(), "svg", "", false)
                               : picture->load((const char *) jsonString.data(), jsonString.size(),
-                                              "svg", false);
+                                              "svg", "", false);
     if (result != tvg::Result::Success) {
-        tvg::Initializer::term(tvgEngine);
-        canvas->clear(true);
+        canvas.release();
         return;
     }
     picture->size((float) w, (float) h);
@@ -89,7 +80,7 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_createBitmapNative(JNIEnv *e
     if (AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0) {
         if (canvas->target((uint32_t *) pixels, w, w, h, tvg::SwCanvas::ABGR8888) !=
             tvg::Result::Success) {
-            tvg::Initializer::term(tvgEngine);
+            canvas.release();
             AndroidBitmap_unlockPixels(env, bitmap);
             return;
         }
@@ -97,8 +88,8 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_createBitmapNative(JNIEnv *e
         canvas->push(std::move(picture));
         canvas->draw();
         canvas->sync();
-        canvas->clear(true);
-        tvg::Initializer::term(tvgEngine);
+        canvas->clear(true, false);
+        canvas.release();
         AndroidBitmap_unlockPixels(env, bitmap);
     }
 }

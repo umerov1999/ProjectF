@@ -22,12 +22,15 @@ import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.TC_END_OBJ
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.TC_OTHER
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.TC_STRING
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.tokenDescription
+import kotlinx.serialization.ExperimentalSerializationApi
 
+@OptIn(ExperimentalSerializationApi::class)
 internal class JsonTreeReader(
     configuration: JsonConfiguration,
     private val lexer: AbstractJsonLexer
 ) {
     private val isLenient = configuration.isLenient
+    private val trailingCommaAllowed = configuration.allowTrailingComma
     private var stackDepth = 0
 
     private fun readObject(): JsonElement = readObjectImpl {
@@ -59,8 +62,9 @@ internal class JsonTreeReader(
         if (lastToken == TC_BEGIN_OBJ) { // Case of empty object
             lexer.consumeNextToken(TC_END_OBJ)
         } else if (lastToken == TC_COMMA) { // Trailing comma
-            lexer.fail("Unexpected trailing comma")
-        }
+            if (!trailingCommaAllowed) lexer.invalidTrailingComma()
+            lexer.consumeNextToken(TC_END_OBJ)
+        } // else unexpected token?
         return JsonObject(result)
     }
 
@@ -81,7 +85,8 @@ internal class JsonTreeReader(
         if (lastToken == TC_BEGIN_LIST) { // Case of empty object
             lexer.consumeNextToken(TC_END_LIST)
         } else if (lastToken == TC_COMMA) { // Trailing comma
-            lexer.fail("Unexpected trailing comma")
+            if (!trailingCommaAllowed) lexer.invalidTrailingComma("array")
+            lexer.consumeNextToken(TC_END_LIST)
         }
         return JsonArray(result)
     }

@@ -292,7 +292,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
                     if (e.isDisposed) {
                         break
                     }
-                    dbos.add(mapFavePhoto(cursor))
+                    mapFavePhoto(cursor)?.let { dbos.add(it) }
                 }
                 cursor.close()
             }
@@ -647,14 +647,14 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
                 )
         }
 
-        internal fun mapFavePhoto(cursor: Cursor): PhotoDboEntity {
-            val json = cursor.getBlob(FavePhotosColumns.PHOTO)!!
-            return MsgPack.decodeFromByteArrayEx(PhotoDboEntity.serializer(), json)
+        internal fun mapFavePhoto(cursor: Cursor): PhotoDboEntity? {
+            val json = cursor.getBlob(FavePhotosColumns.PHOTO)
+            return json?.let { MsgPack.decodeFromByteArrayEx(PhotoDboEntity.serializer(), it) }
         }
 
-        internal fun mapFaveLinkPhoto(cursor: Cursor): PhotoDboEntity {
-            val json = cursor.getBlob(FaveLinksColumns.PHOTO)!!
-            return MsgPack.decodeFromByteArrayEx(PhotoDboEntity.serializer(), json)
+        internal fun mapFaveLinkPhoto(cursor: Cursor): PhotoDboEntity? {
+            val json = cursor.getBlob(FaveLinksColumns.PHOTO)
+            return json?.let { MsgPack.decodeFromByteArrayEx(PhotoDboEntity.serializer(), it) }
         }
     }
 }

@@ -139,6 +139,11 @@
             tools:ignore="LockedOrientationActivity" />
 
         <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
+
+        <service
             android:name="dev.ragnarok.filegallery.media.music.MusicPlaybackService"
             android:enabled="true"
             android:exported="false"

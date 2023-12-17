@@ -20,15 +20,12 @@
  * SOFTWARE.
  */
 
-#ifndef _TVG_SCENE_IMPL_H_
-#define _TVG_SCENE_IMPL_H_
+#ifndef _TVG_SCENE_H_
+#define _TVG_SCENE_H_
 
 #include <float.h>
 #include "tvgPaint.h"
 
-/************************************************************************/
-/* Internal Class Implementation                                        */
-/************************************************************************/
 
 struct SceneIterator : Iterator
 {
@@ -126,8 +123,7 @@ struct Scene::Impl
         this->renderer = &renderer;
 
         if (clipper) {
-            Array<RenderData> rds;
-            rds.reserve(paints.size());
+            Array<RenderData> rds(paints.size());
             for (auto paint : paints) {
                 rds.push(paint->pImpl->update(renderer, transform, clips, opacity, flag, true));
             }
@@ -247,4 +243,4 @@ struct Scene::Impl
     }
 };
 
-#endif //_TVG_SCENE_IMPL_H_
+#endif //_TVG_SCENE_H_

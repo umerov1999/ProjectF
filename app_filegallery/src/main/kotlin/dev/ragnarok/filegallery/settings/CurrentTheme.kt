@@ -127,7 +127,7 @@ object CurrentTheme {
     }
 
     fun getStatusBarNonColored(context: Context): Int {
-        return getColorFromAttrs(R.attr.statusbarNonColoredColor, context, "#000000")
+        return getColorFromAttrs(R.attr.statusBarNonColoredColor, context, "#000000")
     }
 
     fun getColorFromAttrs(resId: Int, context: Context, defaultColor: String): Int {

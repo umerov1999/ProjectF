@@ -10,11 +10,12 @@ import dev.ragnarok.filegallery.util.serializeble.json.JsonClassDiscriminator
 import dev.ragnarok.filegallery.util.serializeble.json.JsonDecoder
 import dev.ragnarok.filegallery.util.serializeble.json.JsonEncoder
 import dev.ragnarok.filegallery.util.serializeble.json.JsonObject
+import dev.ragnarok.filegallery.util.serializeble.json.contentOrNull
 import dev.ragnarok.filegallery.util.serializeble.json.jsonPrimitive
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SealedClassSerializer
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.descriptors.PolymorphicKind
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -24,7 +25,6 @@ import kotlinx.serialization.findPolymorphicSerializer
 import kotlinx.serialization.internal.AbstractPolymorphicSerializer
 import kotlinx.serialization.internal.jsonCachedSerialNames
 
-@OptIn(InternalSerializationApi::class)
 @Suppress("UNCHECKED_CAST")
 internal inline fun <T> JsonEncoder.encodePolymorphically(
     serializer: SerializationStrategy<T>,
@@ -44,7 +44,6 @@ internal inline fun <T> JsonEncoder.encodePolymorphically(
     actualSerializer.serialize(this, value)
 }
 
-@OptIn(InternalSerializationApi::class)
 private fun validateIfSealed(
     serializer: SerializationStrategy<*>,
     actualSerializer: SerializationStrategy<Any>,
@@ -70,7 +69,6 @@ internal fun checkKind(kind: SerialKind) {
     if (kind is PolymorphicKind) error("Actual serializer for polymorphic cannot be polymorphic itself")
 }
 
-@OptIn(InternalSerializationApi::class)
 internal fun <T> JsonDecoder.decodeSerializableValuePolymorphic(deserializer: DeserializationStrategy<T>): T {
     // NB: changes in this method should be reflected in StreamingJsonDecoder#decodeSerializableValue
     if (deserializer !is AbstractPolymorphicSerializer<*> || json.configuration.useArrayPolymorphism) {
@@ -79,28 +77,17 @@ internal fun <T> JsonDecoder.decodeSerializableValuePolymorphic(deserializer: De
     val discriminator = deserializer.descriptor.classDiscriminator(json)
 
     val jsonTree = cast<JsonObject>(decodeJsonElement(), deserializer.descriptor)
-    val type = jsonTree[discriminator]?.jsonPrimitive?.content
-    val actualSerializer = deserializer.findPolymorphicSerializerOrNull(this, type)
-        ?: throwSerializerNotFound(type, jsonTree)
+    val type =
+        jsonTree[discriminator]?.jsonPrimitive?.contentOrNull // differentiate between `"type":"null"` and `"type":null`.
 
     @Suppress("UNCHECKED_CAST")
-    return json.readPolymorphicJson(
-        discriminator,
-        jsonTree,
-        actualSerializer as DeserializationStrategy<T>
-    )
-}
-
-@JvmName("throwSerializerNotFound")
-internal fun throwSerializerNotFound(type: String?, jsonTree: JsonObject): Nothing {
-    val suffix =
-        if (type == null) "missing class discriminator ('null')"
-        else "class discriminator '$type'"
-    throw JsonDecodingException(
-        -1,
-        "Polymorphic serializer was not found for $suffix",
-        jsonTree.toString()
-    )
+    val actualSerializer =
+        try {
+            deserializer.findPolymorphicSerializer(this, type)
+        } catch (it: SerializationException) { //  Wrap SerializationException into JsonDecodingException to preserve input
+            throw JsonDecodingException(-1, it.message.orEmpty(), jsonTree.toString())
+        } as DeserializationStrategy<T>
+    return json.readPolymorphicJson(discriminator, jsonTree, actualSerializer)
 }
 
 internal fun SerialDescriptor.classDiscriminator(json: Json): String {

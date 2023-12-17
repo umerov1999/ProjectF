@@ -86,7 +86,7 @@ class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun onNetDataReceived(offset: Int, markets: List<Market>) {
         cacheDisposable.clear()
         cacheLoadingNow = false
-        mEndOfContent = markets.isEmpty()
+        mEndOfContent = markets.size < COUNT_PER_REQUEST
         netLoadingNow = false
         if (offset == 0) {
             mMarkets.clear()

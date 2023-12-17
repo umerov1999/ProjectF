@@ -426,7 +426,7 @@ public class FirebaseInstallations implements FirebaseInstallationsApi {
 
         // Let the caller know about the result.
         if (prefs.isErrored()) {
-            triggerOnException(new FirebaseInstallationsException(Status.BAD_CONFIG));
+            triggerOnException(new FirebaseInstallationsException("doNetworkCallIfNecessary", Status.BAD_CONFIG));
         } else if (prefs.isNotGenerated()) {
             // If there is no fid it means the call failed with an auth error. Simulate an
             // IOException so that the caller knows to try again.

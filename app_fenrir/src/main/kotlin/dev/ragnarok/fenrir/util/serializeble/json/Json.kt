@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.util.serializeble.json.internal.writeJson
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialFormat
@@ -88,6 +87,7 @@ sealed class Json(
     /**
      * The default instance of [Json] with default configuration.
      */
+    @OptIn(ExperimentalSerializationApi::class)
     companion object Default : Json(JsonConfiguration(), EmptySerializersModule())
 
     /**
@@ -98,7 +98,7 @@ sealed class Json(
     final override fun <T> encodeToString(serializer: SerializationStrategy<T>, value: T): String {
         val result = JsonToStringWriter()
         try {
-            encodeByWriter(result, serializer, value)
+            encodeByWriter(this@Json, result, serializer, value)
             return result.toString()
         } finally {
             result.release()
@@ -112,14 +112,7 @@ sealed class Json(
      * @throws SerializationException in case of any decoding-specific error
      * @throws IllegalArgumentException if the decoded input is not a valid instance of [T]
      */
-    @OptIn(InternalSerializationApi::class)
-    inline fun <reified T> decodeFromString(
-        @FormatLanguage(
-            "json",
-            "",
-            ""
-        ) string: String
-    ): T =
+    inline fun <reified T> decodeFromString(@FormatLanguage("json", "", "") string: String): T =
         decodeFromString(serializersModule.serializer(), string)
 
     /**
@@ -128,7 +121,6 @@ sealed class Json(
      * @throws [SerializationException] if the given JSON string is not a valid JSON input for the type [T]
      * @throws [IllegalArgumentException] if the decoded input cannot be represented as a valid instance of type [T]
      */
-    @OptIn(InternalSerializationApi::class)
     final override fun <T> decodeFromString(
         deserializer: DeserializationStrategy<T>,
         @FormatLanguage("json", "", "") string: String
@@ -145,9 +137,8 @@ sealed class Json(
      *
      * @throws [SerializationException] if the given value cannot be serialized to JSON
      */
-    @OptIn(InternalSerializationApi::class)
     fun <T> encodeToJsonElement(serializer: SerializationStrategy<T>, value: T): JsonElement {
-        return writeJson(value, serializer)
+        return writeJson(this@Json, value, serializer)
     }
 
     /**
@@ -156,12 +147,11 @@ sealed class Json(
      * @throws [SerializationException] if the given JSON element is not a valid JSON input for the type [T]
      * @throws [IllegalArgumentException] if the decoded input cannot be represented as a valid instance of type [T]
      */
-    @OptIn(InternalSerializationApi::class)
     fun <T> decodeFromJsonElement(
         deserializer: DeserializationStrategy<T>,
         element: JsonElement
     ): T {
-        return readJson(element, deserializer)
+        return readJson(this@Json, element, deserializer)
     }
 
     /**
@@ -169,7 +159,7 @@ sealed class Json(
      *
      * @throws [SerializationException] if the given string is not a valid JSON
      */
-    fun parseToJsonElement(string: String): JsonElement {
+    fun parseToJsonElement(@FormatLanguage("json", "", "") string: String): JsonElement {
         return decodeFromString(JsonElementSerializer, string)
     }
 
@@ -420,6 +410,16 @@ class JsonBuilder internal constructor(json: Json) {
     var decodeEnumsCaseInsensitive: Boolean = json.configuration.decodeEnumsCaseInsensitive
 
     /**
+     * Allows parser to accept trailing (ending) commas in JSON objects and arrays,
+     * making inputs like `[1, 2, 3,]` valid.
+     *
+     * Does not affect encoding.
+     * `false` by default.
+     */
+    @ExperimentalSerializationApi
+    var allowTrailingComma: Boolean = json.configuration.allowTrailingComma
+
+    /**
      * Module with contextual and polymorphic serializers to be used in the resulting [Json] instance.
      *
      * @see SerializersModule
@@ -452,7 +452,7 @@ class JsonBuilder internal constructor(json: Json) {
             allowStructuredMapKeys, prettyPrint, explicitNulls, prettyPrintIndent,
             coerceInputValues, useArrayPolymorphism,
             classDiscriminator, allowSpecialFloatingPointValues, useAlternativeNames,
-            namingStrategy, decodeEnumsCaseInsensitive
+            namingStrategy, decodeEnumsCaseInsensitive, allowTrailingComma
         )
     }
 }

@@ -7,7 +7,6 @@ import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.Response
-import okhttp3.internal.charset
 import okhttp3.internal.http.promisesBody
 import okhttp3.internal.platform.Platform
 import okio.Buffer
@@ -17,6 +16,7 @@ import java.io.IOException
 import java.util.TreeSet
 import java.util.concurrent.TimeUnit
 
+@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 class OkHttp3LoggingInterceptor @JvmOverloads constructor(
     private val logger: Logger = Logger.DEFAULT
 ) : Interceptor {
@@ -194,7 +194,7 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
                     }
                 }
 
-                val charset = requestBody.contentType().charset()
+                val charset = requestBody.contentType()?.charset() ?: Charsets.UTF_8
 
                 logger.log("")
                 if (gzippedLength != null) {
@@ -240,6 +240,9 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
             } else {
                 val source = responseBody.source()
                 source.request(Long.MAX_VALUE) // Buffer the entire body.
+
+                val totalMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs)
+
                 var buffer = source.buffer
 
                 var gzippedLength: Long? = null
@@ -276,9 +279,9 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
                 } catch (ignored: Exception) {
                 }
                 if (gzippedLength != null) {
-                    logger.log("<-- END HTTP (${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
+                    logger.log("<-- END HTTP (${totalMs}ms, ${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
                 } else {
-                    logger.log("<-- END HTTP (${buffer.size}-byte body)")
+                    logger.log("<-- END HTTP (${totalMs}ms, ${buffer.size}-byte body)")
                 }
             }
         }

@@ -239,7 +239,7 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_getFrame(JNIEnv *env, jo
                                                                  jobject bitmap, jint w, jint h,
                                                                  jint stride,
                                                                  jboolean clear) {
-    if (!ptr || bitmap == nullptr) {
+    if (!ptr || !bitmap || w <= 0 || h <= 0) {
         return 0;
     }
     auto *info = (LottieInfo *) (intptr_t) ptr;
@@ -261,8 +261,6 @@ public:
         void *pixels;
         if (AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0) {
             size_t frameCount = player->animation->totalFrame();
-            //auto pixels = std::unique_ptr<uint32_t[]>(new uint32_t[w * h]);
-
             uint32_t delay = 2;
             GifBuilder builder(gifName, w, h, bgColor, delay, bitDepth, dither);
             size_t start = 0, end = frameCount;

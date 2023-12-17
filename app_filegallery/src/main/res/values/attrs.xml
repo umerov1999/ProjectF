@@ -16,7 +16,7 @@
     <attr name="materialCardBackgroundStyle" format="reference" />
 
     <attr name="toolbarElevation" format="reference" />
-    <attr name="statusbarNonColoredColor" format="color" />
+    <attr name="statusBarNonColoredColor" format="color" />
 
     <declare-styleable name="KeyboardView">
         <attr name="keyboard_theme" format="enum">

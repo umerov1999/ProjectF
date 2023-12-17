@@ -116,6 +116,7 @@ namespace TagLib {
                                audioPropertiesStyle = AudioProperties::Average) const = 0;
     private:
       class FileTypeResolverPrivate;
+      TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
       std::unique_ptr<FileTypeResolverPrivate> d;
     };
 
@@ -137,6 +138,7 @@ namespace TagLib {
                                audioPropertiesStyle = AudioProperties::Average) const = 0;
     private:
       class StreamTypeResolverPrivate;
+      TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
       std::unique_ptr<StreamTypeResolverPrivate> d;
     };
 
@@ -361,7 +363,7 @@ namespace TagLib {
     /*!
      * Exchanges the content of the FileRef by the content of \a ref.
      */
-    void swap(FileRef &ref);
+    void swap(FileRef &ref) noexcept;
 
     /*!
      * Returns true if this FileRef and \a ref point to the same File object.
@@ -379,6 +381,7 @@ namespace TagLib {
     void parse(IOStream *stream, bool readAudioProperties, AudioProperties::ReadStyle audioPropertiesStyle);
 
     class FileRefPrivate;
+    TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
     std::shared_ptr<FileRefPrivate> d;
   };
 

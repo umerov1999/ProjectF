@@ -13,7 +13,6 @@ import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.StringJson
 import dev.ragnarok.filegallery.util.serializeble.json.internal.printQuoted
 import dev.ragnarok.filegallery.util.serializeble.json.internal.toBooleanStrictOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -144,7 +143,6 @@ fun JsonUnquotedLiteral(value: String?): JsonPrimitive {
 }
 
 /** Used as a marker to indicate during encoding that the [JsonEncoder] should use `encodeInline()` */
-@OptIn(InternalSerializationApi::class)
 internal val jsonUnquotedLiteralDescriptor: SerialDescriptor =
     InlinePrimitiveDescriptor(
         "dev.ragnarok.filegallery.util.serializeble.json.JsonUnquotedLiteral",
@@ -342,7 +340,6 @@ val JsonPrimitive.contentOrNull: String? get() = if (this is JsonNull) null else
 
 private fun JsonElement.error(element: String): Nothing =
     throw IllegalArgumentException("Element ${this::class} is not a $element")
-
 
 private inline fun <T> mapExceptionsToNull(f: () -> T): T? {
     return try {

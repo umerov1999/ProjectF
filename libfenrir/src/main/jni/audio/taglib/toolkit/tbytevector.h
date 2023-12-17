@@ -617,7 +617,7 @@ namespace TagLib {
     /*!
      * Exchanges the content of the ByteVector by the content of \a v.
      */
-    void swap(ByteVector &v);
+    void swap(ByteVector &v) noexcept;
 
     /*!
      * Returns a hex-encoded copy of the byte vector.
@@ -644,6 +644,7 @@ namespace TagLib {
 
   private:
     class ByteVectorPrivate;
+    TAGLIB_MSVC_SUPPRESS_WARNING_NEEDS_TO_HAVE_DLL_INTERFACE
     std::unique_ptr<ByteVectorPrivate> d;
   };
 }  // namespace TagLib
