@@ -29,7 +29,7 @@ import androidx.core.view.isVisible
 import de.maxr1998.modernpreferences.Preference
 import de.maxr1998.modernpreferences.PreferencesAdapter
 import de.maxr1998.modernpreferences.R
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 
 class ExpandableTextPreference(key: String) : Preference(key) {
     var expanded = false
@@ -39,7 +39,7 @@ class ExpandableTextPreference(key: String) : Preference(key) {
         }
 
     @StringRes
-    var textRes: Int = DEFAULT_RES_ID
+    var textRes: Int = DISABLED_RESOURCE_ID
     var text: CharSequence? = null
 
     var monospace = true
@@ -63,7 +63,7 @@ class ExpandableTextPreference(key: String) : Preference(key) {
         }) as TextView
         widget.tag = tv
         tv.apply {
-            if (textRes != DEFAULT_RES_ID) setText(textRes) else text =
+            if (textRes != DISABLED_RESOURCE_ID) setText(textRes) else text =
                 this@ExpandableTextPreference.text
             typeface = if (monospace) Typeface.MONOSPACE else Typeface.SANS_SERIF
             with(context.obtainStyledAttributes(intArrayOf(R.attr.expandableTextBackgroundColor))) {

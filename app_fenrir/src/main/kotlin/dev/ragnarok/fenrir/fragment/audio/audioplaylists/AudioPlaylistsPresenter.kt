@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.model.AudioPlaylist
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.FindAtWithContent
-import dev.ragnarok.fenrir.util.Utils.SafeCallCheckInt
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.isValueAssigned
 import dev.ragnarok.fenrir.util.Utils.safeCheck
@@ -365,38 +364,32 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
 
         override fun compare(data: AudioPlaylist, q: String): Boolean {
             return (safeCheck(
-                data.getTitle(),
-                object : SafeCallCheckInt {
-                    override fun check(): Boolean {
-                        return data.getTitle()?.lowercase(Locale.getDefault())?.contains(
-                            q.lowercase(
-                                Locale.getDefault()
-                            )
-                        ) == true
-                    }
-                })
+                data.getTitle()
+            ) {
+                data.getTitle()?.lowercase(Locale.getDefault())?.contains(
+                    q.lowercase(
+                        Locale.getDefault()
+                    )
+                ) == true
+            }
                     || safeCheck(
-                data.getArtist_name(),
-                object : SafeCallCheckInt {
-                    override fun check(): Boolean {
-                        return data.getArtist_name()?.lowercase(Locale.getDefault())?.contains(
-                            q.lowercase(
-                                Locale.getDefault()
-                            )
-                        ) == true
-                    }
-                })
+                data.getArtist_name()
+            ) {
+                data.getArtist_name()?.lowercase(Locale.getDefault())?.contains(
+                    q.lowercase(
+                        Locale.getDefault()
+                    )
+                ) == true
+            }
                     || safeCheck(
-                data.getDescription(),
-                object : SafeCallCheckInt {
-                    override fun check(): Boolean {
-                        return data.getDescription()?.lowercase(Locale.getDefault())?.contains(
-                            q.lowercase(
-                                Locale.getDefault()
-                            )
-                        ) == true
-                    }
-                }))
+                data.getDescription()
+            ) {
+                data.getDescription()?.lowercase(Locale.getDefault())?.contains(
+                    q.lowercase(
+                        Locale.getDefault()
+                    )
+                ) == true
+            })
         }
 
         override fun onReset(

@@ -558,12 +558,10 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
             NotificationHelper.NOTIFICATION_DOWNLOAD,
             NotificationHelper.NOTIFICATION_DOWNLOADING
         )
-        Utils.inMainThread(object : Utils.SafeCallInt {
-            override fun call() {
-                CustomToast.createCustomToast(applicationContext)
-                    .showToastBottom(R.string.success)
-            }
-        })
+        Utils.inMainThread {
+            CustomToast.createCustomToast(applicationContext)
+                .showToastBottom(R.string.success)
+        }
         try {
             val file = File(Environment.getExternalStorageDirectory(), "fenrir_fave_sync_log.txt")
             FileOutputStream(file).write(log.toString().toByteArray(Charsets.UTF_8))

@@ -30,7 +30,7 @@ import androidx.core.content.edit
 import androidx.core.view.isVisible
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 import de.maxr1998.modernpreferences.helpers.DependencyManager
 import de.maxr1998.modernpreferences.helpers.KEY_ROOT_SCREEN
 import de.maxr1998.modernpreferences.helpers.PreferenceMarker
@@ -54,25 +54,25 @@ import java.util.concurrent.atomic.AtomicBoolean
 abstract class AbstractPreference internal constructor(val key: String) {
     // UI
     @StringRes
-    var titleRes: Int = DEFAULT_RES_ID
+    var titleRes: Int = DISABLED_RESOURCE_ID
     var title: CharSequence = ""
 
     @StringRes
-    var summaryRes: Int = DEFAULT_RES_ID
+    var summaryRes: Int = DISABLED_RESOURCE_ID
     var summary: CharSequence? = null
 
     @StringRes
-    var summaryDisabledRes: Int = DEFAULT_RES_ID
+    var summaryDisabledRes: Int = DISABLED_RESOURCE_ID
     var summaryDisabled: CharSequence? = null
 
     @DrawableRes
-    var iconRes: Int = DEFAULT_RES_ID
+    var iconRes: Int = DISABLED_RESOURCE_ID
     var icon: Drawable? = null
 
     fun getTittle(context: Context): String {
         if (title.isNotEmpty()) {
             return title.toString()
-        } else if (titleRes != DEFAULT_RES_ID) {
+        } else if (titleRes != DISABLED_RESOURCE_ID) {
             return context.getString(titleRes)
         }
         return key
@@ -85,11 +85,11 @@ abstract class AbstractPreference internal constructor(val key: String) {
 
     fun icon(drawable: Drawable?) {
         icon = drawable
-        iconRes = DEFAULT_RES_ID
+        iconRes = DISABLED_RESOURCE_ID
     }
 
     @StringRes
-    var badgeRes: Int = DEFAULT_RES_ID
+    var badgeRes: Int = DISABLED_RESOURCE_ID
     var badge: CharSequence? = null
 
     // State
@@ -256,7 +256,7 @@ open class Preference(key: String) : AbstractPreference(key) {
     var includeInCollapseSummary = true
 
     @LayoutRes
-    open fun getWidgetLayoutResource() = DEFAULT_RES_ID
+    open fun getWidgetLayoutResource() = DISABLED_RESOURCE_ID
 
     internal fun attachToScreen(screen: PreferenceScreen, position: Int) {
         check(parent == null) { "Preference was already attached to a screen!" }
@@ -280,12 +280,12 @@ open class Preference(key: String) : AbstractPreference(key) {
     }
 
     protected open fun resolveSummary(context: Context): CharSequence? = when {
-        !enabled && summaryDisabledRes != DEFAULT_RES_ID -> context.resources.getText(
+        !enabled && summaryDisabledRes != DISABLED_RESOURCE_ID -> context.resources.getText(
             summaryDisabledRes
         )
 
         !enabled && summaryDisabled != null -> summaryDisabled
-        summaryRes != DEFAULT_RES_ID -> context.resources.getText(summaryRes)
+        summaryRes != DISABLED_RESOURCE_ID -> context.resources.getText(summaryRes)
         summary != null -> summary
         else -> null
     }
@@ -317,7 +317,7 @@ open class Preference(key: String) : AbstractPreference(key) {
         holder.icon?.apply {
             itemVisible = true
             when {
-                iconRes != DEFAULT_RES_ID -> setImageResource(iconRes)
+                iconRes != DISABLED_RESOURCE_ID -> setImageResource(iconRes)
                 icon != null -> setImageDrawable(icon)
                 else -> {
                     setImageDrawable(null)
@@ -333,7 +333,7 @@ open class Preference(key: String) : AbstractPreference(key) {
             }
         }
         holder.title.apply {
-            if (titleRes != DEFAULT_RES_ID) setText(titleRes) else text = title
+            if (titleRes != DISABLED_RESOURCE_ID) setText(titleRes) else text = title
             maxLines = Config.titleMaxLines
         }
         holder.summary?.apply {
@@ -345,7 +345,7 @@ open class Preference(key: String) : AbstractPreference(key) {
         holder.badge?.apply {
             itemVisible = true
             when {
-                badgeRes != DEFAULT_RES_ID -> setText(badgeRes)
+                badgeRes != DISABLED_RESOURCE_ID -> setText(badgeRes)
                 badge != null -> text = badge
                 else -> {
                     text = null

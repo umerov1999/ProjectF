@@ -38,7 +38,6 @@
 #include "tvariant.h"
 #include "tdebug.h"
 #include "mpegfile.h"
-#include "id3v2framefactory.h"
 #include "apefile.h"
 
 using namespace TagLib;
@@ -118,7 +117,7 @@ namespace
     File *file = nullptr;
 
     if(ext == "MP3" || ext == "MP2" || ext == "AAC")
-      file = new MPEG::File(stream, ID3v2::FrameFactory::instance(), readAudioProperties, audioPropertiesStyle);
+      file = new MPEG::File(stream, readAudioProperties, audioPropertiesStyle);
     else if(ext == "APE")
       file = new APE::File(stream, readAudioProperties, audioPropertiesStyle);
     // module, nst and wow are possible but uncommon extensions
@@ -142,7 +141,7 @@ namespace
     File *file = nullptr;
 
     if(MPEG::File::isSupported(stream))
-      file = new MPEG::File(stream, ID3v2::FrameFactory::instance(), readAudioProperties, audioPropertiesStyle);
+      file = new MPEG::File(stream, readAudioProperties, audioPropertiesStyle);
     else if(APE::File::isSupported(stream))
       file = new APE::File(stream, readAudioProperties, audioPropertiesStyle);
 

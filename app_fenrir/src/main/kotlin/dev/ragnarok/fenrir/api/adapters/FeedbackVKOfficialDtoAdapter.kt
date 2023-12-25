@@ -5,7 +5,7 @@ import dev.ragnarok.fenrir.api.model.VKApiPhoto
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model
 import dev.ragnarok.fenrir.kJson
-import dev.ragnarok.fenrir.link.LinkParser
+import dev.ragnarok.fenrir.link.LinkParserFeedback
 import dev.ragnarok.fenrir.model.FeedbackVKOfficial
 import dev.ragnarok.fenrir.model.FeedbackVKOfficial.*
 import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
@@ -115,7 +115,7 @@ class FeedbackVKOfficialDtoAdapter :
                     .replace("'''(((?!''').)*)'''".toRegex(), "<b>$1</b>")
                     .replace("\\[vk(ontakte)?://[A-Za-z\\d/?=]+\\|([^]]+)]".toRegex(), "$2")
 
-                val matcher = LinkParser.MENTIONS_AVATAR_PATTERN.matcher(it)
+                val matcher = LinkParserFeedback.MENTIONS_AVATAR_PATTERN.matcher(it)
                 if (matcher.find()) {
                     val Type = matcher.group(1)
                     matcher.group(2)?.toLong()?.let { lit ->

@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.upload.UploadDestination.Companion.forRemotePlay
 import dev.ragnarok.fenrir.upload.UploadIntent
 import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.util.Pair
-import dev.ragnarok.fenrir.util.Utils.SafeCallCheckInt
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.safeCheck
@@ -89,27 +88,23 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
         val r = q.split(Regex("( - )|( )|( {2})"), 2).toTypedArray()
         return if (r.size >= 2) {
             (safeCheck(
-                data.artist,
-                object : SafeCallCheckInt {
-                    override fun check(): Boolean {
-                        return data.artist?.lowercase(Locale.getDefault())?.contains(
-                            r[0].lowercase(
-                                Locale.getDefault()
-                            )
-                        ) == true
-                    }
-                })
+                data.artist
+            ) {
+                data.artist?.lowercase(Locale.getDefault())?.contains(
+                    r[0].lowercase(
+                        Locale.getDefault()
+                    )
+                ) == true
+            }
                     && safeCheck(
-                data.title,
-                object : SafeCallCheckInt {
-                    override fun check(): Boolean {
-                        return data.title?.lowercase(Locale.getDefault())?.contains(
-                            r[1].lowercase(
-                                Locale.getDefault()
-                            )
-                        ) == true
-                    }
-                }))
+                data.title
+            ) {
+                data.title?.lowercase(Locale.getDefault())?.contains(
+                    r[1].lowercase(
+                        Locale.getDefault()
+                    )
+                ) == true
+            })
         } else false
     }
 
@@ -124,20 +119,16 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
         }
         query?.let {
             for (i in origin_audios) {
-                if (safeCheck(i.title, object : SafeCallCheckInt {
-                        override fun check(): Boolean {
-                            return i.title?.lowercase(Locale.getDefault())?.contains(
-                                it.lowercase(Locale.getDefault())
-                            ) == true
-                        }
-                    })
-                    || safeCheck(i.artist, object : SafeCallCheckInt {
-                        override fun check(): Boolean {
-                            return i.artist?.lowercase(Locale.getDefault())?.contains(
-                                it.lowercase(Locale.getDefault())
-                            ) == true
-                        }
-                    }) || checkTittleArtists(i, it)
+                if (safeCheck(i.title) {
+                        i.title?.lowercase(Locale.getDefault())?.contains(
+                            it.lowercase(Locale.getDefault())
+                        ) == true
+                    }
+                    || safeCheck(i.artist) {
+                        i.artist?.lowercase(Locale.getDefault())?.contains(
+                            it.lowercase(Locale.getDefault())
+                        ) == true
+                    } || checkTittleArtists(i, it)
                 ) {
                     audios.add(i)
                 }

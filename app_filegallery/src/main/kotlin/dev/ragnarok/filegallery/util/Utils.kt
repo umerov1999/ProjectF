@@ -323,10 +323,10 @@ object Utils {
     }
 
     @SuppressLint("CheckResult")
-    fun inMainThread(function: SafeCall) {
+    inline fun inMainThread(crossinline function: () -> Unit) {
         Completable.complete()
             .observeOn(provideMainThreadScheduler())
-            .subscribe { function.call() }
+            .subscribe { function.invoke() }
     }
 
     fun createOkHttp(timeouts: Long): OkHttpClient.Builder {
@@ -475,9 +475,5 @@ object Utils {
             Transformers_Types.ZOOM_OUT_TRANSFORMER -> return ZoomOutTransformer()
         }
         return null
-    }
-
-    interface SafeCall {
-        fun call()
     }
 }

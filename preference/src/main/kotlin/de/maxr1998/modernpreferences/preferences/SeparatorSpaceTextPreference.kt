@@ -13,7 +13,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import de.maxr1998.modernpreferences.PreferencesExtra
 import de.maxr1998.modernpreferences.R
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 
 
 class SeparatorSpaceTextPreference(key: String, fragmentManager: FragmentManager) :
@@ -26,11 +26,11 @@ class SeparatorSpaceTextPreference(key: String, fragmentManager: FragmentManager
         InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
 
     @StringRes
-    var textInputHintRes: Int = DEFAULT_RES_ID
+    var textInputHintRes: Int = DISABLED_RESOURCE_ID
     var textInputHint: CharSequence? = null
 
     @StringRes
-    var messageRes: Int = DEFAULT_RES_ID
+    var messageRes: Int = DISABLED_RESOURCE_ID
     var message: CharSequence? = null
     var defaultValue: String? = null
     var separatorTextChangeBeforeListener: OnSeparatorTextChangeBeforeListener? = null
@@ -145,16 +145,16 @@ class SeparatorSpaceTextPreference(key: String, fragmentManager: FragmentManager
         private var title: CharSequence? = null
 
         @StringRes
-        private var titleRes: Int = DEFAULT_RES_ID
+        private var titleRes: Int = DISABLED_RESOURCE_ID
         private var currentInput: CharSequence? = null
         private var textInputType: Int = InputType.TYPE_NULL
 
         @StringRes
-        private var textInputHintRes: Int = DEFAULT_RES_ID
+        private var textInputHintRes: Int = DISABLED_RESOURCE_ID
         private var textInputHint: CharSequence? = null
 
         @StringRes
-        private var messageRes: Int = DEFAULT_RES_ID
+        private var messageRes: Int = DISABLED_RESOURCE_ID
         private var message: CharSequence? = null
 
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -172,13 +172,13 @@ class SeparatorSpaceTextPreference(key: String, fragmentManager: FragmentManager
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return MaterialAlertDialogBuilder(requireActivity()).apply {
                 val view = View.inflate(context, R.layout.map_preference_dialog_edittext, null)
-                if (titleRes != DEFAULT_RES_ID) setTitle(titleRes) else setTitle(title)
+                if (titleRes != DISABLED_RESOURCE_ID) setTitle(titleRes) else setTitle(title)
                 val editText = view.findViewById<TextInputEditText>(R.id.preference_edit).apply {
                     if (textInputType != InputType.TYPE_NULL) {
                         inputType = textInputType
                     }
                     when {
-                        textInputHintRes != DEFAULT_RES_ID -> setHint(textInputHintRes)
+                        textInputHintRes != DISABLED_RESOURCE_ID -> setHint(textInputHintRes)
                         textInputHint != null -> hint = textInputHint
                     }
                     setText(currentInput)
@@ -190,7 +190,7 @@ class SeparatorSpaceTextPreference(key: String, fragmentManager: FragmentManager
                             text = message
                         }
 
-                        messageRes != DEFAULT_RES_ID -> {
+                        messageRes != DISABLED_RESOURCE_ID -> {
                             visibility = View.VISIBLE
                             setText(messageRes)
                         }

@@ -21,7 +21,6 @@ import dev.ragnarok.fenrir.model.menu.Section
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.AppTextUtils.getDateWithZeros
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.joinNonEmptyStrings
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
@@ -226,12 +225,10 @@ class UserDetailsPresenter(
                         Text(
                             join(
                                 it,
-                                ", ",
-                                object : Utils.SimpleFunction<String, String> {
-                                    override fun apply(orig: String): String {
-                                        return orig
-                                    }
-                                })
+                                ", "
+                            ) { orig ->
+                                orig
+                            }
                         )
                     )
                     .setSection(mainSection)

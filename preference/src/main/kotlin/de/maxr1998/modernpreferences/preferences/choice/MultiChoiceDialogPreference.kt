@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.FragmentManager
 import de.maxr1998.modernpreferences.PreferencesExtra
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 
 class MultiChoiceDialogPreference(
     key: String,
@@ -75,7 +75,7 @@ class MultiChoiceDialogPreference(
             truncated = "…"
         ) { (_, titleRes1, title1, _, _) ->
             when {
-                titleRes1 != DEFAULT_RES_ID -> context.resources.getText(titleRes1)
+                titleRes1 != DISABLED_RESOURCE_ID -> context.resources.getText(titleRes1)
                 else -> title1
             }
         }

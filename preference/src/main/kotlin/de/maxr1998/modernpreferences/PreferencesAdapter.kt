@@ -37,7 +37,7 @@ import androidx.core.content.res.use
 import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 import de.maxr1998.modernpreferences.helpers.categoryHeader
 import de.maxr1998.modernpreferences.preferences.AccentButtonPreference
 import de.maxr1998.modernpreferences.preferences.CategoryHeader
@@ -106,7 +106,7 @@ class PreferencesAdapter @VisibleForTesting constructor(
         @StringRes res: Int,
         query: String
     ): Boolean {
-        val obj = if (res != DEFAULT_RES_ID) context.resources.getString(res) else str
+        val obj = if (res != DISABLED_RESOURCE_ID) context.resources.getString(res) else str
         if (obj.isNullOrEmpty()) {
             return false
         }
@@ -160,7 +160,7 @@ class PreferencesAdapter @VisibleForTesting constructor(
         findPrefByName(context, data, query, builder, view)
         var iconHas = false
         for (s in builder.getPreferences()) {
-            if (s.iconRes != DEFAULT_RES_ID || s.icon != null) {
+            if (s.iconRes != DISABLED_RESOURCE_ID || s.icon != null) {
                 iconHas = true
                 break
             }
@@ -509,7 +509,7 @@ class PreferencesAdapter @VisibleForTesting constructor(
                 findPrefByName(context, currentScreen, searchQuery, builder, view)
                 var iconHas = false
                 for (s in builder.getPreferences()) {
-                    if (s.iconRes != DEFAULT_RES_ID || s.icon != null) {
+                    if (s.iconRes != DISABLED_RESOURCE_ID || s.icon != null) {
                         iconHas = true
                         break
                     }

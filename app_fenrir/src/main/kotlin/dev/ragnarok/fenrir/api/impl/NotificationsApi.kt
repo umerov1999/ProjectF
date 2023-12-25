@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.api.impl
 
+import dev.ragnarok.fenrir.api.Fields.FIELDS_BASE_OWNER
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.INotificationsApi
@@ -65,7 +66,7 @@ internal class NotificationsApi(accountId: Long, provider: IServiceProvider) :
                     filters,
                     startTime,
                     endTime,
-                    "photo_200_orig,photo_200"
+                    FIELDS_BASE_OWNER
                 )
                     .map(extractResponseWithErrorHandling())
             }

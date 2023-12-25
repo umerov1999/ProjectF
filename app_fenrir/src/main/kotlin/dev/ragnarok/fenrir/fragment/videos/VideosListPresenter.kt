@@ -27,7 +27,6 @@ import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermission
 import dev.ragnarok.fenrir.util.FindAtWithContent
 import dev.ragnarok.fenrir.util.Pair
-import dev.ragnarok.fenrir.util.Utils.SafeCallCheckInt
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.safeCheck
@@ -422,27 +421,23 @@ class VideosListPresenter(
 
         override fun compare(data: Video, q: String): Boolean {
             return (safeCheck(
-                data.title,
-                object : SafeCallCheckInt {
-                    override fun check(): Boolean {
-                        return data.title?.lowercase(Locale.getDefault())?.contains(
-                            q.lowercase(
-                                Locale.getDefault()
-                            )
-                        ) == true
-                    }
-                })
+                data.title
+            ) {
+                data.title?.lowercase(Locale.getDefault())?.contains(
+                    q.lowercase(
+                        Locale.getDefault()
+                    )
+                ) == true
+            }
                     || safeCheck(
-                data.description,
-                object : SafeCallCheckInt {
-                    override fun check(): Boolean {
-                        return data.description?.lowercase(Locale.getDefault())?.contains(
-                            q.lowercase(
-                                Locale.getDefault()
-                            )
-                        ) == true
-                    }
-                }))
+                data.description
+            ) {
+                data.description?.lowercase(Locale.getDefault())?.contains(
+                    q.lowercase(
+                        Locale.getDefault()
+                    )
+                ) == true
+            })
         }
 
         override fun onReset(data: MutableList<Video>, offset: Int, isEnd: Boolean) {

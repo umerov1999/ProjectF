@@ -19,7 +19,7 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.ifNonNullNoEmpty
-import dev.ragnarok.fenrir.link.LinkParser
+import dev.ragnarok.fenrir.link.LinkParserFeedback
 import dev.ragnarok.fenrir.model.FeedbackVKOfficial
 import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
 import dev.ragnarok.fenrir.model.Photo
@@ -188,7 +188,7 @@ class FeedbackVKOfficialAdapter(
             holder.name.visibility = View.VISIBLE
             val replace = SpannableStringBuilder(fromHtml(lit))
             holder.name.setText(
-                LinkParser.parseLinks(context, replace),
+                LinkParserFeedback.parseLinks(context, replace),
                 TextView.BufferType.SPANNABLE
             )
             if (Page.header_owner_id != null) {
@@ -221,7 +221,7 @@ class FeedbackVKOfficialAdapter(
             holder.description.visibility = View.VISIBLE
             val replace = SpannableStringBuilder(fromHtml(it))
             holder.description.setText(
-                LinkParser.parseLinks(context, replace),
+                LinkParserFeedback.parseLinks(context, replace),
                 TextView.BufferType.SPANNABLE
             )
         }, { holder.description.visibility = View.GONE })
@@ -229,7 +229,7 @@ class FeedbackVKOfficialAdapter(
             holder.footer.visibility = View.VISIBLE
             val replace = SpannableStringBuilder(fromHtml(it))
             holder.footer.setText(
-                LinkParser.parseLinks(context, replace),
+                LinkParserFeedback.parseLinks(context, replace),
                 TextView.BufferType.SPANNABLE
             )
         }, { holder.footer.visibility = View.GONE })

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.maxr1998.modernpreferences.PreferencesExtra
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 import de.maxr1998.modernpreferences.preferences.DialogPreference
 
 abstract class AbstractChoiceDialogPreference(
@@ -66,7 +66,7 @@ abstract class AbstractChoiceDialogPreference(
         private lateinit var items: ArrayList<SelectionItem>
 
         @StringRes
-        private var titleRes: Int = DEFAULT_RES_ID
+        private var titleRes: Int = DISABLED_RESOURCE_ID
         protected var selectionAdapter: SelectionAdapter? = null
 
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +79,7 @@ abstract class AbstractChoiceDialogPreference(
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return MaterialAlertDialogBuilder(requireActivity()).apply {
-                if (titleRes != DEFAULT_RES_ID) setTitle(titleRes) else setTitle(title)
+                if (titleRes != DISABLED_RESOURCE_ID) setTitle(titleRes) else setTitle(title)
                 setView(RecyclerView(context).apply {
                     selectionAdapter =
                         SelectionAdapter(this@AbsChooseDialog, items, allowMultiSelect)

@@ -243,9 +243,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         preferencesView?.let { preferencesAdapter?.restoreAndObserveScrollPosition(it) }
         val actionBar = ActivityUtils.supportToolbarFor(this)
         if (actionBar != null) {
-            if (screen.key == "root" || screen.title.isEmpty() && screen.titleRes == DEFAULT_RES_ID) {
+            if (screen.key == "root" || screen.title.isEmpty() && screen.titleRes == DISABLED_RESOURCE_ID) {
                 actionBar.setTitle(R.string.settings)
-            } else if (screen.titleRes != DEFAULT_RES_ID) {
+            } else if (screen.titleRes != DISABLED_RESOURCE_ID) {
                 actionBar.setTitle(screen.titleRes)
             } else {
                 actionBar.title = screen.title
@@ -2377,9 +2377,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         Settings.get().ui().notifyPlaceResumed(Place.PREFERENCES)
         val actionBar = ActivityUtils.supportToolbarFor(this)
         if (actionBar != null) {
-            if (preferencesAdapter?.currentScreen?.key == "root" || preferencesAdapter?.currentScreen?.title.isNullOrEmpty() && (preferencesAdapter?.currentScreen?.titleRes == DEFAULT_RES_ID || preferencesAdapter?.currentScreen?.titleRes == 0)) {
+            if (preferencesAdapter?.currentScreen?.key == "root" || preferencesAdapter?.currentScreen?.title.isNullOrEmpty() && (preferencesAdapter?.currentScreen?.titleRes == DISABLED_RESOURCE_ID || preferencesAdapter?.currentScreen?.titleRes == 0)) {
                 actionBar.setTitle(R.string.settings)
-            } else if (preferencesAdapter?.currentScreen?.titleRes != DEFAULT_RES_ID && preferencesAdapter?.currentScreen?.titleRes != 0) {
+            } else if (preferencesAdapter?.currentScreen?.titleRes != DISABLED_RESOURCE_ID && preferencesAdapter?.currentScreen?.titleRes != 0) {
                 preferencesAdapter?.currentScreen?.titleRes?.let { actionBar.setTitle(it) }
             } else {
                 actionBar.title = preferencesAdapter?.currentScreen?.title

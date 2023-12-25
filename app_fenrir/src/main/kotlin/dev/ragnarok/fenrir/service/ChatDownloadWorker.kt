@@ -32,7 +32,6 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.CheckDirectory
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeLegalFilename
-import dev.ragnarok.fenrir.util.Utils.SafeCallInt
 import dev.ragnarok.fenrir.util.Utils.appLocale
 import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.inMainThread
@@ -534,26 +533,22 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     mBuilder.build()
                 )
             }
-            inMainThread(object : SafeCallInt {
-                override fun call() {
-                    createCustomToast(
-                        applicationContext
-                    ).showToastSuccessBottom(
-                        applicationContext.getString(R.string.success) + " " + applicationContext.getString(
-                            R.string.chat
-                        ) + " " + peer_title
-                    )
-                }
-            })
+            inMainThread {
+                createCustomToast(
+                    applicationContext
+                ).showToastSuccessBottom(
+                    applicationContext.getString(R.string.success) + " " + applicationContext.getString(
+                        R.string.chat
+                    ) + " " + peer_title
+                )
+            }
         } catch (e: Throwable) {
             e.printStackTrace()
-            inMainThread(object : SafeCallInt {
-                override fun call() {
-                    createCustomToast(
-                        applicationContext
-                    ).showToastError(e.localizedMessage)
-                }
-            })
+            inMainThread {
+                createCustomToast(
+                    applicationContext
+                ).showToastError(e.localizedMessage)
+            }
         }
     }
 
@@ -705,26 +700,22 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     mBuilder.build()
                 )
             }
-            inMainThread(object : SafeCallInt {
-                override fun call() {
-                    createCustomToast(
-                        applicationContext
-                    ).showToastSuccessBottom(
-                        applicationContext.getString(R.string.success) + " " + applicationContext.getString(
-                            R.string.chat
-                        ) + " " + peer_title
-                    )
-                }
-            })
+            inMainThread {
+                createCustomToast(
+                    applicationContext
+                ).showToastSuccessBottom(
+                    applicationContext.getString(R.string.success) + " " + applicationContext.getString(
+                        R.string.chat
+                    ) + " " + peer_title
+                )
+            }
         } catch (e: Throwable) {
             e.printStackTrace()
-            inMainThread(object : SafeCallInt {
-                override fun call() {
-                    createCustomToast(
-                        applicationContext
-                    ).showToastError(e.localizedMessage)
-                }
-            })
+            inMainThread {
+                createCustomToast(
+                    applicationContext
+                ).showToastError(e.localizedMessage)
+            }
         }
     }
 
@@ -765,13 +756,11 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             applicationContext.getString(R.string.chat) + " " + owner_id
         if (owner_id == 0L || account_id == 0L) return Result.failure()
         createForeground()
-        inMainThread(object : SafeCallInt {
-            override fun call() {
-                createCustomToast(
-                    applicationContext
-                ).showToastBottom(applicationContext.getString(R.string.do_chat_download))
-            }
-        })
+        inMainThread {
+            createCustomToast(
+                applicationContext
+            ).showToastBottom(applicationContext.getString(R.string.do_chat_download))
+        }
         if ("html" == action) {
             doDownloadAsHTML(chat_title, account_id, owner_id)
         } else {

@@ -23,7 +23,6 @@ import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.findById
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
@@ -290,12 +289,10 @@ class GroupSettingsInteractor(
             .setObsceneWords(
                 join(
                     dto.obscene_words,
-                    ",",
-                    object : Utils.SimpleFunction<String, String> {
-                        override fun apply(orig: String): String {
-                            return orig
-                        }
-                    })
+                    ","
+                ) {
+                    it
+                }
             )
     }
 

@@ -27,7 +27,7 @@ import androidx.core.view.isVisible
 import de.maxr1998.modernpreferences.Preference
 import de.maxr1998.modernpreferences.PreferencesAdapter
 import de.maxr1998.modernpreferences.R
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 
 /**
  * Shows a drawable inside an ImageView
@@ -46,7 +46,7 @@ class ImagePreference(key: String) : Preference(key) {
     override fun getWidgetLayoutResource() = RESOURCE_CONST
 
     @DrawableRes
-    var imageRes: Int = DEFAULT_RES_ID
+    var imageRes: Int = DISABLED_RESOURCE_ID
     var imageDrawable: Drawable? = null
     var lazyImage: (() -> Drawable)? = null
 
@@ -73,7 +73,7 @@ class ImagePreference(key: String) : Preference(key) {
         super.bindViews(holder)
         val image = holder.root.findViewById<ImageView>(R.id.map_image)
         when {
-            imageRes != DEFAULT_RES_ID -> image.setImageResource(imageRes)
+            imageRes != DISABLED_RESOURCE_ID -> image.setImageResource(imageRes)
             imageDrawable != null -> image.setImageDrawable(imageDrawable)
             lazyImage != null -> image.setImageDrawable(lazyImage?.invoke())
             else -> image.setImageDrawable(null)

@@ -3,7 +3,7 @@ package de.maxr1998.modernpreferences.preferences.choice
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 
 /**
  * Represents a selectable item in a selection dialog preference,
@@ -35,7 +35,7 @@ data class SelectionItem private constructor(
     constructor(
         key: String,
         @StringRes titleRes: Int,
-        @StringRes summaryRes: Int = DEFAULT_RES_ID
+        @StringRes summaryRes: Int = DISABLED_RESOURCE_ID
     ) :
             this(key, titleRes, "", summaryRes, null)
 
@@ -43,7 +43,7 @@ data class SelectionItem private constructor(
      * @see SelectionItem
      */
     constructor(key: String, title: CharSequence, summary: CharSequence? = null) :
-            this(key, DEFAULT_RES_ID, title, DEFAULT_RES_ID, summary)
+            this(key, DISABLED_RESOURCE_ID, title, DISABLED_RESOURCE_ID, summary)
 
     override fun describeContents(): Int {
         return 0

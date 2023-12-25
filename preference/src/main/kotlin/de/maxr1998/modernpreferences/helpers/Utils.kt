@@ -20,7 +20,10 @@ import android.widget.SeekBar
 
 const val KEY_ROOT_SCREEN = "root"
 
-const val DEFAULT_RES_ID = -1
+/**
+ * A resource ID as a default value for optional attributes.
+ */
+const val DISABLED_RESOURCE_ID = -1
 
 internal fun SeekBar.onSeek(callback: (Int, Boolean) -> Unit) {
     setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {

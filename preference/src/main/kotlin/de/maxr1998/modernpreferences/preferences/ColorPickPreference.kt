@@ -12,7 +12,7 @@ import androidx.fragment.app.FragmentManager
 import de.maxr1998.modernpreferences.PreferencesAdapter
 import de.maxr1998.modernpreferences.PreferencesExtra
 import de.maxr1998.modernpreferences.R
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 import de.maxr1998.modernpreferences.preferences.colorpicker.ColorCircleDrawable
 import de.maxr1998.modernpreferences.preferences.colorpicker.ColorPickerView.WHEEL_TYPE
 import de.maxr1998.modernpreferences.preferences.colorpicker.builder.ColorPickerClickListener
@@ -139,7 +139,7 @@ class ColorPickPreference(key: String, fragmentManager: FragmentManager) :
         private var title: CharSequence? = null
 
         @StringRes
-        private var titleRes: Int = DEFAULT_RES_ID
+        private var titleRes: Int = DISABLED_RESOURCE_ID
 
         private var alphaSlider = false
         private var lightSlider = false
@@ -201,7 +201,9 @@ class ColorPickPreference(key: String, fragmentManager: FragmentManager) :
                 .setNegativeButton(android.R.string.cancel) { _, _ ->
                     dismiss()
                 }
-            if (titleRes != DEFAULT_RES_ID) builder.setTitle(titleRes) else builder.setTitle(title?.toString())
+            if (titleRes != DISABLED_RESOURCE_ID) builder.setTitle(titleRes) else builder.setTitle(
+                title?.toString()
+            )
 
             if (!alphaSlider && !lightSlider) builder.noSliders() else if (!alphaSlider) builder.lightnessSliderOnly() else if (!lightSlider) builder.alphaSliderOnly()
 

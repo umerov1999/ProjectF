@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.util.DownloadWorkUtils.TrackIsDownloaded
 import dev.ragnarok.fenrir.util.FindAtWithContent
 import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.HelperSimple.hasHelp
-import dev.ragnarok.fenrir.util.Utils.SafeCallCheckInt
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.safeCheck
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
@@ -446,30 +445,26 @@ class AudiosPresenter(
             val r = q.split(Regex("( - )|( )|( {2})"), 2).toTypedArray()
             return if (r.size >= 2) {
                 (safeCheck(
-                    data.artist,
-                    object : SafeCallCheckInt {
-                        override fun check(): Boolean {
-                            return data.artist?.lowercase(Locale.getDefault())?.contains(
-                                r[0].lowercase(
-                                    Locale.getDefault()
-                                )
-                            ) == true
-                        }
-                    })
+                    data.artist
+                ) {
+                    data.artist?.lowercase(Locale.getDefault())?.contains(
+                        r[0].lowercase(
+                            Locale.getDefault()
+                        )
+                    ) == true
+                }
                         || checkArtists(
                     data.main_artists,
                     r[0]
                 )) && safeCheck(
-                    data.title,
-                    object : SafeCallCheckInt {
-                        override fun check(): Boolean {
-                            return data.title?.lowercase(Locale.getDefault())?.contains(
-                                r[1].lowercase(
-                                    Locale.getDefault()
-                                )
-                            ) == true
-                        }
-                    })
+                    data.title
+                ) {
+                    data.title?.lowercase(Locale.getDefault())?.contains(
+                        r[1].lowercase(
+                            Locale.getDefault()
+                        )
+                    ) == true
+                }
             } else false
         }
 
@@ -477,24 +472,20 @@ class AudiosPresenter(
             return if (q == "dw") {
                 TrackIsDownloaded(data) == 0
             } else safeCheck(
-                data.title,
-                object : SafeCallCheckInt {
-                    override fun check(): Boolean {
-                        return data.title?.lowercase(Locale.getDefault())
-                            ?.contains(q.lowercase(Locale.getDefault())) == true
-                    }
-                })
+                data.title
+            ) {
+                data.title?.lowercase(Locale.getDefault())
+                    ?.contains(q.lowercase(Locale.getDefault())) == true
+            }
                     || safeCheck(
-                data.artist,
-                object : SafeCallCheckInt {
-                    override fun check(): Boolean {
-                        return data.artist?.lowercase(Locale.getDefault())?.contains(
-                            q.lowercase(
-                                Locale.getDefault()
-                            )
-                        ) == true
-                    }
-                })
+                data.artist
+            ) {
+                data.artist?.lowercase(Locale.getDefault())?.contains(
+                    q.lowercase(
+                        Locale.getDefault()
+                    )
+                ) == true
+            }
                     || checkArtists(data.main_artists, q) || checkTittleArtists(data, q)
         }
 

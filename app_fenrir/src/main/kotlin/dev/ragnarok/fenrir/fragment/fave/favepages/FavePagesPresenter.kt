@@ -9,7 +9,6 @@ import dev.ragnarok.fenrir.model.FavePage
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.FindAtWithContent
-import dev.ragnarok.fenrir.util.Utils.SafeCallCheckInt
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.safeCheck
@@ -247,16 +246,14 @@ class FavePagesPresenter(accountId: Long, isUser: Boolean, savedInstanceState: B
 
         override fun compare(data: FavePage, q: String): Boolean {
             return data.owner != null && safeCheck(
-                data.owner?.fullName,
-                object : SafeCallCheckInt {
-                    override fun check(): Boolean {
-                        return data.owner?.fullName?.lowercase(Locale.getDefault())?.contains(
-                            q.lowercase(
-                                Locale.getDefault()
-                            )
-                        ) == true
-                    }
-                })
+                data.owner?.fullName
+            ) {
+                data.owner?.fullName?.lowercase(Locale.getDefault())?.contains(
+                    q.lowercase(
+                        Locale.getDefault()
+                    )
+                ) == true
+            }
         }
 
         override fun onReset(data: MutableList<FavePage>, offset: Int, isEnd: Boolean) {

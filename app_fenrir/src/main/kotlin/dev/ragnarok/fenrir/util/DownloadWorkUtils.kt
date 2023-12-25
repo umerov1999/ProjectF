@@ -610,12 +610,10 @@ object DownloadWorkUtils {
                     file_v.setFile(file_v.file + "." + file_v.ext)
                     result.renameTo(File(file_v.setExt("error").build()))
                 }
-                Utils.inMainThread(object : Utils.SafeCallInt {
-                    override fun call() {
-                        CustomToast.createCustomToast(applicationContext)
-                            .showToastError(R.string.error_with_message, e.localizedMessage)
-                    }
-                })
+                Utils.inMainThread {
+                    CustomToast.createCustomToast(applicationContext)
+                        .showToastError(R.string.error_with_message, e.localizedMessage)
+                }
                 return false
             }
             return true
@@ -769,12 +767,10 @@ object DownloadWorkUtils {
                     file_v.setFile(file_v.file + "." + file_v.ext)
                     result.renameTo(File(file_v.setExt("error").build()))
                 }
-                Utils.inMainThread(object : Utils.SafeCallInt {
-                    override fun call() {
-                        CustomToast.createCustomToast(applicationContext)
-                            .showToastError(R.string.error_with_message, e.localizedMessage)
-                    }
-                })
+                Utils.inMainThread {
+                    CustomToast.createCustomToast(applicationContext)
+                        .showToastError(R.string.error_with_message, e.localizedMessage)
+                }
                 return false
             }
             return true
@@ -877,12 +873,10 @@ object DownloadWorkUtils {
                     NotificationHelper.NOTIFICATION_DOWNLOAD,
                     NotificationHelper.NOTIFICATION_DOWNLOADING
                 )
-                Utils.inMainThread(object : Utils.SafeCallInt {
-                    override fun call() {
-                        CustomToast.createCustomToast(applicationContext)
-                            .showToastBottom(R.string.saved)
-                    }
-                })
+                Utils.inMainThread {
+                    CustomToast.createCustomToast(applicationContext)
+                        .showToastBottom(R.string.saved)
+                }
             }
             return if (ret) Result.success() else Result.failure()
         }
@@ -984,15 +978,13 @@ object DownloadWorkUtils {
                             )
 
                         } catch (e: Throwable) {
-                            Utils.inMainThread(object : Utils.SafeCallInt {
-                                override fun call() {
-                                    CustomToast.createCustomToast(applicationContext)
-                                        .showToastError(
-                                            R.string.error_with_message,
-                                            e.localizedMessage
-                                        )
-                                }
-                            })
+                            Utils.inMainThread {
+                                CustomToast.createCustomToast(applicationContext)
+                                    .showToastError(
+                                        R.string.error_with_message,
+                                        e.localizedMessage
+                                    )
+                            }
                             e.printStackTrace()
                         }
                     }
@@ -1052,12 +1044,10 @@ object DownloadWorkUtils {
                     NotificationHelper.NOTIFICATION_DOWNLOADING
                 )
                 MusicPlaybackController.tracksExist.addAudio(file_v.buildFilename())
-                Utils.inMainThread(object : Utils.SafeCallInt {
-                    override fun call() {
-                        CustomToast.createCustomToast(applicationContext)
-                            .showToastBottom(if (updated_tag) R.string.tag_modified else R.string.saved)
-                    }
-                })
+                Utils.inMainThread {
+                    CustomToast.createCustomToast(applicationContext)
+                        .showToastBottom(if (updated_tag) R.string.tag_modified else R.string.saved)
+                }
             }
             return if (ret) Result.success() else Result.failure()
         }

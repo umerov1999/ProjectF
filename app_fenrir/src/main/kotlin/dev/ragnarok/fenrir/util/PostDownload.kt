@@ -469,26 +469,22 @@ class PostDownload(private val context: Context) {
                         mBuilder.build()
                     )
                 }
-                Utils.inMainThread(object : Utils.SafeCallInt {
-                    override fun call() {
-                        CustomToast.createCustomToast(
-                            context
-                        ).showToastSuccessBottom(
-                            context.getString(R.string.success) + " " + context.getString(
-                                R.string.for_post
-                            ) + " " + peer_title
-                        )
-                    }
-                })
+                Utils.inMainThread {
+                    CustomToast.createCustomToast(
+                        context
+                    ).showToastSuccessBottom(
+                        context.getString(R.string.success) + " " + context.getString(
+                            R.string.for_post
+                        ) + " " + peer_title
+                    )
+                }
             } catch (e: Throwable) {
                 e.printStackTrace()
-                Utils.inMainThread(object : Utils.SafeCallInt {
-                    override fun call() {
-                        CustomToast.createCustomToast(
-                            context
-                        ).showToastError(e.localizedMessage)
-                    }
-                })
+                Utils.inMainThread {
+                    CustomToast.createCustomToast(
+                        context
+                    ).showToastError(e.localizedMessage)
+                }
             }
             it.onComplete()
         }.fromIOToMain().subscribe(RxUtils.dummy(), RxUtils.ignore())

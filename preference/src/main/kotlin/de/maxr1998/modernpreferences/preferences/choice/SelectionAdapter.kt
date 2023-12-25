@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import de.maxr1998.modernpreferences.R
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 
 class SelectionAdapter(
     private val preference: AbstractChoiceDialogPreference.AbsChooseDialog,
@@ -28,12 +28,13 @@ class SelectionAdapter(
         holder.apply {
             selector.isChecked = preference.isSelected(item)
             title.apply {
-                if (item.titleRes != DEFAULT_RES_ID) setText(item.titleRes) else text = item.title
+                if (item.titleRes != DISABLED_RESOURCE_ID) setText(item.titleRes) else text =
+                    item.title
             }
             summary.apply {
-                if (item.summaryRes != DEFAULT_RES_ID) setText(item.summaryRes) else text =
+                if (item.summaryRes != DISABLED_RESOURCE_ID) setText(item.summaryRes) else text =
                     item.summary
-                isVisible = item.summaryRes != DEFAULT_RES_ID || item.summary != null
+                isVisible = item.summaryRes != DISABLED_RESOURCE_ID || item.summary != null
             }
             itemView.setOnClickListener {
                 preference.select(item)

@@ -23,7 +23,7 @@ import de.maxr1998.modernpreferences.Preference
 import de.maxr1998.modernpreferences.PreferenceScreen
 import de.maxr1998.modernpreferences.PreferencesAdapter
 import de.maxr1998.modernpreferences.R
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 
 /**
  * IMPORTANT: If you're using this independently from the helper DSLs,
@@ -74,12 +74,12 @@ class CollapsePreference(screen: PreferenceScreen.Builder, key: String) : Prefer
     }
 
     private fun buildSummary(context: Context) {
-        if (summaryRes != DEFAULT_RES_ID || summary != null) return
+        if (summaryRes != DISABLED_RESOURCE_ID || summary != null) return
 
         summary = preferences.asSequence().filter(Preference::includeInCollapseSummary)
             .take(MAX_PREFS_IN_SUMMARY).joinToString { p ->
                 when {
-                    p.titleRes != DEFAULT_RES_ID -> context.getString(p.titleRes)
+                    p.titleRes != DISABLED_RESOURCE_ID -> context.getString(p.titleRes)
                     else -> p.title
                 }
             }

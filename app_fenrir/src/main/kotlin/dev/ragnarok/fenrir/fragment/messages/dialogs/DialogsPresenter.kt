@@ -739,12 +739,10 @@ class DialogsPresenter(
         internal fun getTitleIfEmpty(users: Collection<User>): String? {
             return join(
                 users,
-                ", ",
-                object : Utils.SimpleFunction<User, String> {
-                    override fun apply(orig: User): String {
-                        return orig.firstName ?: "null"
-                    }
-                })
+                ", "
+            ) {
+                it.firstName ?: "null"
+            }
         }
     }
 

@@ -337,7 +337,7 @@ object Utils {
     inline fun <reified T> join(
         tokens: Array<T>?,
         delimiter: String,
-        function: SimpleFunction<T, String>
+        crossinline function: (T) -> String?
     ): String? {
         if (tokens == null) {
             return null
@@ -350,7 +350,7 @@ object Utils {
             } else {
                 sb.append(delimiter)
             }
-            sb.append(function.apply(token))
+            sb.append(function.invoke(token))
         }
         return sb.toString()
     }
@@ -363,17 +363,15 @@ object Utils {
                 nonEmpty.add(token)
             }
         }
-        return join(nonEmpty, delimiter, object : SimpleFunction<String, String?> {
-            override fun apply(orig: String): String {
-                return orig
-            }
-        })
+        return join(nonEmpty, delimiter) { orig ->
+            orig
+        }
     }
 
     inline fun <reified T> join(
         tokens: Iterable<T>?,
         delimiter: String,
-        function: SimpleFunction<T, String?>
+        crossinline function: (T) -> String?
     ): String? {
         if (tokens == null) {
             return null
@@ -386,7 +384,7 @@ object Utils {
             } else {
                 sb.append(delimiter)
             }
-            sb.append(function.apply(token))
+            sb.append(function.invoke(token))
         }
         return sb.toString()
     }
@@ -394,7 +392,7 @@ object Utils {
     inline fun <reified T, reified E : Collection<T>> join(
         tokens: E?,
         delimiter: String,
-        function: SimpleFunction<T, String>
+        crossinline function: (T) -> String
     ): String? {
         if (tokens == null) {
             return null
@@ -407,7 +405,7 @@ object Utils {
             } else {
                 sb.append(delimiter)
             }
-            sb.append(function.apply(token))
+            sb.append(function.invoke(token))
         }
         return sb.toString()
     }
@@ -1365,9 +1363,9 @@ object Utils {
         return false
     }
 
-    fun safeCheck(obj: CharSequence?, function: SafeCallCheckInt): Boolean {
+    inline fun safeCheck(obj: CharSequence?, crossinline function: () -> Boolean): Boolean {
         return if (obj.nonNullNoEmpty()) {
-            function.check()
+            function.invoke()
         } else false
     }
 
@@ -1392,10 +1390,10 @@ object Utils {
 
 
     @SuppressLint("CheckResult")
-    fun inMainThread(function: SafeCallInt) {
+    inline fun inMainThread(crossinline function: () -> Unit) {
         Completable.complete()
             .observeOn(provideMainThreadScheduler())
-            .subscribe { function.call() }
+            .subscribe { function.invoke() }
     }
 
     fun createOkHttp(timeouts: Long, compressIntercept: Boolean): OkHttpClient.Builder {
@@ -1634,7 +1632,6 @@ object Utils {
         start(context, intent)
     }
 
-
     fun BytesToSize(Bytes: Long): String {
         val tb = 1099511627776L
         val gb: Long = 1073741824
@@ -1667,17 +1664,5 @@ object Utils {
 
             else -> String.format(Locale.getDefault(), "%d Bytes", Bytes)
         }
-    }
-
-    interface SafeCallInt {
-        fun call()
-    }
-
-    interface SafeCallCheckInt {
-        fun check(): Boolean
-    }
-
-    interface SimpleFunction<F, S> {
-        fun apply(orig: F): S
     }
 }

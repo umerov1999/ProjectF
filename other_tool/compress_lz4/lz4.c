@@ -1,6 +1,6 @@
 /*
    LZ4 - Fast LZ compression algorithm
-   Copyright (C) 2011-2020, Yann Collet.
+   Copyright (C) 2011-2023, Yann Collet.
 
    BSD 2-Clause License (http://www.opensource.org/licenses/bsd-license.php)
 
@@ -106,15 +106,13 @@
 #  define LZ4_SRC_INCLUDED 1
 #endif
 
-#ifndef LZ4_STATIC_LINKING_ONLY
-#define LZ4_STATIC_LINKING_ONLY
-#endif
-
 #ifndef LZ4_DISABLE_DEPRECATE_WARNINGS
-#define LZ4_DISABLE_DEPRECATE_WARNINGS /* due to LZ4_decompress_safe_withPrefix64k */
+#  define LZ4_DISABLE_DEPRECATE_WARNINGS /* due to LZ4_decompress_safe_withPrefix64k */
 #endif
 
-#define LZ4_STATIC_LINKING_ONLY  /* LZ4_DISTANCE_MAX */
+#ifndef LZ4_STATIC_LINKING_ONLY
+#  define LZ4_STATIC_LINKING_ONLY
+#endif
 #include "lz4.h"
 /* see also "memory routines" below */
 
@@ -435,6 +433,18 @@ static U16 LZ4_readLE16(const void* memPtr)
         return (U16)((U16)p[0] + (p[1]<<8));
     }
 }
+
+#ifdef LZ4_STATIC_LINKING_ONLY_ENDIANNESS_INDEPENDENT_OUTPUT
+static U32 LZ4_readLE32(const void* memPtr)
+{
+    if (LZ4_isLittleEndian()) {
+        return LZ4_read32(memPtr);
+    } else {
+        const BYTE* p = (const BYTE*)memPtr;
+        return (U32)p[0] + (p[1]<<8) + (p[2]<<16) + (p[3]<<24);
+    }
+}
+#endif
 
 static void LZ4_writeLE16(void* memPtr, U16 value)
 {
@@ -784,7 +794,12 @@ LZ4_FORCE_INLINE U32 LZ4_hash5(U64 sequence, tableType_t const tableType)
 LZ4_FORCE_INLINE U32 LZ4_hashPosition(const void* const p, tableType_t const tableType)
 {
     if ((sizeof(reg_t)==8) && (tableType != byU16)) return LZ4_hash5(LZ4_read_ARCH(p), tableType);
+
+#ifdef LZ4_STATIC_LINKING_ONLY_ENDIANNESS_INDEPENDENT_OUTPUT
+    return LZ4_hash4(LZ4_readLE32(p), tableType);
+#else
     return LZ4_hash4(LZ4_read32(p), tableType);
+#endif
 }
 
 LZ4_FORCE_INLINE void LZ4_clearHash(U32 h, void* tableBase, tableType_t const tableType)
@@ -1363,23 +1378,28 @@ LZ4_FORCE_INLINE int LZ4_compress_generic(
 
 int LZ4_compress_fast_extState(void* state, const char* source, char* dest, int inputSize, int maxOutputSize, int acceleration)
 {
+    return LZ4_compress_fast_extState_destSize(state, source, dest, &inputSize, maxOutputSize, acceleration);
+}
+
+int LZ4_compress_fast_extState_destSize(void* state, const char* src, char* dst, int *srcSizePtr, int dstCapacity, int acceleration)
+{
     LZ4_stream_t_internal* const ctx = & LZ4_initStream(state, sizeof(LZ4_stream_t)) -> internal_donotuse;
     assert(ctx != NULL);
     if (acceleration < 1) acceleration = LZ4_ACCELERATION_DEFAULT;
     if (acceleration > LZ4_ACCELERATION_MAX) acceleration = LZ4_ACCELERATION_MAX;
-    if (maxOutputSize >= LZ4_compressBound(inputSize)) {
-        if (inputSize < LZ4_64Klimit) {
-            return LZ4_compress_generic(ctx, source, dest, inputSize, NULL, 0, notLimited, byU16, noDict, noDictIssue, acceleration);
+    if (dstCapacity >= LZ4_compressBound(*srcSizePtr)) {
+        if (*srcSizePtr < LZ4_64Klimit) {
+            return LZ4_compress_generic(ctx, src, dst, *srcSizePtr, srcSizePtr, 0, notLimited, byU16, noDict, noDictIssue, acceleration);
         } else {
-            const tableType_t tableType = ((sizeof(void*)==4) && ((uptrval)source > LZ4_DISTANCE_MAX)) ? byPtr : byU32;
-            return LZ4_compress_generic(ctx, source, dest, inputSize, NULL, 0, notLimited, tableType, noDict, noDictIssue, acceleration);
+            const tableType_t tableType = ((sizeof(void*)==4) && ((uptrval)src > LZ4_DISTANCE_MAX)) ? byPtr : byU32;
+            return LZ4_compress_generic(ctx, src, dst, *srcSizePtr, srcSizePtr, 0, notLimited, tableType, noDict, noDictIssue, acceleration);
         }
     } else {
-        if (inputSize < LZ4_64Klimit) {
-            return LZ4_compress_generic(ctx, source, dest, inputSize, NULL, maxOutputSize, limitedOutput, byU16, noDict, noDictIssue, acceleration);
+        if (*srcSizePtr < LZ4_64Klimit) {
+            return LZ4_compress_generic(ctx, src, dst, *srcSizePtr, srcSizePtr, dstCapacity, limitedOutput, byU16, noDict, noDictIssue, acceleration);
         } else {
-            const tableType_t tableType = ((sizeof(void*)==4) && ((uptrval)source > LZ4_DISTANCE_MAX)) ? byPtr : byU32;
-            return LZ4_compress_generic(ctx, source, dest, inputSize, NULL, maxOutputSize, limitedOutput, tableType, noDict, noDictIssue, acceleration);
+            const tableType_t tableType = ((sizeof(void*)==4) && ((uptrval)src > LZ4_DISTANCE_MAX)) ? byPtr : byU32;
+            return LZ4_compress_generic(ctx, src, dst, *srcSizePtr, srcSizePtr, dstCapacity, limitedOutput, tableType, noDict, noDictIssue, acceleration);
         }
     }
 }

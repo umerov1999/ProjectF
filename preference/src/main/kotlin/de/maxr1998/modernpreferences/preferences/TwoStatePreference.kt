@@ -21,7 +21,7 @@ import android.graphics.drawable.StateListDrawable
 import android.widget.CompoundButton
 import androidx.annotation.StringRes
 import de.maxr1998.modernpreferences.PreferencesAdapter
-import de.maxr1998.modernpreferences.helpers.DEFAULT_RES_ID
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class TwoStatePreference(key: String) : StatefulPreference(key) {
@@ -44,7 +44,7 @@ abstract class TwoStatePreference(key: String) : StatefulPreference(key) {
     var checkedAfterChangeListener: OnCheckedAfterChangeListener? = null
 
     @StringRes
-    var summaryOnRes: Int = DEFAULT_RES_ID
+    var summaryOnRes: Int = DISABLED_RESOURCE_ID
     var summaryOn: CharSequence? = null
 
     /**
@@ -71,7 +71,10 @@ abstract class TwoStatePreference(key: String) : StatefulPreference(key) {
     }
 
     override fun resolveSummary(context: Context) = when {
-        checkedInternal && summaryOnRes != DEFAULT_RES_ID -> context.resources.getText(summaryOnRes)
+        checkedInternal && summaryOnRes != DISABLED_RESOURCE_ID -> context.resources.getText(
+            summaryOnRes
+        )
+
         checkedInternal && summaryOn != null -> summaryOn
         else -> super.resolveSummary(context)
     }
@@ -86,7 +89,7 @@ abstract class TwoStatePreference(key: String) : StatefulPreference(key) {
             commitBoolean(new)
             checkedInternal = new // Update internal state
             if (holder != null) {
-                if (summaryOnRes != DEFAULT_RES_ID || summaryOn != null) {
+                if (summaryOnRes != DISABLED_RESOURCE_ID || summaryOn != null) {
                     bindViews(holder)
                 } else updateButton(holder)
             } else requestRebind()

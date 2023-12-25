@@ -145,11 +145,9 @@ class LoginActivity : AppCompatActivity() {
             scope: String?,
             groupIds: Collection<Long>?
         ): Intent {
-            val ids = Utils.join(groupIds, ",", object : Utils.SimpleFunction<Long, String> {
-                override fun apply(orig: Long): String {
-                    return orig.toString()
-                }
-            })
+            val ids = Utils.join(groupIds, ",") {
+                it.toString()
+            }
             return Intent(context, LoginActivity::class.java)
                 .putExtra(EXTRA_CLIENT_ID, clientId)
                 .putExtra(EXTRA_SCOPE, scope)

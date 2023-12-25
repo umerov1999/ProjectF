@@ -52,7 +52,6 @@ import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Unixtime.now
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import io.reactivex.rxjava3.core.Completable
@@ -318,12 +317,8 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         return networker.vkDefault(accountId)
             .groups()[accountId, true, join(
             roles,
-            ",",
-            object : Utils.SimpleFunction<String, String> {
-                override fun apply(orig: String): String {
-                    return orig
-                }
-            }), Fields.FIELDS_BASE_GROUP, null, 1000]
+            ","
+        ) { it }, Fields.FIELDS_BASE_GROUP, null, 1000]
             .map { obj -> listEmptyIfNull(obj.items) }
             .map { groups ->
                 val owners: MutableList<Owner> = ArrayList(groups.size)

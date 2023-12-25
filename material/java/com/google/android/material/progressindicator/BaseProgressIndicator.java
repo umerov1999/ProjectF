@@ -634,6 +634,8 @@ public abstract class BaseProgressIndicator<S extends BaseProgressIndicatorSpec>
   public void setTrackCornerRadius(@Px int trackCornerRadius) {
     if (spec.trackCornerRadius != trackCornerRadius) {
       spec.trackCornerRadius = min(trackCornerRadius, spec.trackThickness / 2);
+      spec.validateSpec();
+      invalidate();
     }
   }
 
@@ -875,7 +877,7 @@ public abstract class BaseProgressIndicator<S extends BaseProgressIndicatorSpec>
 
   /** @hide */
   @RestrictTo(Scope.LIBRARY_GROUP)
-  @IntDef({HIDE_NONE, HIDE_OUTWARD, HIDE_INWARD})
+  @IntDef({HIDE_NONE, HIDE_OUTWARD, HIDE_INWARD, HIDE_ESCAPE})
   @Retention(RetentionPolicy.SOURCE)
   public @interface HideAnimationBehavior {}
 }
