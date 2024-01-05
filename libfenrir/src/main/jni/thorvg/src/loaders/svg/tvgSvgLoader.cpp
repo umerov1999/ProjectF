@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2023 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -3531,6 +3531,10 @@ void SvgLoader::clear(bool all)
     loaderData.images.reset();
 
     if (copy) free((char*)content);
+
+    delete(root);
+    root = nullptr;
+
     size = 0;
     content = nullptr;
     copy = false;
@@ -3541,7 +3545,7 @@ void SvgLoader::clear(bool all)
 /* External Class Implementation                                        */
 /************************************************************************/
 
-SvgLoader::SvgLoader() : LoadModule(FileType::Svg)
+SvgLoader::SvgLoader() : ImageLoader(FileType::Svg)
 {
 }
 
@@ -3754,5 +3758,7 @@ bool SvgLoader::close()
 Paint* SvgLoader::paint()
 {
     this->done();
-    return root;
+    auto ret = root;
+    root = nullptr;
+    return ret;
 }

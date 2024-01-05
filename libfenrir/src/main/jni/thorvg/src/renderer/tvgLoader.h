@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2023 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,9 @@ struct LoaderMgr
     static LoadModule* loader(const string& path, bool* invalid);
     static LoadModule* loader(const char* data, uint32_t size, const string& mimeType, const string& rpath, bool copy);
     static LoadModule* loader(const uint32_t* data, uint32_t w, uint32_t h, bool premultiplied, bool copy);
-    static void retrieve(LoadModule* loader);
+    static LoadModule* loader(const char* key);
+    static bool retrieve(const string& path);
+    static bool retrieve(LoadModule* loader);
 };
 
 #endif //_TVG_LOADER_H_

@@ -955,15 +955,7 @@ object Utils {
 
     fun isHiddenAccount(account_id: Long): Boolean {
         val accType = Settings.get().accounts().getType(account_id)
-        return accType == AccountType.VK_ANDROID_HIDDEN || accType == AccountType.KATE_HIDDEN
-    }
-
-    val isKateCurrent: Boolean
-        get() = isKateAccount(Settings.get().accounts().current)
-
-    fun isKateAccount(account_id: Long): Boolean {
-        val accType = Settings.get().accounts().getType(account_id)
-        return accType == AccountType.KATE || accType == AccountType.KATE_HIDDEN
+        return accType == AccountType.VK_ANDROID_HIDDEN || accType == AccountType.KATE_HIDDEN || accType == AccountType.IOS_HIDDEN
     }
 
     val isOfficialVKCurrent: Boolean
@@ -971,7 +963,7 @@ object Utils {
 
     fun isOfficialVKAccount(account_id: Long): Boolean {
         val accType = Settings.get().accounts().getType(account_id)
-        return accType == AccountType.VK_ANDROID || accType == AccountType.VK_ANDROID_HIDDEN
+        return accType == AccountType.VK_ANDROID || accType == AccountType.VK_ANDROID_HIDDEN || accType == AccountType.IOS_HIDDEN
     }
 
     @SuppressLint("HardwareIds")

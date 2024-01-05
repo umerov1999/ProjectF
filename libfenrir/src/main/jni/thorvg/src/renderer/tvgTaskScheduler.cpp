@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2023 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -108,7 +108,10 @@ struct TaskSchedulerImpl
 
         for (unsigned i = 0; i < threadCnt; ++i) {
             taskQueues.push(new TaskQueue);
-            threads.push(new thread([&, i] { run(i); }));
+            threads.push(new thread);
+        }
+        for (unsigned i = 0; i < threadCnt; ++i) {
+            *threads.data[i] = thread([&, i] { run(i); });
         }
     }
 

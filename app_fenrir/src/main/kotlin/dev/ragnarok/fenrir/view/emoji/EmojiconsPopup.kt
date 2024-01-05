@@ -311,7 +311,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                     })
                     val gridMyLayoutManager = GridLayoutManager(holder.itemView.context, 4)
                     recyclerView.layoutManager = gridMyLayoutManager
-                    (holder.itemView.findViewById<View>(R.id.header_sticker) as TextView).text =
+                    holder.itemView.findViewById<TextView>(R.id.header_sticker).text =
                         recyclerView.context.getString(R.string.my)
                     recyclerView.adapter = myStickersAdapter
                 }
@@ -332,7 +332,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                     var title = stickersGridViews[position - 8].getTitle()
                     if (title.nonNullNoEmpty() && title == "recent") title =
                         recyclerView.context.getString(R.string.usages)
-                    (holder.itemView.findViewById<View>(R.id.header_sticker) as TextView).text =
+                    holder.itemView.findViewById<TextView>(R.id.header_sticker).text =
                         title
                     recyclerView.adapter = mAdaptert
                 }

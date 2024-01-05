@@ -211,8 +211,8 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
 
     fun onEdit(context: Context, album: AudioPlaylist) {
         val root = View.inflate(context, R.layout.entry_playlist_info, null)
-        (root.findViewById<View>(R.id.edit_title) as TextInputEditText).setText(album.getTitle())
-        (root.findViewById<View>(R.id.edit_description) as TextInputEditText).setText(album.getDescription())
+        root.findViewById<TextInputEditText>(R.id.edit_title).setText(album.getTitle())
+        root.findViewById<TextInputEditText>(R.id.edit_description).setText(album.getDescription())
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.edit)
             .setCancelable(true)
@@ -220,8 +220,8 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
             .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                 appendDisposable(fInteractor.editPlaylist(
                     accountId, album.getOwnerId(), album.getId(),
-                    (root.findViewById<View>(R.id.edit_title) as TextInputEditText).text.toString(),
-                    (root.findViewById<View>(R.id.edit_description) as TextInputEditText).text.toString()
+                    root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
+                    root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
                 ).fromIOToMain()
                     .subscribe({ fireRefresh() }) { t ->
                         showError(getCauseIfRuntime(t))
@@ -249,8 +249,8 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
             .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                 appendDisposable(fInteractor.createPlaylist(
                     accountId, owner_id,
-                    (root.findViewById<View>(R.id.edit_title) as TextInputEditText).text.toString(),
-                    (root.findViewById<View>(R.id.edit_description) as TextInputEditText).text.toString()
+                    root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
+                    root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
                 ).fromIOToMain()
                     .subscribe({ playlist -> doInsertPlaylist(playlist) }) { t ->
                         showError(getCauseIfRuntime(t))

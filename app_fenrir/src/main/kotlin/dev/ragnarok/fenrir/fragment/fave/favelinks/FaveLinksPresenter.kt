@@ -157,7 +157,7 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
             .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                 actualDisposable.add(faveInteractor.addLink(
                     accountId,
-                    (root.findViewById<View>(R.id.edit_link) as TextInputEditText).text.toString()
+                    root.findViewById<TextInputEditText>(R.id.edit_link).text.toString()
                         .trim { it <= ' ' })
                     .fromIOToMain()
                     .subscribe({ fireRefresh() }) { t ->

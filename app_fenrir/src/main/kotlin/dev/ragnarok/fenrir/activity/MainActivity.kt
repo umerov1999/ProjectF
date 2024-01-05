@@ -40,7 +40,6 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.snackbar.BaseTransientBottomBar
-import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.Includes.networkInterfaces
@@ -1537,10 +1536,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.DOCS -> attachToFront(DocsFragment.newInstance(args))
             Place.FEED -> attachToFront(FeedFragment.newInstance(args))
             Place.NOTIFICATIONS -> {
-                if (Settings.get().accounts()
-                        .getType(mAccountId) == AccountType.VK_ANDROID || Settings.get().accounts()
-                        .getType(mAccountId) == AccountType.VK_ANDROID_HIDDEN
-                ) {
+                if (Utils.isOfficialVKAccount(mAccountId)) {
                     attachToFront(
                         FeedbackVKOfficialFragment.newInstance(
                             Settings.get().accounts().current

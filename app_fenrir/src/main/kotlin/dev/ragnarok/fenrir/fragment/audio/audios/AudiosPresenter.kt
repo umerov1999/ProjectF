@@ -319,8 +319,8 @@ class AudiosPresenter(
 
     fun fireEditTrack(context: Context, audio: Audio) {
         val root = View.inflate(context, R.layout.entry_audio_info, null)
-        (root.findViewById<View>(R.id.edit_artist) as TextInputEditText).setText(audio.artist)
-        (root.findViewById<View>(R.id.edit_title) as TextInputEditText).setText(audio.title)
+        root.findViewById<TextInputEditText>(R.id.edit_artist).setText(audio.artist)
+        root.findViewById<TextInputEditText>(R.id.edit_title).setText(audio.title)
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.enter_audio_info)
             .setCancelable(true)
@@ -330,8 +330,8 @@ class AudiosPresenter(
                     accountId,
                     audio.ownerId,
                     audio.id,
-                    (root.findViewById<View>(R.id.edit_artist) as TextInputEditText).text.toString(),
-                    (root.findViewById<View>(R.id.edit_title) as TextInputEditText).text.toString()
+                    root.findViewById<TextInputEditText>(R.id.edit_artist).text.toString(),
+                    root.findViewById<TextInputEditText>(R.id.edit_title).text.toString()
                 ).fromIOToMain()
                     .subscribe({ fireRefresh() }) { t ->
                         showError(getCauseIfRuntime(t))

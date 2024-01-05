@@ -740,17 +740,17 @@ class CatalogV2SectionAdapter(
 
     private fun fireEditTrack(position: Int, audio: Audio) {
         val root = View.inflate(mContext, R.layout.entry_audio_info, null)
-        (root.findViewById<View>(R.id.edit_artist) as TextInputEditText).setText(audio.artist)
-        (root.findViewById<View>(R.id.edit_title) as TextInputEditText).setText(audio.title)
+        root.findViewById<TextInputEditText>(R.id.edit_artist).setText(audio.artist)
+        root.findViewById<TextInputEditText>(R.id.edit_title).setText(audio.title)
         MaterialAlertDialogBuilder(mContext)
             .setTitle(R.string.enter_audio_info)
             .setCancelable(true)
             .setView(root)
             .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                 val artist =
-                    (root.findViewById<View>(R.id.edit_artist) as TextInputEditText).text.toString()
+                    root.findViewById<TextInputEditText>(R.id.edit_artist).text.toString()
                 val title =
-                    (root.findViewById<View>(R.id.edit_title) as TextInputEditText).text.toString()
+                    root.findViewById<TextInputEditText>(R.id.edit_title).text.toString()
                 audioListDisposable = mAudioInteractor.edit(
                     account_id,
                     audio.ownerId,

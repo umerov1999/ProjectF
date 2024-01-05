@@ -9,9 +9,10 @@ import android.os.Bundle
 import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Spinner
+import android.widget.ArrayAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
@@ -389,13 +390,29 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
 
     private fun fireEdit(context: Context, p: VKApiProfileInfo) {
         val root = View.inflate(context, R.layout.entry_info, null)
-        (root.findViewById<View>(R.id.edit_first_name) as TextInputEditText).setText(p.first_name)
-        (root.findViewById<View>(R.id.edit_last_name) as TextInputEditText).setText(p.last_name)
-        (root.findViewById<View>(R.id.edit_maiden_name) as TextInputEditText).setText(p.maiden_name)
-        (root.findViewById<View>(R.id.edit_screen_name) as TextInputEditText).setText(p.screen_name)
-        (root.findViewById<View>(R.id.edit_bdate) as TextInputEditText).setText(p.bdate)
-        (root.findViewById<View>(R.id.edit_home_town) as TextInputEditText).setText(p.home_town)
-        (root.findViewById<View>(R.id.sex) as Spinner).setSelection(p.sex - 1)
+        root.findViewById<TextInputEditText>(R.id.edit_first_name).setText(p.first_name)
+        root.findViewById<TextInputEditText>(R.id.edit_last_name).setText(p.last_name)
+        root.findViewById<TextInputEditText>(R.id.edit_maiden_name).setText(p.maiden_name)
+        root.findViewById<TextInputEditText>(R.id.edit_screen_name).setText(p.screen_name)
+        root.findViewById<TextInputEditText>(R.id.edit_bdate).setText(p.bdate)
+        root.findViewById<TextInputEditText>(R.id.edit_home_town).setText(p.home_town)
+
+        val spinnerItems = ArrayAdapter(
+            context,
+            R.layout.spinner_item,
+            context.resources.getStringArray(R.array.array_sex)
+        )
+
+        root.findViewById<MaterialAutoCompleteTextView>(R.id.sex)
+            .setText(spinnerItems.getItem(p.sex - 1))
+        root.findViewById<MaterialAutoCompleteTextView>(R.id.sex)
+            .setAdapter(spinnerItems)
+        var selectedItem = p.sex - 1
+        root.findViewById<MaterialAutoCompleteTextView>(R.id.sex)
+            .setOnItemClickListener { _, _, position, _ ->
+                selectedItem = position
+            }
+
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.edit)
             .setCancelable(true)
@@ -404,31 +421,31 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
                 appendDisposable(InteractorFactory.createAccountInteractor().saveProfileInfo(
                     accountId,
                     checkEditInfo(
-                        (root.findViewById<View>(R.id.edit_first_name) as TextInputEditText).editableText.toString()
+                        root.findViewById<TextInputEditText>(R.id.edit_first_name).editableText.toString()
                             .trim { it <= ' ' }, p.first_name
                     ),
                     checkEditInfo(
-                        (root.findViewById<View>(R.id.edit_last_name) as TextInputEditText).editableText.toString()
+                        root.findViewById<TextInputEditText>(R.id.edit_last_name).editableText.toString()
                             .trim { it <= ' ' }, p.last_name
                     ),
                     checkEditInfo(
-                        (root.findViewById<View>(R.id.edit_maiden_name) as TextInputEditText).editableText.toString()
+                        root.findViewById<TextInputEditText>(R.id.edit_maiden_name).editableText.toString()
                             .trim { it <= ' ' }, p.maiden_name
                     ),
                     checkEditInfo(
-                        (root.findViewById<View>(R.id.edit_screen_name) as TextInputEditText).editableText.toString()
+                        root.findViewById<TextInputEditText>(R.id.edit_screen_name).editableText.toString()
                             .trim { it <= ' ' }, p.screen_name
                     ),
                     checkEditInfo(
-                        (root.findViewById<View>(R.id.edit_bdate) as TextInputEditText).editableText.toString()
+                        root.findViewById<TextInputEditText>(R.id.edit_bdate).editableText.toString()
                             .trim { it <= ' ' }, p.bdate
                     ),
                     checkEditInfo(
-                        (root.findViewById<View>(R.id.edit_home_town) as TextInputEditText).editableText.toString()
+                        root.findViewById<TextInputEditText>(R.id.edit_home_town).editableText.toString()
                             .trim { it <= ' ' }, p.home_town
                     ),
                     checkEditInfo(
-                        (root.findViewById<View>(R.id.sex) as Spinner).selectedItemPosition + 1,
+                        selectedItem + 1,
                         p.sex
                     )
                 )

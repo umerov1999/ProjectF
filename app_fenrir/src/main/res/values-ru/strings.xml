@@ -74,6 +74,7 @@
         <item>Kate</item>
         <item>Скрытый VK Android</item>
         <item>Скрытый Kate</item>
+        <item>Скрытый IOS</item>
     </string-array>
 
     <string-array name="array_sex">
@@ -1730,4 +1731,5 @@
     <string name="unsubscribe_from_community">Отписаться от сообщества?</string>
     <string name="read_only_account">Аккаунт только для чтения!</string>
     <string name="remove_feedback">Удалить уведомление?</string>
+    <string name="account_type">Тип аккаунта:</string>
 </resources>

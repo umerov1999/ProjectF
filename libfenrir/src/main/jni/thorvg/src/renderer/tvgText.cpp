@@ -20,62 +20,90 @@
  * SOFTWARE.
  */
 
-#include "tvgCanvas.h"
 
-#ifdef THORVG_WG_RASTER_SUPPORT
-    #include "tvgWgRenderer.h"
-#endif
+#include "tvgText.h"
+
 
 /************************************************************************/
 /* Internal Class Implementation                                        */
 /************************************************************************/
 
-struct WgCanvas::Impl
-{
-};
 
 
 /************************************************************************/
 /* External Class Implementation                                        */
 /************************************************************************/
 
-#ifdef THORVG_WG_RASTER_SUPPORT
-WgCanvas::WgCanvas() : Canvas(WgRenderer::gen()), pImpl(new Impl)
-#else
-WgCanvas::WgCanvas() : Canvas(nullptr), pImpl(nullptr)
-#endif
+
+Text::Text() : pImpl(new Impl)
 {
+    Paint::pImpl->id = TVG_CLASS_ID_TEXT;
 }
 
-WgCanvas::~WgCanvas()
+
+Text::~Text()
 {
-    delete pImpl;
+    delete(pImpl);
 }
 
-Result WgCanvas::target(void* window, uint32_t w, uint32_t h) noexcept
+
+Result Text::text(const char* text) noexcept
 {
-#ifdef THORVG_WG_RASTER_SUPPORT
-    if (!window) return Result::InvalidArguments;
-    if ((w == 0) || (h == 0)) return Result::InvalidArguments;
+    return pImpl->text(text);
+}
 
-    //We know renderer type, avoid dynamic_cast for performance.
-    auto renderer = static_cast<WgRenderer*>(Canvas::pImpl->renderer);
-    if (!renderer) return Result::MemoryCorruption;
 
-    if (!renderer->target(window, w, h)) return Result::Unknown;
+Result Text::font(const char* name, float size, const char* style) noexcept
+{
+    return pImpl->font(name, size, style);
+}
 
-    //Paints must be updated again with this new target.
-    Canvas::pImpl->needRefresh();
+
+Result Text::load(const std::string& path) noexcept
+{
+    bool invalid; //invalid path
+    if (!LoaderMgr::loader(path, &invalid)) {
+        if (invalid) return Result::InvalidArguments;
+        else return Result::NonSupport;
+    }
 
     return Result::Success;
-#endif
-    return Result::NonSupport;
 }
 
-unique_ptr<WgCanvas> WgCanvas::gen() noexcept
+
+Result Text::unload(const std::string& path) noexcept
 {
-#ifdef THORVG_WG_RASTER_SUPPORT
-    return unique_ptr<WgCanvas>(new WgCanvas);
-#endif
-    return nullptr;
+    if (LoaderMgr::retrieve(path)) return Result::Success;
+    return Result::InsufficientCondition;
+}
+
+
+Result Text::fill(uint8_t r, uint8_t g, uint8_t b) noexcept
+{
+    if (!pImpl->paint) return Result::InsufficientCondition;
+
+    return pImpl->fill(r, g, b);
+}
+
+
+Result Text::fill(unique_ptr<Fill> f) noexcept
+{
+    if (!pImpl->paint) return Result::InsufficientCondition;
+
+    auto p = f.release();
+    if (!p) return Result::MemoryCorruption;
+
+    return pImpl->fill(p);
+}
+
+
+unique_ptr<Text> Text::gen() noexcept
+{
+    return unique_ptr<Text>(new Text);
+}
+
+
+uint32_t Text::identifier() noexcept
+{
+    return TVG_CLASS_ID_TEXT;
 }

@@ -64,7 +64,7 @@ class SpotsDialog internal constructor(
 
     private fun initMessage() {
         if (message.nonNullNoEmpty()) {
-            (findViewById<View>(R.id.dmax_spots_title) as MaterialTextView?)?.text = message
+            findViewById<MaterialTextView?>(R.id.dmax_spots_title)?.text = message
         }
     }
 
@@ -150,7 +150,7 @@ class SpotsDialog internal constructor(
                 )
             }
             val root = View.inflate(context, R.layout.dialog_progress, null)
-            (root.findViewById<View>(R.id.item_progress_text) as MaterialTextView).text =
+            root.findViewById<MaterialTextView>(R.id.item_progress_text).text =
                 if (messageId != 0) context.getString(messageId) else message
             val anim: RLottieImageView = root.findViewById(R.id.lottie_animation)
             anim.fromRes(

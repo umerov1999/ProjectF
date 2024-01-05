@@ -61,6 +61,7 @@ add_library(thorvg STATIC
         thorvg/src/renderer/tvgShape.cpp
         thorvg/src/renderer/tvgSwCanvas.cpp
         thorvg/src/renderer/tvgTaskScheduler.cpp
+        thorvg/src/renderer/tvgText.cpp
         thorvg/src/renderer/tvgWgCanvas.cpp
         thorvg/src/loaders/raw/tvgRawLoader.cpp
         thorvg/src/loaders/svg/tvgSvgCssStyle.cpp

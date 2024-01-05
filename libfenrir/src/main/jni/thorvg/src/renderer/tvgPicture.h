@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2023 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,7 +57,7 @@ struct PictureIterator : Iterator
 
 struct Picture::Impl
 {
-    LoadModule* loader = nullptr;
+    ImageLoader* loader = nullptr;
 
     Paint* paint = nullptr;           //vector picture uses
     Surface* surface = nullptr;       //bitmap picture uses
@@ -73,7 +73,7 @@ struct Picture::Impl
     bool render(RenderMethod &renderer);
     bool size(float w, float h);
     RenderRegion bounds(RenderMethod& renderer);
-    Result load(LoadModule* ploader);
+    Result load(ImageLoader* ploader);
 
     Impl(Picture* p) : picture(p)
     {
@@ -83,7 +83,6 @@ struct Picture::Impl
     {
         LoaderMgr::retrieve(loader);
         delete(paint);
-        delete(surface);
     }
 
     bool dispose(RenderMethod& renderer)
@@ -153,7 +152,7 @@ struct Picture::Impl
         if (paint || surface) return Result::InsufficientCondition;
 
         bool invalid;  //Invalid Path
-        auto loader = LoaderMgr::loader(path, &invalid);
+        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(path, &invalid));
         if (!loader) {
             if (invalid) return Result::InvalidArguments;
             return Result::NonSupport;
@@ -164,7 +163,7 @@ struct Picture::Impl
     Result load(const char* data, uint32_t size, const string& mimeType, const string& rpath, bool copy)
     {
         if (paint || surface) return Result::InsufficientCondition;
-        auto loader = LoaderMgr::loader(data, size, mimeType, rpath, copy);
+        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, size, mimeType, rpath, copy));
         if (!loader) return Result::NonSupport;
         return load(loader);
     }
@@ -173,7 +172,7 @@ struct Picture::Impl
     {
         if (paint || surface) return Result::InsufficientCondition;
 
-        auto loader = LoaderMgr::loader(data, w, h, premultiplied, copy);
+        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, w, h, premultiplied, copy));
         if (!loader) return Result::FailedAllocation;
 
         return load(loader);
@@ -206,11 +205,7 @@ struct Picture::Impl
             ++dup->loader->sharing;
         }
 
-        if (surface) {
-            dup->surface = new Surface;
-            *dup->surface = *surface;
-            dup->surface->owner = false;
-        }
+        dup->surface = surface;
         dup->w = w;
         dup->h = h;
         dup->resizing = resizing;

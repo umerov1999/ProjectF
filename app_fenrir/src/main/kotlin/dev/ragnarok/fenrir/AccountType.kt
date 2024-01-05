@@ -7,7 +7,8 @@ import androidx.annotation.IntDef
     AccountType.VK_ANDROID,
     AccountType.VK_ANDROID_HIDDEN,
     AccountType.KATE,
-    AccountType.KATE_HIDDEN
+    AccountType.KATE_HIDDEN,
+    AccountType.IOS_HIDDEN
 )
 @Retention(
     AnnotationRetention.SOURCE
@@ -20,6 +21,7 @@ annotation class AccountType {
                 2 -> VK_ANDROID_HIDDEN
                 3 -> KATE
                 4 -> KATE_HIDDEN
+                5 -> IOS_HIDDEN
                 else -> VK_ANDROID
             }
         }
@@ -29,5 +31,6 @@ annotation class AccountType {
         const val VK_ANDROID_HIDDEN = 2
         const val KATE = 3
         const val KATE_HIDDEN = 4
+        const val IOS_HIDDEN = 5
     }
 }

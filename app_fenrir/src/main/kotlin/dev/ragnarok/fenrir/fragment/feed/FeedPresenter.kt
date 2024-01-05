@@ -6,10 +6,18 @@ import android.text.InputType
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.model.PostUpdate
-import dev.ragnarok.fenrir.domain.*
+import dev.ragnarok.fenrir.domain.IFaveInteractor
+import dev.ragnarok.fenrir.domain.IFeedInteractor
+import dev.ragnarok.fenrir.domain.IWallsRepository
+import dev.ragnarok.fenrir.domain.InteractorFactory
+import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.FeedList
+import dev.ragnarok.fenrir.model.FeedSource
+import dev.ragnarok.fenrir.model.LoadMoreState
+import dev.ragnarok.fenrir.model.News
+import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
@@ -507,7 +515,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
             data.add(FeedSource("likes", R.string.likes_posts, false))
             data.add(FeedSource("updates_full", R.string.updates, false))
             data.add(FeedSource("friends", R.string.friends, false))
-            if (!Utils.isKateCurrent) {
+            if (Utils.isOfficialVKCurrent) {
                 data.add(FeedSource("top", R.string.interesting, false))
             }
             data.add(FeedSource("groups", R.string.groups, false))

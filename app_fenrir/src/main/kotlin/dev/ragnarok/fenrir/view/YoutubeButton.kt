@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.view
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
-import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -40,7 +39,7 @@ class YoutubeButton @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     fun setIconColor(@ColorInt color: Int) {
-        (findViewById<View>(R.id.youtube_button_icon) as ImageView).setColorFilter(color)
+        findViewById<ImageView>(R.id.youtube_button_icon).setColorFilter(color)
     }
 
     init {

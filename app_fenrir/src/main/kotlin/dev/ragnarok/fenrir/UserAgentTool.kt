@@ -43,6 +43,7 @@ object UserAgentTool {
         Constants.DEVICE_COUNTRY_CODE,
         SCREEN_RESOLUTION
     )
+
     private val VK_ANDROID_USER_AGENT = String.format(
         Locale.US,
         "VKAndroidApp/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
@@ -55,6 +56,7 @@ object UserAgentTool {
         Constants.DEVICE_COUNTRY_CODE,
         SCREEN_RESOLUTION
     )
+
     private val VK_ANDROID_USER_AGENT_FAKE = String.format(
         Locale.US,
         "VKAndroidApp/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
@@ -68,32 +70,49 @@ object UserAgentTool {
         SCREEN_RESOLUTION
     )
 
+    private val VK_iOS_USER_AGENT_FAKE = String.format(
+        Locale.US,
+        "com.vk.vkclient/%s (iPhone, iOS 16.1, iPhone11,2, Scale/3.0)",
+        Constants.IOS_APP_VERSION_CODE
+    )
+
     fun getAccountUserAgent(@AccountType type: Int, device: String?): String {
-        if (type == AccountType.VK_ANDROID_HIDDEN || type == AccountType.KATE_HIDDEN) {
+        if (type == AccountType.VK_ANDROID_HIDDEN || type == AccountType.KATE_HIDDEN || type == AccountType.IOS_HIDDEN) {
             if (device.nonNullNoEmpty()) {
-                return if (type == AccountType.KATE_HIDDEN) String.format(
-                    Locale.US,
-                    "KateMobileAndroid/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
-                    Constants.KATE_APP_VERSION_NAME,
-                    Constants.KATE_APP_VERSION_CODE,
-                    Build.VERSION.RELEASE,
-                    Build.VERSION.SDK_INT,
-                    BuildConfig.FAKE_ABI,
-                    device,
-                    Constants.DEVICE_COUNTRY_CODE,
-                    SCREEN_RESOLUTION
-                ) else String.format(
-                    Locale.US,
-                    "VKAndroidApp/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
-                    Constants.VK_ANDROID_APP_VERSION_NAME,
-                    Constants.VK_ANDROID_APP_VERSION_CODE,
-                    Build.VERSION.RELEASE,
-                    Build.VERSION.SDK_INT,
-                    BuildConfig.FAKE_ABI,
-                    device,
-                    Constants.DEVICE_COUNTRY_CODE,
-                    SCREEN_RESOLUTION
-                )
+                return when (type) {
+                    AccountType.KATE_HIDDEN -> String.format(
+                        Locale.US,
+                        "KateMobileAndroid/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
+                        Constants.KATE_APP_VERSION_NAME,
+                        Constants.KATE_APP_VERSION_CODE,
+                        Build.VERSION.RELEASE,
+                        Build.VERSION.SDK_INT,
+                        BuildConfig.FAKE_ABI,
+                        device,
+                        Constants.DEVICE_COUNTRY_CODE,
+                        SCREEN_RESOLUTION
+                    )
+
+                    AccountType.IOS_HIDDEN -> String.format(
+                        Locale.US,
+                        "com.vk.vkclient/%s (iPhone, iOS 16.1, %s, Scale/3.0)",
+                        Constants.IOS_APP_VERSION_CODE,
+                        device
+                    )
+
+                    else -> String.format(
+                        Locale.US,
+                        "VKAndroidApp/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
+                        Constants.VK_ANDROID_APP_VERSION_NAME,
+                        Constants.VK_ANDROID_APP_VERSION_CODE,
+                        Build.VERSION.RELEASE,
+                        Build.VERSION.SDK_INT,
+                        BuildConfig.FAKE_ABI,
+                        device,
+                        Constants.DEVICE_COUNTRY_CODE,
+                        SCREEN_RESOLUTION
+                    )
+                }
             }
         }
         return when (type) {
@@ -101,6 +120,7 @@ object UserAgentTool {
             AccountType.VK_ANDROID_HIDDEN -> VK_ANDROID_USER_AGENT_FAKE
             AccountType.KATE -> KATE_USER_AGENT
             AccountType.KATE_HIDDEN -> KATE_USER_AGENT_FAKE
+            AccountType.IOS_HIDDEN -> VK_iOS_USER_AGENT_FAKE
             else -> byDefaultAccountType(VK_ANDROID_USER_AGENT, KATE_USER_AGENT)
         }
     }
@@ -130,6 +150,7 @@ object UserAgentTool {
             AccountType.VK_ANDROID_HIDDEN -> VK_ANDROID_USER_AGENT_FAKE
             AccountType.KATE -> KATE_USER_AGENT
             AccountType.KATE_HIDDEN -> KATE_USER_AGENT_FAKE
+            AccountType.IOS_HIDDEN -> VK_iOS_USER_AGENT_FAKE
             else -> byDefaultAccountType(VK_ANDROID_USER_AGENT, KATE_USER_AGENT)
         }
     }

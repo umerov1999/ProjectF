@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 - 2023 the ThorVG project. All rights reserved.
+ * Copyright (c) 2020 - 2024 the ThorVG project. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,10 @@
 #ifndef _TVG_RAW_LOADER_H_
 #define _TVG_RAW_LOADER_H_
 
-class RawLoader : public LoadModule
+class RawLoader : public ImageLoader
 {
 public:
-    uint32_t* content = nullptr;
     bool copy = false;
-    bool premultiplied = false;
 
     RawLoader();
     ~RawLoader();
@@ -36,8 +34,6 @@ public:
     using LoadModule::open;
     bool open(const uint32_t* data, uint32_t w, uint32_t h, bool premultiplied, bool copy);
     bool read() override;
-
-    unique_ptr<Surface> bitmap() override;
 };
 
 

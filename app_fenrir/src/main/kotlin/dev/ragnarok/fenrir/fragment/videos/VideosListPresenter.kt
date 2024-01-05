@@ -320,17 +320,16 @@ class VideosListPresenter(
 
     private fun fireEditVideo(context: Context, position: Int, video: Video) {
         val root = View.inflate(context, R.layout.entry_video_info, null)
-        (root.findViewById<View>(R.id.edit_title) as TextInputEditText).setText(video.title)
-        (root.findViewById<View>(R.id.edit_description) as TextInputEditText).setText(video.description)
+        root.findViewById<TextInputEditText>(R.id.edit_title).setText(video.title)
+        root.findViewById<TextInputEditText>(R.id.edit_description).setText(video.description)
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.edit)
             .setCancelable(true)
             .setView(root)
             .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
-                val title =
-                    (root.findViewById<View>(R.id.edit_title) as TextInputEditText).text.toString()
+                val title = root.findViewById<TextInputEditText>(R.id.edit_title).text.toString()
                 val description =
-                    (root.findViewById<View>(R.id.edit_description) as TextInputEditText).text.toString()
+                    root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
                 appendDisposable(interactor.edit(
                     accountId, video.ownerId, video.id,
                     title, description

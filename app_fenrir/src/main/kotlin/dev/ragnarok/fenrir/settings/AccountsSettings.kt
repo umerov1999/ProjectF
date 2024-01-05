@@ -162,7 +162,7 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         get() = types[current] ?: Constants.DEFAULT_ACCOUNT_TYPE
 
     private fun isHiddenType(@AccountType type: Int): Boolean {
-        return type == AccountType.KATE_HIDDEN || type == AccountType.VK_ANDROID_HIDDEN
+        return type == AccountType.VK_ANDROID_HIDDEN || type == AccountType.KATE_HIDDEN || type == AccountType.IOS_HIDDEN
     }
 
     override val currentHidden: Boolean

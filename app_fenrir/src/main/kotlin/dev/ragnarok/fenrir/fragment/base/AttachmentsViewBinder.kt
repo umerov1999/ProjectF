@@ -525,9 +525,9 @@ class AttachmentsViewBinder(
                 })
             tvBody.visibility =
                 if (message.text.isNullOrEmpty()) View.GONE else View.VISIBLE
-            (itemView.findViewById<View>(R.id.item_fwd_message_username) as TextView).text =
+            itemView.findViewById<TextView>(R.id.item_fwd_message_username).text =
                 message.sender?.fullName
-            (itemView.findViewById<View>(R.id.item_fwd_message_time) as TextView).text =
+            itemView.findViewById<TextView>(R.id.item_fwd_message_time).text =
                 AppTextUtils.getDateFromUnixTime(message.date)
             val tvFwds: MaterialButton = itemView.findViewById(R.id.item_forward_message_fwds)
             tvFwds.visibility =

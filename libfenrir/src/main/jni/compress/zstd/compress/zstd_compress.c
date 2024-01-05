@@ -5525,7 +5525,7 @@ ZSTD_CDict* ZSTD_createCDict_advanced2(
                         cctxParams.useRowMatchFinder, cctxParams.enableDedicatedDictSearch,
                         customMem);
 
-    if (ZSTD_isError( ZSTD_initCDict_internal(cdict,
+    if (!cdict || ZSTD_isError( ZSTD_initCDict_internal(cdict,
                                     dict, dictSize,
                                     dictLoadMethod, dictContentType,
                                     cctxParams) )) {
@@ -7084,14 +7084,27 @@ ZSTD_parameters ZSTD_getParams(int compressionLevel, unsigned long long srcSizeH
 }
 
 void ZSTD_registerSequenceProducer(
-    ZSTD_CCtx* zc, void* extSeqProdState,
+    ZSTD_CCtx* zc,
+    void* extSeqProdState,
     ZSTD_sequenceProducer_F extSeqProdFunc
 ) {
+    assert(zc != NULL);
+    ZSTD_CCtxParams_registerSequenceProducer(
+        &zc->requestedParams, extSeqProdState, extSeqProdFunc
+    );
+}
+
+void ZSTD_CCtxParams_registerSequenceProducer(
+  ZSTD_CCtx_params* params,
+  void* extSeqProdState,
+  ZSTD_sequenceProducer_F extSeqProdFunc
+) {
+    assert(params != NULL);
     if (extSeqProdFunc != NULL) {
-        zc->requestedParams.extSeqProdFunc = extSeqProdFunc;
-        zc->requestedParams.extSeqProdState = extSeqProdState;
+        params->extSeqProdFunc = extSeqProdFunc;
+        params->extSeqProdState = extSeqProdState;
     } else {
-        zc->requestedParams.extSeqProdFunc = NULL;
-        zc->requestedParams.extSeqProdState = NULL;
+        params->extSeqProdFunc = NULL;
+        params->extSeqProdState = NULL;
     }
 }

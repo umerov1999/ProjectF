@@ -90,8 +90,8 @@ class VideoPreviewPresenter(
     fun fireEditVideo(context: Context) {
         video?.let { vd ->
             val root = View.inflate(context, R.layout.entry_video_info, null)
-            (root.findViewById<View>(R.id.edit_title) as TextInputEditText).setText(video?.title)
-            (root.findViewById<View>(R.id.edit_description) as TextInputEditText).setText(
+            root.findViewById<TextInputEditText>(R.id.edit_title).setText(video?.title)
+            root.findViewById<TextInputEditText>(R.id.edit_description).setText(
                 video?.description
             )
             MaterialAlertDialogBuilder(context)
@@ -101,8 +101,8 @@ class VideoPreviewPresenter(
                 .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                     appendDisposable(interactor.edit(
                         accountId, vd.ownerId, vd.id,
-                        (root.findViewById<View>(R.id.edit_title) as TextInputEditText).text.toString(),
-                        (root.findViewById<View>(R.id.edit_description) as TextInputEditText).text.toString()
+                        root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
+                        root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
                     ).fromIOToMain()
                         .subscribe({ refreshVideoInfo() }) { t ->
                             showError(getCauseIfRuntime(t))

@@ -154,9 +154,10 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                     val root = View.inflate(
                                         context, R.layout.entry_file_name, null
                                     )
-                                    (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).setText(
-                                        t
-                                    )
+                                    root.findViewById<TextInputEditText>(R.id.edit_file_name)
+                                        .setText(
+                                            t
+                                        )
                                     MaterialAlertDialogBuilder(context)
                                         .setTitle(R.string.change_name)
                                         .setCancelable(true)
@@ -165,7 +166,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                             listDisposable =
                                                 mVideoInteractor.update_file_name(
                                                     hash2,
-                                                    (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).text.toString()
+                                                    root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
                                                         .trim { it <= ' ' })
                                                     .fromIOToMain()
                                                     .subscribe({

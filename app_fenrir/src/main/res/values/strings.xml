@@ -226,7 +226,8 @@
         <item>VK Android</item>
         <item>Kate</item>
         <item>Hidden VK Android</item>
-        <item>Hidden kate</item>
+        <item>Hidden Kate</item>
+        <item>Hidden IOS</item>
     </string-array>
 
     <string-array name="array_sex">
@@ -1977,4 +1978,5 @@
     <string name="unsubscribe_from_community">Unsubscribe from community?</string>
     <string name="read_only_account">Read only account!</string>
     <string name="remove_feedback">Delete notification?</string>
+    <string name="account_type">Account Type:</string>
 </resources>

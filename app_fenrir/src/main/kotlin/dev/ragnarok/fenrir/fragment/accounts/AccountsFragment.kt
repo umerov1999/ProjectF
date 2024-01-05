@@ -15,7 +15,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Spinner
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
@@ -519,7 +520,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                 4 -> {
                     val root =
                         View.inflate(requireActivity(), R.layout.dialog_enter_text, null)
-                    (root.findViewById<View>(R.id.editText) as TextInputEditText).setText(
+                    root.findViewById<TextInputEditText>(R.id.editText).setText(
                         Settings.get().accounts().getDevice(account.getOwnerObjectId())
                     )
                     MaterialAlertDialogBuilder(requireActivity())
@@ -529,7 +530,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                         .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                             Settings.get().accounts().storeDevice(
                                 account.getOwnerObjectId(),
-                                (root.findViewById<View>(R.id.editText) as TextInputEditText).editableText.toString()
+                                root.findViewById<TextInputEditText>(R.id.editText).editableText.toString()
                             )
                             Includes.proxySettings.broadcastUpdate(null)
                         }
@@ -596,6 +597,20 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
 
             R.id.entry_account -> {
                 val root = View.inflate(requireActivity(), R.layout.entry_account, null)
+                val spinnerItems = ArrayAdapter(
+                    requireActivity(),
+                    R.layout.spinner_item,
+                    resources.getStringArray(R.array.array_accounts_input)
+                )
+                root.findViewById<MaterialAutoCompleteTextView>(R.id.access_token_type)
+                    .setText(spinnerItems.getItem(0))
+                root.findViewById<MaterialAutoCompleteTextView>(R.id.access_token_type)
+                    .setAdapter(spinnerItems)
+                var selectedItem = 0
+                root.findViewById<MaterialAutoCompleteTextView>(R.id.access_token_type)
+                    .setOnItemClickListener { _, _, position, _ ->
+                        selectedItem = position
+                    }
                 MaterialAlertDialogBuilder(requireActivity())
                     .setTitle(R.string.entry_account)
                     .setCancelable(true)
@@ -603,23 +618,23 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                     .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                         try {
                             val access_token =
-                                (root.findViewById<View>(R.id.edit_access_token) as TextInputEditText).text.toString()
+                                root.findViewById<TextInputEditText>(R.id.edit_access_token).text.toString()
                                     .trim { it <= ' ' }
-                            val selected =
-                                (root.findViewById<View>(R.id.access_token_type) as Spinner).selectedItemPosition
                             val types = intArrayOf(
                                 AccountType.VK_ANDROID,
                                 AccountType.KATE,
                                 AccountType.VK_ANDROID_HIDDEN,
-                                AccountType.KATE_HIDDEN
+                                AccountType.KATE_HIDDEN,
+                                AccountType.IOS_HIDDEN
                             )
-                            if (access_token.isNotEmpty() && selected >= 0 && selected <= 3) {
+                            if (access_token.isNotEmpty() && selectedItem >= 0 && selectedItem < types.size) {
                                 presenter?.processAccountByAccessToken(
                                     access_token,
-                                    types[selected]
+                                    types[selectedItem]
                                 )
                             }
-                        } catch (ignored: NumberFormatException) {
+                        } catch (e: Exception) {
+                            createCustomToast(requireActivity()).showToastError(e.localizedMessage)
                         }
                     }
                     .setNegativeButton(R.string.button_cancel, null)

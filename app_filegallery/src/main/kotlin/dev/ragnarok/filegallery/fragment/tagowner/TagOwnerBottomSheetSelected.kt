@@ -48,7 +48,7 @@ class TagOwnerBottomSheetSelected :
                 .setView(view)
                 .setPositiveButton(R.string.button_ok) { _, _ ->
                     presenter?.addOwner(
-                        (view.findViewById<View>(R.id.edit_name) as TextInputEditText).text.toString()
+                        view.findViewById<TextInputEditText>(R.id.edit_name).text.toString()
                             .trim { it <= ' ' })
                 }
                 .setNegativeButton(R.string.button_cancel, null)
@@ -112,14 +112,14 @@ class TagOwnerBottomSheetSelected :
 
     override fun onTagOwnerRename(index: Int, owner: TagOwner) {
         val view = View.inflate(context, R.layout.entry_name, null)
-        (view.findViewById<View>(R.id.edit_name) as TextInputEditText).setText(owner.name)
+        view.findViewById<TextInputEditText>(R.id.edit_name).setText(owner.name)
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.title_entry_name)
             .setCancelable(true)
             .setView(view)
             .setPositiveButton(R.string.button_ok) { _, _ ->
                 presenter?.renameTagOwner(
-                    (view.findViewById<View>(R.id.edit_name) as TextInputEditText).text.toString()
+                    view.findViewById<TextInputEditText>(R.id.edit_name).text.toString()
                         .trim { it <= ' ' }, owner
                 )
             }

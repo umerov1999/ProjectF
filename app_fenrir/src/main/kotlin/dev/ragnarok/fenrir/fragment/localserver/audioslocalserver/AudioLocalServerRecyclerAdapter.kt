@@ -308,7 +308,7 @@ class AudioLocalServerRecyclerAdapter(
                             { t: String? ->
                                 val root =
                                     View.inflate(mContext, R.layout.entry_file_name, null)
-                                (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).setText(
+                                root.findViewById<TextInputEditText>(R.id.edit_file_name).setText(
                                     t
                                 )
                                 MaterialAlertDialogBuilder(mContext)
@@ -319,7 +319,7 @@ class AudioLocalServerRecyclerAdapter(
                                         audioListDisposable =
                                             mAudioInteractor.update_file_name(
                                                 hash2,
-                                                (root.findViewById<View>(R.id.edit_file_name) as TextInputEditText).text.toString()
+                                                root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
                                                     .trim { it <= ' ' })
                                                 .fromIOToMain()
                                                 .subscribe({

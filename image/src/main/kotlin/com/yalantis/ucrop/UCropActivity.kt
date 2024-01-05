@@ -426,7 +426,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
         mGestureCropImageView = mUCropView?.cropImageView
         mOverlayView = mUCropView?.overlayView
         mGestureCropImageView?.setTransformImageListener(mImageListener)
-        (findViewById<View>(R.id.image_view_logo) as ImageView).setColorFilter(
+        findViewById<ImageView>(R.id.image_view_logo).setColorFilter(
             mLogoColor,
             PorterDuff.Mode.SRC_ATOP
         )
@@ -527,7 +527,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
 
     private fun setupRotateWidget() {
         mTextViewRotateAngle = findViewById(R.id.text_view_rotate)
-        (findViewById<View>(R.id.rotate_scroll_wheel) as HorizontalProgressWheelView)
+        findViewById<HorizontalProgressWheelView>(R.id.rotate_scroll_wheel)
             .setScrollingListener(object : ScrollingListener {
                 override fun onScroll(delta: Float, totalDistance: Float) {
                     mGestureCropImageView?.postRotate(delta / ROTATE_WIDGET_SENSITIVITY_COEFFICIENT)
@@ -541,7 +541,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
                     mGestureCropImageView?.cancelAllAnimations()
                 }
             })
-        (findViewById<View>(R.id.rotate_scroll_wheel) as HorizontalProgressWheelView).setMiddleLineColor(
+        findViewById<HorizontalProgressWheelView>(R.id.rotate_scroll_wheel).setMiddleLineColor(
             mActiveControlsWidgetColor
         )
         findViewById<View>(R.id.wrapper_reset_rotate).setOnClickListener { resetRotation() }
@@ -555,7 +555,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
 
     private fun setupScaleWidget() {
         mTextViewScalePercent = findViewById(R.id.text_view_scale)
-        (findViewById<View>(R.id.scale_scroll_wheel) as HorizontalProgressWheelView)
+        findViewById<HorizontalProgressWheelView>(R.id.scale_scroll_wheel)
             .setScrollingListener(object : ScrollingListener {
                 override fun onScroll(delta: Float, totalDistance: Float) {
                     mGestureCropImageView?.let {
@@ -581,7 +581,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
                     mGestureCropImageView?.cancelAllAnimations()
                 }
             })
-        (findViewById<View>(R.id.scale_scroll_wheel) as HorizontalProgressWheelView).setMiddleLineColor(
+        findViewById<HorizontalProgressWheelView>(R.id.scale_scroll_wheel).setMiddleLineColor(
             mActiveControlsWidgetColor
         )
         setScaleTextColor(mActiveControlsWidgetColor)
@@ -691,7 +691,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
             mBlockingView?.layoutParams = lp
             mBlockingView?.isClickable = true
         }
-        (findViewById<View>(R.id.ucrop_photobox) as RelativeLayout).addView(mBlockingView)
+        findViewById<RelativeLayout>(R.id.ucrop_photobox).addView(mBlockingView)
     }
 
     private fun cropAndSaveImage() {

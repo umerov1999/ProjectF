@@ -19,6 +19,9 @@ object Constants {
     const val VK_ANDROID_APP_VERSION_CODE = "15271"
     const val KATE_APP_VERSION_NAME = "108 lite"
     const val KATE_APP_VERSION_CODE = "547"
+
+    const val IOS_APP_VERSION_CODE = "3893"
+
     const val API_ID: Int = BuildConfig.VK_API_APP_ID
     const val SECRET: String = BuildConfig.VK_CLIENT_SECRET
     const val PHOTOS_PATH = "DCIM/Fenrir"
