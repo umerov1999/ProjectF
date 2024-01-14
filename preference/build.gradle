@@ -34,7 +34,7 @@ dependencies {
     implementation("androidx.collection:collection-ktx:$collectionVersion")
     implementation("androidx.activity:activity-ktx:$activityVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
-    implementation project(path: ":viewpager2")
+    implementation project(path: ":recyclerview")
     implementation("androidx.constraintlayout:constraintlayout:$constraintlayoutVersion")
     implementation project(path: ":material")
 }

@@ -64,6 +64,7 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-annotations-jvm:$kotlin_version")
     implementation("com.google.guava:guava:$guavaVersion")
     implementation("androidx.core:core-ktx:$coreVersion")
+    implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
     implementation("androidx.annotation:annotation:$annotationVersion")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-common:$lifecycleVersion")

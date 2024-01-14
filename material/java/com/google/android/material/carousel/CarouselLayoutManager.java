@@ -206,7 +206,7 @@ public class CarouselLayoutManager extends LayoutManager
     if (attrs != null) {
       TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Carousel);
       setCarouselAlignment(a.getInt(R.styleable.Carousel_carousel_alignment, ALIGNMENT_START));
-      setOrientation(a.getInt(androidx.viewpager2.R.styleable.RecyclerView_android_orientation, HORIZONTAL));
+      setOrientation(a.getInt(androidx.recyclerview.R.styleable.RecyclerView_android_orientation, HORIZONTAL));
       a.recycle();
     }
   }

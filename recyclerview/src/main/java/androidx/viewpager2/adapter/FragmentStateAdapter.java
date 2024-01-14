@@ -38,7 +38,6 @@ import androidx.annotation.OptIn;
 import androidx.annotation.RequiresOptIn;
 import androidx.collection.ArraySet;
 import androidx.collection.LongSparseArray;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -186,7 +185,7 @@ public abstract class FragmentStateAdapter extends
         /** Special case when {@link RecyclerView} decides to keep the {@link container}
          * attached to the window, resulting in no {@link `onViewAttachedToWindow} callback later */
         final FrameLayout container = holder.getContainer();
-        if (ViewCompat.isAttachedToWindow(container)) {
+        if (container.isAttachedToWindow()) {
             placeFragmentInViewHolder(holder);
         }
 
@@ -365,7 +364,7 @@ public abstract class FragmentStateAdapter extends
                         return;
                     }
                     source.getLifecycle().removeObserver(this);
-                    if (ViewCompat.isAttachedToWindow(holder.getContainer())) {
+                    if (holder.getContainer().isAttachedToWindow()) {
                         placeFragmentInViewHolder(holder);
                     }
                 }

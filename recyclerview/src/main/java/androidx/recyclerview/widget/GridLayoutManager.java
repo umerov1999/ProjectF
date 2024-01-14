@@ -128,7 +128,7 @@ public class GridLayoutManager extends LinearLayoutManager {
      * "layoutManager". If spanCount is not specified in the XML, it defaults to a
      * single column.
      *
-     * {@link androidx.viewpager2.R.attr#spanCount}
+     * {@link androidx.recyclerview.R.attr#spanCount}
      */
     public GridLayoutManager(Context context, AttributeSet attrs, int defStyleAttr,
                              int defStyleRes) {

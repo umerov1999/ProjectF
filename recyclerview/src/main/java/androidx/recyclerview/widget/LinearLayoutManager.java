@@ -186,8 +186,8 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
      * "layoutManager". Defaults to vertical orientation.
      *
      * {@link android.R.attr#orientation}
-     * {@link androidx.viewpager2.R.attr#reverseLayout}
-     * {@link androidx.viewpager2.R.attr#stackFromEnd}
+     * {@link androidx.recyclerview.R.attr#reverseLayout}
+     * {@link androidx.recyclerview.R.attr#stackFromEnd}
      */
     @SuppressLint("UnknownNullness") // b/240775049: Cannot annotate properly
     public LinearLayoutManager(Context context, AttributeSet attrs, int defStyleAttr,
@@ -1117,7 +1117,7 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
     }
 
     protected boolean isLayoutRTL() {
-        return getLayoutDirection() == ViewCompat.LAYOUT_DIRECTION_RTL;
+        return getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
     void ensureLayoutState() {
@@ -1162,7 +1162,7 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
     /**
      * Scroll to the specified adapter position with the given offset from resolved layout
      * start. Resolved layout start depends on {@link #getReverseLayout()},
-     * {@link ViewCompat#getLayoutDirection(android.view.View)} and {@link #getStackFromEnd()}.
+     * {@link View#getLayoutDirection()} and {@link #getStackFromEnd()}.
      * <p>
      * For example, if layout is {@link #VERTICAL} and {@link #getStackFromEnd()} is true, calling
      * <code>scrollToPositionWithOffset(10, 20)</code> will layout such that
@@ -1683,7 +1683,7 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
                 break;
             }
             layoutState.mOffset += layoutChunkResult.mConsumed * layoutState.mLayoutDirection;
-            /**
+            /*
              * Consume the available space if:
              * * layoutChunk did not request to be ignored
              * * OR we are laying out scrap children

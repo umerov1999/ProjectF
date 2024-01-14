@@ -3735,10 +3735,8 @@ bool SvgLoader::read()
 {
     if (!content || size == 0) return false;
 
-    if (!LoadModule::read()) return true;
-
     //the loading has been already completed in header()
-    if (root) return true;
+    if (root || !LoadModule::read()) return true;
 
     TaskScheduler::request(this);
 

@@ -89,7 +89,7 @@ import androidx.customview.poolingcontainer.PoolingContainerListener;
 import androidx.customview.view.AbsSavedState;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator.ItemHolderInfo;
 import androidx.tracing.Trace;
-import androidx.viewpager2.R;
+import androidx.recyclerview.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -792,10 +792,9 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         initChildrenHelper();
         initAutofill();
         // If not explicitly specified this view is important for accessibility.
-        if (ViewCompat.getImportantForAccessibility(this)
-                == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-            ViewCompat.setImportantForAccessibility(this,
-                    ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        if (this.getImportantForAccessibility()
+                == View.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+            setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
         }
         mAccessibilityManager = (AccessibilityManager) getContext()
                 .getSystemService(Context.ACCESSIBILITY_SERVICE);
@@ -3075,7 +3074,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         }
 
         if (invalidate || overscrollX != 0 || overscrollY != 0) {
-            ViewCompat.postInvalidateOnAnimation(this);
+            postInvalidateOnAnimation();
         }
     }
 
@@ -3098,7 +3097,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             needsInvalidate |= mBottomGlow.isFinished();
         }
         if (needsInvalidate) {
-            ViewCompat.postInvalidateOnAnimation(this);
+            postInvalidateOnAnimation();
         }
     }
 
@@ -3121,7 +3120,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             needsInvalidate |= mBottomGlow.isFinished();
         }
         if (needsInvalidate) {
-            ViewCompat.postInvalidateOnAnimation(this);
+            postInvalidateOnAnimation();
         }
     }
 
@@ -3151,7 +3150,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         }
 
         if (velocityX != 0 || velocityY != 0) {
-            ViewCompat.postInvalidateOnAnimation(this);
+            postInvalidateOnAnimation();
         }
     }
 
@@ -3291,7 +3290,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
                 needsFocusFailureLayout = found == null;
             }
             if (!needsFocusFailureLayout && mLayout.canScrollHorizontally()) {
-                boolean rtl = mLayout.getLayoutDirection() == ViewCompat.LAYOUT_DIRECTION_RTL;
+                boolean rtl = mLayout.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
                 final int absDir = (direction == View.FOCUS_FORWARD) ^ rtl
                         ? View.FOCUS_RIGHT : View.FOCUS_LEFT;
                 final View found = ff.findNextFocus(this, focused, absDir);
@@ -3368,7 +3367,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         mTempRect2.set(0, 0, next.getWidth(), next.getHeight());
         offsetDescendantRectToMyCoords(focused, mTempRect);
         offsetDescendantRectToMyCoords(next, mTempRect2);
-        final int rtl = mLayout.getLayoutDirection() == ViewCompat.LAYOUT_DIRECTION_RTL ? -1 : 1;
+        final int rtl = mLayout.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL ? -1 : 1;
         int rightness = 0;
         if ((mTempRect.left < mTempRect2.left
                 || mTempRect.right <= mTempRect2.left)
@@ -3496,7 +3495,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
 
                 // break 60 fps assumption if data from display appears valid
                 // NOTE: we only do this query once, statically, because it's very expensive (> 1ms)
-                Display display = ViewCompat.getDisplay(this);
+                Display display = getDisplay();
                 float refreshRate = 60.0f;
                 if (!isInEditMode() && display != null) {
                     float displayRefreshRate = display.getRefreshRate();
@@ -4095,7 +4094,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             final int widthMode = MeasureSpec.getMode(widthSpec);
             final int heightMode = MeasureSpec.getMode(heightSpec);
 
-            /**
+            /*
              * This specific call should be considered deprecated and replaced with
              * {@link #defaultOnMeasure(int, int)}. It can't actually be replaced as it could
              * break existing third party code but all documentation directs developers to not
@@ -4190,10 +4189,10 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         // than creating another method since this is internal.
         final int width = LayoutManager.chooseSize(widthSpec,
                 getPaddingLeft() + getPaddingRight(),
-                ViewCompat.getMinimumWidth(this));
+                getMinimumWidth());
         final int height = LayoutManager.chooseSize(heightSpec,
                 getPaddingTop() + getPaddingBottom(),
-                ViewCompat.getMinimumHeight(this));
+                getMinimumHeight());
 
         setMeasuredDimension(width, height);
     }
@@ -4353,7 +4352,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
      */
     void postAnimationRunner() {
         if (!mPostedAnimatorRunner && mIsAttached) {
-            ViewCompat.postOnAnimation(this, mItemAnimatorRunner);
+            postOnAnimation(mItemAnimatorRunner);
             mPostedAnimatorRunner = true;
         }
     }
@@ -5083,7 +5082,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         }
 
         if (needsInvalidate) {
-            ViewCompat.postInvalidateOnAnimation(this);
+            postInvalidateOnAnimation();
         }
     }
 
@@ -6029,7 +6028,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
 
         private void internalPostOnAnimation() {
             removeCallbacks(this);
-            ViewCompat.postOnAnimation(RecyclerView.this, this);
+            RecyclerView.this.postOnAnimation(this);
         }
 
         public void fling(int velocityX, int velocityY) {
@@ -6187,7 +6186,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
 
         void triggerUpdateProcessor() {
             if (mHasFixedSize && mIsAttached) {
-                ViewCompat.postOnAnimation(RecyclerView.this, mUpdateChildViewsRunnable);
+                RecyclerView.this.postOnAnimation(mUpdateChildViewsRunnable);
             } else {
                 mAdapterUpdateDuringMeasure = true;
                 requestLayout();
@@ -7023,10 +7022,9 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         private void attachAccessibilityDelegateOnBind(ViewHolder holder) {
             if (isAccessibilityEnabled()) {
                 final View itemView = holder.itemView;
-                if (ViewCompat.getImportantForAccessibility(itemView)
-                        == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-                    ViewCompat.setImportantForAccessibility(itemView,
-                            ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
+                if (itemView.getImportantForAccessibility()
+                        == View.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+                    itemView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
                 }
                 if (mAccessibilityDelegate == null) {
                     return;
@@ -7927,16 +7925,16 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             holder.mBindingAdapter = this;
             if (sDebugAssertionsEnabled) {
                 if (holder.itemView.getParent() == null
-                        && (ViewCompat.isAttachedToWindow(holder.itemView)
+                        && (holder.itemView.isAttachedToWindow()
                         != holder.isTmpDetached())) {
                     throw new IllegalStateException("Temp-detached state out of sync with reality. "
                             + "holder.isTmpDetached(): " + holder.isTmpDetached()
                             + ", attached to window: "
-                            + ViewCompat.isAttachedToWindow(holder.itemView)
+                            + holder.itemView.isAttachedToWindow()
                             + ", holder: " + holder);
                 }
                 if (holder.itemView.getParent() == null
-                        && ViewCompat.isAttachedToWindow(holder.itemView)) {
+                        && holder.itemView.isAttachedToWindow()) {
                     throw new IllegalStateException(
                             "Attempting to bind attached holder with no parent"
                                     + " (AKA temp detached): " + holder);
@@ -9056,7 +9054,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
          */
         public void postOnAnimation(Runnable action) {
             if (mRecyclerView != null) {
-                ViewCompat.postOnAnimation(mRecyclerView, action);
+                mRecyclerView.postOnAnimation(action);
             }
         }
 
@@ -9402,13 +9400,13 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         /**
          * Returns the resolved layout direction for this RecyclerView.
          *
-         * @return {@link androidx.core.view.ViewCompat#LAYOUT_DIRECTION_RTL} if the layout
+         * @return {@link View#LAYOUT_DIRECTION_RTL} if the layout
          * direction is RTL or returns
-         * {@link androidx.core.view.ViewCompat#LAYOUT_DIRECTION_LTR} if the layout direction
+         * {@link View#LAYOUT_DIRECTION_LTR} if the layout direction
          * is not RTL.
          */
         public int getLayoutDirection() {
-            return ViewCompat.getLayoutDirection(mRecyclerView);
+            return mRecyclerView.getLayoutDirection();
         }
 
         /**
@@ -9981,7 +9979,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
          */
         @Px
         public int getPaddingStart() {
-            return mRecyclerView != null ? ViewCompat.getPaddingStart(mRecyclerView) : 0;
+            return mRecyclerView != null ? mRecyclerView.getPaddingStart() : 0;
         }
 
         /**
@@ -9991,7 +9989,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
          */
         @Px
         public int getPaddingEnd() {
-            return mRecyclerView != null ? ViewCompat.getPaddingEnd(mRecyclerView) : 0;
+            return mRecyclerView != null ? mRecyclerView.getPaddingEnd() : 0;
         }
 
         /**
@@ -10779,7 +10777,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             // of a large rect into view. If we decide to bring in end because start is already
             // visible, limit the scroll such that start won't go out of bounds.
             final int dx;
-            if (getLayoutDirection() == ViewCompat.LAYOUT_DIRECTION_RTL) {
+            if (getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
                 dx = offScreenRight != 0 ? offScreenRight
                         : Math.max(offScreenLeft, childRight - parentRight);
             } else {
@@ -11183,7 +11181,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
          */
         @Px
         public int getMinimumWidth() {
-            return ViewCompat.getMinimumWidth(mRecyclerView);
+            return mRecyclerView.getMinimumWidth();
         }
 
         /**
@@ -11191,7 +11189,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
          */
         @Px
         public int getMinimumHeight() {
-            return ViewCompat.getMinimumHeight(mRecyclerView);
+            return mRecyclerView.getMinimumHeight();
         }
 
         /**
@@ -11602,9 +11600,9 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
          * Parse the xml attributes to get the most common properties used by layout managers.
          *
          * {@link android.R.attr#orientation}
-         * {@link androidx.viewpager2.R.attr#spanCount}
-         * {@link androidx.viewpager2.R.attr#reverseLayout}
-         * {@link androidx.viewpager2.R.attr#stackFromEnd}
+         * {@link androidx.recyclerview.R.attr#spanCount}
+         * {@link androidx.recyclerview.R.attr#reverseLayout}
+         * {@link androidx.recyclerview.R.attr#stackFromEnd}
          *
          * @return an object containing the properties as specified in the attrs.
          */
@@ -11662,11 +11660,11 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         public static class Properties {
             /** {@link android.R.attr#orientation} */
             public int orientation;
-            /** {@link androidx.viewpager2.R.attr#spanCount} */
+            /** {@link androidx.recyclerview.R.attr#spanCount} */
             public int spanCount;
-            /** {@link androidx.viewpager2.R.attr#reverseLayout} */
+            /** {@link androidx.recyclerview.R.attr#reverseLayout} */
             public boolean reverseLayout;
-            /** {@link androidx.viewpager2.R.attr#stackFromEnd} */
+            /** {@link androidx.recyclerview.R.attr#stackFromEnd} */
             public boolean stackFromEnd;
         }
     }
@@ -12055,7 +12053,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         // Saves isImportantForAccessibility value for the view item while it's in hidden state and
         // marked as unimportant for accessibility.
         private int mWasImportantForAccessibilityBeforeHidden =
-                ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+                View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
         // set if we defer the accessibility state change of the view holder
         @VisibleForTesting
         int mPendingAccessibilityState = PENDING_ACCESSIBILITY_STATE_NOT_SET;
@@ -12423,7 +12421,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             mShadowedHolder = null;
             mShadowingHolder = null;
             clearPayload();
-            mWasImportantForAccessibilityBeforeHidden = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+            mWasImportantForAccessibilityBeforeHidden = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
             mPendingAccessibilityState = PENDING_ACCESSIBILITY_STATE_NOT_SET;
             clearNestedRecyclerViewIfNotNested(this);
         }
@@ -12437,10 +12435,10 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
                 mWasImportantForAccessibilityBeforeHidden = mPendingAccessibilityState;
             } else {
                 mWasImportantForAccessibilityBeforeHidden =
-                        ViewCompat.getImportantForAccessibility(itemView);
+                        itemView.getImportantForAccessibility();
             }
             parent.setChildImportantForAccessibilityInternal(this,
-                    ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+                    View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
         }
 
         /**
@@ -12449,7 +12447,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         void onLeftHiddenState(RecyclerView parent) {
             parent.setChildImportantForAccessibilityInternal(this,
                     mWasImportantForAccessibilityBeforeHidden);
-            mWasImportantForAccessibilityBeforeHidden = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+            mWasImportantForAccessibilityBeforeHidden = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
         }
 
         @Override
@@ -12515,7 +12513,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
          */
         public final boolean isRecyclable() {
             return (mFlags & FLAG_NOT_RECYCLABLE) == 0
-                    && !ViewCompat.hasTransientState(itemView);
+                    && !itemView.hasTransientState();
         }
 
         /**
@@ -12531,7 +12529,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
          * transient state which will prevent it from being recycled.
          */
         boolean doesTransientStatePreventRecycling() {
-            return (mFlags & FLAG_NOT_RECYCLABLE) == 0 && ViewCompat.hasTransientState(itemView);
+            return (mFlags & FLAG_NOT_RECYCLABLE) == 0 && itemView.hasTransientState();
         }
 
         boolean isUpdated() {
@@ -12550,7 +12548,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             mPendingAccessibilityImportanceChange.add(viewHolder);
             return false;
         }
-        ViewCompat.setImportantForAccessibility(viewHolder.itemView, importantForAccessibility);
+        viewHolder.itemView.setImportantForAccessibility(importantForAccessibility);
         return true;
     }
 
@@ -12563,7 +12561,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             int state = viewHolder.mPendingAccessibilityState;
             if (state != ViewHolder.PENDING_ACCESSIBILITY_STATE_NOT_SET) {
                 //noinspection WrongConstant
-                ViewCompat.setImportantForAccessibility(viewHolder.itemView, state);
+                viewHolder.itemView.setImportantForAccessibility(state);
                 viewHolder.mPendingAccessibilityState =
                         ViewHolder.PENDING_ACCESSIBILITY_STATE_NOT_SET;
             }

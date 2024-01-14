@@ -15,6 +15,7 @@
  */
 package com.google.android.material.progressindicator;
 
+import static com.google.android.material.math.MathUtils.lerp;
 import static com.google.android.material.progressindicator.BaseProgressIndicator.HIDE_ESCAPE;
 import static com.google.android.material.progressindicator.BaseProgressIndicator.HIDE_INWARD;
 import static com.google.android.material.progressindicator.BaseProgressIndicator.SHOW_OUTWARD;
@@ -27,7 +28,6 @@ import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -42,18 +42,23 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
   private float displayedCornerRadius;
   private Path displayedTrackPath;
 
+  // This will be used in the ESCAPE hide animation. The start and end fraction in track will be
+  // scaled by this fraction with a pivot of 1.0f.
+  @FloatRange(from = 0.0f, to = 1.0f)
+  private float totalTrackLengthFraction;
+
   /** Instantiates LinearDrawingDelegate with the current spec. */
-  public LinearDrawingDelegate(@NonNull LinearProgressIndicatorSpec spec) {
+  LinearDrawingDelegate(@NonNull LinearProgressIndicatorSpec spec) {
     super(spec);
   }
 
   @Override
-  public int getPreferredWidth() {
+  int getPreferredWidth() {
     return -1;
   }
 
   @Override
-  public int getPreferredHeight() {
+  int getPreferredHeight() {
     return spec.trackThickness;
   }
 
@@ -69,7 +74,7 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
    * @param isHiding Whether the drawable is currently animating to hide
    */
   @Override
-  public void adjustCanvas(
+  void adjustCanvas(
       @NonNull Canvas canvas,
       @NonNull Rect bounds,
       @FloatRange(from = 0.0, to = 1.0) float trackThicknessFraction,
@@ -96,13 +101,11 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
     if (isShowing || (isHiding && spec.hideAnimationBehavior != HIDE_ESCAPE)) {
       canvas.translate(0f, spec.trackThickness * (trackThicknessFraction - 1) / 2f);
     }
-    // Scales canvas while hiding with escape animation.
+    // Sets the total track length fraction if ESCAPE hide animation is used.
     if (isHiding && spec.hideAnimationBehavior == HIDE_ESCAPE) {
-      canvas.scale(
-          trackThicknessFraction,
-          trackThicknessFraction,
-          bounds.left + bounds.width() / 2f,
-          bounds.top + bounds.height() / 2f);
+      totalTrackLengthFraction = trackThicknessFraction;
+    } else {
+      totalTrackLengthFraction = 1f;
     }
 
     // Clips all drawing to the track area, so it doesn't draw outside of its bounds (which can
@@ -114,31 +117,22 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
     displayedCornerRadius = spec.trackCornerRadius * trackThicknessFraction;
   }
 
-  /**
-   * Fills a part of the track with the designated indicator color. The filling part is defined with
-   * two fractions normalized to [0, 1] representing the start position and the end position on the
-   * track. The rest of the track will be filled with the track color.
-   *
-   * @param canvas Canvas to draw.
-   * @param paint Paint used to draw.
-   * @param startFraction A fraction representing where to start the drawing along the track.
-   * @param endFraction A fraction representing where to end the drawing along the track.
-   * @param color The color used to draw the indicator.
-   * @param drawableAlpha The alpha [0, 255] from the caller drawable.
-   */
   @Override
-  public void fillIndicator(
+  void fillIndicator(
       @NonNull Canvas canvas,
       @NonNull Paint paint,
-      @FloatRange(from = 0.0, to = 1.0) float startFraction,
-      @FloatRange(from = 0.0, to = 1.0) float endFraction,
-      @ColorInt int color,
+      @NonNull ActiveIndicator activeIndicator,
       @IntRange(from = 0, to = 255) int drawableAlpha) {
+    float startFraction = activeIndicator.startFraction;
+    float endFraction = activeIndicator.endFraction;
     // No need to draw if startFraction and endFraction are same.
     if (startFraction == endFraction) {
       return;
     }
-    color = MaterialColors.compositeARGBWithAlpha(color, drawableAlpha);
+    int color = MaterialColors.compositeARGBWithAlpha(activeIndicator.color, drawableAlpha);
+    // Scale start and end fraction if ESCAPE animation is used.
+    startFraction = lerp(1 - totalTrackLengthFraction, 1f, startFraction);
+    endFraction = lerp(1 - totalTrackLengthFraction, 1f, endFraction);
 
     float originX = -trackLength / 2;
 
@@ -198,13 +192,6 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
     canvas.drawRoundRect(stopBounds, displayedCornerRadius, displayedCornerRadius, paint);
   }
 
-  /**
-   * Fills the whole track with track color.
-   *
-   * @param canvas Canvas to draw.
-   * @param paint Paint used to draw.
-   * @param drawableAlpha The alpha [0, 255] from the caller drawable.
-   */
   @Override
   void fillTrack(
       @NonNull Canvas canvas,
@@ -218,10 +205,11 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
     paint.setColor(trackColor);
 
     float right = trackLength / 2;
+    float left = right - trackLength * totalTrackLengthFraction;
     float bottom = displayedTrackThickness / 2;
     displayedTrackPath = new Path();
     displayedTrackPath.addRoundRect(
-        new RectF(-right, -bottom, right, bottom),
+        new RectF(left, -bottom, right, bottom),
         displayedCornerRadius,
         displayedCornerRadius,
         Path.Direction.CCW);

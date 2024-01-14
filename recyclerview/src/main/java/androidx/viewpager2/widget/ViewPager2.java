@@ -54,7 +54,7 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
-import androidx.viewpager2.R;
+import androidx.recyclerview.R;
 import androidx.viewpager2.adapter.StatefulAdapter;
 
 import java.lang.annotation.Retention;
@@ -188,7 +188,7 @@ public final class ViewPager2 extends ViewGroup {
                 : new BasicAccessibilityProvider();
 
         mRecyclerView = new RecyclerViewImpl(context);
-        mRecyclerView.setId(ViewCompat.generateViewId());
+        mRecyclerView.setId(View.generateViewId());
         mRecyclerView.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
 
         mLayoutManager = new LinearLayoutManagerImpl(context);
@@ -583,7 +583,7 @@ public final class ViewPager2 extends ViewGroup {
     }
 
     boolean isRtl() {
-        return mLayoutManager.getLayoutDirection() == ViewCompat.LAYOUT_DIRECTION_RTL;
+        return mLayoutManager.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
     /**
@@ -1362,8 +1362,7 @@ public final class ViewPager2 extends ViewGroup {
         @Override
         public void onInitialize(@NonNull CompositeOnPageChangeCallback pageChangeEventDispatcher,
                 @NonNull RecyclerView recyclerView) {
-            ViewCompat.setImportantForAccessibility(recyclerView,
-                    ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            recyclerView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
             mAdapterDataObserver = new DataSetChangeObserver() {
                 @Override
@@ -1372,10 +1371,9 @@ public final class ViewPager2 extends ViewGroup {
                 }
             };
 
-            if (ViewCompat.getImportantForAccessibility(ViewPager2.this)
-                    == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-                ViewCompat.setImportantForAccessibility(ViewPager2.this,
-                        ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
+            if (ViewPager2.this.getImportantForAccessibility()
+                    == View.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+                ViewPager2.this.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
             }
         }
 

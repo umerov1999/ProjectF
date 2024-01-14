@@ -31,7 +31,7 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-annotations-jvm:$kotlin_version")
     implementation("androidx.annotation:annotation:$annotationVersion")
     implementation("androidx.appcompat:appcompat:$appcompatVersion")
-    implementation project(path: ":viewpager2")
+    implementation project(path: ":recyclerview")
     implementation("androidx.core:core-ktx:$coreVersion")
     implementation("androidx.activity:activity-ktx:$activityVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")

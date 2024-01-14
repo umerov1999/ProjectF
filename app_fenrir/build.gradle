@@ -141,7 +141,7 @@ dependencies {
     implementation project(path: ":firebase-installations")
     implementation project(path: ":picasso3")
     implementation project(path: ":image")
-    implementation project(path: ":viewpager2")
+    implementation project(path: ":recyclerview")
     implementation project(path: ":material")
     implementation project(path: ":preference")
     implementation project(path: ":camera2")

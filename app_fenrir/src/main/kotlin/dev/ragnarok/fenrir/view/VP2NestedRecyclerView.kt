@@ -209,21 +209,21 @@ class VP2NestedRecyclerView @JvmOverloads constructor(
             val a =
                 context.obtainStyledAttributes(
                     attrs,
-                    androidx.viewpager2.R.styleable.RecyclerView,
+                    androidx.recyclerview.R.styleable.RecyclerView,
                     0,
                     0
                 )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 saveAttributeDataForStyleable(
                     context,
-                    androidx.viewpager2.R.styleable.RecyclerView,
+                    androidx.recyclerview.R.styleable.RecyclerView,
                     attrs,
                     a,
                     0,
                     0
                 )
             }
-            a.getInt(androidx.viewpager2.R.styleable.RecyclerView_android_orientation, 0)
+            a.getInt(androidx.recyclerview.R.styleable.RecyclerView_android_orientation, 0)
         } else {
             VERTICAL
         }

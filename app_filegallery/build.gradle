@@ -110,7 +110,7 @@ dependencies {
     implementation("io.reactivex.rxjava3:rxjava:$rxJavaVersion")
     //implementation project(path: ":libfenrir")
     implementation project(path: ":picasso3")
-    implementation project(path: ":viewpager2")
+    implementation project(path: ":recyclerview")
     implementation project(path: ":material")
     implementation project(path: ":preference")
     implementation project(path: ":camera2")

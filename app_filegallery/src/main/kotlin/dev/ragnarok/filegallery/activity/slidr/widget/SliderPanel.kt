@@ -8,7 +8,6 @@ import android.graphics.Paint
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrConfig
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrInterface
@@ -581,7 +580,7 @@ class SliderPanel : FrameLayout {
     override fun computeScroll() {
         super.computeScroll()
         if (dragHelper?.continueSettling(true) == true) {
-            ViewCompat.postInvalidateOnAnimation(this)
+            postInvalidateOnAnimation()
         }
     }
 
