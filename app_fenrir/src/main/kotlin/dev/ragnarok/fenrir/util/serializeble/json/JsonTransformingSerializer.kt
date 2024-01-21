@@ -2,8 +2,6 @@
  * Copyright 2017-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:Suppress("DeprecatedCallableAddReplaceWith")
-
 package dev.ragnarok.fenrir.util.serializeble.json
 
 import dev.ragnarok.fenrir.util.serializeble.json.internal.writeJson

@@ -27,7 +27,9 @@ import androidx.media3.decoder.CryptoConfig
 import androidx.media3.exoplayer.audio.AudioRendererEventListener
 import androidx.media3.exoplayer.audio.AudioSink
 import androidx.media3.exoplayer.audio.DecoderAudioRenderer
+import androidx.media3.extractor.VorbisUtil
 import dev.ragnarok.fenrir.module.FenrirNative
+
 
 /**
  * Decodes and renders audio using the native Opus decoder.
@@ -121,6 +123,10 @@ class LibopusAudioRenderer : DecoderAudioRenderer<OpusDecoder> {
             decoder.channelCount,
             OpusDecoder.SAMPLE_RATE
         )
+    }
+
+    override fun getChannelMapping(decoder: OpusDecoder): IntArray? {
+        return VorbisUtil.getVorbisToAndroidChannelLayoutMapping(decoder.channelCount)
     }
 
     companion object {

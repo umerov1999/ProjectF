@@ -268,7 +268,7 @@ inline fun <reified T> Json.decodeFromJsonElementOrNull(
 /**
  * Builder of the [Json] instance provided by `Json { ... }` factory function.
  */
-@Suppress("unused", "DeprecatedCallableAddReplaceWith")
+@Suppress("unused")
 @OptIn(ExperimentalSerializationApi::class)
 class JsonBuilder internal constructor(json: Json) {
     /**

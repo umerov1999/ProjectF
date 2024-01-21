@@ -79,9 +79,9 @@ class NewsFeedSearchPresenter(
     }
 
     override fun canSearch(criteria: NewsFeedCriteria?): Boolean {
-        return criteria?.query.trimmedNonNullNoEmpty() || (criteria?.findOptionByKey(
+        return criteria?.query.trimmedNonNullNoEmpty() || (criteria?.findOptionByKey<SimpleGPSOption>(
             NewsFeedCriteria.KEY_GPS
-        ) as SimpleGPSOption?)?.has() == true
+        ))?.has() == true
     }
 
     fun fireLikeClick(post: Post) {

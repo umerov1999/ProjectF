@@ -190,7 +190,7 @@ object OwnerLinkSpanFactory {
             val newLenght = link.targetLine?.length ?: 0
             shiftLinks(links, link, origLenght - newLenght)
             link.targetLine?.let { result.replace(link.start, link.end, it) }
-            link.end = link.end - (origLenght - newLenght)
+            link.end -= (origLenght - newLenght)
         }
         return result.toString()
     }
@@ -200,8 +200,8 @@ object OwnerLinkSpanFactory {
         var shiftAllowed = false
         for (link in links) {
             if (shiftAllowed) {
-                link.start = link.start - count
-                link.end = link.end - count
+                link.start -= count
+                link.end -= count
             }
             if (link === after) {
                 shiftAllowed = true

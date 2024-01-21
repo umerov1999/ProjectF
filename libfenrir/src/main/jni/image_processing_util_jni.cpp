@@ -85,9 +85,7 @@ int Android420ToABGR_image_proccessing(const uint8_t *src_y,
                                   height);
 }
 
-
-extern "C" {
-JNIEXPORT jint
+extern "C" JNIEXPORT jint
 Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeCopyBetweenByteBufferAndBitmap(
         JNIEnv *env,
         jobject,
@@ -140,7 +138,8 @@ Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeCopyBetweenByteB
     return 0;
 }
 
-JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeShiftPixel(
+extern "C" JNIEXPORT jint
+Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeShiftPixel(
         JNIEnv *env,
         jobject,
         jobject src_y,
@@ -204,7 +203,8 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeS
  *
  * <p>This is for wrapping JPEG bytes with a media.Image object.
  */
-JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeWriteJpegToSurface(
+extern "C" JNIEXPORT jint
+Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeWriteJpegToSurface(
         JNIEnv *env,
         jobject,
         jbyteArray jpeg_array,
@@ -255,7 +255,7 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeW
     return 0;
 }
 
-JNIEXPORT jint
+extern "C" JNIEXPORT jint
 Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid420ToABGR(
         JNIEnv *env,
         jobject,
@@ -397,7 +397,7 @@ Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid42
     return result;
 }
 
-JNIEXPORT jint
+extern "C" JNIEXPORT jint
 Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid420ToBitmap(
         JNIEnv *env,
         jobject,
@@ -458,7 +458,7 @@ Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeConvertAndroid42
     return 0;
 }
 
-JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeRotateYUV(
+extern "C" JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeRotateYUV(
         JNIEnv *env,
         jobject,
         jobject src_y,
@@ -631,5 +631,3 @@ JNIEXPORT jint Java_dev_ragnarok_fenrir_module_ImageProcessingUtilNative_nativeR
 
     return result;
 }
-
-}  // extern "C"

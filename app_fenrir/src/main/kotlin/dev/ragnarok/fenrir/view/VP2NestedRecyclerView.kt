@@ -120,7 +120,9 @@ class VP2NestedRecyclerView @JvmOverloads constructor(
         while (viewParent !is ViewPager2 && viewParent != null) {
             viewParent = viewParent.parent
         }
-        viewPager2 = viewParent as ViewPager2?
+        if (viewParent is ViewPager2) {
+            viewPager2 = viewParent
+        }
     }
 
     private fun handle(ev: MotionEvent) {

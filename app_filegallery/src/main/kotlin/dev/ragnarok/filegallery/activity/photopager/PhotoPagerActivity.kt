@@ -8,7 +8,14 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.RelativeLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.ColorInt

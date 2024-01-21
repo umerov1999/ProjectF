@@ -7,8 +7,8 @@
 #include "MpegTsDemux.hpp"
 
 using namespace std;
-extern "C" {
-JNIEXPORT jboolean
+
+extern "C" JNIEXPORT jboolean
 Java_dev_ragnarok_fenrir_module_hls_TSDemuxer_unpack(JNIEnv *env, jobject, jstring input,
                                                      jstring output, jboolean info,
                                                      jboolean print_debug) {
@@ -40,5 +40,4 @@ Java_dev_ragnarok_fenrir_module_hls_TSDemuxer_unpack(JNIEnv *env, jobject, jstri
         LOGI("%s", demuxer.wrn.str().c_str());
     }
     return ret;
-}
 }

@@ -323,6 +323,22 @@ object PlaceFactory {
             .setArguments(buildArgsForSimpleGallery(accountId, position, photos, needRefresh))
     }
 
+    fun getSimpleGalleryPlace(
+        accountId: Long,
+        parcelNativePointer: Long,
+        position: Int,
+        needRefresh: Boolean
+    ): Place {
+        return Place(Place.SIMPLE_PHOTO_GALLERY_NATIVE)
+            .setArguments(
+                buildArgsForSimpleGallery(
+                    accountId,
+                    position,
+                    parcelNativePointer,
+                    needRefresh
+                )
+            )
+    }
 
     fun getFavePhotosGallery(accountId: Long, photos: ArrayList<Photo>, position: Int): Place {
         return Place(Place.FAVE_PHOTOS_GALLERY)
@@ -343,7 +359,6 @@ object PlaceFactory {
             )
         )
     }
-
 
     val settingsThemePlace: Place
         get() = Place(Place.SETTINGS_THEME)

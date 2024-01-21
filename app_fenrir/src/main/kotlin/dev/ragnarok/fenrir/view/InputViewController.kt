@@ -24,8 +24,12 @@ import dev.ragnarok.fenrir.view.emoji.BotKeyboardView
 import dev.ragnarok.fenrir.view.emoji.BotKeyboardView.BotKeyboardViewDelegate
 import dev.ragnarok.fenrir.view.emoji.EmojiconEditText
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup
-import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.*
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.Companion.input
+import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnEmojiconBackspaceClickedListener
+import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnEmojiconClickedListener
+import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnMyStickerClickedListener
+import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnSoftKeyboardOpenCloseListener
+import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnStickerClickedListener
 import dev.ragnarok.fenrir.view.emoji.section.Emojicon
 
 class InputViewController(

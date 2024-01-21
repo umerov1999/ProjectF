@@ -2,7 +2,12 @@ package dev.ragnarok.fenrir.fragment.navigationedit
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.recyclerview.widget.ItemTouchHelper

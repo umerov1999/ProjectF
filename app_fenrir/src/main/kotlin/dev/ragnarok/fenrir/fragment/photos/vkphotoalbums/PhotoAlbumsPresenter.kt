@@ -9,7 +9,11 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.PhotoAlbum
+import dev.ragnarok.fenrir.model.PhotoAlbumEditor
+import dev.ragnarok.fenrir.model.SimplePrivacy
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime

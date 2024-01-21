@@ -2,7 +2,12 @@ package dev.ragnarok.fenrir.fragment.base.compat
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.activity.NoMainActivity
-import dev.ragnarok.fenrir.fragment.base.core.*
+import dev.ragnarok.fenrir.fragment.base.core.IErrorView
+import dev.ragnarok.fenrir.fragment.base.core.IMvpView
+import dev.ragnarok.fenrir.fragment.base.core.IPresenter
+import dev.ragnarok.fenrir.fragment.base.core.IProgressView
+import dev.ragnarok.fenrir.fragment.base.core.IToastView
+import dev.ragnarok.fenrir.fragment.base.core.IToolbarView
 
 abstract class AbsMvpActivity<P : IPresenter<V>, V : IMvpView> : NoMainActivity(),
     ViewHostDelegate.IFactoryProvider<P, V>, IProgressView, IErrorView,

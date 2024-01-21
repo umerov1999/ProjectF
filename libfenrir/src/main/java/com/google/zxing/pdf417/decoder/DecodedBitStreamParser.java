@@ -23,6 +23,7 @@ import com.google.zxing.pdf417.PDF417ResultMetadata;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * <p>This class contains the methods for decoding the PDF417 codewords.</p>
@@ -183,7 +184,7 @@ final class DecodedBitStreamParser {
            codeIndex < codewords.length &&
            codewords[codeIndex] != MACRO_PDF417_TERMINATOR &&
            codewords[codeIndex] != BEGIN_MACRO_PDF417_OPTIONAL_FIELD) {
-      fileId.append(String.format("%03d", codewords[codeIndex]));
+      fileId.append(String.format(Locale.getDefault(), "%03d", codewords[codeIndex]));
       codeIndex++;
     }
     if (fileId.length() == 0) {

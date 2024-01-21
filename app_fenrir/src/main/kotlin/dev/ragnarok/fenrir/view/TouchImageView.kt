@@ -3,7 +3,11 @@ package dev.ragnarok.fenrir.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.graphics.PointF
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle

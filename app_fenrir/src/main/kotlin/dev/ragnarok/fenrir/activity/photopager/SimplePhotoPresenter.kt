@@ -4,13 +4,71 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AccessIdPair
 import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.module.parcel.ParcelFlags
+import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.util.Utils
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
 
-class SimplePhotoPresenter(
-    photos: ArrayList<Photo>, index: Int, needToRefreshData: Boolean,
-    accountId: Long, savedInstanceState: Bundle?
-) : PhotoPagerPresenter(photos, accountId, !needToRefreshData, savedInstanceState) {
-    private var mDataRefreshSuccessfull = false
+class SimplePhotoPresenter : PhotoPagerPresenter {
+    private var mDataRefreshSuccessfully = false
+
+    constructor(
+        photos: ArrayList<Photo>,
+        index: Int,
+        needToRefreshData: Boolean,
+        accountId: Long,
+        savedInstanceState: Bundle?
+    ) : super(photos, accountId, !needToRefreshData, savedInstanceState) {
+        currentIndex = index
+        if (needToRefreshData && !mDataRefreshSuccessfully) {
+            refreshData()
+        }
+    }
+
+    constructor(
+        parcelNativePointer: Long,
+        index: Int,
+        needToRefreshData: Boolean,
+        accountId: Long,
+        savedInstanceState: Bundle?
+    ) : super(ArrayList<Photo>(0), accountId, !needToRefreshData, savedInstanceState) {
+        currentIndex = index
+        loadDataFromParcelNative(parcelNativePointer, needToRefreshData)
+    }
+
+    private fun loadDataFromParcelNative(parcelNative: Long, needToRefreshData: Boolean) {
+        changeLoadingNowState(true)
+        appendDisposable(
+            Single.create { v: SingleEmitter<ArrayList<Photo>> ->
+                v.onSuccess(
+                    ParcelNative.loadParcelableArrayList(
+                        parcelNative, Photo.NativeCreator, ParcelFlags.MUTABLE_LIST
+                    ) ?: ArrayList()
+                )
+            }
+                .fromIOToMain()
+                .subscribe({ onInitialLoadingParcelNativeFinished(it, needToRefreshData) }) {
+                    it.printStackTrace()
+                })
+    }
+
+    private fun onInitialLoadingParcelNativeFinished(
+        photos: List<Photo>,
+        needToRefreshData: Boolean
+    ) {
+        changeLoadingNowState(false)
+        mPhotos.addAll(photos)
+        refreshPagerView()
+        resolveButtonsBarVisible()
+        resolveToolbarVisibility()
+        refreshInfoViews(true)
+
+        if (needToRefreshData && !mDataRefreshSuccessfully) {
+            refreshData()
+        }
+    }
+
     private fun refreshData() {
         val ids = ArrayList<AccessIdPair>(mPhotos.size)
         for (photo in mPhotos) {
@@ -29,7 +87,7 @@ class SimplePhotoPresenter(
     }
 
     private fun onPhotosReceived(photos: List<Photo>) {
-        mDataRefreshSuccessfull = true
+        mDataRefreshSuccessfully = true
         onPhotoListRefresh(photos)
     }
 
@@ -57,12 +115,5 @@ class SimplePhotoPresenter(
 
     override fun close() {
         view?.returnOnlyPos(currentIndex)
-    }
-
-    init {
-        currentIndex = index
-        if (needToRefreshData && !mDataRefreshSuccessfull) {
-            refreshData()
-        }
     }
 }

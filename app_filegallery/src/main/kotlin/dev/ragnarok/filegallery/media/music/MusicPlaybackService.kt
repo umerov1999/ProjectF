@@ -142,6 +142,7 @@ class MusicPlaybackService : Service() {
         mAnyActivityInForeground = false
     }
 
+    @SuppressLint("WrongConstant")
     override fun onCreate() {
         if (Constants.IS_DEBUG) Logger.d(TAG, "Creating service")
         super.onCreate()

@@ -355,7 +355,7 @@ class IMGImage {
         when (path.mode) {
             IMGMode.DOODLE -> mDoodles.add(path)
             IMGMode.MOSAIC -> {
-                path.width = path.width * scale
+                path.width *= scale
                 mMosaics.add(path)
             }
 

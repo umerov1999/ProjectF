@@ -18,7 +18,7 @@ package androidx.media3.decoder.ffmpeg
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MimeTypes
-import androidx.media3.common.util.Assertions
+import androidx.media3.common.util.Assertions.checkNotNull
 import androidx.media3.common.util.ParsableByteArray
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.common.util.Util
@@ -104,7 +104,7 @@ class FfmpegAudioDecoder(
         }
         val inputData = Util.castNonNull(inputBuffer.data)
         val inputSize = inputData.limit()
-        val outputData = outputBuffer.init(inputBuffer.timeUs, outputBufferSize)
+        var outputData = outputBuffer.init(inputBuffer.timeUs, outputBufferSize)
         val result = ffmpegDecode(nativeContext, inputData, inputSize, outputData, outputBufferSize)
         when {
             result == AUDIO_DECODER_ERROR_OTHER -> {
@@ -129,7 +129,7 @@ class FfmpegAudioDecoder(
                 channelCount = ffmpegGetChannelCount(nativeContext)
                 sampleRate = ffmpegGetSampleRate(nativeContext)
                 if (sampleRate == 0 && "alac" == codecName) {
-                    Assertions.checkNotNull(extraData)
+                    checkNotNull(extraData)
                     // ALAC decoder did not set the sample rate in earlier versions of FFmpeg. See
                     // https://trac.ffmpeg.org/ticket/6096.
                     val parsableExtraData = ParsableByteArray(extraData ?: return null)
@@ -139,6 +139,9 @@ class FfmpegAudioDecoder(
                 hasOutputFormat = true
             }
         }
+        // Get a new reference to the output ByteBuffer in case the native decode method reallocated the
+        // buffer to grow its size.
+        outputData = checkNotNull(outputBuffer.data)
         outputData.position(0)
         outputData.limit(result)
         return null
@@ -237,8 +240,8 @@ class FfmpegAudioDecoder(
         if (!FenrirNative.isNativeLoaded) {
             throw FfmpegDecoderException("Failed to load decoder native libraries.")
         }
-        Assertions.checkNotNull(format.sampleMimeType)
-        codecName = Assertions.checkNotNull(FfmpegLibrary.getCodecName(format.sampleMimeType))
+        checkNotNull(format.sampleMimeType)
+        codecName = checkNotNull(FfmpegLibrary.getCodecName(format.sampleMimeType))
         extraData = getExtraData(format.sampleMimeType, format.initializationData)
         encoding = if (outputFloat) C.ENCODING_PCM_FLOAT else C.ENCODING_PCM_16BIT
         outputBufferSize = if (outputFloat) OUTPUT_BUFFER_SIZE_32BIT else OUTPUT_BUFFER_SIZE_16BIT

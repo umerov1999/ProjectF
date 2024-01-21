@@ -147,7 +147,6 @@ inline fun <reified T> Preferences.decode(tag: String): T =
  * @param builderAction builder to change the behavior of the [Preferences] format
  */
 @OptIn(ExperimentalContracts::class)
-@Suppress("FunctionName")
 fun Preferences(
     sharedPreferences: SharedPreferences,
     builderAction: PreferencesBuilder.() -> Unit = {},
@@ -155,7 +154,9 @@ fun Preferences(
     contract {
         callsInPlace(builderAction, InvocationKind.EXACTLY_ONCE)
     }
-    return generatePreferences(PreferenceConfiguration(sharedPreferences), builderAction)
+    val builder = PreferencesBuilder(PreferenceConfiguration(sharedPreferences))
+    builder.builderAction()
+    return PreferencesImpl(builder.build())
 }
 
 /**
@@ -166,7 +167,6 @@ fun Preferences(
  * @param builderAction builder to change the behavior of the [Preferences] format
  */
 @OptIn(ExperimentalContracts::class)
-@Suppress("FunctionName")
 fun Preferences(
     preferences: Preferences,
     builderAction: PreferencesBuilder.() -> Unit = {},
@@ -174,17 +174,9 @@ fun Preferences(
     contract {
         callsInPlace(builderAction, InvocationKind.EXACTLY_ONCE)
     }
-    return generatePreferences(preferences.configuration, builderAction)
-}
-
-private inline fun generatePreferences(
-    preferenceConfiguration: PreferenceConfiguration,
-    builderAction: PreferencesBuilder.() -> Unit,
-): Preferences {
-    val builder = PreferencesBuilder(preferenceConfiguration)
+    val builder = PreferencesBuilder(preferences.configuration)
     builder.builderAction()
-    val conf = builder.build()
-    return PreferencesImpl(conf)
+    return PreferencesImpl(builder.build())
 }
 
 /**

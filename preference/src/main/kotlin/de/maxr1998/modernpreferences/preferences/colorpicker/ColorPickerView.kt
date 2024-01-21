@@ -2,7 +2,11 @@ package de.maxr1998.modernpreferences.preferences.colorpicker
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.PorterDuff
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet

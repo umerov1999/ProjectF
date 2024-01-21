@@ -167,8 +167,8 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
 
                 val menus = ModalBottomSheetDialogFragment.Builder()
                 val owner = arguments?.getString(Extra.OWNER)
-                var typeRes = arguments?.getString(Extra.TYPE)
-                if (owner != null && typeRes != null) {
+                var typeRes = arguments?.getString(Extra.TYPE).orEmpty()
+                if (owner != null && typeRes.isNotEmpty()) {
                     menus.add(
                         OptionRequest(
                             R.id.button_ok,
@@ -198,8 +198,9 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                             fileName = fileName.substring(0, fileName.lastIndexOf('.'))
                         }
 
-                        typeRes ?: return@show
-                        owner ?: return@show
+                        if (owner == null || typeRes.isEmpty()) {
+                            return@show
+                        }
                         typeRes += ("_$fileName")
                         val dir = File(Settings.get().main().photoDir)
                         if (!dir.isDirectory) {

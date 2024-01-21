@@ -89,10 +89,16 @@ object MusicPlaybackController {
         pSecs -= hours * 3600
         val mins: Long = pSecs / 60
         pSecs -= mins * 60
-        val durationFormat = context.resources.getString(
-            if (hours == 0L) R.string.durationformatshort else R.string.durationformatlong
+        return if (hours == 0L) context.resources.getString(
+            R.string.duration_format_min_sec,
+            mins,
+            pSecs
+        ) else context.resources.getString(
+            R.string.duration_format_hour_min_sec,
+            hours,
+            mins,
+            pSecs
         )
-        return String.format(durationFormat, hours, mins, pSecs)
     }
 
     /**

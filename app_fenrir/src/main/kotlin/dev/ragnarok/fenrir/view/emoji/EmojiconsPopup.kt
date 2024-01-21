@@ -7,8 +7,12 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
-import android.view.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
 import android.view.View.OnTouchListener
+import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.GridView
 import android.widget.TextView
@@ -29,7 +33,14 @@ import dev.ragnarok.fenrir.model.StickerSet
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.view.emoji.section.*
+import dev.ragnarok.fenrir.view.emoji.section.Cars
+import dev.ragnarok.fenrir.view.emoji.section.Electronics
+import dev.ragnarok.fenrir.view.emoji.section.Emojicon
+import dev.ragnarok.fenrir.view.emoji.section.Food
+import dev.ragnarok.fenrir.view.emoji.section.Nature
+import dev.ragnarok.fenrir.view.emoji.section.People
+import dev.ragnarok.fenrir.view.emoji.section.Sport
+import dev.ragnarok.fenrir.view.emoji.section.Symbols
 
 class EmojiconsPopup(private var rootView: View?, private val mContext: Activity) {
     private var keyBoardHeight = 0

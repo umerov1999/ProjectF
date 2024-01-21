@@ -2,8 +2,6 @@
  * Copyright 2017-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-
 package dev.ragnarok.filegallery.util.serializeble.json.internal.lexer
 
 import dev.ragnarok.filegallery.util.serializeble.json.internal.CharArrayPoolBatchSize

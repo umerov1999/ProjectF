@@ -3,7 +3,6 @@ package androidx.recyclerview.widget
 import android.os.Parcel
 import android.os.Parcelable
 import kotlinx.serialization.Serializable
-import java.util.Arrays
 
 /**
  * @hide
@@ -184,7 +183,7 @@ class FullSpanItem : Parcelable {
                 + "mPosition=" + mPosition
                 + ", mGapDir=" + mGapDir
                 + ", mHasUnwantedGapAfter=" + mHasUnwantedGapAfter
-                + ", mGapPerSpan=" + Arrays.toString(mGapPerSpan)
+                + ", mGapPerSpan=" + mGapPerSpan.contentToString()
                 + '}')
     }
 

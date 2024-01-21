@@ -18,9 +18,15 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso3.Transformation
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpDialogFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
+import dev.ragnarok.fenrir.getInt
+import dev.ragnarok.fenrir.getLong
+import dev.ragnarok.fenrir.getParcelableCompat
+import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.currentAudio
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.isNowPlayingOrPreparingOrPaused
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.playOrPause
@@ -28,6 +34,7 @@ import dev.ragnarok.fenrir.media.music.MusicPlaybackController.playerStatus
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.stop
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService.Companion.startForPlayList
 import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.Content_Local
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.buildUriForPicasso
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.buildUriForPicassoNew

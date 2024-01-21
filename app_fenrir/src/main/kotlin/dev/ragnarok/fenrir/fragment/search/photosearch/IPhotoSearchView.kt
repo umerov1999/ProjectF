@@ -5,4 +5,5 @@ import dev.ragnarok.fenrir.model.Photo
 
 interface IPhotoSearchView : IBaseSearchView<Photo> {
     fun displayGallery(accountId: Long, photos: ArrayList<Photo>, position: Int)
+    fun displayGalleryNative(accountId: Long, photos: Long, position: Int)
 }

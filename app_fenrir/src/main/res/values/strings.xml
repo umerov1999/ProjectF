@@ -940,9 +940,9 @@
     <string name="doc_remove_confirm_message">Are you sure you want to delete this document? This action cannot be undone.</string>
 
     <!-- Do not translate. Duration format for duration < 1 hour -->
-    <string name="durationformatshort" translatable="false"><xliff:g id="format">%2$d:%3$02d</xliff:g></string>
+    <string name="duration_format_min_sec" translatable="false"><xliff:g id="format">%1$d:%2$02d</xliff:g></string>
     <!-- Do not translate. Duration format for duration >= 1 hour -->
-    <string name="durationformatlong" translatable="false"><xliff:g id="format">%1$d:%2$02d:%3$02d</xliff:g></string>
+    <string name="duration_format_hour_min_sec" translatable="false"><xliff:g id="format">%1$d:%2$02d:%3$02d</xliff:g></string>
 
     <string name="album_remove_confirm_message">Are you sure you want to delete this album? This action cannot be undone.</string>
     <string name="in_response_to">%1$s in response to %2$s</string>

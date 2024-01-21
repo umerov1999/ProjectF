@@ -144,14 +144,14 @@ AUDIO_DECODER_FUNC(jint, ffmpegDecode, jlong context, jobject inputData,
     }
     AVPacket *packet = av_packet_alloc();
     if (packet == nullptr) {
-        LOGE("FFMPEG: Invalid packet");
+        LOGE("FFMPEG: Failed to allocate packet.");
         return -1;
     }
     auto *inputBuffer = (uint8_t *) env->GetDirectBufferAddress(inputData);
     auto *outputBuffer = (uint8_t *) env->GetDirectBufferAddress(outputData);
     packet->data = inputBuffer;
     packet->size = inputSize;
-    int ret = decodePacket((AVCodecContext *) context, packet, outputBuffer, outputSize);
+    const int ret = decodePacket((AVCodecContext *) context, packet, outputBuffer, outputSize);
     av_packet_free(&packet);
     return ret;
 }
@@ -161,7 +161,7 @@ AUDIO_DECODER_FUNC(jint, ffmpegGetChannelCount, jlong context) {
         LOGE("FFMPEG: Context must be non-NULL.");
         return -1;
     }
-    return ((AVCodecContext *) context)->channels;
+    return ((AVCodecContext *) context)->ch_layout.nb_channels;
 }
 
 AUDIO_DECODER_FUNC(jint, ffmpegGetSampleRate, jlong context) {
@@ -241,8 +241,7 @@ AVCodecContext *createContext(JNIEnv *env, const AVCodec *codec, jbyteArray extr
     if (context->codec_id == AV_CODEC_ID_PCM_MULAW ||
         context->codec_id == AV_CODEC_ID_PCM_ALAW) {
         context->sample_rate = rawSampleRate;
-        context->channels = rawChannelCount;
-        context->channel_layout = av_get_default_channel_layout(rawChannelCount);
+        av_channel_layout_default(&context->ch_layout, rawChannelCount);
     }
     context->err_recognition = AV_EF_IGNORE_ERR;
     int result = avcodec_open2(context, codec, nullptr);
@@ -284,24 +283,29 @@ int decodePacket(AVCodecContext *context, AVPacket *packet,
 
         // Resample output.
         AVSampleFormat sampleFormat = context->sample_fmt;
-        int channelCount = context->channels;
-        int channelLayout = context->channel_layout;
+        int channelCount = context->ch_layout.nb_channels;
         int sampleRate = context->sample_rate;
         int sampleCount = frame->nb_samples;
         //int dataSize = av_samples_get_buffer_size(nullptr, channelCount, sampleCount, sampleFormat, 1);
-        SwrContext *resampleContext;
-        if (context->opaque) {
-            resampleContext = (SwrContext *) context->opaque;
-        } else {
-            resampleContext = swr_alloc();
-            av_opt_set_int(resampleContext, "in_channel_layout", channelLayout, 0);
-            av_opt_set_int(resampleContext, "out_channel_layout", channelLayout, 0);
-            av_opt_set_int(resampleContext, "in_sample_rate", sampleRate, 0);
-            av_opt_set_int(resampleContext, "out_sample_rate", sampleRate, 0);
-            av_opt_set_int(resampleContext, "in_sample_fmt", sampleFormat, 0);
-            // The output format is always the requested format.
-            av_opt_set_int(resampleContext, "out_sample_fmt",
-                           context->request_sample_fmt, 0);
+        SwrContext *resampleContext = static_cast<SwrContext *>(context->opaque);
+        if (!resampleContext) {
+            result =
+                    swr_alloc_set_opts2(&resampleContext,             // ps
+                                        &context->ch_layout,          // out_ch_layout
+                                        context->request_sample_fmt,  // out_sample_fmt
+                                        sampleRate,                   // out_sample_rate
+                                        &context->ch_layout,          // in_ch_layout
+                                        sampleFormat,                 // in_sample_fmt
+                                        sampleRate,                   // in_sample_rate
+                                        0,                            // log_offset
+                                        NULL                          // log_ctx
+                    );
+            if (result < 0) {
+                logError("swr_alloc_set_opts2", result);
+                av_frame_free(&frame);
+                return transformError(result);
+            }
+
             result = swr_init(resampleContext);
             if (result < 0) {
                 logError("swr_init", result);

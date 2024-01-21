@@ -26,7 +26,11 @@ import android.os.Build.VERSION
 import android.util.TypedValue
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
-import okio.*
+import okio.Buffer
+import okio.BufferedSource
+import okio.ForwardingSource
+import okio.Source
+import okio.buffer
 import java.io.IOException
 import java.nio.ByteBuffer
 import kotlin.math.max

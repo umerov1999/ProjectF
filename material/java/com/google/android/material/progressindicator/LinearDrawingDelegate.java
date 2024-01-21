@@ -23,11 +23,13 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -40,7 +42,7 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
   private float trackLength = 300f;
   private float displayedTrackThickness;
   private float displayedCornerRadius;
-  private Path displayedTrackPath;
+  private final Path displayedTrackPath;
 
   // This will be used in the ESCAPE hide animation. The start and end fraction in track will be
   // scaled by this fraction with a pivot of 1.0f.
@@ -50,6 +52,8 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
   /** Instantiates LinearDrawingDelegate with the current spec. */
   LinearDrawingDelegate(@NonNull LinearProgressIndicatorSpec spec) {
     super(spec);
+
+    displayedTrackPath = new Path();
   }
 
   @Override
@@ -81,7 +85,6 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
       boolean isShowing,
       boolean isHiding) {
     trackLength = bounds.width();
-    float trackSize = spec.trackThickness;
 
     // Positions canvas to center of the clip bounds.
     canvas.translate(
@@ -108,13 +111,22 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
       totalTrackLengthFraction = 1f;
     }
 
-    // Clips all drawing to the track area, so it doesn't draw outside of its bounds (which can
-    // happen in certain configurations of clipToPadding and clipChildren)
-    canvas.clipRect(-trackLength / 2, -trackSize / 2, trackLength / 2, trackSize / 2);
-
     // These are set for the drawing the indicator and track.
     displayedTrackThickness = spec.trackThickness * trackThicknessFraction;
     displayedCornerRadius = spec.trackCornerRadius * trackThicknessFraction;
+
+    // Clips all drawing to the track area, so it doesn't draw outside of its bounds (which can
+    // happen in certain configurations of clipToPadding and clipChildren)
+    float right = trackLength / 2;
+    float left = right - trackLength * totalTrackLengthFraction;
+    float bottom = displayedTrackThickness / 2;
+    displayedTrackPath.rewind();
+    displayedTrackPath.addRoundRect(
+        new RectF(left, -bottom, right, bottom),
+        displayedCornerRadius,
+        displayedCornerRadius,
+        Path.Direction.CCW);
+    canvas.clipPath(displayedTrackPath);
   }
 
   @Override
@@ -157,7 +169,6 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
 
     canvas.save();
     // Avoid the indicator being drawn out of the track.
-    canvas.clipPath(displayedTrackPath);
     RectF indicatorBounds =
         new RectF(
             adjustedStartX,
@@ -165,31 +176,7 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
             adjustedEndX,
             displayedTrackThickness / 2);
     canvas.drawRoundRect(indicatorBounds, displayedCornerRadius, displayedCornerRadius, paint);
-
-    // Draw stop indicator
-    if (spec.trackStopIndicatorSize > 0) {
-      drawStopIndicator(canvas, paint, drawableAlpha);
-    }
     canvas.restore();
-  }
-
-  private void drawStopIndicator(
-      @NonNull Canvas canvas,
-      @NonNull Paint paint,
-      @IntRange(from = 0, to = 255) int drawableAlpha) {
-    int indicatorColor =
-        MaterialColors.compositeARGBWithAlpha(spec.indicatorColors[0], drawableAlpha);
-    paint.setColor(indicatorColor);
-    Rect trackBounds = canvas.getClipBounds();
-    // Maintain proper ratio when stop is smaller than track height and offset from edges.
-    float offset = max(0, displayedTrackThickness - spec.trackStopIndicatorSize);
-    RectF stopBounds =
-        new RectF(
-            trackBounds.right - displayedTrackThickness + offset / 2,
-            -(displayedTrackThickness - offset) / 2,
-            trackBounds.right - offset / 2,
-            (displayedTrackThickness - offset) / 2);
-    canvas.drawRoundRect(stopBounds, displayedCornerRadius, displayedCornerRadius, paint);
   }
 
   @Override
@@ -204,15 +191,33 @@ final class LinearDrawingDelegate extends DrawingDelegate<LinearProgressIndicato
     paint.setAntiAlias(true);
     paint.setColor(trackColor);
 
-    float right = trackLength / 2;
-    float left = right - trackLength * totalTrackLengthFraction;
-    float bottom = displayedTrackThickness / 2;
-    displayedTrackPath = new Path();
-    displayedTrackPath.addRoundRect(
-        new RectF(left, -bottom, right, bottom),
-        displayedCornerRadius,
-        displayedCornerRadius,
-        Path.Direction.CCW);
     canvas.drawPath(displayedTrackPath, paint);
+  }
+
+  @Override
+  void drawStopIndicator(
+      @NonNull Canvas canvas,
+      @NonNull Paint paint,
+      @ColorInt int color,
+      @IntRange(from = 0, to = 255) int drawableAlpha) {
+    int paintColor = MaterialColors.compositeARGBWithAlpha(color, drawableAlpha);
+    if (spec.trackStopIndicatorSize > 0 && paintColor != Color.TRANSPARENT) {
+      // Draws the stop indicator at the end of the track if needed.
+      paint.setStyle(Style.FILL);
+      paint.setAntiAlias(true);
+      paint.setColor(paintColor);
+      canvas.save();
+      // Avoid the indicator being drawn out of the track.
+      Rect trackBounds = canvas.getClipBounds();
+      float offset = max(0, displayedTrackThickness - spec.trackStopIndicatorSize);
+      RectF stopBounds =
+          new RectF(
+              trackBounds.right - displayedTrackThickness + offset / 2,
+              -(displayedTrackThickness - offset) / 2,
+              trackBounds.right - offset / 2,
+              (displayedTrackThickness - offset) / 2);
+      canvas.drawRoundRect(stopBounds, displayedCornerRadius, displayedCornerRadius, paint);
+      canvas.restore();
+    }
   }
 }

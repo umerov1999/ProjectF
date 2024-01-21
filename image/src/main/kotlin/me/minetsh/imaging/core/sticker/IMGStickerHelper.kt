@@ -4,12 +4,13 @@ import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.RectF
 import android.view.View
+import me.minetsh.imaging.view.IMGStickerView
 
 /**
  * Created by felix on 2017/11/16 下午5:52.
  */
-class IMGStickerHelper<StickerView>(private val mView: StickerView) : IMGStickerPortrait,
-    IMGStickerPortrait.Callback where StickerView : View, StickerView : IMGSticker {
+class IMGStickerHelper(private val mView: IMGStickerView) : IMGStickerPortrait,
+    IMGStickerPortrait.Callback {
     private var mFrame: RectF? = null
     private var mCallback: IMGStickerPortrait.Callback? = null
     private var isShowing = false

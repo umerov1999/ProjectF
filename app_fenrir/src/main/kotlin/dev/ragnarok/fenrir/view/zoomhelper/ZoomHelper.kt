@@ -152,7 +152,7 @@ class ZoomHelper {
      * call this method in [Activity.dispatchTouchEvent]
      */
     fun dispatchTouchEvent(ev: MotionEvent, parent: Activity): Boolean {
-        return load(ev, parent.findViewById(android.R.id.content) as View)
+        return load(ev, parent.findViewById(android.R.id.content))
     }
 
     /**

@@ -16,7 +16,6 @@ import java.io.IOException
 import java.util.TreeSet
 import java.util.concurrent.TimeUnit
 
-@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 class OkHttp3LoggingInterceptor @JvmOverloads constructor(
     private val logger: Logger = Logger.DEFAULT
 ) : Interceptor {

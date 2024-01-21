@@ -5,7 +5,14 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.Rect
+import android.graphics.RectF
 import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
@@ -13,8 +20,15 @@ import android.util.Log
 import android.util.Size
 import android.view.MotionEvent
 import android.view.View
-import androidx.camera.core.*
 import androidx.camera.core.Camera
+import androidx.camera.core.CameraInfoUnavailableException
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.MeteringPointFactory
+import androidx.camera.core.Preview
+import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
@@ -22,7 +36,14 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.zxing.*
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.BinaryBitmap
+import com.google.zxing.DecodeHintType
+import com.google.zxing.MultiFormatReader
+import com.google.zxing.RGBLuminanceSource
+import com.google.zxing.Result
+import com.google.zxing.ResultPoint
+import com.google.zxing.ResultPointCallback
 import com.google.zxing.common.HybridBinarizer
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -458,9 +479,6 @@ class CameraScanActivity : NoMainActivity() {
             var generatedQRCode: Bitmap = gen
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && generatedQRCode.config == Bitmap.Config.HARDWARE) {
                 generatedQRCode = generatedQRCode.copy(Bitmap.Config.ARGB_8888, true)
-                if (generatedQRCode == null) {
-                    return "error"
-                }
             }
             val reader = MultiFormatReader()
             val hints: MutableMap<DecodeHintType, Any> = EnumMap(DecodeHintType::class.java)

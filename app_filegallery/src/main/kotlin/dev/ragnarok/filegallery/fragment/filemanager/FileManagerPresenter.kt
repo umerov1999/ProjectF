@@ -11,7 +11,11 @@ import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
 import dev.ragnarok.filegallery.fromIOToMain
-import dev.ragnarok.filegallery.model.*
+import dev.ragnarok.filegallery.model.Audio
+import dev.ragnarok.filegallery.model.FileItem
+import dev.ragnarok.filegallery.model.FileType
+import dev.ragnarok.filegallery.model.Photo
+import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.model.tags.TagOwner
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.upload.IUploadManager

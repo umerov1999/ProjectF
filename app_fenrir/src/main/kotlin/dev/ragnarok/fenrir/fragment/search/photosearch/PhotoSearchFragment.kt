@@ -63,7 +63,13 @@ class PhotoSearchFragment :
     }
 
     override fun displayGallery(accountId: Long, photos: ArrayList<Photo>, position: Int) {
-        getSimpleGalleryPlace(accountId, photos, position, false).setActivityResultLauncher(
+        getSimpleGalleryPlace(accountId, photos, position, true).setActivityResultLauncher(
+            requestPhotoUpdate
+        ).tryOpenWith(requireActivity())
+    }
+
+    override fun displayGalleryNative(accountId: Long, photos: Long, position: Int) {
+        getSimpleGalleryPlace(accountId, photos, position, true).setActivityResultLauncher(
             requestPhotoUpdate
         ).tryOpenWith(requireActivity())
     }

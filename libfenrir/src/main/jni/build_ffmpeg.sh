@@ -25,6 +25,7 @@ COMMON_OPTIONS="
     --disable-network
     --disable-zlib
     --disable-debug
+    --disable-v4l2-m2m
     --disable-vulkan
     --enable-demuxer=gif
     --enable-demuxer=mov

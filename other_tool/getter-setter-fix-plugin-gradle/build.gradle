@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.0"
-    id("org.jetbrains.intellij") version "1.15.0"
+    id("org.jetbrains.kotlin.jvm") version "1.9.22"
+    id("org.jetbrains.intellij") version "1.17.0"
 }
 
 group = "dev.ragnarok"
@@ -16,7 +16,7 @@ repositories {
 }
 
 intellij {
-    version = "2023.1.1"
+    version = "2023.2.1"
     type = "IC"
     plugins = ['android']
 }

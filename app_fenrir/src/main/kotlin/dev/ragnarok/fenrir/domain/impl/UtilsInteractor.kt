@@ -13,7 +13,11 @@ import dev.ragnarok.fenrir.domain.IUtilsInteractor
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildCommunityFromDbo
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.map
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.FriendList
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Privacy
+import dev.ragnarok.fenrir.model.ShortLink
+import dev.ragnarok.fenrir.model.SimplePrivacy
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.empty
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap

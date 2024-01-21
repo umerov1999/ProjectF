@@ -11,7 +11,14 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.os.Bundle
 import android.util.SparseIntArray
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -34,8 +41,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.squareup.picasso3.Callback
 import com.squareup.picasso3.Rotatable
-import dev.ragnarok.fenrir.*
-import dev.ragnarok.fenrir.activity.*
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.StubAnimatorListener
+import dev.ragnarok.fenrir.activity.ActivityFeatures
+import dev.ragnarok.fenrir.activity.BaseMvpActivity
+import dev.ragnarok.fenrir.activity.MainActivity
+import dev.ragnarok.fenrir.activity.SendAttachmentsActivity
+import dev.ragnarok.fenrir.activity.SwipebleActivity
 import dev.ragnarok.fenrir.activity.slidr.Slidr
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
@@ -44,9 +57,18 @@ import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.base.horizontal.ImageListAdapter
+import dev.ragnarok.fenrir.fromIOToMain
+import dev.ragnarok.fenrir.getParcelableArrayListCompat
+import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.AppStyleable
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.EditingPostType
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoSize
+import dev.ragnarok.fenrir.model.PhotoTags
+import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
@@ -85,6 +107,19 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             args.putParcelableArrayList(EXTRA_PHOTOS, photos)
             args.putInt(Extra.INDEX, index)
             args.putBoolean(EXTRA_NEED_UPDATE, needUpdate)
+            return args
+        }
+
+        fun buildArgsForSimpleGallery(
+            aid: Long, index: Int, parcelNativePointer: Long,
+            needUpdate: Boolean
+        ): Bundle {
+            val args = Bundle()
+            args.putLong(Extra.ACCOUNT_ID, aid)
+            args.putInt(Extra.INDEX, index)
+            args.putBoolean(EXTRA_NEED_UPDATE, needUpdate)
+            args.putLong(EXTRA_PHOTOS, parcelNativePointer)
+            Utils.registerParcelNative(parcelNativePointer)
             return args
         }
 
@@ -433,6 +468,38 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             aid,
                             saveInstanceState
                         )
+                    }
+
+                    Place.SIMPLE_PHOTO_GALLERY_NATIVE -> {
+                        val index = requireArguments().getInt(Extra.INDEX)
+                        val needUpdate = requireArguments().getBoolean(EXTRA_NEED_UPDATE)
+                        if (!FenrirNative.isNativeLoaded || !Settings.get()
+                                .main().isNative_parcel_photo
+                        ) {
+                            val photos: ArrayList<Photo> =
+                                requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
+                            return SimplePhotoPresenter(
+                                photos,
+                                index,
+                                needUpdate,
+                                aid,
+                                saveInstanceState
+                            )
+                        } else {
+                            var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
+                            requireArguments().putLong(EXTRA_PHOTOS, 0)
+                            if (!Utils.isParcelNativeRegistered(source)) {
+                                source = 0
+                            }
+                            Utils.unregisterParcelNative(source)
+                            return SimplePhotoPresenter(
+                                source,
+                                index,
+                                needUpdate,
+                                aid,
+                                saveInstanceState
+                            )
+                        }
                     }
 
                     Place.VK_PHOTO_ALBUM_GALLERY_SAVED -> {
@@ -821,6 +888,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             tagCleared = true
         }
 
+        @SuppressLint("InflateParams")
         fun addTags() {
             if (!tagCleared) {
                 return
@@ -857,7 +925,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     layoutParams.leftMargin = leftMargin.toInt()
                     layoutParams.topMargin = topMargin.toInt()
                     val inflate =
-                        layoutInflater.inflate(R.layout.photo_tag_item, null as ViewGroup?)
+                        layoutInflater.inflate(R.layout.photo_tag_item, null)
                     inflate.findViewById<TextView>(R.id.tv_ph_tag_name)?.let { txt ->
                         txt.visibility =
                             if (i.getTaggedName().nonNullNoEmpty()) View.VISIBLE else View.GONE
@@ -872,7 +940,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             }
                         }
                     }
-                    (inflate.findViewById(R.id.iv_ph_tag_border) as ImageView).layoutParams =
+                    inflate.findViewById<ImageView>(R.id.iv_ph_tag_border).layoutParams =
                         LinearLayout.LayoutParams(layoutWidth.toInt(), layoutHeight.toInt())
                     tagsPlaceholder.addView(inflate, layoutParams)
                     if (!has) {

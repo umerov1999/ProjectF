@@ -131,12 +131,12 @@
         <activity
             android:name="dev.ragnarok.filegallery.activity.EnterPinActivityPortraitOnly"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
 
         <activity
             android:name="dev.ragnarok.filegallery.activity.CreatePinActivity"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
 
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"

@@ -2,7 +2,11 @@ package dev.ragnarok.filegallery.fragment.base.compat
 
 import android.os.Bundle
 import dev.ragnarok.filegallery.activity.NoMainActivity
-import dev.ragnarok.filegallery.fragment.base.core.*
+import dev.ragnarok.filegallery.fragment.base.core.IErrorView
+import dev.ragnarok.filegallery.fragment.base.core.IMvpView
+import dev.ragnarok.filegallery.fragment.base.core.IPresenter
+import dev.ragnarok.filegallery.fragment.base.core.IToastView
+import dev.ragnarok.filegallery.fragment.base.core.IToolbarView
 
 abstract class AbsMvpActivity<P : IPresenter<V>, V : IMvpView> : NoMainActivity(),
     ViewHostDelegate.IFactoryProvider<P, V>, IErrorView,

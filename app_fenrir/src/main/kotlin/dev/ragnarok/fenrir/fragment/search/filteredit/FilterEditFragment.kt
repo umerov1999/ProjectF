@@ -31,7 +31,14 @@ import dev.ragnarok.fenrir.dialog.selectschoolclasses.SelectSchoolClassesDialog
 import dev.ragnarok.fenrir.dialog.selectschools.SelectSchoolsDialog
 import dev.ragnarok.fenrir.dialog.selectuniversity.SelectUniversityDialog
 import dev.ragnarok.fenrir.fragment.search.filteredit.SearchOptionsAdapter.OptionClickListener
-import dev.ragnarok.fenrir.fragment.search.options.*
+import dev.ragnarok.fenrir.fragment.search.options.BaseOption
+import dev.ragnarok.fenrir.fragment.search.options.DatabaseOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleBooleanOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleDateOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleGPSOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleNumberOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleTextOption
+import dev.ragnarok.fenrir.fragment.search.options.SpinnerOption
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
 import dev.ragnarok.fenrir.trimmedIsNullOrEmpty
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs

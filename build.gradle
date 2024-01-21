@@ -32,7 +32,7 @@ buildscript {
     ext.fragmentVersion = "1.7.0-alpha08"
     ext.lifecycleVersion = "2.7.0"
     ext.mediaVersion = "1.7.0"
-    ext.media3Version = "1.2.0"
+    ext.media3Version = "1.2.1"
     ext.resourceInspectionAnnotation = "1.0.1"
     ext.savedStateVersion = "1.2.1"
     ext.swiperefreshlayoutVersion = "1.2.0-alpha01"
@@ -55,7 +55,7 @@ buildscript {
     ext.autoValueVersion = "1.10.4"
 
     //common libraries
-    ext.kotlin_version = "1.9.22"
+    ext.kotlin_version = "2.0.0-Beta3"
     ext.kotlin_coroutines = "1.8.0-RC2"
     ext.kotlin_serializer = "1.6.2"
     //ext.okhttpLibraryVersion = "5.0.0-SNAPSHOT"
@@ -63,7 +63,7 @@ buildscript {
     ext.okioVersion = "3.7.0"
     ext.rxJavaVersion = "3.1.8"
     ext.guavaVersion = "33.0.0-android"
-    ext.errorProneVersion = "2.24.0"
+    ext.errorProneVersion = "2.24.1"
     ext.checkerCompatQualVersion = "2.5.6"
     ext.checkerQualAndroidVersion = "3.42.0"
     ext.desugarLibraryVersion = "2.0.4"
@@ -91,7 +91,7 @@ buildscript {
         //maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.2.1"
+        classpath "com.android.tools.build:gradle:8.3.0-beta02"
         classpath "com.google.gms:google-services:4.4.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"

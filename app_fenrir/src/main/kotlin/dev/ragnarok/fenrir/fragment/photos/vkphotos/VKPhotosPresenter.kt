@@ -418,7 +418,7 @@ class VKPhotosPresenter(
             for (i in photos.indices) {
                 val photo = photos[i]
                 if (photo.index > selectedPhoto.index) {
-                    photo.index = photo.index - 1
+                    photo.index -= 1
                 }
             }
             selectedPhoto.index = 0

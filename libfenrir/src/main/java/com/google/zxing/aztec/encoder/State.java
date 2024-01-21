@@ -16,10 +16,13 @@
 
 package com.google.zxing.aztec.encoder;
 
+import androidx.annotation.NonNull;
+
 import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.google.zxing.common.BitArray;
 
@@ -174,9 +177,10 @@ final class State {
     return bitArray;
   }
 
+  @NonNull
   @Override
   public String toString() {
-    return String.format("%s bits=%d bytes=%d", HighLevelEncoder.MODE_NAMES[mode], bitCount, binaryShiftByteCount);
+    return String.format(Locale.getDefault(), "%s bits=%d bytes=%d", HighLevelEncoder.MODE_NAMES[mode], bitCount, binaryShiftByteCount);
   }
 
   private static int calculateBinaryShiftCost(int binaryShiftByteCount) {

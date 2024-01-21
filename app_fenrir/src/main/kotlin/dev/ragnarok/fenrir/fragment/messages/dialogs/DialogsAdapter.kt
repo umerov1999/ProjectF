@@ -18,7 +18,12 @@ import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.ifNonNullNoEmpty
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.ChatAction
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.Dialog
+import dev.ragnarok.fenrir.model.MessageType
+import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.model.UserPlatform
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.CurrentTheme

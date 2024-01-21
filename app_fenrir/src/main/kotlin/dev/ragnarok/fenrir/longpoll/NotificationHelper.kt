@@ -16,7 +16,9 @@ import androidx.core.content.FileProvider
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ChatActivityBubbles.Companion.forStart
 import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.activity.QuickAnswerActivity
@@ -32,6 +34,8 @@ import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.model.PhotoSize
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory.getChatPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getExternalLinkPlace
 import dev.ragnarok.fenrir.push.ChatEntryFetcher

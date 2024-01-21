@@ -7,7 +7,11 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.SparseArray
-import android.view.*
+import android.view.LayoutInflater
+import android.view.SurfaceHolder
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -20,7 +24,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso3.Transformation
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.BaseMvpActivity
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity
@@ -31,6 +37,7 @@ import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
 import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
+import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.media.story.IStoryPlayer
 import dev.ragnarok.fenrir.model.Commented
@@ -40,6 +47,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.DownloadWorkUtils

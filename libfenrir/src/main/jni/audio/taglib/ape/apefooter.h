@@ -59,7 +59,7 @@ namespace TagLib {
       /*!
        * Destroys the footer.
        */
-      virtual ~Footer();
+      ~Footer();
 
       Footer(const Footer &) = delete;
       Footer &operator=(const Footer &) = delete;
@@ -80,7 +80,7 @@ namespace TagLib {
       bool footerPresent() const;
 
       /*!
-       * Returns \c true this is actually the header.
+       * Returns \c true if this is actually the header.
        */
       bool isHeader() const;
 

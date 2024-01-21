@@ -62,8 +62,7 @@ std::string doDecompressResource(size_t length, char *bytes, bool &orig) {
     return data;
 }
 
-extern "C" {
-JNIEXPORT jlong
+extern "C" JNIEXPORT jlong
 Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_create(JNIEnv *env, jobject, jstring src,
                                                                jintArray data,
                                                                jintArray colorReplacement,
@@ -134,7 +133,7 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_create(JNIEnv *env, jobj
     return (jlong) (intptr_t) info;
 }
 
-JNIEXPORT jlong
+extern "C" JNIEXPORT jlong
 Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_createWithJson(JNIEnv *env, jobject,
                                                                        jlong json,
                                                                        jintArray data,
@@ -178,7 +177,7 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_createWithJson(JNIEnv *e
     return (jlong) (intptr_t) info;
 }
 
-JNIEXPORT void
+extern "C" JNIEXPORT void
 Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_destroy(JNIEnv *, jobject, jlong ptr) {
     if (!ptr) {
         return;
@@ -187,7 +186,7 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_destroy(JNIEnv *, jobjec
     delete info;
 }
 
-JNIEXPORT void
+extern "C" JNIEXPORT void
 Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_setLayerColor(JNIEnv *env, jobject,
                                                                       jlong ptr,
                                                                       jstring layer, jint color) {
@@ -209,7 +208,7 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_setLayerColor(JNIEnv *en
     }
 }
 
-JNIEXPORT void
+extern "C" JNIEXPORT void
 Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_replaceColors(JNIEnv *env, jobject,
                                                                       jlong ptr,
                                                                       jintArray colorReplacement) {
@@ -233,7 +232,7 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_replaceColors(JNIEnv *en
     }
 }
 
-JNIEXPORT jint
+extern "C" JNIEXPORT jint
 Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_getFrame(JNIEnv *env, jobject, jlong ptr,
                                                                  jint frame,
                                                                  jobject bitmap, jint w, jint h,
@@ -305,7 +304,7 @@ public:
 
 };
 
-JNIEXPORT
+extern "C" JNIEXPORT
 jboolean
 Java_dev_ragnarok_fenrir_module_rlottie_RLottie2Gif_lottie2gif(JNIEnv *env, jobject, jlong json,
                                                                jobject bitmap, jint w, jint h,
@@ -335,6 +334,4 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottie2Gif_lottie2gif(JNIEnv *env, jobj
     char const *name = SafeGetStringUTFChars(env, gifName, nullptr);
     return Lottie2Gif::render(info, bitmap, w, h, stride, bgColor, (bool) transparent, name,
                               bitDepth, dither, env, listener);
-}
-
 }

@@ -41,7 +41,7 @@ abstract class IMGStickerView @JvmOverloads constructor(
     // TODO
     private var mDownShowing = 0
     private var mMoveHelper: IMGStickerMoveHelper? = null
-    private var mStickerHelper: IMGStickerHelper<IMGStickerView>? = null
+    private var mStickerHelper: IMGStickerHelper? = null
     private var mRemoveView: ImageView? = null
     private var mAdjustView: ImageView? = null
 

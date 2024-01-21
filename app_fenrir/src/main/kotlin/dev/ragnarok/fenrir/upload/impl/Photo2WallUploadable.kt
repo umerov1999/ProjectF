@@ -10,7 +10,11 @@ import dev.ragnarok.fenrir.domain.IAttachmentsRepository
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.model.Photo
-import dev.ragnarok.fenrir.upload.*
+import dev.ragnarok.fenrir.upload.IUploadable
+import dev.ragnarok.fenrir.upload.Method
+import dev.ragnarok.fenrir.upload.Upload
+import dev.ragnarok.fenrir.upload.UploadResult
+import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Utils.safelyClose
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
 import io.reactivex.rxjava3.core.Completable

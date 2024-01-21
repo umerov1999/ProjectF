@@ -95,7 +95,7 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/App.DayNight"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
 
         <activity
             android:name="dev.ragnarok.fenrir.activity.QuickAnswerActivity"
@@ -464,7 +464,7 @@
             android:label="@string/lottie_preview"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -607,12 +607,12 @@
         <activity
             android:name="dev.ragnarok.fenrir.activity.EnterPinActivityPortraitOnly"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
 
         <activity
             android:name="dev.ragnarok.fenrir.activity.CreatePinActivity"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
 
         <service android:name="dev.ragnarok.fenrir.crypt.KeyExchangeService" />
 
