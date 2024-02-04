@@ -20,10 +20,7 @@ open class VKApiOwner
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        other as VKApiOwner
-        return id == other.id
+        return other is VKApiOwner && id == other.id
     }
 
     open val fullName: String?

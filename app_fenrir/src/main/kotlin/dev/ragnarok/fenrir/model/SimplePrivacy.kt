@@ -99,10 +99,7 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
         }
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other == null || javaClass != other.javaClass) return false
-            val entry = other as Entry
-            return type == entry.getType() && id == entry.getId() && allowed == entry.isAllowed()
+            return other is Entry && type == other.getType() && id == other.getId() && allowed == other.isAllowed()
         }
 
         override fun hashCode(): Int {

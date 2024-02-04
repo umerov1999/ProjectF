@@ -224,9 +224,9 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         super.attachBaseContext(Utils.updateActivityContext(newBase))
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleIntent(intent?.action, false)
+        handleIntent(intent.action, false)
     }
 
     private val requestQRScan = registerForActivityResult(

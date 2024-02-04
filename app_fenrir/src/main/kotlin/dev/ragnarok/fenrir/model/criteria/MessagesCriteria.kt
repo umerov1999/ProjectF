@@ -19,10 +19,7 @@ class MessagesCriteria(val accountId: Long, val peerId: Long) : Criteria() {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val that = other as MessagesCriteria
-        return accountId == that.accountId && peerId == that.peerId && startMessageId == that.startMessageId
+        return other is MessagesCriteria && accountId == other.accountId && peerId == other.peerId && startMessageId == other.startMessageId
     }
 
     override fun hashCode(): Int {

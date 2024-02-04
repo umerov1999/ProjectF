@@ -43,10 +43,7 @@ open class UploadDestination : Parcelable {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val that = other as UploadDestination
-        return id == that.id && ownerId == that.ownerId && method == that.method
+        return other is UploadDestination && id == other.id && ownerId == other.ownerId && method == other.method
     }
 
     override fun hashCode(): Int {

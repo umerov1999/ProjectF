@@ -45,6 +45,14 @@ class FavePage(private val id: Long) : IdentificableOwner {
         return this
     }
 
+    override fun equals(other: Any?): Boolean {
+        return other is FavePage && id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+
     val owner: Owner?
         get() {
             if (type == null) {

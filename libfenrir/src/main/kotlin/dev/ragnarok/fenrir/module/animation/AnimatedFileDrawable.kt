@@ -234,16 +234,12 @@ class AnimatedFileDrawable(
         }
     }
 
-    fun getFrameAtTime(ms: Long): Bitmap? {
-        return getFrameAtTime(ms, false)
-    }
-
-    private fun getFrameAtTime(ms: Long, precise: Boolean): Bitmap? {
+    fun getFrameAtTime(ms: Long, precise: Boolean): Bitmap? {
         if (!decoderCreated || nativePtr == 0L) {
             return null
         }
         if (!precise) {
-            seekToMs(nativePtr, ms, precise)
+            seekToMs(nativePtr, ms, false)
         }
         if (backgroundBitmap == null) {
             backgroundBitmap = Bitmap.createBitmap(

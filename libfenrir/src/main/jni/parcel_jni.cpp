@@ -107,11 +107,26 @@ public:
 
     static char *getString(Parcel *&parcel) {
         if (parcel == nullptr) {
-            return nullptr;
+            return (char *) "error";
         }
 
         ParcelEntity entity = parcel->read();
         char *ret = entity.readString();
+
+        if (parcel->parcels.empty()) {
+            delete parcel;
+            parcel = nullptr;
+        }
+        return ret;
+    }
+
+    static int8_t *getBinary(Parcel *&parcel) {
+        if (parcel == nullptr) {
+            return nullptr;
+        }
+
+        ParcelEntity entity = parcel->read();
+        auto *ret = entity.readBinary();
 
         if (parcel->parcels.empty()) {
             delete parcel;
@@ -206,52 +221,77 @@ public:
         parcel->parcels.push_back(entity);
     }
 
+    static void putBinary(Parcel *parcel, int8_t *data, int32_t size) {
+        if (parcel == nullptr) {
+            return;
+        }
+        ParcelEntity entity;
+        entity.putBinary(data, size);
+        parcel->parcels.push_back(entity);
+    }
+
+    static void putNullString(Parcel *parcel) {
+        if (parcel == nullptr) {
+            return;
+        }
+        ParcelEntity entity;
+        entity.putNullString();
+        parcel->parcels.push_back(entity);
+    }
+
+    static void putNullBinary(Parcel *parcel) {
+        if (parcel == nullptr) {
+            return;
+        }
+        ParcelEntity entity;
+        entity.putNullBinary();
+        parcel->parcels.push_back(entity);
+    }
+
 private:
     class ParcelEntity {
     public:
-        union DecNumber {
+        union Numeric {
             int8_t byteValue;
             int32_t intValue;
-            int64_t longValue{};
-        };
-
-        union FloatNumber {
             float floatValue;
-            double doubleValue{};
+            double doubleValue;
+            int64_t longValue;
         };
 
         ParcelEntity() {
+            memset(&numeric, 0, sizeof(Numeric));
             type = Types::TYPE_NULL;
         }
 
         void putBoolean(int8_t value) {
             type = Types::TYPE_BOOL;
-            decNumber.byteValue = value;
+            numeric.byteValue = value;
         }
 
         void putByte(int8_t value) {
             type = Types::TYPE_BYTE;
-            decNumber.byteValue = value;
+            numeric.byteValue = value;
         }
 
         void putInt(int32_t value) {
             type = Types::TYPE_INT;
-            decNumber.intValue = value;
+            numeric.intValue = value;
         }
 
         void putLong(int64_t value) {
             type = Types::TYPE_LONG;
-            decNumber.longValue = value;
+            numeric.longValue = value;
         }
 
         void putFloat(float value) {
             type = Types::TYPE_FLOAT;
-            floatNumber.floatValue = value;
+            numeric.floatValue = value;
         }
 
         void putDouble(double value) {
             type = Types::TYPE_DOUBLE;
-            floatNumber.doubleValue = value;
+            numeric.doubleValue = value;
         }
 
         void putString(const char *value) {
@@ -260,56 +300,83 @@ private:
             char *tmp = (char *) malloc(sz + 1);
             memcpy(tmp, value, sz);
             tmp[sz] = 0;
-            decNumber.longValue = (int64_t) (intptr_t) tmp;
+            numeric.longValue = (int64_t) (intptr_t) tmp;
+        }
+
+        void putNullString() {
+            type = Types::TYPE_STRING;
+            numeric.longValue = 0;
+        }
+
+        void putBinary(int8_t *value, int32_t size) {
+            type = Types::TYPE_BINARY;
+            auto *tmp = (int8_t *) malloc(size + sizeof(int32_t));
+            memcpy(tmp, &size, sizeof(int32_t));
+            if (size > 0) {
+                memcpy(tmp + sizeof(int32_t), value, size);
+            }
+            numeric.longValue = (int64_t) (intptr_t) tmp;
+        }
+
+        void putNullBinary() {
+            type = Types::TYPE_BINARY;
+            numeric.longValue = 0;
         }
 
         int8_t readBool() {
             if (type != Types::TYPE_BOOL) {
                 return false;
             }
-            return decNumber.byteValue;
+            return numeric.byteValue;
         }
 
         int8_t readByte() {
             if (type != Types::TYPE_BYTE) {
                 return 0;
             }
-            return decNumber.byteValue;
+            return numeric.byteValue;
         }
 
         int32_t readInt() {
             if (type != Types::TYPE_INT) {
                 return 0;
             }
-            return decNumber.intValue;
+            return numeric.intValue;
         }
 
         int64_t readLong() {
             if (type != Types::TYPE_LONG) {
                 return 0;
             }
-            return decNumber.longValue;
+            return numeric.longValue;
         }
 
         float readFloat() {
             if (type != Types::TYPE_FLOAT) {
                 return 0;
             }
-            return floatNumber.floatValue;
+            return numeric.floatValue;
         }
 
         double readDouble() {
             if (type != Types::TYPE_DOUBLE) {
                 return 0;
             }
-            return floatNumber.doubleValue;
+            return numeric.doubleValue;
         }
 
         char *readString() {
-            if (type != Types::TYPE_STRING) {
+            if (type != Types::TYPE_STRING || !numeric.longValue) {
                 return nullptr;
             }
-            return (char *) (intptr_t) decNumber.longValue;
+            return (char *) (intptr_t) numeric.longValue;
+        }
+
+        int8_t *readBinary() {
+            if (type != Types::TYPE_BINARY || !numeric.longValue) {
+                return nullptr;
+            }
+            return (int8_t *) (intptr_t) numeric.longValue;
         }
 
         enum class Types {
@@ -320,12 +387,12 @@ private:
             TYPE_LONG,
             TYPE_FLOAT,
             TYPE_DOUBLE,
-            TYPE_STRING
+            TYPE_STRING,
+            TYPE_BINARY
         };
     private:
         Types type;
-        DecNumber decNumber;
-        FloatNumber floatNumber;
+        Numeric numeric;
     };
 
     ParcelEntity read() {
@@ -438,6 +505,16 @@ Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putDouble(JNIEnv *, jobject,
 }
 
 extern "C" JNIEXPORT void
+Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putNullString(JNIEnv *env, jobject,
+                                                                  jlong parcel_native) {
+    if (!parcel_native) {
+        return;
+    }
+    auto *parcel = (Parcel *) (intptr_t) parcel_native;
+    Parcel::putNullString(parcel);
+}
+
+extern "C" JNIEXPORT void
 Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putString(JNIEnv *env, jobject,
                                                               jlong parcel_native,
                                                               jstring value) {
@@ -450,6 +527,34 @@ Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putString(JNIEnv *env, jobje
     if (textString != nullptr) {
         env->ReleaseStringUTFChars(value, textString);
     }
+}
+
+extern "C" JNIEXPORT void
+Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putBinary(JNIEnv *env, jobject,
+                                                              jlong parcel_native,
+                                                              jbyteArray value) {
+    if (!parcel_native) {
+        return;
+    }
+    auto *parcel = (Parcel *) (intptr_t) parcel_native;
+    jboolean isCopy;
+    jint length = env->GetArrayLength(value);
+    jbyte *buf = env->GetByteArrayElements(value, &isCopy);
+    if (!buf) {
+        return;
+    }
+    Parcel::putBinary(parcel, buf, length);
+    env->ReleaseByteArrayElements(value, buf, JNI_ABORT);
+}
+
+extern "C" JNIEXPORT void
+Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putNullBinary(JNIEnv *env, jobject,
+                                                                  jlong parcel_native) {
+    if (!parcel_native) {
+        return;
+    }
+    auto *parcel = (Parcel *) (intptr_t) parcel_native;
+    Parcel::putNullBinary(parcel);
 }
 
 extern "C" JNIEXPORT jboolean
@@ -608,7 +713,40 @@ Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_readString(JNIEnv *env, jobj
         res = env->NewStringUTF(ret);
         free(ret);
     } else {
-        res = env->NewStringUTF("error");
+        res = nullptr;
+    }
+    return res;
+}
+
+extern "C" JNIEXPORT jbyteArray
+Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_readBinary(JNIEnv *env, jobject,
+                                                               jlong parcel_native,
+                                                               jobject listener) {
+    if (!parcel_native) {
+        return nullptr;
+    }
+    auto *parcel = (Parcel *) (intptr_t) parcel_native;
+    auto ret = Parcel::getBinary(parcel);
+
+    if (parcel == nullptr && listener != nullptr) {
+        jweak store_Wlistener = env->NewWeakGlobalRef(listener);
+        jclass ref = env->GetObjectClass(store_Wlistener);
+        auto method = env->GetMethodID(ref, "doUpdateNative", "(J)V");
+        if (ref != nullptr && method != nullptr) {
+            env->CallVoidMethod(store_Wlistener, method, 0ll);
+        }
+    }
+    jbyteArray res;
+    if (ret != nullptr) {
+        int32_t sz = 0;
+        memcpy(&sz, ret, sizeof(int32_t));
+        res = env->NewByteArray(sz);
+        if (sz > 0) {
+            env->SetByteArrayRegion(res, 0, sz, ret + sizeof(int32_t));
+        }
+        free(ret);
+    } else {
+        res = nullptr;
     }
     return res;
 }

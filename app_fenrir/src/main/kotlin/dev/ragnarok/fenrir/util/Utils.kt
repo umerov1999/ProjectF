@@ -11,7 +11,16 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.database.Cursor
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.Point
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Parcel
@@ -31,9 +40,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.AccountType
+import dev.ragnarok.fenrir.BuildConfig
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.Includes.proxySettings
+import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.activity.SwipebleActivity
 import dev.ragnarok.fenrir.activity.SwipebleActivity.Companion.start
@@ -49,11 +63,17 @@ import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
 import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.media.exo.OkHttpDataSource
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.ISelectable
+import dev.ragnarok.fenrir.model.ISomeones
+import dev.ragnarok.fenrir.model.Lang
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.ProxyConfig
+import dev.ragnarok.fenrir.model.ReactionAsset
 import dev.ragnarok.fenrir.model.Sticker.LocalSticker
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.rlottie.RLottieDrawable
 import dev.ragnarok.fenrir.module.thorvg.ThorVGRender
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
@@ -63,10 +83,19 @@ import dev.ragnarok.fenrir.util.FileUtil.updateDateLang
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
-import dev.ragnarok.fenrir.view.pager.*
+import dev.ragnarok.fenrir.view.pager.BackgroundToForegroundTransformer
+import dev.ragnarok.fenrir.view.pager.ClockSpinTransformer
+import dev.ragnarok.fenrir.view.pager.CubeInDepthTransformer
+import dev.ragnarok.fenrir.view.pager.DepthTransformer
+import dev.ragnarok.fenrir.view.pager.FanTransformer
+import dev.ragnarok.fenrir.view.pager.GateTransformer
+import dev.ragnarok.fenrir.view.pager.SliderTransformer
+import dev.ragnarok.fenrir.view.pager.Transformers_Types
+import dev.ragnarok.fenrir.view.pager.ZoomOutTransformer
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
-import okhttp3.*
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import java.io.Closeable
 import java.io.IOException
 import java.util.Calendar
@@ -1353,6 +1382,26 @@ object Utils {
             }
         }
         return false
+    }
+
+    inline fun <reified T> stripEqualsWithCounter(
+        list: List<T>,
+        dataContainer: List<T>,
+        count: Int
+    ): List<T> {
+        if (list.isEmpty()) {
+            return emptyList()
+        }
+        val ret = ArrayList<T>(list)
+        for ((counter, i) in (dataContainer.size - 1 downTo 0).withIndex()) {
+            if (counter >= count) {
+                break
+            }
+            if (ret.contains(dataContainer[i])) {
+                ret.remove(dataContainer[i])
+            }
+        }
+        return ret
     }
 
     inline fun safeCheck(obj: CharSequence?, crossinline function: () -> Boolean): Boolean {

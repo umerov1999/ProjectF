@@ -28,7 +28,7 @@ class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) 
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(fInteractor.getActualFeedbacksOfficial(accountId, 100, offset)
+        actualDataDisposable.add(fInteractor.getActualFeedbacksOfficial(accountId, COUNT, offset)
             .fromIOToMain()
             .subscribe({ data ->
                 onActualDataReceived(
@@ -78,7 +78,7 @@ class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) 
 
     private fun onActualDataReceived(offset: Int, data: FeedbackVKOfficialList) {
         actualDataLoading = false
-        endOfContent = (data.items?.size ?: 0) < 100
+        endOfContent = (data.items?.size ?: 0) < COUNT
         actualDataReceived = true
         if (offset == 0) {
             pages.items?.clear()
@@ -132,6 +132,10 @@ class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) 
         actualDataDisposable.clear()
         actualDataLoading = false
         loadActualData(0)
+    }
+
+    companion object {
+        private const val COUNT = 100
     }
 
     init {

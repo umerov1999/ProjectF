@@ -26,6 +26,8 @@
 #ifndef TAGLIB_DEBUG_H
 #define TAGLIB_DEBUG_H
 
+#include "config.h"
+
 namespace TagLib {
 
   class String;

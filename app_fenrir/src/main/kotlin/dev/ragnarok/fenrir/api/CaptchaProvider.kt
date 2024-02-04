@@ -16,14 +16,14 @@ class CaptchaProvider(private val app: Context, private val uiScheduler: Schedul
     private val entryMap: MutableMap<String, Entry> = Collections.synchronizedMap(HashMap())
     private val cancelingNotifier: PublishSubject<String> = PublishSubject.create()
     private val waitingNotifier: PublishSubject<String> = PublishSubject.create()
-    override fun requestCaptha(sid: String?, captcha: Captcha) {
+    override fun requestCaptcha(sid: String?, captcha: Captcha) {
         sid ?: return
         entryMap[sid] = Entry()
-        startCapthaActivity(app, sid, captcha)
+        startCaptchaActivity(app, sid, captcha)
     }
 
     @SuppressLint("CheckResult")
-    private fun startCapthaActivity(context: Context, sid: String, captcha: Captcha) {
+    private fun startCaptchaActivity(context: Context, sid: String, captcha: Captcha) {
         Completable.complete()
             .observeOn(uiScheduler)
             .subscribe {

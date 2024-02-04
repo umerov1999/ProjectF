@@ -99,8 +99,7 @@ class Article : AbsModel {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other !is Article) return false
-        return id == other.id && ownerId == other.ownerId
+        return other is Article && id == other.id && ownerId == other.ownerId
     }
 
     override fun hashCode(): Int {

@@ -30,6 +30,7 @@
 #include "tstring.h"
 #include "tlist.h"
 #include "tmap.h"
+#include "taglib.h"
 #include "taglib_export.h"
 #include "tag.h"
 #include "id3v2.h"
@@ -381,7 +382,7 @@ namespace TagLib {
        * This is called by read to parse the body of the tag.  It determines if an
        * extended header exists and adds frames to the FrameListMap.
        */
-      void parse(const ByteVector &data);
+      void parse(const ByteVector &origData);
 
       /*!
        * Sets the value of the text frame with the Frame ID \a id to \a value.
@@ -392,7 +393,7 @@ namespace TagLib {
       /*!
        * Downgrade frames from ID3v2.4 (used internally and by default) to ID3v2.3.
        */
-      void downgradeFrames(FrameList *existingFrames, FrameList *newFrames) const;
+      void downgradeFrames(FrameList *frames, FrameList *newFrames) const;
 
     private:
       class TagPrivate;

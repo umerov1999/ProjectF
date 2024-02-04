@@ -104,7 +104,7 @@ class DBHelper private constructor(context: Context, aid: Long) :
         createGroupsDetTable(db)
         createVideoAlbumsTable(db)
         createTopicsTable(db)
-        createNotoficationsTable(db)
+        createNotificationsTable(db)
         createUserDetTable(db)
         createFavePhotosTable(db)
         createFaveVideosTable(db)
@@ -326,7 +326,10 @@ class DBHelper private constructor(context: Context, aid: Long) :
     private fun createFaveVideosTable(db: SQLiteDatabase) {
         val create = "CREATE TABLE [" + FaveVideosColumns.TABLENAME + "] (" +
                 " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                " [" + FaveVideosColumns.VIDEO + "] BLOB);"
+                " [" + FaveVideosColumns.VIDEO_ID + "] INTEGER, " +
+                " [" + FaveVideosColumns.OWNER_ID + "] INTEGER, " +
+                " [" + FaveVideosColumns.VIDEO + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + FaveVideosColumns.VIDEO_ID + "], [" + FaveVideosColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(create)
     }
 
@@ -338,7 +341,10 @@ class DBHelper private constructor(context: Context, aid: Long) :
     private fun createFaveArticlesTable(db: SQLiteDatabase) {
         val create = "CREATE TABLE [" + FaveArticlesColumns.TABLENAME + "] (" +
                 " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                " [" + FaveArticlesColumns.ARTICLE + "] BLOB);"
+                " [" + FaveArticlesColumns.ARTICLE_ID + "] INTEGER, " +
+                " [" + FaveArticlesColumns.OWNER_ID + "] INTEGER, " +
+                " [" + FaveArticlesColumns.ARTICLE + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + FaveArticlesColumns.ARTICLE_ID + "], [" + FaveArticlesColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(create)
     }
 
@@ -350,7 +356,10 @@ class DBHelper private constructor(context: Context, aid: Long) :
     private fun createFaveProductTable(db: SQLiteDatabase) {
         val create = "CREATE TABLE [" + FaveProductsColumns.TABLENAME + "] (" +
                 " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                " [" + FaveProductsColumns.PRODUCT + "] BLOB);"
+                " [" + FaveProductsColumns.PRODUCT_ID + "] INTEGER, " +
+                " [" + FaveProductsColumns.OWNER_ID + "] INTEGER, " +
+                " [" + FaveProductsColumns.PRODUCT + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + FaveProductsColumns.PRODUCT_ID + "], [" + FaveProductsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(create)
     }
 
@@ -362,7 +371,10 @@ class DBHelper private constructor(context: Context, aid: Long) :
     private fun createFavePostsTable(db: SQLiteDatabase) {
         val create = "CREATE TABLE [" + FavePostsColumns.TABLENAME + "] (" +
                 " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                " [" + FavePostsColumns.POST + "] BLOB);"
+                " [" + FavePostsColumns.POST_ID + "] INTEGER, " +
+                " [" + FavePostsColumns.OWNER_ID + "] INTEGER, " +
+                " [" + FavePostsColumns.POST + "] BLOB, " +
+                " CONSTRAINT [] UNIQUE ([" + FavePostsColumns.POST_ID + "], [" + FavePostsColumns.OWNER_ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(create)
     }
 
@@ -832,7 +844,7 @@ class DBHelper private constructor(context: Context, aid: Long) :
         db.execSQL(sql)
     }
 
-    private fun createNotoficationsTable(db: SQLiteDatabase) {
+    private fun createNotificationsTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE [" + NotificationsColumns.TABLENAME + "] (\n" +
                 " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 " [" + NotificationsColumns.DATE + "] INTEGER, " +

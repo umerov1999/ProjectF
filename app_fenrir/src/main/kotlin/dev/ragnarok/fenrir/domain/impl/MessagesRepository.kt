@@ -1816,10 +1816,7 @@ class MessagesRepository(
 
     private class PeerId(val accountId: Long, val peerId: Long) {
         override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other == null || javaClass != other.javaClass) return false
-            val peerId1 = other as PeerId
-            return if (accountId != peerId1.accountId) false else peerId == peerId1.peerId
+            return other is PeerId && accountId == other.accountId && peerId == other.peerId
         }
 
         override fun hashCode(): Int {

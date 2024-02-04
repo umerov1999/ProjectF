@@ -174,8 +174,7 @@ class CatalogV2RecommendationPlaylist : AbsModel {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other !is CatalogV2RecommendationPlaylist) return false
-        return id == other.id && owner_id == other.owner_id
+        return other is CatalogV2RecommendationPlaylist && id == other.id && owner_id == other.owner_id
     }
 
     override fun hashCode(): Int {

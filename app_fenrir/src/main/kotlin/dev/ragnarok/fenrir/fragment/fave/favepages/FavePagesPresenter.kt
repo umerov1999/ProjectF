@@ -9,10 +9,10 @@ import dev.ragnarok.fenrir.model.FavePage
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.FindAtWithContent
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.safeCheck
-import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -34,6 +34,7 @@ class FavePagesPresenter(accountId: Long, isUser: Boolean, savedInstanceState: B
     private var cacheLoadingNow = false
     private var actualDataLoading = false
     private var doLoadTabs = false
+    private var offsetPos = 0
     private fun sleep_search(q: String?) {
         if (actualDataLoading || cacheLoadingNow) return
         sleepDataDisposable.dispose()
@@ -86,19 +87,25 @@ class FavePagesPresenter(accountId: Long, isUser: Boolean, savedInstanceState: B
         cacheDisposable.clear()
         cacheLoadingNow = false
         actualDataLoading = false
-        endOfContent = safeCountOf(data) < GET_COUNT
+        endOfContent = data.isEmpty()
         actualDataReceived = true
+        offsetPos += GET_COUNT
         if (offset == 0) {
             pages.clear()
             pages.addAll(data)
             view?.notifyDataSetChanged()
         } else {
-            val startSize = pages.size
-            pages.addAll(data)
-            view?.notifyDataAdded(
-                startSize,
-                data.size
-            )
+            val tmp = Utils.stripEqualsWithCounter(data, pages, GET_COUNT)
+            if (tmp.isEmpty()) {
+                endOfContent = true
+            } else {
+                val startSize = pages.size
+                pages.addAll(tmp)
+                view?.notifyDataAdded(
+                    startSize,
+                    tmp.size
+                )
+            }
         }
         resolveRefreshingView()
     }
@@ -111,6 +118,7 @@ class FavePagesPresenter(accountId: Long, isUser: Boolean, savedInstanceState: B
         } else {
             true
         }
+        offsetPos = 0
         loadActualData(0)
     }
 
@@ -154,7 +162,7 @@ class FavePagesPresenter(accountId: Long, isUser: Boolean, savedInstanceState: B
             if (searcher.isSearchMode) {
                 searcher.do_search()
             } else if (!endOfContent) {
-                loadActualData(pages.size)
+                loadActualData(offsetPos)
             }
         }
     }
@@ -166,6 +174,7 @@ class FavePagesPresenter(accountId: Long, isUser: Boolean, savedInstanceState: B
         if (searcher.isSearchMode) {
             searcher.reset()
         } else {
+            offsetPos = 0
             loadActualData(0)
         }
     }

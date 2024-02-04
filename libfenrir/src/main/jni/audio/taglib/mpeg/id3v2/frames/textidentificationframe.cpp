@@ -173,9 +173,9 @@ PropertyMap TextIdentificationFrame::asProperties() const
     return makeTIPLProperties();
   if(frameID() == "TMCL")
     return makeTMCLProperties();
-  PropertyMap map;
   String tagName = frameIDToKey(frameID());
   if(tagName.isEmpty()) {
+    PropertyMap map;
     map.addUnsupportedData(frameID());
     return map;
   }
@@ -241,7 +241,7 @@ void TextIdentificationFrame::parseFields(const ByteVector &data)
   // type is the same specified for this frame
 
   unsigned short firstBom = 0;
-  for(auto it = l.begin(); it != l.end(); it++) {
+  for(auto it = l.begin(); it != l.end(); ++it) {
     if(!it->isEmpty() || (it == l.begin() && frameID() == "TXXX")) {
       if(d->textEncoding == String::Latin1) {
         d->fieldList.append(Tag::latin1StringHandler()->parse(*it));
@@ -278,7 +278,7 @@ ByteVector TextIdentificationFrame::renderFields() const
 
   v.append(static_cast<char>(encoding));
 
-  for(auto it = d->fieldList.cbegin(); it != d->fieldList.cend(); it++) {
+  for(auto it = d->fieldList.cbegin(); it != d->fieldList.cend(); ++it) {
 
     // Since the field list is null delimited, if this is not the first
     // element in the list, append the appropriate delimiter for this
@@ -287,7 +287,7 @@ ByteVector TextIdentificationFrame::renderFields() const
     if(it != d->fieldList.cbegin())
       v.append(textDelimiter(encoding));
 
-    v.append((*it).data(encoding));
+    v.append(it->data(encoding));
   }
 
   return v;
@@ -437,7 +437,7 @@ PropertyMap UserTextIdentificationFrame::asProperties() const
 }
 
 UserTextIdentificationFrame *UserTextIdentificationFrame::find(
-  ID3v2::Tag *tag, const String &description) // static
+  const ID3v2::Tag *tag, const String &description) // static
 {
   for(const auto &frame : std::as_const(tag->frameList("TXXX"))) {
     auto f = dynamic_cast<UserTextIdentificationFrame *>(frame);

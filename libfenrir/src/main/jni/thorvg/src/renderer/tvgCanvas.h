@@ -33,8 +33,9 @@ struct Canvas::Impl
     bool refresh = false;   //if all paints should be updated by force.
     bool drawing = false;   //on drawing condition?
 
-    Impl(RenderMethod* pRenderer):renderer(pRenderer)
+    Impl(RenderMethod* pRenderer) : renderer(pRenderer)
     {
+        renderer->ref();
     }
 
     ~Impl()
@@ -43,16 +44,14 @@ struct Canvas::Impl
         if (renderer) renderer->sync();
 
         clearPaints();
-        delete(renderer);
+
+        if (renderer && (renderer->unref() == 0)) delete(renderer);
     }
 
     void clearPaints()
     {
         for (auto paint : paints) {
-            P(paint)->unref();
-            if (paint->pImpl->dispose(*renderer) && P(paint)->refCnt == 0) {
-                delete(paint);
-            }
+            if (P(paint)->unref() == 0) delete(paint);
         }
         paints.clear();
     }
@@ -99,10 +98,10 @@ struct Canvas::Impl
 
         //Update single paint node
         if (paint) {
-            //Optimize Me: Can we skip the searching?
+            //TODO: Leave this for backward compatibility. Remove this when 1.0 out.
             for (auto paint2 : paints) {
                 if (paint2 == paint) {
-                    paint->pImpl->update(*renderer, nullptr, clips, 255, flag);
+                    paint->pImpl->update(renderer, nullptr, clips, 255, flag);
                     return Result::Success;
                 }
             }
@@ -110,7 +109,7 @@ struct Canvas::Impl
         //Update all retained paint nodes
         } else {
             for (auto paint : paints) {
-                paint->pImpl->update(*renderer, nullptr, clips, 255, flag);
+                paint->pImpl->update(renderer, nullptr, clips, 255, flag);
             }
         }
 
@@ -125,7 +124,7 @@ struct Canvas::Impl
 
         bool rendered = false;
         for (auto paint : paints) {
-            if (paint->pImpl->render(*renderer)) rendered = true;
+            if (paint->pImpl->render(renderer)) rendered = true;
         }
 
         if (!rendered || !renderer->postRender()) return Result::InsufficientCondition;

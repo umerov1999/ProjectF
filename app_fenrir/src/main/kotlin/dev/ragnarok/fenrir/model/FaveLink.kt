@@ -53,6 +53,16 @@ class FaveLink : AbsModel {
         return this
     }
 
+    override fun equals(other: Any?): Boolean {
+        return other is FaveLink && id == other.id && url == other.url
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + url.hashCode()
+        return result
+    }
+
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)
         parcel.writeString(url)

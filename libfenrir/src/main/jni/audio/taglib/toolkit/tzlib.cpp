@@ -25,7 +25,7 @@
 
 #include "tzlib.h"
 
-#include "taglib_config.h"
+# include "config.h"
 
 #ifdef HAVE_ZLIB
 # include <zlib.h>
@@ -61,23 +61,21 @@ ByteVector zlib::decompress([[maybe_unused]] const ByteVector &data)
 
   ByteVector inData = data;
 
-  stream.avail_in = static_cast<uInt>(inData.size());
+  stream.avail_in = inData.size();
   stream.next_in  = reinterpret_cast<Bytef *>(inData.data());
-
-  const unsigned int chunkSize = 1024;
 
   ByteVector outData;
 
   do {
+    constexpr unsigned int chunkSize = 1024;
     const size_t offset = outData.size();
     outData.resize(outData.size() + chunkSize);
 
     stream.avail_out = static_cast<uInt>(chunkSize);
     stream.next_out  = reinterpret_cast<Bytef *>(outData.data() + offset);
 
-    const int result = inflate(&stream, Z_NO_FLUSH);
-
-    if(result == Z_STREAM_ERROR ||
+    if(const int result = inflate(&stream, Z_NO_FLUSH);
+       result == Z_STREAM_ERROR ||
        result == Z_NEED_DICT ||
        result == Z_DATA_ERROR ||
        result == Z_MEM_ERROR)

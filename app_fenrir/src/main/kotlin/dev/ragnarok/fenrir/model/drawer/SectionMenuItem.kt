@@ -40,11 +40,7 @@ open class SectionMenuItem : AbsMenuItem {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        if (!super.equals(other)) return false
-        val that = other as SectionMenuItem
-        return section == that.section
+        return super.equals(other) && other is SectionMenuItem && section == other.section
     }
 
     companion object CREATOR : Parcelable.Creator<SectionMenuItem> {

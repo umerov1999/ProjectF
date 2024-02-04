@@ -195,7 +195,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
             ApiErrorCodes.CAPTCHA_NEED -> {
                 val captcha = Captcha(error.captchaSid, error.captchaImg)
                 val provider = Includes.captchaProvider
-                provider.requestCaptha(captcha.sid, captcha)
+                provider.requestCaptcha(captcha.sid, captcha)
                 var code: String? = null
                 while (true) {
                     try {
@@ -212,6 +212,8 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                 if (code.nonNullNoEmpty() && captcha.sid.nonNullNoEmpty()) {
                     params["captcha_sid"] = captcha.sid
                     params["captcha_key"] = code
+                } else {
+                    handle = false
                 }
             }
 

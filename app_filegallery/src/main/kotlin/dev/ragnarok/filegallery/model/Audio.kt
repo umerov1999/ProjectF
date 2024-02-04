@@ -124,8 +124,7 @@ class Audio : Parcelable {
         get() = stringEmptyIfNull(artist) + " - " + stringEmptyIfNull(title)
 
     override fun equals(other: Any?): Boolean {
-        if (other !is Audio) return false
-        return id == other.id && ownerId == other.ownerId
+        return other is Audio && id == other.id && ownerId == other.ownerId
     }
 
     override fun hashCode(): Int {

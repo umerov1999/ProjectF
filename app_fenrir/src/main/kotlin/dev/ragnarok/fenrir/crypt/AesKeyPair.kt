@@ -65,10 +65,7 @@ class AesKeyPair {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val pair = other as AesKeyPair
-        return sessionId == pair.sessionId
+        return other is AesKeyPair && sessionId == other.sessionId
     }
 
     override fun hashCode(): Int {

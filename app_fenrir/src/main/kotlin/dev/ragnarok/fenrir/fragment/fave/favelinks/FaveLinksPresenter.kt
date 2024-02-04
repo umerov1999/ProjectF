@@ -13,8 +13,8 @@ import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.FaveLink
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
@@ -29,6 +29,7 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private var cacheLoading = false
     private var actualLoading = false
     private var doLoadTabs = false
+    private var offsetPos = 0
     private fun loadCachedData() {
         cacheLoading = true
         cacheDisposable.add(
@@ -41,7 +42,7 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadActual(offset: Int) {
         actualLoading = true
         resolveRefreshingView()
-        actualDisposable.add(faveInteractor.getLinks(accountId, getCount, offset)
+        actualDisposable.add(faveInteractor.getLinks(accountId, COUNT, offset)
             .fromIOToMain()
             .subscribe({
                 onActualDataReceived(
@@ -61,19 +62,25 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
         cacheDisposable.clear()
         cacheLoading = false
         actualLoading = false
-        endOfContent = safeCountOf(data) < getCount
+        endOfContent = data.isEmpty()
         actualDataReceived = true
+        offsetPos += COUNT
         if (offset == 0) {
             links.clear()
             links.addAll(data)
             view?.notifyDataSetChanged()
         } else {
-            val sizeBefore = links.size
-            links.addAll(data)
-            view?.notifyDataAdded(
-                sizeBefore,
-                data.size
-            )
+            val tmp = Utils.stripEqualsWithCounter(data, links, COUNT)
+            if (tmp.isEmpty()) {
+                endOfContent = true
+            } else {
+                val sizeBefore = links.size
+                links.addAll(tmp)
+                view?.notifyDataAdded(
+                    sizeBefore,
+                    tmp.size
+                )
+            }
         }
         resolveRefreshingView()
     }
@@ -86,6 +93,7 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
         } else {
             true
         }
+        offsetPos = 0
         loadActual(0)
     }
 
@@ -99,12 +107,13 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
         cacheDisposable.clear()
         cacheLoading = false
         actualDisposable.clear()
+        offsetPos = 0
         loadActual(0)
     }
 
     fun fireScrollToEnd() {
         if (actualDataReceived && !endOfContent && !cacheLoading && !actualLoading && links.nonNullNoEmpty()) {
-            loadActual(links.size)
+            loadActual(offsetPos)
         }
     }
 
@@ -173,7 +182,7 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     companion object {
-        private const val getCount = 50
+        private const val COUNT = 50
     }
 
     init {

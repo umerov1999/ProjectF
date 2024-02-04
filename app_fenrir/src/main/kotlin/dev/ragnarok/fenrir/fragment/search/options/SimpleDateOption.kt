@@ -17,11 +17,7 @@ class SimpleDateOption : BaseOption {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        if (!super.equals(other)) return false
-        val that = other as SimpleDateOption
-        return timeUnix == that.timeUnix
+        return super.equals(other) && other is SimpleDateOption && timeUnix == other.timeUnix
     }
 
     override fun hashCode(): Int {

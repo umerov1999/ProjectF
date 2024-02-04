@@ -74,8 +74,7 @@ class Narratives : AbsModel {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other !is Narratives) return false
-        return id == other.id && owner_id == other.owner_id
+        return other is Narratives && id == other.id && owner_id == other.owner_id
     }
 
     override fun hashCode(): Int {

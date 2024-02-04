@@ -71,6 +71,7 @@ class DialogsPresenter(
     private var cacheNowLoading = false
     private var needAskReloadDialogsWhenGuiReady = false
     private var needShowDialogSendHelperWhenGuiReady = false
+    private var lastSnackShow = 0L
     override fun saveState(outState: Bundle) {
         super.saveState(outState)
         outState.putLong(SAVE_DIALOGS_OWNER_ID, dialogsOwnerId)
@@ -102,7 +103,7 @@ class DialogsPresenter(
             )
         }
         setNetLoadingNow(false)
-        endOfContent = data.size < COUNT
+        endOfContent = data.isEmpty()
         dialogs.clear()
         dialogs.addAll(data)
         safeNotifyDataSetChanged()
@@ -164,13 +165,17 @@ class DialogsPresenter(
             )
         }
         setNetLoadingNow(false)
-        endOfContent = data.size < COUNT
-        val startSize = dialogs.size
-        dialogs.addAll(data)
-        view?.notifyDataAdded(
-            startSize,
-            data.size
-        )
+        val tmp = Utils.stripEqualsWithCounter(data, dialogs, COUNT)
+        if (tmp.isEmpty()) {
+            endOfContent = true
+        } else {
+            val startSize = dialogs.size
+            dialogs.addAll(tmp)
+            view?.notifyDataAdded(
+                startSize,
+                tmp.size
+            )
+        }
     }
 
     private fun onDialogRemovedSuccessfully(accountId: Long, peeId: Long) {
@@ -533,8 +538,11 @@ class DialogsPresenter(
     fun fireScrollToEndConfirmationHidden() {
         if (canLoadMore()) {
             if (isHiddenAccount(accountId)) {
-                resolveRefreshingView()
-                view?.askToScrollToEnd()
+                val cur = System.currentTimeMillis()
+                if (cur - lastSnackShow > 2000) {
+                    lastSnackShow = cur
+                    view?.askToScrollToEnd()
+                }
             } else {
                 fireScrollToEnd()
             }

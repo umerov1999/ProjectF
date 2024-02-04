@@ -26,11 +26,10 @@
 #ifndef TAGLIB_BYTEVECTOR_H
 #define TAGLIB_BYTEVECTOR_H
 
-#include <iostream>
 #include <memory>
 #include <vector>
+#include <iosfwd>
 
-#include "taglib.h"
 #include "taglib_export.h"
 
 namespace TagLib {

@@ -43,11 +43,7 @@ class RecentChat : AbsMenuItem {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        if (!super.equals(other)) return false
-        val that = other as RecentChat
-        return aid == that.aid && peerId == that.peerId
+        return super.equals(other) && other is RecentChat && aid == other.aid && peerId == other.peerId
     }
 
     override fun hashCode(): Int {

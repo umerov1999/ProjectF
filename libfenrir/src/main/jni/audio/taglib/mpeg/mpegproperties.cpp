@@ -29,7 +29,6 @@
 #include "mpegfile.h"
 #include "xingheader.h"
 #include "apetag.h"
-#include "apefooter.h"
 
 using namespace TagLib;
 
@@ -211,7 +210,7 @@ void MPEG::Properties::read(File *file, ReadStyle readStyle)
           }
         }
         bitRate = firstHeader.samplesPerFrame() != 0
-          ? static_cast<int>((bytesPerFrame * 8 * firstHeader.sampleRate())
+          ? static_cast<int>(bytesPerFrame * 8 * firstHeader.sampleRate()
                              / 1000 / firstHeader.samplesPerFrame())
           : 0;
       }
@@ -229,15 +228,15 @@ void MPEG::Properties::read(File *file, ReadStyle readStyle)
 
       // Look for the last MPEG audio frame to calculate the stream length.
 
-      const offset_t lastFrameOffset = file->lastFrameOffset();
-      if(lastFrameOffset < 0) {
+      if(const offset_t lastFrameOffset = file->lastFrameOffset();
+         lastFrameOffset < 0) {
         debug("MPEG::Properties::read() -- Could not find an MPEG frame in the stream.");
       }
       else
       {
         const Header lastHeader(file, lastFrameOffset, false);
-        const offset_t streamLength = lastFrameOffset - firstFrameOffset + lastHeader.frameLength();
-        if (streamLength > 0)
+        if(const offset_t streamLength = lastFrameOffset - firstFrameOffset + lastHeader.frameLength();
+           streamLength > 0)
           d->length = static_cast<int>(streamLength * 8.0 / d->bitrate + 0.5);
       }
     }

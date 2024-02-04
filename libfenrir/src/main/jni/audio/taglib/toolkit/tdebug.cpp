@@ -23,7 +23,7 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include "taglib_config.h"
+#include "config.h"
 
 #if !defined(NDEBUG) || defined(TRACE_IN_RELEASE)
 

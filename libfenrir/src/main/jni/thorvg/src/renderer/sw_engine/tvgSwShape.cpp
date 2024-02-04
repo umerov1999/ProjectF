@@ -122,7 +122,9 @@ static void _dashLineTo(SwDashStroke& dash, const Point* to, const Matrix* trans
     Line cur = {dash.ptCur, *to};
     auto len = _lineLength(cur.pt1, cur.pt2);
 
-    if (len < dash.curLen) {
+    if (mathZero(len)) {
+        _outlineMoveTo(*dash.outline, &dash.ptCur, transform);
+    } else if (len < dash.curLen) {
         dash.curLen -= len;
         if (!dash.curOpGap) {
             if (dash.move) {
@@ -132,7 +134,7 @@ static void _dashLineTo(SwDashStroke& dash, const Point* to, const Matrix* trans
             _outlineLineTo(*dash.outline, to, transform);
         }
     } else {
-        while (len > dash.curLen) {
+        while (len - dash.curLen > 0.0001f) {
             Line left, right;
             if (dash.curLen > 0) {
                 len -= dash.curLen;
@@ -179,7 +181,9 @@ static void _dashCubicTo(SwDashStroke& dash, const Point* ctrl1, const Point* ct
     Bezier cur = {dash.ptCur, *ctrl1, *ctrl2, *to};
     auto len = bezLength(cur);
 
-    if (len < dash.curLen) {
+    if (mathZero(len)) {
+        _outlineMoveTo(*dash.outline, &dash.ptCur, transform);
+    } else if (len < dash.curLen) {
         dash.curLen -= len;
         if (!dash.curOpGap) {
             if (dash.move) {
@@ -189,7 +193,7 @@ static void _dashCubicTo(SwDashStroke& dash, const Point* ctrl1, const Point* ct
             _outlineCubicTo(*dash.outline, ctrl1, ctrl2, to, transform);
         }
     } else {
-        while (len > dash.curLen) {
+        while ((len - dash.curLen) > 0.0001f) {
             Bezier left, right;
             if (dash.curLen > 0) {
                 len -= dash.curLen;

@@ -6,4 +6,6 @@
 #define   HAVE_GCC_ATOMIC 1
 
 #define   HAVE_ZLIB 1
+
+#define   NDEBUG 1
 #endif

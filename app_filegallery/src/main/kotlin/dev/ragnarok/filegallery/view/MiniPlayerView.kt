@@ -24,7 +24,7 @@ import dev.ragnarok.filegallery.place.PlaceFactory
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.filegallery.view.media.MediaActionDrawable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
@@ -33,11 +33,12 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     private var mPlayerDisposable = Disposable.disposed()
     private var mAccountDisposable = Disposable.disposed()
     private var mRefreshDisposable = Disposable.disposed()
-    private lateinit var visual: RLottieImageView
+    private lateinit var visual: ImageView
     private lateinit var playCover: ImageView
     private lateinit var title: TextView
     private lateinit var mProgress: CustomSeekBar
     private lateinit var root: View
+    private lateinit var mVisualDrawable: MediaActionDrawable
 
     constructor(context: Context) : super(context) {
         init()
@@ -59,6 +60,7 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         if (isInEditMode) {
             return
         }
+        mVisualDrawable = MediaActionDrawable()
         root = LayoutInflater.from(context).inflate(R.layout.mini_player, this)
         val play = root.findViewById<View>(R.id.item_audio_play)
         playCover = root.findViewById(R.id.item_audio_play_cover)
@@ -74,13 +76,15 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             MusicPlaybackController.stop()
             true
         }
+        mVisualDrawable.setIcon(MediaActionDrawable.ICON_EMPTY, false)
+        visual.setImageDrawable(mVisualDrawable)
         play.setOnClickListener {
             MusicPlaybackController.playOrPause()
             if (MusicPlaybackController.isPlaying) {
-                Utils.doWavesLottie(visual, true)
+                mVisualDrawable.setIcon(MediaActionDrawable.ICON_PAUSE, true)
                 playCover.setColorFilter(Color.parseColor("#44000000"))
             } else {
-                Utils.doWavesLottie(visual, false)
+                mVisualDrawable.setIcon(MediaActionDrawable.ICON_PLAY, true)
                 playCover.clearColorFilter()
             }
         }
@@ -124,10 +128,10 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
 
     private fun updatePlaybackControls() {
         if (MusicPlaybackController.isPlaying) {
-            Utils.doWavesLottie(visual, true)
+            mVisualDrawable.setIcon(MediaActionDrawable.ICON_PAUSE, true)
             playCover.setColorFilter(Color.parseColor("#44000000"))
         } else {
-            Utils.doWavesLottie(visual, false)
+            mVisualDrawable.setIcon(MediaActionDrawable.ICON_PLAY, true)
             playCover.clearColorFilter()
         }
     }

@@ -37,10 +37,7 @@ class Commented : Parcelable {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val commented = other as Commented
-        return sourceId == commented.sourceId && sourceOwnerId == commented.sourceOwnerId && sourceType == commented.sourceType
+        return other is Commented && sourceId == other.sourceId && sourceOwnerId == other.sourceOwnerId && sourceType == other.sourceType
     }
 
     /**

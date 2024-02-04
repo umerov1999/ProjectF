@@ -28,11 +28,7 @@ class SimpleGPSOption : BaseOption {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        if (!super.equals(other)) return false
-        val that = other as SimpleGPSOption
-        return lat_gps == that.lat_gps && long_gps == that.long_gps
+        return super.equals(other) && other is SimpleGPSOption && lat_gps == other.lat_gps && long_gps == other.long_gps
     }
 
     override fun hashCode(): Int {

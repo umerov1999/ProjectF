@@ -30,11 +30,7 @@ class SpinnerOption : BaseOption {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        if (!super.equals(other)) return false
-        val option = other as SpinnerOption
-        return value == option.value
+        return super.equals(other) && other is SpinnerOption && value == other.value
     }
 
     override fun hashCode(): Int {
@@ -75,10 +71,7 @@ class SpinnerOption : BaseOption {
         }
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other == null || javaClass != other.javaClass) return false
-            val entry = other as Entry
-            return id == entry.id
+            return other is Entry && id == other.id
         }
 
         override fun hashCode(): Int {

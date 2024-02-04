@@ -6,6 +6,7 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Market
+import dev.ragnarok.fenrir.util.Utils
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
@@ -18,6 +19,7 @@ class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private var cacheLoadingNow = false
     private var netLoadingNow = false
     private var doLoadTabs = false
+    private var offsetPos = 0
     private fun resolveRefreshingView() {
         view?.showRefreshing(
             netLoadingNow
@@ -67,7 +69,7 @@ class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun request(offset: Int) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(faveInteractor.getProducts(accountId, COUNT_PER_REQUEST, offset)
+        netDisposable.add(faveInteractor.getProducts(accountId, COUNT, offset)
             .fromIOToMain()
             .subscribe({ products ->
                 onNetDataReceived(
@@ -86,29 +88,36 @@ class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun onNetDataReceived(offset: Int, markets: List<Market>) {
         cacheDisposable.clear()
         cacheLoadingNow = false
-        mEndOfContent = markets.size < COUNT_PER_REQUEST
+        mEndOfContent = markets.isEmpty()
         netLoadingNow = false
+        offsetPos += COUNT
         if (offset == 0) {
             mMarkets.clear()
             mMarkets.addAll(markets)
             view?.notifyDataSetChanged()
         } else {
-            val startSize = mMarkets.size
-            mMarkets.addAll(markets)
-            view?.notifyDataAdded(
-                startSize,
-                markets.size
-            )
+            val tmp = Utils.stripEqualsWithCounter(markets, mMarkets, COUNT)
+            if (tmp.isEmpty()) {
+                mEndOfContent = true
+            } else {
+                val startSize = mMarkets.size
+                mMarkets.addAll(tmp)
+                view?.notifyDataAdded(
+                    startSize,
+                    tmp.size
+                )
+            }
         }
         resolveRefreshingView()
     }
 
     private fun requestAtLast() {
+        offsetPos = 0
         request(0)
     }
 
     private fun requestNext() {
-        request(mMarkets.size)
+        request(offsetPos)
     }
 
     override fun onGuiCreated(viewHost: IFaveProductsView) {
@@ -141,7 +150,7 @@ class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     companion object {
-        private const val COUNT_PER_REQUEST = 25
+        private const val COUNT = 25
     }
 
     init {

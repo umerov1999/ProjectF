@@ -91,7 +91,7 @@ class PhotoAlbumsPresenter(
     private fun refreshFromNet() {
         netLoadingNow = true
         resolveProgressView()
-        netDisposable.add(photosInteractor.getActualAlbums(accountId, mOwnerId, 50, offset)
+        netDisposable.add(photosInteractor.getActualAlbums(accountId, mOwnerId, COUNT, offset)
             .fromIOToMain()
             .subscribe({
                 onActualAlbumsReceived(
@@ -109,7 +109,8 @@ class PhotoAlbumsPresenter(
     private fun onActualAlbumsReceived(albums: List<PhotoAlbum>) {
         // reset cache loading
         cacheDisposable.clear()
-        endOfContent = albums.isEmpty() || mData.contains(albums[0]) && albums.size < 50
+        endOfContent = albums.isEmpty() || mData.contains(albums[0]) && albums.size < COUNT
+
         netLoadingNow = false
         if (offset == 0) {
             mData.clear()
@@ -133,7 +134,7 @@ class PhotoAlbumsPresenter(
                 size
             )
         }
-        offset += 50
+        offset += COUNT
         resolveProgressView()
     }
 
@@ -300,8 +301,11 @@ class PhotoAlbumsPresenter(
         }
     }
 
-    init {
+    companion object {
+        private const val COUNT = 50
+    }
 
+    init {
         //do restore this
         if (params != null) {
             mAction = params.action

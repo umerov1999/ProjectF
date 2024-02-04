@@ -76,8 +76,7 @@ class Graffiti : AbsModel {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other !is Graffiti) return false
-        return id == other.id && owner_id == other.owner_id
+        return other is Graffiti && id == other.id && owner_id == other.owner_id
     }
 
     override fun hashCode(): Int {

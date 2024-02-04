@@ -40,11 +40,7 @@ open class BaseSearchCriteria : Parcelable, Cloneable {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val that = other as BaseSearchCriteria
-        return (query == that.query
-                && options == that.options)
+        return other is BaseSearchCriteria && query == other.query && options == other.options
     }
 
     override fun hashCode(): Int {

@@ -30,10 +30,7 @@ class IdPair : Parcelable {
         get() = id != 0 && ownerId != 0L
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val idPair = other as IdPair
-        return if (id != idPair.id) false else ownerId == idPair.ownerId
+        return other is IdPair && id == other.id && ownerId == other.ownerId
     }
 
     override fun hashCode(): Int {

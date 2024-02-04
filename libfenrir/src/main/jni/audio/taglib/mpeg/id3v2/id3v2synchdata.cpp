@@ -25,8 +25,6 @@
 
 #include "id3v2synchdata.h"
 
-#include <iostream>
-
 using namespace TagLib;
 using namespace ID3v2;
 
@@ -90,7 +88,7 @@ ByteVector SynchData::decode(const ByteVector &data)
     *dst++ = *src++;
 
     if(*(src - 1) == '\xff' && *src == '\x00')
-      src++;
+      ++src;
   }
 
   if(src < data.end())

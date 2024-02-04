@@ -101,8 +101,7 @@ namespace
 #endif
 
     String ext;
-    const int pos = s.rfind(".");
-    if(pos != -1)
+    if(const int pos = s.rfind("."); pos != -1)
       ext = s.substr(pos + 1).upper();
 
     // If this list is updated, the method defaultFileExtensions() should also be
@@ -369,12 +368,12 @@ void FileRef::swap(FileRef &ref) noexcept
 
 bool FileRef::operator==(const FileRef &ref) const
 {
-  return (ref.d->file == d->file);
+  return ref.d->file == d->file;
 }
 
 bool FileRef::operator!=(const FileRef &ref) const
 {
-  return (ref.d->file != d->file);
+  return ref.d->file != d->file;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

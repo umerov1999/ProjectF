@@ -1219,17 +1219,26 @@ class FenrirContentProvider : ContentProvider() {
 
             sFaveVideosProjectionMap = HashMap()
             sFaveVideosProjectionMap[BaseColumns._ID] = FaveVideosColumns.FULL_ID
-            sFaveVideosProjectionMap[FaveVideosColumns.VIDEO] =
-                FaveVideosColumns.FULL_VIDEO
+            sFaveVideosProjectionMap[FaveVideosColumns.VIDEO_ID] = FaveVideosColumns.FULL_VIDEO_ID
+            sFaveVideosProjectionMap[FaveVideosColumns.OWNER_ID] = FaveVideosColumns.FULL_OWNER_ID
+            sFaveVideosProjectionMap[FaveVideosColumns.VIDEO] = FaveVideosColumns.FULL_VIDEO
 
             sFaveArticlesProjectionMap = HashMap()
             sFaveArticlesProjectionMap[BaseColumns._ID] =
                 FaveArticlesColumns.FULL_ID
+            sFaveArticlesProjectionMap[FaveArticlesColumns.ARTICLE_ID] =
+                FaveArticlesColumns.FULL_ARTICLE_ID
+            sFaveArticlesProjectionMap[FaveArticlesColumns.OWNER_ID] =
+                FaveArticlesColumns.FULL_OWNER_ID
             sFaveArticlesProjectionMap[FaveArticlesColumns.ARTICLE] =
                 FaveArticlesColumns.FULL_ARTICLE
 
             sFaveProductsProjectionMap = HashMap()
             sFaveProductsProjectionMap[BaseColumns._ID] = FaveProductsColumns.FULL_ID
+            sFaveProductsProjectionMap[FaveProductsColumns.PRODUCT_ID] =
+                FaveProductsColumns.FULL_PRODUCT_ID
+            sFaveProductsProjectionMap[FaveProductsColumns.OWNER_ID] =
+                FaveProductsColumns.FULL_OWNER_ID
             sFaveProductsProjectionMap[FaveProductsColumns.PRODUCT] =
                 FaveProductsColumns.FULL_PRODUCT
 
@@ -1264,6 +1273,8 @@ class FenrirContentProvider : ContentProvider() {
             sFavePostsProjectionMap = HashMap()
             sFavePostsProjectionMap[BaseColumns._ID] =
                 FavePostsColumns.FULL_ID
+            sFavePostsProjectionMap[FavePostsColumns.POST_ID] = FavePostsColumns.FULL_POST_ID
+            sFavePostsProjectionMap[FavePostsColumns.OWNER_ID] = FavePostsColumns.FULL_OWNER_ID
             sFavePostsProjectionMap[FavePostsColumns.POST] = FavePostsColumns.FULL_POST
 
             sCountriesProjectionMap = HashMap()

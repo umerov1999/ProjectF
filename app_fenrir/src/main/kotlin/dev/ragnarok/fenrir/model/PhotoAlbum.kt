@@ -197,8 +197,7 @@ class PhotoAlbum : AbsModel, ISomeones {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other !is PhotoAlbum) return false
-        return id == other.id && ownerId == other.ownerId
+        return other is PhotoAlbum && id == other.id && ownerId == other.ownerId
     }
 
     override fun hashCode(): Int {

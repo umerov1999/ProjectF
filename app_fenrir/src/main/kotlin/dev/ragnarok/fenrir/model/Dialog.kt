@@ -64,6 +64,14 @@ class Dialog : IdentificableOwner, Parcelable {
         isGroupChannel = parcel.getBoolean()
     }
 
+    override fun equals(other: Any?): Boolean {
+        return other is Dialog && peerId == other.peerId
+    }
+
+    override fun hashCode(): Int {
+        return peerId.hashCode()
+    }
+
     fun setPeerId(peerId: Long): Dialog {
         this.peerId = peerId
         return this

@@ -63,11 +63,7 @@ internal abstract class RemoteViewsAction(
         val viewId: Int
     ) {
         override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other == null || javaClass != other.javaClass) return false
-            val remoteViewsTarget = other as RemoteViewsTarget
-            return viewId == remoteViewsTarget.viewId && remoteViews ==
-                    remoteViewsTarget.remoteViews
+            return other is RemoteViewsTarget && viewId == other.viewId && remoteViews == other.remoteViews
         }
 
         override fun hashCode(): Int {

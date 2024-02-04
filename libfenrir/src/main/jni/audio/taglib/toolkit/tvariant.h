@@ -26,8 +26,7 @@
 #ifndef TAGLIB_VARIANT_H
 #define TAGLIB_VARIANT_H
 
-#include <memory.h>
-#include <iostream>
+#include <iosfwd>
 
 #include "tlist.h"
 #include "tmap.h"

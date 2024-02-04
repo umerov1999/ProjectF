@@ -6,3 +6,4 @@
 #else
 //#define THORVG_AVX_VECTOR_SUPPORT
 #endif
+#undef THORVG_THREAD_SUPPORT

@@ -11,7 +11,7 @@ interface ICaptchaProvider {
      * @param sid     код капчи
      * @param captcha капча
      */
-    fun requestCaptha(sid: String?, captcha: Captcha)
+    fun requestCaptcha(sid: String?, captcha: Captcha)
 
     /**
      * Отменить запрос капчи

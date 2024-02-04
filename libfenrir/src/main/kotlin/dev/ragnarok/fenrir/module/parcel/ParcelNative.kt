@@ -14,6 +14,9 @@ class ParcelNative {
     private external fun putFloat(parcel: Long, value: Float)
     private external fun putDouble(parcel: Long, value: Double)
     private external fun putString(parcel: Long, value: String)
+    private external fun putNullString(parcel: Long)
+    private external fun putBinary(parcel: Long, value: ByteArray)
+    private external fun putNullBinary(parcel: Long)
     private external fun forceDestroy(parcel: Long)
     private external fun readBoolean(parcel: Long, listener: UpdatePointerListener): Boolean
     private external fun readByte(parcel: Long, listener: UpdatePointerListener): Byte
@@ -21,7 +24,8 @@ class ParcelNative {
     private external fun readLong(parcel: Long, listener: UpdatePointerListener): Long
     private external fun readFloat(parcel: Long, listener: UpdatePointerListener): Float
     private external fun readDouble(parcel: Long, listener: UpdatePointerListener): Double
-    private external fun readString(parcel: Long, listener: UpdatePointerListener): String
+    private external fun readString(parcel: Long, listener: UpdatePointerListener): String?
+    private external fun readBinary(parcel: Long, listener: UpdatePointerListener): ByteArray?
 
     var nativePointer: Long = 0
         private set
@@ -57,10 +61,18 @@ class ParcelNative {
 
     fun writeString(value: String?): ParcelNative {
         if (value == null) {
-            putBoolean(nativePointer, false)
+            putNullString(nativePointer)
         } else {
-            putBoolean(nativePointer, true)
             putString(nativePointer, value)
+        }
+        return this
+    }
+
+    fun writeBinary(value: ByteArray?): ParcelNative {
+        if (value == null) {
+            putNullBinary(nativePointer)
+        } else {
+            putBinary(nativePointer, value)
         }
         return this
     }
@@ -172,7 +184,7 @@ class ParcelNative {
         }
         val ret: MutableList<String> = ArrayList(size)
         for (i in 0 until size) {
-            ret.add(readString(nativePointer, updateListener))
+            ret.add(readString(nativePointer, updateListener).orEmpty())
         }
         return ret
     }
@@ -246,13 +258,14 @@ class ParcelNative {
     }
 
     fun readString(): String? {
-        return if (!readBoolean(
-                nativePointer,
-                updateListener
-            )
-        ) {
-            null
-        } else readString(
+        return readString(
+            nativePointer,
+            updateListener
+        )
+    }
+
+    fun readBinary(): ByteArray? {
+        return readBinary(
             nativePointer,
             updateListener
         )

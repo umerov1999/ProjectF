@@ -157,8 +157,7 @@ class Story : AbsModel, ParcelNative.ParcelableNative {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other !is Story) return false
-        return id == other.id && ownerId == other.ownerId
+        return other is Story && id == other.id && ownerId == other.ownerId
     }
 
     override fun hashCode(): Int {

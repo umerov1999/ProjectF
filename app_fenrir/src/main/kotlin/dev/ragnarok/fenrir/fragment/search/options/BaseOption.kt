@@ -56,11 +56,7 @@ open class BaseOption : Parcelable, Cloneable {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val option = other as BaseOption
-        if (optionType != option.optionType) return false
-        return if (key != option.key) false else active == option.active
+        return other is BaseOption && optionType == other.optionType && key == other.key && active == other.active
     }
 
     override fun hashCode(): Int {

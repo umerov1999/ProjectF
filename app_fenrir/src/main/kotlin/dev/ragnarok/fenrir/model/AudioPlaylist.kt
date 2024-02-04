@@ -190,8 +190,7 @@ class AudioPlaylist : AbsModel {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other !is AudioPlaylist) return false
-        return id == other.id && owner_id == other.owner_id
+        return other is AudioPlaylist && id == other.id && owner_id == other.owner_id
     }
 
     override fun hashCode(): Int {

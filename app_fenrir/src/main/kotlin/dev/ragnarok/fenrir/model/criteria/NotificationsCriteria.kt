@@ -12,11 +12,7 @@ class NotificationsCriteria(val accountId: Long) : Criteria() {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val that = other as NotificationsCriteria
-        return (accountId == that.accountId
-                && range == that.range)
+        return other is NotificationsCriteria && accountId == other.accountId && range == other.range
     }
 
     override fun hashCode(): Int {

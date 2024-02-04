@@ -42,12 +42,7 @@ class DatabaseOption : BaseOption {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        if (!super.equals(other)) return false
-        val that = other as DatabaseOption
-        return (type == that.type
-                && value == that.value)
+        return super.equals(other) && other is DatabaseOption && type == other.type && value == other.value
     }
 
     @Throws(CloneNotSupportedException::class)
@@ -83,10 +78,7 @@ class DatabaseOption : BaseOption {
         }
 
         override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other == null || javaClass != other.javaClass) return false
-            val entry = other as Entry
-            return id == entry.id
+            return other is Entry && id == other.id
         }
 
         override fun hashCode(): Int {

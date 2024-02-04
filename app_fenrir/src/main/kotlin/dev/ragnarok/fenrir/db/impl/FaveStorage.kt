@@ -87,6 +87,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             }
             for (dbo in posts) {
                 val cv = ContentValues()
+                cv.put(FavePostsColumns.POST_ID, dbo.id)
+                cv.put(FavePostsColumns.OWNER_ID, dbo.ownerId)
                 cv.put(
                     FavePostsColumns.POST,
                     MsgPack.encodeToByteArrayEx(PostDboEntity.serializer(), dbo)
@@ -418,6 +420,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             for (i in videos.indices) {
                 val dbo = videos[i]
                 val cv = ContentValues()
+                cv.put(FaveVideosColumns.VIDEO_ID, dbo.id)
+                cv.put(FaveVideosColumns.OWNER_ID, dbo.ownerId)
                 cv.put(
                     FaveVideosColumns.VIDEO,
                     MsgPack.encodeToByteArrayEx(VideoDboEntity.serializer(), dbo)
@@ -460,6 +464,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             for (i in articles.indices) {
                 val dbo = articles[i]
                 val cv = ContentValues()
+                cv.put(FaveArticlesColumns.ARTICLE_ID, dbo.id)
+                cv.put(FaveArticlesColumns.OWNER_ID, dbo.ownerId)
                 cv.put(
                     FaveArticlesColumns.ARTICLE,
                     MsgPack.encodeToByteArrayEx(ArticleDboEntity.serializer(), dbo)
@@ -502,6 +508,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             for (i in products.indices) {
                 val dbo = products[i]
                 val cv = ContentValues()
+                cv.put(FaveProductsColumns.PRODUCT_ID, dbo.id)
+                cv.put(FaveProductsColumns.OWNER_ID, dbo.owner_id)
                 cv.put(
                     FaveProductsColumns.PRODUCT,
                     MsgPack.encodeToByteArrayEx(MarketDboEntity.serializer(), dbo)

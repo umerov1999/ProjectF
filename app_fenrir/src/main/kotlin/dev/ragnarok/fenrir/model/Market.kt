@@ -137,6 +137,16 @@ class Market : AbsModel {
         return this
     }
 
+    override fun equals(other: Any?): Boolean {
+        return other is Market && id == other.id && owner_id == other.owner_id
+    }
+
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + owner_id.hashCode()
+        return result
+    }
+
     override fun describeContents(): Int {
         return 0
     }

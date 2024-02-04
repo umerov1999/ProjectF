@@ -193,11 +193,6 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun toggleShowPhotoTags(): Photo {
-        showPhotoTags = !showPhotoTags
-        return this
-    }
-
     fun getUrlForSize(@PhotoSize size: Int, excludeNonAspectRatio: Boolean): String? {
         return sizes?.getUrlForSize(size, excludeNonAspectRatio)
     }
@@ -260,10 +255,7 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val photo = other as Photo
-        return id == photo.id && ownerId == photo.ownerId
+        return other is Photo && id == other.id && ownerId == other.ownerId
     }
 
     override fun hashCode(): Int {
