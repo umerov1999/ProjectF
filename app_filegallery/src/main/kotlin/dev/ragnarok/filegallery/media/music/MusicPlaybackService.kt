@@ -27,7 +27,6 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.PlayWhenReadyChangeReason
 import androidx.media3.datasource.DefaultDataSource
-import androidx.media3.datasource.RawResourceDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
 import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
@@ -982,10 +981,7 @@ class MusicPlaybackService : Service() {
                 "file:///android_asset/audio_error.ogg"
             )
             val mediaSource: MediaSource =
-                if (url?.contains("file://") == true || url?.contains("content://") == true || url?.contains(
-                        RawResourceDataSource.RAW_RESOURCE_SCHEME
-                    ) == true
-                ) {
+                if (url?.contains("file://") == true || url?.contains("content://") == true) {
                     ProgressiveMediaSource.Factory(factoryLocal)
                         .createMediaSource(makeMediaItem(url))
                 } else {

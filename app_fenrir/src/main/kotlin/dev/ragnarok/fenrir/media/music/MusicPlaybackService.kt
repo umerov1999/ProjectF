@@ -1,7 +1,9 @@
 package dev.ragnarok.fenrir.media.music
 
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.Notification
+import android.app.NotificationManager
+import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -27,7 +29,6 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.PlayWhenReadyChangeReason
 import androidx.media3.datasource.DefaultDataSource
-import androidx.media3.datasource.RawResourceDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
 import androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
@@ -38,13 +39,21 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso.LoadedFrom
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.Includes
+import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
+import dev.ragnarok.fenrir.fromIOToMain
+import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
+import dev.ragnarok.fenrir.insertAfter
 import dev.ragnarok.fenrir.media.exo.ExoUtil
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.GetLocalTrackLink
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.TrackIsDownloaded
@@ -995,14 +1004,10 @@ class MusicPlaybackService : Service() {
             }
             val url = Utils.firstNonEmptyString(
                 res,
-                //RawResourceDataSource.buildRawResourceUri(R.raw.audio_error).toString()
                 "file:///android_asset/audio_error.ogg"
             )
             val mediaSource: MediaSource =
-                if (url?.contains("file://") == true || url?.contains("content://") == true || url?.contains(
-                        RawResourceDataSource.RAW_RESOURCE_SCHEME
-                    ) == true
-                ) {
+                if (url?.contains("file://") == true || url?.contains("content://") == true) {
                     ProgressiveMediaSource.Factory(factoryLocal)
                         .createMediaSource(makeMediaItem(url))
                 } else {

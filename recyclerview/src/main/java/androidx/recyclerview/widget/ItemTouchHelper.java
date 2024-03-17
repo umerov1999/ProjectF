@@ -36,8 +36,6 @@ import android.view.animation.Interpolator;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.GestureDetectorCompat;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.R;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -306,7 +304,7 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
      * Used to detect long press.
      */
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    GestureDetectorCompat mGestureDetector;
+    GestureDetector mGestureDetector;
 
     /**
      * Callback for when long press occurs.
@@ -513,7 +511,7 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
 
     private void startGestureDetection() {
         mItemTouchHelperGestureListener = new ItemTouchHelperGestureListener();
-        mGestureDetector = new GestureDetectorCompat(mRecyclerView.getContext(),
+        mGestureDetector = new GestureDetector(mRecyclerView.getContext(),
                 mItemTouchHelperGestureListener);
     }
 

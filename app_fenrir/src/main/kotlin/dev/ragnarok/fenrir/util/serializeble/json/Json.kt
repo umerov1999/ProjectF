@@ -95,7 +95,10 @@ sealed class Json(
      *
      * @throws [SerializationException] if the given value cannot be serialized to JSON.
      */
-    final override fun <T> encodeToString(serializer: SerializationStrategy<T>, value: T): String {
+    final override fun <T> encodeToString(
+        serializer: SerializationStrategy<T>,
+        value: T
+    ): String {
         val result = JsonToStringWriter()
         try {
             encodeByWriter(this@Json, result, serializer, value)
@@ -112,7 +115,13 @@ sealed class Json(
      * @throws SerializationException in case of any decoding-specific error
      * @throws IllegalArgumentException if the decoded input is not a valid instance of [T]
      */
-    inline fun <reified T> decodeFromString(@FormatLanguage("json", "", "") string: String): T =
+    inline fun <reified T> decodeFromString(
+        @FormatLanguage(
+            "json",
+            "",
+            ""
+        ) string: String
+    ): T =
         decodeFromString(serializersModule.serializer(), string)
 
     /**
@@ -137,7 +146,10 @@ sealed class Json(
      *
      * @throws [SerializationException] if the given value cannot be serialized to JSON
      */
-    fun <T> encodeToJsonElement(serializer: SerializationStrategy<T>, value: T): JsonElement {
+    fun <T> encodeToJsonElement(
+        serializer: SerializationStrategy<T>,
+        value: T
+    ): JsonElement {
         return writeJson(this@Json, value, serializer)
     }
 
@@ -268,7 +280,6 @@ inline fun <reified T> Json.decodeFromJsonElementOrNull(
 /**
  * Builder of the [Json] instance provided by `Json { ... }` factory function.
  */
-@Suppress("unused")
 @OptIn(ExperimentalSerializationApi::class)
 class JsonBuilder internal constructor(json: Json) {
     /**
@@ -298,11 +309,10 @@ class JsonBuilder internal constructor(json: Json) {
 
     /**
      * Removes JSON specification restriction (RFC-4627) and makes parser
-     * more liberal to the malformed input. In lenient mode quoted boolean literals,
-     * and unquoted string literals are allowed.
+     * more liberal to the malformed input. In lenient mode, unquoted JSON keys and string values are allowed.
      *
      * Its relaxations can be expanded in the future, so that lenient parser becomes even more
-     * permissive to invalid value in the input, replacing them with defaults.
+     * permissive to invalid values in the input.
      *
      * `false` by default.
      */
@@ -331,7 +341,7 @@ class JsonBuilder internal constructor(json: Json) {
     var prettyPrintIndent: String = json.configuration.prettyPrintIndent
 
     /**
-     * Enables coercing incorrect JSON values to the default property value in the following cases:
+     * Enables coercing incorrect JSON values to the default property value (if exists) in the following cases:
      *   1. JSON value is `null` but the property type is non-nullable.
      *   2. Property type is an enum type, but JSON value contains unknown enum member.
      *
@@ -343,6 +353,8 @@ class JsonBuilder internal constructor(json: Json) {
      * Switches polymorphic serialization to the default array format.
      * This is an option for legacy JSON format and should not be generally used.
      * `false` by default.
+     *
+     * This option can only be used if [classDiscriminatorMode] in a default [ClassDiscriminatorMode.POLYMORPHIC] state.
      */
     var useArrayPolymorphism: Boolean = json.configuration.useArrayPolymorphism
 
@@ -351,6 +363,17 @@ class JsonBuilder internal constructor(json: Json) {
      * "type" by default.
      */
     var classDiscriminator: String = json.configuration.classDiscriminator
+
+
+    /**
+     * Defines which classes and objects should have class discriminator added to the output.
+     * [ClassDiscriminatorMode.POLYMORPHIC] by default.
+     *
+     * Other modes are generally intended to produce JSON for consumption by third-party libraries,
+     * therefore, this setting does not affect the deserialization process.
+     */
+    var classDiscriminatorMode: ClassDiscriminatorMode =
+        json.configuration.classDiscriminatorMode
 
     /**
      * Removes JSON specification restriction on
@@ -430,8 +453,13 @@ class JsonBuilder internal constructor(json: Json) {
 
     @OptIn(ExperimentalSerializationApi::class)
     internal fun build(): JsonConfiguration {
-        if (useArrayPolymorphism) require(classDiscriminator == defaultDiscriminator) {
-            "Class discriminator should not be specified when array polymorphism is specified"
+        if (useArrayPolymorphism) {
+            require(classDiscriminator == defaultDiscriminator) {
+                "Class discriminator should not be specified when array polymorphism is specified"
+            }
+            require(classDiscriminatorMode == ClassDiscriminatorMode.POLYMORPHIC) {
+                "useArrayPolymorphism option can only be used if classDiscriminatorMode in a default POLYMORPHIC state."
+            }
         }
 
         if (!prettyPrint) {
@@ -452,7 +480,7 @@ class JsonBuilder internal constructor(json: Json) {
             allowStructuredMapKeys, prettyPrint, explicitNulls, prettyPrintIndent,
             coerceInputValues, useArrayPolymorphism,
             classDiscriminator, allowSpecialFloatingPointValues, useAlternativeNames,
-            namingStrategy, decodeEnumsCaseInsensitive, allowTrailingComma
+            namingStrategy, decodeEnumsCaseInsensitive, allowTrailingComma, classDiscriminatorMode
         )
     }
 }

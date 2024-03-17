@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 project(fenrir_jni C CXX ASM)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
@@ -37,95 +37,95 @@ foreach (ffmpeg_lib avutil swresample avcodec avformat swscale)
 endforeach ()
 
 add_library(thorvg STATIC
-        thorvg/src/renderer/sw_engine/tvgSwFill.cpp
-        thorvg/src/renderer/sw_engine/tvgSwImage.cpp
-        thorvg/src/renderer/sw_engine/tvgSwMath.cpp
-        thorvg/src/renderer/sw_engine/tvgSwMemPool.cpp
-        thorvg/src/renderer/sw_engine/tvgSwRaster.cpp
-        thorvg/src/renderer/sw_engine/tvgSwRenderer.cpp
-        thorvg/src/renderer/sw_engine/tvgSwRle.cpp
-        thorvg/src/renderer/sw_engine/tvgSwShape.cpp
-        thorvg/src/renderer/sw_engine/tvgSwStroke.cpp
-        thorvg/src/renderer/tvgAccessor.cpp
-        thorvg/src/renderer/tvgAnimation.cpp
-        thorvg/src/renderer/tvgCanvas.cpp
-        thorvg/src/renderer/tvgFill.cpp
-        thorvg/src/renderer/tvgGlCanvas.cpp
-        thorvg/src/renderer/tvgInitializer.cpp
-        thorvg/src/renderer/tvgLoader.cpp
-        thorvg/src/renderer/tvgPaint.cpp
-        thorvg/src/renderer/tvgPicture.cpp
-        thorvg/src/renderer/tvgRender.cpp
-        thorvg/src/renderer/tvgSaver.cpp
-        thorvg/src/renderer/tvgScene.cpp
-        thorvg/src/renderer/tvgShape.cpp
-        thorvg/src/renderer/tvgSwCanvas.cpp
-        thorvg/src/renderer/tvgTaskScheduler.cpp
-        thorvg/src/renderer/tvgText.cpp
-        thorvg/src/renderer/tvgWgCanvas.cpp
-        thorvg/src/loaders/raw/tvgRawLoader.cpp
-        thorvg/src/loaders/svg/tvgSvgCssStyle.cpp
-        thorvg/src/loaders/svg/tvgSvgLoader.cpp
-        thorvg/src/loaders/svg/tvgSvgPath.cpp
-        thorvg/src/loaders/svg/tvgSvgSceneBuilder.cpp
-        thorvg/src/loaders/svg/tvgSvgUtil.cpp
-        thorvg/src/loaders/svg/tvgXmlParser.cpp
-        thorvg/src/common/tvgBezier.cpp
-        thorvg/src/common/tvgCompressor.cpp
-        thorvg/src/common/tvgMath.cpp
-        thorvg/src/common/tvgStr.cpp)
+        animation/thorvg/src/renderer/sw_engine/tvgSwFill.cpp
+        animation/thorvg/src/renderer/sw_engine/tvgSwImage.cpp
+        animation/thorvg/src/renderer/sw_engine/tvgSwMath.cpp
+        animation/thorvg/src/renderer/sw_engine/tvgSwMemPool.cpp
+        animation/thorvg/src/renderer/sw_engine/tvgSwRaster.cpp
+        animation/thorvg/src/renderer/sw_engine/tvgSwRenderer.cpp
+        animation/thorvg/src/renderer/sw_engine/tvgSwRle.cpp
+        animation/thorvg/src/renderer/sw_engine/tvgSwShape.cpp
+        animation/thorvg/src/renderer/sw_engine/tvgSwStroke.cpp
+        animation/thorvg/src/renderer/tvgAccessor.cpp
+        animation/thorvg/src/renderer/tvgAnimation.cpp
+        animation/thorvg/src/renderer/tvgCanvas.cpp
+        animation/thorvg/src/renderer/tvgFill.cpp
+        animation/thorvg/src/renderer/tvgGlCanvas.cpp
+        animation/thorvg/src/renderer/tvgInitializer.cpp
+        animation/thorvg/src/renderer/tvgLoader.cpp
+        animation/thorvg/src/renderer/tvgPaint.cpp
+        animation/thorvg/src/renderer/tvgPicture.cpp
+        animation/thorvg/src/renderer/tvgRender.cpp
+        animation/thorvg/src/renderer/tvgSaver.cpp
+        animation/thorvg/src/renderer/tvgScene.cpp
+        animation/thorvg/src/renderer/tvgShape.cpp
+        animation/thorvg/src/renderer/tvgSwCanvas.cpp
+        animation/thorvg/src/renderer/tvgTaskScheduler.cpp
+        animation/thorvg/src/renderer/tvgText.cpp
+        animation/thorvg/src/renderer/tvgWgCanvas.cpp
+        animation/thorvg/src/loaders/raw/tvgRawLoader.cpp
+        animation/thorvg/src/loaders/svg/tvgSvgCssStyle.cpp
+        animation/thorvg/src/loaders/svg/tvgSvgLoader.cpp
+        animation/thorvg/src/loaders/svg/tvgSvgPath.cpp
+        animation/thorvg/src/loaders/svg/tvgSvgSceneBuilder.cpp
+        animation/thorvg/src/loaders/svg/tvgSvgUtil.cpp
+        animation/thorvg/src/loaders/svg/tvgXmlParser.cpp
+        animation/thorvg/src/common/tvgLines.cpp
+        animation/thorvg/src/common/tvgCompressor.cpp
+        animation/thorvg/src/common/tvgMath.cpp
+        animation/thorvg/src/common/tvgStr.cpp)
 
 target_compile_options(thorvg PRIVATE
         -DTVG_STATIC=1 -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter ${SYM_VISIBILITY})
 target_include_directories(thorvg PRIVATE
-        thorvg/inc
-        thorvg/src/renderer
-        thorvg/src/renderer/sw_engine
-        thorvg/src/loaders/raw
-        thorvg/src/loaders/svg
-        thorvg/src/common)
+        animation/thorvg/inc
+        animation/thorvg/src/renderer
+        animation/thorvg/src/renderer/sw_engine
+        animation/thorvg/src/loaders/raw
+        animation/thorvg/src/loaders/svg
+        animation/thorvg/src/common)
 
 add_library(rlottie STATIC
-        rlottie/src/lottie/lottieanimation.cpp
-        rlottie/src/lottie/lottieitem.cpp
-        rlottie/src/lottie/lottiekeypath.cpp
-        rlottie/src/lottie/lottieloader.cpp
-        rlottie/src/lottie/lottiemodel.cpp
-        rlottie/src/lottie/lottieparser.cpp
-        rlottie/src/lottie/lottieitem_capi.cpp
-        rlottie/src/vector/freetype/v_ft_math.cpp
-        rlottie/src/vector/freetype/v_ft_raster.cpp
-        rlottie/src/vector/freetype/v_ft_stroker.cpp
-        rlottie/src/vector/stb/stb_image.cpp
-        rlottie/src/vector/vbezier.cpp
-        rlottie/src/vector/vbitmap.cpp
-        rlottie/src/vector/vbrush.cpp
-        rlottie/src/vector/varenaalloc.cpp
-        rlottie/src/vector/vdasher.cpp
-        rlottie/src/vector/vdebug.cpp
-        rlottie/src/vector/vdrawable.cpp
-        rlottie/src/vector/vdrawhelper.cpp
-        rlottie/src/vector/vdrawhelper_sse2.cpp
-        rlottie/src/vector/vdrawhelper_neon.cpp
-        rlottie/src/vector/vdrawhelper_common.cpp
-        rlottie/src/vector/velapsedtimer.cpp
-        rlottie/src/vector/vimageloader.cpp
-        rlottie/src/vector/vinterpolator.cpp
-        rlottie/src/vector/vmatrix.cpp
-        rlottie/src/vector/vpainter.cpp
-        rlottie/src/vector/vpath.cpp
-        rlottie/src/vector/vpathmesure.cpp
-        rlottie/src/vector/vraster.cpp
-        rlottie/src/vector/vrect.cpp
-        rlottie/src/vector/vrle.cpp)
+        animation/rlottie/src/lottie/lottieanimation.cpp
+        animation/rlottie/src/lottie/lottieitem.cpp
+        animation/rlottie/src/lottie/lottiekeypath.cpp
+        animation/rlottie/src/lottie/lottieloader.cpp
+        animation/rlottie/src/lottie/lottiemodel.cpp
+        animation/rlottie/src/lottie/lottieparser.cpp
+        animation/rlottie/src/lottie/lottieitem_capi.cpp
+        animation/rlottie/src/vector/freetype/v_ft_math.cpp
+        animation/rlottie/src/vector/freetype/v_ft_raster.cpp
+        animation/rlottie/src/vector/freetype/v_ft_stroker.cpp
+        animation/rlottie/src/vector/stb/stb_image.cpp
+        animation/rlottie/src/vector/vbezier.cpp
+        animation/rlottie/src/vector/vbitmap.cpp
+        animation/rlottie/src/vector/vbrush.cpp
+        animation/rlottie/src/vector/varenaalloc.cpp
+        animation/rlottie/src/vector/vdasher.cpp
+        animation/rlottie/src/vector/vdebug.cpp
+        animation/rlottie/src/vector/vdrawable.cpp
+        animation/rlottie/src/vector/vdrawhelper.cpp
+        animation/rlottie/src/vector/vdrawhelper_sse2.cpp
+        animation/rlottie/src/vector/vdrawhelper_neon.cpp
+        animation/rlottie/src/vector/vdrawhelper_common.cpp
+        animation/rlottie/src/vector/velapsedtimer.cpp
+        animation/rlottie/src/vector/vimageloader.cpp
+        animation/rlottie/src/vector/vinterpolator.cpp
+        animation/rlottie/src/vector/vmatrix.cpp
+        animation/rlottie/src/vector/vpainter.cpp
+        animation/rlottie/src/vector/vpath.cpp
+        animation/rlottie/src/vector/vpathmesure.cpp
+        animation/rlottie/src/vector/vraster.cpp
+        animation/rlottie/src/vector/vrect.cpp
+        animation/rlottie/src/vector/vrle.cpp)
 target_compile_options(rlottie PRIVATE
         -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter ${SYM_VISIBILITY})
 target_include_directories(rlottie PRIVATE
-        rlottie/inc
-        rlottie/src/vector
-        rlottie/src/vector/pixman
-        rlottie/src/vector/freetype
-        rlottie/src/vector/stb)
+        animation/rlottie/inc
+        animation/rlottie/src/vector
+        animation/rlottie/src/vector/pixman
+        animation/rlottie/src/vector/freetype
+        animation/rlottie/src/vector/stb)
 
 add_library(libyuv STATIC
         animation/libyuv/source/compare.cc
@@ -190,6 +190,7 @@ add_library(opus STATIC
         audio/opus/libopus/src/opus_multistream_decoder.c
         audio/opus/libopus/src/repacketizer.c
         audio/opus/libopus/src/analysis.c
+        audio/opus/libopus/src/extensions.c
         audio/opus/libopus/src/mlp.c
         audio/opus/libopus/src/mlp_data.c
         audio/opus/libopus/src/opus_projection_encoder.c
@@ -315,10 +316,10 @@ add_library(opus STATIC
         audio/opus/libopus/celt/vq.c
         audio/opus/libopus/celt/arm/armcpu.c
         audio/opus/libopus/celt/arm/arm_celt_map.c
-        )
+)
 if (${ANDROID_ABI} STREQUAL "armeabi-v7a" OR ${ANDROID_ABI} STREQUAL "arm64-v8a")
     target_compile_definitions(opus PRIVATE
-            LIBYUV_NEON OPUS_HAVE_RTCD OPUS_ARM_ASM)
+            OPUS_HAVE_RTCD OPUS_ARM_ASM)
 
     target_sources(opus PRIVATE
             audio/opus/libopus/celt/arm/celt_neon_intr.c
@@ -329,7 +330,7 @@ if (${ANDROID_ABI} STREQUAL "armeabi-v7a" OR ${ANDROID_ABI} STREQUAL "arm64-v8a"
             audio/opus/libopus/silk/arm/NSQ_del_dec_neon_intr.c
             audio/opus/libopus/silk/arm/biquad_alt_neon_intr.c
             audio/opus/libopus/silk/fixed/arm/warped_autocorrelation_FIX_neon_intr.c
-            )
+    )
 endif ()
 target_include_directories(opus PRIVATE
         audio/opus/libopus/include
@@ -454,7 +455,7 @@ add_library(common STATIC
         compress/zstd/decompress/huf_decompress_amd64.S
         compress/zstd/compress/fse_compress.c
         compress/zstd/compress/zstd_compress.c
-        )
+)
 
 target_include_directories(common
         PRIVATE
@@ -483,18 +484,15 @@ target_compile_options(common PRIVATE
 add_library(fenrir_jni
         SHARED
         jni_call.cpp
-        lottie_jni.cpp
-        thorvg_jni.cpp
-        audio/ffmpeg/ffmpeg_jni.cpp
-        audio/opus/opus_jni.cc
+        animation/lottie_jni.cpp
+        animation/thorvg_jni.cpp
         animation/animation_jni.cpp
-        parcel_jni.cpp
-        string_exist_jni.cpp
-        file_utils_jni.cpp
-        image_processing_util_jni.cpp
+        animation/image_processing_util_jni.cpp
         audio/ffmpeg/to_mp4_audio_jni.cpp
+        audio/ffmpeg/ffmpeg_jni.cpp
         audio/ts/mpegts_demux_jni.cpp
         audio/taglib/taglib_jni.cpp
+        audio/opus/opus_jni.cc
         compress/zstd/jni_bufferdecompress_zstd.c
         compress/zstd/jni_directbuffercompress_zstd.c
         compress/zstd/jni_directbufferdecompress_zstd.c
@@ -502,16 +500,17 @@ add_library(fenrir_jni
         compress/zstd/jni_inputstream_zstd.c
         compress/zstd/jni_outputstream_zstd.c
         compress/zstd/jni_zdict.c
-        compress/zstd/jni_zstd.c)
+        compress/zstd/jni_zstd.c
+        parcel_jni.cpp
+        string_exist_jni.cpp
+        file_utils_jni.cpp)
 
 target_include_directories(fenrir_jni
         PRIVATE
         ./
-        rlottie/inc
-        thorvg/inc
+        animation/rlottie/inc
+        animation/thorvg/inc
         animation/libyuv/include
-        exoplayer/include
-        audio/opus/libopus/include
         compress/lz4
         compress/zstd
         compress/zstd/common
@@ -520,13 +519,13 @@ target_include_directories(fenrir_jni
         compress/zstd/dictBuilder
         compress/zstd/legacy
         compress/zlib
+        audio/opus/libopus/include
         audio/taglib
         audio/taglib/mpeg
         audio/taglib/mpeg/id3v1
         audio/taglib/mpeg/id3v2
         audio/taglib/mpeg/id3v2/frames
         audio/taglib/toolkit
-        animation/libyuv/include
         ${ffmpeg_location})
 
 target_compile_options(fenrir_jni PRIVATE
@@ -546,3 +545,5 @@ target_link_libraries(fenrir_jni
         PRIVATE thorvg ${LTO_LINK}
         PRIVATE libyuv ${LTO_LINK}
         PRIVATE opus ${LTO_LINK})
+
+target_link_options(fenrir_jni PRIVATE "-Wl,-z,max-page-size=16384")

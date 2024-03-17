@@ -5,6 +5,7 @@ import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.RefreshToken
 import dev.ragnarok.fenrir.api.model.VKApiConversation
+import dev.ragnarok.fenrir.api.model.VKApiProcessAuthCode
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.PushSettingsResponse.ConversationsPush.ConversationPushItem
@@ -188,6 +189,14 @@ class AccountsInteractor(
                 .account().importMessagesContacts(it)
                 .andThen(getContactList(accountId, offset, count))
         }
+    }
+
+    override fun processAuthCode(
+        accountId: Long,
+        auth_code: String, action: Int
+    ): Single<VKApiProcessAuthCode> {
+        return networker.vkDefault(accountId)
+            .account().processAuthCode(auth_code, action)
     }
 
     override fun resetMessagesContacts(

@@ -575,7 +575,11 @@ typedef uint32_t XXH32_hash_t;
 #elif !defined (__VMS) \
   && (defined (__cplusplus) \
   || (defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 */) )
-#   include <stdint.h>
+#   ifdef _AIX
+#     include <inttypes.h>
+#   else
+#     include <stdint.h>
+#   endif
     typedef uint32_t XXH32_hash_t;
 
 #else
@@ -630,7 +634,6 @@ XXH_PUBLIC_API XXH_PUREF XXH32_hash_t XXH32 (const void* input, size_t length, X
  * @brief The opaque state struct for the XXH32 streaming API.
  *
  * @see XXH32_state_s for details.
- * @see @ref streaming_example "Streaming Example"
  */
 typedef struct XXH32_state_s XXH32_state_t;
 
@@ -641,8 +644,6 @@ typedef struct XXH32_state_s XXH32_state_t;
  * @return `NULL` on failure.
  *
  * @note Must be freed with XXH32_freeState().
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_MALLOCF XXH32_state_t* XXH32_createState(void);
 /*!
@@ -653,8 +654,6 @@ XXH_PUBLIC_API XXH_MALLOCF XXH32_state_t* XXH32_createState(void);
  * @return @ref XXH_OK.
  *
  * @note @p statePtr must be allocated with XXH32_createState().
- *
- * @see @ref streaming_example "Streaming Example"
  *
  */
 XXH_PUBLIC_API XXH_errorcode  XXH32_freeState(XXH32_state_t* statePtr);
@@ -681,8 +680,6 @@ XXH_PUBLIC_API void XXH32_copyState(XXH32_state_t* dst_state, const XXH32_state_
  * @return @ref XXH_ERROR on failure.
  *
  * @note This function resets and seeds a state. Call it before @ref XXH32_update().
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_errorcode XXH32_reset  (XXH32_state_t* statePtr, XXH32_hash_t seed);
 
@@ -704,8 +701,6 @@ XXH_PUBLIC_API XXH_errorcode XXH32_reset  (XXH32_state_t* statePtr, XXH32_hash_t
  * @return @ref XXH_ERROR on failure.
  *
  * @note Call this to incrementally consume blocks of data.
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_errorcode XXH32_update (XXH32_state_t* statePtr, const void* input, size_t length);
 
@@ -722,8 +717,6 @@ XXH_PUBLIC_API XXH_errorcode XXH32_update (XXH32_state_t* statePtr, const void* 
  * @note
  *   Calling XXH32_digest() will not affect @p statePtr, so you can update,
  *   digest, and update again.
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_PUREF XXH32_hash_t XXH32_digest (const XXH32_state_t* statePtr);
 #endif /* !XXH_NO_STREAM */
@@ -849,7 +842,11 @@ typedef uint64_t XXH64_hash_t;
 #elif !defined (__VMS) \
   && (defined (__cplusplus) \
   || (defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 */) )
-#  include <stdint.h>
+#   ifdef _AIX
+#     include <inttypes.h>
+#   else
+#     include <stdint.h>
+#   endif
    typedef uint64_t XXH64_hash_t;
 #else
 #  include <limits.h>
@@ -900,7 +897,6 @@ XXH_PUBLIC_API XXH_PUREF XXH64_hash_t XXH64(XXH_NOESCAPE const void* input, size
  * @brief The opaque state struct for the XXH64 streaming API.
  *
  * @see XXH64_state_s for details.
- * @see @ref streaming_example "Streaming Example"
  */
 typedef struct XXH64_state_s XXH64_state_t;   /* incomplete type */
 
@@ -911,8 +907,6 @@ typedef struct XXH64_state_s XXH64_state_t;   /* incomplete type */
  * @return `NULL` on failure.
  *
  * @note Must be freed with XXH64_freeState().
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_MALLOCF XXH64_state_t* XXH64_createState(void);
 
@@ -924,8 +918,6 @@ XXH_PUBLIC_API XXH_MALLOCF XXH64_state_t* XXH64_createState(void);
  * @return @ref XXH_OK.
  *
  * @note @p statePtr must be allocated with XXH64_createState().
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_errorcode  XXH64_freeState(XXH64_state_t* statePtr);
 
@@ -952,8 +944,6 @@ XXH_PUBLIC_API void XXH64_copyState(XXH_NOESCAPE XXH64_state_t* dst_state, const
  * @return @ref XXH_ERROR on failure.
  *
  * @note This function resets and seeds a state. Call it before @ref XXH64_update().
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_errorcode XXH64_reset  (XXH_NOESCAPE XXH64_state_t* statePtr, XXH64_hash_t seed);
 
@@ -975,8 +965,6 @@ XXH_PUBLIC_API XXH_errorcode XXH64_reset  (XXH_NOESCAPE XXH64_state_t* statePtr,
  * @return @ref XXH_ERROR on failure.
  *
  * @note Call this to incrementally consume blocks of data.
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_errorcode XXH64_update (XXH_NOESCAPE XXH64_state_t* statePtr, XXH_NOESCAPE const void* input, size_t length);
 
@@ -993,8 +981,6 @@ XXH_PUBLIC_API XXH_errorcode XXH64_update (XXH_NOESCAPE XXH64_state_t* statePtr,
  * @note
  *   Calling XXH64_digest() will not affect @p statePtr, so you can update,
  *   digest, and update again.
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_PUREF XXH64_hash_t XXH64_digest (XXH_NOESCAPE const XXH64_state_t* statePtr);
 #endif /* !XXH_NO_STREAM */
@@ -1199,7 +1185,6 @@ XXH_PUBLIC_API XXH_PUREF XXH64_hash_t XXH3_64bits_withSecret(XXH_NOESCAPE const 
  * @brief The opaque state struct for the XXH3 streaming API.
  *
  * @see XXH3_state_s for details.
- * @see @ref streaming_example "Streaming Example"
  */
 typedef struct XXH3_state_s XXH3_state_t;
 XXH_PUBLIC_API XXH_MALLOCF XXH3_state_t* XXH3_createState(void);
@@ -1231,8 +1216,6 @@ XXH_PUBLIC_API void XXH3_copyState(XXH_NOESCAPE XXH3_state_t* dst_state, XXH_NOE
  *   - Call this function before @ref XXH3_64bits_update().
  *   - Digest will be equivalent to `XXH3_64bits()`.
  *
- * @see @ref streaming_example "Streaming Example"
- *
  */
 XXH_PUBLIC_API XXH_errorcode XXH3_64bits_reset(XXH_NOESCAPE XXH3_state_t* statePtr);
 
@@ -1252,8 +1235,6 @@ XXH_PUBLIC_API XXH_errorcode XXH3_64bits_reset(XXH_NOESCAPE XXH3_state_t* stateP
  *   - This function resets `statePtr` and generate a secret from `seed`.
  *   - Call this function before @ref XXH3_64bits_update().
  *   - Digest will be equivalent to `XXH3_64bits_withSeed()`.
- *
- * @see @ref streaming_example "Streaming Example"
  *
  */
 XXH_PUBLIC_API XXH_errorcode XXH3_64bits_reset_withSeed(XXH_NOESCAPE XXH3_state_t* statePtr, XXH64_hash_t seed);
@@ -1279,8 +1260,6 @@ XXH_PUBLIC_API XXH_errorcode XXH3_64bits_reset_withSeed(XXH_NOESCAPE XXH3_state_
  * (secret's content should look like a bunch of random bytes).
  * When in doubt about the randomness of a candidate `secret`,
  * consider employing `XXH3_generateSecret()` instead (see below).
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_errorcode XXH3_64bits_reset_withSecret(XXH_NOESCAPE XXH3_state_t* statePtr, XXH_NOESCAPE const void* secret, size_t secretSize);
 
@@ -1302,8 +1281,6 @@ XXH_PUBLIC_API XXH_errorcode XXH3_64bits_reset_withSecret(XXH_NOESCAPE XXH3_stat
  * @return @ref XXH_ERROR on failure.
  *
  * @note Call this to incrementally consume blocks of data.
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_errorcode XXH3_64bits_update (XXH_NOESCAPE XXH3_state_t* statePtr, XXH_NOESCAPE const void* input, size_t length);
 
@@ -1320,8 +1297,6 @@ XXH_PUBLIC_API XXH_errorcode XXH3_64bits_update (XXH_NOESCAPE XXH3_state_t* stat
  * @note
  *   Calling XXH3_64bits_digest() will not affect @p statePtr, so you can update,
  *   digest, and update again.
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_PUREF XXH64_hash_t  XXH3_64bits_digest (XXH_NOESCAPE const XXH3_state_t* statePtr);
 #endif /* !XXH_NO_STREAM */
@@ -1442,8 +1417,6 @@ XXH_PUBLIC_API XXH_PUREF XXH128_hash_t XXH3_128bits_withSecret(XXH_NOESCAPE cons
  *   - This function resets `statePtr` and generate a secret with default parameters.
  *   - Call it before @ref XXH3_128bits_update().
  *   - Digest will be equivalent to `XXH3_128bits()`.
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_errorcode XXH3_128bits_reset(XXH_NOESCAPE XXH3_state_t* statePtr);
 
@@ -1463,8 +1436,6 @@ XXH_PUBLIC_API XXH_errorcode XXH3_128bits_reset(XXH_NOESCAPE XXH3_state_t* state
  *   - This function resets `statePtr` and generate a secret from `seed`.
  *   - Call it before @ref XXH3_128bits_update().
  *   - Digest will be equivalent to `XXH3_128bits_withSeed()`.
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_errorcode XXH3_128bits_reset_withSeed(XXH_NOESCAPE XXH3_state_t* statePtr, XXH64_hash_t seed);
 /*!
@@ -1486,8 +1457,6 @@ XXH_PUBLIC_API XXH_errorcode XXH3_128bits_reset_withSeed(XXH_NOESCAPE XXH3_state
  * (secret's content should look like a bunch of random bytes).
  * When in doubt about the randomness of a candidate `secret`,
  * consider employing `XXH3_generateSecret()` instead (see below).
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_errorcode XXH3_128bits_reset_withSecret(XXH_NOESCAPE XXH3_state_t* statePtr, XXH_NOESCAPE const void* secret, size_t secretSize);
 
@@ -2465,7 +2434,11 @@ static void* XXH_memcpy(void* dest, const void* src, size_t size)
 #if !defined (__VMS) \
  && (defined (__cplusplus) \
  || (defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 */) )
-# include <stdint.h>
+# ifdef _AIX
+#   include <inttypes.h>
+# else
+#   include <stdint.h>
+# endif
   typedef uint8_t xxh_u8;
 #else
   typedef unsigned char xxh_u8;
@@ -3356,6 +3329,23 @@ static xxh_u64 XXH64_round(xxh_u64 acc, xxh_u64 input)
     acc += input * XXH_PRIME64_2;
     acc  = XXH_rotl64(acc, 31);
     acc *= XXH_PRIME64_1;
+#if (defined(__AVX512F__)) && !defined(XXH_ENABLE_AUTOVECTORIZE)
+    /*
+     * DISABLE AUTOVECTORIZATION:
+     * A compiler fence is used to prevent GCC and Clang from
+     * autovectorizing the XXH64 loop (pragmas and attributes don't work for some
+     * reason) without globally disabling AVX512.
+     *
+     * Autovectorization of XXH64 tends to be detrimental,
+     * though the exact outcome may change depending on exact cpu and compiler version.
+     * For information, it has been reported as detrimental for Skylake-X,
+     * but possibly beneficial for Zen4.
+     *
+     * The default is to disable auto-vectorization,
+     * but you can select to enable it instead using `XXH_ENABLE_AUTOVECTORIZE` build variable.
+     */
+    XXH_COMPILER_GUARD(acc);
+#endif
     return acc;
 }
 
@@ -6072,8 +6062,6 @@ static void XXH_alignedFree(void* p)
  * @return `NULL` on failure.
  *
  * @note Must be freed with XXH3_freeState().
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH3_state_t* XXH3_createState(void)
 {
@@ -6092,8 +6080,6 @@ XXH_PUBLIC_API XXH3_state_t* XXH3_createState(void)
  * @return @ref XXH_OK.
  *
  * @note Must be allocated with XXH3_createState().
- *
- * @see @ref streaming_example "Streaming Example"
  */
 XXH_PUBLIC_API XXH_errorcode XXH3_freeState(XXH3_state_t* statePtr)
 {

@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.domain
 
 import android.content.Context
 import dev.ragnarok.fenrir.api.model.RefreshToken
+import dev.ragnarok.fenrir.api.model.VKApiProcessAuthCode
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
 import dev.ragnarok.fenrir.api.model.response.PushSettingsResponse.ConversationsPush.ConversationPushItem
 import dev.ragnarok.fenrir.model.Account
@@ -38,6 +39,11 @@ interface IAccountsInteractor {
         offset: Int?,
         count: Int?
     ): Single<List<ContactConversation>>
+
+    fun processAuthCode(
+        accountId: Long,
+        auth_code: String, action: Int
+    ): Single<VKApiProcessAuthCode>
 
     fun getContactList(
         accountId: Long,

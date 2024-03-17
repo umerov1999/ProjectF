@@ -6,6 +6,7 @@ import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IAccountApi
 import dev.ragnarok.fenrir.api.model.CountersDto
 import dev.ragnarok.fenrir.api.model.RefreshToken
+import dev.ragnarok.fenrir.api.model.VKApiProcessAuthCode
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfoResponse
 import dev.ragnarok.fenrir.api.model.response.AccountsBannedResponse
@@ -177,6 +178,15 @@ internal class AccountApi(accountId: Long, provider: IServiceProvider) :
                 service
                     .importMessagesContacts(contacts)
                     .flatMapCompletable(checkResponseWithErrorHandling())
+            }
+    }
+
+    override fun processAuthCode(auth_code: String, action: Int): Single<VKApiProcessAuthCode> {
+        return provideService(IAccountService(), TokenType.USER)
+            .flatMap { service ->
+                service
+                    .processAuthCode(auth_code, action)
+                    .map(extractResponseWithErrorHandling())
             }
     }
 

@@ -727,6 +727,7 @@ size_t ZSTD_decodeSeqHeaders(ZSTD_DCtx* dctx, int* nbSeqPtr,
 
     /* FSE table descriptors */
     RETURN_ERROR_IF(ip+1 > iend, srcSize_wrong, ""); /* minimum possible size: 1 byte for symbol encoding types */
+    RETURN_ERROR_IF(*ip & 3, corruption_detected, ""); /* The last field, Reserved, must be all-zeroes. */
     {   symbolEncodingType_e const LLtype = (symbolEncodingType_e)(*ip >> 6);
         symbolEncodingType_e const OFtype = (symbolEncodingType_e)((*ip >> 4) & 3);
         symbolEncodingType_e const MLtype = (symbolEncodingType_e)((*ip >> 2) & 3);
@@ -1304,7 +1305,7 @@ ZSTD_decodeSequence(seqState_t* seqState, const ZSTD_longOffset_e longOffsets, c
                 } else {
                     offset = ofBase + ll0 + BIT_readBitsFast(&seqState->DStream, 1);
                     {   size_t temp = (offset==3) ? seqState->prevOffset[0] - 1 : seqState->prevOffset[offset];
-                        temp += !temp;   /* 0 is not valid; input is corrupted; force offset to 1 */
+                        temp -= !temp; /* 0 is not valid: input corrupted => force offset to -1 => corruption detected at execSequence */
                         if (offset != 1) seqState->prevOffset[2] = seqState->prevOffset[1];
                         seqState->prevOffset[1] = seqState->prevOffset[0];
                         seqState->prevOffset[0] = offset = temp;
@@ -1585,7 +1586,8 @@ ZSTD_decompressSequences_bodySplitLitBuffer( ZSTD_DCtx* dctx,
     /* last literal segment */
     if (dctx->litBufferLocation == ZSTD_split) {
         /* split hasn't been reached yet, first get dst then copy litExtraBuffer */
-        size_t const lastLLSize = litBufferEnd - litPtr;
+        size_t const lastLLSize = (size_t)(litBufferEnd - litPtr);
+        DEBUGLOG(6, "copy last literals from segment : %u", (U32)lastLLSize);
         RETURN_ERROR_IF(lastLLSize > (size_t)(oend - op), dstSize_tooSmall, "");
         if (op != NULL) {
             ZSTD_memmove(op, litPtr, lastLLSize);
@@ -1596,14 +1598,16 @@ ZSTD_decompressSequences_bodySplitLitBuffer( ZSTD_DCtx* dctx,
         dctx->litBufferLocation = ZSTD_not_in_dst;
     }
     /* copy last literals from internal buffer */
-    {   size_t const lastLLSize = litBufferEnd - litPtr;
+    {   size_t const lastLLSize = (size_t)(litBufferEnd - litPtr);
+        DEBUGLOG(6, "copy last literals from internal buffer : %u", (U32)lastLLSize);
         RETURN_ERROR_IF(lastLLSize > (size_t)(oend-op), dstSize_tooSmall, "");
         if (op != NULL) {
             ZSTD_memcpy(op, litPtr, lastLLSize);
             op += lastLLSize;
     }   }
 
-    return op-ostart;
+    DEBUGLOG(6, "decoded block of size %u bytes", (U32)(op - ostart));
+    return (size_t)(op - ostart);
 }
 
 FORCE_INLINE_TEMPLATE size_t
@@ -1673,14 +1677,16 @@ ZSTD_decompressSequences_body(ZSTD_DCtx* dctx,
     }
 
     /* last literal segment */
-    {   size_t const lastLLSize = litEnd - litPtr;
+    {   size_t const lastLLSize = (size_t)(litEnd - litPtr);
+        DEBUGLOG(6, "copy last literals : %u", (U32)lastLLSize);
         RETURN_ERROR_IF(lastLLSize > (size_t)(oend-op), dstSize_tooSmall, "");
         if (op != NULL) {
             ZSTD_memcpy(op, litPtr, lastLLSize);
             op += lastLLSize;
     }   }
 
-    return op-ostart;
+    DEBUGLOG(6, "decoded block of size %u bytes", (U32)(op - ostart));
+    return (size_t)(op - ostart);
 }
 
 static size_t
@@ -1878,7 +1884,7 @@ ZSTD_decompressSequencesLong_body(
         }
     }
 
-    return op-ostart;
+    return (size_t)(op - ostart);
 }
 
 static size_t
@@ -2068,7 +2074,7 @@ ZSTD_decompressBlock_internal(ZSTD_DCtx* dctx,
                         const void* src, size_t srcSize, const streaming_operation streaming)
 {   /* blockType == blockCompressed */
     const BYTE* ip = (const BYTE*)src;
-    DEBUGLOG(5, "ZSTD_decompressBlock_internal (size : %u)", (U32)srcSize);
+    DEBUGLOG(5, "ZSTD_decompressBlock_internal (cSize : %u)", (unsigned)srcSize);
 
     /* Note : the wording of the specification
      * allows compressed block to be sized exactly ZSTD_blockSizeMax(dctx).

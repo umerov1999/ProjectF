@@ -14,6 +14,7 @@ import dev.ragnarok.fenrir.dialog.ResolveDomainDialog
 import dev.ragnarok.fenrir.fragment.BrowserFragment
 import dev.ragnarok.fenrir.fragment.DocPreviewFragment
 import dev.ragnarok.fenrir.fragment.PreferencesFragment
+import dev.ragnarok.fenrir.fragment.accounts.processauthcode.ProcessAuthCodeFragment
 import dev.ragnarok.fenrir.fragment.attachments.postcreate.PostCreateFragment
 import dev.ragnarok.fenrir.fragment.attachments.repost.RepostFragment
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
@@ -999,12 +1000,10 @@ object PlaceFactory {
         )
     }
 
-
     fun getFriendsByPhonesPlace(accountId: Long): Place {
         return Place(Place.FRIENDS_BY_PHONES)
             .setArguments(FriendsByPhonesFragment.buildArgs(accountId))
     }
-
 
     fun getGiftsPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.GIFTS)
@@ -1014,6 +1013,11 @@ object PlaceFactory {
 
     fun getShortcutsPlace(): Place {
         return Place(Place.SHORTCUTS)
+    }
+
+    fun getProcessAuthCodePlace(accountId: Long, code: String): Place {
+        return Place(Place.AUTH_BY_CODE)
+            .setArguments(ProcessAuthCodeFragment.buildArgs(accountId, code))
     }
 
     fun getVotersPlace(

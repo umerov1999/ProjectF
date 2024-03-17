@@ -8,7 +8,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Matrix
+import android.graphics.ImageFormat
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
@@ -39,7 +39,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.DecodeHintType
+import com.google.zxing.LuminanceSource
 import com.google.zxing.MultiFormatReader
+import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.Result
 import com.google.zxing.ResultPoint
@@ -55,9 +57,9 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsResultAbs
 import dev.ragnarok.fenrir.util.Utils
-import java.nio.ByteBuffer
 import java.util.EnumMap
 import java.util.EnumSet
+
 
 class CameraScanActivity : NoMainActivity() {
     private lateinit var textureView: PreviewView
@@ -66,12 +68,15 @@ class CameraScanActivity : NoMainActivity() {
     private var flashButton: FloatingActionButton? = null
     private val reader: MultiFormatReader = MultiFormatReader()
     private var isFlash = false
+    private var mYBuffer = ByteArray(0)
 
     inner class DecoderResultPointCallback : ResultPointCallback {
         override fun foundPossibleResultPoint(point: ResultPoint) {
             finder?.pushPoints(point)
         }
     }
+
+    private class RotatedImage(var byteArray: ByteArray, var width: Int, var height: Int)
 
     init {
         val hints: MutableMap<DecodeHintType, Any> = EnumMap(DecodeHintType::class.java)
@@ -128,12 +133,7 @@ class CameraScanActivity : NoMainActivity() {
         }
     }
 
-    private fun detect(generatedQRCode: Bitmap): String? {
-        val width = generatedQRCode.width
-        val height = generatedQRCode.height
-        val pixels = IntArray(width * height)
-        generatedQRCode.getPixels(pixels, 0, width, 0, 0, width, height)
-        val source = RGBLuminanceSource(width, height, pixels)
+    private fun detect(source: LuminanceSource): String? {
         val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
 
         val result: Result = try {
@@ -149,56 +149,94 @@ class CameraScanActivity : NoMainActivity() {
         return result.text
     }
 
+    private fun toYBuffer(image: ImageProxy): RotatedImage {
+        var tmpRotationDegrees = image.imageInfo.rotationDegrees
+        if (tmpRotationDegrees % 90 != 0) {
+            tmpRotationDegrees = 0
+        }
+
+        val yPlane = image.getPlanes()[0]
+        val yBuffer = yPlane.getBuffer()
+        yBuffer.rewind()
+        val ySize = yBuffer.remaining()
+        if (mYBuffer.size != ySize) {
+            mYBuffer = ByteArray(ySize)
+        }
+
+        val widthImage = image.width
+        val heightImage = image.height
+
+        for (y in 0 until heightImage) {
+            for (x in 0 until widthImage) {
+                when (tmpRotationDegrees) {
+                    0 -> mYBuffer[x + y * widthImage] = yBuffer[x + y * widthImage]
+                    90 -> mYBuffer[x * heightImage + heightImage - y - 1] =
+                        yBuffer[x + y * widthImage]
+
+                    180 -> mYBuffer[widthImage * (heightImage - y - 1) + widthImage - x - 1] =
+                        yBuffer[x + y * widthImage]
+
+                    270 -> mYBuffer[y + x * heightImage] =
+                        yBuffer[y * widthImage + widthImage - x - 1]
+                }
+            }
+        }
+        val op = RotatedImage(mYBuffer, widthImage, heightImage)
+        if (tmpRotationDegrees != 180) {
+            op.height = widthImage
+            op.width = heightImage
+        }
+        return op
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun startCamera() {
-        val preview = Preview.Builder().build()
+        val resolution = ResolutionSelector.Builder()
+            .setResolutionStrategy(
+                ResolutionStrategy(
+                    Size(1280, 960),
+                    ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
+                )
+            ).setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+            .build()
+        val preview = Preview.Builder().setResolutionSelector(resolution).build()
         preview.setSurfaceProvider(textureView.surfaceProvider)
         val imageAnalysis = ImageAnalysis.Builder()
-            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-            .setResolutionSelector(
-                ResolutionSelector.Builder()
-                    .setResolutionStrategy(
-                        ResolutionStrategy(
-                            Size(1280, 960),
-                            ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
-                        )
-                    ).setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
-                    .build()
-            )
+            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
+            .setResolutionSelector(resolution)
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
         imageAnalysis.setAnalyzer(
             ContextCompat.getMainExecutor(this)
         ) { imageProxy: ImageProxy ->
-            @SuppressLint("UnsafeOptInUsageError") val image =
-                imageProxy.image ?: return@setAnalyzer imageProxy.close()
-            val aspect = image.width.coerceAtMost(image.height)
-            finder?.updatePreviewSize(aspect, aspect)
-            val firstBuffer = image.planes[0].buffer
-            firstBuffer.rewind()
-            val firstBytes = ByteArray(firstBuffer.remaining())
-            firstBuffer[firstBytes]
-            val bmp = Bitmap.createBitmap(
-                image.width, image.height,
-                Bitmap.Config.ARGB_8888
-            )
-            val buffer = ByteBuffer.wrap(firstBytes)
-            bmp.copyPixelsFromBuffer(buffer)
-            val m = Matrix()
-            m.postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
-            val res = Bitmap.createBitmap(
-                bmp,
-                (image.width - aspect) / 2,
-                (image.height - aspect) / 2,
-                aspect,
-                aspect,
-                m,
-                true
-            )
-            if (res != bmp) {
-                bmp.recycle()
+            if (ImageFormat.YUV_420_888 != imageProxy.getFormat() && ImageFormat.YUV_422_888 != imageProxy.getFormat() && ImageFormat.YUV_444_888 != imageProxy.getFormat() && imageProxy.planes.size == 3) {
+                imageProxy.close()
+                return@setAnalyzer
             }
-            val data = detect(res)
+
+            val ui = toYBuffer(imageProxy)
+
+            val imageWidth = ui.width
+            val imageHeight = ui.height
+
+            val aspect = imageWidth.coerceAtMost(imageHeight)
+            finder?.updatePreviewSize(aspect, aspect)
+
+            val left = (imageWidth - aspect) / 2
+            val top = (imageHeight - aspect) / 2
+
+            val source = PlanarYUVLuminanceSource(
+                ui.byteArray,
+                imageWidth,
+                imageHeight,
+                left,
+                top,
+                aspect,
+                aspect,
+                false
+            )
+
+            val data = detect(source)
             if (data.nonNullNoEmpty()) {
                 val retIntent = Intent()
                 retIntent.putExtra(Extra.URL, data)

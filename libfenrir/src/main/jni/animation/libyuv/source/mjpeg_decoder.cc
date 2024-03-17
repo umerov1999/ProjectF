@@ -13,12 +13,7 @@
 #ifdef HAVE_JPEG
 #include <assert.h>
 
-#if !defined(TARGET_IPHONE_SIMULATOR)
-#define TARGET_IPHONE_SIMULATOR 0
-#endif
-
-#if !defined(__pnacl__) && !defined(__CLR_VER) && \
-    !defined(COVERAGE_ENABLED) && !TARGET_IPHONE_SIMULATOR
+#if !defined(__pnacl__) && !defined(__CLR_VER) && !defined(COVERAGE_ENABLED)
 // Must be included before jpeglib.
 #include <setjmp.h>
 #define HAVE_SETJMP

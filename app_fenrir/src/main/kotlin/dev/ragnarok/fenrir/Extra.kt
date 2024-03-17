@@ -92,7 +92,6 @@ object Extra {
     const val SECTION_ID = "section_id"
     const val SELECTED = "selected"
     const val SERVICE = "service"
-    const val SESSION_ID = "session_id"
     const val SETTINGS = "settings"
     const val SHUFFLE_MODE = "shuffle_mode"
     const val SOURCE = "source"
@@ -115,4 +114,6 @@ object Extra {
     const val USER_ID = "user_id"
     const val VIDEO = "video"
     const val VIDEOS = "videos"
+    const val DETAILS = "details"
+    const val CODE = "code"
 }

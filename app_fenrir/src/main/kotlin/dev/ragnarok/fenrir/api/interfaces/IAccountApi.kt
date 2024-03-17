@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.api.interfaces
 import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.api.model.CountersDto
 import dev.ragnarok.fenrir.api.model.RefreshToken
+import dev.ragnarok.fenrir.api.model.VKApiProcessAuthCode
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfoResponse
 import dev.ragnarok.fenrir.api.model.response.AccountsBannedResponse
@@ -72,6 +73,9 @@ interface IAccountApi {
 
     @CheckResult
     fun importMessagesContacts(contacts: String?): Completable
+
+    @CheckResult
+    fun processAuthCode(auth_code: String, action: Int): Single<VKApiProcessAuthCode>
 
     @CheckResult
     fun getContactList(offset: Int?, count: Int?): Single<ContactsResponse>

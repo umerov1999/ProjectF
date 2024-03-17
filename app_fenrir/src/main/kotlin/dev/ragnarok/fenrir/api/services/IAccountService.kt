@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.api.services
 
 import dev.ragnarok.fenrir.api.model.CountersDto
 import dev.ragnarok.fenrir.api.model.RefreshToken
+import dev.ragnarok.fenrir.api.model.VKApiProcessAuthCode
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfoResponse
 import dev.ragnarok.fenrir.api.model.response.AccountsBannedResponse
@@ -167,6 +168,17 @@ class IAccountService : IServiceRest() {
             "account.importMessagesContacts",
             form("contacts" to contacts),
             VKResponse.serializer()
+        )
+    }
+
+    fun processAuthCode(
+        auth_code: String,
+        action: Int
+    ): Single<BaseResponse<VKApiProcessAuthCode>> {
+        return rest.request(
+            "auth.processAuthCode",
+            form("auth_code" to auth_code, "action" to action),
+            base(VKApiProcessAuthCode.serializer())
         )
     }
 

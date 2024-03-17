@@ -65,6 +65,7 @@ import dev.ragnarok.fenrir.fragment.NotificationPreferencesFragment
 import dev.ragnarok.fenrir.fragment.PreferencesFragment
 import dev.ragnarok.fenrir.fragment.PreferencesFragment.Companion.cleanCache
 import dev.ragnarok.fenrir.fragment.SecurityPreferencesFragment
+import dev.ragnarok.fenrir.fragment.accounts.processauthcode.ProcessAuthCodeFragment
 import dev.ragnarok.fenrir.fragment.attachments.commentcreate.CommentCreateFragment
 import dev.ragnarok.fenrir.fragment.attachments.commentedit.CommentEditFragment
 import dev.ragnarok.fenrir.fragment.attachments.postcreate.PostCreateFragment
@@ -211,6 +212,7 @@ import dev.ragnarok.fenrir.view.navigation.AbsNavigationView.NavigationDrawerCal
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.getInstance
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
 
 open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSectionResumeCallback,
     AppStyleable, PlaceProvider, ServiceConnection, UpdatableNavigation,
@@ -240,6 +242,21 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         if (result.resultCode == Activity.RESULT_OK) {
             val scanner = result.data?.extras?.getString(Extra.URL)
             if (scanner.nonNullNoEmpty()) {
+                val PATTERN: Pattern =
+                    Pattern.compile("qr\\.vk\\.com/ca[?]q=(\\w+)")
+                val matcher = PATTERN.matcher(scanner)
+                try {
+                    if (matcher.find()) {
+                        matcher.group(1)
+                            ?.let {
+                                PlaceFactory.getProcessAuthCodePlace(mAccountId, it)
+                                    .tryOpenWith(this)
+                                return@registerForActivityResult
+                            }
+                    }
+                } catch (ignored: NumberFormatException) {
+                }
+
                 MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.qr_code)
                     .setMessage(scanner)
@@ -1680,13 +1697,10 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.DRAWER_EDIT -> attachToFront(DrawerEditFragment.newInstance())
             Place.SIDE_DRAWER_EDIT -> attachToFront(SideDrawerEditFragment.newInstance())
             Place.CATALOG_V2_LIST_EDIT -> attachToFront(CatalogV2ListEditFragment.newInstance())
-            Place.ARTIST -> {
-                attachToFront(AudiosByArtistFragment.newInstance(args))
-            }
-
+            Place.ARTIST -> attachToFront(AudiosByArtistFragment.newInstance(args))
             Place.SHORT_LINKS -> attachToFront(ShortedLinksFragment.newInstance(args.getLong(Extra.ACCOUNT_ID)))
-
             Place.SHORTCUTS -> attachToFront(ShortcutsViewFragment())
+            Place.AUTH_BY_CODE -> attachToFront(ProcessAuthCodeFragment.newInstance(args))
             Place.IMPORTANT_MESSAGES -> attachToFront(
                 ImportantMessagesFragment.newInstance(
                     args.getLong(

@@ -1979,4 +1979,6 @@
     <string name="read_only_account">Read only account!</string>
     <string name="remove_feedback">Delete notification?</string>
     <string name="account_type">Account Type:</string>
+    <string name="ip">IP Address:</string>
+    <string name="auth_by_code">Auth By Code</string>
 </resources>

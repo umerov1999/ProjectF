@@ -117,7 +117,7 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
                 return UserDetailsPresenter(
                     requireArguments().getLong(Extra.ACCOUNT_ID),
                     requireArguments().getParcelableCompat(Extra.USER)!!,
-                    requireArguments().getParcelableCompat("details")!!,
+                    requireArguments().getParcelableCompat(Extra.DETAILS)!!,
                     saveInstanceState
                 )
             }
@@ -212,7 +212,7 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)
             args.putParcelable(Extra.USER, user)
-            args.putParcelable("details", details)
+            args.putParcelable(Extra.DETAILS, details)
             val fragment = UserDetailsFragment()
             fragment.arguments = args
             return fragment
