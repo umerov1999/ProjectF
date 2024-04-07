@@ -99,9 +99,8 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
     /* put sample parameters */
     audioCodecContext->bit_rate = 96000;
     audioCodecContext->sample_rate = 44100;
-    audioCodecContext->channels = 1;
     audioCodecContext->sample_fmt = encoder->sample_fmts[0];
-    audioCodecContext->channel_layout = AV_CH_LAYOUT_MONO;
+    audioCodecContext->ch_layout = AV_CHANNEL_LAYOUT_MONO;
 
     // some formats want stream headers to be separate
     if (outContext->oformat->flags & AVFMT_GLOBALHEADER)
@@ -126,10 +125,10 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
 
     // resampling
     swrContext = swr_alloc();
-    av_opt_set_channel_layout(swrContext, "in_channel_layout", fileCodecContext->channel_layout,
-                              0);
-    av_opt_set_channel_layout(swrContext, "out_channel_layout",
-                              audioCodecContext->channel_layout, 0);
+    av_opt_set_chlayout(swrContext, "in_chlayout", &fileCodecContext->ch_layout,
+                        0);
+    av_opt_set_chlayout(swrContext, "out_chlayout",
+                        &audioCodecContext->ch_layout, 0);
     av_opt_set_int(swrContext, "in_sample_rate", fileCodecContext->sample_rate, 0);
     av_opt_set_int(swrContext, "out_sample_rate", audioCodecContext->sample_rate, 0);
     av_opt_set_sample_fmt(swrContext, "in_sample_fmt", fileCodecContext->sample_fmt, 0);
@@ -141,8 +140,7 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
     if (!audioFrameDecoded) ERRRET("Could not allocate audio frame")
 
     audioFrameDecoded->format = fileCodecContext->sample_fmt;
-    audioFrameDecoded->channel_layout = fileCodecContext->channel_layout;
-    audioFrameDecoded->channels = fileCodecContext->channels;
+    audioFrameDecoded->ch_layout = fileCodecContext->ch_layout;
     audioFrameDecoded->sample_rate = fileCodecContext->sample_rate;
 
     audioFrameConverted = av_frame_alloc();
@@ -150,8 +148,7 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
 
     audioFrameConverted->nb_samples = audioCodecContext->frame_size;
     audioFrameConverted->format = audioCodecContext->sample_fmt;
-    audioFrameConverted->channel_layout = audioCodecContext->channel_layout;
-    audioFrameConverted->channels = audioCodecContext->channels;
+    audioFrameConverted->ch_layout = audioCodecContext->ch_layout;
     audioFrameConverted->sample_rate = audioCodecContext->sample_rate;
 
     inPacket = av_packet_alloc();
@@ -176,7 +173,7 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
 
                 if (av_samples_alloc(&convertedData,
                                      nullptr,
-                                     audioCodecContext->channels,
+                                     audioCodecContext->ch_layout.nb_channels,
                                      audioFrameConverted->nb_samples,
                                      audioCodecContext->sample_fmt, 0) < 0) ERRRET(
                         "Could not allocate samples")
@@ -191,7 +188,7 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
                 for (;;) {
                     outSamples = swr_get_out_samples(swrContext, 0);
                     if (outSamples <
-                        audioCodecContext->frame_size * audioCodecContext->channels)
+                        audioCodecContext->frame_size * audioCodecContext->ch_layout.nb_channels)
                         break; // see comments, thanks to @dajuric for fixing this
 
                     swr_convert(swrContext,
@@ -199,14 +196,14 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
                                 audioFrameConverted->nb_samples, nullptr, 0);
 
                     size_t buffer_size = av_samples_get_buffer_size(nullptr,
-                                                                    audioCodecContext->channels,
+                                                                    audioCodecContext->ch_layout.nb_channels,
                                                                     audioFrameConverted->nb_samples,
                                                                     audioCodecContext->sample_fmt,
                                                                     0);
                     if (buffer_size < 0) ERRRET("Invalid buffer size")
 
                     if (avcodec_fill_audio_frame(audioFrameConverted,
-                                                 audioCodecContext->channels,
+                                                 audioCodecContext->ch_layout.nb_channels,
                                                  audioCodecContext->sample_fmt,
                                                  convertedData,
                                                  buffer_size,
