@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
@@ -259,17 +258,11 @@ class CatalogV2SectionFragment :
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CatalogV2SectionPresenter> {
-        return object : IPresenterFactory<CatalogV2SectionPresenter> {
-            override fun create(): CatalogV2SectionPresenter {
-                return CatalogV2SectionPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getString(Extra.SECTION_ID)!!,
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CatalogV2SectionPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getString(Extra.SECTION_ID)!!,
+        saveInstanceState
+    )
 
     override fun onAddPlayList(index: Int, album: AudioPlaylist) {
         presenter?.onAdd(

@@ -12,7 +12,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.dialog.ImageSizeAlertDialog
 import dev.ragnarok.fenrir.fragment.attachments.abspostedit.AbsPostEditFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.EditingPostType
@@ -22,32 +21,28 @@ import dev.ragnarok.fenrir.model.WallEditorAttrs
 class PostCreateFragment : AbsPostEditFragment<PostCreatePresenter, IPostCreateView>(),
     IPostCreateView, MenuProvider {
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PostCreatePresenter> {
-        return object : IPresenterFactory<PostCreatePresenter> {
-            override fun create(): PostCreatePresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                @EditingPostType val type = requireArguments().getInt(EXTRA_EDITING_TYPE)
-                val bundle: ModelsBundle? = requireArguments().getParcelableCompat(Extra.BUNDLE)
-                val attrs: WallEditorAttrs = requireArguments().getParcelableCompat(Extra.ATTRS)!!
-                val links = requireArguments().getString(Extra.BODY)
-                val mime = requireArguments().getString(Extra.TYPE)
-                val streams = requireArguments().getParcelableArrayListCompat<Uri>(EXTRA_STREAMS)
-                requireArguments().remove(EXTRA_STREAMS) // only first start
-                requireArguments().remove(Extra.BODY)
-                return PostCreatePresenter(
-                    accountId,
-                    ownerId,
-                    type,
-                    bundle,
-                    attrs,
-                    streams,
-                    links,
-                    mime,
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): PostCreatePresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+        @EditingPostType val type = requireArguments().getInt(EXTRA_EDITING_TYPE)
+        val bundle: ModelsBundle? = requireArguments().getParcelableCompat(Extra.BUNDLE)
+        val attrs: WallEditorAttrs = requireArguments().getParcelableCompat(Extra.ATTRS)!!
+        val links = requireArguments().getString(Extra.BODY)
+        val mime = requireArguments().getString(Extra.TYPE)
+        val streams = requireArguments().getParcelableArrayListCompat<Uri>(EXTRA_STREAMS)
+        requireArguments().remove(EXTRA_STREAMS) // only first start
+        requireArguments().remove(Extra.BODY)
+        return PostCreatePresenter(
+            accountId,
+            ownerId,
+            type,
+            bundle,
+            attrs,
+            streams,
+            links,
+            mime,
+            saveInstanceState
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

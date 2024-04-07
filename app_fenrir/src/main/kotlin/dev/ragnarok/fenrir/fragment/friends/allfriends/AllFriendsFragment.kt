@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.DeltaOwnerActivity
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.DeltaOwner
@@ -77,16 +76,10 @@ class AllFriendsFragment : BaseMvpFragment<AllFriendsPresenter, IAllFriendsView>
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<AllFriendsPresenter> {
-        return object : IPresenterFactory<AllFriendsPresenter> {
-            override fun create(): AllFriendsPresenter {
-                return AllFriendsPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.USER_ID), saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = AllFriendsPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.USER_ID), saveInstanceState
+    )
 
     override fun notifyDatasetChanged(grouping: Boolean) {
         mAdapter?.setGroup(grouping)

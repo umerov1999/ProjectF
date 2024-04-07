@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.audio.audios.AudioRecyclerAdapter
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
@@ -226,17 +225,11 @@ class AudiosByArtistFragment : BaseMvpFragment<AudiosByArtistPresenter, IAudiosB
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<AudiosByArtistPresenter> {
-        return object : IPresenterFactory<AudiosByArtistPresenter> {
-            override fun create(): AudiosByArtistPresenter {
-                return AudiosByArtistPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getString(Extra.ARTIST)!!,
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = AudiosByArtistPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getString(Extra.ARTIST)!!,
+        saveInstanceState
+    )
 
     override fun displayList(audios: MutableList<Audio>) {
         mAudioRecyclerAdapter?.setData(audios)

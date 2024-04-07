@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModelStoreOwner
 import dev.ragnarok.filegallery.fragment.base.core.AbsPresenter
 import dev.ragnarok.filegallery.fragment.base.core.IMvpView
 import dev.ragnarok.filegallery.fragment.base.core.IPresenter
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import java.lang.ref.WeakReference
 import java.util.Collections
 
@@ -94,7 +93,7 @@ class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
     }
 
     interface IFactoryProvider<P : IPresenter<V>, V : IMvpView> {
-        fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<P>
+        fun getPresenterFactory(saveInstanceState: Bundle?): P
     }
 
     internal class PresenterLoader<P : IPresenter<V>, V : IMvpView> : ViewModel() {
@@ -103,7 +102,7 @@ class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
         fun make(savedInstanceState: Bundle?, factory: IFactoryProvider<P, V>): P {
             var presenter: P? = list[AbsPresenter.extractIdPresenter(savedInstanceState)]
             if (presenter == null) {
-                presenter = factory.getPresenterFactory(savedInstanceState).create()
+                presenter = factory.getPresenterFactory(savedInstanceState)
                 list[presenter.getPresenterId()] = presenter
             }
             return presenter

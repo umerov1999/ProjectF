@@ -11,7 +11,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.FavePage
@@ -120,17 +119,11 @@ class FavePagesFragment : BaseMvpFragment<FavePagesPresenter, IFavePagesView>(),
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FavePagesPresenter> {
-        return object : IPresenterFactory<FavePagesPresenter> {
-            override fun create(): FavePagesPresenter {
-                return FavePagesPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getBoolean(Extra.USER),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FavePagesPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getBoolean(Extra.USER),
+        saveInstanceState
+    )
 
     override fun onPageClick(index: Int, owner: Owner) {
         presenter?.fireOwnerClick(

@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.audio.audios.AudioRecyclerAdapter
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.conversationattachments.abschatattachments.AbsChatAttachmentsFragment
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
@@ -57,16 +56,9 @@ class ConversationAudiosFragment :
         (adapter as AudioRecyclerAdapter?)?.setData(data)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ChatAttachmentAudioPresenter> {
-        return object : IPresenterFactory<ChatAttachmentAudioPresenter> {
-            override fun create(): ChatAttachmentAudioPresenter {
-                return ChatAttachmentAudioPresenter(
-                    requireArguments().getLong(Extra.PEER_ID),
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    saveInstanceState
-                )
-            }
-
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ChatAttachmentAudioPresenter(
+        requireArguments().getLong(Extra.PEER_ID),
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        saveInstanceState
+    )
 }

@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.MarketAlbum
@@ -103,20 +102,14 @@ class ProductAlbumsFragment : BaseMvpFragment<ProductAlbumsPresenter, IProductAl
         )
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ProductAlbumsPresenter> {
-        return object : IPresenterFactory<ProductAlbumsPresenter> {
-            override fun create(): ProductAlbumsPresenter {
-                return ProductAlbumsPresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    requireActivity().getString(R.string.markets_all),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ProductAlbumsPresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ),
+        requireArguments().getLong(Extra.OWNER_ID),
+        requireActivity().getString(R.string.markets_all),
+        saveInstanceState
+    )
 
     override fun onResume() {
         super.onResume()

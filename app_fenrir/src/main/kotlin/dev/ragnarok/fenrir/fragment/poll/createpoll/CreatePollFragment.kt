@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.Poll
 
@@ -124,17 +123,11 @@ class CreatePollFragment : BaseMvpFragment<CreatePollPresenter, ICreatePollView>
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CreatePollPresenter> {
-        return object : IPresenterFactory<CreatePollPresenter> {
-            override fun create(): CreatePollPresenter {
-                return CreatePollPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CreatePollPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.OWNER_ID),
+        saveInstanceState
+    )
 
     override fun onResume() {
         super.onResume()

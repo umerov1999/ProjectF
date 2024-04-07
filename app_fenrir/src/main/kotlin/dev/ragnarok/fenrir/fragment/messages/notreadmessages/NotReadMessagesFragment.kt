@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter.OnMessageActionListener
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -331,26 +330,22 @@ class NotReadMessagesFragment :
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<NotReadMessagesPresenter> {
-        return object : IPresenterFactory<NotReadMessagesPresenter> {
-            override fun create(): NotReadMessagesPresenter {
-                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val focusTo = requireArguments().getInt(Extra.FOCUS_TO)
-                val incoming = requireArguments().getInt(Extra.INCOMING)
-                val outgoing = requireArguments().getInt(Extra.OUTGOING)
-                val peer: Peer = requireArguments().getParcelableCompat(Extra.PEER)!!
-                val unreadCount = requireArguments().getInt(Extra.COUNT)
-                return NotReadMessagesPresenter(
-                    aid,
-                    focusTo,
-                    incoming,
-                    outgoing,
-                    unreadCount,
-                    peer,
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): NotReadMessagesPresenter {
+        val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val focusTo = requireArguments().getInt(Extra.FOCUS_TO)
+        val incoming = requireArguments().getInt(Extra.INCOMING)
+        val outgoing = requireArguments().getInt(Extra.OUTGOING)
+        val peer: Peer = requireArguments().getParcelableCompat(Extra.PEER)!!
+        val unreadCount = requireArguments().getInt(Extra.COUNT)
+        return NotReadMessagesPresenter(
+            aid,
+            focusTo,
+            incoming,
+            outgoing,
+            unreadCount,
+            peer,
+            saveInstanceState
+        )
     }
 
     override fun onAvatarClick(message: Message, userId: Long, position: Int) {

@@ -5,22 +5,15 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.absownerslist.AbsOwnersListFragment
 import dev.ragnarok.fenrir.fragment.absownerslist.ISimpleOwnersView
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Owner
 
 class FeedBannedFragment : AbsOwnersListFragment<FeedBannedPresenter, ISimpleOwnersView>() {
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FeedBannedPresenter> {
-        return object : IPresenterFactory<FeedBannedPresenter> {
-            override fun create(): FeedBannedPresenter {
-                return FeedBannedPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FeedBannedPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        saveInstanceState
+    )
 
     override fun onLongClick(owner: Owner): Boolean {
         val menus = ModalBottomSheetDialogFragment.Builder()

@@ -55,7 +55,6 @@ import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.base.horizontal.ImageListAdapter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
@@ -450,198 +449,195 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         popupMenu.show()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PhotoPagerPresenter> =
-        object : IPresenterFactory<PhotoPagerPresenter> {
-            override fun create(): PhotoPagerPresenter {
-                val placeType = requireArguments().getInt(Extra.PLACE_TYPE)
-                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
-                when (placeType) {
-                    Place.SIMPLE_PHOTO_GALLERY -> {
-                        val index = requireArguments().getInt(Extra.INDEX)
-                        val needUpdate = requireArguments().getBoolean(EXTRA_NEED_UPDATE)
-                        val photos: ArrayList<Photo> =
-                            requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
-                        return SimplePhotoPresenter(
-                            photos,
-                            index,
-                            needUpdate,
-                            aid,
-                            saveInstanceState
-                        )
-                    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): PhotoPagerPresenter {
+        val placeType = requireArguments().getInt(Extra.PLACE_TYPE)
+        val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
+        when (placeType) {
+            Place.SIMPLE_PHOTO_GALLERY -> {
+                val index = requireArguments().getInt(Extra.INDEX)
+                val needUpdate = requireArguments().getBoolean(EXTRA_NEED_UPDATE)
+                val photos: ArrayList<Photo> =
+                    requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
+                return SimplePhotoPresenter(
+                    photos,
+                    index,
+                    needUpdate,
+                    aid,
+                    saveInstanceState
+                )
+            }
 
-                    Place.SIMPLE_PHOTO_GALLERY_NATIVE -> {
-                        val index = requireArguments().getInt(Extra.INDEX)
-                        val needUpdate = requireArguments().getBoolean(EXTRA_NEED_UPDATE)
-                        if (!FenrirNative.isNativeLoaded || !Settings.get()
-                                .main().isNative_parcel_photo
-                        ) {
-                            val photos: ArrayList<Photo> =
-                                requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
-                            return SimplePhotoPresenter(
-                                photos,
-                                index,
-                                needUpdate,
-                                aid,
-                                saveInstanceState
-                            )
-                        } else {
-                            var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
-                            requireArguments().putLong(EXTRA_PHOTOS, 0)
-                            if (!Utils.isParcelNativeRegistered(source)) {
-                                source = 0
-                            }
-                            Utils.unregisterParcelNative(source)
-                            return SimplePhotoPresenter(
-                                source,
-                                index,
-                                needUpdate,
-                                aid,
-                                saveInstanceState
-                            )
-                        }
+            Place.SIMPLE_PHOTO_GALLERY_NATIVE -> {
+                val index = requireArguments().getInt(Extra.INDEX)
+                val needUpdate = requireArguments().getBoolean(EXTRA_NEED_UPDATE)
+                if (!FenrirNative.isNativeLoaded || !Settings.get()
+                        .main().isNative_parcel_photo
+                ) {
+                    val photos: ArrayList<Photo> =
+                        requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
+                    return SimplePhotoPresenter(
+                        photos,
+                        index,
+                        needUpdate,
+                        aid,
+                        saveInstanceState
+                    )
+                } else {
+                    var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
+                    requireArguments().putLong(EXTRA_PHOTOS, 0)
+                    if (!Utils.isParcelNativeRegistered(source)) {
+                        source = 0
                     }
-
-                    Place.VK_PHOTO_ALBUM_GALLERY_SAVED -> {
-                        val indexx = requireArguments().getInt(Extra.INDEX)
-                        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                        val albumId = requireArguments().getInt(Extra.ALBUM_ID)
-                        val readOnly = requireArguments().getBoolean(Extra.READONLY)
-                        val invert = requireArguments().getBoolean(Extra.INVERT)
-                        val source: TmpSource =
-                            requireArguments().getParcelableCompat(Extra.SOURCE)!!
-                        return PhotoAlbumPagerPresenter(
-                            indexx,
-                            aid,
-                            ownerId,
-                            albumId,
-                            source,
-                            readOnly,
-                            invert,
-                            saveInstanceState
-                        )
-                    }
-
-                    Place.VK_PHOTO_ALBUM_GALLERY_NATIVE -> {
-                        val indexx = requireArguments().getInt(Extra.INDEX)
-                        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                        val albumId = requireArguments().getInt(Extra.ALBUM_ID)
-                        val readOnly = requireArguments().getBoolean(Extra.READONLY)
-                        val invert = requireArguments().getBoolean(Extra.INVERT)
-                        var nativePointer = requireArguments().getLong(
-                            EXTRA_PHOTOS
-                        )
-                        if (!Utils.isParcelNativeRegistered(nativePointer)) {
-                            nativePointer = 0
-                        }
-                        Utils.unregisterParcelNative(nativePointer)
-                        requireArguments().putLong(EXTRA_PHOTOS, 0)
-                        if (FenrirNative.isNativeLoaded && Settings.get()
-                                .main().isNative_parcel_photo && nativePointer != 0L
-                        ) {
-                            return PhotoAlbumPagerPresenter(
-                                indexx,
-                                aid,
-                                ownerId,
-                                albumId,
-                                nativePointer,
-                                readOnly,
-                                invert,
-                                saveInstanceState
-                            )
-                        }
-                        return PhotoAlbumPagerPresenter(
-                            indexx,
-                            aid,
-                            ownerId,
-                            albumId,
-                            ArrayList(),
-                            readOnly,
-                            invert,
-                            saveInstanceState
-                        )
-                    }
-
-                    Place.VK_PHOTO_ALBUM_GALLERY -> {
-                        val indexx = requireArguments().getInt(Extra.INDEX)
-                        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                        val albumId = requireArguments().getInt(Extra.ALBUM_ID)
-                        val readOnly = requireArguments().getBoolean(Extra.READONLY)
-                        val invert = requireArguments().getBoolean(Extra.INVERT)
-                        val photos_album: ArrayList<Photo> =
-                            requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
-                        return PhotoAlbumPagerPresenter(
-                            indexx,
-                            aid,
-                            ownerId,
-                            albumId,
-                            photos_album,
-                            readOnly,
-                            invert,
-                            saveInstanceState
-                        )
-                    }
-
-                    Place.FAVE_PHOTOS_GALLERY -> {
-                        val findex = requireArguments().getInt(Extra.INDEX)
-                        if (!FenrirNative.isNativeLoaded || !Settings.get()
-                                .main().isNative_parcel_photo
-                        ) {
-                            val favePhotos: ArrayList<Photo> =
-                                requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
-                            return FavePhotoPagerPresenter(
-                                favePhotos,
-                                findex,
-                                aid,
-                                saveInstanceState
-                            )
-                        } else {
-                            var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
-                            requireArguments().putLong(EXTRA_PHOTOS, 0)
-                            if (!Utils.isParcelNativeRegistered(source)) {
-                                source = 0
-                            }
-                            Utils.unregisterParcelNative(source)
-                            return FavePhotoPagerPresenter(
-                                source,
-                                findex,
-                                aid,
-                                saveInstanceState
-                            )
-                        }
-                    }
-
-                    Place.VK_PHOTO_TMP_SOURCE -> {
-                        if (!FenrirNative.isNativeLoaded || !Settings.get()
-                                .main().isNative_parcel_photo
-                        ) {
-                            val source: TmpSource =
-                                requireArguments().getParcelableCompat(Extra.SOURCE)!!
-                            return TmpGalleryPagerPresenter(
-                                aid,
-                                source,
-                                requireArguments().getInt(Extra.INDEX),
-                                saveInstanceState
-                            )
-                        } else {
-                            var source: Long = requireArguments().getLong(Extra.SOURCE)
-                            requireArguments().putLong(Extra.SOURCE, 0)
-                            if (!Utils.isParcelNativeRegistered(source)) {
-                                source = 0
-                            }
-                            Utils.unregisterParcelNative(source)
-                            return TmpGalleryPagerPresenter(
-                                aid,
-                                source,
-                                requireArguments().getInt(Extra.INDEX),
-                                saveInstanceState
-                            )
-                        }
-                    }
+                    Utils.unregisterParcelNative(source)
+                    return SimplePhotoPresenter(
+                        source,
+                        index,
+                        needUpdate,
+                        aid,
+                        saveInstanceState
+                    )
                 }
-                throw UnsupportedOperationException()
+            }
+
+            Place.VK_PHOTO_ALBUM_GALLERY_SAVED -> {
+                val indexx = requireArguments().getInt(Extra.INDEX)
+                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+                val albumId = requireArguments().getInt(Extra.ALBUM_ID)
+                val readOnly = requireArguments().getBoolean(Extra.READONLY)
+                val invert = requireArguments().getBoolean(Extra.INVERT)
+                val source: TmpSource =
+                    requireArguments().getParcelableCompat(Extra.SOURCE)!!
+                return PhotoAlbumPagerPresenter(
+                    indexx,
+                    aid,
+                    ownerId,
+                    albumId,
+                    source,
+                    readOnly,
+                    invert,
+                    saveInstanceState
+                )
+            }
+
+            Place.VK_PHOTO_ALBUM_GALLERY_NATIVE -> {
+                val indexx = requireArguments().getInt(Extra.INDEX)
+                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+                val albumId = requireArguments().getInt(Extra.ALBUM_ID)
+                val readOnly = requireArguments().getBoolean(Extra.READONLY)
+                val invert = requireArguments().getBoolean(Extra.INVERT)
+                var nativePointer = requireArguments().getLong(
+                    EXTRA_PHOTOS
+                )
+                if (!Utils.isParcelNativeRegistered(nativePointer)) {
+                    nativePointer = 0
+                }
+                Utils.unregisterParcelNative(nativePointer)
+                requireArguments().putLong(EXTRA_PHOTOS, 0)
+                if (FenrirNative.isNativeLoaded && Settings.get()
+                        .main().isNative_parcel_photo && nativePointer != 0L
+                ) {
+                    return PhotoAlbumPagerPresenter(
+                        indexx,
+                        aid,
+                        ownerId,
+                        albumId,
+                        nativePointer,
+                        readOnly,
+                        invert,
+                        saveInstanceState
+                    )
+                }
+                return PhotoAlbumPagerPresenter(
+                    indexx,
+                    aid,
+                    ownerId,
+                    albumId,
+                    ArrayList(),
+                    readOnly,
+                    invert,
+                    saveInstanceState
+                )
+            }
+
+            Place.VK_PHOTO_ALBUM_GALLERY -> {
+                val indexx = requireArguments().getInt(Extra.INDEX)
+                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+                val albumId = requireArguments().getInt(Extra.ALBUM_ID)
+                val readOnly = requireArguments().getBoolean(Extra.READONLY)
+                val invert = requireArguments().getBoolean(Extra.INVERT)
+                val photos_album: ArrayList<Photo> =
+                    requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
+                return PhotoAlbumPagerPresenter(
+                    indexx,
+                    aid,
+                    ownerId,
+                    albumId,
+                    photos_album,
+                    readOnly,
+                    invert,
+                    saveInstanceState
+                )
+            }
+
+            Place.FAVE_PHOTOS_GALLERY -> {
+                val findex = requireArguments().getInt(Extra.INDEX)
+                if (!FenrirNative.isNativeLoaded || !Settings.get()
+                        .main().isNative_parcel_photo
+                ) {
+                    val favePhotos: ArrayList<Photo> =
+                        requireArguments().getParcelableArrayListCompat(EXTRA_PHOTOS)!!
+                    return FavePhotoPagerPresenter(
+                        favePhotos,
+                        findex,
+                        aid,
+                        saveInstanceState
+                    )
+                } else {
+                    var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
+                    requireArguments().putLong(EXTRA_PHOTOS, 0)
+                    if (!Utils.isParcelNativeRegistered(source)) {
+                        source = 0
+                    }
+                    Utils.unregisterParcelNative(source)
+                    return FavePhotoPagerPresenter(
+                        source,
+                        findex,
+                        aid,
+                        saveInstanceState
+                    )
+                }
+            }
+
+            Place.VK_PHOTO_TMP_SOURCE -> {
+                if (!FenrirNative.isNativeLoaded || !Settings.get()
+                        .main().isNative_parcel_photo
+                ) {
+                    val source: TmpSource =
+                        requireArguments().getParcelableCompat(Extra.SOURCE)!!
+                    return TmpGalleryPagerPresenter(
+                        aid,
+                        source,
+                        requireArguments().getInt(Extra.INDEX),
+                        saveInstanceState
+                    )
+                } else {
+                    var source: Long = requireArguments().getLong(Extra.SOURCE)
+                    requireArguments().putLong(Extra.SOURCE, 0)
+                    if (!Utils.isParcelNativeRegistered(source)) {
+                        source = 0
+                    }
+                    Utils.unregisterParcelNative(source)
+                    return TmpGalleryPagerPresenter(
+                        aid,
+                        source,
+                        requireArguments().getInt(Extra.INDEX),
+                        saveInstanceState
+                    )
+                }
             }
         }
+        throw UnsupportedOperationException()
+    }
 
     override fun setupLikeButton(visible: Boolean, like: Boolean, likes: Int) {
         mButtonLike?.visibility = if (visible) View.VISIBLE else View.GONE
@@ -834,10 +830,10 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusbarColored = CurrentTheme.getStatusBarColor(this)
+        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
+        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
+        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
         @ColorInt val navigationColor =
             if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor

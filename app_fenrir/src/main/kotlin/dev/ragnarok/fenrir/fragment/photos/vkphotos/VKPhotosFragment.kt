@@ -27,7 +27,6 @@ import dev.ragnarok.fenrir.activity.PhotosActivity
 import dev.ragnarok.fenrir.dialog.ImageSizeAlertDialog
 import dev.ragnarok.fenrir.dialog.ImageSizeAlertDialog.Companion.showUploadPhotoSizeIfNeed
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.photos.vkphotos.BigVKPhotosAdapter.UploadActionListener
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -420,25 +419,21 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<VKPhotosPresenter> {
-        return object : IPresenterFactory<VKPhotosPresenter> {
-            override fun create(): VKPhotosPresenter {
-                val ownerWrapper: ParcelableOwnerWrapper? =
-                    requireArguments().getParcelableCompat(Extra.OWNER)
-                val owner = ownerWrapper?.get()
-                val album: PhotoAlbum? = requireArguments().getParcelableCompat(Extra.ALBUM)
-                return VKPhotosPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    requireArguments().getInt(Extra.ALBUM_ID),
-                    requireArguments().getString(Extra.ACTION, IVKPhotosView.ACTION_SHOW_PHOTOS),
-                    owner,
-                    album,
-                    requireArguments().getInt(Extra.SELECTED),
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): VKPhotosPresenter {
+        val ownerWrapper: ParcelableOwnerWrapper? =
+            requireArguments().getParcelableCompat(Extra.OWNER)
+        val owner = ownerWrapper?.get()
+        val album: PhotoAlbum? = requireArguments().getParcelableCompat(Extra.ALBUM)
+        return VKPhotosPresenter(
+            requireArguments().getLong(Extra.ACCOUNT_ID),
+            requireArguments().getLong(Extra.OWNER_ID),
+            requireArguments().getInt(Extra.ALBUM_ID),
+            requireArguments().getString(Extra.ACTION, IVKPhotosView.ACTION_SHOW_PHOTOS),
+            owner,
+            album,
+            requireArguments().getInt(Extra.SELECTED),
+            saveInstanceState
+        )
     }
 
     companion object {

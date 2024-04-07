@@ -5,7 +5,6 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.docs.DocsAdapter
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.DocumentSearchCriteria
@@ -40,17 +39,11 @@ class DocsSearchFragment :
         return false
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<DocsSearchPresenter> {
-        return object : IPresenterFactory<DocsSearchPresenter> {
-            override fun create(): DocsSearchPresenter {
-                return DocsSearchPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.CRITERIA),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = DocsSearchPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.CRITERIA),
+        saveInstanceState
+    )
 
     companion object {
 

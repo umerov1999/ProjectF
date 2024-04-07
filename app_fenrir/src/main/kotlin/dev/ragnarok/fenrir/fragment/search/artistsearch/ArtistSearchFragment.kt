@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.api.model.VKApiArtist
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.ArtistSearchCriteria
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -30,17 +29,11 @@ class ArtistSearchFragment :
         return LinearLayoutManager(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ArtistSearchPresenter> {
-        return object : IPresenterFactory<ArtistSearchPresenter> {
-            override fun create(): ArtistSearchPresenter {
-                return ArtistSearchPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.CRITERIA),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ArtistSearchPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.CRITERIA),
+        saveInstanceState
+    )
 
     override fun onArtistClick(id: String) {
         presenter?.fireArtistClick(

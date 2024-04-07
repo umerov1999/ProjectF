@@ -5,7 +5,6 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.DialogsSearchCriteria
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -14,15 +13,11 @@ import dev.ragnarok.fenrir.model.Conversation
 class DialogsSearchFragment :
     AbsSearchFragment<DialogsSearchPresenter, IDialogsSearchView, Conversation, DialogPreviewAdapter>(),
     IDialogsSearchView, DialogPreviewAdapter.ActionListener {
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<DialogsSearchPresenter> {
-        return object : IPresenterFactory<DialogsSearchPresenter> {
-            override fun create(): DialogsSearchPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val criteria: DialogsSearchCriteria? =
-                    requireArguments().getParcelableCompat(Extra.CRITERIA)
-                return DialogsSearchPresenter(accountId, criteria, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): DialogsSearchPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val criteria: DialogsSearchCriteria? =
+            requireArguments().getParcelableCompat(Extra.CRITERIA)
+        return DialogsSearchPresenter(accountId, criteria, saveInstanceState)
     }
 
     override fun setAdapterData(adapter: DialogPreviewAdapter, data: MutableList<Conversation>) {

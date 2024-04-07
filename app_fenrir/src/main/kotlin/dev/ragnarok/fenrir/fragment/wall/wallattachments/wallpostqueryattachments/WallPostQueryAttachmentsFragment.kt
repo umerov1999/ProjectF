@@ -16,7 +16,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.wall.WallAdapter
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
@@ -114,17 +113,12 @@ class WallPostQueryAttachmentsFragment :
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<WallPostQueryAttachmentsPresenter> {
-        return object : IPresenterFactory<WallPostQueryAttachmentsPresenter> {
-            override fun create(): WallPostQueryAttachmentsPresenter {
-                return WallPostQueryAttachmentsPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        WallPostQueryAttachmentsPresenter(
+            requireArguments().getLong(Extra.ACCOUNT_ID),
+            requireArguments().getLong(Extra.OWNER_ID),
+            saveInstanceState
+        )
 
     override fun toolbarTitle(title: String) {
         val actionBar = supportToolbarFor(this)

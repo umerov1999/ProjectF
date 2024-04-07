@@ -1229,8 +1229,8 @@ public:
      * @param[in] data A pointer to a memory location where the content of the picture file is stored.
      * @param[in] size The size in bytes of the memory occupied by the @p data.
      * @param[in] mimeType Mimetype or extension of data such as "jpg", "jpeg", "lottie", "svg", "svg+xml", "png", etc. In case an empty string or an unknown type is provided, the loaders will be tried one by one.
-     * @param[in] copy If @c true the data are copied into the engine local buffer, otherwise they are not.
      * @param[in] rpath A resource directory path, if the @p data needs to access any external resources.
+     * @param[in] copy If @c true the data are copied into the engine local buffer, otherwise they are not.
      *
      * @retval Result::Success When succeed.
      * @retval Result::InvalidArguments In case no data are provided or the @p size is zero or less.
@@ -1785,7 +1785,6 @@ public:
  *
  * This class supports the display and control of animation frames.
  *
- * @note Experimental API
  */
 
 class TVG_API Animation
@@ -1804,7 +1803,6 @@ public:
      *
      * @see totalFrame()
      *
-     * @note Experimental API
      */
     Result frame(float no) noexcept;
 
@@ -1819,7 +1817,6 @@ public:
      *
      * @warning The picture instance is owned by Animation. It should not be deleted manually.
      *
-     * @note Experimental API
      */
     Picture* picture() const noexcept;
 
@@ -1833,7 +1830,6 @@ public:
      * @see Animation::frame(float no)
      * @see Animation::totalFrame()
      *
-     * @note Experimental API
      */
     float curFrame() const noexcept;
 
@@ -1845,7 +1841,6 @@ public:
      * @note Frame numbering starts from 0.
      * @note If the Picture is not properly configured, this function will return 0.
      *
-     * @note Experimental API
      */
     float totalFrame() const noexcept;
 
@@ -1856,7 +1851,6 @@ public:
      *
      * @note If the Picture is not properly configured, this function will return 0.
      *
-     * @% Experimental API
      */
     float duration() const noexcept;
 
@@ -1865,7 +1859,6 @@ public:
      *
      * @return A new Animation object.
      *
-     * @note Experimental API
      */
     static std::unique_ptr<Animation> gen() noexcept;
 

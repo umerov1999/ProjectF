@@ -13,7 +13,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.model.BirthDay
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.place.PlaceFactory
@@ -79,14 +78,10 @@ class BirthDayFragment : BaseMvpFragment<BirthDayPresenter, IBirthDayView>(),
         mlinear?.scrollToPosition(pos)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<BirthDayPresenter> {
-        return object : IPresenterFactory<BirthDayPresenter> {
-            override fun create(): BirthDayPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                return BirthDayPresenter(accountId, ownerId, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): BirthDayPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+        return BirthDayPresenter(accountId, ownerId, saveInstanceState)
     }
 
     companion object {

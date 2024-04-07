@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.fragment.localserver.videoslocalserver.LocalServerVideosAdapter.VideoOnClickListener
 import dev.ragnarok.filegallery.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.filegallery.listener.PicassoPauseOnScrollListener
@@ -65,15 +64,9 @@ class VideosLocalServerFragment :
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<VideosLocalServerPresenter> {
-        return object : IPresenterFactory<VideosLocalServerPresenter> {
-            override fun create(): VideosLocalServerPresenter {
-                return VideosLocalServerPresenter(
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = VideosLocalServerPresenter(
+        saveInstanceState
+    )
 
     override fun displayList(videos: List<Video>) {
         mVideoRecyclerAdapter?.setData(videos)

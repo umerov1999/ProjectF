@@ -12,7 +12,6 @@ import androidx.annotation.StringRes
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.listener.BackPressCallback
 import dev.ragnarok.filegallery.view.KeyboardView
 import dev.ragnarok.filegallery.view.KeyboardView.OnKeyboardClickListener
@@ -77,13 +76,8 @@ class CreatePinFragment : BaseMvpFragment<CreatePinPresenter, ICreatePinView>(),
         requireActivity().finish()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CreatePinPresenter> {
-        return object : IPresenterFactory<CreatePinPresenter> {
-            override fun create(): CreatePinPresenter {
-                return CreatePinPresenter(saveInstanceState)
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        CreatePinPresenter(saveInstanceState)
 
     override fun onButtonClick(number: Int) {
         presenter?.fireDigitClick(

@@ -14,24 +14,19 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit.AbsAttachmentsEditFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Comment
 
 class CommentEditFragment : AbsAttachmentsEditFragment<CommentEditPresenter, ICommentEditView>(),
     ICommentEditView, MenuProvider {
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommentEditPresenter> {
-        return object : IPresenterFactory<CommentEditPresenter> {
-            override fun create(): CommentEditPresenter {
-                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val CommentThread: Int? =
-                    if (requireArguments().containsKey(Extra.COMMENT_ID)) requireArguments().getInt(
-                        Extra.COMMENT_ID
-                    ) else null
-                val comment: Comment = requireArguments().getParcelableCompat(Extra.COMMENT)!!
-                return CommentEditPresenter(comment, aid, CommentThread, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): CommentEditPresenter {
+        val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val CommentThread: Int? =
+            if (requireArguments().containsKey(Extra.COMMENT_ID)) requireArguments().getInt(
+                Extra.COMMENT_ID
+            ) else null
+        val comment: Comment = requireArguments().getParcelableCompat(Extra.COMMENT)!!
+        return CommentEditPresenter(comment, aid, CommentThread, saveInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

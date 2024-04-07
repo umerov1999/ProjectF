@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
@@ -197,16 +196,10 @@ class FeedbackVKOfficialFragment :
         presenter?.fireRefresh()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FeedbackVKOfficialPresenter> {
-        return object : IPresenterFactory<FeedbackVKOfficialPresenter> {
-            override fun create(): FeedbackVKOfficialPresenter {
-                return FeedbackVKOfficialPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FeedbackVKOfficialPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        saveInstanceState
+    )
 
     companion object {
         fun newInstance(accountId: Long): FeedbackVKOfficialFragment {

@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.Gift
@@ -99,17 +98,11 @@ class GiftsFragment : BaseMvpFragment<GiftsPresenter, IGiftsView>(), IGiftsView,
         getOwnerWallPlace(accountId, ownerId, null).tryOpenWith(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<GiftsPresenter> {
-        return object : IPresenterFactory<GiftsPresenter> {
-            override fun create(): GiftsPresenter {
-                return GiftsPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID), requireArguments().getLong(
-                        Extra.OWNER_ID
-                    ), saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = GiftsPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID), requireArguments().getLong(
+            Extra.OWNER_ID
+        ), saveInstanceState
+    )
 
     override fun onResume() {
         super.onResume()

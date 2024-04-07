@@ -13,7 +13,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.VoiceActionListener
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter.OnMessageActionListener
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
@@ -171,15 +170,11 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
         mAdapter?.notifyItemBindableChanged(index)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FwdsPresenter> {
-        return object : IPresenterFactory<FwdsPresenter> {
-            override fun create(): FwdsPresenter {
-                val messages: ArrayList<Message> =
-                    requireArguments().getParcelableArrayListCompat(Extra.MESSAGES)!!
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                return FwdsPresenter(accountId, messages, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): FwdsPresenter {
+        val messages: ArrayList<Message> =
+            requireArguments().getParcelableArrayListCompat(Extra.MESSAGES)!!
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        return FwdsPresenter(accountId, messages, saveInstanceState)
     }
 
     override fun onVoiceHolderBinded(voiceMessageId: Int, voiceHolderId: Int) {

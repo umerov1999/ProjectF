@@ -12,7 +12,6 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.Article
@@ -108,17 +107,11 @@ class FaveArticlesFragment : BaseMvpFragment<FaveArticlesPresenter, IFaveArticle
         getSimpleGalleryPlace(accountId, temp, 0, false).tryOpenWith(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FaveArticlesPresenter> {
-        return object : IPresenterFactory<FaveArticlesPresenter> {
-            override fun create(): FaveArticlesPresenter {
-                return FaveArticlesPresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ), saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FaveArticlesPresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ), saveInstanceState
+    )
 
     override fun onArticleClick(article: Article) {
         presenter?.fireArticleClick(

@@ -16,7 +16,6 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.selectprofiles.SelectProfilesActivity.Companion.createIntent
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.communities.communitycontrol.communityban.CommunityBannedAdapter
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.PeopleSearchCriteria
@@ -75,17 +74,11 @@ class CommunityBlacklistFragment :
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunityBlacklistPresenter> {
-        return object : IPresenterFactory<CommunityBlacklistPresenter> {
-            override fun create(): CommunityBlacklistPresenter {
-                return CommunityBlacklistPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.GROUP_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CommunityBlacklistPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.GROUP_ID),
+        saveInstanceState
+    )
 
     override fun displayRefreshing(loadingNow: Boolean) {
         if (mSwipeRefreshLayout != null) {

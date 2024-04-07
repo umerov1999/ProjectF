@@ -13,7 +13,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.audio.audios.AudioRecyclerAdapter
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.AudioSearchCriteria
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -120,17 +119,11 @@ class AudiosSearchFragment :
         return LinearLayoutManager(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<AudiosSearchPresenter> {
-        return object : IPresenterFactory<AudiosSearchPresenter> {
-            override fun create(): AudiosSearchPresenter {
-                return AudiosSearchPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.CRITERIA),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = AudiosSearchPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.CRITERIA),
+        saveInstanceState
+    )
 
     companion object {
         const val ACTION_SELECT = "AudiosSearchFragment.ACTION_SELECT"

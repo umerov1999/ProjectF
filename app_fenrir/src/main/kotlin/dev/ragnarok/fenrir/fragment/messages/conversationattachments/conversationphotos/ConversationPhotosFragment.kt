@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.fave.favephotos.FavePhotosAdapter
 import dev.ragnarok.fenrir.fragment.fave.favephotos.FavePhotosAdapter.PhotoConversationListener
 import dev.ragnarok.fenrir.fragment.messages.conversationattachments.abschatattachments.AbsChatAttachmentsFragment
@@ -51,14 +50,10 @@ class ConversationPhotosFragment :
         )
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ChatAttachmentPhotoPresenter> {
-        return object : IPresenterFactory<ChatAttachmentPhotoPresenter> {
-            override fun create(): ChatAttachmentPhotoPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val peerId = requireArguments().getLong(Extra.PEER_ID)
-                return ChatAttachmentPhotoPresenter(peerId, accountId, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): ChatAttachmentPhotoPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val peerId = requireArguments().getLong(Extra.PEER_ID)
+        return ChatAttachmentPhotoPresenter(peerId, accountId, saveInstanceState)
     }
 
     override fun displayAttachments(data: MutableList<Photo>) {

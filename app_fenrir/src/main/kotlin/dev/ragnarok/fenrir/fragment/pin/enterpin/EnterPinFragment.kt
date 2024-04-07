@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
@@ -76,13 +75,8 @@ class EnterPinFragment : BaseMvpFragment<EnterPinPresenter, IEnterPinView>(), IE
         mBiometricPrompt.authenticate(promptInfo)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<EnterPinPresenter> {
-        return object : IPresenterFactory<EnterPinPresenter> {
-            override fun create(): EnterPinPresenter {
-                return EnterPinPresenter(saveInstanceState)
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        EnterPinPresenter(saveInstanceState)
 
     override fun displayPin(value: IntArray, noValue: Int) {
         check(value.size == mValuesCircles.size) { "Invalid pin length, view: " + mValuesCircles.size + ", target: " + value.size }

@@ -13,7 +13,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.LoadMoreState
@@ -99,14 +98,10 @@ class TopicsFragment : BaseMvpFragment<TopicsPresenter, ITopicsView>(),
             .tryOpenWith(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<TopicsPresenter> {
-        return object : IPresenterFactory<TopicsPresenter> {
-            override fun create(): TopicsPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                return TopicsPresenter(accountId, ownerId, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): TopicsPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+        return TopicsPresenter(accountId, ownerId, saveInstanceState)
     }
 
     override fun onTopicClick(topic: Topic) {

@@ -21,7 +21,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.selectprofiles.SelectProfilesActivity.Companion.createIntent
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.friends.friendstabs.FriendsTabsFragment
 import dev.ragnarok.fenrir.fragment.search.peoplesearch.PeopleAdapter
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
@@ -168,16 +167,10 @@ class UserBannedFragment : BaseMvpFragment<UserBannedPresenter, IUserBannedView>
         getOwnerWallPlace(accountId, owner).tryOpenWith(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<UserBannedPresenter> {
-        return object : IPresenterFactory<UserBannedPresenter> {
-            override fun create(): UserBannedPresenter {
-                return UserBannedPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = UserBannedPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        saveInstanceState
+    )
 
     override fun onOwnerLongClick(owner: Owner): Boolean {
         MaterialAlertDialogBuilder(requireActivity())

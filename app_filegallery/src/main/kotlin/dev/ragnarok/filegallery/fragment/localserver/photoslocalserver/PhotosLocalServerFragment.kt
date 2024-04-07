@@ -13,7 +13,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.fragment.localserver.photoslocalserver.LocalServerPhotosAdapter.PhotoSelectionListener
 import dev.ragnarok.filegallery.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.filegallery.listener.PicassoPauseOnScrollListener
@@ -93,16 +92,9 @@ class PhotosLocalServerFragment :
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PhotosLocalServerPresenter> {
-        return object : IPresenterFactory<PhotosLocalServerPresenter> {
-            override fun create(): PhotosLocalServerPresenter {
-                return PhotosLocalServerPresenter(
-                    saveInstanceState
-                )
-            }
-
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = PhotosLocalServerPresenter(
+        saveInstanceState
+    )
 
     override fun displayList(photos: List<Photo>) {
         mPhotoRecyclerAdapter?.setData(photos)

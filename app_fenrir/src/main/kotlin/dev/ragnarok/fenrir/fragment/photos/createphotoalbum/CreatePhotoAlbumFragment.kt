@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.hideSoftKeyboard
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.photos.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.BackPressCallback
@@ -159,29 +158,25 @@ class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditP
         )
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<EditPhotoAlbumPresenter> {
-        return object : IPresenterFactory<EditPhotoAlbumPresenter> {
-            override fun create(): EditPhotoAlbumPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                if (requireArguments().containsKey(Extra.ALBUM)) {
-                    val abum: PhotoAlbum = requireArguments().getParcelableCompat(Extra.ALBUM)!!
-                    val editor: PhotoAlbumEditor =
-                        requireArguments().getParcelableCompat(EXTRA_EDITOR)!!
-                    return EditPhotoAlbumPresenter(
-                        accountId,
-                        abum,
-                        editor,
-                        saveInstanceState
-                    )
-                } else {
-                    val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                    return EditPhotoAlbumPresenter(
-                        accountId,
-                        ownerId,
-                        saveInstanceState
-                    )
-                }
-            }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): EditPhotoAlbumPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        if (requireArguments().containsKey(Extra.ALBUM)) {
+            val abum: PhotoAlbum = requireArguments().getParcelableCompat(Extra.ALBUM)!!
+            val editor: PhotoAlbumEditor =
+                requireArguments().getParcelableCompat(EXTRA_EDITOR)!!
+            return EditPhotoAlbumPresenter(
+                accountId,
+                abum,
+                editor,
+                saveInstanceState
+            )
+        } else {
+            val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+            return EditPhotoAlbumPresenter(
+                accountId,
+                ownerId,
+                saveInstanceState
+            )
         }
     }
 

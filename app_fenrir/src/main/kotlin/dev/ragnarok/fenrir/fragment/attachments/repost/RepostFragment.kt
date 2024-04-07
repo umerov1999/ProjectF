@@ -10,7 +10,6 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit.AbsAttachmentsEditFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Post
 
@@ -39,18 +38,14 @@ class RepostFragment : AbsAttachmentsEditFragment<RepostPresenter, IRepostView>(
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<RepostPresenter> {
-        return object : IPresenterFactory<RepostPresenter> {
-            override fun create(): RepostPresenter {
-                val post: Post = requireArguments().getParcelableCompat(EXTRA_POST)!!
-                val groupId =
-                    if (requireArguments().containsKey(EXTRA_GROUP_ID)) requireArguments().getLong(
-                        EXTRA_GROUP_ID
-                    ) else null
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                return RepostPresenter(accountId, post, groupId, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): RepostPresenter {
+        val post: Post = requireArguments().getParcelableCompat(EXTRA_POST)!!
+        val groupId =
+            if (requireArguments().containsKey(EXTRA_GROUP_ID)) requireArguments().getLong(
+                EXTRA_GROUP_ID
+            ) else null
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        return RepostPresenter(accountId, post, groupId, saveInstanceState)
     }
 
     companion object {

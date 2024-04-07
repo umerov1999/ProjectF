@@ -11,7 +11,6 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.activity.ActivityFeatures
 import dev.ragnarok.filegallery.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.filegallery.fragment.base.compat.AbsMvpFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.settings.theme.ThemeValue
 
@@ -47,12 +46,7 @@ class ThemeFragment : AbsMvpFragment<ThemePresenter, IThemeView>(), IThemeView,
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ThemePresenter> =
-        object : IPresenterFactory<ThemePresenter> {
-            override fun create(): ThemePresenter {
-                return ThemePresenter(saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ThemePresenter(saveInstanceState)
 
     override fun displayData(data: Array<ThemeValue>) {
         mAdapter?.setData(data)

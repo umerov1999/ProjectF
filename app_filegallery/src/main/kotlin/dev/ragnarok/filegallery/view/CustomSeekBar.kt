@@ -45,7 +45,8 @@ class CustomSeekBar @JvmOverloads constructor(
     private var noCircle: Boolean
     private val rect = RectF()
     private var lineHeight: Float
-    private var bufferedProgress = 0f
+    private var bufferedPosition: Long = 0
+    private var currentPosition: Long = -1
     private var currentRadius: Float = Utils.dp(6f).toFloat()
     private var lastUpdateTime: Long = 0
     private var paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -54,7 +55,6 @@ class CustomSeekBar @JvmOverloads constructor(
 
     private var layoutWidth: Int = 0
     private var layoutHeight: Int = 0
-    private var pendingPosition: Long = -1
 
     fun setCustomSeekBarListener(seekBarListener: CustomSeekBarListener?) {
         delegate = seekBarListener
@@ -89,9 +89,10 @@ class CustomSeekBar @JvmOverloads constructor(
         } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
             if (isDragging) {
                 parent?.requestDisallowInterceptTouchEvent(false)
-                thumbX = draggingThumbX
                 if (action == MotionEvent.ACTION_UP && delegate != null) {
-                    delegate?.onSeekBarDrag((duration * (thumbX.toDouble() / (layoutWidth - thumbWidth).toDouble())).toLong())
+                    currentPosition =
+                        (duration * (draggingThumbX.toDouble() / (layoutWidth - thumbWidth).toDouble())).toLong()
+                    delegate?.onSeekBarDrag(currentPosition)
                 }
                 isDragging = false
                 invalidate()
@@ -123,7 +124,7 @@ class CustomSeekBar @JvmOverloads constructor(
         if (duration <= 0) {
             return
         }
-        bufferedProgress = (value.toDouble() / duration).toFloat()
+        bufferedPosition = value
         invalidate()
     }
 
@@ -133,37 +134,32 @@ class CustomSeekBar @JvmOverloads constructor(
             this.duration = duration
             inv = true
         }
-        val tmp = (buffered.toDouble() / duration).toFloat()
-        if (bufferedProgress != tmp) {
-            bufferedProgress = tmp
+        if (bufferedPosition != buffered) {
+            bufferedPosition = buffered
             inv = true
         }
-        position = pos
+        if (currentPosition != pos) {
+            currentPosition = if (duration < 0) {
+                -1L
+            } else {
+                pos
+            }
+            inv = true
+        }
         if (inv) {
             invalidate()
         }
     }
 
     var position: Long
-        get() = if (duration == -1L) -1L else (duration * thumbX.toDouble() / (layoutWidth - thumbWidth).toDouble()).toLong()
+        get() = if (duration <= 0L) -1L else currentPosition
         set(value) {
-            if (duration <= 0) {
-                thumbX = 0
-                if (!isDragging) {
-                    invalidate()
-                }
+            if (duration <= 0L) {
+                currentPosition = -1L
                 return
             }
-            pendingPosition = value
-            thumbX = ceil(((layoutWidth - thumbWidth) * (value.toDouble() / duration))).toInt()
-            if (thumbX < 0) {
-                thumbX = 0
-            } else if (thumbX > layoutWidth - thumbWidth) {
-                thumbX = layoutWidth - thumbWidth
-            }
-            if (!isDragging) {
-                invalidate()
-            }
+            currentPosition = value
+            invalidate()
         }
 
     private fun clamp(value: Float, min: Float, max: Float): Float {
@@ -180,23 +176,24 @@ class CustomSeekBar @JvmOverloads constructor(
         val halfLayoutHeight = layoutHeight / 2
         val halfLineHeight = lineHeight / 2
         val halfThumbWidth = thumbWidth / 2
-        if (pendingPosition >= 0 && thumbX <= 0 && layoutWidth > 0) {
+        if (currentPosition >= 0 && layoutWidth > 0) {
             thumbX =
-                ceil(((layoutWidth - thumbWidth) * (pendingPosition.toDouble() / duration))).toInt()
+                ceil(((layoutWidth - thumbWidth) * (currentPosition.toDouble() / duration))).toInt()
             if (thumbX < 0) {
                 thumbX = 0
             } else if (thumbX > layoutWidth - thumbWidth) {
                 thumbX = layoutWidth - thumbWidth
             }
-            pendingPosition = -1
+        } else {
+            thumbX = 0
         }
         rect[halfThumbWidth.toFloat(), (halfLayoutHeight - halfLineHeight), (layoutWidth - halfThumbWidth).toFloat()] =
             (halfLayoutHeight + halfLineHeight)
         paint.color = lineColor
         canvas.drawRoundRect(rect, halfThumbWidth.toFloat(), halfThumbWidth.toFloat(), paint)
-        if (bufferedProgress > 0 && duration > 0) {
+        if (bufferedPosition > 0L && duration > 0L) {
             paint.color = cacheColor
-            rect[halfThumbWidth.toFloat(), (halfLayoutHeight - halfLineHeight), halfThumbWidth + bufferedProgress * (layoutWidth - thumbWidth)] =
+            rect[halfThumbWidth.toFloat(), (halfLayoutHeight - halfLineHeight), (halfThumbWidth + bufferedPosition.toDouble() / duration * (layoutWidth - thumbWidth)).toFloat()] =
                 (halfLayoutHeight + halfLineHeight)
             canvas.drawRoundRect(
                 rect,
@@ -210,7 +207,7 @@ class CustomSeekBar @JvmOverloads constructor(
         paint.color = progressColor
         canvas.drawRoundRect(rect, halfThumbWidth.toFloat(), halfThumbWidth.toFloat(), paint)
 
-        if (duration <= 0) {
+        if (duration <= 0L) {
             return
         }
         val newRad = Utils.dp(if (isDragging) 8f else 6f)

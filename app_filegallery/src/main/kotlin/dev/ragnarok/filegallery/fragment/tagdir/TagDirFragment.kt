@@ -17,7 +17,6 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.activity.ActivityFeatures
 import dev.ragnarok.filegallery.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.listener.OnSectionResumeCallback
 import dev.ragnarok.filegallery.media.music.MusicPlaybackService
 import dev.ragnarok.filegallery.model.Audio
@@ -103,12 +102,8 @@ class TagDirFragment : BaseMvpFragment<TagDirPresenter, ITagDirView>(), ITagDirV
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<TagDirPresenter> =
-        object : IPresenterFactory<TagDirPresenter> {
-            override fun create(): TagDirPresenter {
-                return TagDirPresenter(requireArguments().getInt(Extra.OWNER_ID), saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        TagDirPresenter(requireArguments().getInt(Extra.OWNER_ID), saveInstanceState)
 
     override fun displayData(data: List<TagDir>) {
         mAdapter?.setItems(data)

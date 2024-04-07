@@ -5,7 +5,6 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.PeopleSearchCriteria
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -31,17 +30,11 @@ class PeopleSearchFragment :
         return LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PeopleSearchPresenter> {
-        return object : IPresenterFactory<PeopleSearchPresenter> {
-            override fun create(): PeopleSearchPresenter {
-                return PeopleSearchPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.CRITERIA),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = PeopleSearchPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.CRITERIA),
+        saveInstanceState
+    )
 
     override fun onOwnerClick(owner: Owner) {
         presenter?.fireUserClick(

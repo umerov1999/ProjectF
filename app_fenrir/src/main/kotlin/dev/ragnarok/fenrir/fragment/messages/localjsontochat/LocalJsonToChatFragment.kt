@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.StubAnimatorListener
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter.OnMessageActionListener
 import dev.ragnarok.fenrir.fromIOToMain
@@ -262,16 +261,11 @@ class LocalJsonToChatFragment :
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<LocalJsonToChatPresenter> =
-        object : IPresenterFactory<LocalJsonToChatPresenter> {
-            override fun create(): LocalJsonToChatPresenter {
-                return LocalJsonToChatPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireActivity(),
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = LocalJsonToChatPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireActivity(),
+        saveInstanceState
+    )
 
     override fun displayToolbarAvatar(peer: Peer) {
         Avatar?.setOnClickListener {

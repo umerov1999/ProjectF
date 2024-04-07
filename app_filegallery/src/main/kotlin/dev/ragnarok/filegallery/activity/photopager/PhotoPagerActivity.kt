@@ -44,7 +44,6 @@ import dev.ragnarok.filegallery.activity.slidr.model.SlidrConfig
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrListener
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrPosition
 import dev.ragnarok.filegallery.fragment.AudioPlayerFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.fragment.base.horizontal.ImageListAdapter
 import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.listener.AppStyleable
@@ -282,42 +281,39 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         return false
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PhotoPagerPresenter> =
-        object : IPresenterFactory<PhotoPagerPresenter> {
-            override fun create(): PhotoPagerPresenter {
-                when (requireArguments().getInt(Extra.PLACE_TYPE)) {
-                    Place.PHOTO_LOCAL_SERVER -> {
-                        var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
-                        requireArguments().putLong(EXTRA_PHOTOS, 0)
-                        if (!Utils.isParcelNativeRegistered(source)) {
-                            source = 0
-                        }
-                        Utils.unregisterParcelNative(source)
-                        return PhotoAlbumPagerPresenter(
-                            requireArguments().getInt(Extra.INDEX),
-                            source,
-                            requireArguments().getBoolean(Extra.INVERT),
-                            saveInstanceState
-                        )
-                    }
-
-                    Place.PHOTO_LOCAL -> {
-                        var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
-                        requireArguments().putLong(EXTRA_PHOTOS, 0)
-                        if (!Utils.isParcelNativeRegistered(source)) {
-                            source = 0
-                        }
-                        Utils.unregisterParcelNative(source)
-                        return TmpGalleryPagerPresenter(
-                            source,
-                            requireArguments().getInt(Extra.INDEX),
-                            saveInstanceState
-                        )
-                    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): PhotoPagerPresenter {
+        when (requireArguments().getInt(Extra.PLACE_TYPE)) {
+            Place.PHOTO_LOCAL_SERVER -> {
+                var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
+                requireArguments().putLong(EXTRA_PHOTOS, 0)
+                if (!Utils.isParcelNativeRegistered(source)) {
+                    source = 0
                 }
-                throw UnsupportedOperationException()
+                Utils.unregisterParcelNative(source)
+                return PhotoAlbumPagerPresenter(
+                    requireArguments().getInt(Extra.INDEX),
+                    source,
+                    requireArguments().getBoolean(Extra.INVERT),
+                    saveInstanceState
+                )
+            }
+
+            Place.PHOTO_LOCAL -> {
+                var source: Long = requireArguments().getLong(EXTRA_PHOTOS)
+                requireArguments().putLong(EXTRA_PHOTOS, 0)
+                if (!Utils.isParcelNativeRegistered(source)) {
+                    source = 0
+                }
+                Utils.unregisterParcelNative(source)
+                return TmpGalleryPagerPresenter(
+                    source,
+                    requireArguments().getInt(Extra.INDEX),
+                    saveInstanceState
+                )
             }
         }
+        throw UnsupportedOperationException()
+    }
 
     private val pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
@@ -436,10 +432,10 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusbarColored = CurrentTheme.getStatusBarColor(this)
+        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
+        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
+        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
         @ColorInt val navigationColor =
             if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor

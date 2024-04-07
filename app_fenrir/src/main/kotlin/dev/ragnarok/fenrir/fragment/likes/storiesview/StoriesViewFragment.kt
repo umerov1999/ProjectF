@@ -15,7 +15,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.Owner
@@ -124,18 +123,12 @@ class StoriesViewFragment : BaseMvpFragment<StoriesViewPresenter, IStoriesViewVi
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<StoriesViewPresenter> {
-        return object : IPresenterFactory<StoriesViewPresenter> {
-            override fun create(): StoriesViewPresenter {
-                return StoriesViewPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    requireArguments().getInt(Extra.ITEM_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = StoriesViewPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.OWNER_ID),
+        requireArguments().getInt(Extra.ITEM_ID),
+        saveInstanceState
+    )
 
     companion object {
         fun buildArgs(

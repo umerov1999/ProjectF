@@ -21,7 +21,6 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.StubAnimatorListener
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
@@ -71,16 +70,11 @@ class FileManagerSelectFragment :
         animationDispose.dispose()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FileManagerSelectPresenter> =
-        object : IPresenterFactory<FileManagerSelectPresenter> {
-            override fun create(): FileManagerSelectPresenter {
-                return FileManagerSelectPresenter(
-                    File(requireArguments().getString(Extra.PATH)!!),
-                    requireArguments().getString(Extra.EXT),
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FileManagerSelectPresenter(
+        File(requireArguments().getString(Extra.PATH)!!),
+        requireArguments().getString(Extra.EXT),
+        saveInstanceState
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,

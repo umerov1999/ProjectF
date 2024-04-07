@@ -16,7 +16,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.photos.localphotos.LocalPhotosAdapter
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.InternalVideoSize
@@ -141,13 +140,8 @@ class LocalVideosFragment : BaseMvpFragment<LocalVideosPresenter, ILocalVideosVi
         if (isAdded) showError(getString(titleTes, *params))
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<LocalVideosPresenter> {
-        return object : IPresenterFactory<LocalVideosPresenter> {
-            override fun create(): LocalVideosPresenter {
-                return LocalVideosPresenter(saveInstanceState)
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        LocalVideosPresenter(saveInstanceState)
 
     companion object {
         fun newInstance(): LocalVideosFragment {

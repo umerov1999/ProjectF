@@ -49,7 +49,6 @@ import dev.ragnarok.fenrir.Includes.pushRegistrationResolver
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.checkInputExist
 import dev.ragnarok.fenrir.activity.ActivityUtils.isMimeAudio
-import dev.ragnarok.fenrir.activity.EnterPinActivity.Companion.getClass
 import dev.ragnarok.fenrir.activity.gifpager.GifPagerActivity
 import dev.ragnarok.fenrir.activity.photopager.PhotoPagerActivity.Companion.newInstance
 import dev.ragnarok.fenrir.activity.qr.CameraScanActivity
@@ -601,13 +600,11 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     private fun startEnterPinActivity() {
-        val intent = Intent(this, getClass(this))
-        requestEnterPin.launch(intent)
+        requestEnterPin.launch(EnterPinActivity.getIntent(this))
     }
 
     private fun startEnterPinActivityZero() {
-        val intent = Intent(this, getClass(this))
-        requestEnterPinZero.launch(intent)
+        requestEnterPinZero.launch(EnterPinActivity.getIntent(this))
     }
 
     private fun checkFCMRegistration(onlyCheckGMS: Boolean) {
@@ -1332,10 +1329,10 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusbarColored = CurrentTheme.getStatusBarColor(this)
+        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
+        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
+        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
         @ColorInt val navigationColor =
             if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor

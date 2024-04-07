@@ -16,7 +16,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.comments.CommentsAdapter
 import dev.ragnarok.fenrir.fragment.comments.CommentsAdapter.OnCommentActionListener
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
@@ -99,18 +98,13 @@ class WallSearchCommentsAttachmentsFragment :
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<WallSearchCommentsAttachmentsPresenter> {
-        return object : IPresenterFactory<WallSearchCommentsAttachmentsPresenter> {
-            override fun create(): WallSearchCommentsAttachmentsPresenter {
-                return WallSearchCommentsAttachmentsPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    requireArguments().getIntegerArrayList(Extra.POST_ID)!!,
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        WallSearchCommentsAttachmentsPresenter(
+            requireArguments().getLong(Extra.ACCOUNT_ID),
+            requireArguments().getLong(Extra.OWNER_ID),
+            requireArguments().getIntegerArrayList(Extra.POST_ID)!!,
+            saveInstanceState
+        )
 
     override fun toolbarTitle(title: String) {
         val actionBar = supportToolbarFor(this)

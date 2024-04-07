@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.Market
@@ -96,19 +95,13 @@ class ProductsFragment : BaseMvpFragment<ProductsPresenter, IProductsView>(), IP
         getMarketViewPlace(accountId, market).tryOpenWith(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ProductsPresenter> {
-        return object : IPresenterFactory<ProductsPresenter> {
-            override fun create(): ProductsPresenter {
-                return ProductsPresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ), requireArguments().getLong(Extra.OWNER_ID), requireArguments().getInt(
-                        Extra.ALBUM_ID
-                    ), requireArguments().getBoolean(Extra.SERVICE, false), saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ProductsPresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ), requireArguments().getLong(Extra.OWNER_ID), requireArguments().getInt(
+            Extra.ALBUM_ID
+        ), requireArguments().getBoolean(Extra.SERVICE, false), saveInstanceState
+    )
 
     override fun onResume() {
         super.onResume()

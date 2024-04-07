@@ -10,7 +10,6 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.audio.audioplaylists.AudioPlaylistsAdapter
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.AudioPlaylistSearchCriteria
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -43,17 +42,11 @@ class AudioPlaylistSearchFragment :
         return GridLayoutManager(requireActivity(), columnCount)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<AudioPlaylistSearchPresenter> {
-        return object : IPresenterFactory<AudioPlaylistSearchPresenter> {
-            override fun create(): AudioPlaylistSearchPresenter {
-                return AudioPlaylistSearchPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.CRITERIA),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = AudioPlaylistSearchPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.CRITERIA),
+        saveInstanceState
+    )
 
     override fun onAlbumClick(index: Int, album: AudioPlaylist) {
         if (isSelectMode) {

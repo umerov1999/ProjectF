@@ -28,7 +28,6 @@ import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.docs.absdocumentpreview.AbsDocumentPreviewActivity
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
 import dev.ragnarok.fenrir.listener.AppStyleable
@@ -165,10 +164,10 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusbarColored = CurrentTheme.getStatusBarColor(this)
+        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
+        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
+        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
         @ColorInt val navigationColor =
             if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor
@@ -202,16 +201,12 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
         mButtonsRoot?.visibility = if (mFullscreen) View.GONE else View.VISIBLE
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<GifPagerPresenter> {
-        return object : IPresenterFactory<GifPagerPresenter> {
-            override fun create(): GifPagerPresenter {
-                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val index = requireArguments().getInt(Extra.INDEX)
-                val documents: ArrayList<Document> =
-                    requireArguments().getParcelableArrayListCompat(Extra.DOCS)!!
-                return GifPagerPresenter(aid, documents, index, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): GifPagerPresenter {
+        val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val index = requireArguments().getInt(Extra.INDEX)
+        val documents: ArrayList<Document> =
+            requireArguments().getParcelableArrayListCompat(Extra.DOCS)!!
+        return GifPagerPresenter(aid, documents, index, saveInstanceState)
     }
 
     private val pageChangeListener = object : ViewPager2.OnPageChangeCallback() {

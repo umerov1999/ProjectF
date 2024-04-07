@@ -29,7 +29,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.docs.DocsUploadAdapter
 import dev.ragnarok.fenrir.getParcelableExtraCompat
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
@@ -89,25 +88,21 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
     private var mUploadAdapter: DocsUploadAdapter? = null
     private var mUploadRoot: View? = null
     private var mEmpty: TextView? = null
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<VideosListPresenter> {
-        return object : IPresenterFactory<VideosListPresenter> {
-            override fun create(): VideosListPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val albumId = requireArguments().getInt(Extra.ALBUM_ID)
-                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                val optAlbumTitle = requireArguments().getString(EXTRA_ALBUM_TITLE)
-                val action = requireArguments().getString(Extra.ACTION)
-                return VideosListPresenter(
-                    accountId,
-                    ownerId,
-                    albumId,
-                    action,
-                    optAlbumTitle,
-                    requireActivity(),
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): VideosListPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val albumId = requireArguments().getInt(Extra.ALBUM_ID)
+        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+        val optAlbumTitle = requireArguments().getString(EXTRA_ALBUM_TITLE)
+        val action = requireArguments().getString(Extra.ACTION)
+        return VideosListPresenter(
+            accountId,
+            ownerId,
+            albumId,
+            action,
+            optAlbumTitle,
+            requireActivity(),
+            saveInstanceState
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

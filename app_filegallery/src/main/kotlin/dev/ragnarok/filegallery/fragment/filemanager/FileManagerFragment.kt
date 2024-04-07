@@ -29,7 +29,6 @@ import dev.ragnarok.filegallery.StubAnimatorListener
 import dev.ragnarok.filegallery.activity.ActivityFeatures
 import dev.ragnarok.filegallery.activity.EnterPinActivity
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.fragment.filemanager.FileManagerAdapter.ClickListener
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerBottomSheet
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerBottomSheet.Companion.REQUEST_TAG
@@ -115,16 +114,11 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FileManagerPresenter> =
-        object : IPresenterFactory<FileManagerPresenter> {
-            override fun create(): FileManagerPresenter {
-                return FileManagerPresenter(
-                    File(requireArguments().getString(Extra.PATH)!!),
-                    requireArguments().getBoolean(Extra.POSITION),
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FileManagerPresenter(
+        File(requireArguments().getString(Extra.PATH)!!),
+        requireArguments().getBoolean(Extra.POSITION),
+        saveInstanceState
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -337,11 +331,9 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
     }
 
     private fun startEnterPinActivity(item: FileItem) {
-        val intent = Intent(
-            requireActivity(),
-            EnterPinActivity.getClass(requireActivity())
-        ).putExtra(Extra.PATH, item)
-        requestEnterPin.launch(intent)
+        requestEnterPin.launch(
+            EnterPinActivity.getIntent(requireActivity()).putExtra(Extra.PATH, item)
+        )
     }
 
     override fun onDelete(item: FileItem) {

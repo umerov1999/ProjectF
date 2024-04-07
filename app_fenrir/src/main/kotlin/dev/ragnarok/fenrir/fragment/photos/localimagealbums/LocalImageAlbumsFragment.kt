@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.LocalImageAlbum
 import dev.ragnarok.fenrir.picasso.Content_Local
@@ -121,13 +120,7 @@ class LocalImageAlbumsFragment :
         requestReadPermission.launch()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<LocalPhotoAlbumsPresenter> {
-        return object : IPresenterFactory<LocalPhotoAlbumsPresenter> {
-            override fun create(): LocalPhotoAlbumsPresenter {
-                return LocalPhotoAlbumsPresenter(
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = LocalPhotoAlbumsPresenter(
+        saveInstanceState
+    )
 }

@@ -15,7 +15,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.dialog.feedbacklink.FeedbackLinkDialog
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
@@ -139,17 +138,11 @@ class FeedbackFragment : PlaceSupportMvpFragment<FeedbackPresenter, IFeedbackVie
             .show(parentFragmentManager, "feedback_links")
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FeedbackPresenter> {
-        return object : IPresenterFactory<FeedbackPresenter> {
-            override fun create(): FeedbackPresenter {
-                return FeedbackPresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ), saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FeedbackPresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ), saveInstanceState
+    )
 
     override fun onNotificationClick(notification: Feedback) {
         presenter?.fireItemClick(

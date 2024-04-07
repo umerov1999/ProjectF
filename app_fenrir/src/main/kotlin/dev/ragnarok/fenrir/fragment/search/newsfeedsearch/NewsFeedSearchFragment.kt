@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.domain.ILikesInteractor
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
 import dev.ragnarok.fenrir.fragment.wall.WallAdapter
@@ -89,17 +88,11 @@ class NewsFeedSearchFragment :
         )
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<NewsFeedSearchPresenter> {
-        return object : IPresenterFactory<NewsFeedSearchPresenter> {
-            override fun create(): NewsFeedSearchPresenter {
-                return NewsFeedSearchPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.CRITERIA),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = NewsFeedSearchPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.CRITERIA),
+        saveInstanceState
+    )
 
     companion object {
 

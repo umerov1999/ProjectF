@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpDialogFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getInt
 import dev.ragnarok.fenrir.getLong
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -199,18 +198,12 @@ class AudioDuplicateDialog :
         dismiss()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<AudioDuplicatePresenter> {
-        return object : IPresenterFactory<AudioDuplicatePresenter> {
-            override fun create(): AudioDuplicatePresenter {
-                return AudioDuplicatePresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.NEW)!!,
-                    requireArguments().getParcelableCompat(Extra.OLD)!!,
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = AudioDuplicatePresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.NEW)!!,
+        requireArguments().getParcelableCompat(Extra.OLD)!!,
+        saveInstanceState
+    )
 
     internal class AudioHolder(itemView: View) {
         val artist: TextView = itemView.findViewById(R.id.dialog_title)

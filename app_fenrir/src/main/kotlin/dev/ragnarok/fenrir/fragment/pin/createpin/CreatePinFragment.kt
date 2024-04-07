@@ -14,7 +14,6 @@ import com.google.android.material.materialswitch.MaterialSwitch
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.view.KeyboardView
@@ -121,13 +120,8 @@ class CreatePinFragment : BaseMvpFragment<CreatePinPresenter, ICreatePinView>(),
         requireActivity().finish()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CreatePinPresenter> {
-        return object : IPresenterFactory<CreatePinPresenter> {
-            override fun create(): CreatePinPresenter {
-                return CreatePinPresenter(saveInstanceState)
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        CreatePinPresenter(saveInstanceState)
 
     override fun onButtonClick(number: Int) {
         presenter?.fireDigitClick(

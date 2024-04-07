@@ -67,7 +67,6 @@ import dev.ragnarok.fenrir.dialog.ImageSizeAlertDialog
 import dev.ragnarok.fenrir.dialog.LandscapeExpandBottomSheetDialog
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.chat.sheet.AttachmentsBottomSheetAdapter
 import dev.ragnarok.fenrir.fragment.messages.chat.sheet.MessageAttachmentsFragment
 import dev.ragnarok.fenrir.fragment.messages.chatusersdomain.ChatUsersDomainFragment
@@ -803,21 +802,18 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         adapter?.disableVoiceMessagePlaying()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ChatPresenter> =
-        object : IPresenterFactory<ChatPresenter> {
-            override fun create(): ChatPresenter {
-                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val messagesOwnerId = requireArguments().getLong(Extra.OWNER_ID)
-                val peer = requireArguments().getParcelableCompat<Peer>(Extra.PEER)!!
-                return ChatPresenter(
-                    aid,
-                    messagesOwnerId,
-                    peer,
-                    createStartConfig(),
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): ChatPresenter {
+        val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val messagesOwnerId = requireArguments().getLong(Extra.OWNER_ID)
+        val peer = requireArguments().getParcelableCompat<Peer>(Extra.PEER)!!
+        return ChatPresenter(
+            aid,
+            messagesOwnerId,
+            peer,
+            createStartConfig(),
+            saveInstanceState
+        )
+    }
 
     internal fun createStartConfig(): ChatConfig {
         val config = ChatConfig()

@@ -32,7 +32,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.activity.PhotosActivity
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
 import dev.ragnarok.fenrir.fragment.wall.AbsWallFragment
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
@@ -424,22 +423,18 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         setupPaganContent(mHeaderHolder?.Runes, mHeaderHolder?.paganSymbol)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<UserWallPresenter> {
-        return object : IPresenterFactory<UserWallPresenter> {
-            override fun create(): UserWallPresenter {
-                requireArguments()
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                val wrapper: ParcelableOwnerWrapper? =
-                    requireArguments().getParcelableCompat(Extra.OWNER)
-                return UserWallPresenter(
-                    accountId,
-                    ownerId,
-                    wrapper?.get() as User?,
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): UserWallPresenter {
+        requireArguments()
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+        val wrapper: ParcelableOwnerWrapper? =
+            requireArguments().getParcelableCompat(Extra.OWNER)
+        return UserWallPresenter(
+            accountId,
+            ownerId,
+            wrapper?.get() as User?,
+            saveInstanceState
+        )
     }
 
     override fun displayWallFilters(filters: MutableList<PostFilter>) {

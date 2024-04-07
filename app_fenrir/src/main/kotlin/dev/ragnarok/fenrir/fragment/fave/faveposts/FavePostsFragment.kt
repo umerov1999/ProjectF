@@ -13,7 +13,6 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.Poll
@@ -151,17 +150,11 @@ class FavePostsFragment : PlaceSupportMvpFragment<FavePostsPresenter, IFavePosts
         mAdapter?.notifyItemChanged(index + (mAdapter?.headersCount ?: 0))
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FavePostsPresenter> {
-        return object : IPresenterFactory<FavePostsPresenter> {
-            override fun create(): FavePostsPresenter {
-                return FavePostsPresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ), saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FavePostsPresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ), saveInstanceState
+    )
 
     companion object {
         fun newInstance(accountId: Long): FavePostsFragment {

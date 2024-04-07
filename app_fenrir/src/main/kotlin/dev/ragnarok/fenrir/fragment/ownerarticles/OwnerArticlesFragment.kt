@@ -15,7 +15,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
@@ -112,17 +111,11 @@ class OwnerArticlesFragment : BaseMvpFragment<OwnerArticlesPresenter, IOwnerArti
         getSimpleGalleryPlace(accountId, temp, 0, false).tryOpenWith(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<OwnerArticlesPresenter> {
-        return object : IPresenterFactory<OwnerArticlesPresenter> {
-            override fun create(): OwnerArticlesPresenter {
-                return OwnerArticlesPresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ), requireArguments().getLong(Extra.OWNER_ID), saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = OwnerArticlesPresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ), requireArguments().getLong(Extra.OWNER_ID), saveInstanceState
+    )
 
     override fun onResume() {
         super.onResume()

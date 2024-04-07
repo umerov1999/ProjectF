@@ -14,7 +14,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.Photo
@@ -123,17 +122,11 @@ class FavePhotosFragment : BaseMvpFragment<FavePhotosPresenter, IFavePhotosView>
         ).tryOpenWith(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FavePhotosPresenter> {
-        return object : IPresenterFactory<FavePhotosPresenter> {
-            override fun create(): FavePhotosPresenter {
-                return FavePhotosPresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ), saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FavePhotosPresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ), saveInstanceState
+    )
 
     companion object {
         fun newInstance(accountId: Long): FavePhotosFragment {

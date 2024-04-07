@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.comments.CommentsAdapter
 import dev.ragnarok.fenrir.fragment.comments.CommentsAdapter.OnCommentActionListener
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
@@ -148,17 +147,11 @@ class PhotoAllCommentFragment :
         mAdapter?.notifyItemChanged(index + (mAdapter?.headersCount ?: 0))
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PhotoAllCommentPresenter> {
-        return object : IPresenterFactory<PhotoAllCommentPresenter> {
-            override fun create(): PhotoAllCommentPresenter {
-                return PhotoAllCommentPresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ), requireArguments().getLong(Extra.OWNER_ID), saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = PhotoAllCommentPresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ), requireArguments().getLong(Extra.OWNER_ID), saveInstanceState
+    )
 
     override fun onResume() {
         super.onResume()

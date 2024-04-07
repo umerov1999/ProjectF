@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.compat.AbsMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 
 class CatalogV2ListEditFragment :
     AbsMvpFragment<CatalogV2ListEditPresenter, ICatalogV2ListEditView>(),
@@ -97,15 +96,9 @@ class CatalogV2ListEditFragment :
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CatalogV2ListEditPresenter> {
-        return object : IPresenterFactory<CatalogV2ListEditPresenter> {
-            override fun create(): CatalogV2ListEditPresenter {
-                return CatalogV2ListEditPresenter(
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CatalogV2ListEditPresenter(
+        saveInstanceState
+    )
 
     override fun displayData(data: List<Int>) {
         mAdapter?.setData(data)

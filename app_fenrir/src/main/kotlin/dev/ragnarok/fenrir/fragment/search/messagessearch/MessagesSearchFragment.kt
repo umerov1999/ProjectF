@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter.OnMessageActionListener
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
@@ -82,15 +81,11 @@ class MessagesSearchFragment :
     }
 
     override fun onMessageDelete(message: Message) {}
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<MessagesSearchPresenter> {
-        return object : IPresenterFactory<MessagesSearchPresenter> {
-            override fun create(): MessagesSearchPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val c: MessageSearchCriteria? =
-                    requireArguments().getParcelableCompat(Extra.CRITERIA)
-                return MessagesSearchPresenter(accountId, c, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): MessagesSearchPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val c: MessageSearchCriteria? =
+            requireArguments().getParcelableCompat(Extra.CRITERIA)
+        return MessagesSearchPresenter(accountId, c, saveInstanceState)
     }
 
     override fun goToMessagesLookup(accountId: Long, peerId: Long, messageId: Int) {

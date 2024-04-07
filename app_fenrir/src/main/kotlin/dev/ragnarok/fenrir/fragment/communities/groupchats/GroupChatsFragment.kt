@@ -15,7 +15,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.model.GroupChats
 import dev.ragnarok.fenrir.model.LoadMoreState
@@ -102,14 +101,10 @@ class GroupChatsFragment : BaseMvpFragment<GroupChatsPresenter, IGroupChatsView>
         )
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<GroupChatsPresenter> {
-        return object : IPresenterFactory<GroupChatsPresenter> {
-            override fun create(): GroupChatsPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val groupId = requireArguments().getLong(Extra.GROUP_ID)
-                return GroupChatsPresenter(accountId, groupId, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): GroupChatsPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val groupId = requireArguments().getLong(Extra.GROUP_ID)
+        return GroupChatsPresenter(accountId, groupId, saveInstanceState)
     }
 
     override fun onGroupChatsClick(chat: GroupChats) {

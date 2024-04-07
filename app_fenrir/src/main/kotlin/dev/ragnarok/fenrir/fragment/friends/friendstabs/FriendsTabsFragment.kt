@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.friends.allfriends.AllFriendsFragment
 import dev.ragnarok.fenrir.fragment.friends.followers.FollowersFragment
 import dev.ragnarok.fenrir.fragment.friends.mutualfriends.MutualFriendsFragment
@@ -101,18 +100,12 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FriendsTabsPresenter> {
-        return object : IPresenterFactory<FriendsTabsPresenter> {
-            override fun create(): FriendsTabsPresenter {
-                return FriendsTabsPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.USER_ID),
-                    requireArguments().getParcelableCompat(Extra.COUNTERS),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FriendsTabsPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.USER_ID),
+        requireArguments().getParcelableCompat(Extra.COUNTERS),
+        saveInstanceState
+    )
 
     override fun displayCounters(counters: FriendsCounters) {
         setupTabCounterView(TAB_ALL_FRIENDS, counters.getAll())

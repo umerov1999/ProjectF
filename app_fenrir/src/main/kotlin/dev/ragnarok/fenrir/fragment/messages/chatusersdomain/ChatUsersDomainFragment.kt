@@ -10,7 +10,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpBottomSheetDialogFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.model.AppChatUser
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
@@ -88,17 +87,11 @@ class ChatUsersDomainFragment :
     }
 
     override fun displayRefreshing(refreshing: Boolean) {}
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ChatUsersDomainPresenter> {
-        return object : IPresenterFactory<ChatUsersDomainPresenter> {
-            override fun create(): ChatUsersDomainPresenter {
-                return ChatUsersDomainPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.CHAT_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ChatUsersDomainPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.CHAT_ID),
+        saveInstanceState
+    )
 
     override fun onUserClick(user: AppChatUser) {
         presenter?.fireUserClick(

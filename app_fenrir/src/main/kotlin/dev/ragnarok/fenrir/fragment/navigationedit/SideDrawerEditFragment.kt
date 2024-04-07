@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.compat.AbsMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.model.DrawerCategory
 import dev.ragnarok.fenrir.settings.Settings
 
@@ -108,15 +107,9 @@ class SideDrawerEditFragment : AbsMvpFragment<SideDrawerEditPresenter, IDrawerEd
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<SideDrawerEditPresenter> {
-        return object : IPresenterFactory<SideDrawerEditPresenter> {
-            override fun create(): SideDrawerEditPresenter {
-                return SideDrawerEditPresenter(
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = SideDrawerEditPresenter(
+        saveInstanceState
+    )
 
     override fun displayData(data: List<DrawerCategory>) {
         mAdapter?.setData(data)

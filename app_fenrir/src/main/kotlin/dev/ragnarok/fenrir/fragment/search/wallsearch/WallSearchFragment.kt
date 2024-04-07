@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.WallSearchCriteria
 import dev.ragnarok.fenrir.fragment.wall.WallAdapter
@@ -18,14 +17,10 @@ import dev.ragnarok.fenrir.util.Utils.isLandscape
 class WallSearchFragment :
     AbsSearchFragment<WallSearchPresenter, IWallSearchView, Post, WallAdapter>(),
     IWallSearchView, WallAdapter.ClickListener {
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<WallSearchPresenter> {
-        return object : IPresenterFactory<WallSearchPresenter> {
-            override fun create(): WallSearchPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val c: WallSearchCriteria? = requireArguments().getParcelableCompat(Extra.CRITERIA)
-                return WallSearchPresenter(accountId, c, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): WallSearchPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val c: WallSearchCriteria? = requireArguments().getParcelableCompat(Extra.CRITERIA)
+        return WallSearchPresenter(accountId, c, saveInstanceState)
     }
 
     override fun setAdapterData(adapter: WallAdapter, data: MutableList<Post>) {

@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.Narratives
@@ -98,19 +97,13 @@ class NarrativesFragment : BaseMvpFragment<NarrativesPresenter, INarrativesView>
             .tryOpenWith(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<NarrativesPresenter> {
-        return object : IPresenterFactory<NarrativesPresenter> {
-            override fun create(): NarrativesPresenter {
-                return NarrativesPresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = NarrativesPresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ),
+        requireArguments().getLong(Extra.OWNER_ID),
+        saveInstanceState
+    )
 
     override fun onResume() {
         super.onResume()

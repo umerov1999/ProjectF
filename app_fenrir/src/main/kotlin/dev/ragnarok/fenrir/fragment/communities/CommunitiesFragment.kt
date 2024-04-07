@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.activity.DeltaOwnerActivity
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
@@ -160,17 +159,11 @@ class CommunitiesFragment : BaseMvpFragment<CommunitiesPresenter, ICommunitiesVi
             .show()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunitiesPresenter> {
-        return object : IPresenterFactory<CommunitiesPresenter> {
-            override fun create(): CommunitiesPresenter {
-                return CommunitiesPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.USER_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CommunitiesPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.USER_ID),
+        saveInstanceState
+    )
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         presenter?.fireSearchQueryChanged(

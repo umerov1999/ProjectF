@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.model.LogEventType
@@ -111,13 +110,7 @@ class LogsFragment : BaseMvpFragment<LogsPresenter, ILogsView>(), ILogsView,
         mEmptyText?.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<LogsPresenter> {
-        return object : IPresenterFactory<LogsPresenter> {
-            override fun create(): LogsPresenter {
-                return LogsPresenter(saveInstanceState)
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = LogsPresenter(saveInstanceState)
 
     override fun onOptionClick(entry: LogEventType) {
         presenter?.fireTypeClick(

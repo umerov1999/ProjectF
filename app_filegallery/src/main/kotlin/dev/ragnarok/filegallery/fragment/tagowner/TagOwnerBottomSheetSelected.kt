@@ -15,7 +15,6 @@ import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.base.BaseMvpBottomSheetDialogFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.model.FileItem
 import dev.ragnarok.filegallery.model.tags.TagOwner
 import dev.ragnarok.filegallery.util.toast.CustomToast
@@ -65,12 +64,8 @@ class TagOwnerBottomSheetSelected :
         return dialog
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<TagOwnerPresenter> =
-        object : IPresenterFactory<TagOwnerPresenter> {
-            override fun create(): TagOwnerPresenter {
-                return TagOwnerPresenter(saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        TagOwnerPresenter(saveInstanceState)
 
     override fun displayData(data: List<TagOwner>) {
         mAdapter?.setData(data)

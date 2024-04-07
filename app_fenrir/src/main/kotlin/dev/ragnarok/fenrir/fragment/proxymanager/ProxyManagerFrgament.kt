@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.model.ProxyConfig
 import dev.ragnarok.fenrir.place.PlaceFactory.proxyAddPlace
 
@@ -52,13 +51,8 @@ class ProxyManagerFrgament : BaseMvpFragment<ProxyManagerPresenter, IProxyManage
         return false
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ProxyManagerPresenter> {
-        return object : IPresenterFactory<ProxyManagerPresenter> {
-            override fun create(): ProxyManagerPresenter {
-                return ProxyManagerPresenter(saveInstanceState)
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        ProxyManagerPresenter(saveInstanceState)
 
     override fun displayData(configs: MutableList<ProxyConfig>, active: ProxyConfig?) {
         mProxiesAdapter?.setData(configs, active)

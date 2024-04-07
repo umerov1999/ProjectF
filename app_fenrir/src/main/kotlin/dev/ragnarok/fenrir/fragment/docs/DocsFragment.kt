@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
@@ -321,18 +320,12 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<DocsListPresenter> {
-        return object : IPresenterFactory<DocsListPresenter> {
-            override fun create(): DocsListPresenter {
-                return DocsListPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    requireArguments().getString(Extra.ACTION),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = DocsListPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.OWNER_ID),
+        requireArguments().getString(Extra.ACTION),
+        saveInstanceState
+    )
 
     override fun onResume() {
         super.onResume()

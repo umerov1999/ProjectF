@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.docs.DocsAdapter
 import dev.ragnarok.fenrir.fragment.messages.conversationattachments.abschatattachments.AbsChatAttachmentsFragment
 import dev.ragnarok.fenrir.model.Document
@@ -28,17 +27,11 @@ class ConversationDocsFragment :
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ChatAttachmentDocsPresenter> {
-        return object : IPresenterFactory<ChatAttachmentDocsPresenter> {
-            override fun create(): ChatAttachmentDocsPresenter {
-                return ChatAttachmentDocsPresenter(
-                    requireArguments().getLong(Extra.PEER_ID),
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ChatAttachmentDocsPresenter(
+        requireArguments().getLong(Extra.PEER_ID),
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        saveInstanceState
+    )
 
     override fun onDocClick(index: Int, doc: Document) {
         presenter?.fireDocClick(

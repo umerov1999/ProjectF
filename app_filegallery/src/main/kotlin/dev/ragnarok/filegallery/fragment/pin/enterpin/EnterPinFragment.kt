@@ -15,7 +15,6 @@ import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.getParcelableExtraCompat
 import dev.ragnarok.filegallery.model.FileItem
 import dev.ragnarok.filegallery.settings.Settings
@@ -75,13 +74,8 @@ class EnterPinFragment : BaseMvpFragment<EnterPinPresenter, IEnterPinView>(), IE
         mBiometricPrompt.authenticate(promptInfo)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<EnterPinPresenter> {
-        return object : IPresenterFactory<EnterPinPresenter> {
-            override fun create(): EnterPinPresenter {
-                return EnterPinPresenter(saveInstanceState)
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        EnterPinPresenter(saveInstanceState)
 
     override fun displayPin(value: IntArray, noValue: Int) {
         check(value.size == mValuesCircles.size) { "Invalid pin length, view: " + mValuesCircles.size + ", target: " + value.size }

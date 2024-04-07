@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.VideoSearchCriteria
 import dev.ragnarok.fenrir.fragment.videos.VideosAdapter
@@ -52,18 +51,12 @@ class VideoSearchFragment :
         return false
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<VideosSearchPresenter> {
-        return object : IPresenterFactory<VideosSearchPresenter> {
-            override fun create(): VideosSearchPresenter {
-                return VideosSearchPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.CRITERIA),
-                    requireArguments().getString(Extra.ACTION),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = VideosSearchPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.CRITERIA),
+        requireArguments().getString(Extra.ACTION),
+        saveInstanceState
+    )
 
     companion object {
         fun newInstance(

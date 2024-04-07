@@ -348,25 +348,7 @@ abstract class BaseSlider<
 
   @NonNull
   private final ViewTreeObserver.OnScrollChangedListener onScrollChangedListener =
-      () -> {
-        if (shouldAlwaysShowLabel() && isEnabled()) {
-          Rect contentViewBounds = new Rect();
-          ViewUtils.getContentView(this).getHitRect(contentViewBounds);
-          boolean isSliderVisibleOnScreen = getLocalVisibleRect(contentViewBounds);
-          for (int i = 0; i < labels.size(); i++) {
-            TooltipDrawable label = labels.get(i);
-            // Get associated value for label
-            if (i < values.size()) {
-              positionLabel(label, values.get(i));
-            }
-            if (isSliderVisibleOnScreen) {
-              ViewUtils.getContentViewOverlay(this).add(label);
-            } else {
-              ViewUtils.getContentViewOverlay(this).remove(label);
-            }
-          }
-        }
-      };
+      this::updateLabels;
 
   /**
    * Determines the behavior of the label which can be any of the following.
@@ -556,9 +538,10 @@ abstract class BaseSlider<
 
     setTrackHeight(a.getDimensionPixelSize(R.styleable.Slider_trackHeight, 0));
 
-    setTickActiveRadius(a.getDimensionPixelSize(R.styleable.Slider_tickRadiusActive, 0));
-
-    setTickInactiveRadius(a.getDimensionPixelSize(R.styleable.Slider_tickRadiusInactive, 0));
+    setTickActiveRadius(
+        a.getDimensionPixelSize(R.styleable.Slider_tickRadiusActive, trackStopIndicatorSize / 2));
+    setTickInactiveRadius(
+        a.getDimensionPixelSize(R.styleable.Slider_tickRadiusInactive, trackStopIndicatorSize / 2));
 
     setLabelBehavior(a.getInt(R.styleable.Slider_labelBehavior, LABEL_FLOATING));
 
@@ -2029,12 +2012,7 @@ abstract class BaseSlider<
       maybeDrawCompatHalo(canvas, trackWidth, yCenter);
     }
 
-    // Draw labels if there is an active thumb or the labels are always visible.
-    if ((activeThumbIdx != -1 || shouldAlwaysShowLabel()) && isEnabled()) {
-      ensureLabelsAdded();
-    } else {
-      ensureLabelsRemoved();
-    }
+    updateLabels();
 
     drawThumbs(canvas, trackWidth, yCenter);
   }
@@ -2241,25 +2219,41 @@ abstract class BaseSlider<
     }
 
     float[] activeRange = getActiveRange();
-    int leftPivotIndex = pivotIndex(ticksCoordinates, activeRange[0]);
-    int rightPivotIndex = pivotIndex(ticksCoordinates, activeRange[1]);
 
-    // Draw inactive ticks to the left of the smallest thumb.
-    canvas.drawPoints(ticksCoordinates, 0, leftPivotIndex * 2, inactiveTicksPaint);
+    // Calculate the index of the left tick of the active track.
+    final int leftActiveTickIndex =
+        (int) Math.ceil(activeRange[0] * (ticksCoordinates.length / 2f - 1));
 
-    // Draw active ticks between the thumbs.
-    canvas.drawPoints(
-        ticksCoordinates,
-        leftPivotIndex * 2,
-        rightPivotIndex * 2 - leftPivotIndex * 2,
-        activeTicksPaint);
+    // Calculate the index of the right tick of the active track.
+    final int rightActiveTickIndex =
+        (int) Math.floor(activeRange[1] * (ticksCoordinates.length / 2f - 1));
 
-    // Draw inactive ticks to the right of the largest thumb.
-    canvas.drawPoints(
-        ticksCoordinates,
-        rightPivotIndex * 2,
-        ticksCoordinates.length - rightPivotIndex * 2,
-        inactiveTicksPaint);
+    // Draw ticks on the left inactive track (if any).
+    if (leftActiveTickIndex > 0) {
+      canvas.drawPoints(
+          ticksCoordinates,
+          0,
+          leftActiveTickIndex * 2,
+          inactiveTicksPaint);
+    }
+
+    // Draw ticks on the active track (if any).
+    if (leftActiveTickIndex <= rightActiveTickIndex) {
+      canvas.drawPoints(
+          ticksCoordinates,
+          leftActiveTickIndex * 2,
+          (rightActiveTickIndex - leftActiveTickIndex + 1) * 2,
+          activeTicksPaint);
+    }
+
+    // Draw ticks on the right inactive track (if any).
+    if ((rightActiveTickIndex + 1) * 2 < ticksCoordinates.length) {
+      canvas.drawPoints(
+          ticksCoordinates,
+          (rightActiveTickIndex + 1) * 2,
+          ticksCoordinates.length - (rightActiveTickIndex + 1) * 2,
+          inactiveTicksPaint);
+    }
   }
 
   private void maybeDrawStopIndicator(@NonNull Canvas canvas, int yCenter) {
@@ -2434,17 +2428,6 @@ abstract class BaseSlider<
 
     lastEvent = MotionEvent.obtain(event);
     return true;
-  }
-
-  /**
-   * Calculates the index the closest tick coordinates that the thumb should snap to.
-   *
-   * @param coordinates Tick coordinates defined in {@code #setTicksCoordinates()}.
-   * @param position Actual thumb position.
-   * @return Index of the closest tick coordinate.
-   */
-  private static int pivotIndex(float[] coordinates, float position) {
-    return Math.round(position * (coordinates.length / 2f - 1));
   }
 
   private double snapPosition(float position) {
@@ -2660,6 +2643,37 @@ abstract class BaseSlider<
     return animator;
   }
 
+  private void updateLabels() {
+    switch (labelBehavior) {
+      case LABEL_GONE:
+        ensureLabelsRemoved();
+        break;
+      case LABEL_VISIBLE:
+        if (isEnabled() && isSliderVisibleOnScreen()) {
+          ensureLabelsAdded();
+        } else {
+          ensureLabelsRemoved();
+        }
+        break;
+      case LABEL_FLOATING:
+      case LABEL_WITHIN_BOUNDS:
+        if (activeThumbIdx != -1 && isEnabled()) {
+          ensureLabelsAdded();
+        } else {
+          ensureLabelsRemoved();
+        }
+        break;
+      default:
+        throw new IllegalArgumentException("Unexpected labelBehavior: " + labelBehavior);
+    }
+  }
+
+  private boolean isSliderVisibleOnScreen() {
+    final Rect contentViewBounds = new Rect();
+    ViewUtils.getContentView(this).getHitRect(contentViewBounds);
+    return getLocalVisibleRect(contentViewBounds);
+  }
+
   private void ensureLabelsRemoved() {
     // If the labels are animated in or in the process of animating in, create and start a new
     // animator to animate out the labels and remove them once the animation ends.
@@ -2683,11 +2697,6 @@ abstract class BaseSlider<
   }
 
   private void ensureLabelsAdded() {
-    if (labelBehavior == LABEL_GONE) {
-      // If the label shouldn't be drawn we can skip this.
-      return;
-    }
-
     // If the labels are not animating in, start an animator to show them. ensureLabelsAdded will
     // be called multiple times by BaseSlider's draw method, making this check necessary to avoid
     // creating and starting an animator for each draw call.

@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
@@ -154,30 +153,26 @@ class CommunityManagerEditFragment :
         menu.findItem(R.id.action_delete).isVisible = mOptionDeleteVisible
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunityManagerEditPresenter> {
-        return object : IPresenterFactory<CommunityManagerEditPresenter> {
-            override fun create(): CommunityManagerEditPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val groupId = requireArguments().getLong(Extra.GROUP_ID)
-                val users: List<User>? =
-                    requireArguments().getParcelableArrayListCompat(Extra.USERS)
-                val manager: Manager? = requireArguments().getParcelableCompat(Extra.MANAGER)
-                return manager?.let {
-                    CommunityManagerEditPresenter(
-                        accountId,
-                        groupId,
-                        it,
-                        saveInstanceState
-                    )
-                }
-                    ?: CommunityManagerEditPresenter(
-                        accountId,
-                        groupId,
-                        users.orEmpty(),
-                        saveInstanceState
-                    )
-            }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): CommunityManagerEditPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val groupId = requireArguments().getLong(Extra.GROUP_ID)
+        val users: List<User>? =
+            requireArguments().getParcelableArrayListCompat(Extra.USERS)
+        val manager: Manager? = requireArguments().getParcelableCompat(Extra.MANAGER)
+        return manager?.let {
+            CommunityManagerEditPresenter(
+                accountId,
+                groupId,
+                it,
+                saveInstanceState
+            )
         }
+            ?: CommunityManagerEditPresenter(
+                accountId,
+                groupId,
+                users.orEmpty(),
+                saveInstanceState
+            )
     }
 
     override fun onResume() {

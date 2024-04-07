@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.selectprofiles.SelectProfilesActivity.Companion.createIntent
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.friends.friendstabs.FriendsTabsFragment
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.model.AppChatUser
@@ -158,17 +157,11 @@ class ChatMembersFragment : BaseMvpFragment<ChatMembersPresenter, IChatMembersVi
         mAdapter?.setIsOwner(isOwner)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ChatMembersPresenter> {
-        return object : IPresenterFactory<ChatMembersPresenter> {
-            override fun create(): ChatMembersPresenter {
-                return ChatMembersPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.CHAT_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ChatMembersPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.CHAT_ID),
+        saveInstanceState
+    )
 
     override fun onUserClick(user: AppChatUser) {
         presenter?.fireUserClick(

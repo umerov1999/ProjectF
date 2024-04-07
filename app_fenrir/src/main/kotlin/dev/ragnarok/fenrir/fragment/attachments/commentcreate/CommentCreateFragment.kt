@@ -12,28 +12,23 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit.AbsAttachmentsEditFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 
 class CommentCreateFragment :
     AbsAttachmentsEditFragment<CommentCreatePresenter, ICreateCommentView>(), ICreateCommentView,
     MenuProvider {
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommentCreatePresenter> {
-        return object : IPresenterFactory<CommentCreatePresenter> {
-            override fun create(): CommentCreatePresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val commentDbid = requireArguments().getInt(Extra.COMMENT_ID)
-                val sourceOwnerId = requireArguments().getLong(Extra.COMMENT_ID)
-                val body = requireArguments().getString(Extra.BODY)
-                return CommentCreatePresenter(
-                    accountId,
-                    commentDbid,
-                    sourceOwnerId,
-                    body,
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): CommentCreatePresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val commentDbid = requireArguments().getInt(Extra.COMMENT_ID)
+        val sourceOwnerId = requireArguments().getLong(Extra.COMMENT_ID)
+        val body = requireArguments().getString(Extra.BODY)
+        return CommentCreatePresenter(
+            accountId,
+            commentDbid,
+            sourceOwnerId,
+            body,
+            saveInstanceState
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -19,7 +19,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.LocalImageAlbum
@@ -140,15 +139,11 @@ class LocalPhotosFragment : BaseMvpFragment<LocalPhotosPresenter, ILocalPhotosVi
         if (isAdded) showError(getString(titleTes, *params))
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<LocalPhotosPresenter> {
-        return object : IPresenterFactory<LocalPhotosPresenter> {
-            override fun create(): LocalPhotosPresenter {
-                val maxSelectionItemCount =
-                    requireArguments().getInt(EXTRA_MAX_SELECTION_COUNT, 10)
-                val album: LocalImageAlbum? = requireArguments().getParcelableCompat(Extra.ALBUM)
-                return LocalPhotosPresenter(album, maxSelectionItemCount, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): LocalPhotosPresenter {
+        val maxSelectionItemCount =
+            requireArguments().getInt(EXTRA_MAX_SELECTION_COUNT, 10)
+        val album: LocalImageAlbum? = requireArguments().getParcelableCompat(Extra.ALBUM)
+        return LocalPhotosPresenter(album, maxSelectionItemCount, saveInstanceState)
     }
 
     companion object {

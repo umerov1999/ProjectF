@@ -13,7 +13,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.hideSoftKeyboard
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
@@ -63,17 +62,11 @@ class RequestExecuteFragment : BaseMvpFragment<RequestExecutePresenter, IRequest
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<RequestExecutePresenter> {
-        return object : IPresenterFactory<RequestExecutePresenter> {
-            override fun create(): RequestExecutePresenter {
-                return RequestExecutePresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ), saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = RequestExecutePresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ), saveInstanceState
+    )
 
     override fun onResume() {
         super.onResume()

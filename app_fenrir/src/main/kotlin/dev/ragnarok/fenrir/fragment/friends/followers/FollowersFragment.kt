@@ -7,26 +7,19 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.DeltaOwnerActivity
 import dev.ragnarok.fenrir.fragment.absownerslist.AbsOwnersListFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.model.DeltaOwner
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.util.Utils
 
 class FollowersFragment : AbsOwnersListFragment<FollowersPresenter, IFollowersView>(),
     IFollowersView {
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FollowersPresenter> {
-        return object : IPresenterFactory<FollowersPresenter> {
-            override fun create(): FollowersPresenter {
-                return FollowersPresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ),
-                    requireArguments().getLong(Extra.USER_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FollowersPresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ),
+        requireArguments().getLong(Extra.USER_ID),
+        saveInstanceState
+    )
 
     override fun notifyRemoved(position: Int) {
         mOwnersAdapter?.notifyItemRemoved(position)

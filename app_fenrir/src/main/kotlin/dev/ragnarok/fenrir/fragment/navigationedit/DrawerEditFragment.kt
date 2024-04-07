@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.compat.AbsMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.model.DrawerCategory
 import dev.ragnarok.fenrir.settings.Settings
 
@@ -108,13 +107,8 @@ class DrawerEditFragment : AbsMvpFragment<DrawerEditPresenter, IDrawerEditView>(
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<DrawerEditPresenter> {
-        return object : IPresenterFactory<DrawerEditPresenter> {
-            override fun create(): DrawerEditPresenter {
-                return DrawerEditPresenter(saveInstanceState)
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        DrawerEditPresenter(saveInstanceState)
 
     @SuppressLint("NotifyDataSetChanged")
     override fun notifyDataSetChanged() {

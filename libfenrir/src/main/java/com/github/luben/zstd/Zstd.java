@@ -530,8 +530,9 @@ public class Zstd {
     public static native int loadFastDictDecompress(long stream, ZstdDictDecompress dict);
     public static native int loadDictCompress(long stream, byte[] dict, int dict_size);
     public static native int loadFastDictCompress(long stream, ZstdDictCompress dict);
-    public static native void registerSequenceProducer(long stream, long seqProdState, long seqProdFunction);
-    static native long getBuiltinSequenceProducer(); // Used in tests
+    // TODO: Fix native compilation
+    //public static native void registerSequenceProducer(long stream, long seqProdState, long seqProdFunction);
+    // static native long getBuiltinSequenceProducer(); // Used in tests
     static native long getStubSequenceProducer();    // Used in tests
     public static native int setCompressionChecksums(long stream, boolean useChecksums);
     public static native int setCompressionMagicless(long stream, boolean useMagicless);
@@ -1414,10 +1415,15 @@ public class Zstd {
         }
     }
 
-    static byte[] extractArray(ByteBuffer buffer) {
+    static ByteBuffer getArrayBackedBuffer(BufferPool bufferPool, int size) throws ZstdIOException {
+        ByteBuffer buffer = bufferPool.get(size);
+        if (buffer == null) {
+            throw new ZstdIOException(Zstd.errMemoryAllocation(), "Cannot get ByteBuffer of size " + size + " from the BufferPool");
+        }
         if (!buffer.hasArray() || buffer.arrayOffset() != 0) {
+            bufferPool.release(buffer);
             throw new IllegalArgumentException("provided ByteBuffer lacks array or has non-zero arrayOffset");
         }
-        return buffer.array();
+        return buffer;
     }
 }

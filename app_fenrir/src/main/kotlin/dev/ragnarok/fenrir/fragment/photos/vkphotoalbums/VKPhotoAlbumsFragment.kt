@@ -24,7 +24,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.photos.vkphotoalbums.PhotoAlbumsPresenter.AdditionalParams
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
@@ -271,22 +270,18 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PhotoAlbumsPresenter> {
-        return object : IPresenterFactory<PhotoAlbumsPresenter> {
-            override fun create(): PhotoAlbumsPresenter {
-                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val wrapper: ParcelableOwnerWrapper? =
-                    requireArguments().getParcelableCompat(Extra.OWNER)
-                val owner = wrapper?.get()
-                val action = requireArguments().getString(Extra.ACTION)
-                return PhotoAlbumsPresenter(
-                    accountId, ownerId, AdditionalParams()
-                        .setAction(action)
-                        .setOwner(owner), saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): PhotoAlbumsPresenter {
+        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val wrapper: ParcelableOwnerWrapper? =
+            requireArguments().getParcelableCompat(Extra.OWNER)
+        val owner = wrapper?.get()
+        val action = requireArguments().getString(Extra.ACTION)
+        return PhotoAlbumsPresenter(
+            accountId, ownerId, AdditionalParams()
+                .setAction(action)
+                .setOwner(owner), saveInstanceState
+        )
     }
 
     override fun onVkPhotoAlbumClick(album: PhotoAlbum) {

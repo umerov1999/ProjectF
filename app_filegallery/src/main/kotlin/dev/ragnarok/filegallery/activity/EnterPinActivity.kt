@@ -1,6 +1,7 @@
 package dev.ragnarok.filegallery.activity
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.pin.enterpin.EnterPinFragment
@@ -18,9 +19,11 @@ open class EnterPinActivity : NoMainActivity() {
     }
 
     companion object {
-
-        fun getClass(context: Context): Class<*> {
-            return if (Utils.is600dp(context)) EnterPinActivity::class.java else EnterPinActivityPortraitOnly::class.java
+        fun getIntent(context: Context): Intent {
+            return Intent(
+                context,
+                if (Utils.is600dp(context)) EnterPinActivity::class.java else EnterPinActivityPortraitOnly::class.java
+            )
         }
     }
 }

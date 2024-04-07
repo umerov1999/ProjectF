@@ -15,7 +15,6 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.activity.ActivityFeatures
 import dev.ragnarok.filegallery.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.listener.OnSectionResumeCallback
 import dev.ragnarok.filegallery.model.FileItem
 import dev.ragnarok.filegallery.model.SectionItem
@@ -75,12 +74,8 @@ class TagOwnerFragment : BaseMvpFragment<TagOwnerPresenter, ITagOwnerView>(), IT
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<TagOwnerPresenter> =
-        object : IPresenterFactory<TagOwnerPresenter> {
-            override fun create(): TagOwnerPresenter {
-                return TagOwnerPresenter(saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        TagOwnerPresenter(saveInstanceState)
 
     override fun displayData(data: List<TagOwner>) {
         mAdapter?.setData(data)

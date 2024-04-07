@@ -30,7 +30,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.fragment.attachments.commentcreate.CommentCreateFragment
 import dev.ragnarok.fenrir.fragment.attachments.commentedit.CommentEditFragment
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.comments.CommentsAdapter.OnCommentActionListener
 import dev.ragnarok.fenrir.fragment.comments.ICommentsView.ICommentContextView
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -198,30 +197,26 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         return false
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommentsPresenter> {
-        return object : IPresenterFactory<CommentsPresenter> {
-            override fun create(): CommentsPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val commented: Commented = requireArguments().getParcelableCompat(Extra.COMMENTED)!!
-                var focusTo: Int? = null
-                var ThreadComment: Int? = null
-                if (requireArguments().containsKey(EXTRA_AT_COMMENT_OBJECT)) {
-                    focusTo = requireArguments().getInt(EXTRA_AT_COMMENT_OBJECT)
-                    requireArguments().remove(EXTRA_AT_COMMENT_OBJECT)
-                }
-                if (requireArguments().containsKey(EXTRA_AT_COMMENT_THREAD)) {
-                    ThreadComment = requireArguments().getInt(EXTRA_AT_COMMENT_THREAD)
-                    requireArguments().remove(EXTRA_AT_COMMENT_THREAD)
-                }
-                return CommentsPresenter(
-                    accountId,
-                    commented,
-                    focusTo,
-                    ThreadComment,
-                    saveInstanceState
-                )
-            }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): CommentsPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val commented: Commented = requireArguments().getParcelableCompat(Extra.COMMENTED)!!
+        var focusTo: Int? = null
+        var ThreadComment: Int? = null
+        if (requireArguments().containsKey(EXTRA_AT_COMMENT_OBJECT)) {
+            focusTo = requireArguments().getInt(EXTRA_AT_COMMENT_OBJECT)
+            requireArguments().remove(EXTRA_AT_COMMENT_OBJECT)
         }
+        if (requireArguments().containsKey(EXTRA_AT_COMMENT_THREAD)) {
+            ThreadComment = requireArguments().getInt(EXTRA_AT_COMMENT_THREAD)
+            requireArguments().remove(EXTRA_AT_COMMENT_THREAD)
+        }
+        return CommentsPresenter(
+            accountId,
+            commented,
+            focusTo,
+            ThreadComment,
+            saveInstanceState
+        )
     }
 
     override fun displayData(data: MutableList<Comment>) {

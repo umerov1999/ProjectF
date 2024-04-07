@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.audio.audios.AudioRecyclerAdapter
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.currentAudio
@@ -199,19 +198,13 @@ class AudiosRecommendationFragment :
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<AudiosRecommendationPresenter> {
-        return object : IPresenterFactory<AudiosRecommendationPresenter> {
-            override fun create(): AudiosRecommendationPresenter {
-                return AudiosRecommendationPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    requireArguments().getBoolean(Extra.TOP),
-                    requireArguments().getInt(Extra.ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = AudiosRecommendationPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.OWNER_ID),
+        requireArguments().getBoolean(Extra.TOP),
+        requireArguments().getInt(Extra.ID),
+        saveInstanceState
+    )
 
     override fun displayList(audios: MutableList<Audio>) {
         mAudioRecyclerAdapter?.setData(audios)

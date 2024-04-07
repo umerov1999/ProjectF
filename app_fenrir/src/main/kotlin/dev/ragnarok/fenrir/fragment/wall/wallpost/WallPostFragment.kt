@@ -29,7 +29,6 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsHolder
 import dev.ragnarok.fenrir.fragment.base.AttachmentsHolder.Companion.forPost
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
 import dev.ragnarok.fenrir.fromIOToMain
@@ -518,21 +517,17 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
             .showToastInfo(R.string.wall_post_is_not_yet_initialized)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<WallPostPresenter> {
-        return object : IPresenterFactory<WallPostPresenter> {
-            override fun create(): WallPostPresenter {
-                val wrapper: ParcelableOwnerWrapper? =
-                    requireArguments().getParcelableCompat(Extra.OWNER)
-                return WallPostPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(Extra.POST_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    requireArguments().getParcelableCompat(Extra.POST),
-                    wrapper?.get(),
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): WallPostPresenter {
+        val wrapper: ParcelableOwnerWrapper? =
+            requireArguments().getParcelableCompat(Extra.OWNER)
+        return WallPostPresenter(
+            requireArguments().getLong(Extra.ACCOUNT_ID),
+            requireArguments().getInt(Extra.POST_ID),
+            requireArguments().getLong(Extra.OWNER_ID),
+            requireArguments().getParcelableCompat(Extra.POST),
+            wrapper?.get(),
+            saveInstanceState
+        )
     }
 
     override fun goToNewsSearch(accountId: Long, hashTag: String?) {

@@ -12,7 +12,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.link.LinkHelper.openLinkInBrowser
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
@@ -113,17 +112,11 @@ class FaveLinksFragment : BaseMvpFragment<FaveLinksPresenter, IFaveLinksView>(),
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FaveLinksPresenter> {
-        return object : IPresenterFactory<FaveLinksPresenter> {
-            override fun create(): FaveLinksPresenter {
-                return FaveLinksPresenter(
-                    requireArguments().getLong(
-                        Extra.ACCOUNT_ID
-                    ), saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FaveLinksPresenter(
+        requireArguments().getLong(
+            Extra.ACCOUNT_ID
+        ), saveInstanceState
+    )
 
     companion object {
 

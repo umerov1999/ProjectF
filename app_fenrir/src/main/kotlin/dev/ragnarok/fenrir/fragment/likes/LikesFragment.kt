@@ -7,7 +7,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.absownerslist.AbsOwnersListFragment
 import dev.ragnarok.fenrir.fragment.absownerslist.ISimpleOwnersView
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 
 class LikesFragment : AbsOwnersListFragment<LikesListPresenter, ISimpleOwnersView>() {
     override fun onResume() {
@@ -25,20 +24,14 @@ class LikesFragment : AbsOwnersListFragment<LikesListPresenter, ISimpleOwnersVie
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<LikesListPresenter> {
-        return object : IPresenterFactory<LikesListPresenter> {
-            override fun create(): LikesListPresenter {
-                return LikesListPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getString(Extra.TYPE)!!,
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    requireArguments().getInt(Extra.ITEM_ID),
-                    requireArguments().getString(Extra.FILTER),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = LikesListPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getString(Extra.TYPE)!!,
+        requireArguments().getLong(Extra.OWNER_ID),
+        requireArguments().getInt(Extra.ITEM_ID),
+        requireArguments().getString(Extra.FILTER),
+        saveInstanceState
+    )
 
     override fun hasToolbar(): Boolean {
         return true

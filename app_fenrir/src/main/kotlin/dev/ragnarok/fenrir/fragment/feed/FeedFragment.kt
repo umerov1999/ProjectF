@@ -31,7 +31,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.selectprofiles.SelectProfilesActivity.Companion.startFaveSelection
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter.CustomListener
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
@@ -533,16 +532,10 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         mHeaderLayoutManager?.scrollToPosition(position)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FeedPresenter> {
-        return object : IPresenterFactory<FeedPresenter> {
-            override fun create(): FeedPresenter {
-                return FeedPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FeedPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        saveInstanceState
+    )
 
     companion object {
         fun buildArgs(accountId: Long): Bundle {

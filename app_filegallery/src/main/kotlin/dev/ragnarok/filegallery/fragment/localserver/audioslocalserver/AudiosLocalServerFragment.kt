@@ -12,7 +12,6 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.dialog.DialogLocalServerOptionDialog.Companion.newInstance
 import dev.ragnarok.filegallery.dialog.DialogLocalServerOptionDialog.DialogLocalServerOptionListener
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.filegallery.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
@@ -92,16 +91,9 @@ class AudiosLocalServerFragment :
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<AudiosLocalServerPresenter> {
-        return object : IPresenterFactory<AudiosLocalServerPresenter> {
-            override fun create(): AudiosLocalServerPresenter {
-                return AudiosLocalServerPresenter(
-                    saveInstanceState
-                )
-            }
-
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = AudiosLocalServerPresenter(
+        saveInstanceState
+    )
 
     override fun displayList(audios: List<Audio>) {
         mAudioRecyclerAdapter?.setItems(audios)

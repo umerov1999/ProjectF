@@ -36,7 +36,6 @@ import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.media.story.IStoryPlayer
@@ -309,10 +308,10 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusbarColored = CurrentTheme.getStatusBarColor(this)
+        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
+        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
+        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
         @ColorInt val navigationColor =
             if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor
@@ -367,22 +366,19 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         commentsButton?.visibility = if (mFullscreen) View.GONE else View.VISIBLE
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ShortVideoPagerPresenter> =
-        object : IPresenterFactory<ShortVideoPagerPresenter> {
-            override fun create(): ShortVideoPagerPresenter {
-                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val ownerId: Long? = if (!requireArguments().getBoolean(Extra.NO_OWNER_ID)) {
-                    requireArguments().getLong(Extra.OWNER_ID)
-                } else {
-                    null
-                }
-                return ShortVideoPagerPresenter(
-                    aid,
-                    ownerId,
-                    saveInstanceState
-                )
-            }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): ShortVideoPagerPresenter {
+        val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val ownerId: Long? = if (!requireArguments().getBoolean(Extra.NO_OWNER_ID)) {
+            requireArguments().getLong(Extra.OWNER_ID)
+        } else {
+            null
         }
+        return ShortVideoPagerPresenter(
+            aid,
+            ownerId,
+            saveInstanceState
+        )
+    }
 
     private val pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {

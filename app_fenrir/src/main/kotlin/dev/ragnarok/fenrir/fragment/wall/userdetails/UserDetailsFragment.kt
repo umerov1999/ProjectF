@@ -25,7 +25,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils
 import dev.ragnarok.fenrir.fadeIn
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.RecyclerMenuAdapter
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.hide
 import dev.ragnarok.fenrir.link.LinkHelper
@@ -111,17 +110,12 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<UserDetailsPresenter> =
-        object : IPresenterFactory<UserDetailsPresenter> {
-            override fun create(): UserDetailsPresenter {
-                return UserDetailsPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.USER)!!,
-                    requireArguments().getParcelableCompat(Extra.DETAILS)!!,
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = UserDetailsPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.USER)!!,
+        requireArguments().getParcelableCompat(Extra.DETAILS)!!,
+        saveInstanceState
+    )
 
     override fun onLongClick(item: AdvancedItem) {
         val clipboard =

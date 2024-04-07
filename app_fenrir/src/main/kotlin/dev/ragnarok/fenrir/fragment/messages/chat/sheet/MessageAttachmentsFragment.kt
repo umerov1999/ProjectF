@@ -28,7 +28,6 @@ import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.VideoSelectActivity
 import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.db.model.AttachmentsTypes
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.poll.createpoll.CreatePollDialogFragment
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -193,24 +192,20 @@ class MessageAttachmentsFragment :
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<MessageAttachmentsPresenter> {
-        return object : IPresenterFactory<MessageAttachmentsPresenter> {
-            override fun create(): MessageAttachmentsPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val messageId = requireArguments().getInt(Extra.MESSAGE_ID)
-                val messageOwnerId = requireArguments().getLong(Extra.OWNER_ID)
-                val bundle: ModelsBundle = requireArguments().getParcelableCompat(Extra.BUNDLE)!!
-                val isGroupChat = requireArguments().getBoolean(Extra.IS_CHAT)
-                return MessageAttachmentsPresenter(
-                    accountId,
-                    messageOwnerId,
-                    messageId,
-                    bundle,
-                    isGroupChat,
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): MessageAttachmentsPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val messageId = requireArguments().getInt(Extra.MESSAGE_ID)
+        val messageOwnerId = requireArguments().getLong(Extra.OWNER_ID)
+        val bundle: ModelsBundle = requireArguments().getParcelableCompat(Extra.BUNDLE)!!
+        val isGroupChat = requireArguments().getBoolean(Extra.IS_CHAT)
+        return MessageAttachmentsPresenter(
+            accountId,
+            messageOwnerId,
+            messageId,
+            bundle,
+            isGroupChat,
+            saveInstanceState
+        )
     }
 
     override fun openPollCreationWindow(accountId: Long, ownerId: Long) {

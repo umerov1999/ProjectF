@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.dialog.DialogLocalServerOptionDialog.Companion.newInstance
 import dev.ragnarok.fenrir.dialog.DialogLocalServerOptionDialog.DialogLocalServerOptionListener
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
@@ -109,16 +108,10 @@ class AudiosLocalServerFragment :
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<AudiosLocalServerPresenter> {
-        return object : IPresenterFactory<AudiosLocalServerPresenter> {
-            override fun create(): AudiosLocalServerPresenter {
-                return AudiosLocalServerPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = AudiosLocalServerPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        saveInstanceState
+    )
 
     override fun displayList(audios: List<Audio>) {
         mAudioRecyclerAdapter?.setItems(audios)

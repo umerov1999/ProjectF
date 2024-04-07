@@ -25,7 +25,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalPlaylistAdapter
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
@@ -326,7 +325,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<AudiosPresenter> {
+    override fun getPresenterFactory(saveInstanceState: Bundle?): AudiosPresenter {
         val accessKey =
             if (requireArguments().containsKey(Extra.ACCESS_KEY)) requireArguments().getString(
                 Extra.ACCESS_KEY
@@ -334,18 +333,14 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
         val albumId = if (requireArguments().containsKey(Extra.ALBUM_ID)) requireArguments().getInt(
             Extra.ALBUM_ID
         ) else null
-        return object : IPresenterFactory<AudiosPresenter> {
-            override fun create(): AudiosPresenter {
-                return AudiosPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    albumId,
-                    accessKey,
-                    requireArguments().getBoolean(ACTION_SELECT),
-                    saveInstanceState
-                )
-            }
-        }
+        return AudiosPresenter(
+            requireArguments().getLong(Extra.ACCOUNT_ID),
+            requireArguments().getLong(Extra.OWNER_ID),
+            albumId,
+            accessKey,
+            requireArguments().getBoolean(ACTION_SELECT),
+            saveInstanceState
+        )
     }
 
     override fun displayList(audios: MutableList<Audio>) {

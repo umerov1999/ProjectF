@@ -13,7 +13,6 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
@@ -43,17 +42,11 @@ class CommunityInfoLinksFragment :
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunityInfoLinksPresenter> {
-        return object : IPresenterFactory<CommunityInfoLinksPresenter> {
-            override fun create(): CommunityInfoLinksPresenter {
-                return CommunityInfoLinksPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.GROUP_ID)!!,
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CommunityInfoLinksPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.GROUP_ID)!!,
+        saveInstanceState
+    )
 
     override fun displayRefreshing(loadingNow: Boolean) {
         mSwipeRefreshLayout?.isRefreshing = loadingNow

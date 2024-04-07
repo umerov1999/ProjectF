@@ -28,7 +28,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.FileManagerSelectActivity
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.ContactConversation
 import dev.ragnarok.fenrir.model.Peer
@@ -242,13 +241,9 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FriendsByPhonesPresenter> {
-        return object : IPresenterFactory<FriendsByPhonesPresenter> {
-            override fun create(): FriendsByPhonesPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                return FriendsByPhonesPresenter(accountId, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): FriendsByPhonesPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        return FriendsByPhonesPresenter(accountId, saveInstanceState)
     }
 
     override fun onContactClick(contact: ContactConversation) {

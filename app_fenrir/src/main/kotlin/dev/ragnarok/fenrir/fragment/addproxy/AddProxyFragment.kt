@@ -10,7 +10,6 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 
 class AddProxyFragment : BaseMvpFragment<AddProxyPresenter, IAddProxyView>(), IAddProxyView {
@@ -80,13 +79,8 @@ class AddProxyFragment : BaseMvpFragment<AddProxyPresenter, IAddProxyView>(), IA
         requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<AddProxyPresenter> {
-        return object : IPresenterFactory<AddProxyPresenter> {
-            override fun create(): AddProxyPresenter {
-                return AddProxyPresenter(saveInstanceState)
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        AddProxyPresenter(saveInstanceState)
 
     companion object {
         fun newInstance(): AddProxyFragment {

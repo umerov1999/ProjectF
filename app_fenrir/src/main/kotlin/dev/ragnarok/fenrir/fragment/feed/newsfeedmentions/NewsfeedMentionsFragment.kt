@@ -15,7 +15,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.feed.newsfeedcomments.INewsfeedCommentsView
 import dev.ragnarok.fenrir.fragment.feed.newsfeedcomments.NewsfeedCommentsAdapter
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
@@ -69,14 +68,10 @@ class NewsfeedMentionsFragment :
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<NewsfeedMentionsPresenter> {
-        return object : IPresenterFactory<NewsfeedMentionsPresenter> {
-            override fun create(): NewsfeedMentionsPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                return NewsfeedMentionsPresenter(accountId, ownerId, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): NewsfeedMentionsPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+        return NewsfeedMentionsPresenter(accountId, ownerId, saveInstanceState)
     }
 
     override fun onResume() {

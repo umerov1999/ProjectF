@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.VoiceActionListener
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter.OnMessageActionListener
 import dev.ragnarok.fenrir.listener.BackPressCallback
@@ -270,13 +269,9 @@ class ImportantMessagesFragment :
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ImportantMessagesPresenter> {
-        return object : IPresenterFactory<ImportantMessagesPresenter> {
-            override fun create(): ImportantMessagesPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                return ImportantMessagesPresenter(accountId, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): ImportantMessagesPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        return ImportantMessagesPresenter(accountId, saveInstanceState)
     }
 
     override fun onVoiceHolderBinded(voiceMessageId: Int, voiceHolderId: Int) {

@@ -11,7 +11,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.compat.AbsMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.settings.theme.ThemeValue
 
@@ -48,12 +47,7 @@ class ThemeFragment : AbsMvpFragment<ThemePresenter, IThemeView>(), IThemeView,
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ThemePresenter> =
-        object : IPresenterFactory<ThemePresenter> {
-            override fun create(): ThemePresenter {
-                return ThemePresenter(saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ThemePresenter(saveInstanceState)
 
     override fun displayData(data: Array<ThemeValue>) {
         mAdapter?.setData(data)

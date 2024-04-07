@@ -11,7 +11,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.ShortcutStored
 
@@ -63,15 +62,9 @@ class ShortcutsViewFragment : BaseMvpFragment<ShortcutsViewPresenter, IShortcuts
         mAdapter?.notifyDataSetChanged()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ShortcutsViewPresenter> {
-        return object : IPresenterFactory<ShortcutsViewPresenter> {
-            override fun create(): ShortcutsViewPresenter {
-                return ShortcutsViewPresenter(
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ShortcutsViewPresenter(
+        saveInstanceState
+    )
 
     override fun onShortcutClick(shortcutStored: ShortcutStored) {
         presenter?.fireShortcutClick(requireActivity(), shortcutStored)

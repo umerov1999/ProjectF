@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils
 import dev.ragnarok.fenrir.activity.DeltaOwnerActivity
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.PeopleSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.peoplesearch.PeopleAdapter
@@ -231,17 +230,11 @@ class CommunityMembersFragment :
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunityMembersPresenter> {
-        return object : IPresenterFactory<CommunityMembersPresenter> {
-            override fun create(): CommunityMembersPresenter {
-                return CommunityMembersPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.GROUP_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CommunityMembersPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.GROUP_ID),
+        saveInstanceState
+    )
 
     override fun onOwnerClick(owner: Owner) {
         presenter?.fireUserClick(

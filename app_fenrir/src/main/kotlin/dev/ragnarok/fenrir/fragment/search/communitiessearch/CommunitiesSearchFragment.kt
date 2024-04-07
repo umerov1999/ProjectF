@@ -5,7 +5,6 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.GroupSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.peoplesearch.PeopleAdapter
@@ -32,17 +31,11 @@ class CommunitiesSearchFragment :
         return LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunitiesSearchPresenter> {
-        return object : IPresenterFactory<CommunitiesSearchPresenter> {
-            override fun create(): CommunitiesSearchPresenter {
-                return CommunitiesSearchPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.CRITERIA),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CommunitiesSearchPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.CRITERIA),
+        saveInstanceState
+    )
 
     override fun onOwnerClick(owner: Owner) {
         presenter?.fireCommunityClick(

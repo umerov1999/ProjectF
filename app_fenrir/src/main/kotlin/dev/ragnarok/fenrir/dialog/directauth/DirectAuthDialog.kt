@@ -17,7 +17,6 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpDialogFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 
@@ -98,13 +97,8 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
         return dialog
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<DirectAuthPresenter> {
-        return object : IPresenterFactory<DirectAuthPresenter> {
-            override fun create(): DirectAuthPresenter {
-                return DirectAuthPresenter(saveInstanceState)
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        DirectAuthPresenter(saveInstanceState)
 
     override fun onResume() {
         super.onResume()

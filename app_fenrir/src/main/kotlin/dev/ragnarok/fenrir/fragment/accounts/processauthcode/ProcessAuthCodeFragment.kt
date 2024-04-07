@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.base.RecyclerMenuAdapter
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.menu.AdvancedItem
 import dev.ragnarok.fenrir.util.Utils
@@ -83,17 +82,11 @@ class ProcessAuthCodeFragment : BaseMvpFragment<ProcessAuthCodePresenter, IProce
         requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ProcessAuthCodePresenter> {
-        return object : IPresenterFactory<ProcessAuthCodePresenter> {
-            override fun create(): ProcessAuthCodePresenter {
-                return ProcessAuthCodePresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getString(Extra.CODE)!!,
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ProcessAuthCodePresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getString(Extra.CODE)!!,
+        saveInstanceState
+    )
 
     companion object {
         fun newInstance(args: Bundle?): Fragment {

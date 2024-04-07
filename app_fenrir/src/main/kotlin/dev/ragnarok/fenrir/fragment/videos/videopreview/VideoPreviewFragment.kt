@@ -31,7 +31,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.link.LinkHelper.openLinkInBrowser
 import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
@@ -209,24 +208,19 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         startActivity(intent)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<VideoPreviewPresenter> {
+    override fun getPresenterFactory(saveInstanceState: Bundle?): VideoPreviewPresenter {
         var documentAccessKey: String? = null
         if (requireArguments().containsKey(Extra.ACCESS_KEY)) {
             documentAccessKey = requireArguments().getString(Extra.ACCESS_KEY)
         }
-        val finalDocumentAccessKey = documentAccessKey
-        return object : IPresenterFactory<VideoPreviewPresenter> {
-            override fun create(): VideoPreviewPresenter {
-                return VideoPreviewPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getInt(EXTRA_VIDEO_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    finalDocumentAccessKey,
-                    requireArguments().getParcelableCompat(Extra.VIDEO),
-                    saveInstanceState
-                )
-            }
-        }
+        return VideoPreviewPresenter(
+            requireArguments().getLong(Extra.ACCOUNT_ID),
+            requireArguments().getInt(EXTRA_VIDEO_ID),
+            requireArguments().getLong(Extra.OWNER_ID),
+            documentAccessKey,
+            requireArguments().getParcelableCompat(Extra.VIDEO),
+            saveInstanceState
+        )
     }
 
     override fun displayLoading() {

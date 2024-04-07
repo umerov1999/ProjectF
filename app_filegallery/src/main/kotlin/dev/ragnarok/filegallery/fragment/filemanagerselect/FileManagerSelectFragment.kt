@@ -20,7 +20,6 @@ import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.StubAnimatorListener
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
-import dev.ragnarok.filegallery.fragment.base.core.IPresenterFactory
 import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.listener.BackPressCallback
 import dev.ragnarok.filegallery.listener.PicassoPauseOnScrollListener
@@ -70,16 +69,11 @@ class FileManagerSelectFragment :
         animationDispose.dispose()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<FileManagerSelectPresenter> =
-        object : IPresenterFactory<FileManagerSelectPresenter> {
-            override fun create(): FileManagerSelectPresenter {
-                return FileManagerSelectPresenter(
-                    File(requireArguments().getString(Extra.PATH)!!),
-                    requireArguments().getString(Extra.EXT),
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FileManagerSelectPresenter(
+        File(requireArguments().getString(Extra.PATH)!!),
+        requireArguments().getString(Extra.EXT),
+        saveInstanceState
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,

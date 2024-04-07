@@ -23,7 +23,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
@@ -130,29 +129,25 @@ class CommunityBanEditFragment :
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunityBanEditPresenter> {
-        return object : IPresenterFactory<CommunityBanEditPresenter> {
-            override fun create(): CommunityBanEditPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val groupId = requireArguments().getLong(Extra.GROUP_ID)
-                val banned: Banned? = requireArguments().getParcelableCompat(Extra.BANNED)
-                if (banned != null) {
-                    return CommunityBanEditPresenter(
-                        accountId,
-                        groupId,
-                        banned,
-                        saveInstanceState
-                    )
-                }
-                val users: ArrayList<User>? =
-                    requireArguments().getParcelableArrayListCompat(Extra.USERS)
-                val owners = ArrayList<Owner>()
-                if (users.nonNullNoEmpty()) {
-                    owners.addAll(users)
-                }
-                return CommunityBanEditPresenter(accountId, groupId, owners, saveInstanceState)
-            }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): CommunityBanEditPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val groupId = requireArguments().getLong(Extra.GROUP_ID)
+        val banned: Banned? = requireArguments().getParcelableCompat(Extra.BANNED)
+        if (banned != null) {
+            return CommunityBanEditPresenter(
+                accountId,
+                groupId,
+                banned,
+                saveInstanceState
+            )
         }
+        val users: ArrayList<User>? =
+            requireArguments().getParcelableArrayListCompat(Extra.USERS)
+        val owners = ArrayList<Owner>()
+        if (users.nonNullNoEmpty()) {
+            owners.addAll(users)
+        }
+        return CommunityBanEditPresenter(accountId, groupId, owners, saveInstanceState)
     }
 
     override fun displayUserInfo(user: Owner) {

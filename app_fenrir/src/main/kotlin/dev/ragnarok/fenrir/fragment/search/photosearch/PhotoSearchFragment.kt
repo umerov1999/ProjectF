@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchFragment
 import dev.ragnarok.fenrir.fragment.search.criteria.PhotoSearchCriteria
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -50,17 +49,11 @@ class PhotoSearchFragment :
         return GridLayoutManager(requireActivity(), columnCount)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PhotoSearchPresenter> {
-        return object : IPresenterFactory<PhotoSearchPresenter> {
-            override fun create(): PhotoSearchPresenter {
-                return PhotoSearchPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.CRITERIA),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = PhotoSearchPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.CRITERIA),
+        saveInstanceState
+    )
 
     override fun displayGallery(accountId: Long, photos: ArrayList<Photo>, position: Int) {
         getSimpleGalleryPlace(accountId, photos, position, true).setActivityResultLauncher(

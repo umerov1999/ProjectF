@@ -21,7 +21,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
@@ -172,16 +171,10 @@ class ShortedLinksFragment : BaseMvpFragment<ShortedLinksPresenter, IShortedLink
             ?.setDurationSnack(Snackbar.LENGTH_LONG)?.coloredSnack(stat, color)?.show()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ShortedLinksPresenter> {
-        return object : IPresenterFactory<ShortedLinksPresenter> {
-            override fun create(): ShortedLinksPresenter {
-                return ShortedLinksPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ShortedLinksPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        saveInstanceState
+    )
 
     override fun onCopy(index: Int, link: ShortLink) {
         val clipboard =

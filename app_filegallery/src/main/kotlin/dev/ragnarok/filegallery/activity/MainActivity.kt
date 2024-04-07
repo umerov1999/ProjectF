@@ -38,7 +38,6 @@ import com.google.android.material.navigation.NavigationBarView
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
-import dev.ragnarok.filegallery.activity.EnterPinActivity.Companion.getClass
 import dev.ragnarok.filegallery.activity.photopager.PhotoPagerActivity
 import dev.ragnarok.filegallery.activity.qr.CameraScanActivity
 import dev.ragnarok.filegallery.fragment.AudioPlayerFragment
@@ -135,8 +134,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
     }
 
     private fun startEnterPinActivity() {
-        val intent = Intent(this, getClass(this))
-        requestEnterPin.launch(intent)
+        requestEnterPin.launch(EnterPinActivity.getIntent(this))
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -366,10 +364,10 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusbarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusbarColored = CurrentTheme.getStatusBarColor(this)
+        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
+        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusbarColored else statusbarNonColored
+        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
         @ColorInt val navigationColor =
             if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
         w.navigationBarColor = navigationColor

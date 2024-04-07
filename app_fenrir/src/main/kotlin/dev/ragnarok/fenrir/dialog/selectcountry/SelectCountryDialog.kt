@@ -10,7 +10,6 @@ import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpDialogFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.database.Country
@@ -74,14 +73,8 @@ class SelectCountryDialog : BaseMvpDialogFragment<CountriesPresenter, ICountries
         dismiss()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CountriesPresenter> {
-        return object : IPresenterFactory<CountriesPresenter> {
-            override fun create(): CountriesPresenter {
-                return CountriesPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CountriesPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        saveInstanceState
+    )
 }

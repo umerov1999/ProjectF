@@ -12,7 +12,6 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.fragment.attachments.abspostedit.AbsPostEditFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.WallEditorAttrs
@@ -20,15 +19,11 @@ import dev.ragnarok.fenrir.model.WallEditorAttrs
 class PostEditFragment : AbsPostEditFragment<PostEditPresenter, IPostEditView>(), IPostEditView,
     MenuProvider {
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PostEditPresenter> {
-        return object : IPresenterFactory<PostEditPresenter> {
-            override fun create(): PostEditPresenter {
-                val post: Post = requireArguments().getParcelableCompat(Extra.POST)!!
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val attrs: WallEditorAttrs = requireArguments().getParcelableCompat(Extra.ATTRS)!!
-                return PostEditPresenter(accountId, post, attrs, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): PostEditPresenter {
+        val post: Post = requireArguments().getParcelableCompat(Extra.POST)!!
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val attrs: WallEditorAttrs = requireArguments().getParcelableCompat(Extra.ATTRS)!!
+        return PostEditPresenter(accountId, post, attrs, saveInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

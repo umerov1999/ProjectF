@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.poll.PollAnswersAdapter.OnAnswerChangedCallback
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Poll
@@ -145,14 +144,10 @@ class PollFragment : BaseMvpFragment<PollPresenter, IPollView>(), IPollView,
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<PollPresenter> {
-        return object : IPresenterFactory<PollPresenter> {
-            override fun create(): PollPresenter {
-                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val poll: Poll = requireArguments().getParcelableCompat(Extra.POLL)!!
-                return PollPresenter(aid, poll, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): PollPresenter {
+        val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val poll: Poll = requireArguments().getParcelableCompat(Extra.POLL)!!
+        return PollPresenter(aid, poll, saveInstanceState)
     }
 
     override fun onAnswerChanged(checked: MutableSet<Long>) {

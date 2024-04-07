@@ -35,7 +35,6 @@ import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.activity.selectprofiles.SelectProfilesActivity.Companion.startFriendsSelection
 import dev.ragnarok.fenrir.dialog.DialogNotifOptionsDialog
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.dialogs.IDialogsView.IContextView
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.DialogsSearchCriteria
@@ -570,18 +569,12 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         getOwnerWallPlace(accountId, ownerId, owner).tryOpenWith(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<DialogsPresenter> {
-        return object : IPresenterFactory<DialogsPresenter> {
-            override fun create(): DialogsPresenter {
-                return DialogsPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    requireActivity().intent.getParcelableExtraCompat(MainActivity.EXTRA_INPUT_ATTACHMENTS),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = DialogsPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.OWNER_ID),
+        requireActivity().intent.getParcelableExtraCompat(MainActivity.EXTRA_INPUT_ATTACHMENTS),
+        saveInstanceState
+    )
 
     private class OptionView : IDialogsView.IOptionView {
         var pCanSearch = false

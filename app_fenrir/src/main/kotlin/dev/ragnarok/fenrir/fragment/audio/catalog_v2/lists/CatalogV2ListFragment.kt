@@ -27,7 +27,6 @@ import dev.ragnarok.fenrir.fragment.audio.audiosrecommendation.AudiosRecommendat
 import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.CatalogV2SectionFragment
 import dev.ragnarok.fenrir.fragment.audio.local.audioslocal.AudiosLocalFragment
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.localserver.audioslocalserver.AudiosLocalServerFragment
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2List
@@ -228,21 +227,15 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CatalogV2ListPresenter> {
-        return object : IPresenterFactory<CatalogV2ListPresenter> {
-            override fun create(): CatalogV2ListPresenter {
-                return CatalogV2ListPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.OWNER_ID),
-                    requireArguments().getString(Extra.ARTIST),
-                    requireArguments().getString(Extra.QUERY),
-                    requireArguments().getString(Extra.URL),
-                    requireActivity(),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CatalogV2ListPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getLong(Extra.OWNER_ID),
+        requireArguments().getString(Extra.ARTIST),
+        requireArguments().getString(Extra.QUERY),
+        requireArguments().getString(Extra.URL),
+        requireActivity(),
+        saveInstanceState
+    )
 
     override fun onResume() {
         super.onResume()

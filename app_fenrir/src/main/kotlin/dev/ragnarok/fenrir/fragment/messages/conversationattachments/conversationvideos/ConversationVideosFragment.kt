@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.conversationattachments.abschatattachments.AbsChatAttachmentsFragment
 import dev.ragnarok.fenrir.fragment.videos.VideosAdapter
 import dev.ragnarok.fenrir.model.Video
@@ -43,13 +42,9 @@ class ConversationVideosFragment :
         adapter?.setData(data)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ChatAttachmentVideoPresenter> {
-        return object : IPresenterFactory<ChatAttachmentVideoPresenter> {
-            override fun create(): ChatAttachmentVideoPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val peerId = requireArguments().getLong(Extra.PEER_ID)
-                return ChatAttachmentVideoPresenter(peerId, accountId, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): ChatAttachmentVideoPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val peerId = requireArguments().getLong(Extra.PEER_ID)
+        return ChatAttachmentVideoPresenter(peerId, accountId, saveInstanceState)
     }
 }

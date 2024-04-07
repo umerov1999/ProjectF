@@ -13,7 +13,6 @@ import com.google.android.material.materialswitch.MaterialSwitch
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpBottomSheetDialogFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.photos.localimagealbums.LocalPhotoAlbumsAdapter
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.LocalImageAlbum
@@ -122,17 +121,13 @@ class LocalAudioAlbumsFragment :
         mAlbumsAdapter?.updateCurrentId(currentId)
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<LocalAudioAlbumsPresenter> {
-        return object : IPresenterFactory<LocalAudioAlbumsPresenter> {
-            override fun create(): LocalAudioAlbumsPresenter {
-                val selectedId =
-                    requireArguments().getInt(Extra.ALBUM_ID, 0)
-                return LocalAudioAlbumsPresenter(
-                    selectedId,
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): LocalAudioAlbumsPresenter {
+        val selectedId =
+            requireArguments().getInt(Extra.ALBUM_ID, 0)
+        return LocalAudioAlbumsPresenter(
+            selectedId,
+            saveInstanceState
+        )
     }
 
     interface Listener {

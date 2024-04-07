@@ -56,7 +56,6 @@ struct Shape::Impl
         if (needComp) {
             cmp = renderer->target(bounds(renderer), renderer->colorSpace());
             renderer->beginComposite(cmp, CompositeMethod::None, opacity);
-            needComp = false;
         }
         ret = renderer->renderShape(rd);
         if (cmp) renderer->endComposite(cmp);
@@ -204,7 +203,7 @@ struct Shape::Impl
         return true;
     }
 
-    bool strokeTrim(float begin, float end)
+    bool strokeTrim(float begin, float end, bool individual)
     {
         if (!rs.stroke) {
             if (begin == 0.0f && end == 1.0f) return true;
@@ -215,6 +214,7 @@ struct Shape::Impl
 
         rs.stroke->trim.begin = begin;
         rs.stroke->trim.end = end;
+        rs.stroke->trim.individual = individual;
         flag |= RenderUpdateFlag::Stroke;
 
         return true;

@@ -10,7 +10,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.model.Manager
@@ -49,17 +48,11 @@ class CommunityInfoContactsFragment :
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunityInfoContactsPresenter> {
-        return object : IPresenterFactory<CommunityInfoContactsPresenter> {
-            override fun create(): CommunityInfoContactsPresenter {
-                return CommunityInfoContactsPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.GROUP_ID)!!,
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CommunityInfoContactsPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.GROUP_ID)!!,
+        saveInstanceState
+    )
 
     override fun notifyDataSetChanged() {
         mAdapter?.notifyDataSetChanged()

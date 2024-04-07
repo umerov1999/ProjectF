@@ -16,7 +16,6 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.selectprofiles.SelectProfilesActivity.Companion.createIntent
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.PeopleSearchCriteria
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
@@ -94,17 +93,11 @@ class CommunityManagersFragment :
             .show()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<CommunityManagersPresenter> {
-        return object : IPresenterFactory<CommunityManagersPresenter> {
-            override fun create(): CommunityManagersPresenter {
-                return CommunityManagersPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getParcelableCompat(Extra.GROUP_ID)!!,
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CommunityManagersPresenter(
+        requireArguments().getLong(Extra.ACCOUNT_ID),
+        requireArguments().getParcelableCompat(Extra.GROUP_ID)!!,
+        saveInstanceState
+    )
 
     override fun notifyDataSetChanged() {
         mAdapter?.notifyDataSetChanged()

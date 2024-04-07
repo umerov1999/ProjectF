@@ -26,7 +26,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.audio.audios.AudioRecyclerAdapter
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.docs.DocsAdapter
 import dev.ragnarok.fenrir.fragment.fave.favephotos.FavePhotosAdapter
 import dev.ragnarok.fenrir.fragment.videos.VideosAdapter
@@ -391,17 +390,12 @@ class ConversationMultiAttachmentsFragment :
         mSwipeRefreshLayout?.isRefreshing = refreshing
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<ConversationMultiAttachmentsPresenter> {
-        return object : IPresenterFactory<ConversationMultiAttachmentsPresenter> {
-            override fun create(): ConversationMultiAttachmentsPresenter {
-                return ConversationMultiAttachmentsPresenter(
-                    requireArguments().getLong(Extra.ACCOUNT_ID),
-                    requireArguments().getLong(Extra.PEER_ID),
-                    saveInstanceState
-                )
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        ConversationMultiAttachmentsPresenter(
+            requireArguments().getLong(Extra.ACCOUNT_ID),
+            requireArguments().getLong(Extra.PEER_ID),
+            saveInstanceState
+        )
 
     override fun toolbarTitle(title: String) {
         supportToolbarFor(this)?.title = title

@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.videos.videoalbums.VideoAlbumsNewAdapter
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.VideoAlbum
@@ -121,22 +120,18 @@ class VideoAlbumsByVideoFragment :
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<VideoAlbumsByVideoPresenter> {
-        return object : IPresenterFactory<VideoAlbumsByVideoPresenter> {
-            override fun create(): VideoAlbumsByVideoPresenter {
-                val ownerId1 = requireArguments().getLong(Extra.OWNER_ID)
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val owner = requireArguments().getLong(Extra.OWNER)
-                val video = requireArguments().getInt(Extra.VIDEO)
-                return VideoAlbumsByVideoPresenter(
-                    accountId,
-                    ownerId1,
-                    owner,
-                    video,
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): VideoAlbumsByVideoPresenter {
+        val ownerId1 = requireArguments().getLong(Extra.OWNER_ID)
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val owner = requireArguments().getLong(Extra.OWNER)
+        val video = requireArguments().getInt(Extra.VIDEO)
+        return VideoAlbumsByVideoPresenter(
+            accountId,
+            ownerId1,
+            owner,
+            video,
+            saveInstanceState
+        )
     }
 
     companion object {

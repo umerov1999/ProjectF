@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter.OnMessageActionListener
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -310,19 +309,15 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         startForSendAttachments(requireActivity(), accountId, FwdMessages(messages))
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<MessagesLookPresenter> {
-        return object : IPresenterFactory<MessagesLookPresenter> {
-            override fun create(): MessagesLookPresenter {
-                val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val peerId = requireArguments().getLong(Extra.PEER_ID)
-                val focusTo = requireArguments().getInt(Extra.FOCUS_TO)
-                val message: Message? =
-                    if (requireArguments().containsKey(Extra.MESSAGE)) requireArguments().getParcelableCompat(
-                        Extra.MESSAGE
-                    ) else null
-                return MessagesLookPresenter(aid, peerId, focusTo, message, saveInstanceState)
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): MessagesLookPresenter {
+        val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val peerId = requireArguments().getLong(Extra.PEER_ID)
+        val focusTo = requireArguments().getInt(Extra.FOCUS_TO)
+        val message: Message? =
+            if (requireArguments().containsKey(Extra.MESSAGE)) requireArguments().getParcelableCompat(
+                Extra.MESSAGE
+            ) else null
+        return MessagesLookPresenter(aid, peerId, focusTo, message, saveInstanceState)
     }
 
     override fun onAvatarClick(message: Message, userId: Long, position: Int) {

@@ -46,7 +46,6 @@ import dev.ragnarok.fenrir.api.Auth.scope
 import dev.ragnarok.fenrir.dialog.directauth.DirectAuthDialog
 import dev.ragnarok.fenrir.dialog.directauth.DirectAuthDialog.Companion.newInstance
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
@@ -685,13 +684,8 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<AccountsPresenter> {
-        return object : IPresenterFactory<AccountsPresenter> {
-            override fun create(): AccountsPresenter {
-                return AccountsPresenter(saveInstanceState)
-            }
-        }
-    }
+    override fun getPresenterFactory(saveInstanceState: Bundle?) =
+        AccountsPresenter(saveInstanceState)
 
     private fun startProxySettings() {
         startActivity(Intent(requireActivity(), ProxyManagerActivity::class.java))

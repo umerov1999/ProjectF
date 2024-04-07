@@ -31,7 +31,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.activity.LoginActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.LoginActivity.Companion.extractGroupTokens
-import dev.ragnarok.fenrir.fragment.base.core.IPresenterFactory
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalMenuAdapter
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
 import dev.ragnarok.fenrir.fragment.docs.DocsListPresenter
@@ -301,21 +300,17 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         requireActivity().invalidateOptionsMenu()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?): IPresenterFactory<GroupWallPresenter> {
-        return object : IPresenterFactory<GroupWallPresenter> {
-            override fun create(): GroupWallPresenter {
-                val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-                val ownerId = requireArguments().getLong(Extra.OWNER_ID)
-                val wrapper: ParcelableOwnerWrapper? =
-                    requireArguments().getParcelableCompat(Extra.OWNER)
-                return GroupWallPresenter(
-                    accountId,
-                    ownerId,
-                    wrapper?.get() as Community?,
-                    saveInstanceState
-                )
-            }
-        }
+    override fun getPresenterFactory(saveInstanceState: Bundle?): GroupWallPresenter {
+        val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
+        val ownerId = requireArguments().getLong(Extra.OWNER_ID)
+        val wrapper: ParcelableOwnerWrapper? =
+            requireArguments().getParcelableCompat(Extra.OWNER)
+        return GroupWallPresenter(
+            accountId,
+            ownerId,
+            wrapper?.get() as Community?,
+            saveInstanceState
+        )
     }
 
     override fun headerLayout(): Int {
