@@ -24,8 +24,9 @@ import java.util.concurrent.TimeUnit
 
 class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IPhotosLocalServerView>(accountId, savedInstanceState) {
-    private val photos: MutableList<Photo>
-    private val fInteractor: ILocalServerInteractor
+    private val photos: MutableList<Photo> = ArrayList()
+    private val fInteractor: ILocalServerInteractor =
+        InteractorFactory.createLocalServerInteractor()
     private var actualDataDisposable = Disposable.disposed()
     private var Foffset = 0
     private var actualDataReceived = false
@@ -296,8 +297,6 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        photos = ArrayList()
-        fInteractor = InteractorFactory.createLocalServerInteractor()
         search_at = FindAt()
     }
 }

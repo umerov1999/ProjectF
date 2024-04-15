@@ -17,7 +17,7 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IUserBannedView>(accountId, savedInstanceState) {
     private val interactor: IAccountsInteractor = InteractorFactory.createAccountInteractor()
-    private val owners: MutableList<Owner>
+    private val owners: MutableList<Owner> = ArrayList()
     private var endOfContent = false
     private var loadinNow = false
     private fun onOwnerRemoved(id: Long) {
@@ -152,7 +152,6 @@ class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        owners = ArrayList()
         loadNextPart(0)
         val repository = blacklistRepository
         appendDisposable(repository.observeAdding()

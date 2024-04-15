@@ -15,14 +15,10 @@ import dev.ragnarok.fenrir.settings.Settings
 
 class CatalogHeaderButton @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     FrameLayout(context, attrs) {
-    private val layoutInflater: LayoutInflater
+    private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     private var simpleText: TextView? = null
     private var dropdownText: TextView? = null
     private var clearButton: View? = null
-
-    init {
-        layoutInflater = LayoutInflater.from(context)
-    }
 
     fun setUpWithCatalogAction(catalogAction: CatalogV2Button) {
         when (catalogAction.action?.type) {

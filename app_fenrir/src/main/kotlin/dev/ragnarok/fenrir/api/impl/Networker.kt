@@ -22,9 +22,10 @@ import dev.ragnarok.fenrir.settings.IProxySettings
 import io.reactivex.rxjava3.core.Single
 
 class Networker(settings: IProxySettings) : INetworker {
-    private val otherVkRestProvider: IOtherVKRestProvider
-    private val vkRestProvider: IVKRestProvider
-    private val uploadRestProvider: IUploadRestProvider
+    private val otherVkRestProvider: IOtherVKRestProvider = OtherVKRestProvider(settings)
+    private val vkRestProvider: IVKRestProvider =
+        VKRestProvider(settings, VKMethodHttpClientFactory())
+    private val uploadRestProvider: IUploadRestProvider = UploadRestProvider(settings)
     override fun vkDefault(accountId: Long): IAccountApis {
         return VKApies[accountId, vkRestProvider]
     }
@@ -82,11 +83,5 @@ class Networker(settings: IProxySettings) : INetworker {
 
     override fun uploads(): IUploadApi {
         return UploadApi(uploadRestProvider)
-    }
-
-    init {
-        otherVkRestProvider = OtherVKRestProvider(settings)
-        vkRestProvider = VKRestProvider(settings, VKMethodHttpClientFactory())
-        uploadRestProvider = UploadRestProvider(settings)
     }
 }

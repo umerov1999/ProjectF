@@ -11,9 +11,11 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.view.ContextMenu
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -345,9 +347,14 @@ class CatalogV2SectionAdapter(
     inner class PlaylistHolder(itemView: View) : IViewHolder(itemView),
         View.OnCreateContextMenuListener {
         val thumb: ImageView
-        val name: TextView
+        val title: TextView
         val year: TextView
         val artist: TextView
+        val item_additional_info: ViewGroup
+        val item_badge: ViewGroup
+        val item_badge_icon: AppCompatImageView
+        val item_title_badge: TextView
+        val item_subtitle_badge: TextView
         private val playlist_container: View
         override fun onCreateContextMenu(
             menu: ContextMenu,
@@ -373,10 +380,15 @@ class CatalogV2SectionAdapter(
         init {
             itemView.setOnCreateContextMenuListener(this)
             thumb = itemView.findViewById(R.id.item_thumb)
-            name = itemView.findViewById(R.id.item_name)
+            title = itemView.findViewById(R.id.item_title)
             playlist_container = itemView.findViewById(R.id.playlist_container)
             year = itemView.findViewById(R.id.item_year)
             artist = itemView.findViewById(R.id.item_artist)
+            item_additional_info = itemView.findViewById(R.id.item_additional_info)
+            item_badge = itemView.findViewById(R.id.item_badge)
+            item_badge_icon = itemView.findViewById(R.id.item_badge_icon)
+            item_title_badge = itemView.findViewById(R.id.item_title_badge)
+            item_subtitle_badge = itemView.findViewById(R.id.item_subtitle_badge)
         }
 
         override fun bind(position: Int, itemDataHolder: AbsModel) {
@@ -394,7 +406,22 @@ class CatalogV2SectionAdapter(
                     ), 0.1f
                 )
             )
-            name.text = playlist.getTitle()
+            if (playlist.getIsSubtitleBadge()) {
+                item_additional_info.visibility = View.GONE
+                item_badge.visibility = View.VISIBLE
+                item_badge_icon.visibility = View.VISIBLE
+            } else {
+                item_additional_info.visibility = View.VISIBLE
+                item_badge.visibility = View.GONE
+                item_badge_icon.visibility = View.GONE
+            }
+            item_title_badge.text = playlist.getTitle()
+            if (playlist.getSubtitle().isNullOrEmpty()) item_subtitle_badge.visibility =
+                View.GONE else {
+                item_subtitle_badge.visibility = View.VISIBLE
+                item_subtitle_badge.text = playlist.getSubtitle()
+            }
+            title.text = playlist.getTitle()
             if (playlist.getArtist_name().isNullOrEmpty()) artist.visibility = View.GONE else {
                 artist.visibility = View.VISIBLE
                 artist.text = playlist.getArtist_name()
@@ -420,12 +447,12 @@ class CatalogV2SectionAdapter(
 
     inner class RecommendationPlaylistHolder(itemView: View) : IViewHolder(itemView),
         View.OnCreateContextMenuListener {
-        val percentage: TextView
-        private val percentageTitle: TextView
+        val percentage: TextView = itemView.findViewById(R.id.percentage)
+        private val percentageTitle: TextView = itemView.findViewById(R.id.percentageTitle)
         val title: TextView
         val subtitle: TextView
         val audios: AudioContainer
-        private val playlist_container: View
+        private val playlist_container: View = itemView.findViewById(R.id.playlist_container)
         override fun onCreateContextMenu(
             menu: ContextMenu,
             v: View,
@@ -456,9 +483,6 @@ class CatalogV2SectionAdapter(
         }
 
         init {
-            percentage = itemView.findViewById(R.id.percentage)
-            percentageTitle = itemView.findViewById(R.id.percentageTitle)
-            playlist_container = itemView.findViewById(R.id.playlist_container)
             playlist_container.setOnCreateContextMenuListener(this)
             title = itemView.findViewById(R.id.title)
             subtitle = itemView.findViewById(R.id.subtitle)
@@ -1124,7 +1148,20 @@ class CatalogV2SectionAdapter(
         val selectionView: MaterialCardView = itemView.findViewById(R.id.item_audio_selection)
         private val isSelectedView: MaterialCardView =
             itemView.findViewById(R.id.item_audio_select_add)
-        private val animationAdapter: Animator.AnimatorListener
+        private val animationAdapter: Animator.AnimatorListener =
+            object : WeakViewAnimatorAdapter<View>(selectionView) {
+                override fun onAnimationEnd(view: View) {
+                    view.visibility = View.GONE
+                }
+
+                override fun onAnimationStart(view: View) {
+                    view.visibility = View.VISIBLE
+                }
+
+                override fun onAnimationCancel(view: View) {
+                    view.visibility = View.GONE
+                }
+            }
         var animator: ObjectAnimator? = null
         private fun startSelectionAnimation() {
             selectionView.setCardBackgroundColor(CurrentTheme.getColorPrimary(mContext))
@@ -1297,22 +1334,6 @@ class CatalogV2SectionAdapter(
                     doPlay(getItemRawPosition(bindingAdapterPosition), audio)
                 } else {
                     doMenu(this, getItemRawPosition(bindingAdapterPosition), view, audio)
-                }
-            }
-        }
-
-        init {
-            animationAdapter = object : WeakViewAnimatorAdapter<View>(selectionView) {
-                override fun onAnimationEnd(view: View) {
-                    view.visibility = View.GONE
-                }
-
-                override fun onAnimationStart(view: View) {
-                    view.visibility = View.VISIBLE
-                }
-
-                override fun onAnimationCancel(view: View) {
-                    view.visibility = View.GONE
                 }
             }
         }

@@ -50,10 +50,10 @@ class MessageAttachmentsPresenter(
     private val isGroupChat: Boolean,
     savedInstanceState: Bundle?
 ) : RxSupportPresenter<IMessageAttachmentsView>(savedInstanceState) {
-    private val entries: MutableList<AttachmentEntry>
-    private val attachmentsRepository: IAttachmentsRepository
+    private val entries: MutableList<AttachmentEntry> = ArrayList()
+    private val attachmentsRepository: IAttachmentsRepository = Includes.attachmentsRepository
     private val destination: UploadDestination = UploadDestination.forMessage(messageId)
-    private val uploadManager: IUploadManager
+    private val uploadManager: IUploadManager = Includes.uploadManager
     private var currentPhotoCameraUri: Uri? = null
     private fun handleInputModels(bundle: ModelsBundle?) {
         if (bundle == null) {
@@ -577,9 +577,6 @@ class MessageAttachmentsPresenter(
     }
 
     init {
-        entries = ArrayList()
-        attachmentsRepository = Includes.attachmentsRepository
-        uploadManager = Includes.uploadManager
         if (savedInstanceState != null) {
             currentPhotoCameraUri = savedInstanceState.getParcelableCompat(SAVE_CAMERA_FILE_URI)
             val accompanying: ArrayList<AttachmentEntry>? =

@@ -1,28 +1,33 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.22"
-    id("org.jetbrains.intellij") version "1.17.0"
+    id("org.jetbrains.kotlin.jvm") version "2.0.0-RC1"
+    id("org.jetbrains.intellij") version "1.17.3"
 }
 
 group = "dev.ragnarok"
 version = "1.0"
 
 repositories {
+    google()
     mavenCentral()
     maven { url "https://www.jetbrains.com/intellij-repository/releases" }
     maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
 }
 
 intellij {
-    version = "2023.2.1"
-    type = "IC"
-    plugins = ['android']
+    version = "2023.3.1.16"
+    type = "AI"
+    plugins = ["android"]
+    pluginName = "getter_setter-idea-plugin"
 }
 
 tasks.withType(KotlinCompile).configureEach {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+    }
 }
 
 java {

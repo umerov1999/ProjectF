@@ -12,8 +12,8 @@ import java.util.Calendar
 
 class BirthDayPresenter(accountId: Long, private val ownerId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IBirthDayView>(accountId, savedInstanceState) {
-    private val users: MutableList<BirthDay>
-    private val cacheInteractor: IOwnersRepository
+    private val users: MutableList<BirthDay> = ArrayList()
+    private val cacheInteractor: IOwnersRepository = Repository.owners
     private val cacheDisposable = CompositeDisposable()
     private var cacheLoadingNow = false
     private fun loadCachedData() {
@@ -79,8 +79,6 @@ class BirthDayPresenter(accountId: Long, private val ownerId: Long, savedInstanc
     }
 
     init {
-        users = ArrayList()
-        cacheInteractor = Repository.owners
         loadCachedData()
     }
 }

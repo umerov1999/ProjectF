@@ -17,7 +17,7 @@ import dev.ragnarok.fenrir.view.AspectRatioImageView
 
 class LocalVideosAdapter(private val context: Context, private val data: List<LocalVideo>) :
     RecyclerView.Adapter<LocalVideosAdapter.ViewHolder>() {
-    private val holders: MutableSet<ViewHolder>
+    private val holders: MutableSet<ViewHolder> = HashSet()
     private var clickListener: ClickListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val holder = ViewHolder(
@@ -102,9 +102,5 @@ class LocalVideosAdapter(private val context: Context, private val data: List<Lo
 
     companion object {
         val TAG: String = LocalVideosAdapter::class.java.simpleName
-    }
-
-    init {
-        holders = HashSet()
     }
 }

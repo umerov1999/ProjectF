@@ -6,14 +6,11 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 abstract class FindAtWithContent<T>(
-    disposable: CompositeDisposable,
-    visibleCount: Int,
-    searchCount: Int
-) {
-    private val cached: MutableList<T>
-    private val disposable: CompositeDisposable
-    private val visibleCount: Int
+    private val disposable: CompositeDisposable,
+    private val visibleCount: Int,
     private val searchCount: Int
+) {
+    private val cached: MutableList<T> = ArrayList()
     private var q: String? = null
     private var ended = false
     private var needSearchInCache: Boolean
@@ -111,10 +108,6 @@ abstract class FindAtWithContent<T>(
         get() = q.nonNullNoEmpty()
 
     init {
-        cached = ArrayList()
-        this.disposable = disposable
-        this.visibleCount = visibleCount
-        this.searchCount = searchCount
         needSearchInCache = true
     }
 }

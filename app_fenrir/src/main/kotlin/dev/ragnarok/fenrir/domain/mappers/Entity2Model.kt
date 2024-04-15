@@ -830,6 +830,8 @@ object Entity2Model {
             .setDescription(dto.description)
             .setGenre(dto.genre)
             .setYear(dto.year)
+            .setSubtitle(dto.subtitle)
+            .setSubtitleBadge(dto.subtitle_badge)
             .setTitle(dto.title)
             .setThumb_image(dto.thumb_image)
             .setUpdate_time(dto.update_time)

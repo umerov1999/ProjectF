@@ -59,17 +59,18 @@ import kotlin.math.abs
 
 class CommentsPresenter(
     private var authorId: Long,
-    commented: Commented,
+    private val commented: Commented,
     focusToComment: Int?,
     commentThread: Int?,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<ICommentsView>(
     authorId, savedInstanceState
 ) {
-    private val commented: Commented
     private val ownersRepository: IOwnersRepository = owners
-    private val interactor: ICommentsInteractor
-    private val stickersInteractor: IStickersInteractor
+    private val interactor: ICommentsInteractor =
+        CommentsInteractor(networkInterfaces, stores, owners)
+    private val stickersInteractor: IStickersInteractor =
+        InteractorFactory.createStickersInteractor()
     private val data: MutableList<Comment>
     private val CommentThread: Int?
     private val stickersWordsDisplayDisposable = DisposableHolder<Void>()
@@ -1177,9 +1178,6 @@ class CommentsPresenter(
     }
 
     init {
-        interactor = CommentsInteractor(networkInterfaces, stores, owners)
-        stickersInteractor = InteractorFactory.createStickersInteractor()
-        this.commented = commented
         this.focusToComment = focusToComment
         directionDesc = Settings.get().main().isCommentsDesc
         this.CommentThread = commentThread

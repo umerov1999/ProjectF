@@ -23,7 +23,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
-import java.lang.ref.WeakReference
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -44,35 +43,20 @@ class BitmapCropTask(
     cropParameters: CropParameters,
     private val mCropCallback: BitmapCropCallback?
 ) {
-    private val mContext: WeakReference<Context>
-    private val mCropRect: RectF
-    private val mCurrentImageRect: RectF
-    private val mCurrentAngle: Float
-    private val mMaxResultImageSizeX: Int
-    private val mMaxResultImageSizeY: Int
-    private val mCompressFormat: CompressFormat
-    private val mCompressQuality: Int
-    private val mImageInputPath: String?
-    private val mImageOutputPath: String?
-    private var mCurrentScale: Float
+    private val mCropRect: RectF = imageState.cropRect
+    private val mCurrentImageRect: RectF = imageState.currentImageRect
+    private val mCurrentAngle: Float = imageState.currentAngle
+    private val mMaxResultImageSizeX: Int = cropParameters.maxResultImageSizeX
+    private val mMaxResultImageSizeY: Int = cropParameters.maxResultImageSizeY
+    private val mCompressFormat: CompressFormat = cropParameters.compressFormat
+    private val mCompressQuality: Int = cropParameters.compressQuality
+    private val mImageInputPath: String? = cropParameters.imageInputPath
+    private val mImageOutputPath: String? = cropParameters.imageOutputPath
+    private var mCurrentScale: Float = imageState.currentScale
     private var mCroppedImageWidth = 0
     private var mCroppedImageHeight = 0
     private var cropOffsetX = 0
     private var cropOffsetY = 0
-
-    init {
-        mContext = WeakReference(context)
-        mCropRect = imageState.cropRect
-        mCurrentImageRect = imageState.currentImageRect
-        mCurrentScale = imageState.currentScale
-        mCurrentAngle = imageState.currentAngle
-        mMaxResultImageSizeX = cropParameters.maxResultImageSizeX
-        mMaxResultImageSizeY = cropParameters.maxResultImageSizeY
-        mCompressFormat = cropParameters.compressFormat
-        mCompressQuality = cropParameters.compressQuality
-        mImageInputPath = cropParameters.imageInputPath
-        mImageOutputPath = cropParameters.imageOutputPath
-    }
 
     @SuppressLint("CheckResult")
     fun execute() {

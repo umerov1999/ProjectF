@@ -13,8 +13,9 @@ import dev.ragnarok.filegallery.settings.ISettings.IMainSettings
 import io.reactivex.rxjava3.core.Single
 
 class Networker(settings: IMainSettings) : INetworker {
-    private val localServerRestProvider: ILocalServerRestProvider
-    private val uploadRestProvider: IUploadRestProvider
+    private val localServerRestProvider: ILocalServerRestProvider =
+        LocalServerRestProvider(settings)
+    private val uploadRestProvider: IUploadRestProvider = UploadRestProvider(settings)
     override fun localServerApi(): ILocalServerApi {
         return LocalServerApi(object : ILocalServerServiceProvider {
             override fun provideLocalServerService(): Single<ILocalServerService> {
@@ -30,10 +31,5 @@ class Networker(settings: IMainSettings) : INetworker {
 
     override fun uploads(): IUploadApi {
         return UploadApi(uploadRestProvider)
-    }
-
-    init {
-        localServerRestProvider = LocalServerRestProvider(settings)
-        uploadRestProvider = UploadRestProvider(settings)
     }
 }

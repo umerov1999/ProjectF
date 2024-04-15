@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
@@ -64,7 +65,7 @@ import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 
 class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IAccountsView,
-    View.OnClickListener, AccountAdapter.Callback,
+    AccountAdapter.Callback,
     MenuProvider {
     private val requestPinForExportAccount = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -260,7 +261,13 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                 }
             }
         }).attachToRecyclerView(mRecyclerView)
-        root.findViewById<View>(R.id.fab).setOnClickListener(this)
+        root.findViewById<FloatingActionButton>(R.id.auth).setOnClickListener {
+            if (DEFAULT_ACCOUNT_TYPE == AccountType.KATE) {
+                startLoginViaWeb()
+            } else {
+                startDirectLogin()
+            }
+        }
         mAdapter = AccountAdapter(requireActivity(), emptyList(), this)
         mRecyclerView?.adapter = mAdapter
         return root
@@ -338,7 +345,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         )
     }
 
-    private fun startLoginViaWeb() {
+    override fun startLoginViaWeb() {
         val intent = createIntent(requireActivity(), Constants.API_ID.toString(), scope)
         requestLoginWeb.launch(intent)
     }
@@ -410,12 +417,6 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                 color,
                 params
             )?.show()
-    }
-
-    override fun onClick(v: View) {
-        if (v.id == R.id.fab) {
-            startDirectLogin()
-        }
     }
 
     override fun onClick(account: Account) {

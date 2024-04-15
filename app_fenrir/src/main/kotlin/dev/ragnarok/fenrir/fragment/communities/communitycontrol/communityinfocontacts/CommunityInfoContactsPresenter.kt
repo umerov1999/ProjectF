@@ -22,12 +22,12 @@ import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 
 class CommunityInfoContactsPresenter(
     accountId: Long,
-    groupId: Community,
+    private val groupId: Community,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<ICommunityInfoContactsView>(accountId, savedInstanceState) {
-    private val groupId: Community
-    private val data: MutableList<Manager>
-    private val interactor: IGroupSettingsInteractor
+    private val data: MutableList<Manager> = ArrayList()
+    private val interactor: IGroupSettingsInteractor =
+        GroupSettingsInteractor(networkInterfaces, stores.owners(), owners)
     private var loadingNow = false
     private fun onManagerActionReceived(manager: Manager) {
         val index =
@@ -156,9 +156,6 @@ class CommunityInfoContactsPresenter(
     }
 
     init {
-        interactor = GroupSettingsInteractor(networkInterfaces, stores.owners(), owners)
-        this.groupId = groupId
-        data = ArrayList()
         appendDisposable(stores
             .owners()
             .observeManagementChanges()

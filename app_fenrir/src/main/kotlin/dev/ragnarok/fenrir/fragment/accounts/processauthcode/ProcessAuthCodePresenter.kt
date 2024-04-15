@@ -19,7 +19,7 @@ class ProcessAuthCodePresenter(
 ) :
     AccountDependencyPresenter<IProcessAuthCodeView>(accountId, savedInstanceState) {
     private val pInteractor: IAccountsInteractor = InteractorFactory.createAccountInteractor()
-    private val items: MutableList<AdvancedItem>
+    private val items: MutableList<AdvancedItem> = ArrayList()
     private var actionState = 0
 
     override fun onGuiCreated(viewHost: IProcessAuthCodeView) {
@@ -98,7 +98,6 @@ class ProcessAuthCodePresenter(
     }
 
     init {
-        items = ArrayList()
         requestData(actionState)
     }
 }

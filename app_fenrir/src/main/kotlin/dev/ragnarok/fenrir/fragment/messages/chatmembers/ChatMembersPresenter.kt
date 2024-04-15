@@ -15,9 +15,9 @@ import java.util.Locale
 
 class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IChatMembersView>(accountId, savedInstanceState) {
-    private val messagesInteractor: IMessagesRepository
-    private val users: MutableList<AppChatUser>
-    private val original: MutableList<AppChatUser>
+    private val messagesInteractor: IMessagesRepository = messages
+    private val users: MutableList<AppChatUser> = ArrayList()
+    private val original: MutableList<AppChatUser> = ArrayList()
     private var refreshing = false
     private var isOwner = false
     private var query: String? = null
@@ -198,9 +198,6 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
     }
 
     init {
-        users = ArrayList()
-        original = ArrayList()
-        messagesInteractor = messages
         requestData()
     }
 }

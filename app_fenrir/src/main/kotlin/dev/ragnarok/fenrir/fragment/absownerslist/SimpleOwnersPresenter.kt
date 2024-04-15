@@ -8,7 +8,7 @@ abstract class SimpleOwnersPresenter<V : ISimpleOwnersView>(
     accountId: Long,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<V>(accountId, savedInstanceState) {
-    val data: MutableList<Owner>
+    val data: MutableList<Owner> = ArrayList()
     override fun onGuiCreated(viewHost: V) {
         super.onGuiCreated(viewHost)
         viewHost.displayOwnerList(data)
@@ -27,9 +27,5 @@ abstract class SimpleOwnersPresenter<V : ISimpleOwnersView>(
 
     fun fireOwnerClick(owner: Owner) {
         view?.showOwnerWall(accountId, owner)
-    }
-
-    init {
-        data = ArrayList()
     }
 }

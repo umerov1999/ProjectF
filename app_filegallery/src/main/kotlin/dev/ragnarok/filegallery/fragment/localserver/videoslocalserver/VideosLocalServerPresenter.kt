@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit
 
 class VideosLocalServerPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<IVideosLocalServerView>(savedInstanceState) {
-    private val videos: MutableList<Video>
-    private val fInteractor: ILocalServerApi
+    private val videos: MutableList<Video> = ArrayList()
+    private val fInteractor: ILocalServerApi = networkInterfaces.localServerApi()
     private var actualDataDisposable = Disposable.disposed()
     private var Foffset = 0
     private var actualDataReceived = false
@@ -201,8 +201,6 @@ class VideosLocalServerPresenter(savedInstanceState: Bundle?) :
     }
 
     init {
-        videos = ArrayList()
-        fInteractor = networkInterfaces.localServerApi()
         search_at = FindAt()
     }
 }

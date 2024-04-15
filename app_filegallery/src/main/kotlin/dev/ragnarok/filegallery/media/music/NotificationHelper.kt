@@ -19,7 +19,8 @@ import dev.ragnarok.filegallery.util.AppPerms
 import dev.ragnarok.filegallery.util.Utils
 
 class NotificationHelper(private val mService: MusicPlaybackService) {
-    private val mNotificationManager: NotificationManager?
+    private val mNotificationManager: NotificationManager? = mService
+        .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
     private var mNotificationBuilder: NotificationCompat.Builder? = null
 
     @Suppress("DEPRECATION")
@@ -206,10 +207,5 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
         const val NOTIFICATION_DOWNLOAD = 75
         const val NOTIFICATION_DOWNLOAD_MANAGER = 76
         const val NOTIFICATION_DOWNLOADING_GROUP = 77
-    }
-
-    init {
-        mNotificationManager = mService
-            .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
 }

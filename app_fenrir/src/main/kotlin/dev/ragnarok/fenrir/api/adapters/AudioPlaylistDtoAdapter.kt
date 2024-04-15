@@ -19,10 +19,12 @@ class AudioPlaylistDtoAdapter : AbsDtoAdapter<VKApiAudioPlaylist>("VKApiAudioPla
         album.count = optInt(root, "count")
         album.owner_id = optLong(root, "owner_id")
         album.title = optString(root, "title")
-        album.access_key = optString(root, "access_key")
+        album.subtitle = optString(root, "subtitle")
+        album.subtitle_badge = optBoolean(root, "subtitle_badge")
         album.description = optString(root, "description")
+        album.access_key = optString(root, "access_key")
         album.update_time = optLong(root, "update_time")
-        album.Year = optInt(root, "year")
+        album.year = optInt(root, "year")
         if (hasArray(root, "genres")) {
             val build = StringBuilder()
             val gnr = root["genres"]?.jsonArray

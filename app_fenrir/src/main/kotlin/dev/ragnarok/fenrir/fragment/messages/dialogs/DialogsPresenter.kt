@@ -54,17 +54,16 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 class DialogsPresenter(
     accountId: Long,
     initialDialogsOwnerId: Long,
-    models: ModelsBundle?,
+    private val models: ModelsBundle?,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IDialogsView>(accountId, savedInstanceState, true) {
-    private val dialogs: ArrayList<Dialog>
+    private val dialogs: ArrayList<Dialog> = ArrayList()
     private val messagesInteractor: IMessagesRepository
     private val stickerInteractor: IStickersInteractor
     private val accountsInteractor: IAccountsInteractor
     private val longpollManager: ILongpollManager
     private val netDisposable = CompositeDisposable()
     private val cacheLoadingDisposable = CompositeDisposable()
-    private val models: ModelsBundle?
     private var dialogsOwnerId = 0L
     private var endOfContent = false
     private var netLoadingNow = false
@@ -763,8 +762,6 @@ class DialogsPresenter(
     }
 
     init {
-        this.models = models
-        dialogs = ArrayList()
         dialogsOwnerId = savedInstanceState?.getLong(SAVE_DIALOGS_OWNER_ID)
             ?: initialDialogsOwnerId
         messagesInteractor = messages

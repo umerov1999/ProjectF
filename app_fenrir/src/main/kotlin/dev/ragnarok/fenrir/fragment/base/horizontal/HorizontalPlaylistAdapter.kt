@@ -43,7 +43,16 @@ class HorizontalPlaylistAdapter(data: MutableList<AudioPlaylist>) :
         )
         viewHolder.count.text =
             playlist.getCount().toString() + " " + context.getString(R.string.audios_pattern_count)
-        viewHolder.name.text = playlist.getTitle()
+        viewHolder.title.text = playlist.getTitle()
+        if (playlist.getSubtitle().isNullOrEmpty()) viewHolder.subtitle.visibility =
+            View.GONE else {
+            viewHolder.subtitle.visibility = View.VISIBLE
+            viewHolder.subtitle.text = playlist.getSubtitle()
+            viewHolder.subtitle.setOnClickListener {
+                if (viewHolder.subtitle.maxLines == 1) viewHolder.subtitle.maxLines =
+                    6 else viewHolder.subtitle.maxLines = 1
+            }
+        }
         if (playlist.getDescription().isNullOrEmpty()) viewHolder.description.visibility =
             View.GONE else {
             viewHolder.description.visibility = View.VISIBLE
@@ -113,7 +122,8 @@ class HorizontalPlaylistAdapter(data: MutableList<AudioPlaylist>) :
 
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val thumb: ImageView = itemView.findViewById(R.id.item_thumb)
-        val name: TextView = itemView.findViewById(R.id.item_name)
+        val title: TextView = itemView.findViewById(R.id.item_title)
+        val subtitle: TextView = itemView.findViewById(R.id.item_subtitle)
         val description: TextView = itemView.findViewById(R.id.item_description)
         val count: TextView = itemView.findViewById(R.id.item_count)
         val year: TextView = itemView.findViewById(R.id.item_year)

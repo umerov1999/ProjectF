@@ -13,8 +13,8 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class ShortedLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IShortedLinksView>(accountId, savedInstanceState) {
-    private val links: MutableList<ShortLink>
-    private val fInteractor: IUtilsInteractor
+    private val links: MutableList<ShortLink> = ArrayList()
+    private val fInteractor: IUtilsInteractor = InteractorFactory.createUtilsInteractor()
     private val actualDataDisposable = CompositeDisposable()
     private var actualDataReceived = false
     private var endOfContent = false
@@ -134,8 +134,6 @@ class ShortedLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        links = ArrayList()
-        fInteractor = InteractorFactory.createUtilsInteractor()
         loadActualData(0)
     }
 }

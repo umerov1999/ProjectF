@@ -222,7 +222,7 @@ class FavePostAdapter(
         val vTextContainer: View = itemView.findViewById(R.id.item_text_container)
         val tvText: EmojiconTextView = itemView.findViewById(R.id.item_post_text)
         val tvShowMore: TextView
-        val tvCopyright: TextView
+        val tvCopyright: TextView = itemView.findViewById(R.id.item_post_copyright)
         val tvTime: TextView
         val ivFriendOnly: ImageView
         val viewCounter: TextView?
@@ -233,7 +233,6 @@ class FavePostAdapter(
         val tvDonut: TextView
 
         init {
-            tvCopyright = itemView.findViewById(R.id.item_post_copyright)
             tvText.setOnHashTagClickListener(mOnHashTagClickListener)
             tvShowMore = itemView.findViewById(R.id.item_post_show_more)
             tvTime = itemView.findViewById(R.id.item_post_time)

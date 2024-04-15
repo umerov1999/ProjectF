@@ -18,7 +18,7 @@ import java.util.regex.Pattern
 class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<IShortcutsView>(savedInstanceState) {
     private val pInteractor: ITempDataStorage = Includes.stores.tempStore()
-    private val shortcuts: MutableList<ShortcutStored>
+    private val shortcuts: MutableList<ShortcutStored> = ArrayList()
 
     private val PATTERN_ACCOUNT: Pattern = Pattern.compile("fenrir_account_(-?\\d*)")
     private val PATTERN_WALL: Pattern = Pattern.compile("fenrir_wall_(-?\\d*)_aid_(-?\\d*)")
@@ -179,7 +179,6 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
     }
 
     init {
-        shortcuts = ArrayList()
         requestData()
     }
 }

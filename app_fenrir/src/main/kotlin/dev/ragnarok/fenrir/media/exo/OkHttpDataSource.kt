@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutionException
  */
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class OkHttpDataSource internal constructor(
-    callFactory: OkHttpClient,
+    private val callFactory: OkHttpClient,
     userAgent: String?,
     cacheControl: CacheControl?,
     defaultRequestProperties: HttpDataSource.RequestProperties?,
@@ -46,7 +46,6 @@ class OkHttpDataSource internal constructor(
         }
     }
 
-    private val callFactory: OkHttpClient
     private val requestProperties: HttpDataSource.RequestProperties
     private val userAgent: String?
     private val cacheControl: CacheControl?
@@ -447,7 +446,6 @@ class OkHttpDataSource internal constructor(
     }
 
     init {
-        this.callFactory = callFactory
         this.userAgent = userAgent
         this.cacheControl = cacheControl
         this.defaultRequestProperties = defaultRequestProperties

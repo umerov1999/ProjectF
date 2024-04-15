@@ -40,11 +40,7 @@ import java.nio.ByteOrder
  * A class for parsing the exif orientation from an image header.
  */
 class ImageHeaderParser(v: InputStream) {
-    private val reader: Reader
-
-    init {
-        reader = StreamReader(v)
-    }
+    private val reader: Reader = StreamReader(v)
 
     @get:Throws(IOException::class)
     val orientation: Int
@@ -190,13 +186,9 @@ class ImageHeaderParser(v: InputStream) {
     }
 
     private class RandomAccessReader(data: ByteArray, length: Int) {
-        private val data: ByteBuffer
-
-        init {
-            this.data = ByteBuffer.wrap(data)
-                .order(ByteOrder.BIG_ENDIAN)
-                .limit(length) as ByteBuffer
-        }
+        private val data: ByteBuffer = ByteBuffer.wrap(data)
+            .order(ByteOrder.BIG_ENDIAN)
+            .limit(length) as ByteBuffer
 
         fun order(byteOrder: ByteOrder) {
             data.order(byteOrder)

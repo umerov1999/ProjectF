@@ -16,7 +16,7 @@ class VideoAlbumsByVideoPresenter(
 ) : AccountDependencyPresenter<IVideoAlbumsByVideoView>(accountId, savedInstanceState) {
     private val videoOwnerId: Long = owner
     private val videoId: Int = video
-    private val data: MutableList<VideoAlbum>
+    private val data: MutableList<VideoAlbum> = ArrayList()
     private val videosInteractor: IVideosInteractor = InteractorFactory.createVideosInteractor()
     private var netLoadingNow = false
     private fun resolveRefreshingView() {
@@ -79,7 +79,6 @@ class VideoAlbumsByVideoPresenter(
     }
 
     init {
-        data = ArrayList()
         requestActualData()
     }
 }

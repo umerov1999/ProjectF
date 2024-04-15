@@ -27,7 +27,7 @@ import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.addZoomableView
 
 class PhotosViewHelper internal constructor(
     private val context: Context,
-    private val attachmentsActionCallback: OnAttachmentsActionCallback
+    private val attachmentsActionCallback: OnAttachmentsActionCallback?
 ) {
     @PhotoSize
     private val mPhotoPreviewSize = Settings.get().main().prefPreviewImageSize
@@ -65,7 +65,7 @@ class PhotosViewHelper internal constructor(
             holder.vgVideo.setOnClickListener {
                 if (image.type == PostImage.TYPE_VIDEO) {
                     val video = image.attachment as Video
-                    attachmentsActionCallback.onVideoPlay(video)
+                    attachmentsActionCallback?.onVideoPlay(video)
                 }
             }
             val url = image.getPreviewUrl(mPhotoPreviewSize)
@@ -209,12 +209,12 @@ class PhotosViewHelper internal constructor(
                     PostImage.TYPE_IMAGE -> openImages(photos, g)
                     PostImage.TYPE_VIDEO -> {
                         val video = image.attachment as Video
-                        attachmentsActionCallback.onVideoPlay(video)
+                        attachmentsActionCallback?.onVideoPlay(video)
                     }
 
                     PostImage.TYPE_GIF -> {
                         val document = image.attachment as Document
-                        attachmentsActionCallback.onDocPreviewOpen(document)
+                        attachmentsActionCallback?.onDocPreviewOpen(document)
                     }
                 }
             }
@@ -288,7 +288,7 @@ class PhotosViewHelper internal constructor(
         if (models.isEmpty()) {
             return
         }
-        attachmentsActionCallback.onPhotosOpen(models, index, true)
+        attachmentsActionCallback?.onPhotosOpen(models, index, true)
     }
 
     private class Holder(itemView: View) {

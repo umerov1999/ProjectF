@@ -26,13 +26,14 @@ import dev.ragnarok.fenrir.util.Utils.copyToArrayListWithPredicate
 class CommentEditPresenter(
     comment: Comment,
     accountId: Long,
-    CommentThread: Int?,
+    private val CommentThread: Int?,
     savedInstanceState: Bundle?
 ) : AbsAttachmentsEditPresenter<ICommentEditView>(accountId, savedInstanceState) {
-    private val orig: Comment
-    private val destination: UploadDestination
-    private val commentsInteractor: ICommentsInteractor
-    private val CommentThread: Int?
+    private val orig: Comment = comment
+    private val destination: UploadDestination =
+        UploadDestination.forComment(comment.getObjectId(), comment.commented.sourceOwnerId)
+    private val commentsInteractor: ICommentsInteractor =
+        CommentsInteractor(networkInterfaces, stores, owners)
     private var editingNow = false
     private var canGoBack = false
     private fun onUploadsQueueChanged(pair: Pair<Upload, UploadResult<*>>) {
@@ -181,11 +182,6 @@ class CommentEditPresenter(
     }
 
     init {
-        commentsInteractor = CommentsInteractor(networkInterfaces, stores, owners)
-        orig = comment
-        destination =
-            UploadDestination.forComment(comment.getObjectId(), comment.commented.sourceOwnerId)
-        this.CommentThread = CommentThread
         if (savedInstanceState == null) {
             setTextBody(orig.text)
             initialPopulateEntries()

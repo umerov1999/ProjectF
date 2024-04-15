@@ -9,11 +9,14 @@ import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.NewsfeedComment
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 
-class NewsfeedMentionsPresenter(accountId: Long, ownerId: Long, savedInstanceState: Bundle?) :
+class NewsfeedMentionsPresenter(
+    accountId: Long,
+    private val ownerId: Long,
+    savedInstanceState: Bundle?
+) :
     PlaceSupportPresenter<INewsfeedCommentsView>(accountId, savedInstanceState) {
-    private val data: MutableList<NewsfeedComment>
-    private val interactor: INewsfeedInteractor
-    private val ownerId: Long
+    private val data: MutableList<NewsfeedComment> = ArrayList()
+    private val interactor: INewsfeedInteractor = InteractorFactory.createNewsfeedInteractor()
     private var isEndOfContent = false
     private var loadingNow = false
     private var offset: Int
@@ -107,9 +110,6 @@ class NewsfeedMentionsPresenter(accountId: Long, ownerId: Long, savedInstanceSta
     }
 
     init {
-        data = ArrayList()
-        interactor = InteractorFactory.createNewsfeedInteractor()
-        this.ownerId = ownerId
         offset = 0
         loadAtLast()
     }

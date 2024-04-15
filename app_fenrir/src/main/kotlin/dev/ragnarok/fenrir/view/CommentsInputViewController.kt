@@ -33,10 +33,14 @@ class CommentsInputViewController(
     private val ibEmoji: ImageView
     private val ibAttach: ImageView
     private val tvAttCount: TextView
-    private val mButtonSend: ImageView
-    private val mTextWatcher: TextWatcherAdapter
-    private val mIconColorActive: Int
-    private val mIconColorInactive: Int
+    private val mButtonSend: ImageView = rootView.findViewById(R.id.buttonSend)
+    private val mTextWatcher: TextWatcherAdapter = object : TextWatcherAdapter() {
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            callback.onInputTextChanged(s.toString())
+        }
+    }
+    private val mIconColorActive: Int = CurrentTheme.getColorPrimary(activity)
+    private val mIconColorInactive: Int = CurrentTheme.getColorOnSurface(activity)
     private var emojiPopup: EmojiconsPopup?
     private var emojiOnScreen = false
     private var emojiNeed = false
@@ -172,14 +176,6 @@ class CommentsInputViewController(
     }
 
     init {
-        mTextWatcher = object : TextWatcherAdapter() {
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                callback.onInputTextChanged(s.toString())
-            }
-        }
-        mIconColorActive = CurrentTheme.getColorPrimary(activity)
-        mIconColorInactive = CurrentTheme.getColorOnSurface(activity)
-        mButtonSend = rootView.findViewById(R.id.buttonSend)
         mButtonSend.setOnClickListener { onSendButtonClick() }
         mButtonSend.setOnLongClickListener { callback.onSendLongClick() }
         tvAttCount = rootView.findViewById(R.id.fragment_input_att_count)

@@ -12,8 +12,8 @@ import java.util.Locale
 
 class LocalPhotoAlbumsPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<ILocalPhotoAlbumsView>(savedInstanceState) {
-    private val mLocalImageAlbums: MutableList<LocalImageAlbum>
-    private val mLocalImageAlbums_Search: MutableList<LocalImageAlbum>
+    private val mLocalImageAlbums: MutableList<LocalImageAlbum> = ArrayList()
+    private val mLocalImageAlbums_Search: MutableList<LocalImageAlbum> = ArrayList()
     private var permissionRequestedOnce = false
     private var mLoadingNow = false
     private var q: String? = null
@@ -132,10 +132,5 @@ class LocalPhotoAlbumsPresenter(savedInstanceState: Bundle?) :
         if (hasReadStoragePermission(applicationContext)) {
             loadData()
         }
-    }
-
-    init {
-        mLocalImageAlbums = ArrayList()
-        mLocalImageAlbums_Search = ArrayList()
     }
 }

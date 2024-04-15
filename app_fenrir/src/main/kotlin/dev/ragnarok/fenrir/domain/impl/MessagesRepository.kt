@@ -146,10 +146,9 @@ class MessagesRepository(
     private val networker: INetworker,
     private val ownersRepository: IOwnersRepository,
     private val storages: IStorages,
-    uploadManager: IUploadManager
-) : IMessagesRepository {
-    private val decryptor: IMessagesDecryptor
     private val uploadManager: IUploadManager
+) : IMessagesRepository {
+    private val decryptor: IMessagesDecryptor = MessagesDecryptor(storages)
     private val peerUpdatePublisher = PublishProcessor.create<List<PeerUpdate>>()
     private val peerDeletingPublisher = PublishProcessor.create<PeerDeleting>()
     private val messageUpdatesPublisher = PublishProcessor.create<List<MessageUpdate>>()
@@ -1896,8 +1895,6 @@ class MessagesRepository(
     }
 
     init {
-        decryptor = MessagesDecryptor(storages)
-        this.uploadManager = uploadManager
         compositeDisposable.add(
             uploadManager.observeResults()
                 .filter { it.first.destination.method == Method.TO_MESSAGE }

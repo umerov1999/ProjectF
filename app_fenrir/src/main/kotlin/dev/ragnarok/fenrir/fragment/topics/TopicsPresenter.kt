@@ -12,8 +12,8 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class TopicsPresenter(accountId: Long, private val ownerId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<ITopicsView>(accountId, savedInstanceState) {
-    private val topics: MutableList<Topic>
-    private val boardInteractor: IBoardInteractor
+    private val topics: MutableList<Topic> = ArrayList()
+    private val boardInteractor: IBoardInteractor = InteractorFactory.createBoardInteractor()
     private val cacheDisposable = CompositeDisposable()
     private val netDisposable = CompositeDisposable()
     private var endOfContent = false
@@ -146,8 +146,6 @@ class TopicsPresenter(accountId: Long, private val ownerId: Long, savedInstanceS
     }
 
     init {
-        topics = ArrayList()
-        boardInteractor = InteractorFactory.createBoardInteractor()
         loadCachedData()
         requestActualData(0)
     }

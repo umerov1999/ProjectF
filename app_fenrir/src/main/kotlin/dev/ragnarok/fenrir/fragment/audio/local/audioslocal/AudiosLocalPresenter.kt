@@ -30,11 +30,11 @@ import java.util.Locale
 
 class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IAudiosLocalView>(accountId, savedInstanceState) {
-    private val origin_audios: ArrayList<Audio>
-    private val audios: ArrayList<Audio>
+    private val origin_audios: ArrayList<Audio> = ArrayList()
+    private val audios: ArrayList<Audio> = ArrayList()
     private val audioListDisposable = CompositeDisposable()
     private val uploadManager: IUploadManager = Includes.uploadManager
-    private val uploadsData: MutableList<Upload>
+    private val uploadsData: MutableList<Upload> = ArrayList(0)
     private val destination: UploadDestination = forAudio(accountId)
     private val remotePlay: UploadDestination = forRemotePlay()
     private var actualReceived = false
@@ -84,7 +84,7 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
         resolveRefreshingView()
     }
 
-    private fun checkTittleArtists(data: Audio, q: String): Boolean {
+    private fun checkTitleArtists(data: Audio, q: String): Boolean {
         val r = q.split(Regex("( - )|( )|( {2})"), 2).toTypedArray()
         return if (r.size >= 2) {
             (safeCheck(
@@ -128,7 +128,7 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
                         i.artist?.lowercase(Locale.getDefault())?.contains(
                             it.lowercase(Locale.getDefault())
                         ) == true
-                    } || checkTittleArtists(i, it)
+                    } || checkTitleArtists(i, it)
                 ) {
                     audios.add(i)
                 }
@@ -356,9 +356,6 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        uploadsData = ArrayList(0)
-        audios = ArrayList()
-        origin_audios = ArrayList()
 
         bucket_id = if (Settings.get().main().isRememberLocalAudioAlbum) {
             Settings.get().main().currentLocalAudioAlbum

@@ -441,7 +441,7 @@ class AudiosPresenter(
             return false
         }
 
-        private fun checkTittleArtists(data: Audio, q: String): Boolean {
+        private fun checkTitleArtists(data: Audio, q: String): Boolean {
             val r = q.split(Regex("( - )|( )|( {2})"), 2).toTypedArray()
             return if (r.size >= 2) {
                 (safeCheck(
@@ -486,7 +486,7 @@ class AudiosPresenter(
                     )
                 ) == true
             }
-                    || checkArtists(data.main_artists, q) || checkTittleArtists(data, q)
+                    || checkArtists(data.main_artists, q) || checkTitleArtists(data, q)
         }
 
         override fun onReset(data: MutableList<Audio>, offset: Int, isEnd: Boolean) {

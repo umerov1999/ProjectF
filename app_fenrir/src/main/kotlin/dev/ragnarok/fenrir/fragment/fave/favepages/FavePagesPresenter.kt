@@ -20,14 +20,17 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
-class FavePagesPresenter(accountId: Long, isUser: Boolean, savedInstanceState: Bundle?) :
+class FavePagesPresenter(
+    accountId: Long,
+    private val isUser: Boolean,
+    savedInstanceState: Bundle?
+) :
     AccountDependencyPresenter<IFavePagesView>(accountId, savedInstanceState) {
-    private val pages: MutableList<FavePage>
-    private val faveInteractor: IFaveInteractor
-    private val isUser: Boolean
+    private val pages: MutableList<FavePage> = ArrayList()
+    private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
     private val cacheDisposable = CompositeDisposable()
     private val actualDataDisposable = CompositeDisposable()
-    private val searcher: FindPage
+    private val searcher: FindPage = FindPage(actualDataDisposable)
     private var sleepDataDisposable = Disposable.disposed()
     private var actualDataReceived = false
     private var endOfContent = false
@@ -285,10 +288,6 @@ class FavePagesPresenter(accountId: Long, isUser: Boolean, savedInstanceState: B
     }
 
     init {
-        pages = ArrayList()
-        faveInteractor = InteractorFactory.createFaveInteractor()
-        this.isUser = isUser
-        searcher = FindPage(actualDataDisposable)
         loadAllCachedData()
     }
 }

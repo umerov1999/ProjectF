@@ -33,8 +33,9 @@ class PhotoAllCommentPresenter(
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<IPhotoAllCommentView>(accountId, savedInstanceState) {
     private val photosInteractor: IPhotosInteractor = InteractorFactory.createPhotosInteractor()
-    private val interactor: ICommentsInteractor
-    private val mComments: ArrayList<Comment>
+    private val interactor: ICommentsInteractor =
+        CommentsInteractor(networkInterfaces, stores, owners)
+    private val mComments: ArrayList<Comment> = ArrayList()
     private val netDisposable = CompositeDisposable()
     private val deepLookingHolder = DisposableHolder<Void>()
     private var mEndOfContent = false
@@ -309,8 +310,6 @@ class PhotoAllCommentPresenter(
     }
 
     init {
-        interactor = CommentsInteractor(networkInterfaces, stores, owners)
-        mComments = ArrayList()
         requestAtLast()
     }
 }

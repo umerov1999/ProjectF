@@ -856,7 +856,20 @@ class AudioRecyclerAdapter(
         val Track: View = itemView.findViewById(R.id.track_option)
         val selectionView: MaterialCardView = itemView.findViewById(R.id.item_audio_selection)
         val isSelectedView: MaterialCardView = itemView.findViewById(R.id.item_audio_select_add)
-        private val animationAdapter: Animator.AnimatorListener
+        private val animationAdapter: Animator.AnimatorListener =
+            object : WeakViewAnimatorAdapter<View>(selectionView) {
+                override fun onAnimationEnd(view: View) {
+                    view.visibility = View.GONE
+                }
+
+                override fun onAnimationStart(view: View) {
+                    view.visibility = View.VISIBLE
+                }
+
+                override fun onAnimationCancel(view: View) {
+                    view.visibility = View.GONE
+                }
+            }
         var animator: ObjectAnimator? = null
         fun startSelectionAnimation() {
             selectionView.setCardBackgroundColor(CurrentTheme.getColorPrimary(mContext))
@@ -880,22 +893,6 @@ class AudioRecyclerAdapter(
             animator?.cancel()
             animator = null
             selectionView.visibility = View.INVISIBLE
-        }
-
-        init {
-            animationAdapter = object : WeakViewAnimatorAdapter<View>(selectionView) {
-                override fun onAnimationEnd(view: View) {
-                    view.visibility = View.GONE
-                }
-
-                override fun onAnimationStart(view: View) {
-                    view.visibility = View.VISIBLE
-                }
-
-                override fun onAnimationCancel(view: View) {
-                    view.visibility = View.GONE
-                }
-            }
         }
     }
 

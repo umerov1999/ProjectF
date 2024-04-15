@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.util
 import java.util.concurrent.atomic.AtomicLong
 
 class InstancesCounter {
-    private val map: MutableMap<Class<*>, AtomicLong>
+    private val map: MutableMap<Class<*>, AtomicLong> = HashMap()
     fun incrementAndGet(c: Class<*>): Long {
         var counter = map[c]
         if (counter == null) {
@@ -22,9 +22,5 @@ class InstancesCounter {
         if (counter.get() < id) {
             counter.set(id)
         }
-    }
-
-    init {
-        map = HashMap()
     }
 }

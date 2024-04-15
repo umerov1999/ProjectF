@@ -15,22 +15,13 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.util.Utils
 
 class HeaderViewHolder(itemView: View) : IViewHolder(itemView) {
-    private val title: TextView
+    private val title: TextView = itemView.findViewById(R.id.title)
     private var badge: TextView? = null
-    private val button: CatalogHeaderButton
-    private val badgeStub: ViewStub?
-    private val extension: ViewGroup
-    private val top_title_icon: ImageView
-    private val top_title: TextView
-
-    init {
-        title = itemView.findViewById(R.id.title)
-        button = itemView.findViewById(R.id.button)
-        badgeStub = itemView.findViewById(R.id.badgeStub)
-        extension = itemView.findViewById(R.id.extension)
-        top_title_icon = itemView.findViewById(R.id.top_title_icon)
-        top_title = itemView.findViewById(R.id.top_title)
-    }
+    private val button: CatalogHeaderButton = itemView.findViewById(R.id.button)
+    private val badgeStub: ViewStub? = itemView.findViewById(R.id.badgeStub)
+    private val extension: ViewGroup = itemView.findViewById(R.id.extension)
+    private val top_title_icon: ImageView = itemView.findViewById(R.id.top_title_icon)
+    private val top_title: TextView = itemView.findViewById(R.id.top_title)
 
     override fun bind(position: Int, itemDataHolder: AbsModel) {
         if (itemDataHolder !is CatalogV2Block) {
@@ -106,7 +97,7 @@ class HeaderViewHolder(itemView: View) : IViewHolder(itemView) {
             }
             s++
         }
-        if (catalogLayout.topTittleIcon.isNullOrEmpty() && catalogLayout.topTittleText.isNullOrEmpty()) {
+        if (catalogLayout.topTitleIcon.isNullOrEmpty() && catalogLayout.topTitleText.isNullOrEmpty()) {
             if (extension.visibility != View.GONE) {
                 extension.visibility = View.GONE
             }
@@ -119,13 +110,13 @@ class HeaderViewHolder(itemView: View) : IViewHolder(itemView) {
             if (extension.visibility != View.VISIBLE) {
                 extension.visibility = View.VISIBLE
             }
-            top_title.text = catalogLayout.topTittleText
+            top_title.text = catalogLayout.topTitleText
 
             top_title_icon.visibility =
-                if (catalogLayout.topTittleIcon.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
-            if (catalogLayout.topTittleIcon.nonNullNoEmpty()) {
+                if (catalogLayout.topTitleIcon.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
+            if (catalogLayout.topTitleIcon.nonNullNoEmpty()) {
                 PicassoInstance.with()
-                    .load(catalogLayout.topTittleIcon)
+                    .load(catalogLayout.topTitleIcon)
                     .tag(Constants.PICASSO_TAG)
                     .placeholder(R.drawable.background_gray)
                     .into(top_title_icon)

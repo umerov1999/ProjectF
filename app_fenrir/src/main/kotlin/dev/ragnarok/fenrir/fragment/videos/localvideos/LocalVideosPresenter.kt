@@ -13,8 +13,8 @@ import java.util.Locale
 
 class LocalVideosPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<ILocalVideosView>(savedInstanceState) {
-    private val mLocalVideos: MutableList<LocalVideo>
-    private val mLocalVideos_search: MutableList<LocalVideo>
+    private val mLocalVideos: MutableList<LocalVideo> = ArrayList()
+    private val mLocalVideos_search: MutableList<LocalVideo> = ArrayList()
     private var mLoadingNow = false
     private var q: String? = null
     private fun loadData() {
@@ -143,8 +143,6 @@ class LocalVideosPresenter(savedInstanceState: Bundle?) :
     }
 
     init {
-        mLocalVideos = ArrayList()
-        mLocalVideos_search = ArrayList()
         loadData()
     }
 }

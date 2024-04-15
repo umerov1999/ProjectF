@@ -75,9 +75,9 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     val ownerId: Long,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<V>(accountId, savedInstanceState) {
-    protected val wall: MutableList<Post>
+    protected val wall: MutableList<Post> = ArrayList()
 
-    val stories: MutableList<Story>
+    val stories: MutableList<Story> = ArrayList()
     private val ownersRepository: IOwnersRepository
     private val storiesInteractor: IStoriesShortVideosInteractor
     private val walls: IWallsRepository
@@ -962,8 +962,6 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     init {
-        wall = ArrayList()
-        stories = ArrayList()
         wallFilter = WallCriteria.MODE_ALL
         walls = Repository.walls
         ownersRepository = owners

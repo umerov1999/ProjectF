@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit
 
 class AudiosLocalServerPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<IAudiosLocalServerView>(savedInstanceState) {
-    private val audios: MutableList<Audio>
-    private val fInteractor: ILocalServerApi
+    private val audios: MutableList<Audio> = ArrayList()
+    private val fInteractor: ILocalServerApi = networkInterfaces.localServerApi()
     private var actualDataDisposable = Disposable.disposed()
     private var Foffset = 0
     private var actualDataReceived = false
@@ -252,8 +252,6 @@ class AudiosLocalServerPresenter(savedInstanceState: Bundle?) :
     }
 
     init {
-        audios = ArrayList()
-        fInteractor = networkInterfaces.localServerApi()
         search_at = FindAt()
     }
 }

@@ -24,11 +24,15 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 
-class CommunityManagersPresenter(accountId: Long, groupId: Community, savedInstanceState: Bundle?) :
+class CommunityManagersPresenter(
+    accountId: Long,
+    private val groupId: Community,
+    savedInstanceState: Bundle?
+) :
     AccountDependencyPresenter<ICommunityManagersView>(accountId, savedInstanceState) {
-    private val groupId: Community
-    private val data: MutableList<Manager>
-    private val interactor: IGroupSettingsInteractor
+    private val data: MutableList<Manager> = ArrayList()
+    private val interactor: IGroupSettingsInteractor =
+        GroupSettingsInteractor(networkInterfaces, stores.owners(), owners)
     private var loadingNow = false
     private fun onManagerActionReceived(manager: Manager) {
         val index =
@@ -213,9 +217,6 @@ class CommunityManagersPresenter(accountId: Long, groupId: Community, savedInsta
     }
 
     init {
-        interactor = GroupSettingsInteractor(networkInterfaces, stores.owners(), owners)
-        this.groupId = groupId
-        data = ArrayList()
         appendDisposable(stores
             .owners()
             .observeManagementChanges()

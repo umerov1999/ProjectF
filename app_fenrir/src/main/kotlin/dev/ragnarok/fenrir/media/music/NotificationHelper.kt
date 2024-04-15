@@ -19,7 +19,8 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Utils
 
 class NotificationHelper(private val mService: MusicPlaybackService) {
-    private val mNotificationManager: NotificationManager?
+    private val mNotificationManager: NotificationManager? = mService
+        .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
     private var mNotificationBuilder: NotificationCompat.Builder? = null
 
     @Suppress("DEPRECATION")
@@ -200,10 +201,5 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
         private const val ACTION_NEXT = 2
         private const val ACTION_PREV = 3
         private const val SWIPE_DISMISS_ACTION = 4
-    }
-
-    init {
-        mNotificationManager = mService
-            .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
 }

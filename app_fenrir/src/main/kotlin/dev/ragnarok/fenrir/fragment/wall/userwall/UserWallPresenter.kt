@@ -61,7 +61,7 @@ class UserWallPresenter(
     owner: User?,
     savedInstanceState: Bundle?
 ) : AbsWallPresenter<IUserWallView>(accountId, ownerId, savedInstanceState) {
-    private val filters: MutableList<PostFilter>
+    private val filters: MutableList<PostFilter> = ArrayList()
     private val ownersRepository: IOwnersRepository = owners
     private val storiesInteractor: IStoriesShortVideosInteractor =
         InteractorFactory.createStoriesInteractor()
@@ -797,7 +797,6 @@ class UserWallPresenter(
     }
 
     init {
-        filters = ArrayList()
         filters.addAll(createPostFilters())
         user = owner ?: User(ownerId)
         details = UserDetails()

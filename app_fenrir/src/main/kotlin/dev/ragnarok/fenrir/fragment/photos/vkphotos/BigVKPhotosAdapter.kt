@@ -33,11 +33,13 @@ class BigVKPhotosAdapter(
     photoWrappers: List<SelectablePhotoWrapper>,
     picassoTag: String
 ) : DifferentDataAdapter() {
-    private val mUploadViewHolders: SharedHolders<UploadViewHolder>
-    private val mPhotoHolders: MutableSet<PhotoViewHolder>
-    private val mColorPrimaryWithAlpha: Int
-    private val mColorSecondaryWithAlpha: Int
-    private val mPicassoTag: String
+    private val mUploadViewHolders: SharedHolders<UploadViewHolder> = SharedHolders(false)
+    private val mPhotoHolders: MutableSet<PhotoViewHolder> = HashSet()
+    private val mColorPrimaryWithAlpha: Int =
+        Utils.adjustAlpha(CurrentTheme.getColorPrimary(mContext), 0.75f)
+    private val mColorSecondaryWithAlpha: Int =
+        Utils.adjustAlpha(CurrentTheme.getColorSecondary(mContext), 0.60f)
+    private val mPicassoTag: String = picassoTag
     private var isShowBDate = false
     private var mPhotosActionListener: PhotosActionListener? = null
     private var mUploadActionListener: UploadActionListener? = null
@@ -286,12 +288,6 @@ class BigVKPhotosAdapter(
     }
 
     init {
-        mPhotoHolders = HashSet()
-        mUploadViewHolders = SharedHolders(false)
-        mPicassoTag = picassoTag
-        mColorPrimaryWithAlpha = Utils.adjustAlpha(CurrentTheme.getColorPrimary(mContext), 0.75f)
-        mColorSecondaryWithAlpha =
-            Utils.adjustAlpha(CurrentTheme.getColorSecondary(mContext), 0.60f)
         setData(DATA_TYPE_UPLOAD, uploads)
         setData(DATA_TYPE_PHOTO, photoWrappers)
     }

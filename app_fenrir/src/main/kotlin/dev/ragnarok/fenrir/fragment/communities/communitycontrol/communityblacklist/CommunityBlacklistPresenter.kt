@@ -24,7 +24,7 @@ class CommunityBlacklistPresenter(
     private val groupId: Long,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<ICommunityBlacklistView>(accountId, savedInstanceState) {
-    private val data: MutableList<Banned>
+    private val data: MutableList<Banned> = ArrayList()
     private val groupSettingsInteractor: IGroupSettingsInteractor
     private var loadingNow = false
     private var moreStartFrom: IntNextFrom
@@ -183,7 +183,6 @@ class CommunityBlacklistPresenter(
     }
 
     init {
-        data = ArrayList()
         moreStartFrom = IntNextFrom(0)
         val networker = networkInterfaces
         val repository = stores.owners()

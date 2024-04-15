@@ -558,7 +558,20 @@ class AudioLocalServerRecyclerAdapter(
         val Track: View = itemView.findViewById(R.id.track_option)
         val saved: ImageView = itemView.findViewById(R.id.saved)
         val selectionView: MaterialCardView = itemView.findViewById(R.id.item_audio_selection)
-        private val animationAdapter: Animator.AnimatorListener
+        private val animationAdapter: Animator.AnimatorListener =
+            object : WeakViewAnimatorAdapter<View>(selectionView) {
+                override fun onAnimationEnd(view: View) {
+                    view.visibility = View.GONE
+                }
+
+                override fun onAnimationStart(view: View) {
+                    view.visibility = View.VISIBLE
+                }
+
+                override fun onAnimationCancel(view: View) {
+                    view.visibility = View.GONE
+                }
+            }
         val visual: RLottieImageView = itemView.findViewById(R.id.item_audio_visual)
         val time: TextView = itemView.findViewById(R.id.item_audio_time)
         var animator: ObjectAnimator? = null
@@ -584,22 +597,6 @@ class AudioLocalServerRecyclerAdapter(
             animator?.cancel()
             animator = null
             selectionView.visibility = View.INVISIBLE
-        }
-
-        init {
-            animationAdapter = object : WeakViewAnimatorAdapter<View>(selectionView) {
-                override fun onAnimationEnd(view: View) {
-                    view.visibility = View.GONE
-                }
-
-                override fun onAnimationStart(view: View) {
-                    view.visibility = View.VISIBLE
-                }
-
-                override fun onAnimationCancel(view: View) {
-                    view.visibility = View.GONE
-                }
-            }
         }
     }
 

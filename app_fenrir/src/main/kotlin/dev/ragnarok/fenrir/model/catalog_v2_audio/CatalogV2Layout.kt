@@ -21,9 +21,9 @@ class CatalogV2Layout : Parcelable {
     var title: String? = null
         private set
 
-    var topTittleIcon: String? = null
+    var topTitleIcon: String? = null
         private set
-    var topTittleText: String? = null
+    var topTitleText: String? = null
         private set
 
     @IntDef(
@@ -103,8 +103,8 @@ class CatalogV2Layout : Parcelable {
         title = object_v.title
         this.data_type = data_type
         object_v.top_title?.let {
-            topTittleIcon = it.icon
-            topTittleText = it.text
+            topTitleIcon = it.icon
+            topTitleText = it.text
         }
     }
 
@@ -112,16 +112,16 @@ class CatalogV2Layout : Parcelable {
         name = parcel.readString()
         title = parcel.readString()
         data_type = parcel.readString()
-        topTittleIcon = parcel.readString()
-        topTittleText = parcel.readString()
+        topTitleIcon = parcel.readString()
+        topTitleText = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
         parcel.writeString(title)
         parcel.writeString(data_type)
-        parcel.writeString(topTittleIcon)
-        parcel.writeString(topTittleText)
+        parcel.writeString(topTitleIcon)
+        parcel.writeString(topTitleText)
     }
 
     override fun describeContents(): Int {

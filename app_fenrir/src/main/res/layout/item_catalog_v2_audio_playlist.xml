@@ -19,12 +19,59 @@
         android:background="?attr/selectableItemBackground"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/item_thumb"
+        <FrameLayout
             android:layout_width="@dimen/avatar_size_very_big"
-            android:layout_height="@dimen/avatar_size_very_big"
-            android:contentDescription="@null"
-            android:scaleType="centerCrop" />
+            android:layout_height="@dimen/avatar_size_very_big">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/item_thumb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop" />
+
+            <LinearLayout
+                android:id="@+id/item_badge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/item_title_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:maxLines="2"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="Title" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/item_subtitle_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:maxLines="2"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="#ffffff"
+                    android:textSize="12sp"
+                    tools:text="Subtitle" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/item_badge_icon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="8dp"
+                android:contentDescription="@null"
+                android:src="@drawable/audio_subtitle_badge" />
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/item_additional_info"
@@ -33,7 +80,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/item_name"
+                android:id="@+id/item_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -45,7 +92,7 @@
                 android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                 android:textColor="?colorPrimary"
                 android:textSize="14sp"
-                tools:text="Name" />
+                tools:text="Title" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/item_artist"

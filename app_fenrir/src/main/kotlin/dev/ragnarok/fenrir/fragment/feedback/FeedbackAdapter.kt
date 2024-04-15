@@ -30,8 +30,9 @@ class FeedbackAdapter(
     items: MutableList<Feedback>,
     attachmentsActionCallback: OnAttachmentsActionCallback
 ) : RecyclerBindableAdapter<Feedback, FeedbackHolder>(items) {
-    private val mContext: Context
-    private val mFeedbackViewBinder: FeedbackViewBinder
+    private val mContext: Context = context
+    private val mFeedbackViewBinder: FeedbackViewBinder =
+        FeedbackViewBinder(context, attachmentsActionCallback)
     private var mClickListener: ClickListener? = null
     override fun onBindItemViewHolder(
         viewHolder: FeedbackHolder,
@@ -326,10 +327,5 @@ class FeedbackAdapter(
         private const val HEADER_THIS_WEEK = 2
         private const val HEADER_OLD = 3
         private const val HEADER_YESTERDAY = 4
-    }
-
-    init {
-        mContext = context
-        mFeedbackViewBinder = FeedbackViewBinder(context, attachmentsActionCallback)
     }
 }

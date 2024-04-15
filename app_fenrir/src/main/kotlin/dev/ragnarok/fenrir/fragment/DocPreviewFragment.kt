@@ -44,7 +44,7 @@ import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.TouchImageView
 
-class DocPreviewFragment : BaseFragment(), View.OnClickListener, MenuProvider {
+class DocPreviewFragment : BaseFragment(), MenuProvider {
     private var accountId = 0L
     private var rootView: View? = null
     private var ownerId = 0L
@@ -107,9 +107,19 @@ class DocPreviewFragment : BaseFragment(), View.OnClickListener, MenuProvider {
         tvSubtitle = rootView?.findViewById(R.id.fragment_document_subtitle)
         val deleteOrAddButton: CircleCounterButton? =
             rootView?.findViewById(R.id.add_or_delete_button)
-        deleteOrAddButton?.setOnClickListener(this)
-        rootView?.findViewById<View>(R.id.download_button)?.setOnClickListener(this)
-        rootView?.findViewById<View>(R.id.share_button)?.setOnClickListener(this)
+        deleteOrAddButton?.setOnClickListener {
+            if (isMy) {
+                remove()
+            } else {
+                addYourSelf()
+            }
+        }
+        rootView?.findViewById<CircleCounterButton>(R.id.download_button)?.setOnClickListener {
+            download()
+        }
+        rootView?.findViewById<CircleCounterButton>(R.id.share_button)?.setOnClickListener {
+            share()
+        }
         deleteOrAddButton?.setIcon(if (isMy) R.drawable.ic_outline_delete else R.drawable.plus)
         return rootView
     }
@@ -245,20 +255,6 @@ class DocPreviewFragment : BaseFragment(), View.OnClickListener, MenuProvider {
 
     private fun restoreFromInstanceState(state: Bundle) {
         deleted = state.getBoolean(SAVE_DELETED)
-    }
-
-    override fun onClick(v: View) {
-        if (v.id == R.id.add_or_delete_button) {
-            if (isMy) {
-                remove()
-            } else {
-                addYourSelf()
-            }
-        } else if (v.id == R.id.share_button) {
-            share()
-        } else if (v.id == R.id.download_button) {
-            download()
-        }
     }
 
     private fun doRemove() {

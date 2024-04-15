@@ -37,11 +37,11 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
     private val repositories: IStorages = stores
     private val networker: INetworker = networkInterfaces
     private val stateLock = Any()
-    private val queue: MutableList<Entry>
+    private val queue: MutableList<Entry> = LinkedList()
     private val app: Context = provideApplicationContext()
-    private val notificationsInterceptors: HashMap<Long, Pair<Long, Long>>
-    private val ownersRepository: IOwnersRepository
-    private val messagesInteractor: IMessagesRepository
+    private val notificationsInterceptors: HashMap<Long, Pair<Long, Long>> = HashMap(3)
+    private val ownersRepository: IOwnersRepository = owners
+    private val messagesInteractor: IMessagesRepository = messages
 
     @Volatile
     private var current: Entry? = null
@@ -391,12 +391,5 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
                 result
             }
         }
-    }
-
-    init {
-        queue = LinkedList()
-        notificationsInterceptors = HashMap(3)
-        ownersRepository = owners
-        messagesInteractor = messages
     }
 }

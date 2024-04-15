@@ -69,7 +69,7 @@ import dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
 import dev.ragnarok.fenrir.view.natives.animation.AspectRatioAnimatedShapeableImageView
 
 class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPreviewView>(),
-    View.OnClickListener, View.OnLongClickListener, IVideoPreviewView, MenuProvider {
+    IVideoPreviewView, MenuProvider {
     private val ownerLinkAdapter: OwnerLinkSpanFactory.ActionListener =
         object : LinkActionAdapter() {
             override fun onOwnerClick(ownerId: Long) {
@@ -160,10 +160,19 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         likeButton = mRootView?.findViewById(R.id.like_button)
         val shareButton: CircleCounterButton? = mRootView?.findViewById(R.id.share_button)
         commentsButton = mRootView?.findViewById(R.id.comments_button)
-        commentsButton?.setOnClickListener(this)
-        shareButton?.setOnClickListener(this)
-        likeButton?.setOnClickListener(this)
-        likeButton?.setOnLongClickListener(this)
+        commentsButton?.setOnClickListener {
+            presenter?.fireCommentsClick()
+        }
+        shareButton?.setOnClickListener {
+            presenter?.fireShareClick()
+        }
+        likeButton?.setOnClickListener {
+            presenter?.fireLikeClick()
+        }
+        likeButton?.setOnLongClickListener {
+            presenter?.fireLikeLongClick()
+            true
+        }
         mTitleText = mRootView?.findViewById(R.id.fragment_video_title)
         mSubtitleText = mRootView?.findViewById(R.id.fragment_video_subtitle)
         mOwnerAvatar = mRootView?.findViewById(R.id.item_owner_avatar)
@@ -862,30 +871,6 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             .setBarsColored(requireActivity(), true)
             .build()
             .apply(requireActivity())
-    }
-
-    override fun onClick(v: View) {
-        when (v.id) {
-            R.id.like_button -> {
-                presenter?.fireLikeClick()
-            }
-
-            R.id.comments_button -> {
-                presenter?.fireCommentsClick()
-            }
-
-            R.id.share_button -> {
-                presenter?.fireShareClick()
-            }
-        }
-    }
-
-    override fun onLongClick(v: View): Boolean {
-        if (v.id == R.id.like_button) {
-            presenter?.fireLikeLongClick()
-            return true
-        }
-        return false
     }
 
     private class OptionView : IVideoPreviewView.IOptionView {

@@ -100,7 +100,7 @@ class WallMultiAttachmentsFragment :
             root.findViewById(R.id.tablayout),
             viewpager
         ) { tab: TabLayout.Tab, position: Int ->
-            frameAdapter?.getTittle(position)
+            frameAdapter?.getTitle(position)
                 ?.let { tab.setText(it) }
         }.attach()
         viewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -462,7 +462,7 @@ class WallMultiAttachmentsFragment :
         }
 
         @StringRes
-        fun getTittle(position: Int): Int {
+        fun getTitle(position: Int): Int {
             return when (data[position]) {
                 AttachmentWallType.AUDIO -> {
                     R.string.audios

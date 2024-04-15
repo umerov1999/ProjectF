@@ -19,8 +19,9 @@ import java.util.concurrent.TimeUnit
 
 class AudiosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IAudiosLocalServerView>(accountId, savedInstanceState) {
-    private val audios: MutableList<Audio>
-    private val fInteractor: ILocalServerInteractor
+    private val audios: MutableList<Audio> = ArrayList()
+    private val fInteractor: ILocalServerInteractor =
+        InteractorFactory.createLocalServerInteractor()
     private var actualDataDisposable = Disposable.disposed()
     private var Foffset = 0
     private var actualDataReceived = false
@@ -247,8 +248,6 @@ class AudiosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        audios = ArrayList()
-        fInteractor = InteractorFactory.createLocalServerInteractor()
         search_at = FindAt()
     }
 }

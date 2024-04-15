@@ -4,13 +4,12 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 
 class WriteText(val accountId: Long, peerId: Long, from_ids: LongArray?, val isText: Boolean) {
     val peerId: Long
-    private val from_ids: MutableList<Long>
+    private val from_ids: MutableList<Long> = ArrayList()
     fun getFrom_ids(): List<Long> {
         return from_ids
     }
 
     init {
-        this.from_ids = ArrayList()
         if (from_ids.nonNullNoEmpty()) {
             for (from_id in from_ids) {
                 if (accountId != from_id) {

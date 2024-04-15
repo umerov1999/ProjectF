@@ -13,9 +13,9 @@ class ChatUsersDomainPresenter(
     private val chatId: Long,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IChatUsersDomainView>(accountId, savedInstanceState) {
-    private val messagesInteractor: IMessagesRepository
-    private val users: MutableList<AppChatUser>
-    private val original: MutableList<AppChatUser>
+    private val messagesInteractor: IMessagesRepository = messages
+    private val users: MutableList<AppChatUser> = ArrayList()
+    private val original: MutableList<AppChatUser> = ArrayList()
     private var refreshing = false
     private var query: String? = null
     fun setLoadingNow(loadingNow: Boolean) {
@@ -125,9 +125,6 @@ class ChatUsersDomainPresenter(
     }
 
     init {
-        users = ArrayList()
-        original = ArrayList()
-        messagesInteractor = messages
         requestData()
     }
 }

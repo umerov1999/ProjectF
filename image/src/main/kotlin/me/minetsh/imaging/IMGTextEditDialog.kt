@@ -4,9 +4,9 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioGroup
+import androidx.appcompat.widget.AppCompatImageButton
 import com.google.android.material.textfield.TextInputEditText
 import me.minetsh.imaging.core.IMGText
 import me.minetsh.imaging.view.IMGColorGroup
@@ -16,7 +16,7 @@ import me.minetsh.imaging.view.IMGColorGroup
  */
 class IMGTextEditDialog(context: Context, callback: Callback?) : Dialog(
     context, R.style.ImageTextDialog
-), View.OnClickListener, RadioGroup.OnCheckedChangeListener {
+), RadioGroup.OnCheckedChangeListener {
     private val mCallback: Callback?
     private var mEditText: TextInputEditText? = null
     private var mDefaultText: IMGText? = null
@@ -34,8 +34,12 @@ class IMGTextEditDialog(context: Context, callback: Callback?) : Dialog(
         mColorGroup = findViewById(R.id.cg_colors)
         mColorGroup?.setOnCheckedChangeListener(this)
         mEditText = findViewById(R.id.et_text)
-        findViewById<View>(R.id.tv_cancel).setOnClickListener(this)
-        findViewById<View>(R.id.tv_done).setOnClickListener(this)
+        findViewById<AppCompatImageButton>(R.id.tv_cancel).setOnClickListener {
+            dismiss()
+        }
+        findViewById<AppCompatImageButton>(R.id.tv_done).setOnClickListener {
+            onDone()
+        }
     }
 
     override fun onStart() {
@@ -57,15 +61,6 @@ class IMGTextEditDialog(context: Context, callback: Callback?) : Dialog(
 
     fun reset() {
         setText(IMGText(null, Color.WHITE))
-    }
-
-    override fun onClick(v: View) {
-        val vid = v.id
-        if (vid == R.id.tv_done) {
-            onDone()
-        } else if (vid == R.id.tv_cancel) {
-            dismiss()
-        }
     }
 
     private fun onDone() {

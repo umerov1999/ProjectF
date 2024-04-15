@@ -45,11 +45,11 @@ class AudioPlaylistsAdapter(
         ) else holder.thumb.setImageResource(if (isDark) R.drawable.generic_audio_nowplaying_dark else R.drawable.generic_audio_nowplaying_light)
         holder.count.text =
             playlist.getCount().toString() + " " + context.getString(R.string.audios_pattern_count)
-        holder.name.text = playlist.getTitle()
-        if (playlist.getDescription().isNullOrEmpty()) holder.description.visibility =
+        holder.title.text = playlist.getTitle()
+        if (playlist.getDescriptionOrSubtitle().isNullOrEmpty()) holder.description.visibility =
             View.GONE else {
             holder.description.visibility = View.VISIBLE
-            holder.description.text = playlist.getDescription()
+            holder.description.text = playlist.getDescriptionOrSubtitle()
         }
         if (playlist.getArtist_name().isNullOrEmpty()) holder.artist.visibility = View.GONE else {
             holder.artist.visibility = View.VISIBLE
@@ -105,7 +105,7 @@ class AudioPlaylistsAdapter(
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView),
         OnCreateContextMenuListener {
         val thumb: ImageView
-        val name: TextView
+        val title: TextView
         val description: TextView
         val count: TextView
         val year: TextView
@@ -166,7 +166,7 @@ class AudioPlaylistsAdapter(
         init {
             itemView.setOnCreateContextMenuListener(this)
             thumb = itemView.findViewById(R.id.item_thumb)
-            name = itemView.findViewById(R.id.item_name)
+            title = itemView.findViewById(R.id.item_title)
             count = itemView.findViewById(R.id.item_count)
             playlist_container = itemView.findViewById(R.id.playlist_container)
             description = itemView.findViewById(R.id.item_description)

@@ -69,7 +69,7 @@ abstract class AbstractPreference internal constructor(val key: String) {
     var iconRes: Int = DISABLED_RESOURCE_ID
     var icon: Drawable? = null
 
-    fun getTittle(context: Context): String {
+    fun getTitle(context: Context): String {
         if (title.isNotEmpty()) {
             return title.toString()
         } else if (titleRes != DISABLED_RESOURCE_ID) {
@@ -399,7 +399,7 @@ open class Preference(key: String) : AbstractPreference(key) {
         val list = ArrayList<String>()
         var prScreen = pref.parent
         while (prScreen != null && prScreen.key != "root" && prScreen.key != "found_result") {
-            list.add(prScreen.getTittle(context))
+            list.add(prScreen.getTitle(context))
             prScreen = prScreen.parent
         }
         list.reverse()
@@ -407,7 +407,7 @@ open class Preference(key: String) : AbstractPreference(key) {
         for (i in list) {
             res.append(i).append(" -> ")
         }
-        res.append(pref.getTittle(context))
+        res.append(pref.getTitle(context))
         inSearchParentStory = res.toString()
     }
 

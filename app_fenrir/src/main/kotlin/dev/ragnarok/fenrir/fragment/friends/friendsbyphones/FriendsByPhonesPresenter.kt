@@ -25,8 +25,8 @@ import java.util.Locale
 
 class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFriendsByPhonesView>(accountId, savedInstanceState) {
-    private val data: MutableList<ContactConversation>
-    private val dataSearch: MutableList<ContactConversation>
+    private val data: MutableList<ContactConversation> = ArrayList()
+    private val dataSearch: MutableList<ContactConversation> = ArrayList()
     private val accountsInteractor: IAccountsInteractor =
         InteractorFactory.createAccountInteractor()
     private var netLoadingNow = false
@@ -191,8 +191,6 @@ class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        data = ArrayList()
-        dataSearch = ArrayList()
         requestActualData()
     }
 }

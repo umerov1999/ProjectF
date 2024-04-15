@@ -16,7 +16,7 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 class LogsPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<ILogsView>(savedInstanceState) {
     private val types: MutableList<LogEventType> = createTypes()
-    private val events: MutableList<LogEventWrapper>
+    private val events: MutableList<LogEventWrapper> = ArrayList()
     private val store: ITempDataStorage = Includes.stores.tempStore()
     private val disposableHolder = DisposableHolder<Int>()
     private var loadingNow = false
@@ -117,7 +117,6 @@ class LogsPresenter(savedInstanceState: Bundle?) :
     }
 
     init {
-        events = ArrayList()
         loadAll()
     }
 }

@@ -16,7 +16,7 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 
 class LocalPhotosAdapter(private val context: Context, private val data: List<LocalPhoto>) :
     RecyclerView.Adapter<LocalPhotosAdapter.ViewHolder>() {
-    private val holders: MutableSet<ViewHolder>
+    private val holders: MutableSet<ViewHolder> = HashSet()
     private var clickListener: ClickListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val holder = ViewHolder(
@@ -97,9 +97,5 @@ class LocalPhotosAdapter(private val context: Context, private val data: List<Lo
 
     companion object {
         val TAG: String = LocalPhotosAdapter::class.java.simpleName
-    }
-
-    init {
-        holders = HashSet()
     }
 }

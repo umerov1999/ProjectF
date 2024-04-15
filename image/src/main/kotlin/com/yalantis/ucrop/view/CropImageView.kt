@@ -483,13 +483,8 @@ open class CropImageView @JvmOverloads constructor(
         private val mOldScale: Float, private val mDeltaScale: Float,
         private val mWillBeImageInBoundsAfterTranslate: Boolean
     ) : Runnable {
-        private val mCropImageView: WeakReference<CropImageView>
-        private val mStartTime: Long
-
-        init {
-            mCropImageView = WeakReference(cropImageView)
-            mStartTime = System.currentTimeMillis()
-        }
+        private val mCropImageView: WeakReference<CropImageView> = WeakReference(cropImageView)
+        private val mStartTime: Long = System.currentTimeMillis()
 
         override fun run() {
             val cropImageView = mCropImageView.get() ?: return
@@ -529,13 +524,8 @@ open class CropImageView @JvmOverloads constructor(
         private val mOldScale: Float, private val mDeltaScale: Float,
         private val mDestX: Float, private val mDestY: Float
     ) : Runnable {
-        private val mCropImageView: WeakReference<CropImageView>
-        private val mStartTime: Long
-
-        init {
-            mCropImageView = WeakReference(cropImageView)
-            mStartTime = System.currentTimeMillis()
-        }
+        private val mCropImageView: WeakReference<CropImageView> = WeakReference(cropImageView)
+        private val mStartTime: Long = System.currentTimeMillis()
 
         override fun run() {
             val cropImageView = mCropImageView.get() ?: return

@@ -53,7 +53,8 @@ class NewsfeedCommentsAdapter(
     private val attachmentsViewBinder: AttachmentsViewBinder =
         AttachmentsViewBinder(context, callback)
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
-    private val linkActionAdapter: LinkActionAdapter
+    private val linkActionAdapter: LinkActionAdapter = object : LinkActionAdapter() { // do nothing
+    }
     private val colorTextSecondary: Int = CurrentTheme.getSecondaryTextColorCode(context)
     private val iconColorActive: Int = CurrentTheme.getColorPrimary(context)
     private var actionListener: ActionListener? = null
@@ -299,10 +300,9 @@ class NewsfeedCommentsAdapter(
         holder.friendsOnlyIcon.visibility = if (post.isFriendsOnly) View.VISIBLE else View.GONE
         holder.topDivider.visibility =
             if (needToShowTopDivider(post)) View.VISIBLE else View.GONE
-        val postOpenClickListener = View.OnClickListener {
+        holder.postRoot.setOnClickListener {
             actionListener?.onPostBodyClick(comment)
         }
-        holder.postRoot.setOnClickListener(postOpenClickListener)
         holder.tvDonut.visibility = if (post.isDonut) View.VISIBLE else View.GONE
         post.copyright?.let { vit ->
             holder.tvCopyright.visibility = View.VISIBLE
@@ -446,10 +446,5 @@ class NewsfeedCommentsAdapter(
         private const val VTYPE_VIDEO = 2
         private const val VTYPE_PHOTO = 3
         private const val VTYPE_TOPIC = 4
-    }
-
-    init {
-        linkActionAdapter = object : LinkActionAdapter() { // do nothing
-        }
     }
 }

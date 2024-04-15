@@ -26,6 +26,10 @@ class AudioPlaylistDboEntity : DboEntity() {
         private set
     var description: String? = null
         private set
+    var subtitle: String? = null
+        private set
+    var subtitle_badge: Boolean = false
+        private set
     var thumb_image: String? = null
         private set
     var access_key: String? = null
@@ -79,6 +83,16 @@ class AudioPlaylistDboEntity : DboEntity() {
 
     fun setDescription(description: String?): AudioPlaylistDboEntity {
         this.description = description
+        return this
+    }
+
+    fun setSubtitle(subtitle: String?): AudioPlaylistDboEntity {
+        this.subtitle = subtitle
+        return this
+    }
+
+    fun setSubtitleBadge(subtitle_badge: Boolean): AudioPlaylistDboEntity {
+        this.subtitle_badge = subtitle_badge
         return this
     }
 

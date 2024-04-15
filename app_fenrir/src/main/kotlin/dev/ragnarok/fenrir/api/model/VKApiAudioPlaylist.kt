@@ -11,11 +11,13 @@ class VKApiAudioPlaylist : VKApiAttachment, IIdComparable {
     var owner_id = 0L
     var count = 0
     var update_time: Long = 0
-    var Year = 0
+    var year = 0
     var artist_name: String? = null
     var genre: String? = null
     var title: String? = null
     var description: String? = null
+    var subtitle: String? = null
+    var subtitle_badge: Boolean = false
     var thumb_image: String? = null
     var access_key: String? = null
     var original_access_key: String? = null

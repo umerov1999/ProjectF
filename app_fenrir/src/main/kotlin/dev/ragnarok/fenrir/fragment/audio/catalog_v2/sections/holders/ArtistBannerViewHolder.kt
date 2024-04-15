@@ -11,11 +11,7 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.BlurTransformation
 
 class ArtistBannerViewHolder(itemView: View) : IViewHolder(itemView) {
-    private val photo: ImageView
-
-    init {
-        photo = itemView.findViewById(R.id.photo)
-    }
+    private val photo: ImageView = itemView.findViewById(R.id.photo)
 
     override fun bind(position: Int, itemDataHolder: AbsModel) {
         if (itemDataHolder !is CatalogV2Block || itemDataHolder.items?.get(0) !is CatalogV2ArtistItem) {

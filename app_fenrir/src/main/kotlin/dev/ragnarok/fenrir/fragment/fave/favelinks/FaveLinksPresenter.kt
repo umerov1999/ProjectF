@@ -20,8 +20,8 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFaveLinksView>(accountId, savedInstanceState) {
-    private val faveInteractor: IFaveInteractor
-    private val links: MutableList<FaveLink>
+    private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
+    private val links: MutableList<FaveLink> = ArrayList()
     private val cacheDisposable = CompositeDisposable()
     private val actualDisposable = CompositeDisposable()
     private var endOfContent = false
@@ -186,8 +186,6 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        links = ArrayList()
-        faveInteractor = InteractorFactory.createFaveInteractor()
         loadCachedData()
     }
 }

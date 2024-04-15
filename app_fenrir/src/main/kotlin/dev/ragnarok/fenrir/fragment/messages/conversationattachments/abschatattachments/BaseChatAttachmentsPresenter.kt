@@ -11,7 +11,7 @@ import io.reactivex.rxjava3.core.Single
 abstract class BaseChatAttachmentsPresenter<T, V : IBaseChatAttachmentsView<T>> internal constructor(
     private val peerId: Long, accountId: Long, savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<V>(accountId, savedInstanceState) {
-    val data: MutableList<T>
+    val data: MutableList<T> = ArrayList()
     private var nextFrom: String? = null
     private var endOfContent = false
     private var loadingHolder: DisposableHolder<Void> = DisposableHolder()
@@ -113,7 +113,6 @@ abstract class BaseChatAttachmentsPresenter<T, V : IBaseChatAttachmentsView<T>> 
     ): Single<Pair<String?, List<T>>>
 
     init {
-        data = ArrayList()
         initLoading()
     }
 }

@@ -12,6 +12,7 @@ interface IAccountsView : IMvpView, IErrorView, IToastView {
     fun isLoading(loading: Boolean)
     fun resolveEmptyText(isEmpty: Boolean)
     fun invalidateMenu()
+    fun startLoginViaWeb()
     fun startDirectLogin()
 
     fun notifyDataSetChanged()

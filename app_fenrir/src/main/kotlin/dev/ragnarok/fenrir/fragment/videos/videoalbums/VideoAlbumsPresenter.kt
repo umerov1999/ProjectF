@@ -15,7 +15,7 @@ class VideoAlbumsPresenter(
     private val action: String?,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IVideoAlbumsView>(accountId, savedInstanceState) {
-    private val data: MutableList<VideoAlbum>
+    private val data: MutableList<VideoAlbum> = ArrayList()
     private val videosInteractor: IVideosInteractor = InteractorFactory.createVideosInteractor()
     private val netDisposable = CompositeDisposable()
     private val cacheDisposable = CompositeDisposable()
@@ -144,7 +144,6 @@ class VideoAlbumsPresenter(
     }
 
     init {
-        data = ArrayList()
         loadAllDataFromDb()
     }
 }

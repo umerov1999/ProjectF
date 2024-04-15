@@ -16,7 +16,7 @@ class CommunityInfoLinksPresenter(
 ) :
     AccountDependencyPresenter<ICommunityInfoLinksView>(accountId, savedInstanceState) {
     private val networker: INetworker = networkInterfaces
-    private val links: MutableList<VKApiCommunity.Link>
+    private val links: MutableList<VKApiCommunity.Link> = ArrayList()
     private var loadingNow = false
     private fun setLoadingNow(loadingNow: Boolean) {
         this.loadingNow = loadingNow
@@ -80,7 +80,6 @@ class CommunityInfoLinksPresenter(
     }
 
     init {
-        links = ArrayList()
         requestLinks()
     }
 }

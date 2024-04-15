@@ -21,8 +21,9 @@ class WallSearchCommentsAttachmentsPresenter(
     private val posts: List<Int>,
     savedInstanceState: Bundle?
 ) : PlaceSupportPresenter<IWallSearchCommentsAttachmentsView>(accountId, savedInstanceState) {
-    private val data: MutableList<Comment>
-    private val interactor: ICommentsInteractor
+    private val data: MutableList<Comment> = ArrayList()
+    private val interactor: ICommentsInteractor =
+        CommentsInteractor(networkInterfaces, stores, owners)
     private val actualDataDisposable = CompositeDisposable()
     private var loaded = 0
     private var offset = 0
@@ -186,8 +187,6 @@ class WallSearchCommentsAttachmentsPresenter(
     }
 
     init {
-        data = ArrayList()
-        interactor = CommentsInteractor(networkInterfaces, stores, owners)
         loadActualData()
     }
 }

@@ -18,9 +18,9 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class FavePostsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     PlaceSupportPresenter<IFavePostsView>(accountId, savedInstanceState) {
-    private val posts: MutableList<Post>
-    private val faveInteractor: IFaveInteractor
-    private val wallInteractor: IWallsRepository
+    private val posts: MutableList<Post> = ArrayList()
+    private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
+    private val wallInteractor: IWallsRepository = walls
     private val cacheCompositeDisposable = CompositeDisposable()
     private var requestNow = false
     private var actualInfoReceived = false
@@ -171,9 +171,6 @@ class FavePostsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        posts = ArrayList()
-        faveInteractor = InteractorFactory.createFaveInteractor()
-        wallInteractor = walls
         appendDisposable(wallInteractor.observeMinorChanges()
             .observeOn(provideMainThreadScheduler())
             .subscribe { onPostUpdate(it) })

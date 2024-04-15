@@ -116,7 +116,7 @@ class ConversationMultiAttachmentsFragment :
             root.findViewById(R.id.tablayout),
             viewpager
         ) { tab: TabLayout.Tab, position: Int ->
-            frameAdapter?.getTittle(position)
+            frameAdapter?.getTitle(position)
                 ?.let { tab.setText(it) }
         }.attach()
         viewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -488,7 +488,7 @@ class ConversationMultiAttachmentsFragment :
         }
 
         @StringRes
-        fun getTittle(position: Int): Int {
+        fun getTitle(position: Int): Int {
             return when (data[position]) {
                 AttachmentConversationType.AUDIO -> {
                     R.string.audios

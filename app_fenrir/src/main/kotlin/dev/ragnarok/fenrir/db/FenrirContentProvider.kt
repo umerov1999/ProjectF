@@ -242,7 +242,8 @@ class FenrirContentProvider : ContentProvider() {
         private val KEYS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$KEYS_PATH")
         private const val AID = "aid"
 
-        private val sUsersProjectionMap: MutableMap<String, String>
+        //Setup projection maps
+        private val sUsersProjectionMap: MutableMap<String, String> = HashMap()
         private val sMessagesProjectionMap: MutableMap<String, String>
         private val sMessagesAttachmentsProjectionMap: MutableMap<String, String>
         private val sPhotosProjectionMap: MutableMap<String, String>
@@ -567,8 +568,6 @@ class FenrirContentProvider : ContentProvider() {
         }
 
         init {
-            //Setup projection maps
-            sUsersProjectionMap = HashMap()
             sUsersProjectionMap[BaseColumns._ID] = UsersColumns.FULL_ID
             sUsersProjectionMap[UsersColumns.FIRST_NAME] = UsersColumns.FULL_FIRST_NAME
             sUsersProjectionMap[UsersColumns.LAST_NAME] =

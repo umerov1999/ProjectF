@@ -2,16 +2,20 @@ package dev.ragnarok.fenrir.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.putBoolean
 
 class AudioPlaylist : AbsModel {
     private var id = 0
     private var owner_id = 0L
     private var count = 0
     private var update_time: Long = 0
-    private var Year = 0
+    private var year = 0
     private var artist_name: String? = null
     private var genre: String? = null
     private var title: String? = null
+    private var subtitle: String? = null
+    private var subtitle_badge: Boolean = false
     private var description: String? = null
     private var thumb_image: String? = null
     private var access_key: String? = null
@@ -25,10 +29,12 @@ class AudioPlaylist : AbsModel {
         owner_id = parcel.readLong()
         count = parcel.readInt()
         update_time = parcel.readLong()
-        Year = parcel.readInt()
+        year = parcel.readInt()
         artist_name = parcel.readString()
         genre = parcel.readString()
         title = parcel.readString()
+        subtitle = parcel.readString()
+        subtitle_badge = parcel.getBoolean()
         description = parcel.readString()
         thumb_image = parcel.readString()
         access_key = parcel.readString()
@@ -42,10 +48,12 @@ class AudioPlaylist : AbsModel {
         parcel.writeLong(owner_id)
         parcel.writeInt(count)
         parcel.writeLong(update_time)
-        parcel.writeInt(Year)
+        parcel.writeInt(year)
         parcel.writeString(artist_name)
         parcel.writeString(genre)
         parcel.writeString(title)
+        parcel.writeString(subtitle)
+        parcel.putBoolean(subtitle_badge)
         parcel.writeString(description)
         parcel.writeString(thumb_image)
         parcel.writeString(access_key)
@@ -96,11 +104,11 @@ class AudioPlaylist : AbsModel {
     }
 
     fun getYear(): Int {
-        return Year
+        return year
     }
 
-    fun setYear(Year: Int): AudioPlaylist {
-        this.Year = Year
+    fun setYear(year: Int): AudioPlaylist {
+        this.year = year
         return this
     }
 
@@ -131,6 +139,24 @@ class AudioPlaylist : AbsModel {
         return this
     }
 
+    fun getSubtitle(): String? {
+        return subtitle
+    }
+
+    fun setSubtitle(subtitle: String?): AudioPlaylist {
+        this.subtitle = subtitle
+        return this
+    }
+
+    fun getIsSubtitleBadge(): Boolean {
+        return subtitle_badge
+    }
+
+    fun setSubtitleBadge(subtitle_badge: Boolean): AudioPlaylist {
+        this.subtitle_badge = subtitle_badge
+        return this
+    }
+
     fun getDescription(): String? {
         return description
     }
@@ -138,6 +164,14 @@ class AudioPlaylist : AbsModel {
     fun setDescription(description: String?): AudioPlaylist {
         this.description = description
         return this
+    }
+
+    fun getDescriptionOrSubtitle(): String? {
+        return if (description.isNullOrEmpty()) {
+            subtitle
+        } else {
+            description
+        }
     }
 
     fun getThumb_image(): String? {

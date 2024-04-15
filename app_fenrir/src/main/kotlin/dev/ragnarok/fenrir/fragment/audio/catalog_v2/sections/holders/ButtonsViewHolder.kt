@@ -14,16 +14,11 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 
 class ButtonsViewHolder(itemView: View) : IViewHolder(itemView) {
-    private val button: MaterialButton
-    private val context: Activity?
-
-    init {
-        button = itemView.findViewById(R.id.buttonNext)
-        context = if (itemView.context is Activity) {
-            itemView.context as Activity
-        } else {
-            null
-        }
+    private val button: MaterialButton = itemView.findViewById(R.id.buttonNext)
+    private val context: Activity? = if (itemView.context is Activity) {
+        itemView.context as Activity
+    } else {
+        null
     }
 
     override fun bind(position: Int, itemDataHolder: AbsModel) {

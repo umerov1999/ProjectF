@@ -29,10 +29,10 @@ import java.util.concurrent.TimeUnit
 
 class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IAudioPlaylistsView>(accountId, savedInstanceState) {
-    private val addon: MutableList<AudioPlaylist>
-    private val playlists: MutableList<AudioPlaylist>
-    private val fInteractor: IAudioInteractor
-    private val searcher: FindPlaylist
+    private val addon: MutableList<AudioPlaylist> = ArrayList()
+    private val playlists: MutableList<AudioPlaylist> = ArrayList()
+    private val fInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
+    private val searcher: FindPlaylist = FindPlaylist(compositeDisposable)
     private var actualDataDisposable = Disposable.disposed()
     private var pending_to_add: AudioPlaylist? = null
     private var Foffset = 0
@@ -382,9 +382,9 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
                 ) == true
             }
                     || safeCheck(
-                data.getDescription()
+                data.getDescriptionOrSubtitle()
             ) {
-                data.getDescription()?.lowercase(Locale.getDefault())?.contains(
+                data.getDescriptionOrSubtitle()?.lowercase(Locale.getDefault())?.contains(
                     q.lowercase(
                         Locale.getDefault()
                     )
@@ -415,12 +415,5 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
         private const val SEARCH_VIEW_COUNT = 10
         private const val GET_COUNT = 50
         private const val WEB_SEARCH_DELAY = 1000
-    }
-
-    init {
-        playlists = ArrayList()
-        addon = ArrayList()
-        fInteractor = InteractorFactory.createAudioInteractor()
-        searcher = FindPlaylist(compositeDisposable)
     }
 }

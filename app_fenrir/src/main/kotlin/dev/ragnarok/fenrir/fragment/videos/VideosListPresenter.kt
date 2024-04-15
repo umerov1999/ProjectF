@@ -37,23 +37,20 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class VideosListPresenter(
-    accountId: Long, ownerId: Long, albumId: Int, private val action: String?,
-    albumTitle: String?, context: Context, savedInstanceState: Bundle?
+    accountId: Long, val ownerId: Long, val albumId: Int, private val action: String?,
+    private val albumTitle: String?, context: Context, savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IVideosListView>(accountId, savedInstanceState) {
-    val ownerId: Long
-    val albumId: Int
     private val data: MutableList<Video>
     private val interactor: IVideosInteractor = InteractorFactory.createVideosInteractor()
     private val uploadManager: IUploadManager = Includes.uploadManager
-    private val albumTitle: String?
     private val destination: UploadDestination = forVideo(
         if (IVideosListView.ACTION_SELECT.equals(action, ignoreCase = true)) 0 else 1,
         ownerId
     )
-    private val uploadsData: MutableList<Upload>
+    private val uploadsData: MutableList<Upload> = ArrayList(0)
     private val netDisposable = CompositeDisposable()
     private val cacheDisposable = CompositeDisposable()
-    private val searcher: FindVideo
+    private val searcher: FindVideo = FindVideo(netDisposable)
     private var sleepDataDisposable = Disposable.disposed()
     private var endOfContent = false
     private var intNextFrom: IntNextFrom
@@ -460,11 +457,6 @@ class VideosListPresenter(
     }
 
     init {
-        uploadsData = ArrayList(0)
-        searcher = FindVideo(netDisposable)
-        this.ownerId = ownerId
-        this.albumId = albumId
-        this.albumTitle = albumTitle
         intNextFrom = IntNextFrom(0)
         data = ArrayList()
         appendDisposable(uploadManager[accountId, destination]

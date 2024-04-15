@@ -24,8 +24,8 @@ class CatalogV2SectionPresenter(
     savedInstanceState: Bundle?
 ) :
     AccountDependencyPresenter<ICatalogV2SectionView>(accountId, savedInstanceState) {
-    private val pages: MutableList<AbsModel>
-    private val fInteractor: IAudioInteractor
+    private val pages: MutableList<AbsModel> = ArrayList()
+    private val fInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
     private var actualDataDisposable = Disposable.disposed()
     private var doAudioLoadTabs = false
     private var actualDataLoading = false
@@ -222,10 +222,5 @@ class CatalogV2SectionPresenter(
             return
         }
         loadActualData()
-    }
-
-    init {
-        pages = ArrayList()
-        fInteractor = InteractorFactory.createAudioInteractor()
     }
 }

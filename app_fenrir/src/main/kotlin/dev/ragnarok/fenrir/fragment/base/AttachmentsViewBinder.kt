@@ -76,17 +76,20 @@ import kotlin.math.abs
 
 class AttachmentsViewBinder(
     private val mContext: Context,
-    attachmentsActionCallback: OnAttachmentsActionCallback
+    attachmentsActionCallback: OnAttachmentsActionCallback?
 ) {
     private val photosViewHelper: PhotosViewHelper =
         PhotosViewHelper(mContext, attachmentsActionCallback)
     private val mAvatarTransformation: Transformation = CurrentTheme.createTransformationForAvatar()
-    private val mActiveWaveFormColor: Int
-    private val mNoActiveWaveFormColor: Int
+    private val mActiveWaveFormColor: Int = CurrentTheme.getColorPrimary(mContext)
+    private val mNoActiveWaveFormColor: Int = Utils.adjustAlpha(mActiveWaveFormColor, 0.5f)
     private val mVoiceSharedHolders: SharedHolders<VoiceHolder> = SharedHolders(true)
-    private val mAttachmentsActionCallback: OnAttachmentsActionCallback?
-    private val isNightSticker: Boolean
-    private val expandVoiceTranscript: Boolean
+    private val mAttachmentsActionCallback: OnAttachmentsActionCallback? = attachmentsActionCallback
+    private val isNightSticker: Boolean =
+        Settings.get().ui().isStickers_by_theme && Settings.get().ui().isDarkModeEnabled(
+            mContext
+        )
+    private val expandVoiceTranscript: Boolean = Settings.get().main().isExpand_voice_transcript
     private var mVoiceActionListener: VoiceActionListener? = null
     private var mOnHashTagClickListener: EmojiconTextView.OnHashTagClickListener? = null
     fun setOnHashTagClickListener(onHashTagClickListener: EmojiconTextView.OnHashTagClickListener?) {
@@ -277,7 +280,7 @@ class AttachmentsViewBinder(
             holder.mButtonPlay.setBackgroundResource(R.drawable.spinner)
         }
         if (voice.getTranscript().isNullOrEmpty()) {
-            holder.TranscriptText.visibility = View.GONE
+            holder.mTranscriptText.visibility = View.GONE
             if (messageId == null) {
                 holder.mDoTranscript.visibility = View.GONE
             } else {
@@ -294,16 +297,16 @@ class AttachmentsViewBinder(
             }
         } else {
             if (voice.isShowTranscript() || expandVoiceTranscript) {
-                holder.TranscriptText.visibility = View.VISIBLE
-                holder.TranscriptText.text = voice.getTranscript()
+                holder.mTranscriptText.visibility = View.VISIBLE
+                holder.mTranscriptText.text = voice.getTranscript()
                 holder.mDoTranscript.visibility = View.GONE
             } else {
-                holder.TranscriptText.visibility = View.GONE
+                holder.mTranscriptText.visibility = View.GONE
                 holder.mDoTranscript.visibility = View.VISIBLE
                 holder.mDoTranscript.setOnClickListener {
                     voice.setShowTranscript(true)
-                    holder.TranscriptText.visibility = View.VISIBLE
-                    holder.TranscriptText.text = voice.getTranscript()
+                    holder.mTranscriptText.visibility = View.VISIBLE
+                    holder.mTranscriptText.text = voice.getTranscript()
                     holder.mDoTranscript.visibility = View.GONE
                 }
             }
@@ -1237,7 +1240,7 @@ class AttachmentsViewBinder(
         val mWaveFormView: WaveFormView = itemView.findViewById(R.id.item_voice_wave_form_view)
         val mButtonPlay: ImageView
         val mDurationText: TextView
-        val TranscriptText: TextView
+        val mTranscriptText: TextView
         val mDoTranscript: TextView
         val mSpeed: ImageView
         override val holderId: Int
@@ -1250,7 +1253,7 @@ class AttachmentsViewBinder(
             mWaveFormView.tag = generateHolderId()
             mButtonPlay = itemView.findViewById(R.id.item_voice_button_play)
             mDurationText = itemView.findViewById(R.id.item_voice_duration)
-            TranscriptText = itemView.findViewById(R.id.transcription_text)
+            mTranscriptText = itemView.findViewById(R.id.transcription_text)
             mDoTranscript = itemView.findViewById(R.id.item_voice_translate)
             mSpeed = itemView.findViewById(R.id.item_voice_speed)
         }
@@ -1260,9 +1263,6 @@ class AttachmentsViewBinder(
         private const val PREFFERED_STICKER_SIZE = 120
         private val DEFAUL_WAVEFORM = byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         private var sHolderIdCounter = 0
-        internal fun safeSetVisibitity(view: View?, visibility: Int) {
-            if (view != null) view.visibility = visibility
-        }
 
         internal fun safeRemoveChildrenAndGoneParent(container: ViewGroup?) {
             if (container != null) {
@@ -1277,16 +1277,5 @@ class AttachmentsViewBinder(
             sHolderIdCounter++
             return sHolderIdCounter
         }
-    }
-
-    init {
-        mAttachmentsActionCallback = attachmentsActionCallback
-        mActiveWaveFormColor = CurrentTheme.getColorPrimary(mContext)
-        mNoActiveWaveFormColor = Utils.adjustAlpha(mActiveWaveFormColor, 0.5f)
-        isNightSticker =
-            Settings.get().ui().isStickers_by_theme && Settings.get().ui().isDarkModeEnabled(
-                mContext
-            )
-        expandVoiceTranscript = Settings.get().main().isExpand_voice_transcript
     }
 }

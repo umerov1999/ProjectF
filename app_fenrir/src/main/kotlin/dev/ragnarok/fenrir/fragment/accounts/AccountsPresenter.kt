@@ -127,7 +127,11 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 view?.resolveEmptyText(mData.isEmpty())
                 if (mData.isEmpty()) {
                     view?.invalidateMenu()
-                    view?.startDirectLogin()
+                    if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.KATE) {
+                        view?.startLoginViaWeb()
+                    } else {
+                        view?.startDirectLogin()
+                    }
                 }
             }) { view?.isLoading(false) })
     }

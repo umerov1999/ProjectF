@@ -794,6 +794,8 @@ object Model2Entity {
             .setGenre(dto.getGenre())
             .setYear(dto.getYear())
             .setTitle(dto.getTitle())
+            .setSubtitle(dto.getSubtitle())
+            .setSubtitleBadge(dto.getIsSubtitleBadge())
             .setThumb_image(dto.getThumb_image())
             .setUpdate_time(dto.getUpdate_time())
             .setOriginal_access_key(dto.getOriginal_access_key())

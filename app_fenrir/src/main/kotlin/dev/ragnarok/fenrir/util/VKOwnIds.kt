@@ -21,8 +21,8 @@ import dev.ragnarok.fenrir.requireNonNull
 import kotlin.math.abs
 
 class VKOwnIds {
-    private val uids: MutableSet<Long>
-    private val gids: MutableSet<Long>
+    private val uids: MutableSet<Long> = HashSet()
+    private val gids: MutableSet<Long> = HashSet()
     fun append(userArray: UserArray): VKOwnIds {
         userArray.ids?.let {
             for (id in it) {
@@ -277,10 +277,5 @@ class VKOwnIds {
             }
             return ids
         }
-    }
-
-    init {
-        uids = HashSet()
-        gids = HashSet()
     }
 }

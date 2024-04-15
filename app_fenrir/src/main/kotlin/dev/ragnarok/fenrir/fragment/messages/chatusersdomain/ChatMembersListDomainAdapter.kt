@@ -117,19 +117,8 @@ class ChatMembersListDomainAdapter(context: Context, private var data: List<AppC
         val tvName: TextView = root.findViewById(R.id.item_user_name)
         val tvDomain: TextView = root.findViewById(R.id.item_user_domain)
         val selectionView: MaterialCardView = root.findViewById(R.id.item_user_selection)
-        private val animationAdapter: Animator.AnimatorListener
-        var animator: ObjectAnimator? = null
-        fun startSomeAnimation() {
-            selectionView.setCardBackgroundColor(CurrentTheme.getColorSecondary(selectionView.context))
-            selectionView.alpha = 0.5f
-            animator = ObjectAnimator.ofFloat(selectionView, View.ALPHA, 0.0f)
-            animator?.duration = 500
-            animator?.addListener(animationAdapter)
-            animator?.start()
-        }
-
-        init {
-            animationAdapter = object : WeakViewAnimatorAdapter<View>(selectionView) {
+        private val animationAdapter: Animator.AnimatorListener =
+            object : WeakViewAnimatorAdapter<View>(selectionView) {
                 override fun onAnimationEnd(view: View) {
                     view.visibility = View.GONE
                 }
@@ -142,6 +131,14 @@ class ChatMembersListDomainAdapter(context: Context, private var data: List<AppC
                     view.visibility = View.GONE
                 }
             }
+        var animator: ObjectAnimator? = null
+        fun startSomeAnimation() {
+            selectionView.setCardBackgroundColor(CurrentTheme.getColorSecondary(selectionView.context))
+            selectionView.alpha = 0.5f
+            animator = ObjectAnimator.ofFloat(selectionView, View.ALPHA, 0.0f)
+            animator?.duration = 500
+            animator?.addListener(animationAdapter)
+            animator?.start()
         }
     }
 

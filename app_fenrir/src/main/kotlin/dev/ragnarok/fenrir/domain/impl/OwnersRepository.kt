@@ -674,12 +674,10 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
     }
 
     private class DividedIds(ids: Collection<Long>) {
-        val uids: MutableList<Long>
-        val gids: MutableList<Long>
+        val uids: MutableList<Long> = LinkedList()
+        val gids: MutableList<Long> = LinkedList()
 
         init {
-            uids = LinkedList()
-            gids = LinkedList()
             for (id in ids) {
                 when {
                     id > 0 -> {

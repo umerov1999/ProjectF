@@ -43,7 +43,11 @@ class WallAdapter(
         AttachmentsViewBinder(mContext, attachmentsActionCallback)
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
     private val clickListener: ClickListener = adapterListener
-    private val mLinkActionAdapter: LinkActionAdapter
+    private val mLinkActionAdapter: LinkActionAdapter = object : LinkActionAdapter() {
+        override fun onOwnerClick(ownerId: Long) {
+            clickListener.onAvatarClick(ownerId)
+        }
+    }
     private var nonPublishedPostActionListener: NonPublishedPostActionListener? = null
     private var mOnHashTagClickListener: EmojiconTextView.OnHashTagClickListener? = null
     override fun onBindItemViewHolder(
@@ -295,13 +299,5 @@ class WallAdapter(
         private const val TYPE_SCHEDULED = 2
         private const val TYPE_DELETED = 1
         private const val TYPE_NORMAL = 0
-    }
-
-    init {
-        mLinkActionAdapter = object : LinkActionAdapter() {
-            override fun onOwnerClick(ownerId: Long) {
-                clickListener.onAvatarClick(ownerId)
-            }
-        }
     }
 }

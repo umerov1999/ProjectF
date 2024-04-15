@@ -15,8 +15,9 @@ import java.util.concurrent.TimeUnit
 
 class VideosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IVideosLocalServerView>(accountId, savedInstanceState) {
-    private val videos: MutableList<Video>
-    private val fInteractor: ILocalServerInteractor
+    private val videos: MutableList<Video> = ArrayList()
+    private val fInteractor: ILocalServerInteractor =
+        InteractorFactory.createLocalServerInteractor()
     private var actualDataDisposable = Disposable.disposed()
     private var Foffset = 0
     private var actualDataReceived = false
@@ -196,8 +197,6 @@ class VideosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        videos = ArrayList()
-        fInteractor = InteractorFactory.createLocalServerInteractor()
         search_at = FindAt()
     }
 }

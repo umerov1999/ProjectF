@@ -13,7 +13,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class FeedbackPresenter(accountId: Long, savedInstanceState: Bundle?) :
     PlaceSupportPresenter<IFeedbackView>(accountId, savedInstanceState) {
-    private val mData: MutableList<Feedback>
+    private val mData: MutableList<Feedback> = ArrayList()
     private val feedbackInteractor: IFeedbackInteractor =
         InteractorFactory.createFeedbackInteractor()
     private val cacheDisposable = CompositeDisposable()
@@ -169,7 +169,6 @@ class FeedbackPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        mData = ArrayList()
         loadAllFromDb()
         requestActualData(null)
     }

@@ -49,13 +49,13 @@ class DocsListPresenter(
 ) : AccountDependencyPresenter<IDocListView>(accountId, savedInstanceState) {
     private val mOwnerId: Long = ownerId
     private val mLoader = DisposableHolder<Int>()
-    private val mDocuments: MutableList<Document>
-    private val mAction: String?
+    private val mDocuments: MutableList<Document> = ArrayList()
+    private val mAction: String? = action
     private val filters: MutableList<DocFilter>
     private val docsInteractor: IDocsInteractor = InteractorFactory.createDocsInteractor()
     private val uploadManager: IUploadManager = Includes.uploadManager
-    private val destination: UploadDestination
-    private val uploadsData: MutableList<Upload>
+    private val destination: UploadDestination = forDocuments(ownerId)
+    private val uploadsData: MutableList<Upload> = ArrayList(0)
     private val requestHolder = DisposableHolder<Int>()
     private var requestNow = false
     private var cacheLoadingNow = false
@@ -444,10 +444,6 @@ class DocsListPresenter(
     }
 
     init {
-        mDocuments = ArrayList()
-        uploadsData = ArrayList(0)
-        mAction = action
-        destination = forDocuments(ownerId)
         appendDisposable(uploadManager[accountId, destination]
             .fromIOToMain()
             .subscribe { data -> onUploadsDataReceived(data) })

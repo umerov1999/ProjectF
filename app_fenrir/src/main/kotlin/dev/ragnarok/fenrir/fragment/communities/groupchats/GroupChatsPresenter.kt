@@ -13,9 +13,9 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class GroupChatsPresenter(accountId: Long, private val groupId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IGroupChatsView>(accountId, savedInstanceState) {
-    private val chats: MutableList<GroupChats>
-    private val utilsInteractor: IUtilsInteractor
-    private val owners: IOwnersRepository
+    private val chats: MutableList<GroupChats> = ArrayList()
+    private val utilsInteractor: IUtilsInteractor = InteractorFactory.createUtilsInteractor()
+    private val owners: IOwnersRepository = Repository.owners
     private val netDisposable = CompositeDisposable()
     private var endOfContent = false
     private var actualDataReceived = false
@@ -135,9 +135,6 @@ class GroupChatsPresenter(accountId: Long, private val groupId: Long, savedInsta
     }
 
     init {
-        chats = ArrayList()
-        utilsInteractor = InteractorFactory.createUtilsInteractor()
-        owners = Repository.owners
         requestActualData(0)
     }
 }

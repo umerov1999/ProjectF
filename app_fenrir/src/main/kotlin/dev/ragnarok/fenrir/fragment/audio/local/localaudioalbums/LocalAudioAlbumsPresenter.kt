@@ -12,8 +12,8 @@ import java.util.Locale
 
 class LocalAudioAlbumsPresenter(private val currentId: Int, savedInstanceState: Bundle?) :
     RxSupportPresenter<ILocalAudioAlbumsView>(savedInstanceState) {
-    private val mLocalImageAlbums: MutableList<LocalImageAlbum>
-    private val mLocalImageAlbums_Search: MutableList<LocalImageAlbum>
+    private val mLocalImageAlbums: MutableList<LocalImageAlbum> = ArrayList()
+    private val mLocalImageAlbums_Search: MutableList<LocalImageAlbum> = ArrayList()
     private var permissionRequestedOnce = false
     private var mLoadingNow = false
     private var q: String? = null
@@ -134,10 +134,5 @@ class LocalAudioAlbumsPresenter(private val currentId: Int, savedInstanceState: 
         if (hasReadStoragePermission(applicationContext)) {
             loadData()
         }
-    }
-
-    init {
-        mLocalImageAlbums = ArrayList()
-        mLocalImageAlbums_Search = ArrayList()
     }
 }

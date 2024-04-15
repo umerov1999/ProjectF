@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.model
 import dev.ragnarok.fenrir.settings.Settings.get
 
 class SparseArrayOwnersBundle(capacity: Int) : IOwnersBundle {
-    private val data: HashMap<Long, Owner>
+    private val data: HashMap<Long, Owner> = HashMap(capacity)
     override fun findById(id: Long): Owner? {
         return data[id]
     }
@@ -53,9 +53,5 @@ class SparseArrayOwnersBundle(capacity: Int) : IOwnersBundle {
             }
         }
         return missing
-    }
-
-    init {
-        data = HashMap(capacity)
     }
 }

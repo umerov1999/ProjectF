@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit
 
 class PhotosLocalServerPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<IPhotosLocalServerView>(savedInstanceState) {
-    private val photos: MutableList<Photo>
-    private val fInteractor: ILocalServerApi
+    private val photos: MutableList<Photo> = ArrayList()
+    private val fInteractor: ILocalServerApi = networkInterfaces.localServerApi()
     private var actualDataDisposable = Disposable.disposed()
     private var Foffset = 0
     private var actualDataReceived = false
@@ -248,8 +248,6 @@ class PhotosLocalServerPresenter(savedInstanceState: Bundle?) :
     }
 
     init {
-        photos = ArrayList()
-        fInteractor = networkInterfaces.localServerApi()
         search_at = FindAt()
     }
 }

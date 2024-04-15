@@ -42,15 +42,19 @@ class InputViewController(
     private val rlEmojiContainer: LinearLayout
     private val ibEmoji: ImageView
     private val ibAttach: ImageView
-    private val vgInputViewHolder: ViewGroup
-    private val vgMessageInput: ViewGroup
-    private val vgVoiceInput: ViewGroup
+    private val vgInputViewHolder: ViewGroup = rootView.findViewById(R.id.fragment_input_container)
+    private val vgMessageInput: ViewGroup = rootView.findViewById(R.id.message_input_container)
+    private val vgVoiceInput: ViewGroup = rootView.findViewById(R.id.voice_input_container)
     private val tvAttCount: TextView
-    private val mButtonSend: ImageView
+    private val mButtonSend: ImageView = rootView.findViewById(R.id.buttonSend)
     private val mRecordResumePause: ImageView
-    private val mTextWatcher: TextWatcherAdapter
-    private val mIconColorActive: Int
-    private val mIconColorInactive: Int
+    private val mTextWatcher: TextWatcherAdapter = object : TextWatcherAdapter() {
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            callback.onInputTextChanged(s.toString())
+        }
+    }
+    private val mIconColorActive: Int = CurrentTheme.getColorPrimary(activity)
+    private val mIconColorInactive: Int = CurrentTheme.getColorOnSurface(activity)
     private val mRecordingDuration: TextView = rootView.findViewById(R.id.recording_duration)
     private val currentKeyboardShow: ImageView
     private var botKeyboard: BotKeyboardView?
@@ -398,17 +402,6 @@ class InputViewController(
     }
 
     init {
-        mTextWatcher = object : TextWatcherAdapter() {
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                callback.onInputTextChanged(s.toString())
-            }
-        }
-        vgInputViewHolder = rootView.findViewById(R.id.fragment_input_container)
-        vgMessageInput = rootView.findViewById(R.id.message_input_container)
-        vgVoiceInput = rootView.findViewById(R.id.voice_input_container)
-        mIconColorActive = CurrentTheme.getColorPrimary(activity)
-        mIconColorInactive = CurrentTheme.getColorOnSurface(activity)
-        mButtonSend = rootView.findViewById(R.id.buttonSend)
         mButtonSend.setOnClickListener { onSendButtonClick() }
         mButtonSend.setOnLongClickListener {
             if (canStartRecording && mCurrentMode == Mode.NORMAL && mRecordActionsCallback != null) {
