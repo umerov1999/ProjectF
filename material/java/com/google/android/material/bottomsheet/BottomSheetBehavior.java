@@ -308,6 +308,9 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
 
   private boolean draggable = true;
 
+  private boolean draggableOnNestedScroll = true;
+  private boolean draggableOnNestedScrollLastDragIgnored;
+
   @State int state = STATE_COLLAPSED;
 
   @State int lastStableState = STATE_COLLAPSED;
@@ -400,6 +403,9 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
     setSkipCollapsed(
         a.getBoolean(R.styleable.BottomSheetBehavior_Layout_behavior_skipCollapsed, false));
     setDraggable(a.getBoolean(R.styleable.BottomSheetBehavior_Layout_behavior_draggable, true));
+    setDraggableOnNestedScroll(
+        a.getBoolean(
+            R.styleable.BottomSheetBehavior_Layout_behavior_draggableOnNestedScroll, true));
     setSaveFlags(a.getInt(R.styleable.BottomSheetBehavior_Layout_behavior_saveFlags, SAVE_NONE));
     setHalfExpandedRatio(
         a.getFloat(R.styleable.BottomSheetBehavior_Layout_behavior_halfExpandedRatio, 0.5f));
@@ -743,7 +749,12 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
     }
     int currentTop = child.getTop();
     int newTop = currentTop - dy;
-    if (dy > 0) { // Upward
+    if (dy > 0) { // Upward swipe
+      if (!draggableOnNestedScroll && target == scrollingChild && target.canScrollVertically(1)) {
+        // Prevent dragging if draggableOnNestedScroll=false and we can scroll the scrolling child.
+        draggableOnNestedScrollLastDragIgnored = true;
+        return;
+      }
       if (newTop < getExpandedOffset()) {
         consumed[1] = currentTop - getExpandedOffset();
         ViewCompat.offsetTopAndBottom(child, -consumed[1]);
@@ -758,8 +769,14 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
         ViewCompat.offsetTopAndBottom(child, -dy);
         setStateInternal(STATE_DRAGGING);
       }
-    } else if (dy < 0) { // Downward
-      if (!target.canScrollVertically(-1)) {
+    } else if (dy < 0) { // Downward swipe
+      boolean canScrollUp = target.canScrollVertically(-1);
+      if (!draggableOnNestedScroll && target == scrollingChild && canScrollUp) {
+        // Prevent dragging if draggableOnNestedScroll=false and we can scroll the scrolling child.
+        draggableOnNestedScrollLastDragIgnored = true;
+        return;
+      }
+      if (!canScrollUp) {
         if (newTop <= collapsedOffset || canBeHiddenByDragging()) {
           if (!draggable) {
             // Prevent dragging
@@ -779,6 +796,7 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
     dispatchOnSlide(child.getTop());
     lastNestedScrollDy = dy;
     nestedScrolled = true;
+    draggableOnNestedScrollLastDragIgnored = false;
   }
 
   @Override
@@ -879,7 +897,7 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
 
     if (isNestedScrollingCheckEnabled() && nestedScrollingChildRef != null) {
       return target == nestedScrollingChildRef.get()
-          && (state != STATE_EXPANDED
+          && ((state != STATE_EXPANDED && !draggableOnNestedScrollLastDragIgnored)
               || super.onNestedPreFling(coordinatorLayout, child, target, velocityX, velocityY));
     } else {
       return false;
@@ -1172,7 +1190,7 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
   }
 
   /**
-   * Sets whether this bottom sheet is can be collapsed/expanded by dragging. Note: When disabling
+   * Sets whether this bottom sheet can be collapsed/expanded by dragging. Note: When disabling
    * dragging, an app will require to implement a custom way to expand/collapse the bottom sheet
    *
    * @param draggable {@code false} to prevent dragging the sheet to collapse and expand
@@ -1184,6 +1202,22 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
 
   public boolean isDraggable() {
     return draggable;
+  }
+
+  /**
+   * Sets whether this bottom sheet can be collapsed/expanded by dragging on the nested scrolling
+   * child view. Default is true.
+   *
+   * @param draggableOnNestedScroll {@code false} to prevent dragging the nested scrolling child
+   * view to collapse and expand the sheet
+   * @attr ref com.google.android.material.R.styleable#BottomSheetBehavior_Layout_behavior_draggableOnNestedScroll
+   */
+  public void setDraggableOnNestedScroll(boolean draggableOnNestedScroll) {
+    this.draggableOnNestedScroll = draggableOnNestedScroll;
+  }
+
+  public boolean isDraggableOnNestedScroll() {
+    return draggableOnNestedScroll;
   }
 
   /*

@@ -74,7 +74,7 @@ class PhotoSearchFragment :
     }
 
     companion object {
-        private val TAG = PhotoSearchFragment::class.java.simpleName
+        private val TAG = PhotoSearchFragment::class.simpleName.orEmpty()
 
 
         fun newInstance(

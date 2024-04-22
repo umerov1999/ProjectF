@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.Utils
 
 object SelectionUtils {
-    private val TAG = SelectionUtils::class.java.simpleName
+    private val TAG = SelectionUtils::class.simpleName.orEmpty()
     private const val VIEW_TAG = "SelectionUtils.SelectionView"
 
 

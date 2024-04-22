@@ -24,6 +24,6 @@ class ProfileInfoResponseDtoAdapter :
     }
 
     companion object {
-        private val TAG = ProfileInfoResponseDtoAdapter::class.java.simpleName
+        private val TAG = ProfileInfoResponseDtoAdapter::class.simpleName.orEmpty()
     }
 }

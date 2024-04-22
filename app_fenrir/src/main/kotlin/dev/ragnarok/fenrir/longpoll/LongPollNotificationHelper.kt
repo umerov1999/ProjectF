@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.util.Logger.d
 import dev.ragnarok.fenrir.util.Utils.hasFlag
 
 object LongPollNotificationHelper {
-    val TAG: String = LongPollNotificationHelper::class.java.simpleName
+    val TAG: String = LongPollNotificationHelper::class.simpleName.orEmpty()
 
     /**
      * Действие при добавлении нового сообщения в диалог или чат

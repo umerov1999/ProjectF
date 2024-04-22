@@ -54,6 +54,6 @@ class LyricsDtoAdapter : AbsDtoAdapter<VKApiLyrics>("VKApiLyrics") {
     }
 
     companion object {
-        private val TAG = LyricsDtoAdapter::class.java.simpleName
+        private val TAG = LyricsDtoAdapter::class.simpleName.orEmpty()
     }
 }

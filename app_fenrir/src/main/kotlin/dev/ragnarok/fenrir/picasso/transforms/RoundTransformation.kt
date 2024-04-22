@@ -25,6 +25,6 @@ class RoundTransformation : Transformation {
     }
 
     companion object {
-        private val TAG = RoundTransformation::class.java.simpleName
+        private val TAG = RoundTransformation::class.simpleName.orEmpty()
     }
 }

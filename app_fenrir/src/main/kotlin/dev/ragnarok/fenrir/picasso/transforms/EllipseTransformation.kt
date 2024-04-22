@@ -25,6 +25,6 @@ class EllipseTransformation : Transformation {
     }
 
     companion object {
-        private val TAG = EllipseTransformation::class.java.simpleName
+        private val TAG = EllipseTransformation::class.simpleName.orEmpty()
     }
 }

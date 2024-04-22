@@ -112,7 +112,7 @@ class ReplyFCMMessage {
     }
 
     companion object {
-        private val TAG = ReplyFCMMessage::class.java.simpleName
+        private val TAG = ReplyFCMMessage::class.simpleName.orEmpty()
 
         //public String lastName;
         //private String type;

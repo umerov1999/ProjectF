@@ -15,6 +15,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Build
 import android.os.Bundle
+import android.util.ArrayMap
 import android.util.AttributeSet
 import android.util.Log
 import android.util.Size
@@ -57,7 +58,6 @@ import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.util.AppPerms
 import dev.ragnarok.filegallery.util.AppPerms.requestPermissionsResultAbs
 import dev.ragnarok.filegallery.util.Utils
-import java.util.EnumMap
 import java.util.EnumSet
 
 
@@ -79,7 +79,7 @@ class CameraScanActivity : NoMainActivity() {
     private class RotatedImage(var byteArray: ByteArray, var width: Int, var height: Int)
 
     init {
-        val hints: MutableMap<DecodeHintType, Any> = EnumMap(DecodeHintType::class.java)
+        val hints = ArrayMap<DecodeHintType, Any>()
         hints[DecodeHintType.NEED_RESULT_POINT_CALLBACK] = DecoderResultPointCallback()
         hints[DecodeHintType.POSSIBLE_FORMATS] = EnumSet.of(
             BarcodeFormat.QR_CODE,
@@ -519,7 +519,7 @@ class CameraScanActivity : NoMainActivity() {
                 generatedQRCode = generatedQRCode.copy(Bitmap.Config.ARGB_8888, true)
             }
             val reader = MultiFormatReader()
-            val hints: MutableMap<DecodeHintType, Any> = EnumMap(DecodeHintType::class.java)
+            val hints = ArrayMap<DecodeHintType, Any>()
             hints[DecodeHintType.POSSIBLE_FORMATS] = EnumSet.of(
                 BarcodeFormat.QR_CODE,
                 BarcodeFormat.EAN_13,

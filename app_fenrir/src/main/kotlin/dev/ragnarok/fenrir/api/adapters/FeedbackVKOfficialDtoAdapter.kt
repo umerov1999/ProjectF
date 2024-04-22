@@ -233,6 +233,6 @@ class FeedbackVKOfficialDtoAdapter :
     }
 
     companion object {
-        private val TAG = FeedbackVKOfficialDtoAdapter::class.java.simpleName
+        private val TAG = FeedbackVKOfficialDtoAdapter::class.simpleName.orEmpty()
     }
 }

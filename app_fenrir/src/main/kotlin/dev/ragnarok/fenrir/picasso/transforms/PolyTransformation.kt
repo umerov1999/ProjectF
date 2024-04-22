@@ -25,6 +25,6 @@ class PolyTransformation : Transformation {
     }
 
     companion object {
-        private val TAG = PolyTransformation::class.java.simpleName
+        private val TAG = PolyTransformation::class.simpleName.orEmpty()
     }
 }

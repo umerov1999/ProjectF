@@ -157,6 +157,6 @@ class CommunityDtoAdapter : AbsDtoAdapter<VKApiCommunity>("VKApiCommunity") {
     }
 
     companion object {
-        private val TAG = CommunityDtoAdapter::class.java.simpleName
+        private val TAG = CommunityDtoAdapter::class.simpleName.orEmpty()
     }
 }

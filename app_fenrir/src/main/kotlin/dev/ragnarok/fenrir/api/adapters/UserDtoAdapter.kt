@@ -164,6 +164,6 @@ class UserDtoAdapter : AbsDtoAdapter<VKApiUser>("VKApiUser") {
     }
 
     companion object {
-        private val TAG = UserDtoAdapter::class.java.simpleName
+        private val TAG = UserDtoAdapter::class.simpleName.orEmpty()
     }
 }

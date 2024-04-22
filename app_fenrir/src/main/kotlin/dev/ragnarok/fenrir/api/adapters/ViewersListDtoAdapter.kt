@@ -45,6 +45,6 @@ class ViewersListDtoAdapter : AbsDtoAdapter<ViewersListResponse>("ViewersListAda
     }
 
     companion object {
-        private val TAG = ViewersListDtoAdapter::class.java.simpleName
+        private val TAG = ViewersListDtoAdapter::class.simpleName.orEmpty()
     }
 }

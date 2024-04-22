@@ -41,6 +41,6 @@ class ServicePlaylistResponseDtoAdapter :
     }
 
     companion object {
-        private val TAG = ServicePlaylistResponseDtoAdapter::class.java.simpleName
+        private val TAG = ServicePlaylistResponseDtoAdapter::class.simpleName.orEmpty()
     }
 }

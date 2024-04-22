@@ -4,7 +4,7 @@ import android.util.Log
 import dev.ragnarok.fenrir.Constants
 
 object Exestime {
-    private val TAG = Exestime::class.java.simpleName
+    private val TAG = Exestime::class.simpleName.orEmpty()
 
 
     fun log(method: String, startTime: Long, vararg params: Any) {

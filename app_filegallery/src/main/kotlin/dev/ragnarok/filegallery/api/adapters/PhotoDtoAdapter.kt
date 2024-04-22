@@ -38,6 +38,6 @@ class PhotoDtoAdapter : AbsDtoAdapter<Photo>("Photo") {
     }
 
     companion object {
-        private val TAG = PhotoDtoAdapter::class.java.simpleName
+        private val TAG = PhotoDtoAdapter::class.simpleName.orEmpty()
     }
 }

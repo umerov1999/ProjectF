@@ -46,6 +46,6 @@ class VKApiCatalogV2LinkDtoAdapter : AbsDtoAdapter<VKApiCatalogV2Link>("VKApiCat
     }
 
     companion object {
-        private val TAG = VKApiCatalogV2LinkDtoAdapter::class.java.simpleName
+        private val TAG = VKApiCatalogV2LinkDtoAdapter::class.simpleName.orEmpty()
     }
 }

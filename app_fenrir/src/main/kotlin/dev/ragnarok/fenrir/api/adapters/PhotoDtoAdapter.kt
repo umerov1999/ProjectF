@@ -76,6 +76,6 @@ class PhotoDtoAdapter : AbsDtoAdapter<VKApiPhoto>("VKApiPhoto") {
     }
 
     companion object {
-        private val TAG = PhotoDtoAdapter::class.java.simpleName
+        private val TAG = PhotoDtoAdapter::class.simpleName.orEmpty()
     }
 }

@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.api.impl
 
 import android.os.SystemClock
 import dev.ragnarok.fenrir.Includes
-import dev.ragnarok.fenrir.api.AbsVKApiInterceptor
 import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.OutOfDateException
@@ -148,9 +147,8 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
         var handle = true
         when (error.errorCode) {
             ApiErrorCodes.TOO_MANY_REQUESTS_PER_SECOND -> {
-                synchronized(AbsVKApiInterceptor::class.java) {
-                    val sleepMs = 1000 + RANDOM.nextInt(500)
-                    SystemClock.sleep(sleepMs.toLong())
+                synchronized(lock) {
+                    SystemClock.sleep((1000 + RANDOM.nextInt(500)).toLong())
                 }
             }
 
@@ -286,6 +284,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
     }
 
     companion object {
+        val lock = Any()
         val RANDOM = Random(System.nanoTime())
         inline fun <reified T> join(
             tokens: Iterable<T>?,

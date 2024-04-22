@@ -19,7 +19,7 @@ import java.util.WeakHashMap
 object MusicPlaybackController {
     private val mConnectionMap: WeakHashMap<Context, ServiceBinder> = WeakHashMap()
     private val SERVICE_BIND_PUBLISHER = PublishSubject.create<Int>()
-    private val TAG = MusicPlaybackController::class.java.simpleName
+    private val TAG = MusicPlaybackController::class.simpleName.orEmpty()
     var mService: IAudioPlayerService? = null
 
     lateinit var tracksExist: AbsFileExist

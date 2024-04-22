@@ -576,7 +576,7 @@ class WallMultiAttachmentsFragment :
     }
 
     companion object {
-        private val TAG = WallMultiAttachmentsFragment::class.java.simpleName
+        private val TAG = WallMultiAttachmentsFragment::class.simpleName.orEmpty()
         fun newInstance(accountId: Long, ownerId: Long): WallMultiAttachmentsFragment {
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, accountId)

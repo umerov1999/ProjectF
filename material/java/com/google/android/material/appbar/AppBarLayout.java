@@ -1533,7 +1533,9 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
       // or we can scroll the children.
       final boolean started =
           (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0
-              && (child.isLiftOnScroll() || canScrollChildren(parent, child, directTargetChild));
+              && (child.isLiftOnScroll()
+                  || child.isLifted()
+                  || canScrollChildren(parent, child, directTargetChild));
 
       if (started && offsetAnimator != null) {
         // Cancel any offset animation
@@ -2579,16 +2581,16 @@ public class AppBarLayout extends LinearLayout implements CoordinatorLayout.Atta
         // invisible. Otherwise, on API <= 24 a ghost rect that is outside of the drawing rect will
         // be ignored and the child would be drawn with no clipping.
         if (offsetY >= ghostRect.height()) {
-          child.setVisibility(INVISIBLE);
+          child.setAlpha(0f);
         } else {
-          child.setVisibility(VISIBLE);
+          child.setAlpha(1f);
         }
         ViewCompat.setClipBounds(child, ghostRect);
       } else {
         // Reset both the clip bounds and translationY of this view
         ViewCompat.setClipBounds(child, null);
         child.setTranslationY(0);
-        child.setVisibility(VISIBLE);
+        child.setAlpha(1f);
       }
     }
   }

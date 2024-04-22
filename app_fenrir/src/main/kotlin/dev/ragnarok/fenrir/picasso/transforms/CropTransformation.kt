@@ -33,6 +33,6 @@ class CropTransformation(val x: Int, val y: Int, val w: Int, val h: Int) : Trans
     }
 
     companion object {
-        private val TAG = CropTransformation::class.java.simpleName
+        private val TAG = CropTransformation::class.simpleName.orEmpty()
     }
 }

@@ -285,6 +285,6 @@ class MySearchView : LinearLayout {
     }
 
     companion object {
-        private val TAG = MySearchView::class.java.simpleName
+        private val TAG = MySearchView::class.simpleName.orEmpty()
     }
 }

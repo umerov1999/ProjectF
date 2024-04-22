@@ -38,7 +38,7 @@ class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
         val loader = ViewModelProvider(
             viewModelOwner,
             factoryPresenterLoader
-        )["fenrirPresenters", PresenterLoader::class.java] as PresenterLoader<P, V>
+        )["fenrirPresenters", PresenterLoader::class] as PresenterLoader<P, V>
 
         presenter = loader.make(lastKnownPresenterState, factoryProvider)
         presenter?.run {

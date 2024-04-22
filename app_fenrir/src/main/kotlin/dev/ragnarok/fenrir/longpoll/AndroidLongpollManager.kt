@@ -163,7 +163,7 @@ class AndroidLongpollManager internal constructor(
     }
 
     companion object {
-        private val TAG = AndroidLongpollManager::class.java.simpleName
+        private val TAG = AndroidLongpollManager::class.simpleName.orEmpty()
         private val MONO_SCHEDULER = Schedulers.from(Executors.newFixedThreadPool(1))
     }
 

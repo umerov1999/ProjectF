@@ -87,7 +87,7 @@ class DateTimePicker internal constructor(builder: Builder) {
     }
 
     companion object {
-        private val TAG = DateTimePicker::class.java.simpleName
+        private val TAG = DateTimePicker::class.simpleName.orEmpty()
     }
 
 }

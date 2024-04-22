@@ -38,6 +38,6 @@ class ArticleDtoAdapter : AbsDtoAdapter<VKApiArticle>("VKApiArticle") {
     }
 
     companion object {
-        private val TAG = ArticleDtoAdapter::class.java.simpleName
+        private val TAG = ArticleDtoAdapter::class.simpleName.orEmpty()
     }
 }

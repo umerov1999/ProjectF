@@ -101,6 +101,6 @@ class LocalVideosAdapter(private val context: Context, private val data: List<Lo
     }
 
     companion object {
-        val TAG: String = LocalVideosAdapter::class.java.simpleName
+        val TAG: String = LocalVideosAdapter::class.simpleName.orEmpty()
     }
 }

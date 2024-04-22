@@ -176,10 +176,11 @@ add_library(libyuv STATIC
         animation/libyuv/source/scale_rvv.cc
         animation/libyuv/source/scale_uv.cc
         animation/libyuv/source/video_common.cc)
-target_compile_options(libyuv PRIVATE
-        -ffast-math ${OPTIMIZE_NORMAL} -funroll-loops -fno-strict-aliasing -fno-math-errno ${SYM_VISIBILITY})
-target_include_directories(libyuv PRIVATE
-        animation/libyuv/include)
+target_compile_options(libyuv PRIVATE -ffast-math ${OPTIMIZE_NORMAL} -funroll-loops -fno-strict-aliasing -fno-math-errno ${SYM_VISIBILITY})
+target_include_directories(libyuv PRIVATE animation/libyuv/include)
+if (${ANDROID_ABI} STREQUAL "arm64-v8a")
+    target_compile_options(libyuv PRIVATE -march=armv8-a+dotprod+i8mm -DLIBYUV_DISABLE_SVE)
+endif ()
 
 add_library(opus STATIC
         audio/opus/libopus/src/opus.c

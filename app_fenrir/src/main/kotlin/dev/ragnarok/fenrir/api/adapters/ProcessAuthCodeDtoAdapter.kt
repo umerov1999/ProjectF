@@ -33,6 +33,6 @@ class ProcessAuthCodeDtoAdapter : AbsDtoAdapter<VKApiProcessAuthCode>("VKApiProc
     }
 
     companion object {
-        private val TAG = ProcessAuthCodeDtoAdapter::class.java.simpleName
+        private val TAG = ProcessAuthCodeDtoAdapter::class.simpleName.orEmpty()
     }
 }

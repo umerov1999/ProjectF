@@ -108,7 +108,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val TAG = LoginActivity::class.java.simpleName
+        private val TAG = LoginActivity::class.simpleName.orEmpty()
         private const val EXTRA_CLIENT_ID = "client_id"
         private const val EXTRA_SCOPE = "scope"
         private const val EXTRA_VALIDATE = "validate"

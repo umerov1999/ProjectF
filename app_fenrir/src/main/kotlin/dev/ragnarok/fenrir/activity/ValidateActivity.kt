@@ -163,7 +163,7 @@ class ValidateActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val TAG = ValidateActivity::class.java.simpleName
+        private val TAG = ValidateActivity::class.simpleName.orEmpty()
         private const val EXTRA_VALIDATE = "validate"
 
 

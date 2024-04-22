@@ -154,7 +154,7 @@ object DownloadWorkUtils {
     }
 
     private fun toDefaultInternalDownloader(context: Context, url: String, file: DownloadInfo) {
-        val downloadWork = OneTimeWorkRequest.Builder(DefaultDownloadWorker::class.java)
+        val downloadWork = OneTimeWorkRequest.Builder(DefaultDownloadWorker::class)
         val data = Data.Builder()
         data.putString(ExtraDwn.URL, url)
         data.putString(ExtraDwn.DIR, file.path)
@@ -275,7 +275,7 @@ object DownloadWorkUtils {
             result_filename.setFile(result_filename.file + ("." + DOWNLOAD_DATE_FORMAT.format(Date())))
         }
         try {
-            val downloadWork = OneTimeWorkRequest.Builder(TrackDownloadWorker::class.java)
+            val downloadWork = OneTimeWorkRequest.Builder(TrackDownloadWorker::class)
             val data = Data.Builder()
             data.putString(ExtraDwn.URL, audio.url)
             data.putString(ExtraDwn.DIR, result_filename.path)

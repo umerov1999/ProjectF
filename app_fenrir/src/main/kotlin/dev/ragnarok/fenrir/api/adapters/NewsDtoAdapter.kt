@@ -140,6 +140,6 @@ class NewsDtoAdapter : AbsDtoAdapter<VKApiNews>("VKApiNews") {
     }
 
     companion object {
-        private val TAG = NewsDtoAdapter::class.java.simpleName
+        private val TAG = NewsDtoAdapter::class.simpleName.orEmpty()
     }
 }

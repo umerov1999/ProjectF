@@ -45,6 +45,6 @@ class TopicDtoAdapter : AbsDtoAdapter<VKApiTopic>("VKApiTopic") {
     }
 
     companion object {
-        private val TAG = TopicDtoAdapter::class.java.simpleName
+        private val TAG = TopicDtoAdapter::class.simpleName.orEmpty()
     }
 }

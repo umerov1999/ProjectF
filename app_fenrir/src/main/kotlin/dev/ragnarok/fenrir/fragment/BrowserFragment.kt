@@ -355,7 +355,7 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
     }
 
     companion object {
-        val TAG: String = BrowserFragment::class.java.simpleName
+        val TAG: String = BrowserFragment::class.simpleName.orEmpty()
         private const val SAVE_TITLE = "save_title"
         fun buildArgs(accountId: Long, url: String, owner: String?, type: String?): Bundle {
             val args = Bundle()

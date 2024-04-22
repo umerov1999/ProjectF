@@ -75,6 +75,6 @@ class GroupSettingsDtoAdapter : AbsDtoAdapter<GroupSettingsDto>("GroupSettingsDt
     }
 
     companion object {
-        private val TAG = GroupSettingsDtoAdapter::class.java.simpleName
+        private val TAG = GroupSettingsDtoAdapter::class.simpleName.orEmpty()
     }
 }

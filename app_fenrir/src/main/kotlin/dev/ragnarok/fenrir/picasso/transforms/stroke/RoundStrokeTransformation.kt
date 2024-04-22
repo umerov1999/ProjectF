@@ -26,6 +26,6 @@ class RoundStrokeTransformation(@ColorInt private val strokeFirst: Int) : Transf
     }
 
     companion object {
-        private val TAG = RoundStrokeTransformation::class.java.simpleName
+        private val TAG = RoundStrokeTransformation::class.simpleName.orEmpty()
     }
 }

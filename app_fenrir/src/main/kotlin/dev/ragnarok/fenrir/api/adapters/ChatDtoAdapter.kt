@@ -68,6 +68,6 @@ class ChatDtoAdapter : AbsDtoAdapter<VKApiChat>("VKApiChat") {
     }
 
     companion object {
-        private val TAG = ChatDtoAdapter::class.java.simpleName
+        private val TAG = ChatDtoAdapter::class.simpleName.orEmpty()
     }
 }

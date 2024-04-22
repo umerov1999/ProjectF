@@ -164,14 +164,6 @@ inline fun PreferenceScreen.Appendable.customText(
     return CustomTextPreference(key, fragmentManager).apply(block).also(::addPreferenceItem)
 }
 
-inline fun <reified T : Preference> PreferenceScreen.Appendable.custom(
-    key: String,
-    block: T.() -> Unit
-): T {
-    return T::class.java.getConstructor(String::class.java).newInstance(key).apply(block)
-        .also(::addPreferenceItem)
-}
-
 inline fun PreferenceScreen.Builder.collapse(
     key: String = "advanced",
     block: CollapsePreference.() -> Unit

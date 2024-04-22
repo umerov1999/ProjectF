@@ -70,6 +70,6 @@ class AudioPlaylistDtoAdapter : AbsDtoAdapter<VKApiAudioPlaylist>("VKApiAudioPla
     }
 
     companion object {
-        private val TAG = AudioPlaylistDtoAdapter::class.java.simpleName
+        private val TAG = AudioPlaylistDtoAdapter::class.simpleName.orEmpty()
     }
 }

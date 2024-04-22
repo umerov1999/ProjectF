@@ -50,6 +50,6 @@ class LikesListDtoAdapter : AbsDtoAdapter<LikesListResponse>("LikesListResponse"
     }
 
     companion object {
-        private val TAG = LikesListDtoAdapter::class.java.simpleName
+        private val TAG = LikesListDtoAdapter::class.simpleName.orEmpty()
     }
 }

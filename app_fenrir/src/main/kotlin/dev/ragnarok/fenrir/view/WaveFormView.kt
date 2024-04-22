@@ -23,7 +23,7 @@ class WaveFormView @JvmOverloads constructor(context: Context, attrs: AttributeS
         )
         private val PROGRESS_PROPERTY: Property<WaveFormView, Float> =
             object : Property<WaveFormView, Float>(
-                Float::class.java, "displayed-precentage"
+                Float::class.java, "displayed-percentage"
             ) {
                 override fun get(view: WaveFormView): Float {
                     return view.mDisplayedProgress

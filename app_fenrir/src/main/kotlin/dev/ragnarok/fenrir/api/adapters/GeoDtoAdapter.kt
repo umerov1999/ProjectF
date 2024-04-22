@@ -42,6 +42,6 @@ class GeoDtoAdapter : AbsDtoAdapter<VKApiGeo>("VKApiGeo") {
     }
 
     companion object {
-        private val TAG = GeoDtoAdapter::class.java.simpleName
+        private val TAG = GeoDtoAdapter::class.simpleName.orEmpty()
     }
 }

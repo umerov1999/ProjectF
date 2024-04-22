@@ -26,6 +26,6 @@ class EllipseStrokeTransformation(@ColorInt private val strokeFirst: Int) : Tran
     }
 
     companion object {
-        private val TAG = EllipseStrokeTransformation::class.java.simpleName
+        private val TAG = EllipseStrokeTransformation::class.simpleName.orEmpty()
     }
 }

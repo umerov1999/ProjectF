@@ -2091,7 +2091,7 @@ class ChatPresenter(
     }
 
     fun fireChatDownloadClick(context: Context, action: String) {
-        val downloadWork = OneTimeWorkRequest.Builder(ChatDownloadWorker::class.java)
+        val downloadWork = OneTimeWorkRequest.Builder(ChatDownloadWorker::class)
         val data = Data.Builder()
         data.putLong(Extra.OWNER_ID, peerId)
         data.putLong(Extra.ACCOUNT_ID, accountId)

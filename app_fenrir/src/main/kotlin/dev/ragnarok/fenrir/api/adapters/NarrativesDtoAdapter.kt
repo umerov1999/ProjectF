@@ -47,6 +47,6 @@ class NarrativesDtoAdapter : AbsDtoAdapter<VKApiNarratives>("VKApiNarratives") {
     }
 
     companion object {
-        private val TAG = NarrativesDtoAdapter::class.java.simpleName
+        private val TAG = NarrativesDtoAdapter::class.simpleName.orEmpty()
     }
 }

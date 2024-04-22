@@ -121,7 +121,7 @@ class AudioRecordWrapper internal constructor(builder: Builder) {
 
     companion object {
         private const val TEMP_FILE_NAME = "temp_recording"
-        private val TAG = AudioRecordWrapper::class.java.simpleName
+        private val TAG = AudioRecordWrapper::class.simpleName.orEmpty()
         fun getRecordingDirectory(context: Context): File? {
             return context.getExternalFilesDir(Environment.DIRECTORY_RINGTONES)
         }

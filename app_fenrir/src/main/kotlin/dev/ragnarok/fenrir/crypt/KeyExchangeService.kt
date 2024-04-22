@@ -727,7 +727,7 @@ class KeyExchangeService : Service() {
     companion object {
         const val ACTION_APPLY_EXHANGE = "ACTION_APPLY_EXHANGE"
         const val ACTION_DECLINE = "ACTION_DECLINE"
-        private val TAG = KeyExchangeService::class.java.simpleName
+        private val TAG = KeyExchangeService::class.simpleName.orEmpty()
         private const val EXTRA_KEY_LOCATION_POLICY = "key_location_policy"
         private const val ACTION_PROCESS_MESSAGE = "ACTION_PROCESS_MESSAGE"
         private const val ACTION_INICIATE_KEY_EXCHANGE = "ACTION_INICIATE_KEY_EXCHANGE"

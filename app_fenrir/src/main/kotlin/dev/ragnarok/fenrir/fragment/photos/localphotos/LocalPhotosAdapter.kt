@@ -96,6 +96,6 @@ class LocalPhotosAdapter(private val context: Context, private val data: List<Lo
     }
 
     companion object {
-        val TAG: String = LocalPhotosAdapter::class.java.simpleName
+        val TAG: String = LocalPhotosAdapter::class.simpleName.orEmpty()
     }
 }

@@ -53,6 +53,6 @@ class MarketDtoAdapter : AbsDtoAdapter<VKApiMarket>("VKApiMarket") {
     }
 
     companion object {
-        private val TAG = MarketDtoAdapter::class.java.simpleName
+        private val TAG = MarketDtoAdapter::class.simpleName.orEmpty()
     }
 }

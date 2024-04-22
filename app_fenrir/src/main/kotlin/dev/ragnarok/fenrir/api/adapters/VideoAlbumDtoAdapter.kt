@@ -56,6 +56,6 @@ class VideoAlbumDtoAdapter : AbsDtoAdapter<VKApiVideoAlbum>("VKApiVideoAlbum") {
     }
 
     companion object {
-        private val TAG = VideoAlbumDtoAdapter::class.java.simpleName
+        private val TAG = VideoAlbumDtoAdapter::class.simpleName.orEmpty()
     }
 }

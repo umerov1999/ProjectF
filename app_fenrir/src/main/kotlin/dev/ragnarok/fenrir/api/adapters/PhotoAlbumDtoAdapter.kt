@@ -113,6 +113,6 @@ class PhotoAlbumDtoAdapter : AbsDtoAdapter<VKApiPhotoAlbum>("VKApiPhotoAlbum") {
     }
 
     companion object {
-        private val TAG = PhotoAlbumDtoAdapter::class.java.simpleName
+        private val TAG = PhotoAlbumDtoAdapter::class.simpleName.orEmpty()
     }
 }

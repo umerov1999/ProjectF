@@ -126,6 +126,6 @@ class PostDtoAdapter : AbsDtoAdapter<VKApiPost>("VKApiPost") {
     }
 
     companion object {
-        private val TAG = PostDtoAdapter::class.java.simpleName
+        private val TAG = PostDtoAdapter::class.simpleName.orEmpty()
     }
 }

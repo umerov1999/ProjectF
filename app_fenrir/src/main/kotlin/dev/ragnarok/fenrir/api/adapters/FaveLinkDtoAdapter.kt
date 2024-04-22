@@ -32,6 +32,6 @@ class FaveLinkDtoAdapter : AbsDtoAdapter<FaveLinkDto>("FaveLinkDto") {
     }
 
     companion object {
-        private val TAG = FaveLinkDtoAdapter::class.java.simpleName
+        private val TAG = FaveLinkDtoAdapter::class.simpleName.orEmpty()
     }
 }

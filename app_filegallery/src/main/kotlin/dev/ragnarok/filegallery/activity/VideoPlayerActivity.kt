@@ -73,7 +73,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        Logger.d(VideoPlayerActivity::class.java.name, "onNewIntent, intent: $intent")
+        Logger.d(VideoPlayerActivity::class.simpleName, "onNewIntent, intent: $intent")
         handleIntent(intent, true)
     }
 

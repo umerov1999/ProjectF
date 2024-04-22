@@ -125,7 +125,7 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
     }
 
     companion object {
-        private val TAG = PicassoInstance::class.java.simpleName
+        private val TAG = PicassoInstance::class.simpleName.orEmpty()
 
         @SuppressLint("StaticFieldLeak")
         private var instance: PicassoInstance? = null

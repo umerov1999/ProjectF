@@ -42,6 +42,6 @@ class LongpollUpdatesDtoAdapter : AbsDtoAdapter<VKApiLongpollUpdates>("VkApiLong
     }
 
     companion object {
-        private val TAG = LongpollUpdatesDtoAdapter::class.java.simpleName
+        private val TAG = LongpollUpdatesDtoAdapter::class.simpleName.orEmpty()
     }
 }

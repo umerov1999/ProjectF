@@ -370,7 +370,7 @@ class FeedbackDtoAdapter : AbsDtoAdapter<VKApiBaseFeedback>("VKApiBaseFeedback")
     }
 
     companion object {
-        private val TAG = FeedbackDtoAdapter::class.java.simpleName
+        private val TAG = FeedbackDtoAdapter::class.simpleName.orEmpty()
         private val MENTION_COMMENT_PARSER = BaseMentionCommentParser()
         private val LIKE_COMMENT_PARSER = BaseLikeCommentParser()
         private val COPY_PARSER = BaseCopyParser()

@@ -498,7 +498,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         ?.setAction(
                             R.string.button_yes
                         ) {
-                            val faveWork = OneTimeWorkRequest.Builder(FaveSyncWorker::class.java)
+                            val faveWork = OneTimeWorkRequest.Builder(FaveSyncWorker::class)
                             WorkManager.getInstance(requireActivity()).enqueue(faveWork.build())
                         }?.show()
                     true

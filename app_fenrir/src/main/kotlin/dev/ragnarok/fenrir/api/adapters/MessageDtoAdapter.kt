@@ -113,6 +113,6 @@ class MessageDtoAdapter : AbsDtoAdapter<VKApiMessage>("VKApiMessage") {
     }
 
     companion object {
-        private val TAG = MessageDtoAdapter::class.java.simpleName
+        private val TAG = MessageDtoAdapter::class.simpleName.orEmpty()
     }
 }

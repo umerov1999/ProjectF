@@ -382,7 +382,7 @@ class PostEditPresenter(
     }
 
     companion object {
-        private val TAG = PostEditPresenter::class.java.simpleName
+        private val TAG = PostEditPresenter::class.simpleName.orEmpty()
         private const val SAVE_POST = "save_post"
         internal fun safelyClone(post: Post): Post {
             return try {

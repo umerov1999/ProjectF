@@ -34,6 +34,6 @@ class VideoDtoAdapter : AbsDtoAdapter<Video>("Video") {
     }
 
     companion object {
-        private val TAG = VideoDtoAdapter::class.java.simpleName
+        private val TAG = VideoDtoAdapter::class.simpleName.orEmpty()
     }
 }

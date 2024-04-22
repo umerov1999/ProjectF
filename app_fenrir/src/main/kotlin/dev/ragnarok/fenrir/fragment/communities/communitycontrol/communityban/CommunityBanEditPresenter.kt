@@ -323,7 +323,7 @@ class CommunityBanEditPresenter : AccountDependencyPresenter<ICommunityBanEditVi
     }
 
     companion object {
-        private val TAG = CommunityBanEditPresenter::class.java.simpleName
+        private val TAG = CommunityBanEditPresenter::class.simpleName.orEmpty()
         private const val BLOCK_FOR_UNCHANGED = -1
         private const val REQUEST_CODE_BLOCK_FOR = 1
         private const val REQUEST_CODE_REASON = 2

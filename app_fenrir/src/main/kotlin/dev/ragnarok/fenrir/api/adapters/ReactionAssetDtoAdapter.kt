@@ -27,6 +27,6 @@ class ReactionAssetDtoAdapter : AbsDtoAdapter<VKApiReactionAsset>("VKApiReaction
     }
 
     companion object {
-        private val TAG = ReactionAssetDtoAdapter::class.java.simpleName
+        private val TAG = ReactionAssetDtoAdapter::class.simpleName.orEmpty()
     }
 }

@@ -18,7 +18,7 @@ class BlurTransformation(
         return "$TAG(radius=$mRadius)"
     }
 
-    private val TAG = BlurTransformation::class.java.simpleName
+    private val TAG = BlurTransformation::class.simpleName.orEmpty()
 
     private fun blurRenderScriptDeprecated(
         context: Context?,

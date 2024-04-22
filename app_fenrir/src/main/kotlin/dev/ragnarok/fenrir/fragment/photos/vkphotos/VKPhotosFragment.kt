@@ -437,7 +437,7 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
     }
 
     companion object {
-        private val TAG = VKPhotosFragment::class.java.simpleName
+        private val TAG = VKPhotosFragment::class.simpleName.orEmpty()
         fun buildArgs(
             accountId: Long,
             ownerId: Long,

@@ -66,6 +66,6 @@ class MonochromeTransformation : Transformation {
     }
 
     companion object {
-        private val TAG = MonochromeTransformation::class.java.simpleName
+        private val TAG = MonochromeTransformation::class.simpleName.orEmpty()
     }
 }

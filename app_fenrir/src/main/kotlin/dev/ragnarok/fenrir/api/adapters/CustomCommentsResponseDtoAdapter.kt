@@ -42,6 +42,6 @@ class CustomCommentsResponseDtoAdapter :
     }
 
     companion object {
-        private val TAG = CustomCommentsResponseDtoAdapter::class.java.simpleName
+        private val TAG = CustomCommentsResponseDtoAdapter::class.simpleName.orEmpty()
     }
 }

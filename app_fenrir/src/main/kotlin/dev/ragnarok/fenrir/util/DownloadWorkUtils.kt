@@ -184,7 +184,7 @@ object DownloadWorkUtils {
         file: DownloadInfo,
         type: String
     ) {
-        val downloadWork = OneTimeWorkRequest.Builder(DefaultDownloadWorker::class.java)
+        val downloadWork = OneTimeWorkRequest.Builder(DefaultDownloadWorker::class)
         val data = Data.Builder()
         data.putString(ExtraDwn.URL, url)
         data.putString(ExtraDwn.DIR, file.path)
@@ -486,7 +486,7 @@ object DownloadWorkUtils {
             result_filename.setFile(result_filename.file + ("." + DOWNLOAD_DATE_FORMAT.format(Date())))
         }
         try {
-            val downloadWork = OneTimeWorkRequest.Builder(TrackDownloadWorker::class.java)
+            val downloadWork = OneTimeWorkRequest.Builder(TrackDownloadWorker::class)
             val data = Data.Builder()
             data.putByteArray(ExtraDwn.URL, MsgPack.encodeToByteArrayEx(Audio.serializer(), audio))
             data.putString(ExtraDwn.DIR, result_filename.path)
@@ -510,7 +510,7 @@ object DownloadWorkUtils {
             Settings.get().main().musicDir,
             "mp3"
         )
-        val downloadWork = OneTimeWorkRequest.Builder(TrackDownloadWorker::class.java)
+        val downloadWork = OneTimeWorkRequest.Builder(TrackDownloadWorker::class)
         val data = Data.Builder()
         data.putByteArray(ExtraDwn.URL, MsgPack.encodeToByteArrayEx(Audio.serializer(), audio))
         data.putString(ExtraDwn.DIR, result_filename.path)

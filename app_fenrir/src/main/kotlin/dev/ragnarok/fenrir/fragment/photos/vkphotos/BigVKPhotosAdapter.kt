@@ -277,7 +277,7 @@ class BigVKPhotosAdapter(
     companion object {
         const val DATA_TYPE_PHOTO = 1
         const val DATA_TYPE_UPLOAD = 0
-        private val TAG = BigVKPhotosAdapter::class.java.simpleName
+        private val TAG = BigVKPhotosAdapter::class.simpleName.orEmpty()
         private const val VIEW_TYPE_PHOTO = 0
         private const val VIEW_TYPE_UPLOAD = 1
         private var holderIdGenerator = 0

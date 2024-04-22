@@ -93,7 +93,7 @@ class CircleRoadProgress(context: Context, attrs: AttributeSet) : View(context, 
             Paint(Paint.FILTER_BITMAP_FLAG or Paint.DITHER_FLAG or Paint.ANTI_ALIAS_FLAG)
         private val PROGRESS_PROPERTY: Property<CircleRoadProgress, Float> =
             object : Property<CircleRoadProgress, Float>(
-                Float::class.java, "displayed-precentage"
+                Float::class.java, "displayed-percentage"
             ) {
                 override fun get(view: CircleRoadProgress): Float {
                     return view.displayedPercentage

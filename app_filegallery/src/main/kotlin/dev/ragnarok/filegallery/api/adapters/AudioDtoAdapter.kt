@@ -34,6 +34,6 @@ class AudioDtoAdapter : AbsDtoAdapter<Audio>("Audio") {
     }
 
     companion object {
-        private val TAG = AudioDtoAdapter::class.java.simpleName
+        private val TAG = AudioDtoAdapter::class.simpleName.orEmpty()
     }
 }

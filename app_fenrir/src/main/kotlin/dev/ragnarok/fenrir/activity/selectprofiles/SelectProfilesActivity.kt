@@ -91,7 +91,7 @@ class SelectProfilesActivity : MainActivity(), SelectedProfilesAdapter.ActionLis
     }
 
     companion object {
-        private val TAG = SelectProfilesActivity::class.java.simpleName
+        private val TAG = SelectProfilesActivity::class.simpleName.orEmpty()
         private const val SAVE_SELECTED_OWNERS = "save_selected_owners"
 
 

@@ -218,6 +218,6 @@ class PushRegistrationResolver(
 
     private class Data(val fcmToken: String, val deviceId: String)
     companion object {
-        private val TAG = PushRegistrationResolver::class.java.simpleName
+        private val TAG = PushRegistrationResolver::class.simpleName.orEmpty()
     }
 }

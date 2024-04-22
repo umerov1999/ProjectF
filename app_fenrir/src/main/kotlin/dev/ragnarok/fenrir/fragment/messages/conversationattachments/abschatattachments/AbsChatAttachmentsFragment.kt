@@ -87,6 +87,6 @@ abstract class AbsChatAttachmentsFragment<T, P : BaseChatAttachmentsPresenter<T,
     }
 
     companion object {
-        val TAG: String = ConversationPhotosFragment::class.java.simpleName
+        val TAG: String = ConversationPhotosFragment::class.simpleName.orEmpty()
     }
 }

@@ -112,11 +112,8 @@ abstract class AbstractPreference internal constructor(val key: String) {
         collapsed = other.collapsed
     }
 
-    override fun equals(other: Any?): Boolean = when {
-        other == null -> false
-        this === other -> true
-        this::class.java == other::class.java && key == (other as AbstractPreference).key -> true
-        else -> false
+    override fun equals(other: Any?): Boolean {
+        return other is AbstractPreference && key == other.key
     }
 
     override fun hashCode() = key.hashCode()
@@ -611,14 +608,8 @@ class PreferenceScreen internal constructor(builder: Builder) : Preference(build
         adapter?.notifyItemRangeChanged(position, itemCount)
     }
 
-    override fun equals(other: Any?): Boolean = when {
-        other == null -> false
-        this === other -> true
-        this::class.java == other::class.java &&
-                key == (other as PreferenceScreen).key &&
-                preferences == other.preferences -> true
-
-        else -> false
+    override fun equals(other: Any?): Boolean {
+        return other is PreferenceScreen && key == other.key && preferences == other.preferences
     }
 
     override fun hashCode() = (31 * key.hashCode()) + preferences.hashCode()

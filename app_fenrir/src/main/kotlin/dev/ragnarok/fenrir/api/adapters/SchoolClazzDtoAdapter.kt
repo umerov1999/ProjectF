@@ -29,6 +29,6 @@ class SchoolClazzDtoAdapter : AbsDtoAdapter<SchoolClazzDto>("SchoolClazzDto") {
     }
 
     companion object {
-        private val TAG = SchoolClazzDtoAdapter::class.java.simpleName
+        private val TAG = SchoolClazzDtoAdapter::class.simpleName.orEmpty()
     }
 }

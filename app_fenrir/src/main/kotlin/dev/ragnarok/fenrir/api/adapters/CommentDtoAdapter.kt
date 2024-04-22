@@ -52,6 +52,6 @@ class CommentDtoAdapter : AbsDtoAdapter<VKApiComment>("VKApiComment") {
     }
 
     companion object {
-        private val TAG = CommentDtoAdapter::class.java.simpleName
+        private val TAG = CommentDtoAdapter::class.simpleName.orEmpty()
     }
 }

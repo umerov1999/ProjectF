@@ -279,7 +279,7 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
 
     private fun onProcessError(throwable: Throwable) {
         throwable.printStackTrace()
-        logThrowable(RealtimeMessagesProcessor::class.java.simpleName, throwable)
+        logThrowable(RealtimeMessagesProcessor::class.simpleName.orEmpty(), throwable)
         resetCurrent()
         startIfNotStarted()
     }

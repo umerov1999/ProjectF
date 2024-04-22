@@ -602,6 +602,6 @@ class ConversationMultiAttachmentsFragment :
     }
 
     companion object {
-        private val TAG = ConversationMultiAttachmentsFragment::class.java.simpleName
+        private val TAG = ConversationMultiAttachmentsFragment::class.simpleName.orEmpty()
     }
 }

@@ -1,5 +1,5 @@
-curl --location https://maven.google.com/androidx/camera/camera-camera2/1.3.2/camera-camera2-1.3.2-sources.jar --output camera-camera2-1.3.2-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-core/1.3.2/camera-core-1.3.2-sources.jar --output camera-core-1.3.2-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-lifecycle/1.3.2/camera-lifecycle-1.3.2-sources.jar --output camera-lifecycle-1.3.2-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-video/1.3.2/camera-video-1.3.2-sources.jar --output camera-video-1.3.2-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-view/1.3.2/camera-view-1.3.2-sources.jar --output camera-view-1.3.2-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-camera2/1.3.3/camera-camera2-1.3.3-sources.jar --output camera-camera2-1.3.3-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-core/1.3.3/camera-core-1.3.3-sources.jar --output camera-core-1.3.3-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-lifecycle/1.3.3/camera-lifecycle-1.3.3-sources.jar --output camera-lifecycle-1.3.3-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-video/1.3.3/camera-video-1.3.3-sources.jar --output camera-video-1.3.3-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-view/1.3.3/camera-view-1.3.3-sources.jar --output camera-view-1.3.3-sources.jar
