@@ -12,18 +12,30 @@ import kotlinx.serialization.Serializable
 @Keep
 @Serializable
 class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
-    private var s: Size? = null
-    private var m: Size? = null
-    private var x: Size? = null
-    private var o: Size? = null
-    private var p: Size? = null
-    private var q: Size? = null
-    private var r: Size? = null
-    private var k: Size? = null
-    private var l: Size? = null
-    private var y: Size? = null
-    private var z: Size? = null
-    private var w: Size? = null
+    var s: Size? = null
+        private set
+    var m: Size? = null
+        private set
+    var x: Size? = null
+        private set
+    var o: Size? = null
+        private set
+    var p: Size? = null
+        private set
+    var q: Size? = null
+        private set
+    var r: Size? = null
+        private set
+    var k: Size? = null
+        private set
+    var l: Size? = null
+        private set
+    var y: Size? = null
+        private set
+    var z: Size? = null
+        private set
+    var w: Size? = null
+        private set
 
     constructor()
     internal constructor(parcel: ParcelNative) {
@@ -56,17 +68,9 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         l = parcel.readTypedObjectCompat(Size.CREATOR)
     }
 
-    fun getS(): Size? {
-        return s
-    }
-
     fun setS(s: Size?): PhotoSizes {
         this.s = s
         return this
-    }
-
-    fun getM(): Size? {
-        return m
     }
 
     fun setM(m: Size?): PhotoSizes {
@@ -74,17 +78,9 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun getX(): Size? {
-        return x
-    }
-
     fun setX(x: Size?): PhotoSizes {
         this.x = x
         return this
-    }
-
-    fun getO(): Size? {
-        return o
     }
 
     fun setO(o: Size?): PhotoSizes {
@@ -92,17 +88,9 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun getP(): Size? {
-        return p
-    }
-
     fun setP(p: Size?): PhotoSizes {
         this.p = p
         return this
-    }
-
-    fun getQ(): Size? {
-        return q
     }
 
     fun setQ(q: Size?): PhotoSizes {
@@ -110,17 +98,9 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun getR(): Size? {
-        return r
-    }
-
     fun setR(r: Size?): PhotoSizes {
         this.r = r
         return this
-    }
-
-    fun getY(): Size? {
-        return y
     }
 
     fun setY(y: Size?): PhotoSizes {
@@ -128,17 +108,9 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun getZ(): Size? {
-        return z
-    }
-
     fun setZ(z: Size?): PhotoSizes {
         this.z = z
         return this
-    }
-
-    fun getW(): Size? {
-        return w
     }
 
     fun setW(w: Size?): PhotoSizes {
@@ -146,17 +118,9 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun getK(): Size? {
-        return k
-    }
-
     fun setK(k: Size?): PhotoSizes {
         this.k = k
         return this
-    }
-
-    fun getL(): Size? {
-        return l
     }
 
     fun setL(l: Size?): PhotoSizes {
@@ -295,9 +259,12 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
     @Keep
     @Serializable
     class Size : Parcelable, ParcelNative.ParcelableNative {
-        private var width = 0
-        private var height = 0
+        var width = 0
+            private set
+        var height = 0
+            private set
         var url: String? = null
+            private set
 
         constructor()
         constructor(w: Int, h: Int, url: String?) {
@@ -316,14 +283,6 @@ class PhotoSizes : Parcelable, ParcelNative.ParcelableNative {
             width = parcel.readInt()
             height = parcel.readInt()
             url = parcel.readString()
-        }
-
-        fun getW(): Int {
-            return width
-        }
-
-        fun getH(): Int {
-            return height
         }
 
         override fun describeContents(): Int {

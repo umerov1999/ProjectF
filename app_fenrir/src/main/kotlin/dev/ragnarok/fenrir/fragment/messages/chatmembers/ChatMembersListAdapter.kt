@@ -48,7 +48,7 @@ class ChatMembersListAdapter(context: Context, private var data: List<AppChatUse
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val context = holder.itemView.context
         val item = data[position]
-        val user = item.getMember()
+        val user = item.member
         var online = false
         var onlineMobile = false
         @UserPlatform var platform = UserPlatform.UNKNOWN
@@ -75,31 +75,31 @@ class ChatMembersListAdapter(context: Context, private var data: List<AppChatUse
                 .into(holder.ivAvatar)
         }
         holder.tvName.text = user?.fullName
-        if (item.isOwner()) {
+        if (item.isOwner) {
             holder.tvInvitedBy.visibility = View.GONE
             holder.tvAdmin.visibility = View.VISIBLE
             holder.tvAdmin.setText(R.string.creator_of_conversation)
             holder.tvInvitedDate.visibility = View.GONE
-        } else if (item.isAdmin()) {
+        } else if (item.isAdmin) {
             holder.tvAdmin.visibility = View.VISIBLE
             holder.tvAdmin.setText(R.string.role_administrator)
             holder.tvInvitedBy.visibility = View.VISIBLE
             holder.tvInvitedBy.text =
-                context.getString(R.string.invited_by, item.getInviter()?.fullName)
-            if (item.getJoin_date() > 0) {
+                context.getString(R.string.invited_by, item.inviter?.fullName)
+            if (item.join_date > 0) {
                 holder.tvInvitedDate.text =
-                    AppTextUtils.getDateFromUnixTime(context, item.getJoin_date())
+                    AppTextUtils.getDateFromUnixTime(context, item.join_date)
             } else {
                 holder.tvInvitedDate.visibility = View.GONE
             }
         } else {
             holder.tvInvitedBy.visibility = View.VISIBLE
             holder.tvInvitedBy.text =
-                context.getString(R.string.invited_by, item.getInviter()?.fullName)
+                context.getString(R.string.invited_by, item.inviter?.fullName)
             holder.tvAdmin.visibility = View.GONE
-            if (item.getJoin_date() > 0) {
+            if (item.join_date > 0) {
                 holder.tvInvitedDate.text =
-                    AppTextUtils.getDateFromUnixTime(context, item.getJoin_date())
+                    AppTextUtils.getDateFromUnixTime(context, item.join_date)
             } else {
                 holder.tvInvitedDate.visibility = View.GONE
             }
@@ -112,7 +112,7 @@ class ChatMembersListAdapter(context: Context, private var data: List<AppChatUse
         holder.itemView.setOnClickListener {
             actionListener?.onUserClick(item)
         }
-        holder.vRemove.visibility = if (item.isCanRemove()) View.VISIBLE else View.GONE
+        holder.vRemove.visibility = if (item.canRemove) View.VISIBLE else View.GONE
         holder.vRemove.setOnClickListener {
             actionListener?.onRemoveClick(item)
         }
@@ -167,14 +167,14 @@ class ChatMembersListAdapter(context: Context, private var data: List<AppChatUse
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
             val position = recyclerView?.getChildAdapterPosition(v) ?: 0
             val item = data[position]
-            if (isOwner && !item.isOwner()) {
+            if (isOwner && !item.isOwner) {
                 menu.add(
                     0,
                     v.id,
                     0,
-                    if (item.isAdmin()) R.string.disrate else R.string.assign_administrator
+                    if (item.isAdmin) R.string.disrate else R.string.assign_administrator
                 ).setOnMenuItemClickListener {
-                    actionListener?.onAdminToggleClick(!item.isAdmin(), item.getOwnerObjectId())
+                    actionListener?.onAdminToggleClick(!item.isAdmin, item.getOwnerObjectId())
                     true
                 }
             }

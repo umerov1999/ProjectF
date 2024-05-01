@@ -43,7 +43,7 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
             return
         }
         for (i in original) {
-            val user = i.getMember()
+            val user = i.member
             if (query?.lowercase(Locale.getDefault())?.let {
                     user?.fullName?.lowercase(Locale.getDefault())?.contains(it)
                 } == true || query?.lowercase(Locale.getDefault())?.let {
@@ -76,7 +76,7 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
         resolveRefreshing()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshing()
     }
@@ -105,7 +105,7 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
         isOwner = false
         for (i in original) {
             if (i.getOwnerObjectId() == accountId) {
-                isOwner = i.isOwner()
+                isOwner = i.isOwner
                 break
             }
         }
@@ -126,7 +126,7 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
     }
 
     fun fireUserDeleteConfirmed(user: AppChatUser) {
-        val userId = user.getMember()?.ownerId ?: return
+        val userId = user.member?.ownerId ?: return
         appendDisposable(messagesInteractor.removeChatMember(accountId, chatId, userId)
             .fromIOToMain()
             .subscribe({ onUserRemoved(userId) }) { t ->
@@ -187,7 +187,7 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
     fun fireUserClick(user: AppChatUser) {
         view?.openUserWall(
             accountId,
-            user.getMember() ?: return
+            user.member ?: return
         )
     }
 

@@ -38,6 +38,11 @@ abstract class AbsMvpFragment<P : IPresenter<V>, V : IMvpView> : androidx.fragme
         delegate.onSaveInstanceState(outState)
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        delegate.onRestoreViewState()
+    }
+
     override fun onPause() {
         super.onPause()
         delegate.onPause()

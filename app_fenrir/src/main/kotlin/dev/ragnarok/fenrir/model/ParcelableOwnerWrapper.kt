@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
     private val type: Int
     private val isNull: Boolean
-    private val owner: Owner?
+    val owner: Owner?
 
     constructor(owner: Owner?) {
         this.owner = owner
@@ -46,10 +46,6 @@ class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
         } else {
             null
         }
-    }
-
-    fun get(): Owner? {
-        return owner
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -99,7 +95,7 @@ class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
         }
 
         fun readOwner(parcel: ParcelNative): Owner? {
-            return parcel.readParcelable(NativeCreator)?.get()
+            return parcel.readParcelable(NativeCreator)?.owner
         }
 
         fun writeOwner(dest: ParcelNative, owner: Owner?) {
@@ -108,7 +104,7 @@ class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
 
         fun readOwner(parcel: Parcel): Owner? {
             return parcel.readTypedObjectCompat(CREATOR)
-                ?.get()
+                ?.owner
         }
 
         fun writeOwner(dest: Parcel, flags: Int, owner: Owner?) {

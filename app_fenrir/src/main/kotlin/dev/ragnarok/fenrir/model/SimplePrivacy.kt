@@ -7,8 +7,8 @@ import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.putBoolean
 
 class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
-    private val type: String?
-    private val entries: List<Entry>?
+    val type: String?
+    val entries: List<Entry>?
 
     constructor(type: String?, entries: List<Entry>?) {
         this.type = type
@@ -23,14 +23,6 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
     internal constructor(parcel: ParcelNative) {
         type = parcel.readString()
         entries = parcel.readParcelableList(Entry.NativeCreator)
-    }
-
-    fun getType(): String? {
-        return type
-    }
-
-    fun getEntries(): List<Entry>? {
-        return entries
     }
 
     override fun describeContents(): Int {
@@ -48,9 +40,9 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
     }
 
     class Entry : Parcelable, ParcelNative.ParcelableNative {
-        private val type: Int
-        private val id: Long
-        private val allowed: Boolean
+        val type: Int
+        val id: Long
+        val allowed: Boolean
 
         constructor(type: Int, id: Long, allowed: Boolean) {
             this.type = type
@@ -70,18 +62,6 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
             allowed = parcel.readBoolean()
         }
 
-        fun getType(): Int {
-            return type
-        }
-
-        fun getId(): Long {
-            return id
-        }
-
-        fun isAllowed(): Boolean {
-            return allowed
-        }
-
         override fun describeContents(): Int {
             return 0
         }
@@ -99,7 +79,7 @@ class SimplePrivacy : Parcelable, ParcelNative.ParcelableNative {
         }
 
         override fun equals(other: Any?): Boolean {
-            return other is Entry && type == other.getType() && id == other.getId() && allowed == other.isAllowed()
+            return other is Entry && type == other.type && id == other.id && allowed == other.allowed
         }
 
         override fun hashCode(): Int {

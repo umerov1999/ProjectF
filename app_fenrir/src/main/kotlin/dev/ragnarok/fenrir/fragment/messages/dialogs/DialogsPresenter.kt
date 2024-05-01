@@ -464,7 +464,7 @@ class DialogsPresenter(
         super.onDestroyed()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         checkLongpoll()
@@ -779,8 +779,8 @@ class DialogsPresenter(
                 .observeOn(provideMainThreadScheduler())
                 .subscribe({ dialog ->
                     onDialogDeleted(
-                        dialog.getAccountId(),
-                        dialog.getPeerId()
+                        dialog.accountId,
+                        dialog.peerId
                     )
                 }, ignore())
         )

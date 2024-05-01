@@ -105,7 +105,7 @@ class NewsfeedMentionsFragment :
 
     override fun onPostBodyClick(comment: NewsfeedComment) {
         presenter?.firePostClick(
-            (comment.getModel() as Post)
+            (comment.model as Post)
         )
     }
 

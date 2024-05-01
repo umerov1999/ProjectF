@@ -217,12 +217,12 @@ class StoryPagerPresenter(
         onWritePermissionResolved()
     }
 
-    public override fun onGuiPaused() {
+    override fun onGuiPaused() {
         super.onGuiPaused()
         mStoryPlayer?.pause()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         if (mStoryPlayer != null) {
             try {

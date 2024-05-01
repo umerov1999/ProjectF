@@ -26,9 +26,9 @@ class VideoAlbumsNewAdapter(private val context: Context, private var data: List
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = data[position]
         holder.tvCount.text =
-            context.getString(R.string.videos_albums_videos_counter, item.getCount())
-        holder.tvTitle.text = item.getTitle()
-        val photoUrl = item.getImage()
+            context.getString(R.string.videos_albums_videos_counter, item.count)
+        holder.tvTitle.text = item.title
+        val photoUrl = item.image
         holder.ivPhoto.visibility = if (photoUrl.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
         if (photoUrl.nonNullNoEmpty()) {
             with()

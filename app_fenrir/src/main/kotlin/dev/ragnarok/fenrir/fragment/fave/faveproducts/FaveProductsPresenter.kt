@@ -26,7 +26,7 @@ class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
         )
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doLoadTabs = if (doLoadTabs) {

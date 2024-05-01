@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.fragment.wall.userdetails
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -77,6 +78,19 @@ class UserDetailsFragment : BaseMvpFragment<UserDetailsPresenter, IUserDetailsVi
 
     override fun displayData(items: List<AdvancedItem>) {
         menuAdapter?.setItems(items)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun notifyChanges() {
+        menuAdapter?.notifyDataSetChanged()
+    }
+
+    override fun notifyItemChanged(pos: Int) {
+        menuAdapter?.notifyItemChanged(pos)
+    }
+
+    override fun notifyItemInserted(pos: Int) {
+        menuAdapter?.notifyItemInserted(pos)
     }
 
     override fun displayToolbarTitle(user: User?) {

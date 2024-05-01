@@ -4,8 +4,8 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class StickersKeywords : Parcelable {
-    private val keywords: List<String>
-    private val stickers: List<Sticker>
+    val keywords: List<String>
+    val stickers: List<Sticker>
 
     internal constructor(parcel: Parcel) {
         keywords = ArrayList()
@@ -21,14 +21,6 @@ class StickersKeywords : Parcelable {
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeStringList(keywords)
         dest.writeTypedList(stickers)
-    }
-
-    fun getKeywords(): List<String> {
-        return keywords
-    }
-
-    fun getStickers(): List<Sticker> {
-        return stickers
     }
 
     override fun describeContents(): Int {

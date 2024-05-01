@@ -38,7 +38,7 @@ class AllFriendsPresenter(accountId: Long, private val userId: Long, savedInstan
     private var searchRunNow = false
     private var doLoadTabs = false
     private var offset = 0
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doLoadTabs = if (doLoadTabs) {

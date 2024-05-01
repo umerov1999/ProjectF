@@ -202,9 +202,9 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
     override fun openAudioPlaylist(accountId: Long, playlist: AudioPlaylist) {
         PlaceFactory.getAudiosInAlbumPlace(
             accountId,
-            playlist.getOwnerId(),
-            playlist.getId(),
-            playlist.getAccess_key()
+            playlist.owner_id,
+            playlist.id,
+            playlist.access_key
         ).tryOpenWith(requireActivity())
     }
 
@@ -252,15 +252,15 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
     override fun toMarketAlbumOpen(accountId: Long, market_album: MarketAlbum) {
         PlaceFactory.getMarketPlace(
             accountId,
-            market_album.getOwner_id(),
-            market_album.getId(),
+            market_album.owner_id,
+            market_album.id,
             false
         )
             .tryOpenWith(requireActivity())
     }
 
     override fun toArtistOpen(accountId: Long, artist: AudioArtist) {
-        PlaceFactory.getArtistPlace(accountId, artist.getId()).tryOpenWith(requireActivity())
+        PlaceFactory.getArtistPlace(accountId, artist.id).tryOpenWith(requireActivity())
     }
 
     override fun toMarketOpen(accountId: Long, market: Market) {

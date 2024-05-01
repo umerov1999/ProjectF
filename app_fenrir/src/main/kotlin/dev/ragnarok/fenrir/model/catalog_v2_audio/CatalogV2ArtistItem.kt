@@ -13,9 +13,13 @@ import kotlin.math.abs
 
 class CatalogV2ArtistItem : AbsModel {
     var name: String? = null
+        private set
     var id: String? = null
+        private set
     var is_album_cover: Boolean = false
+        private set
     var photo: List<CatalogV2Cover>? = null
+        private set
 
     constructor(object_v: VKApiCatalogV2ArtistItem) {
         name = object_v.name

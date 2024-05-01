@@ -106,7 +106,7 @@ class ChatMembersFragment : BaseMvpFragment<ChatMembersPresenter, IChatMembersVi
     override fun onRemoveClick(user: AppChatUser) {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.confirmation)
-            .setMessage(getString(R.string.remove_chat_user_commit, user.getMember()?.fullName))
+            .setMessage(getString(R.string.remove_chat_user_commit, user.member?.fullName))
             .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                 presenter?.fireUserDeleteConfirmed(
                     user

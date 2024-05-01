@@ -64,7 +64,7 @@ class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanc
         )
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doLoadTabs = if (doLoadTabs) {
@@ -139,7 +139,7 @@ class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanc
         }
     }
 
-    public override fun onUserRefreshed() {
+    override fun onUserRefreshed() {
         cacheDisposable.clear()
         cacheLoadingNow = false
         actualDataDisposable.clear()

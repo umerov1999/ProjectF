@@ -94,8 +94,8 @@ class ProductAlbumsFragment : BaseMvpFragment<ProductAlbumsPresenter, IProductAl
     override fun onMarketAlbumOpen(accountId: Long, market_album: MarketAlbum) {
         getMarketPlace(
             accountId,
-            market_album.getOwner_id(),
-            market_album.getId(),
+            market_album.owner_id,
+            market_album.id,
             false
         ).tryOpenWith(
             requireActivity()

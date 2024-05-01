@@ -196,9 +196,9 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
                 }
                 var firstTimeVoice = true
                 for (vs in message.attachments?.voiceMessages.orEmpty()) {
-                    if (!vs.getTranscript().isNullOrEmpty()) {
+                    if (!vs.transcript.isNullOrEmpty()) {
                         result.append(if (!firstTimeVoice) "\n" else "")
-                        result.append(vs.getTranscript())
+                        result.append(vs.transcript)
                         firstTimeVoice = false
                     }
                 }
@@ -230,7 +230,7 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
         try {
             val messageChanged = player.toggle(voiceMessageId, voiceMessage)
             if (messageChanged) {
-                if (!voiceMessage.wasListened()) {
+                if (!voiceMessage.was_listened) {
                     if (!Utils.isHiddenCurrent && Settings.get().main().isMarkListenedVoice) {
                         appendDisposable(
                             Repository.messages.markAsListened(accountId, messageId)
@@ -285,7 +285,7 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
         }
     }
 
-    public override fun onGuiDestroyed() {
+    override fun onGuiDestroyed() {
         syncVoiceLookupState()
         super.onGuiDestroyed()
     }

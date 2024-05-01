@@ -50,6 +50,10 @@ class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
         }
     }
 
+    fun onRestoreViewState() {
+        presenter?.restoreViewState()
+    }
+
     fun onDestroy() {
         viewReference = WeakReference(null)
         presenter?.detachViewHost()

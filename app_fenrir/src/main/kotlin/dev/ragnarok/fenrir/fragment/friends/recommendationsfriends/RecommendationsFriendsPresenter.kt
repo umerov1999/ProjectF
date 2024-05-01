@@ -22,7 +22,7 @@ class RecommendationsFriendsPresenter(accountId: Long, savedInstanceState: Bundl
         )
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doLoadTabs = if (doLoadTabs) {

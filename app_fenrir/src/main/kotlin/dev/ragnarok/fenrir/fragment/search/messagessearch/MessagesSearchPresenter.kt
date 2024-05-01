@@ -101,7 +101,7 @@ class MessagesSearchPresenter(
             ).fromIOToMain().subscribe({
                 view?.goToPeerLookup(
                     accountId,
-                    Peer(message.peerId).setTitle(it.getTitle()).setAvaUrl(it.imageUrl)
+                    Peer(message.peerId).setTitle(it.title).setAvaUrl(it.imageUrl)
                 )
             }, { showError(it) })
         )
@@ -127,7 +127,7 @@ class MessagesSearchPresenter(
         try {
             val messageChanged = player.toggle(voiceMessageId, voiceMessage)
             if (messageChanged) {
-                if (!voiceMessage.wasListened()) {
+                if (!voiceMessage.was_listened) {
                     if (!Utils.isHiddenCurrent && Settings.get().main().isMarkListenedVoice) {
                         appendDisposable(
                             messages.markAsListened(accountId, messageId)

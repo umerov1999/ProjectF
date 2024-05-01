@@ -220,7 +220,7 @@ object Entity2Model {
                 .setImages(ArrayList(safeCountOf(it.images)))
             it.images.nonNullNoEmpty { pit ->
                 for (imageDto in pit) {
-                    cover.getImages()?.add(
+                    cover.images?.add(
                         CommunityDetails.CoverImage(
                             imageDto.url,
                             imageDto.height,
@@ -347,7 +347,7 @@ object Entity2Model {
                 .setImages(ArrayList(safeCountOf(it.images)))
             it.images.nonNullNoEmpty { pit ->
                 for (imageDto in pit) {
-                    cover.getImages()?.add(
+                    cover.images?.add(
                         UserDetails.CoverImage(
                             imageDto.url,
                             imageDto.height,

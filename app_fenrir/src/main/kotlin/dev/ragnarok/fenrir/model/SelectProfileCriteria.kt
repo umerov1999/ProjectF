@@ -6,7 +6,8 @@ import androidx.annotation.IntDef
 
 class SelectProfileCriteria : Parcelable {
     @OwnerType
-    private var ownerType: Int
+    var ownerType: Int
+        private set
 
     internal constructor(parcel: Parcel) {
         ownerType = parcel.readInt()
@@ -14,11 +15,6 @@ class SelectProfileCriteria : Parcelable {
 
     constructor() {
         ownerType = OwnerType.ALL_PEOPLE
-    }
-
-    @OwnerType
-    fun getOwnerType(): Int {
-        return ownerType
     }
 
     fun setOwnerType(@OwnerType ownerType: Int): SelectProfileCriteria {

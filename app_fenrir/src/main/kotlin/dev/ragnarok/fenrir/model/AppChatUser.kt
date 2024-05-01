@@ -9,13 +9,18 @@ import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class AppChatUser : Parcelable, IdentificableOwner {
-    private val member: Owner?
-    private val invitedBy: Long
-    private var join_date: Long = 0
-    private var inviter: Owner? = null
-    private var canRemove = false
-    private var isAdmin = false
-    private var isOwner = false
+    val member: Owner?
+    val invitedBy: Long
+    var join_date: Long = 0
+        private set
+    var inviter: Owner? = null
+        private set
+    var canRemove = false
+        private set
+    var isAdmin = false
+        private set
+    var isOwner = false
+        private set
 
     constructor(member: Owner?, invitedBy: Long) {
         this.member = member
@@ -25,10 +30,10 @@ class AppChatUser : Parcelable, IdentificableOwner {
     internal constructor(parcel: Parcel) {
         inviter =
             parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
-                .get()
+                .owner
         member =
             parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
-                .get()
+                .owner
         invitedBy = parcel.readLong()
         canRemove = parcel.getBoolean()
         join_date = parcel.readLong()
@@ -50,17 +55,9 @@ class AppChatUser : Parcelable, IdentificableOwner {
         return 0
     }
 
-    fun isCanRemove(): Boolean {
-        return canRemove
-    }
-
     fun setCanRemove(canRemove: Boolean): AppChatUser {
         this.canRemove = canRemove
         return this
-    }
-
-    fun getInviter(): Owner? {
-        return inviter
     }
 
     fun setInviter(inviter: Owner?): AppChatUser {
@@ -68,20 +65,8 @@ class AppChatUser : Parcelable, IdentificableOwner {
         return this
     }
 
-    fun getInvitedBy(): Long {
-        return invitedBy
-    }
-
-    fun getMember(): Owner? {
-        return member
-    }
-
     override fun getOwnerObjectId(): Long {
         return member?.ownerId ?: 0
-    }
-
-    fun getJoin_date(): Long {
-        return join_date
     }
 
     fun setJoin_date(join_date: Long): AppChatUser {
@@ -89,17 +74,9 @@ class AppChatUser : Parcelable, IdentificableOwner {
         return this
     }
 
-    fun isAdmin(): Boolean {
-        return isAdmin
-    }
-
     fun setAdmin(admin: Boolean): AppChatUser {
         isAdmin = admin
         return this
-    }
-
-    fun isOwner(): Boolean {
-        return isOwner
     }
 
     fun setOwner(owner: Boolean): AppChatUser {

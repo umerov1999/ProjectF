@@ -10,6 +10,9 @@ import dev.ragnarok.fenrir.model.menu.AdvancedItem
 
 interface IUserDetailsView : IMvpView, IErrorView {
     fun displayData(items: List<AdvancedItem>)
+    fun notifyChanges()
+    fun notifyItemChanged(pos: Int)
+    fun notifyItemInserted(pos: Int)
     fun displayToolbarTitle(user: User?)
     fun openOwnerProfile(accountId: Long, ownerId: Long, owner: Owner?)
     fun onPhotosLoaded(photo: Photo)

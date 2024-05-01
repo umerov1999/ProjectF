@@ -63,17 +63,17 @@ class GroupWallPresenter(
     private fun resolveCounters() {
         view?.displayCounters(
             community.membersCount,
-            details.getTopicsCount(),
-            details.getDocsCount(),
-            details.getPhotosCount(),
-            details.getAudiosCount(),
-            details.getVideosCount(),
-            details.getArticlesCount(),
-            details.getProductsCount(),
-            details.getChatsCount(),
-            details.getProductServicesCount(),
-            details.getNarrativesCount(),
-            details.getClipsCount()
+            details.topicsCount,
+            details.docsCount,
+            details.photosCount,
+            details.audiosCount,
+            details.videosCount,
+            details.articlesCount,
+            details.productsCount,
+            details.chatsCount,
+            details.productServicesCount,
+            details.narrativesCount,
+            details.clipsCount
         )
     }
 
@@ -115,7 +115,7 @@ class GroupWallPresenter(
             this.details = details
         }
         menus.clear()
-        menus.addAll(details?.getMenu().orEmpty())
+        menus.addAll(details?.menu.orEmpty())
         view?.notifyWallMenusChanged(menus.isEmpty())
         filters.clear()
         filters.addAll(createPostFilters())
@@ -156,11 +156,11 @@ class GroupWallPresenter(
     private fun syncFilterCounters() {
         for (filter in filters) {
             when (filter.getMode()) {
-                WallCriteria.MODE_ALL -> filter.setCount(details.getAllWallCount())
-                WallCriteria.MODE_OWNER -> filter.setCount(details.getOwnerWallCount())
-                WallCriteria.MODE_SCHEDULED -> filter.setCount(details.getPostponedWallCount())
-                WallCriteria.MODE_SUGGEST -> filter.setCount(details.getSuggestedWallCount())
-                WallCriteria.MODE_DONUT -> filter.setCount(details.getDonutWallCount())
+                WallCriteria.MODE_ALL -> filter.setCount(details.allWallCount)
+                WallCriteria.MODE_OWNER -> filter.setCount(details.ownerWallCount)
+                WallCriteria.MODE_SCHEDULED -> filter.setCount(details.postponedWallCount)
+                WallCriteria.MODE_SUGGEST -> filter.setCount(details.suggestedWallCount)
+                WallCriteria.MODE_DONUT -> filter.setCount(details.donutWallCount)
             }
         }
     }
@@ -318,7 +318,7 @@ class GroupWallPresenter(
     }
 
     fun fireHeaderStatusClick() {
-        details.getStatusAudio().requireNonNull {
+        details.statusAudio.requireNonNull {
             view?.playAudioList(
                 accountId, 0, singletonArrayList(
                     it
@@ -540,8 +540,8 @@ class GroupWallPresenter(
 
     fun fireOptionMenuViewCreated(view: IOptionMenuView) {
         view.setControlVisible(isAdmin)
-        view.setIsFavorite(details.isSetFavorite())
-        view.setIsSubscribed(details.isSetSubscribed())
+        view.setIsFavorite(details.isFavorite)
+        view.setIsSubscribed(details.isSubscribed)
     }
 
     fun fireChatClick() {

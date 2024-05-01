@@ -29,7 +29,7 @@ class PhotoAlbumsAdapter(private var data: List<PhotoAlbum>, private val context
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val album = data[position]
-        val url = album.getSizes()?.getUrlForSize(mPhotoPreviewSize, false)
+        val url = album.sizes?.getUrlForSize(mPhotoPreviewSize, false)
         if (url.nonNullNoEmpty()) {
             with()
                 .load(url)
@@ -41,13 +41,13 @@ class PhotoAlbumsAdapter(private var data: List<PhotoAlbum>, private val context
             with().cancelRequest(holder.thumb)
             holder.thumb.visibility = View.INVISIBLE
         }
-        holder.count.text = context.getString(R.string.photos_count, album.getSize())
+        holder.count.text = context.getString(R.string.photos_count, album.size)
         holder.name.text = album.getDisplayTitle(holder.name.context)
-        if (album.getDescription().isNullOrEmpty()) holder.description.visibility = View.GONE else {
+        if (album.description.isNullOrEmpty()) holder.description.visibility = View.GONE else {
             holder.description.visibility = View.VISIBLE
-            holder.description.text = album.getDescription()
+            holder.description.text = album.description
         }
-        holder.update.text = AppTextUtils.getDateFromUnixTime(context, album.getUpdatedTime())
+        holder.update.text = AppTextUtils.getDateFromUnixTime(context, album.updatedTime)
         holder.album_container.setOnClickListener {
             clickListener?.onAlbumClick(holder.bindingAdapterPosition, album)
         }

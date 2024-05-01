@@ -16,7 +16,7 @@ import dev.ragnarok.fenrir.domain.impl.CommentsInteractor
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.model.AccessIdPair
+import dev.ragnarok.fenrir.model.AccessIdPairModel
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.WallReply
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -134,7 +134,7 @@ class PhotoAllCommentPresenter(
     fun fireGoPhotoClick(comment: Comment) {
         appendDisposable(photosInteractor.getPhotosByIds(
             accountId,
-            listOf(AccessIdPair(comment.commented.sourceId, owner_id, null))
+            listOf(AccessIdPairModel(comment.commented.sourceId, owner_id, null))
         )
             .fromIOToMain()
             .subscribe({
@@ -296,7 +296,7 @@ class PhotoAllCommentPresenter(
         )
     }
 
-    public override fun onGuiDestroyed() {
+    override fun onGuiDestroyed() {
         deepLookingHolder.dispose()
         super.onGuiDestroyed()
     }

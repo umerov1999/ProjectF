@@ -9,6 +9,7 @@ interface IPresenter<V : IMvpView> {
     fun resumeView()
     fun pauseView()
     fun attachViewHost(view: V)
+    fun restoreViewState()
     fun detachViewHost()
     fun createView(view: V)
     fun destroyView()

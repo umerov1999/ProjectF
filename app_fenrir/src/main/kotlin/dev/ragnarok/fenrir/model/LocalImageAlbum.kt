@@ -4,10 +4,14 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class LocalImageAlbum : Parcelable {
-    private var id = 0
-    private var name: String? = null
-    private var coverImageId: Long = 0
-    private var photoCount = 0
+    var id = 0
+        private set
+    var name: String? = null
+        private set
+    var coverImageId: Long = 0
+        private set
+    var photoCount = 0
+        private set
 
     constructor()
     internal constructor(parcel: Parcel) {
@@ -17,17 +21,9 @@ class LocalImageAlbum : Parcelable {
         photoCount = parcel.readInt()
     }
 
-    fun getId(): Int {
-        return id
-    }
-
     fun setId(id: Int): LocalImageAlbum {
         this.id = id
         return this
-    }
-
-    fun getCoverImageId(): Long {
-        return coverImageId
     }
 
     fun setCoverId(coverImageId: Long): LocalImageAlbum {
@@ -35,17 +31,9 @@ class LocalImageAlbum : Parcelable {
         return this
     }
 
-    fun getName(): String? {
-        return name
-    }
-
     fun setName(name: String?): LocalImageAlbum {
         this.name = name
         return this
-    }
-
-    fun getPhotoCount(): Int {
-        return photoCount
     }
 
     fun setPhotoCount(photoCount: Int): LocalImageAlbum {

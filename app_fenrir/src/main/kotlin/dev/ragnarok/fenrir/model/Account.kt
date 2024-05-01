@@ -20,7 +20,7 @@ class Account : Parcelable, IdentificableOwner {
         val wrapper = parcel.readTypedObjectCompat(
             ParcelableOwnerWrapper.CREATOR
         )
-        owner = wrapper!!.get()
+        owner = wrapper?.owner
     }
 
     override fun describeContents(): Int {

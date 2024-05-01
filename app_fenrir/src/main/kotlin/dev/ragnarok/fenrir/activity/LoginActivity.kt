@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
     private var isSave = false
 
     @SuppressLint("SetJavaScriptEnabled")
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)

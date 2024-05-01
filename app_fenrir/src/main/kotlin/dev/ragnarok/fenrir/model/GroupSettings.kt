@@ -8,20 +8,34 @@ import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class GroupSettings : Parcelable {
-    private var title: String? = null
-    private var description: String? = null
-    private var address: String? = null
-    private var access: Int = 0
-    private var age: Int = 1
-    private var category: IdOption? = null
-    private var subcategory: IdOption? = null
-    private var availableCategories: List<IdOption>?
-    private var website: String? = null
-    private var dateCreated: Day? = null
-    private var feedbackCommentsEnabled = false
-    private var obsceneFilterEnabled = false
-    private var obsceneStopwordsEnabled = false
-    private var obsceneWords: String? = null
+    var title: String? = null
+        private set
+    var description: String? = null
+        private set
+    var address: String? = null
+        private set
+    var access: Int = 0
+        private set
+    var age: Int = 1
+        private set
+    var category: IdOption? = null
+        private set
+    var subcategory: IdOption? = null
+        private set
+    var availableCategories: List<IdOption>?
+        private set
+    var website: String? = null
+        private set
+    var dateCreated: Day? = null
+        private set
+    var feedbackCommentsEnabled = false
+        private set
+    var obsceneFilterEnabled = false
+        private set
+    var obsceneStopwordsEnabled = false
+        private set
+    var obsceneWords: String? = null
+        private set
 
     constructor() {
         availableCategories = emptyList()
@@ -63,26 +77,14 @@ class GroupSettings : Parcelable {
         return 0
     }
 
-    fun getTitle(): String? {
-        return title
-    }
-
     fun setTitle(title: String?): GroupSettings {
         this.title = title
         return this
     }
 
-    fun getAge(): Int {
-        return age
-    }
-
     fun setAge(age: Int): GroupSettings {
         this.age = age
         return this
-    }
-
-    fun getAccess(): Int {
-        return access
     }
 
     fun setAccess(access: Int): GroupSettings {
@@ -98,17 +100,9 @@ class GroupSettings : Parcelable {
         return this
     }
 
-    fun getDescription(): String? {
-        return description
-    }
-
     fun setDescription(description: String?): GroupSettings {
         this.description = description
         return this
-    }
-
-    fun getAddress(): String? {
-        return address
     }
 
     fun setAddress(address: String?): GroupSettings {
@@ -116,17 +110,9 @@ class GroupSettings : Parcelable {
         return this
     }
 
-    fun getCategory(): IdOption? {
-        return category
-    }
-
     fun setCategory(category: IdOption?): GroupSettings {
         this.category = category
         return this
-    }
-
-    fun getAvailableCategories(): List<IdOption>? {
-        return availableCategories
     }
 
     fun setAvailableCategories(availableCategories: List<IdOption>?): GroupSettings {
@@ -134,17 +120,9 @@ class GroupSettings : Parcelable {
         return this
     }
 
-    fun getSubcategory(): IdOption? {
-        return subcategory
-    }
-
     fun setSubcategory(subcategory: IdOption?): GroupSettings {
         this.subcategory = subcategory
         return this
-    }
-
-    fun getWebsite(): String? {
-        return website
     }
 
     fun setWebsite(website: String?): GroupSettings {
@@ -152,17 +130,9 @@ class GroupSettings : Parcelable {
         return this
     }
 
-    fun isFeedbackCommentsEnabled(): Boolean {
-        return feedbackCommentsEnabled
-    }
-
     fun setFeedbackCommentsEnabled(feedbackCommentsEnabled: Boolean): GroupSettings {
         this.feedbackCommentsEnabled = feedbackCommentsEnabled
         return this
-    }
-
-    fun getDateCreated(): Day? {
-        return dateCreated
     }
 
     fun setDateCreated(dateCreated: Day?): GroupSettings {
@@ -170,26 +140,14 @@ class GroupSettings : Parcelable {
         return this
     }
 
-    fun isObsceneFilterEnabled(): Boolean {
-        return obsceneFilterEnabled
-    }
-
     fun setObsceneFilterEnabled(obsceneFilterEnabled: Boolean): GroupSettings {
         this.obsceneFilterEnabled = obsceneFilterEnabled
         return this
     }
 
-    fun isObsceneStopwordsEnabled(): Boolean {
-        return obsceneStopwordsEnabled
-    }
-
     fun setObsceneStopwordsEnabled(obsceneStopwordsEnabled: Boolean): GroupSettings {
         this.obsceneStopwordsEnabled = obsceneStopwordsEnabled
         return this
-    }
-
-    fun getObsceneWords(): String? {
-        return obsceneWords
     }
 
     fun setObsceneWords(obsceneWords: String?): GroupSettings {

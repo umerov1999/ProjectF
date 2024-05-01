@@ -415,7 +415,7 @@ open class TouchImageView @JvmOverloads constructor(
         }
     }
 
-    public override fun onSaveInstanceState(): Parcelable? {
+    override fun onSaveInstanceState(): Parcelable? {
         val bundle = Bundle()
         bundle.putParcelable(STATE, super.onSaveInstanceState())
         bundle.putInt("orientation", orientation)
@@ -432,7 +432,7 @@ open class TouchImageView @JvmOverloads constructor(
         return bundle
     }
 
-    public override fun onRestoreInstanceState(state: Parcelable) {
+    override fun onRestoreInstanceState(state: Parcelable) {
         if (state is Bundle) {
             currentZoom = state.getFloat("saveScale")
             floatMatrix = (state.getFloatArray("matrix") ?: return)
@@ -471,7 +471,7 @@ open class TouchImageView @JvmOverloads constructor(
         super.onDraw(canvas)
     }
 
-    public override fun onConfigurationChanged(newConfig: Configuration) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         val newOrientation = resources.configuration.orientation
         if (newOrientation != orientation) {

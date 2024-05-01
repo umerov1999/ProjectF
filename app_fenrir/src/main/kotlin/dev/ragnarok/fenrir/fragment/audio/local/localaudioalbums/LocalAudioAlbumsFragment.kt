@@ -103,7 +103,7 @@ class LocalAudioAlbumsFragment :
     override fun setEmptyTextVisible(visible: Boolean) {}
     override fun displayProgress(loading: Boolean) {}
     override fun openAlbum(album: LocalImageAlbum) {
-        listener?.onSelected(album.getId())
+        listener?.onSelected(album.id)
         dismiss()
     }
 

@@ -9,12 +9,8 @@ class PeerUpdate(val accountId: Long, val peerId: Long) {
     var title: Title? = null
 
     class Read(val messageId: Int)
-
     class Unread(val count: Int)
-
     class LastMessage(val messageId: Int)
-
     class Pin(val pinned: Message?)
-
     class Title(val title: String?)
 }

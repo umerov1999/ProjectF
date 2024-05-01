@@ -188,7 +188,7 @@ class FeedbackInteractor(
         }
 
         private fun populateOwnerIds(ids: VKOwnIds, dbo: ReplyCommentEntity) {
-            fillOwnerIds(ids, dbo.getCommented())
+            fillOwnerIds(ids, dbo.commented)
             fillOwnerIds(ids, dbo.feedbackComment)
             fillOwnerIds(ids, dbo.ownComment)
         }
@@ -199,26 +199,26 @@ class FeedbackInteractor(
 
         private fun populateOwnerIds(ids: VKOwnIds, dbo: NewCommentEntity) {
             fillOwnerIds(ids, dbo.comment)
-            fillOwnerIds(ids, dbo.getCommented())
+            fillOwnerIds(ids, dbo.commented)
         }
 
         private fun populateOwnerIds(ids: VKOwnIds, dbo: MentionEntity) {
-            fillOwnerIds(ids, dbo.getWhere())
+            fillOwnerIds(ids, dbo.where)
         }
 
         private fun populateOwnerIds(ids: VKOwnIds, dbo: MentionCommentEntity) {
-            fillOwnerIds(ids, dbo.getCommented())
+            fillOwnerIds(ids, dbo.commented)
             fillOwnerIds(ids, dbo.where)
         }
 
         private fun populateOwnerIds(ids: VKOwnIds, dbo: LikeEntity) {
-            fillOwnerIds(ids, dbo.getLiked())
+            fillOwnerIds(ids, dbo.liked)
             ids.appendAll(dbo.likesOwnerIds)
         }
 
         private fun populateOwnerIds(ids: VKOwnIds, dbo: LikeCommentEntity) {
             fillOwnerIds(ids, dbo.liked)
-            fillOwnerIds(ids, dbo.getCommented())
+            fillOwnerIds(ids, dbo.commented)
             ids.appendAll(dbo.likesOwnerIds)
         }
 
@@ -226,7 +226,7 @@ class FeedbackInteractor(
             for (i in dbo.copies?.pairDbos.orEmpty()) {
                 ids.append(i.ownerId)
             }
-            fillOwnerIds(ids, dbo.getCopied())
+            fillOwnerIds(ids, dbo.copied)
         }
     }
 }

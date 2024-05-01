@@ -246,7 +246,7 @@ class WallMultiAttachmentsPresenter(
         resolveRefreshingView()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
     }

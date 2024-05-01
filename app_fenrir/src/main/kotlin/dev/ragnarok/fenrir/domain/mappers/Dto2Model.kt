@@ -676,19 +676,19 @@ object Dto2Model {
         friendListMap: Map<Long, FriendList>
     ): Privacy {
         val privacy = Privacy()
-        privacy.setType(simplePrivacy.getType() ?: "null")
-        for (entry in simplePrivacy.getEntries().orEmpty()) {
-            when (entry.getType()) {
-                VKApiPrivacy.Entry.TYPE_FRIENDS_LIST -> if (entry.isAllowed()) {
-                    friendListMap[entry.getId()]?.let { privacy.allowFor(it) }
+        privacy.setType(simplePrivacy.type ?: "null")
+        for (entry in simplePrivacy.entries.orEmpty()) {
+            when (entry.type) {
+                VKApiPrivacy.Entry.TYPE_FRIENDS_LIST -> if (entry.allowed) {
+                    friendListMap[entry.id]?.let { privacy.allowFor(it) }
                 } else {
-                    friendListMap[entry.getId()]?.let { privacy.disallowFor(it) }
+                    friendListMap[entry.id]?.let { privacy.disallowFor(it) }
                 }
 
-                VKApiPrivacy.Entry.TYPE_OWNER -> if (entry.isAllowed()) {
-                    privacy.allowFor(owners.getById(entry.getId()) as User)
+                VKApiPrivacy.Entry.TYPE_OWNER -> if (entry.allowed) {
+                    privacy.allowFor(owners.getById(entry.id) as User)
                 } else {
-                    privacy.disallowFor(owners.getById(entry.getId()) as User)
+                    privacy.disallowFor(owners.getById(entry.id) as User)
                 }
             }
         }

@@ -123,13 +123,13 @@ class CommentsPresenter(
     private fun onCommentMinorUpdate(update: CommentUpdate) {
         for (i in data.indices) {
             val comment = data[i]
-            if (comment.getObjectId() == update.getCommentId()) {
+            if (comment.getObjectId() == update.commentId) {
                 applyUpdate(comment, update)
                 view?.notifyItemChanged(i)
                 return
             } else if (comment.hasThreads()) {
                 for (s in comment.threads.orEmpty()) {
-                    if (s.getObjectId() == update.getCommentId()) {
+                    if (s.getObjectId() == update.commentId) {
                         applyUpdate(s, update)
                         view?.notifyItemChanged(
                             i
@@ -142,12 +142,12 @@ class CommentsPresenter(
     }
 
     private fun applyUpdate(comment: Comment, update: CommentUpdate) {
-        update.getLikeUpdate().requireNonNull {
-            comment.setLikesCount(it.getCount())
-            comment.setUserLikes(it.isUserLikes())
+        update.likeUpdate.requireNonNull {
+            comment.setLikesCount(it.count)
+            comment.setUserLikes(it.userLikes)
         }
-        update.getDeleteUpdate().requireNonNull {
-            comment.setDeleted(it.isDeleted())
+        update.deleteUpdate.requireNonNull {
+            comment.setDeleted(it.deleted)
         }
     }
 
@@ -211,9 +211,9 @@ class CommentsPresenter(
         val draft = interactor.restoreDraftComment(authorId, commented)
             ?.blockingGet()
         if (draft != null) {
-            draftCommentText = draft.getText()
-            draftCommentAttachmentsCount = draft.getAttachmentsCount()
-            draftCommentId = draft.getId()
+            draftCommentText = draft.text
+            draftCommentAttachmentsCount = draft.attachmentsCount
+            draftCommentId = draft.id
         }
     }
 
@@ -323,7 +323,7 @@ class CommentsPresenter(
 
     private fun onCommentsPortionPortionReceived(bundle: CommentsBundle) {
         cacheLoadingDisposable.clear()
-        val comments = bundle.getComments()
+        val comments = bundle.comments
         when (loadingState) {
             LoadingState.UP -> {
                 data.addAll(comments)
@@ -344,8 +344,8 @@ class CommentsPresenter(
                 }
             }
         }
-        commentedState = CommentedState(bundle.getFirstCommentId(), bundle.getLastCommentId())
-        updateAdminLevel(bundle.getAdminLevel().orZero())
+        commentedState = CommentedState(bundle.firstCommentId, bundle.lastCommentId)
+        updateAdminLevel(bundle.adminLevel.orZero())
         setLoadingState(LoadingState.NO)
     }
 
@@ -592,7 +592,7 @@ class CommentsPresenter(
         }
     }
 
-    public override fun onGuiDestroyed() {
+    override fun onGuiDestroyed() {
         deepLookingHolder.dispose()
         super.onGuiDestroyed()
     }
@@ -743,7 +743,7 @@ class CommentsPresenter(
         setSendingNow(true)
         val accountId = authorId
         val intent = createCommentIntent()
-        if (intent.getReplyToComment() == null && CommentThread != null) intent.setReplyToComment(
+        if (intent.replyToComment == null && CommentThread != null) intent.setReplyToComment(
             CommentThread
         )
         appendDisposable(interactor.send(accountId, commented, CommentThread, intent)
@@ -757,7 +757,7 @@ class CommentsPresenter(
 
     private fun sendQuickComment(intent: CommentIntent) {
         setSendingNow(true)
-        if (intent.getReplyToComment() == null && CommentThread != null) intent.setReplyToComment(
+        if (intent.replyToComment == null && CommentThread != null) intent.setReplyToComment(
             CommentThread
         )
         val accountId = authorId
@@ -937,7 +937,7 @@ class CommentsPresenter(
         }
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveOptionMenu()
     }
@@ -1052,12 +1052,12 @@ class CommentsPresenter(
         // отменяем загрузку из БД если активна
         cacheLoadingDisposable.clear()
         data.clear()
-        data.addAll(bundle.getComments())
-        commentedState = CommentedState(bundle.getFirstCommentId(), bundle.getLastCommentId())
-        updateAdminLevel(bundle.getAdminLevel().orZero())
+        data.addAll(bundle.comments)
+        commentedState = CommentedState(bundle.firstCommentId, bundle.lastCommentId)
+        updateAdminLevel(bundle.adminLevel.orZero())
 
         // init poll once
-        topicPoll = bundle.getTopicPoll()
+        topicPoll = bundle.topicPoll
         setLoadingState(LoadingState.NO)
         view?.notifyDataSetChanged()
         if (focusToComment != null) {
@@ -1196,7 +1196,7 @@ class CommentsPresenter(
         appendDisposable(stores
             .comments()
             .observeMinorUpdates()
-            .filter { it.getCommented() == commented }
+            .filter { it.commented == commented }
             .observeOn(provideMainThreadScheduler())
             .subscribe({ update -> onCommentMinorUpdate(update) }) { it.printStackTrace() })
         restoreDraftCommentSync()

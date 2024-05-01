@@ -26,7 +26,7 @@ import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.LinkHelper
-import dev.ragnarok.fenrir.model.AccessIdPair
+import dev.ragnarok.fenrir.model.AccessIdPairModel
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.FunctionSource
 import dev.ragnarok.fenrir.model.IOwnersBundle
@@ -313,7 +313,13 @@ open class PhotoPagerPresenter internal constructor(
             if (photo.albumId != -311) {
                 appendDisposable(photosInteractor.getPhotosByIds(
                     accountId,
-                    setOf(AccessIdPair(photo.getObjectId(), photo.ownerId, photo.accessKey))
+                    setOf(
+                        AccessIdPairModel(
+                            photo.getObjectId(),
+                            photo.ownerId,
+                            photo.accessKey
+                        )
+                    )
                 )
                     .fromIOToMain()
                     .subscribe({
@@ -591,14 +597,14 @@ open class PhotoPagerPresenter internal constructor(
         view?.rebindPhotoAtPartial(currentIndex)
         val buttons: MutableList<FunctionSource> = ArrayList(photo.photoTags?.size.orZero())
         for (i in photo.photoTags.orEmpty()) {
-            if (i.getUserId() != 0L) {
-                buttons.add(FunctionSource(i.getTaggedName(), R.drawable.person) {
+            if (i.user_id != 0L) {
+                buttons.add(FunctionSource(i.tagged_name, R.drawable.person) {
                     PlaceFactory.getOwnerWallPlace(
-                        accountId, i.getUserId(), null
+                        accountId, i.user_id, null
                     ).tryOpenWith(context)
                 })
             } else {
-                buttons.add(FunctionSource(i.getTaggedName(), R.drawable.pencil) {})
+                buttons.add(FunctionSource(i.tagged_name, R.drawable.pencil) {})
             }
         }
         val adapter = ButtonAdapter(context, buttons)
@@ -717,7 +723,7 @@ open class PhotoPagerPresenter internal constructor(
             val source = items[position]
             holder.button.text = source.getTitle(context)
             holder.button.setIconResource(source.getIcon())
-            holder.button.setOnClickListener { source.Do() }
+            holder.button.setOnClickListener { source.call.invoke() }
         }
 
         override fun getItemCount(): Int {

@@ -33,7 +33,7 @@ class ChatUsersDomainPresenter(
             return
         }
         for (i in original) {
-            val user = i.getMember()
+            val user = i.member
             if (query?.lowercase(Locale.getDefault())?.let {
                     user?.fullName?.lowercase(Locale.getDefault())?.contains(it)
                 } == true || query?.lowercase(Locale.getDefault())?.let {
@@ -67,7 +67,7 @@ class ChatUsersDomainPresenter(
         )
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshing()
     }
@@ -107,7 +107,7 @@ class ChatUsersDomainPresenter(
     }
 
     fun fireUserClick(user: AppChatUser) {
-        user.getMember()?.let {
+        user.member?.let {
             view?.addDomain(
                 accountId,
                 it
@@ -116,7 +116,7 @@ class ChatUsersDomainPresenter(
     }
 
     fun fireUserLongClick(user: AppChatUser) {
-        user.getMember()?.let {
+        user.member?.let {
             view?.openUserWall(
                 accountId,
                 it

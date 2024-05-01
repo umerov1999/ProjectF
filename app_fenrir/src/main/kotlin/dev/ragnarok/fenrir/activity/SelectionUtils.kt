@@ -23,7 +23,7 @@ object SelectionUtils {
         val criteria = (context as ProfileSelectable).acceptableCriteria
         var canSelect =
             if (criteria?.getIsPeopleOnly() == true) mayBeUser is User else mayBeUser is Owner || mayBeUser is FavePage
-        if (canSelect && criteria?.getOwnerType() == SelectProfileCriteria.OwnerType.ONLY_FRIENDS) {
+        if (canSelect && criteria?.ownerType == SelectProfileCriteria.OwnerType.ONLY_FRIENDS) {
             assert(mayBeUser is User)
             canSelect = (mayBeUser as User).isFriend
         }

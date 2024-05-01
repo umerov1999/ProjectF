@@ -23,7 +23,7 @@ class LocalPhotosPresenter(
         if (mLocalImageAlbum != null) {
             appendDisposable(Stores.instance
                 .localMedia()
-                .getPhotos(mLocalImageAlbum.getId().toLong())
+                .getPhotos(mLocalImageAlbum.id.toLong())
                 .fromIOToMain()
                 .subscribe({ onDataLoaded(it) }) {
                     onLoadError()
@@ -107,16 +107,16 @@ class LocalPhotosPresenter(
         if (selectedPhoto.isSelected) {
             var targetIndex = 1
             for (photo in mLocalPhotos) {
-                if (photo.getIndex() >= targetIndex) {
-                    targetIndex = photo.getIndex() + 1
+                if (photo.index >= targetIndex) {
+                    targetIndex = photo.index + 1
                 }
             }
             selectedPhoto.setIndex(targetIndex)
         } else {
             for (i in mLocalPhotos.indices) {
                 val photo = mLocalPhotos[i]
-                if (photo.getIndex() > selectedPhoto.getIndex()) {
-                    photo.setIndex(photo.getIndex() - 1)
+                if (photo.index > selectedPhoto.index) {
+                    photo.setIndex(photo.index - 1)
                 }
             }
             selectedPhoto.setIndex(0)

@@ -65,7 +65,7 @@ class CommunityManagersAdapter(private var users: List<Manager>) :
         roleTextResources[manager.role]?.let {
             holder.role.setText(it)
         } ?: run {
-            manager.contactInfo?.getDescription().ifNonNullNoEmpty({
+            manager.contactInfo?.description.ifNonNullNoEmpty({
                 holder.role.text = it
             }, {
                 holder.role.setText(R.string.role_unknown)

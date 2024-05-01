@@ -52,7 +52,7 @@ class FavePostsPresenter(accountId: Long, savedInstanceState: Bundle?) :
         resolveRefreshingView()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doLoadTabs = if (doLoadTabs) {

@@ -264,22 +264,22 @@ class AttachmentsViewBinder(
         messageId: Int?,
         peerId: Long?
     ) {
-        val voiceMessageId = voice.getId()
+        val voiceMessageId = voice.id
         mVoiceSharedHolders.put(voiceMessageId, holder)
-        holder.mDurationText.text = AppTextUtils.getDurationString(voice.getDuration())
+        holder.mDurationText.text = AppTextUtils.getDurationString(voice.duration)
 
         // can bee NULL/empty
-        voice.getWaveform().ifNonNullNoEmpty({
+        voice.waveform.ifNonNullNoEmpty({
             holder.mWaveFormView.setWaveForm(it)
         }, {
             holder.mWaveFormView.setWaveForm(DEFAUL_WAVEFORM)
         })
-        if (voice.wasListened()) {
+        if (voice.was_listened) {
             holder.mButtonPlay.background = null
         } else {
             holder.mButtonPlay.setBackgroundResource(R.drawable.spinner)
         }
-        if (voice.getTranscript().isNullOrEmpty()) {
+        if (voice.transcript.isNullOrEmpty()) {
             holder.mTranscriptText.visibility = View.GONE
             if (messageId == null) {
                 holder.mDoTranscript.visibility = View.GONE
@@ -288,7 +288,7 @@ class AttachmentsViewBinder(
                 holder.mDoTranscript.setOnClickListener {
                     if (mVoiceActionListener != null) {
                         mVoiceActionListener?.onTranscript(
-                            voice.getOwnerId().toString() + "_" + voice.getId(),
+                            voice.ownerId.toString() + "_" + voice.id,
                             messageId
                         )
                         holder.mDoTranscript.visibility = View.GONE
@@ -296,9 +296,9 @@ class AttachmentsViewBinder(
                 }
             }
         } else {
-            if (voice.isShowTranscript() || expandVoiceTranscript) {
+            if (voice.showTranscript || expandVoiceTranscript) {
                 holder.mTranscriptText.visibility = View.VISIBLE
-                holder.mTranscriptText.text = voice.getTranscript()
+                holder.mTranscriptText.text = voice.transcript
                 holder.mDoTranscript.visibility = View.GONE
             } else {
                 holder.mTranscriptText.visibility = View.GONE
@@ -306,7 +306,7 @@ class AttachmentsViewBinder(
                 holder.mDoTranscript.setOnClickListener {
                     voice.setShowTranscript(true)
                     holder.mTranscriptText.visibility = View.VISIBLE
-                    holder.mTranscriptText.text = voice.getTranscript()
+                    holder.mTranscriptText.text = voice.transcript
                     holder.mDoTranscript.visibility = View.GONE
                 }
             }
@@ -987,12 +987,12 @@ class AttachmentsViewBinder(
                 ivPhoto.setOnLongClickListener {
                     bigLink.photo?.let {
                         val op = it
-                        if (op.sizes?.getL()?.url.nonNullNoEmpty()) {
-                            op.sizes?.setY(op.sizes?.getL())
-                            op.sizes?.setW(op.sizes?.getL())
+                        if (op.sizes?.l?.url.nonNullNoEmpty()) {
+                            op.sizes?.setY(op.sizes?.l)
+                            op.sizes?.setW(op.sizes?.l)
                         } else {
-                            op.sizes?.setY(op.sizes?.getK())
-                            op.sizes?.setW(op.sizes?.getK())
+                            op.sizes?.setY(op.sizes?.k)
+                            op.sizes?.setW(op.sizes?.k)
                         }
                         val temp = ArrayList(listOf(op))
                         mAttachmentsActionCallback?.onPhotosOpen(temp, 0, false)
@@ -1136,7 +1136,7 @@ class AttachmentsViewBinder(
                 val clipboard =
                     mContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                 val clip =
-                    ClipData.newPlainText("response", (link.attachment as NotSupported).getBody())
+                    ClipData.newPlainText("response", (link.attachment as NotSupported).body)
                 clipboard?.setPrimaryClip(clip)
                 CustomToast.createCustomToast(mContext).showToast(R.string.copied)
             }

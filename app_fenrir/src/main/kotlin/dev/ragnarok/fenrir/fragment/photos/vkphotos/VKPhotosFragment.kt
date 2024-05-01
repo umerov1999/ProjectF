@@ -422,7 +422,7 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
     override fun getPresenterFactory(saveInstanceState: Bundle?): VKPhotosPresenter {
         val ownerWrapper: ParcelableOwnerWrapper? =
             requireArguments().getParcelableCompat(Extra.OWNER)
-        val owner = ownerWrapper?.get()
+        val owner = ownerWrapper?.owner
         val album: PhotoAlbum? = requireArguments().getParcelableCompat(Extra.ALBUM)
         return VKPhotosPresenter(
             requireArguments().getLong(Extra.ACCOUNT_ID),

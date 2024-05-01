@@ -275,7 +275,7 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
         val accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
         val wrapper: ParcelableOwnerWrapper? =
             requireArguments().getParcelableCompat(Extra.OWNER)
-        val owner = wrapper?.get()
+        val owner = wrapper?.owner
         val action = requireArguments().getString(Extra.ACTION)
         return PhotoAlbumsPresenter(
             accountId, ownerId, AdditionalParams()

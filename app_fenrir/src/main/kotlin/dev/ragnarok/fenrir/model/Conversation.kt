@@ -6,40 +6,47 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 
-class Conversation(private val id: Long) {
-    private var title: String? = null
-    private var unreadCount = 0
-    private var photo50: String? = null
-    private var photo100: String? = null
-    private var photo200: String? = null
+class Conversation(val id: Long) {
+    var title: String? = null
+        private set
+    var unreadCount = 0
+        private set
+    var photo50: String? = null
+        private set
+    var photo100: String? = null
+        private set
+    var photo200: String? = null
+        private set
 
     /**
      * ID of the last read incoming message.
      */
-    private var inRead = 0
+    var inRead = 0
+        private set
 
     /**
      * ID of the last read outcoming message.
      */
-    private var outRead = 0
-    private var interlocutor: Owner? = null
-    private var currentKeyboard: Keyboard? = null
-    private var pinned: Message? = null
-    private var isGroupChannel = false
-    private var acl = 0
-    private var major_id = 0
-    private var minor_id = 0
-    fun getAcl(): Int {
-        return acl
-    }
+    var outRead = 0
+        private set
+    var interlocutor: Owner? = null
+        private set
+    var currentKeyboard: Keyboard? = null
+        private set
+    var pinned: Message? = null
+        private set
+    var isGroupChannel = false
+        private set
+    var acl = 0
+        private set
+    var major_id = 0
+        private set
+    var minor_id = 0
+        private set
 
     fun setAcl(acl: Int): Conversation {
         this.acl = acl
         return this
-    }
-
-    fun getPinned(): Message? {
-        return pinned
     }
 
     fun setPinned(pinned: Message?): Conversation {
@@ -47,17 +54,9 @@ class Conversation(private val id: Long) {
         return this
     }
 
-    fun getInterlocutor(): Owner? {
-        return interlocutor
-    }
-
     fun setInterlocutor(interlocutor: Owner?): Conversation {
         this.interlocutor = interlocutor
         return this
-    }
-
-    fun getId(): Long {
-        return id
     }
 
     val imageUrl: String?
@@ -110,17 +109,9 @@ class Conversation(private val id: Long) {
         }
     }
 
-    fun getTitle(): String? {
-        return title
-    }
-
     fun setTitle(title: String?): Conversation {
         this.title = title
         return this
-    }
-
-    fun getCurrentKeyboard(): Keyboard? {
-        return currentKeyboard
     }
 
     fun setCurrentKeyboard(currentKeyboard: Keyboard?): Conversation {
@@ -128,17 +119,9 @@ class Conversation(private val id: Long) {
         return this
     }
 
-    fun getUnreadCount(): Int {
-        return unreadCount
-    }
-
     fun setUnreadCount(unreadCount: Int): Conversation {
         this.unreadCount = unreadCount
         return this
-    }
-
-    fun getPhoto50(): String? {
-        return photo50
     }
 
     fun setPhoto50(photo50: String?): Conversation {
@@ -146,17 +129,9 @@ class Conversation(private val id: Long) {
         return this
     }
 
-    fun getPhoto100(): String? {
-        return photo100
-    }
-
     fun setPhoto100(photo100: String?): Conversation {
         this.photo100 = photo100
         return this
-    }
-
-    fun getPhoto200(): String? {
-        return photo200
     }
 
     fun setPhoto200(photo200: String?): Conversation {
@@ -164,17 +139,9 @@ class Conversation(private val id: Long) {
         return this
     }
 
-    fun getInRead(): Int {
-        return inRead
-    }
-
     fun setInRead(inRead: Int): Conversation {
         this.inRead = inRead
         return this
-    }
-
-    fun getOutRead(): Int {
-        return outRead
     }
 
     fun setOutRead(outRead: Int): Conversation {
@@ -182,26 +149,14 @@ class Conversation(private val id: Long) {
         return this
     }
 
-    fun isGroupChannel(): Boolean {
-        return isGroupChannel
-    }
-
     fun setGroupChannel(isGroupChannel: Boolean): Conversation {
         this.isGroupChannel = isGroupChannel
         return this
     }
 
-    fun getMajor_id(): Int {
-        return major_id
-    }
-
     fun setMajor_id(major_id: Int): Conversation {
         this.major_id = major_id
         return this
-    }
-
-    fun getMinor_id(): Int {
-        return minor_id
     }
 
     fun setMinor_id(minor_id: Int): Conversation {

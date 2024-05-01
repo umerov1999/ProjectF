@@ -32,7 +32,7 @@ class VotersPresenter(
         )
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         view?.updateTitle(R.string.voters)
         resolveRefreshingView()

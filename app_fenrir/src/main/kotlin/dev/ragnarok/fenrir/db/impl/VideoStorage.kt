@@ -28,25 +28,25 @@ import io.reactivex.rxjava3.core.SingleEmitter
 internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage {
     override fun findByCriteria(criteria: VideoCriteria): Single<List<VideoDboEntity>> {
         return Single.create { e: SingleEmitter<List<VideoDboEntity>> ->
-            val uri = getVideosContentUriFor(criteria.getAccountId())
+            val uri = getVideosContentUriFor(criteria.accountId)
             val where: String
             val args: Array<String>
-            val range = criteria.getRange()
+            val range = criteria.range
             when {
                 range != null -> {
                     where = BaseColumns._ID + " >= ? AND " + BaseColumns._ID + " <= ?"
                     args = arrayOf(range.first.toString(), range.last.toString())
                 }
 
-                criteria.getAlbumId() == 0 -> {
+                criteria.albumId == 0 -> {
                     where = VideosColumns.OWNER_ID + " = ?"
-                    args = arrayOf(criteria.getOwnerId().toString())
+                    args = arrayOf(criteria.ownerId.toString())
                 }
 
                 else -> {
                     where = VideosColumns.OWNER_ID + " = ? AND " + VideosColumns.ALBUM_ID + " = ?"
                     args =
-                        arrayOf(criteria.getOwnerId().toString(), criteria.getAlbumId().toString())
+                        arrayOf(criteria.ownerId.toString(), criteria.albumId.toString())
                 }
             }
             val cursor =

@@ -14,7 +14,8 @@ class CopyEntity : FeedbackEntity {
     var copies: CopiesEntity? = null
         private set
 
-    private var copied: DboEntity? = null
+    var copied: DboEntity? = null
+        private set
 
     @Suppress("UNUSED")
     constructor()
@@ -25,10 +26,6 @@ class CopyEntity : FeedbackEntity {
     fun setCopies(copies: CopiesEntity?): CopyEntity {
         this.copies = copies
         return this
-    }
-
-    fun getCopied(): DboEntity? {
-        return copied
     }
 
     fun setCopied(copied: DboEntity?): CopyEntity {

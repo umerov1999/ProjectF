@@ -41,13 +41,13 @@ class UtilsInteractor(
                 val uids: MutableSet<Long> = HashSet()
                 val listsIds: MutableSet<Long> = HashSet()
                 for ((_, privacy) in orig) {
-                    if (privacy.getEntries().isNullOrEmpty()) {
+                    if (privacy.entries.isNullOrEmpty()) {
                         continue
                     }
-                    for (entry in privacy.getEntries().orEmpty()) {
-                        when (entry.getType()) {
-                            SimplePrivacy.Entry.TYPE_FRIENDS_LIST -> listsIds.add(entry.getId())
-                            SimplePrivacy.Entry.TYPE_USER -> uids.add(entry.getId())
+                    for (entry in privacy.entries) {
+                        when (entry.type) {
+                            SimplePrivacy.Entry.TYPE_FRIENDS_LIST -> listsIds.add(entry.id)
+                            SimplePrivacy.Entry.TYPE_USER -> uids.add(entry.id)
                         }
                     }
                 }

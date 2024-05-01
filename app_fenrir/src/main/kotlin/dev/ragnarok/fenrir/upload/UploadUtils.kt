@@ -163,8 +163,8 @@ object UploadUtils {
                 UploadIntent(accountId, destination)
                     .setSize(size)
                     .setAutoCommit(autoCommit)
-                    .setFileId(photo.getImageId())
-                    .setFileUri(photo.getFullImageUri())
+                    .setFileId(photo.imageId)
+                    .setFileUri(photo.fullImageUri)
             )
         }
         return intents

@@ -6,13 +6,18 @@ import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class MarketAlbum : AbsModel {
-    private val id: Int
-    private val owner_id: Long
-    private var access_key: String? = null
-    private var title: String? = null
-    private var photo: Photo? = null
-    private var count = 0
-    private var updated_time: Long = 0
+    val id: Int
+    val owner_id: Long
+    var access_key: String? = null
+        private set
+    var title: String? = null
+        private set
+    var photo: Photo? = null
+        private set
+    var count = 0
+        private set
+    var updated_time: Long = 0
+        private set
 
     constructor(id: Int, owner_id: Long) {
         this.id = id
@@ -44,25 +49,9 @@ class MarketAlbum : AbsModel {
         return AbsModelType.MODEL_MARKET_ALBUM
     }
 
-    fun getId(): Int {
-        return id
-    }
-
-    fun getOwner_id(): Long {
-        return owner_id
-    }
-
-    fun getAccess_key(): String? {
-        return access_key
-    }
-
     fun setAccess_key(access_key: String?): MarketAlbum {
         this.access_key = access_key
         return this
-    }
-
-    fun getTitle(): String? {
-        return title
     }
 
     fun setTitle(title: String?): MarketAlbum {
@@ -70,26 +59,14 @@ class MarketAlbum : AbsModel {
         return this
     }
 
-    fun getPhoto(): Photo? {
-        return photo
-    }
-
     fun setPhoto(photo: Photo?): MarketAlbum {
         this.photo = photo
         return this
     }
 
-    fun getCount(): Int {
-        return count
-    }
-
     fun setCount(count: Int): MarketAlbum {
         this.count = count
         return this
-    }
-
-    fun getUpdated_time(): Long {
-        return updated_time
     }
 
     fun setUpdated_time(updated_time: Long): MarketAlbum {

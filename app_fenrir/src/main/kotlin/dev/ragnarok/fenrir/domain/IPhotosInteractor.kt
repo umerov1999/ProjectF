@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.domain
 
 import dev.ragnarok.fenrir.fragment.search.criteria.PhotoSearchCriteria
-import dev.ragnarok.fenrir.model.AccessIdPair
+import dev.ragnarok.fenrir.model.AccessIdPairModel
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
@@ -80,7 +80,7 @@ interface IPhotosInteractor {
     fun removedAlbum(accountId: Long, ownerId: Long, albumId: Int): Completable
     fun deletePhoto(accountId: Long, ownerId: Long, photoId: Int): Completable
     fun restorePhoto(accountId: Long, ownerId: Long, photoId: Int): Completable
-    fun getPhotosByIds(accountId: Long, ids: Collection<AccessIdPair>): Single<List<Photo>>
+    fun getPhotosByIds(accountId: Long, ids: Collection<AccessIdPairModel>): Single<List<Photo>>
     fun getTags(
         accountId: Long,
         ownerId: Long?,

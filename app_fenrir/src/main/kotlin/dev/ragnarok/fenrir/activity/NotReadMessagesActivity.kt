@@ -40,7 +40,7 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
     internal val frontFragment: Fragment?
         get() = supportFragmentManager.findFragmentById(R.id.fragment)
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         attach(this, SlidrConfig.Builder().listener(object : SlidrListener {
             override fun onSlideStateChanged(state: Int) {}
@@ -165,12 +165,12 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
             .commitAllowingStateLoss()
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         ViewUtils.keyboardHide(this)
         super.onPause()
     }
 
-    public override fun onDestroy() {
+    override fun onDestroy() {
         supportFragmentManager.removeOnBackStackChangedListener(mOnBackStackChangedListener)
         ViewUtils.keyboardHide(this)
         super.onDestroy()

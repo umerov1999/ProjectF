@@ -25,7 +25,7 @@ class NewsfeedMentionsPresenter(
         resolveLoadingView()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveLoadingView()
     }
@@ -99,7 +99,7 @@ class NewsfeedMentionsPresenter(
     }
 
     fun fireCommentBodyClick(newsfeedComment: NewsfeedComment) {
-        val comment = newsfeedComment.getComment()
+        val comment = newsfeedComment.comment
         comment?.commented?.let {
             view?.openComments(
                 accountId,

@@ -20,7 +20,7 @@ class Banned : Parcelable {
 
     internal constructor(parcel: Parcel) {
         val wrapper = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)
-        banned = wrapper?.get()!!
+        banned = wrapper?.owner!!
         admin = parcel.readTypedObjectCompat(User.CREATOR)!!
         info = parcel.readTypedObjectCompat(Info.CREATOR)!!
     }

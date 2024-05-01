@@ -14,7 +14,7 @@ class LogsAdapter(data: MutableList<LogEventWrapper>, private val actionListener
     RecyclerBindableAdapter<LogEventWrapper, LogsAdapter.Holder>(data) {
     override fun onBindItemViewHolder(viewHolder: Holder, position: Int, type: Int) {
         val wrapper = getItem(position)
-        val event = wrapper.getEvent()
+        val event = wrapper.event
         viewHolder.body.text = event?.body
         viewHolder.tag.text = event?.tag
         val unixtime = event?.date.orZero() / 1000
@@ -25,7 +25,7 @@ class LogsAdapter(data: MutableList<LogEventWrapper>, private val actionListener
             if (!canReduce(event?.body)) {
                 return@setOnClickListener
             }
-            wrapper.setExpanded(!wrapper.isExpanded())
+            wrapper.setExpanded(!wrapper.expanded)
             notifyItemChanged(position + headersCount)
         }
         setupBodyRoot(viewHolder, wrapper)
@@ -36,9 +36,9 @@ class LogsAdapter(data: MutableList<LogEventWrapper>, private val actionListener
     }
 
     private fun setupBodyRoot(holder: Holder, wrapper: LogEventWrapper) {
-        val body = wrapper.getEvent()?.body
+        val body = wrapper.event?.body
         val canReduce = canReduce(body)
-        if (!canReduce || wrapper.isExpanded()) {
+        if (!canReduce || wrapper.expanded) {
             holder.buttonExpand.visibility = View.GONE
             holder.body.text = body
         } else {

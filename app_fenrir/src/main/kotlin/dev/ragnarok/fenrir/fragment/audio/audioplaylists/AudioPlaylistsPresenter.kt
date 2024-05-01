@@ -87,7 +87,7 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
         resolveRefreshingView()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doAudioLoadTabs = if (doAudioLoadTabs) {
@@ -192,7 +192,7 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
     }
 
     fun onDelete(index: Int, album: AudioPlaylist) {
-        appendDisposable(fInteractor.deletePlaylist(accountId, album.getId(), album.getOwnerId())
+        appendDisposable(fInteractor.deletePlaylist(accountId, album.id, album.owner_id)
             .fromIOToMain()
             .subscribe({
                 playlists.removeAt(index)
@@ -211,15 +211,15 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
 
     fun onEdit(context: Context, album: AudioPlaylist) {
         val root = View.inflate(context, R.layout.entry_playlist_info, null)
-        root.findViewById<TextInputEditText>(R.id.edit_title).setText(album.getTitle())
-        root.findViewById<TextInputEditText>(R.id.edit_description).setText(album.getDescription())
+        root.findViewById<TextInputEditText>(R.id.edit_title).setText(album.title)
+        root.findViewById<TextInputEditText>(R.id.edit_description).setText(album.description)
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.edit)
             .setCancelable(true)
             .setView(root)
             .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
                 appendDisposable(fInteractor.editPlaylist(
-                    accountId, album.getOwnerId(), album.getId(),
+                    accountId, album.owner_id, album.id,
                     root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
                     root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
                 ).fromIOToMain()
@@ -263,13 +263,13 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
     fun onAdd(album: AudioPlaylist, clone: Boolean) {
         appendDisposable((if (clone) fInteractor.clonePlaylist(
             accountId,
-            album.getId(),
-            album.getOwnerId()
+            album.id,
+            album.owner_id
         ) else fInteractor.followPlaylist(
             accountId,
-            album.getId(),
-            album.getOwnerId(),
-            album.getAccess_key()
+            album.id,
+            album.owner_id,
+            album.access_key
         ))
             .fromIOToMain()
             .subscribe({
@@ -277,7 +277,7 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
                     R.string.success
                 )
                 if (clone && isValueAssigned(
-                        album.getId(),
+                        album.id,
                         Settings.get().main().servicePlaylist
                     )
                 ) {
@@ -296,8 +296,8 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
         pending_to_add?.let { o ->
             appendDisposable(fInteractor.addToPlaylist(
                 accountId,
-                o.getOwnerId(),
-                o.getId(),
+                o.owner_id,
+                o.id,
                 targets
             )
                 .fromIOToMain()
@@ -364,18 +364,18 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
 
         override fun compare(data: AudioPlaylist, q: String): Boolean {
             return (safeCheck(
-                data.getTitle()
+                data.title
             ) {
-                data.getTitle()?.lowercase(Locale.getDefault())?.contains(
+                data.title?.lowercase(Locale.getDefault())?.contains(
                     q.lowercase(
                         Locale.getDefault()
                     )
                 ) == true
             }
                     || safeCheck(
-                data.getArtist_name()
+                data.artist_name
             ) {
-                data.getArtist_name()?.lowercase(Locale.getDefault())?.contains(
+                data.artist_name?.lowercase(Locale.getDefault())?.contains(
                     q.lowercase(
                         Locale.getDefault()
                     )

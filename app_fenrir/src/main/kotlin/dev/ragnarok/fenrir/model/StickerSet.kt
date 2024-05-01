@@ -3,22 +3,10 @@ package dev.ragnarok.fenrir.model
 import kotlin.math.abs
 
 class StickerSet(
-    private val icon: List<Image>?,
-    private val stickers: List<Sticker>?,
-    private val title: String?
+    val icon: List<Image>?,
+    val stickers: List<Sticker>?,
+    val title: String?
 ) {
-    fun getStickers(): List<Sticker>? {
-        return stickers
-    }
-
-    fun getTitle(): String? {
-        return title
-    }
-
-    fun getIcon(): List<Image>? {
-        return icon
-    }
-
     fun getImageUrl(prefSize: Int): String? {
         if (icon.isNullOrEmpty()) {
             return null
@@ -39,15 +27,7 @@ class StickerSet(
         } else result.url
     }
 
-    class Image(val url: String?, private val width: Int, private val height: Int) {
-        fun getWidth(): Int {
-            return width
-        }
-
-        fun getHeight(): Int {
-            return height
-        }
-
+    class Image(val url: String?, val width: Int, val height: Int) {
         fun calcAverageSize(): Int {
             return (width + height) / 2
         }

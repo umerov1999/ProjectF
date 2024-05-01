@@ -77,7 +77,7 @@ class ChatActivity : NoMainActivity(), PlaceProvider, AppStyleable, ServiceConne
         }
     }
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         attach(
             this,
@@ -193,12 +193,12 @@ class ChatActivity : NoMainActivity(), PlaceProvider, AppStyleable, ServiceConne
             .commitAllowingStateLoss()
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         ViewUtils.keyboardHide(this)
         super.onPause()
     }
 
-    public override fun onDestroy() {
+    override fun onDestroy() {
         supportFragmentManager.removeOnBackStackChangedListener(mOnBackStackChangedListener)
         ViewUtils.keyboardHide(this)
 

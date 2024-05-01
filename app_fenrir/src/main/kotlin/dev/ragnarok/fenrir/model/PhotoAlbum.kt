@@ -13,17 +13,28 @@ class PhotoAlbum : AbsModel, ISomeones {
     private val id: Int
     override var ownerId = 0L
         private set
-    private var size = 0
-    private var title: String? = null
-    private var description: String? = null
-    private var canUpload = false
-    private var updatedTime: Long = 0
-    private var createdTime: Long = 0
-    private var sizes: PhotoSizes? = null
-    private var uploadByAdminsOnly = false
-    private var commentsDisabled = false
-    private var privacyView: SimplePrivacy? = null
-    private var privacyComment: SimplePrivacy? = null
+    var size = 0
+        private set
+    var title: String? = null
+        private set
+    var description: String? = null
+        private set
+    var canUpload = false
+        private set
+    var updatedTime: Long = 0
+        private set
+    var createdTime: Long = 0
+        private set
+    var sizes: PhotoSizes? = null
+        private set
+    var uploadByAdminsOnly = false
+        private set
+    var commentsDisabled = false
+        private set
+    var privacyView: SimplePrivacy? = null
+        private set
+    var privacyComment: SimplePrivacy? = null
+        private set
 
     constructor(id: Int, ownerId: Long) {
         this.id = id
@@ -71,17 +82,9 @@ class PhotoAlbum : AbsModel, ISomeones {
         return id
     }
 
-    fun getSize(): Int {
-        return size
-    }
-
     fun setSize(size: Int): PhotoAlbum {
         this.size = size
         return this
-    }
-
-    fun getTitle(): String? {
-        return title
     }
 
     fun setTitle(title: String?): PhotoAlbum {
@@ -111,17 +114,9 @@ class PhotoAlbum : AbsModel, ISomeones {
         }
     }
 
-    fun getDescription(): String? {
-        return description
-    }
-
     fun setDescription(description: String?): PhotoAlbum {
         this.description = description
         return this
-    }
-
-    fun isCanUpload(): Boolean {
-        return canUpload
     }
 
     fun setCanUpload(canUpload: Boolean): PhotoAlbum {
@@ -129,17 +124,9 @@ class PhotoAlbum : AbsModel, ISomeones {
         return this
     }
 
-    fun getUpdatedTime(): Long {
-        return updatedTime
-    }
-
     fun setUpdatedTime(updatedTime: Long): PhotoAlbum {
         this.updatedTime = updatedTime
         return this
-    }
-
-    fun getCreatedTime(): Long {
-        return createdTime
     }
 
     fun setCreatedTime(createdTime: Long): PhotoAlbum {
@@ -147,17 +134,9 @@ class PhotoAlbum : AbsModel, ISomeones {
         return this
     }
 
-    fun getSizes(): PhotoSizes? {
-        return sizes
-    }
-
     fun setSizes(sizes: PhotoSizes?): PhotoAlbum {
         this.sizes = sizes
         return this
-    }
-
-    fun isUploadByAdminsOnly(): Boolean {
-        return uploadByAdminsOnly
     }
 
     fun setUploadByAdminsOnly(uploadByAdminsOnly: Boolean): PhotoAlbum {
@@ -165,26 +144,14 @@ class PhotoAlbum : AbsModel, ISomeones {
         return this
     }
 
-    fun isCommentsDisabled(): Boolean {
-        return commentsDisabled
-    }
-
     fun setCommentsDisabled(commentsDisabled: Boolean): PhotoAlbum {
         this.commentsDisabled = commentsDisabled
         return this
     }
 
-    fun getPrivacyView(): SimplePrivacy? {
-        return privacyView
-    }
-
     fun setPrivacyView(privacyView: SimplePrivacy?): PhotoAlbum {
         this.privacyView = privacyView
         return this
-    }
-
-    fun getPrivacyComment(): SimplePrivacy? {
-        return privacyComment
     }
 
     fun setPrivacyComment(privacyComment: SimplePrivacy?): PhotoAlbum {

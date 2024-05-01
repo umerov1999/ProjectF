@@ -114,7 +114,7 @@ class GroupChatsPresenter(accountId: Long, private val groupId: Long, savedInsta
     }
 
     fun fireGroupChatsClick(chat: GroupChats) {
-        netDisposable.add(utilsInteractor.joinChatByInviteLink(accountId, chat.getInvite_link())
+        netDisposable.add(utilsInteractor.joinChatByInviteLink(accountId, chat.invite_link)
             .fromIOToMain()
             .subscribe({ t ->
                 view?.goToChat(

@@ -80,13 +80,13 @@ class UserWallPresenter(
     }
 
     private fun resolveCoverImage() {
-        details.getCover()?.getImages().ifNonNullNoEmpty({
+        details.cover?.images.ifNonNullNoEmpty({
             var def = 0
             var url: String? = null
             for (i in it) {
-                if (i.getWidth() * i.getHeight() > def) {
-                    def = i.getWidth() * i.getHeight()
-                    url = i.getUrl()
+                if (i.width * i.height > def) {
+                    def = i.width * i.height
+                    url = i.url
                 }
             }
             view?.displayUserCover(user.blacklisted, url, true)
@@ -97,19 +97,19 @@ class UserWallPresenter(
 
     private fun resolveCounters() {
         view?.displayCounters(
-            details.getFriendsCount(),
-            details.getMutualFriendsCount(),
-            details.getFollowersCount(),
-            details.getGroupsCount(),
-            details.getPhotosCount(),
-            details.getAudiosCount(),
-            details.getVideosCount(),
-            details.getArticlesCount(),
-            details.getProductsCount(),
-            details.getGiftCount(),
-            details.getProductServicesCount(),
-            details.getNarrativesCount(),
-            details.getClipsCount()
+            details.friendsCount,
+            details.mutualFriendsCount,
+            details.followersCount,
+            details.groupsCount,
+            details.photosCount,
+            details.audiosCount,
+            details.videosCount,
+            details.articlesCount,
+            details.productsCount,
+            details.giftCount,
+            details.productServicesCount,
+            details.narrativesCount,
+            details.clipsCount
         )
     }
 
@@ -185,9 +185,9 @@ class UserWallPresenter(
     private fun syncFilterCountersWithDetails() {
         for (filter in filters) {
             when (filter.getMode()) {
-                WallCriteria.MODE_ALL -> filter.setCount(details.getAllWallCount())
-                WallCriteria.MODE_OWNER -> filter.setCount(details.getOwnWallCount())
-                WallCriteria.MODE_SCHEDULED -> filter.setCount(details.getPostponedWallCount())
+                WallCriteria.MODE_ALL -> filter.setCount(details.allWallCount)
+                WallCriteria.MODE_OWNER -> filter.setCount(details.ownWallCount)
+                WallCriteria.MODE_SCHEDULED -> filter.setCount(details.postponedWallCount)
             }
         }
     }
@@ -215,7 +215,7 @@ class UserWallPresenter(
     }
 
     fun fireStatusClick() {
-        details.getStatusAudio().requireNonNull {
+        details.statusAudio.requireNonNull {
             view?.playAudioList(
                 accountId, 0, singletonArrayList(
                     it
@@ -297,10 +297,10 @@ class UserWallPresenter(
 
     private val friendsCounters: FriendsCounters
         get() = FriendsCounters(
-            details.getFriendsCount(),
-            details.getOnlineFriendsCount(),
-            details.getFollowersCount(),
-            details.getMutualFriendsCount()
+            details.friendsCount,
+            details.onlineFriendsCount,
+            details.followersCount,
+            details.mutualFriendsCount
         )
 
     fun fireHeaderGroupsClick() {
@@ -367,8 +367,8 @@ class UserWallPresenter(
             )
             return
         }
-        val currentAvatarPhotoId = details.getPhotoId()?.id
-        val currentAvatarOwner_id = details.getPhotoId()?.ownerId
+        val currentAvatarPhotoId = details.photoId?.id
+        val currentAvatarOwner_id = details.photoId?.ownerId
         var sel = 0
         if (currentAvatarPhotoId != null && currentAvatarOwner_id != null) {
             var ut = 0
@@ -450,14 +450,14 @@ class UserWallPresenter(
     }
 
     private fun resolveStatusView() {
-        val statusText: String? = if (details.getStatusAudio() != null) {
-            details.getStatusAudio()?.artistAndTitle
+        val statusText: String? = if (details.statusAudio != null) {
+            details.statusAudio?.artistAndTitle
         } else {
             user.status
         }
         view?.displayUserStatus(
             statusText,
-            details.getStatusAudio() != null
+            details.statusAudio != null
         )
     }
 
@@ -593,8 +593,8 @@ class UserWallPresenter(
     override fun fireOptionViewCreated(view: IWallView.IOptionView) {
         super.fireOptionViewCreated(view)
         view.setIsBlacklistedByMe(user.blacklisted_by_me)
-        view.setIsFavorite(details.isSetFavorite())
-        view.setIsSubscribed(details.isSetSubscribed())
+        view.setIsFavorite(details.isFavorite)
+        view.setIsSubscribed(details.isSubscribed)
     }
 
     fun renameLocal(name: String?) {

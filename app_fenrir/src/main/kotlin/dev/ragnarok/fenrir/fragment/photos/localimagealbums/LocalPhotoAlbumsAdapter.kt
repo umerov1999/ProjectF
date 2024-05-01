@@ -35,14 +35,14 @@ class LocalPhotoAlbumsAdapter(
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val album = data[position]
-        val uri = buildUriForPicasso(type, album.getCoverImageId())
+        val uri = buildUriForPicasso(type, album.coverImageId)
         if (type == Content_Local.AUDIO) {
-            if (album.getId() != 0) {
-                holder.title.text = album.getName()
+            if (album.id != 0) {
+                holder.title.text = album.name
                 holder.subtitle.text =
                     holder.itemView.context.getString(
                         R.string.local_audios_count,
-                        album.getPhotoCount()
+                        album.photoCount
                     )
                 with()
                     .load(uri)
@@ -57,9 +57,9 @@ class LocalPhotoAlbumsAdapter(
                 holder.subtitle.text = ""
             }
         } else {
-            holder.title.text = album.getName()
+            holder.title.text = album.name
             holder.subtitle.text =
-                holder.itemView.context.getString(R.string.photos_count, album.getPhotoCount())
+                holder.itemView.context.getString(R.string.photos_count, album.photoCount)
             with()
                 .load(uri)
                 .tag(PICASSO_TAG)

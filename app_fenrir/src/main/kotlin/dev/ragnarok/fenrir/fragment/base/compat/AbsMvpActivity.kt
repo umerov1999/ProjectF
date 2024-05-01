@@ -43,6 +43,11 @@ abstract class AbsMvpActivity<P : IPresenter<V>, V : IMvpView> : NoMainActivity(
         delegate.onSaveInstanceState(outState)
     }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        delegate.onRestoreViewState()
+    }
+
     override fun onPause() {
         super.onPause()
         delegate.onPause()

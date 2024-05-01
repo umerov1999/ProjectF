@@ -6,7 +6,7 @@ import androidx.annotation.StringRes
 
 class FunctionSource {
     private val title: Text
-    private val call: () -> Unit
+    val call: () -> Unit
 
     @DrawableRes
     private val icon: Int
@@ -28,10 +28,6 @@ class FunctionSource {
         return if (context == null) {
             null
         } else title.getText(context)
-    }
-
-    fun Do() {
-        call.invoke()
     }
 
     @DrawableRes

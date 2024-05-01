@@ -129,7 +129,7 @@ class Message : AbsModel, Identificable, ISelectable {
         photo200 = parcel.readString()
         actionUser =
             parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
-                .get()
+                .owner
         sender = Owner.readOwnerFromParcel(senderId, parcel)
         randomId = parcel.readLong()
         extras = readIntStringMap(parcel)

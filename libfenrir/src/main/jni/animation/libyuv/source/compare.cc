@@ -134,6 +134,11 @@ uint64_t ComputeHammingDistance(const uint8_t* src_a,
     HammingDistance = HammingDistance_NEON;
   }
 #endif
+#if defined(HAS_HAMMINGDISTANCE_NEON_DOTPROD)
+  if (TestCpuFlag(kCpuHasNeonDotProd)) {
+    HammingDistance = HammingDistance_NEON_DotProd;
+  }
+#endif
 #if defined(HAS_HAMMINGDISTANCE_SSSE3)
   if (TestCpuFlag(kCpuHasSSSE3)) {
     HammingDistance = HammingDistance_SSSE3;
@@ -192,6 +197,11 @@ uint64_t ComputeSumSquareError(const uint8_t* src_a,
 #if defined(HAS_SUMSQUAREERROR_NEON)
   if (TestCpuFlag(kCpuHasNEON)) {
     SumSquareError = SumSquareError_NEON;
+  }
+#endif
+#if defined(HAS_SUMSQUAREERROR_NEON_DOTPROD)
+  if (TestCpuFlag(kCpuHasNeonDotProd)) {
+    SumSquareError = SumSquareError_NEON_DotProd;
   }
 #endif
 #if defined(HAS_SUMSQUAREERROR_SSE2)

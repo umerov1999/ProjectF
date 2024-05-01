@@ -262,10 +262,10 @@ class PhotoAlbumsPresenter(
 
     fun fireAlbumEditClick(album: PhotoAlbum) {
         @SuppressLint("UseSparseArrays") val privacies: MutableMap<Int, SimplePrivacy> = HashMap()
-        album.getPrivacyView()?.let {
+        album.privacyView?.let {
             privacies[0] = it
         }
-        album.getPrivacyComment()?.let {
+        album.privacyComment?.let {
             privacies[1] = it
         }
         appendDisposable(utilsInteractor
@@ -275,10 +275,10 @@ class PhotoAlbumsPresenter(
                 val editor = PhotoAlbumEditor.create()
                     .setPrivacyView(full[0])
                     .setPrivacyComment(full[1])
-                    .setTitle(album.getTitle())
-                    .setDescription(album.getDescription())
-                    .setCommentsDisabled(album.isCommentsDisabled())
-                    .setUploadByAdminsOnly(album.isUploadByAdminsOnly())
+                    .setTitle(album.title)
+                    .setDescription(album.description)
+                    .setCommentsDisabled(album.commentsDisabled)
+                    .setUploadByAdminsOnly(album.uploadByAdminsOnly)
                 view?.goToAlbumEditing(
                     accountId,
                     album,

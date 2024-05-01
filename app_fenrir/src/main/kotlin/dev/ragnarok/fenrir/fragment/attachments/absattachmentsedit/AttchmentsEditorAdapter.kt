@@ -182,7 +182,7 @@ class AttchmentsEditorAdapter(
 
     private fun bindPhotoAlbum(holder: ViewHolder, album: PhotoAlbum) {
         holder.tvTitle.setText(R.string.photo_album)
-        val photoLink = album.getSizes()?.getUrlForSize(
+        val photoLink = album.sizes?.getUrlForSize(
             PhotoSize.X,
             false
         )
@@ -198,8 +198,8 @@ class AttchmentsEditorAdapter(
     }
 
     private fun bindAudioPlaylist(holder: ViewHolder, playlist: AudioPlaylist) {
-        holder.tvTitle.text = playlist.getTitle()
-        val photoLink = playlist.getThumb_image()
+        holder.tvTitle.text = playlist.title
+        val photoLink = playlist.thumb_image
         if (photoLink.nonNullNoEmpty()) {
             with()
                 .load(photoLink)
@@ -255,19 +255,19 @@ class AttchmentsEditorAdapter(
     }
 
     private fun bindMarketAlbum(holder: ViewHolder, market_album: MarketAlbum) {
-        holder.tvTitle.text = market_album.getTitle()
-        if (market_album.getPhoto() == null) {
+        holder.tvTitle.text = market_album.title
+        if (market_album.photo == null) {
             with().cancelRequest(holder.photoImageView)
         } else {
             with()
-                .load(market_album.getPhoto()?.getUrlForSize(PhotoSize.X, false))
+                .load(market_album.photo?.getUrlForSize(PhotoSize.X, false))
                 .placeholder(R.drawable.background_gray)
                 .into(holder.photoImageView)
         }
     }
 
     private fun bindAudioArtist(holder: ViewHolder, artist: AudioArtist) {
-        holder.tvTitle.text = artist.getName()
+        holder.tvTitle.text = artist.name
         if (artist.getMaxPhoto() == null) {
             with().cancelRequest(holder.photoImageView)
         } else {

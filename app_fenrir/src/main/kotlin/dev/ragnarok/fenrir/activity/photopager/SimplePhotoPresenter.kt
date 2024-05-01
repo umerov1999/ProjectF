@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.activity.photopager
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.model.AccessIdPair
+import dev.ragnarok.fenrir.model.AccessIdPairModel
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
@@ -70,9 +70,9 @@ class SimplePhotoPresenter : PhotoPagerPresenter {
     }
 
     private fun refreshData() {
-        val ids = ArrayList<AccessIdPair>(mPhotos.size)
+        val ids = ArrayList<AccessIdPairModel>(mPhotos.size)
         for (photo in mPhotos) {
-            ids.add(AccessIdPair(photo.getObjectId(), photo.ownerId, photo.accessKey))
+            ids.add(AccessIdPairModel(photo.getObjectId(), photo.ownerId, photo.accessKey))
         }
         appendDisposable(photosInteractor.getPhotosByIds(accountId, ids)
             .fromIOToMain()

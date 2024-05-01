@@ -67,7 +67,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
         SimpleDateFormat("yyyyMMdd_HHmmss", Utils.appLocale)
 
     @Suppress("DEPRECATION")
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(ThemesController.currentStyle())
         Utils.prepareDensity(this)
         Utils.registerColorsThorVG(this)

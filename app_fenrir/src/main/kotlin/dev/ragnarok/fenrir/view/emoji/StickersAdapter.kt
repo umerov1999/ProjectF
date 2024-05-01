@@ -62,7 +62,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = stickers.getStickers()?.get(position)
+        val item = stickers.stickers?.get(position)
         when (getItemViewType(position)) {
             TYPE_ANIMATED -> {
                 val animatedHolder = holder as StickerAnimatedHolder
@@ -136,7 +136,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
     }
 
     override fun getItemCount(): Int {
-        return stickers.getStickers()?.size.orZero()
+        return stickers.stickers?.size.orZero()
     }
 
     internal class StickerHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

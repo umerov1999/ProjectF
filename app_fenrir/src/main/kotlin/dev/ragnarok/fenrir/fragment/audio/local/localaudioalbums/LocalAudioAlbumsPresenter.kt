@@ -26,11 +26,11 @@ class LocalAudioAlbumsPresenter(private val currentId: Int, savedInstanceState: 
         mLocalImageAlbums_Search.clear()
         if (!this.q.isNullOrEmpty()) {
             for (i in mLocalImageAlbums) {
-                if (i.getName().isNullOrEmpty()) {
+                if (i.name.isNullOrEmpty()) {
                     continue
                 }
                 if (this.q?.lowercase(Locale.getDefault())
-                        ?.let { i.getName()?.lowercase(Locale.getDefault())?.contains(it) } == true
+                        ?.let { i.name?.lowercase(Locale.getDefault())?.contains(it) } == true
                 ) {
                     mLocalImageAlbums_Search.add(i)
                 }

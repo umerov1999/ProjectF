@@ -106,13 +106,13 @@ object FeedbackEntity2Model {
         owners: IOwnersBundle
     ): CommentFeedback {
         return CommentFeedback(entity.type)
-            .setCommentOf(entity.getCommented()?.let { buildAttachmentFromDbo(it, owners) })
+            .setCommentOf(entity.commented?.let { buildAttachmentFromDbo(it, owners) })
             .setComment(buildCommentFromDbo(entity.comment, owners))
     }
 
     private fun buildCopyFeedback(entity: CopyEntity, owners: IOwnersBundle): CopyFeedback {
         val feedback = CopyFeedback(entity.type)
-        feedback.setWhat(entity.getCopied()?.let { buildAttachmentFromDbo(it, owners) })
+        feedback.setWhat(entity.copied?.let { buildAttachmentFromDbo(it, owners) })
         val copyOwners: MutableList<Owner> = LinkedList()
         for (pair in entity.copies?.pairDbos.orEmpty()) {
             copyOwners.add(owners.getById(pair.ownerId))
@@ -128,14 +128,14 @@ object FeedbackEntity2Model {
         val feedback = LikeCommentFeedback(entity.type)
         feedback.setOwners(buildUserArray(entity.likesOwnerIds, owners))
         feedback.setLiked(buildCommentFromDbo(entity.liked, owners))
-        feedback.setCommented(entity.getCommented()?.let { buildAttachmentFromDbo(it, owners) })
+        feedback.setCommented(entity.commented?.let { buildAttachmentFromDbo(it, owners) })
         return feedback
     }
 
     private fun buildLikeFeedback(entity: LikeEntity, owners: IOwnersBundle): LikeFeedback {
         return LikeFeedback(entity.type)
             .setOwners(buildUserArray(entity.likesOwnerIds, owners))
-            .setLiked(entity.getLiked()?.let { buildAttachmentFromDbo(it, owners) })
+            .setLiked(entity.liked?.let { buildAttachmentFromDbo(it, owners) })
     }
 
     private fun buildMentionCommentFeedback(
@@ -144,7 +144,7 @@ object FeedbackEntity2Model {
     ): MentionCommentFeedback {
         return MentionCommentFeedback(entity.type)
             .setWhere(buildCommentFromDbo(entity.where, owners))
-            .setCommentOf(entity.getCommented()?.let { buildAttachmentFromDbo(it, owners) })
+            .setCommentOf(entity.commented?.let { buildAttachmentFromDbo(it, owners) })
     }
 
     private fun buildMentionFeedback(
@@ -152,7 +152,7 @@ object FeedbackEntity2Model {
         owners: IOwnersBundle
     ): MentionFeedback {
         return MentionFeedback(entity.type)
-            .setWhere(entity.getWhere()?.let { buildAttachmentFromDbo(it, owners) })
+            .setWhere(entity.where?.let { buildAttachmentFromDbo(it, owners) })
     }
 
     private fun buildPostPublishFeedback(
@@ -172,7 +172,7 @@ object FeedbackEntity2Model {
             ownComment = buildCommentFromDbo(entity.ownComment, owners)
         }
         return ReplyCommentFeedback(entity.type)
-            .setCommentsOf(entity.getCommented()?.let { buildAttachmentFromDbo(it, owners) })
+            .setCommentsOf(entity.commented?.let { buildAttachmentFromDbo(it, owners) })
             .setFeedbackComment(buildCommentFromDbo(entity.feedbackComment, owners))
             .setOwnComment(ownComment)
     }

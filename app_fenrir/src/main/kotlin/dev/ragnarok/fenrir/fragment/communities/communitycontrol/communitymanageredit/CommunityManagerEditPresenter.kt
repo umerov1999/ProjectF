@@ -46,9 +46,9 @@ class CommunityManagerEditPresenter : AccountDependencyPresenter<ICommunityManag
         } else {
             val info = manager.contactInfo
             if (info != null) {
-                position = info.getDescription()
-                email = info.getEmail()
-                phone = info.getPhone()
+                position = info.description
+                email = info.email
+                phone = info.phone
             }
         }
     }

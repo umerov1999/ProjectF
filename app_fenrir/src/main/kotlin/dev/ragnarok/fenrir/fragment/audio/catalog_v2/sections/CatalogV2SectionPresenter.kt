@@ -54,7 +54,7 @@ class CatalogV2SectionPresenter(
         }
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doAudioLoadTabs = if (doAudioLoadTabs) {
@@ -93,7 +93,7 @@ class CatalogV2SectionPresenter(
                     continue
                 } else if (i.getModelType() == AbsModelType.MODEL_CATALOG_V2_RECOMMENDATION_PLAYLIST) {
                     val u = i as CatalogV2RecommendationPlaylist
-                    if (u.getAudios().isNullOrEmpty()) {
+                    if (u.audios.isNullOrEmpty()) {
                         continue
                     }
                     val sd = getAudioPos(u.getAudiosModels(), audio)
@@ -195,9 +195,9 @@ class CatalogV2SectionPresenter(
     fun onAdd(album: AudioPlaylist) {
         appendDisposable(fInteractor.followPlaylist(
             accountId,
-            album.getId(),
-            album.getOwnerId(),
-            album.getAccess_key()
+            album.id,
+            album.owner_id,
+            album.access_key
         )
             .fromIOToMain()
             .subscribe({

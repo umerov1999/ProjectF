@@ -314,7 +314,7 @@ class CatalogV2SectionAdapter(
     ///////////////////////////////////////PLAYLIST_HOLDER////////////////////////////////////////////
     private fun onDelete(index: Int, album: AudioPlaylist) {
         audioListDisposable =
-            mAudioInteractor.deletePlaylist(account_id, album.getId(), album.getOwnerId())
+            mAudioInteractor.deletePlaylist(account_id, album.id, album.owner_id)
                 .fromIOToMain()
                 .subscribe({
                     getItems().removeAt(index)
@@ -330,9 +330,9 @@ class CatalogV2SectionAdapter(
     private fun onAddPlaylist(album: AudioPlaylist) {
         audioListDisposable = mAudioInteractor.followPlaylist(
             account_id,
-            album.getId(),
-            album.getOwnerId(),
-            album.getAccess_key()
+            album.id,
+            album.owner_id,
+            album.access_key
         )
             .fromIOToMain()
             .subscribe({
@@ -363,7 +363,7 @@ class CatalogV2SectionAdapter(
         ) {
             val position = recyclerView?.getChildAdapterPosition(v) ?: 0
             val playlist = getItem(position) as AudioPlaylist
-            if (Settings.get().accounts().current == playlist.getOwnerId()) {
+            if (Settings.get().accounts().current == playlist.owner_id) {
                 menu.add(0, v.id, 0, R.string.delete)
                     .setOnMenuItemClickListener {
                         onDelete(position, playlist)
@@ -393,10 +393,10 @@ class CatalogV2SectionAdapter(
 
         override fun bind(position: Int, itemDataHolder: AbsModel) {
             val playlist = itemDataHolder as AudioPlaylist
-            if (playlist.getThumb_image().nonNullNoEmpty()) ViewUtils.displayAvatar(
+            if (playlist.thumb_image.nonNullNoEmpty()) ViewUtils.displayAvatar(
                 thumb,
                 PolyTransformation(),
-                playlist.getThumb_image(),
+                playlist.thumb_image,
                 Constants.PICASSO_TAG
             ) else thumb.setImageBitmap(
                 ImageHelper.getEllipseBitmap(
@@ -406,7 +406,7 @@ class CatalogV2SectionAdapter(
                     ), 0.1f
                 )
             )
-            if (playlist.getIsSubtitleBadge()) {
+            if (playlist.subtitle_badge) {
                 item_additional_info.visibility = View.GONE
                 item_badge.visibility = View.VISIBLE
                 item_badge_icon.visibility = View.VISIBLE
@@ -415,31 +415,31 @@ class CatalogV2SectionAdapter(
                 item_badge.visibility = View.GONE
                 item_badge_icon.visibility = View.GONE
             }
-            item_title_badge.text = playlist.getTitle()
-            if (playlist.getSubtitle().isNullOrEmpty()) item_subtitle_badge.visibility =
+            item_title_badge.text = playlist.title
+            if (playlist.subtitle.isNullOrEmpty()) item_subtitle_badge.visibility =
                 View.GONE else {
                 item_subtitle_badge.visibility = View.VISIBLE
-                item_subtitle_badge.text = playlist.getSubtitle()
+                item_subtitle_badge.text = playlist.subtitle
             }
-            title.text = playlist.getTitle()
-            if (playlist.getArtist_name().isNullOrEmpty()) artist.visibility = View.GONE else {
+            title.text = playlist.title
+            if (playlist.artist_name.isNullOrEmpty()) artist.visibility = View.GONE else {
                 artist.visibility = View.VISIBLE
-                artist.text = playlist.getArtist_name()
+                artist.text = playlist.artist_name
             }
-            if (playlist.getYear() == 0) year.visibility = View.GONE else {
+            if (playlist.year == 0) year.visibility = View.GONE else {
                 year.visibility = View.VISIBLE
-                year.text = playlist.getYear().toString()
+                year.text = playlist.year.toString()
             }
             playlist_container.setOnClickListener {
-                if (playlist.getOriginal_access_key()
-                        .isNullOrEmpty() || playlist.getOriginal_id() == 0 || playlist.getOriginal_owner_id() == 0L
+                if (playlist.original_access_key
+                        .isNullOrEmpty() || playlist.original_id == 0 || playlist.original_owner_id == 0L
                 ) PlaceFactory.getAudiosInAlbumPlace(
-                    account_id, playlist.getOwnerId(), playlist.getId(), playlist.getAccess_key()
+                    account_id, playlist.owner_id, playlist.id, playlist.access_key
                 ).tryOpenWith(mContext) else PlaceFactory.getAudiosInAlbumPlace(
                     account_id,
-                    playlist.getOriginal_owner_id(),
-                    playlist.getOriginal_id(),
-                    playlist.getOriginal_access_key()
+                    playlist.original_owner_id,
+                    playlist.original_id,
+                    playlist.original_access_key
                 ).tryOpenWith(mContext)
             }
         }
@@ -460,7 +460,7 @@ class CatalogV2SectionAdapter(
         ) {
             val position = recyclerView?.getChildAdapterPosition(itemView) ?: 0
             val recPlaylist = getItem(position) as CatalogV2RecommendationPlaylist
-            if (Settings.get().accounts().current == recPlaylist.getOwnerId()) {
+            if (Settings.get().accounts().current == recPlaylist.owner_id) {
                 menu.add(0, itemView.id, 0, R.string.delete)
                     .setOnMenuItemClickListener {
                         onDelete(position, recPlaylist.getPlaylist())
@@ -473,7 +473,7 @@ class CatalogV2SectionAdapter(
                 }
 
                 menu.add(0, itemView.id, 0, R.string.goto_user).setOnMenuItemClickListener {
-                    recPlaylist.getOwner()
+                    recPlaylist.owner
                         ?.let { it1 ->
                             PlaceFactory.getOwnerWallPlace(account_id, it1).tryOpenWith(mContext)
                         }
@@ -494,23 +494,23 @@ class CatalogV2SectionAdapter(
             val recPlaylist = itemDataHolder as CatalogV2RecommendationPlaylist
             val playlist = recPlaylist.getPlaylist()
             playlist_container.setOnClickListener {
-                if (playlist.getOriginal_access_key()
-                        .isNullOrEmpty() || playlist.getOriginal_id() == 0 || playlist.getOriginal_owner_id() == 0L
+                if (playlist.original_access_key
+                        .isNullOrEmpty() || playlist.original_id == 0 || playlist.original_owner_id == 0L
                 ) PlaceFactory.getAudiosInAlbumPlace(
-                    account_id, playlist.getOwnerId(), playlist.getId(), playlist.getAccess_key()
+                    account_id, playlist.owner_id, playlist.id, playlist.access_key
                 ).tryOpenWith(mContext) else PlaceFactory.getAudiosInAlbumPlace(
                     account_id,
-                    playlist.getOriginal_owner_id(),
-                    playlist.getOriginal_id(),
-                    playlist.getOriginal_access_key()
+                    playlist.original_owner_id,
+                    playlist.original_id,
+                    playlist.original_access_key
                 ).tryOpenWith(mContext)
             }
-            percentage.text = ((recPlaylist.getPercentage() * 100).toInt()).toString() + "%"
-            percentageTitle.text = recPlaylist.getPercentageTitle()
-            title.text = playlist.getTitle()
-            title.setTextColor(recPlaylist.getColor())
-            subtitle.text = recPlaylist.getOwner()?.fullName
-            audios.displayAudios(recPlaylist.getAudios(), object :
+            percentage.text = ((recPlaylist.percentage * 100).toInt()).toString() + "%"
+            percentageTitle.text = recPlaylist.percentage_title
+            title.text = playlist.title
+            title.setTextColor(recPlaylist.color)
+            subtitle.text = recPlaylist.owner?.fullName
+            audios.displayAudios(recPlaylist.audios, object :
                 AttachmentsViewBinder.OnAttachmentsActionCallback {
                 override fun onPollOpen(poll: Poll) {
 

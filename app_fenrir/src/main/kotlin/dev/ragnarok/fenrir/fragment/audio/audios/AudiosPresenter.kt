@@ -71,7 +71,7 @@ class AudiosPresenter(
         resolveRefreshingView()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doAudioLoadTabs = if (doAudioLoadTabs) {
@@ -279,8 +279,8 @@ class AudiosPresenter(
     fun onDelete(album: AudioPlaylist) {
         audioListDisposable.add(audioInteractor.deletePlaylist(
             accountId,
-            album.getId(),
-            album.getOwnerId()
+            album.id,
+            album.owner_id
         )
             .fromIOToMain()
             .subscribe({
@@ -295,9 +295,9 @@ class AudiosPresenter(
     fun onAdd(album: AudioPlaylist) {
         audioListDisposable.add(audioInteractor.followPlaylist(
             accountId,
-            album.getId(),
-            album.getOwnerId(),
-            album.getAccess_key()
+            album.id,
+            album.owner_id,
+            album.access_key
         )
             .fromIOToMain()
             .subscribe({

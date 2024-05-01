@@ -69,7 +69,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
                 }
             } else if (vid != null) {
                 lazyPresenter {
-                    fireFileForUploadSelected(vid.getData().toString())
+                    fireFileForUploadSelected(vid.data.toString())
                 }
             }
         }

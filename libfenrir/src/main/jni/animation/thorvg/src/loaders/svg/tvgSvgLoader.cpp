@@ -1108,6 +1108,7 @@ static void _handleFillRuleAttr(TVG_UNUSED SvgLoaderData* loader, SvgNode* node,
 
 static void _handleOpacityAttr(TVG_UNUSED SvgLoaderData* loader, SvgNode* node, const char* value)
 {
+    node->style->flags = (node->style->flags | SvgStyleFlags::Opacity);
     node->style->opacity = _toOpacity(value);
 }
 
@@ -1728,11 +1729,10 @@ static SvgNode* _createEllipseNode(SvgLoaderData* loader, SvgNode* parent, const
 
 static bool _attrParsePolygonPoints(const char* str, SvgPolygonNode* polygon)
 {
-    float num;
-    while (_parseNumber(&str, nullptr, &num)) polygon->pts.push(num);
-    if (polygon->pts.count % 2 != 0) {
-        polygon->pts.clear();
-        return false;
+    float num_x, num_y;
+    while (_parseNumber(&str, nullptr, &num_x) && _parseNumber(&str, nullptr, &num_y)) {
+        polygon->pts.push(num_x);
+        polygon->pts.push(num_y);
     }
     return true;
 }
@@ -1776,7 +1776,7 @@ static SvgNode* _createPolygonNode(SvgLoaderData* loader, SvgNode* parent, const
 
     if (!loader->svgParse->node) return nullptr;
 
-    if (!func(buf, bufLength, _attrParsePolygonNode, loader)) return nullptr;
+    func(buf, bufLength, _attrParsePolygonNode, loader);
     return loader->svgParse->node;
 }
 
@@ -2967,6 +2967,9 @@ static void _styleCopy(SvgStyleProperty* to, const SvgStyleProperty* from)
         to->color = from->color;
         to->curColorSet = true;
     }
+    if (from->flags & SvgStyleFlags::Opacity) {
+        to->opacity = from->opacity;
+    }
     if (from->flags & SvgStyleFlags::PaintOrder) {
         to->paintOrder = from->paintOrder;
     }
@@ -3030,6 +3033,7 @@ static void _styleCopy(SvgStyleProperty* to, const SvgStyleProperty* from)
 
 static void _copyAttr(SvgNode* to, const SvgNode* from)
 {
+    to->display = from->display;
     //Copy matrix attribute
     if (from->transform) {
         to->transform = (Matrix*)malloc(sizeof(Matrix));
@@ -3198,6 +3202,14 @@ static void _svgLoaderParserXmlClose(SvgLoaderData* loader, const char* content)
         }
     }
 
+    for (unsigned int i = 0; i < sizeof(graphicsTags) / sizeof(graphicsTags[0]); i++) {
+        if (!strncmp(content, graphicsTags[i].tag, graphicsTags[i].sz - 1)) {
+            loader->currentGraphicsNode = nullptr;
+            loader->stack.pop();
+            break;
+        }
+    }
+
     loader->level--;
 }
 
@@ -3264,6 +3276,11 @@ static void _svgLoaderParserXmlOpen(SvgLoaderData* loader, const char* content, 
         if (loader->stack.count > 0) parent = loader->stack.last();
         else parent = loader->doc;
         node = method(loader, parent, attrs, attrsLength, simpleXmlParseAttributes);
+        if (node && !empty) {
+            auto defs = _createDefsNode(loader, nullptr, nullptr, 0, nullptr);
+            loader->stack.push(defs);
+            loader->currentGraphicsNode = node;
+        }
     } else if ((gradientMethod = _findGradientFactory(tagName))) {
         SvgStyleGradient* gradient;
         gradient = gradientMethod(loader, attrs, attrsLength);

@@ -27,22 +27,22 @@ import io.reactivex.rxjava3.core.SingleEmitter
 internal class VideoAlbumsStorage(base: AppStorages) : AbsStorage(base), IVideoAlbumsStorage {
     override fun findByCriteria(criteria: VideoAlbumCriteria): Single<List<VideoAlbumDboEntity>> {
         return Single.create { e: SingleEmitter<List<VideoAlbumDboEntity>> ->
-            val uri = getVideoAlbumsContentUriFor(criteria.getAccountId())
+            val uri = getVideoAlbumsContentUriFor(criteria.accountId)
             val where: String
             val args: Array<String>
-            val range = criteria.getRange()
+            val range = criteria.range
             if (range != null) {
                 where = VideoAlbumsColumns.OWNER_ID + " = ? " +
                         " AND " + BaseColumns._ID + " >= ? " +
                         " AND " + BaseColumns._ID + " <= ?"
                 args = arrayOf(
-                    criteria.getOwnerId().toString(),
+                    criteria.ownerId.toString(),
                     range.first.toString(),
                     range.last.toString()
                 )
             } else {
                 where = VideoAlbumsColumns.OWNER_ID + " = ?"
-                args = arrayOf(criteria.getOwnerId().toString())
+                args = arrayOf(criteria.ownerId.toString())
             }
             val cursor = contentResolver.query(uri, null, where, args, null)
             val data: MutableList<VideoAlbumDboEntity> = ArrayList(safeCountOf(cursor))

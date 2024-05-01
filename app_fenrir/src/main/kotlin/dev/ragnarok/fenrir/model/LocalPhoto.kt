@@ -7,10 +7,13 @@ import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
 
 class LocalPhoto : Parcelable, Comparable<LocalPhoto>, ISelectable {
-    private var imageId: Long = 0
-    private var fullImageUri: Uri? = null
+    var imageId: Long = 0
+        private set
+    var fullImageUri: Uri? = null
+        private set
     private var selected = false
-    private var index = 0
+    var index = 0
+        private set
 
     constructor()
     internal constructor(parcel: Parcel) {
@@ -35,26 +38,14 @@ class LocalPhoto : Parcelable, Comparable<LocalPhoto>, ISelectable {
         dest.writeInt(index)
     }
 
-    fun getImageId(): Long {
-        return imageId
-    }
-
     fun setImageId(imageId: Long): LocalPhoto {
         this.imageId = imageId
         return this
     }
 
-    fun getIndex(): Int {
-        return index
-    }
-
     fun setIndex(index: Int): LocalPhoto {
         this.index = index
         return this
-    }
-
-    fun getFullImageUri(): Uri? {
-        return fullImageUri
     }
 
     fun setFullImageUri(fullImageUri: Uri?): LocalPhoto {

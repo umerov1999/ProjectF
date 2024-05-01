@@ -53,8 +53,8 @@ class Topic : AbsModel {
         commentsCount = parcel.readInt()
         firstCommentText = parcel.readString()
         lastCommentText = parcel.readString()
-        creator = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.get()
-        updater = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.get()
+        creator = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.owner
+        updater = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.owner
     }
 
     @AbsModelType

@@ -27,7 +27,7 @@ class SendAttachmentsActivity : MainActivity() {
         mLastBackPressedTime = Long.MAX_VALUE - DOUBLE_BACK_PRESSED_TIMEOUT
     }
 
-    public override fun onDestroy() {
+    override fun onDestroy() {
         ViewUtils.keyboardHide(this)
         super.onDestroy()
     }

@@ -23,7 +23,7 @@ class AudioSearchCriteria : BaseSearchCriteria {
     internal constructor(parcel: Parcel) : super(parcel)
 
     @Throws(CloneNotSupportedException::class)
-    public override fun clone(): AudioSearchCriteria {
+    override fun clone(): AudioSearchCriteria {
         return super.clone() as AudioSearchCriteria
     }
 

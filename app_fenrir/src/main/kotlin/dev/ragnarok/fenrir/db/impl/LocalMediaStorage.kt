@@ -140,8 +140,8 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
 
     private fun hasAlbumById(albumId: Int, albums: List<LocalImageAlbum>): Boolean {
         for (i in albums) {
-            if (i.getId() == albumId) {
-                i.setPhotoCount(i.getPhotoCount() + 1)
+            if (i.id == albumId) {
+                i.setPhotoCount(i.photoCount + 1)
                 return true
             }
         }

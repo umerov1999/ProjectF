@@ -21,18 +21,18 @@ class CommunityOptionsPresenter(
 ) : AccountDependencyPresenter<ICommunityOptionsView>(accountId, savedInstanceState) {
     override fun onGuiCreated(viewHost: ICommunityOptionsView) {
         super.onGuiCreated(viewHost)
-        viewHost.displayName(settings.getTitle())
-        viewHost.displayDescription(settings.getDescription())
+        viewHost.displayName(settings.title)
+        viewHost.displayDescription(settings.description)
         viewHost.setCommunityTypeVisible(true)
-        viewHost.displayAddress(settings.getAddress())
-        viewHost.displayWebsite(settings.getWebsite())
+        viewHost.displayAddress(settings.address)
+        viewHost.displayWebsite(settings.website)
         viewHost.setFeedbackCommentsRootVisible(community.communityType == VKApiCommunity.Type.PAGE)
-        viewHost.setFeedbackCommentsChecked(settings.isFeedbackCommentsEnabled())
-        viewHost.setObsceneFilterChecked(settings.isObsceneFilterEnabled())
-        viewHost.setObsceneStopWordsChecked(settings.isObsceneStopwordsEnabled())
-        viewHost.displayObsceneStopWords(settings.getObsceneWords())
-        viewHost.setGroupType(settings.getAccess())
-        viewHost.resolveEdge(settings.getAge())
+        viewHost.setFeedbackCommentsChecked(settings.feedbackCommentsEnabled)
+        viewHost.setObsceneFilterChecked(settings.obsceneFilterEnabled)
+        viewHost.setObsceneStopWordsChecked(settings.obsceneStopwordsEnabled)
+        viewHost.displayObsceneStopWords(settings.obsceneWords)
+        viewHost.setGroupType(settings.access)
+        viewHost.resolveEdge(settings.age)
         resolveObsceneWordsEditorVisibility()
         resolvePublicDateView()
         resolveCategoryView()
@@ -53,13 +53,13 @@ class CommunityOptionsPresenter(
             name,
             description,
             address,
-            settings.getAccess(),
+            settings.access,
             website,
-            if (community.communityType != VKApiCommunity.Type.PAGE) settings.getCategory()
+            if (community.communityType != VKApiCommunity.Type.PAGE) settings.category
                 ?.getObjectId() else null,
-            if (community.communityType == VKApiCommunity.Type.PAGE) settings.getDateCreated()
+            if (community.communityType == VKApiCommunity.Type.PAGE) settings.dateCreated
                 ?.let { SimpleDateFormat("dd.mm.yyyy", Utils.appLocale).format(it) } else null,
-            settings.getAge(), mObsceneFilter, mObsceneStopWords, mObsceneStopWordsText
+            settings.age, mObsceneFilter, mObsceneStopWords, mObsceneStopWordsText
         )
             .fromIOToMain()
             .subscribe({ onEditComplete() }, {
@@ -85,19 +85,19 @@ class CommunityOptionsPresenter(
 
     private fun resolveObsceneWordsEditorVisibility() {
         view?.setObsceneStopWordsVisible(
-            settings.isObsceneStopwordsEnabled()
+            settings.obsceneStopwordsEnabled
         )
     }
 
     fun fireAccessClick() {
         settings.incAccess()
-        view?.setGroupType(settings.getAccess())
+        view?.setGroupType(settings.access)
     }
 
     private fun resolvePublicDateView() {
         view?.let {
             it.setPublicDateVisible(community.communityType == VKApiCommunity.Type.PAGE)
-            settings.getDateCreated()?.let { it1 -> it.dislayPublicDate(it1) }
+            settings.dateCreated?.let { it1 -> it.dislayPublicDate(it1) }
         }
     }
 
@@ -108,13 +108,13 @@ class CommunityOptionsPresenter(
         )
         if (available) {
             view?.displayCategory(
-                settings.getCategory()?.title
+                settings.category?.title
             )
         }
     }
 
     fun onCategoryClick() {
-        settings.getAvailableCategories()?.let {
+        settings.availableCategories?.let {
             view?.showSelectOptionDialog(
                 REQUEST_CATEGORY, it
             )
@@ -129,17 +129,17 @@ class CommunityOptionsPresenter(
             }
 
             REQUEST_DAY -> {
-                settings.getDateCreated()?.day = option.getObjectId()
+                settings.dateCreated?.day = option.getObjectId()
                 resolvePublicDateView()
             }
 
             REQUEST_MONTH -> {
-                settings.getDateCreated()?.month = option.getObjectId()
+                settings.dateCreated?.month = option.getObjectId()
                 resolvePublicDateView()
             }
 
             REQUEST_YEAR -> {
-                settings.getDateCreated()?.year = option.getObjectId()
+                settings.dateCreated?.year = option.getObjectId()
                 resolvePublicDateView()
             }
         }

@@ -23,16 +23,23 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 import kotlin.math.abs
 
 class CatalogV2RecommendationPlaylist : AbsModel {
-    private var id = 0
-    private var owner_id = 0L
+    var id = 0
+        private set
+    var owner_id = 0L
+        private set
 
     @ColorInt
-    private var color: Int = 0
-    private var percentage: Double = 0.0
-    private var percentage_title: String? = null
+    var color: Int = 0
+        private set
+    var percentage: Double = 0.0
+        private set
+    var percentage_title: String? = null
+        private set
     private var playlist: AudioPlaylist? = null
-    private var audios: ArrayList<Audio>? = null
-    private var owner: Owner? = null
+    var audios: ArrayList<Audio>? = null
+        private set
+    var owner: Owner? = null
+        private set
     private var scrollToIt = false
 
     constructor(
@@ -95,7 +102,7 @@ class CatalogV2RecommendationPlaylist : AbsModel {
         val wrapper = parcel.readTypedObjectCompat(
             ParcelableOwnerWrapper.CREATOR
         )
-        owner = wrapper!!.get()
+        owner = wrapper?.owner
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -125,37 +132,8 @@ class CatalogV2RecommendationPlaylist : AbsModel {
         return ret
     }
 
-    fun getId(): Int {
-        return id
-    }
-
-    fun getOwnerId(): Long {
-        return owner_id
-    }
-
-    @ColorInt
-    fun getColor(): Int {
-        return color
-    }
-
-    fun getPercentage(): Double {
-        return percentage
-    }
-
-    fun getPercentageTitle(): String? {
-        return percentage_title
-    }
-
-    fun getOwner(): Owner? {
-        return owner
-    }
-
     fun getPlaylist(): AudioPlaylist {
         return playlist ?: AudioPlaylist().setId(id).setOwnerId(owner_id).setTitle("null")
-    }
-
-    fun getAudios(): ArrayList<Audio>? {
-        return audios
     }
 
     fun getAudiosModels(): MutableList<AbsModel>? {

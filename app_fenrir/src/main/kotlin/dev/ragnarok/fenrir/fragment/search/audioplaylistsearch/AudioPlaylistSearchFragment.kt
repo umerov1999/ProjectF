@@ -55,35 +55,35 @@ class AudioPlaylistSearchFragment :
             requireActivity().setResult(Activity.RESULT_OK, intent)
             requireActivity().finish()
         } else {
-            if (album.getOriginal_access_key()
-                    .isNullOrEmpty() || album.getOriginal_id() == 0 || album.getOriginal_owner_id() == 0L
+            if (album.original_access_key
+                    .isNullOrEmpty() || album.original_id == 0 || album.original_owner_id == 0L
             ) getAudiosInAlbumPlace(
                 presenter?.accountId ?: Settings.get().accounts().current,
-                album.getOwnerId(),
-                album.getId(),
-                album.getAccess_key()
+                album.owner_id,
+                album.id,
+                album.access_key
             ).tryOpenWith(requireActivity()) else getAudiosInAlbumPlace(
                 presenter?.accountId ?: Settings.get().accounts().current,
-                album.getOriginal_owner_id(),
-                album.getOriginal_id(),
-                album.getOriginal_access_key()
+                album.original_owner_id,
+                album.original_id,
+                album.original_access_key
             ).tryOpenWith(requireActivity())
         }
     }
 
     override fun onOpenClick(index: Int, album: AudioPlaylist) {
-        if (album.getOriginal_access_key()
-                .isNullOrEmpty() || album.getOriginal_id() == 0 || album.getOriginal_owner_id() == 0L
+        if (album.original_access_key
+                .isNullOrEmpty() || album.original_id == 0 || album.original_owner_id == 0L
         ) getAudiosInAlbumPlace(
             presenter?.accountId ?: Settings.get().accounts().current,
-            album.getOwnerId(),
-            album.getId(),
-            album.getAccess_key()
+            album.owner_id,
+            album.id,
+            album.access_key
         ).tryOpenWith(requireActivity()) else getAudiosInAlbumPlace(
             presenter?.accountId ?: Settings.get().accounts().current,
-            album.getOriginal_owner_id(),
-            album.getOriginal_id(),
-            album.getOriginal_access_key()
+            album.original_owner_id,
+            album.original_id,
+            album.original_access_key
         ).tryOpenWith(requireActivity())
     }
 

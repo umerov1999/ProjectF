@@ -1,33 +1,21 @@
 package dev.ragnarok.fenrir.model
 
-class ContactInfo(private val userId: Long) {
-    private var description: String? = null
-    private var phone: String? = null
-    private var email: String? = null
-    fun getUserId(): Long {
-        return userId
-    }
-
-    fun getEmail(): String? {
-        return email
-    }
+class ContactInfo(val userId: Long) {
+    var description: String? = null
+        private set
+    var phone: String? = null
+        private set
+    var email: String? = null
+        private set
 
     fun setEmail(email: String?): ContactInfo {
         this.email = email
         return this
     }
 
-    fun getDescription(): String? {
-        return description
-    }
-
     fun setDescription(description: String?): ContactInfo {
         this.description = description
         return this
-    }
-
-    fun getPhone(): String? {
-        return phone
     }
 
     fun setPhone(phone: String?): ContactInfo {

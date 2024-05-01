@@ -58,8 +58,8 @@ class MessagesLookPresenter(
             peer.setAvaUrl(data.imageUrl)
         }
         view?.displayToolbarAvatar(accountId, peer)
-        lastReadId.setIncoming(data.getInRead())
-        lastReadId.setOutgoing(data.getOutRead())
+        lastReadId.incoming = data.inRead
+        lastReadId.outgoing = data.outRead
         initRequest()
     }
 
@@ -70,7 +70,7 @@ class MessagesLookPresenter(
         view?.displayToolbarAvatar(accountId, peer)
     }
 
-    public override fun onMessageClick(message: Message, position: Int, x: Int?, y: Int?) {
+    override fun onMessageClick(message: Message, position: Int, x: Int?, y: Int?) {
         if (x != null && y != null) {
             resolvePopupMenu(message, position, x, y)
         }

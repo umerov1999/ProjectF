@@ -469,7 +469,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
             ) {
                 mFeedSourceAdapter?.removeChild(position)
                 presenter?.fireFeedSourceDelete(
-                    entry.getValue()?.replace("list", "")?.toInt()
+                    entry.value?.replace("list", "")?.toInt()
                 )
             }?.show()
     }

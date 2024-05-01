@@ -225,7 +225,7 @@ class MessageAttachmentsPresenter(
             }
 
             video != null -> {
-                doUploadVideo(video.getData().toString())
+                doUploadVideo(video.data.toString())
             }
         }
     }
@@ -326,7 +326,7 @@ class MessageAttachmentsPresenter(
                 photos
             )
         } else if (size == Upload.IMAGE_SIZE_CROPPING && photos.size == 1) {
-            var to_up = photos[0].getFullImageUri() ?: return
+            var to_up = photos[0].fullImageUri ?: return
             if (to_up.path?.let { File(it).isFile } == true) {
                 to_up = Uri.fromFile(to_up.path?.let { File(it) })
             }
@@ -426,7 +426,7 @@ class MessageAttachmentsPresenter(
 
     fun fireUploadPhotoSizeSelected(photos: List<LocalPhoto>, imageSize: Int) {
         if (imageSize == Upload.IMAGE_SIZE_CROPPING && photos.size == 1) {
-            var to_up = photos[0].getFullImageUri() ?: return
+            var to_up = photos[0].fullImageUri ?: return
             if (to_up.path?.let { File(it).isFile } == true) {
                 to_up = Uri.fromFile(to_up.path?.let { File(it) })
             }

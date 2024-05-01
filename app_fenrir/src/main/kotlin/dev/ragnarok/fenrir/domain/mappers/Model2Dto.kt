@@ -113,7 +113,7 @@ object Model2Dto {
             }
 
             is AudioArtist -> {
-                return AttachmentsTokenCreator.ofArtist(model.getId())
+                return AttachmentsTokenCreator.ofArtist(model.id)
             }
 
             is WallReply -> {
@@ -121,7 +121,7 @@ object Model2Dto {
             }
 
             is NotSupported -> {
-                return AttachmentsTokenCreator.ofError(model.getType(), model.getBody())
+                return AttachmentsTokenCreator.ofError(model.type, model.body)
             }
 
             is Event -> {
@@ -134,26 +134,26 @@ object Model2Dto {
 
             is MarketAlbum -> {
                 return AttachmentsTokenCreator.ofMarketAlbum(
-                    model.getId(),
-                    model.getOwner_id(),
-                    model.getAccess_key()
+                    model.id,
+                    model.owner_id,
+                    model.access_key
                 )
             }
 
             is AudioPlaylist -> {
-                return if (model.getOriginal_access_key()
-                        .isNullOrEmpty() || model.getOriginal_id() == 0 || model.getOriginal_owner_id() == 0L
+                return if (model.original_access_key
+                        .isNullOrEmpty() || model.original_id == 0 || model.original_owner_id == 0L
                 ) {
                     AttachmentsTokenCreator.ofAudioPlaylist(
-                        model.getId(),
-                        model.getOwnerId(),
-                        model.getAccess_key()
+                        model.id,
+                        model.owner_id,
+                        model.access_key
                     )
                 } else {
                     AttachmentsTokenCreator.ofAudioPlaylist(
-                        model.getOriginal_id(),
-                        model.getOriginal_owner_id(),
-                        model.getOriginal_access_key()
+                        model.original_id,
+                        model.original_owner_id,
+                        model.original_access_key
                     )
                 }
             }

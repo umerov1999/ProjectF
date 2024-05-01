@@ -4,8 +4,8 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class FriendList : Parcelable {
-    private val id: Long
-    private val name: String?
+    val id: Long
+    val name: String?
 
     constructor(id: Long, name: String?) {
         this.id = id
@@ -15,14 +15,6 @@ class FriendList : Parcelable {
     internal constructor(parcel: Parcel) {
         id = parcel.readLong()
         name = parcel.readString()
-    }
-
-    fun getId(): Long {
-        return id
-    }
-
-    fun getName(): String? {
-        return name
     }
 
     override fun describeContents(): Int {

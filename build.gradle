@@ -47,15 +47,15 @@ buildscript {
     ext.firebaseMessagingVersion = "23.4.1"
 
     //firebase common libraries
-    ext.firebaseCommonVersion = "20.4.3"
+    ext.firebaseCommonVersion = "21.0.0"
     ext.firebaseInstallationsInteropVersion = "17.2.0"
-    ext.firebaseComponentsVersion = "17.1.5"
+    ext.firebaseComponentsVersion = "18.0.0"
     ext.firebaseAnnotationsVersion = "16.2.0"
     ext.playServicesTasksVersion = "18.1.0"
     ext.autoValueVersion = "1.10.4"
 
     //common libraries
-    ext.kotlin_version = "2.0.0-RC1"
+    ext.kotlin_version = "2.0.0-RC2"
     ext.kotlin_coroutines = "1.8.1-Beta"
     ext.kotlin_serializer = "1.6.3"
     //ext.okhttpLibraryVersion = "5.0.0-SNAPSHOT"
@@ -63,7 +63,7 @@ buildscript {
     ext.okioVersion = "3.9.0"
     ext.rxJavaVersion = "3.1.8"
     ext.guavaVersion = "33.1.0-android"
-    ext.errorProneVersion = "2.26.1"
+    ext.errorProneVersion = "2.27.0"
     ext.checkerCompatQualVersion = "2.5.6"
     ext.checkerQualAndroidVersion = "3.42.0"
     ext.desugarLibraryVersion = "2.0.4"
@@ -91,7 +91,7 @@ buildscript {
         //maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.4.0-rc02"
+        classpath "com.android.tools.build:gradle:8.4.0"
         classpath "com.google.gms:google-services:4.4.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"

@@ -111,9 +111,9 @@ class NewsfeedCommentsAdapter(
     }
 
     private fun bindTopic(holder: TopicHolder, position: Int) {
-        val wrapper = data[position].getModel() as TopicWithOwner
-        val topic = wrapper.getTopic()
-        val owner = wrapper.getOwner()
+        val wrapper = data[position].model as TopicWithOwner
+        val topic = wrapper.topic
+        val owner = wrapper.owner
         displayAvatar(
             holder.ownerAvatar,
             transformation,
@@ -139,9 +139,9 @@ class NewsfeedCommentsAdapter(
     }
 
     private fun bindPhoto(holder: PhotoHolder, position: Int) {
-        val wrapper = data[position].getModel() as PhotoWithOwner
-        val photo = wrapper.getPhoto()
-        val owner = wrapper.getOwner()
+        val wrapper = data[position].model as PhotoWithOwner
+        val photo = wrapper.photo
+        val owner = wrapper.owner
         displayAvatar(
             holder.ownerAvatar,
             transformation,
@@ -173,9 +173,9 @@ class NewsfeedCommentsAdapter(
     }
 
     private fun bindVideo(holder: VideoHolder, position: Int) {
-        val wrapper = data[position].getModel() as VideoWithOwner
-        val video = wrapper.getVideo()
-        val owner = wrapper.getOwner()
+        val wrapper = data[position].model as VideoWithOwner
+        val video = wrapper.video
+        val owner = wrapper.owner
         holder.title.text = video.title
         holder.viewsCounter.text = video.views.toString()
         holder.datitime.text = AppTextUtils.getDateFromUnixTime(context, video.date)
@@ -205,7 +205,7 @@ class NewsfeedCommentsAdapter(
 
     private fun bindBase(holder: AbsHolder, position: Int) {
         val newsfeedComment = data[position]
-        val comment = newsfeedComment.getComment()
+        val comment = newsfeedComment.comment
         if (comment == null) {
             holder.commentRoot.visibility = View.GONE
             return
@@ -255,7 +255,7 @@ class NewsfeedCommentsAdapter(
     @SuppressLint("SetTextI18n")
     private fun bindPost(holder: PostHolder, position: Int) {
         val comment = data[position]
-        val post = comment.getModel() as Post
+        val post = comment.model as Post
         attachmentsViewBinder.displayAttachments(
             post.attachments,
             holder.postAttachmentsHolder,
@@ -340,16 +340,16 @@ class NewsfeedCommentsAdapter(
 
     override fun getItemViewType(position: Int): Int {
         val comment = data[position]
-        if (comment.getModel() is Post) {
+        if (comment.model is Post) {
             return VTYPE_POST
         }
-        if (comment.getModel() is VideoWithOwner) {
+        if (comment.model is VideoWithOwner) {
             return VTYPE_VIDEO
         }
-        if (comment.getModel() is PhotoWithOwner) {
+        if (comment.model is PhotoWithOwner) {
             return VTYPE_PHOTO
         }
-        if (comment.getModel() is TopicWithOwner) {
+        if (comment.model is TopicWithOwner) {
             return VTYPE_TOPIC
         }
         throw IllegalStateException("Unsupported view type")

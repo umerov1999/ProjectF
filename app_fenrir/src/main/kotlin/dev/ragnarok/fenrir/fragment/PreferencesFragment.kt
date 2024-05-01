@@ -2032,7 +2032,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         val file = getDrawerBackgroundFile(requireActivity(), light)
         var original: Bitmap?
         try {
-            original = BitmapFactory.decodeFile(photo.getFullImageUri()?.path)
+            original = BitmapFactory.decodeFile(photo.fullImageUri?.path)
             original = checkBitmap(original)
             original?.let {
                 FileOutputStream(file).use { fos ->
@@ -2309,8 +2309,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         @SwitchableCategory key: String
     ): Boolean {
         for (i in list) {
-            if (i.getId() == key) {
-                return i.isActive()
+            if (i.id == key) {
+                return i.active
             }
         }
         return true

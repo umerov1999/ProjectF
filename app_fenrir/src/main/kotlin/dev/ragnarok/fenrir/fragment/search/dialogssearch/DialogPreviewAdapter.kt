@@ -59,7 +59,7 @@ class DialogPreviewAdapter(
                     Utils.createGradientChatImage(
                         200,
                         200,
-                        item.getId()
+                        item.id
                     )
                 )
             )

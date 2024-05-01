@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         requestEnterPin.launch(EnterPinActivity.getIntent(this))
     }
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         delegate.applyDayNight()
         savedInstanceState ?: nextRandom()
         setTheme(currentStyle())

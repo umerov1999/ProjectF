@@ -49,7 +49,7 @@ class DocLink(val attachment: AbsModel) {
                 AttachmentsTypes.NARRATIVE -> return (attachment as Narratives).cover
                 AttachmentsTypes.ALBUM -> {
                     val album = attachment as PhotoAlbum
-                    return album.getSizes()?.getUrlForSize(
+                    return album.sizes?.getUrlForSize(
                         Settings.get().main().prefPreviewImageSize,
                         true
                     )
@@ -57,14 +57,14 @@ class DocLink(val attachment: AbsModel) {
 
                 AttachmentsTypes.MARKET_ALBUM -> {
                     val market_album = attachment as MarketAlbum
-                    return market_album.getPhoto()?.sizes?.getUrlForSize(
+                    return market_album.photo?.sizes?.getUrlForSize(
                         Settings.get().main().prefPreviewImageSize, true
                     )
                 }
 
                 AttachmentsTypes.ARTIST -> return (attachment as AudioArtist).getMaxPhoto()
                 AttachmentsTypes.MARKET -> return (attachment as Market).thumb_photo
-                AttachmentsTypes.AUDIO_PLAYLIST -> return (attachment as AudioPlaylist).getThumb_image()
+                AttachmentsTypes.AUDIO_PLAYLIST -> return (attachment as AudioPlaylist).thumb_image
                 AttachmentsTypes.LINK -> {
                     val link = attachment as Link
                     if (link.photo == null && link.previewPhoto != null) return link.previewPhoto
@@ -88,11 +88,11 @@ class DocLink(val attachment: AbsModel) {
             AttachmentsTypes.POST -> return (attachment as Post).authorName
             AttachmentsTypes.EVENT -> return (attachment as Event).subjectName
             AttachmentsTypes.WALL_REPLY -> return (attachment as WallReply).authorName
-            AttachmentsTypes.AUDIO_PLAYLIST -> return (attachment as AudioPlaylist).getTitle()
-            AttachmentsTypes.ALBUM -> return (attachment as PhotoAlbum).getTitle()
+            AttachmentsTypes.AUDIO_PLAYLIST -> return (attachment as AudioPlaylist).title
+            AttachmentsTypes.ALBUM -> return (attachment as PhotoAlbum).title
             AttachmentsTypes.MARKET -> return (attachment as Market).title
-            AttachmentsTypes.ARTIST -> return (attachment as AudioArtist).getName()
-            AttachmentsTypes.MARKET_ALBUM -> return (attachment as MarketAlbum).getTitle()
+            AttachmentsTypes.ARTIST -> return (attachment as AudioArtist).name
+            AttachmentsTypes.MARKET_ALBUM -> return (attachment as MarketAlbum).title
             AttachmentsTypes.LINK -> {
                 title = (attachment as Link).title
                 if (title.isNullOrEmpty()) {
@@ -146,7 +146,7 @@ class DocLink(val attachment: AbsModel) {
 
             AttachmentsTypes.NOT_SUPPORTED -> {
                 val ns = attachment as NotSupported
-                return ns.getType() + ": " + ns.getBody()
+                return ns.type + ": " + ns.body
             }
 
             AttachmentsTypes.POST -> {
@@ -175,10 +175,10 @@ class DocLink(val attachment: AbsModel) {
 
             AttachmentsTypes.LINK -> return (attachment as Link).url
             AttachmentsTypes.ALBUM -> return Utils.firstNonEmptyString(
-                (attachment as PhotoAlbum).getDescription(),
+                (attachment as PhotoAlbum).description,
                 " "
             ) +
-                    " " + context.getString(R.string.photos_count, attachment.getSize())
+                    " " + context.getString(R.string.photos_count, attachment.size)
 
             AttachmentsTypes.POLL -> return (attachment as Poll).question
             AttachmentsTypes.WIKI_PAGE -> return (attachment as WikiPage).title
@@ -191,14 +191,14 @@ class DocLink(val attachment: AbsModel) {
 
             AttachmentsTypes.MARKET_ALBUM -> return context.getString(
                 R.string.markets_count,
-                (attachment as MarketAlbum).getCount()
+                (attachment as MarketAlbum).count
             )
 
             AttachmentsTypes.AUDIO_PLAYLIST -> return Utils.firstNonEmptyString(
-                (attachment as AudioPlaylist).getArtist_name(),
+                (attachment as AudioPlaylist).artist_name,
                 " "
             ) + " " +
-                    attachment.getCount() + " " + context.getString(R.string.audios_pattern_count)
+                    attachment.count + " " + context.getString(R.string.audios_pattern_count)
 
             AttachmentsTypes.STORY -> {
                 val item = attachment as Story

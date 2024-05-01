@@ -138,7 +138,7 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
 
     override fun getAllLists(criteria: FeedSourceCriteria): Single<List<FeedListEntity>> {
         return Single.create { e: SingleEmitter<List<FeedListEntity>> ->
-            val uri = getFeedListsContentUriFor(criteria.getAccountId())
+            val uri = getFeedListsContentUriFor(criteria.accountId)
             val cursor = contentResolver.query(uri, null, null, null, null)
             val data: MutableList<FeedListEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {

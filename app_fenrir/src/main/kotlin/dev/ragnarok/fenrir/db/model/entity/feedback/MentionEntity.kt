@@ -10,16 +10,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("mention")
 class MentionEntity : FeedbackEntity {
-    private var where: DboEntity? = null
+    var where: DboEntity? = null
+        private set
 
     @Suppress("UNUSED")
     constructor()
     constructor(@FeedbackType type: Int) {
         this.type = type
-    }
-
-    fun getWhere(): DboEntity? {
-        return where
     }
 
     fun setWhere(where: DboEntity?): MentionEntity {

@@ -38,7 +38,7 @@ class AudiosByArtistPresenter(
         resolveRefreshingView()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
     }
@@ -166,9 +166,9 @@ class AudiosByArtistPresenter(
     fun onAdd(album: AudioPlaylist) {
         audioListDisposable.add(audioInteractor.followPlaylist(
             accountId,
-            album.getId(),
-            album.getOwnerId(),
-            album.getAccess_key()
+            album.id,
+            album.owner_id,
+            album.access_key
         )
             .fromIOToMain()
             .subscribe({

@@ -34,7 +34,7 @@ class LocalVideosAdapter(private val context: Context, private val data: List<Lo
         val video = data[position]
         holder.attachPhoto(video)
         with()
-            .load(buildUriForPicasso(Content_Local.VIDEO, video.getId()))
+            .load(buildUriForPicasso(Content_Local.VIDEO, video.id))
             .tag(TAG)
             .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
             .placeholder(R.drawable.background_gray)
@@ -69,10 +69,10 @@ class LocalVideosAdapter(private val context: Context, private val data: List<Lo
     }
 
     private fun resolveIndexText(video: LocalVideo, holder: ViewHolder) {
-        holder.tvTitle.text = video.getTitle()
+        holder.tvTitle.text = video.title
         holder.tvDuration.text =
-            if (video.getDuration() == 0) "" else AppTextUtils.getDurationStringMS(video.getDuration())
-        holder.tvIndex.text = if (video.getIndex() == 0) "" else video.getIndex().toString()
+            if (video.duration == 0) "" else AppTextUtils.getDurationStringMS(video.duration)
+        holder.tvIndex.text = if (video.index == 0) "" else video.index.toString()
     }
 
     fun setClickListener(clickListener: ClickListener?) {

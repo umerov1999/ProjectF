@@ -6,22 +6,38 @@ import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
 
 class AudioPlaylist : AbsModel {
-    private var id = 0
-    private var owner_id = 0L
-    private var count = 0
-    private var update_time: Long = 0
-    private var year = 0
-    private var artist_name: String? = null
-    private var genre: String? = null
-    private var title: String? = null
-    private var subtitle: String? = null
-    private var subtitle_badge: Boolean = false
-    private var description: String? = null
-    private var thumb_image: String? = null
-    private var access_key: String? = null
-    private var original_access_key: String? = null
-    private var original_id = 0
-    private var original_owner_id = 0L
+    var id = 0
+        private set
+    var owner_id = 0L
+        private set
+    var count = 0
+        private set
+    var update_time: Long = 0
+        private set
+    var year = 0
+        private set
+    var artist_name: String? = null
+        private set
+    var genre: String? = null
+        private set
+    var title: String? = null
+        private set
+    var subtitle: String? = null
+        private set
+    var subtitle_badge: Boolean = false
+        private set
+    var description: String? = null
+        private set
+    var thumb_image: String? = null
+        private set
+    var access_key: String? = null
+        private set
+    var original_access_key: String? = null
+        private set
+    var original_id = 0
+        private set
+    var original_owner_id = 0L
+        private set
 
     constructor()
     internal constructor(parcel: Parcel) {
@@ -67,17 +83,9 @@ class AudioPlaylist : AbsModel {
         return AbsModelType.MODEL_AUDIO_PLAYLIST
     }
 
-    fun getId(): Int {
-        return id
-    }
-
     fun setId(id: Int): AudioPlaylist {
         this.id = id
         return this
-    }
-
-    fun getOwnerId(): Long {
-        return owner_id
     }
 
     fun setOwnerId(ownerId: Long): AudioPlaylist {
@@ -85,17 +93,9 @@ class AudioPlaylist : AbsModel {
         return this
     }
 
-    fun getCount(): Int {
-        return count
-    }
-
     fun setCount(count: Int): AudioPlaylist {
         this.count = count
         return this
-    }
-
-    fun getUpdate_time(): Long {
-        return update_time
     }
 
     fun setUpdate_time(update_time: Long): AudioPlaylist {
@@ -103,17 +103,9 @@ class AudioPlaylist : AbsModel {
         return this
     }
 
-    fun getYear(): Int {
-        return year
-    }
-
     fun setYear(year: Int): AudioPlaylist {
         this.year = year
         return this
-    }
-
-    fun getArtist_name(): String? {
-        return artist_name
     }
 
     fun setArtist_name(artist_name: String?): AudioPlaylist {
@@ -121,17 +113,9 @@ class AudioPlaylist : AbsModel {
         return this
     }
 
-    fun getGenre(): String? {
-        return genre
-    }
-
     fun setGenre(genre: String?): AudioPlaylist {
         this.genre = genre
         return this
-    }
-
-    fun getTitle(): String? {
-        return title
     }
 
     fun setTitle(title: String?): AudioPlaylist {
@@ -139,26 +123,14 @@ class AudioPlaylist : AbsModel {
         return this
     }
 
-    fun getSubtitle(): String? {
-        return subtitle
-    }
-
     fun setSubtitle(subtitle: String?): AudioPlaylist {
         this.subtitle = subtitle
         return this
     }
 
-    fun getIsSubtitleBadge(): Boolean {
-        return subtitle_badge
-    }
-
     fun setSubtitleBadge(subtitle_badge: Boolean): AudioPlaylist {
         this.subtitle_badge = subtitle_badge
         return this
-    }
-
-    fun getDescription(): String? {
-        return description
     }
 
     fun setDescription(description: String?): AudioPlaylist {
@@ -174,17 +146,9 @@ class AudioPlaylist : AbsModel {
         }
     }
 
-    fun getThumb_image(): String? {
-        return thumb_image
-    }
-
     fun setThumb_image(thumb_image: String?): AudioPlaylist {
         this.thumb_image = thumb_image
         return this
-    }
-
-    fun getAccess_key(): String? {
-        return access_key
     }
 
     fun setAccess_key(access_key: String?): AudioPlaylist {
@@ -192,26 +156,14 @@ class AudioPlaylist : AbsModel {
         return this
     }
 
-    fun getOriginal_access_key(): String? {
-        return original_access_key
-    }
-
     fun setOriginal_access_key(original_access_key: String?): AudioPlaylist {
         this.original_access_key = original_access_key
         return this
     }
 
-    fun getOriginal_id(): Int {
-        return original_id
-    }
-
     fun setOriginal_id(original_id: Int): AudioPlaylist {
         this.original_id = original_id
         return this
-    }
-
-    fun getOriginal_owner_id(): Long {
-        return original_owner_id
     }
 
     fun setOriginal_owner_id(original_owner_id: Long): AudioPlaylist {

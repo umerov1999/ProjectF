@@ -38,11 +38,11 @@ class LocalVideosPresenter(savedInstanceState: Bundle?) :
         mLocalVideos_search.clear()
         if (!this.q.isNullOrEmpty()) {
             for (i in mLocalVideos) {
-                if (i.getTitle().isNullOrEmpty()) {
+                if (i.title.isNullOrEmpty()) {
                     continue
                 }
                 if (this.q?.lowercase(Locale.getDefault())
-                        ?.let { i.getTitle()?.lowercase(Locale.getDefault())?.contains(it) } == true
+                        ?.let { i.title?.lowercase(Locale.getDefault())?.contains(it) } == true
                 ) {
                     mLocalVideos_search.add(i)
                 }

@@ -252,8 +252,8 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
             mDrawerItems?.addAll(generateNavDrawerItems())
         } else {
             for (category in list) {
-                if (category.isActive()) {
-                    getItemBySwitchableCategory(category.getId())?.let { mDrawerItems?.add(it) }
+                if (category.active) {
+                    getItemBySwitchableCategory(category.id)?.let { mDrawerItems?.add(it) }
                 }
             }
             mDrawerItems?.add(DividerMenuItem())
@@ -275,8 +275,8 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
         @SwitchableCategory val categories = settings.categoriesOrder
         val items = ArrayList<AbsMenuItem>()
         for (category in categories) {
-            if (category.isActive()) {
-                getItemBySwitchableCategory(category.getId())?.let { items.add(it) }
+            if (category.active) {
+                getItemBySwitchableCategory(category.id)?.let { items.add(it) }
             }
         }
         items.add(DividerMenuItem())

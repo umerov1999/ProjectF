@@ -91,7 +91,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                 val photos: ArrayList<LocalPhoto>? =
                     result.data?.getParcelableArrayListExtraCompat(Extra.PHOTOS)
                 if (photos != null && photos.nonNullNoEmpty()) {
-                    var to_up = photos[0].getFullImageUri() ?: return@registerForActivityResult
+                    var to_up = photos[0].fullImageUri ?: return@registerForActivityResult
                     if (to_up.path?.let { File(it).isFile } == true) {
                         to_up = Uri.fromFile(to_up.path?.let { File(it) })
                     }
@@ -432,7 +432,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         return UserWallPresenter(
             accountId,
             ownerId,
-            wrapper?.get() as User?,
+            wrapper?.owner as User?,
             saveInstanceState
         )
     }

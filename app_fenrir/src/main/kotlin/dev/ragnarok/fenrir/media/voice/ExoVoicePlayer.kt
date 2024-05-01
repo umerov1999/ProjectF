@@ -71,8 +71,8 @@ class ExoVoicePlayer(context: Context, config: ProxyConfig?) : IVoicePlayer {
         exoPlayer?.setWakeMode(C.WAKE_MODE_NETWORK)
         val userAgent = UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
         val url = if (isOpusSupported) firstNonEmptyString(
-            playingEntry?.audio?.getLinkOgg(), playingEntry?.audio?.getLinkMp3()
-        ) else playingEntry?.audio?.getLinkMp3()
+            playingEntry?.audio?.linkOgg, playingEntry?.audio?.linkMp3
+        ) else playingEntry?.audio?.linkMp3
         val mediaSource: MediaSource =
             ProgressiveMediaSource.Factory(getExoPlayerFactory(userAgent, proxyConfig))
                 .createMediaSource(
@@ -126,9 +126,9 @@ class ExoVoicePlayer(context: Context, config: ProxyConfig?) : IVoicePlayer {
     }
 
     private val duration: Long
-        get() = if (playingEntry == null || playingEntry?.audio == null || playingEntry?.audio?.getDuration() == 0) {
+        get() = if (playingEntry == null || playingEntry?.audio?.duration == 0) {
             exoPlayer?.duration?.coerceAtLeast(1L) ?: 1
-        } else (playingEntry?.audio?.getDuration()?.times(1000L)) ?: 1
+        } else (playingEntry?.audio?.duration?.times(1000L)) ?: 1
 
     override val progress: Float
         get() = when {

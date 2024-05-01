@@ -37,7 +37,7 @@ class ValidateActivity : AppCompatActivity() {
     private var accountId: Long = ISettings.IAccountsSettings.INVALID_ID
 
     @SuppressLint("SetJavaScriptEnabled")
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)

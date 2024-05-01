@@ -68,7 +68,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleIntent(intent)
         mFullscreen = savedInstanceState?.getBoolean("mFullscreen") == true

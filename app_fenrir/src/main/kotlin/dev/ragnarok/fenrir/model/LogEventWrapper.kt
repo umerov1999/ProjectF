@@ -1,14 +1,8 @@
 package dev.ragnarok.fenrir.model
 
-class LogEventWrapper(private val event: LogEvent?) {
-    private var expanded = false
-    fun getEvent(): LogEvent? {
-        return event
-    }
-
-    fun isExpanded(): Boolean {
-        return expanded
-    }
+class LogEventWrapper(val event: LogEvent?) {
+    var expanded = false
+        private set
 
     fun setExpanded(expanded: Boolean) {
         this.expanded = expanded

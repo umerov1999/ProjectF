@@ -81,7 +81,7 @@ class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable, Servi
         }
     }
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         attach(this, SlidrConfig.Builder().listener(object : SlidrListener {
             override fun onSlideStateChanged(state: Int) {}
@@ -203,12 +203,12 @@ class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable, Servi
             .commitAllowingStateLoss()
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         ViewUtils.keyboardHide(this)
         super.onPause()
     }
 
-    public override fun onResume() {
+    override fun onResume() {
         val data = intent
         if (data != null && data.extras != null) {
             NotificationHelper.setBubbleOpened(
@@ -219,7 +219,7 @@ class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable, Servi
         super.onResume()
     }
 
-    public override fun onDestroy() {
+    override fun onDestroy() {
         NotificationHelper.resetBubbleOpened(this, true)
         supportFragmentManager.removeOnBackStackChangedListener(mOnBackStackChangedListener)
         ViewUtils.keyboardHide(this)

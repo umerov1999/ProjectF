@@ -115,6 +115,8 @@ dependencies {
     implementation("androidx.vectordrawable:vectordrawable:$vectordrawableVersion")
     implementation("androidx.transition:transition:$transitionVersion")
     implementation("androidx.lifecycle:lifecycle-runtime:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-common:$lifecycleVersion")
     implementation("androidx.drawerlayout:drawerlayout:$drawerlayoutVersion")
     implementation("com.google.errorprone:error_prone_annotations:${errorProneVersion}")
     implementation("androidx.resourceinspection:resourceinspection-annotation:${resourceInspectionAnnotation}")

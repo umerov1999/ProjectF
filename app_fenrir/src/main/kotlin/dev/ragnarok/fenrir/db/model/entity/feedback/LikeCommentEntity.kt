@@ -14,7 +14,8 @@ class LikeCommentEntity : FeedbackEntity {
     var likesOwnerIds: LongArray? = null
         private set
 
-    private var commented: DboEntity? = null
+    var commented: DboEntity? = null
+        private set
 
     var liked: CommentEntity? = null
         private set
@@ -28,10 +29,6 @@ class LikeCommentEntity : FeedbackEntity {
     fun setLiked(liked: CommentEntity?): LikeCommentEntity {
         this.liked = liked
         return this
-    }
-
-    fun getCommented(): DboEntity? {
-        return commented
     }
 
     fun setCommented(commented: DboEntity?): LikeCommentEntity {

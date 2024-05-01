@@ -65,12 +65,12 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
 
     private fun createInitialState(): PhotoAlbumState {
         return PhotoAlbumState()
-            .setPrivacyComment(editor.getPrivacyComment())
-            .setPrivacyView(editor.getPrivacyView())
-            .setCommentsDisabled(editor.isCommentsDisabled())
-            .setUploadByAdminsOnly(editor.isUploadByAdminsOnly())
-            .setDescription(editor.getDescription())
-            .setTitle(editor.getTitle())
+            .setPrivacyComment(editor.privacyComment)
+            .setPrivacyView(editor.privacyView)
+            .setCommentsDisabled(editor.commentsDisabled)
+            .setUploadByAdminsOnly(editor.uploadByAdminsOnly)
+            .setDescription(editor.description)
+            .setTitle(editor.title)
     }
 
     fun fireStepNegativeButtonClick(clickAtStep: Int) {

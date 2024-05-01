@@ -194,9 +194,9 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
     override fun onAudioPlaylistOpen(playlist: AudioPlaylist) {
         getAudiosInAlbumPlace(
             accountId,
-            playlist.getOwnerId(),
-            playlist.getId(),
-            playlist.getAccess_key()
+            playlist.owner_id,
+            playlist.id,
+            playlist.access_key
         ).tryOpenWith(requireActivity())
     }
 
@@ -221,8 +221,8 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
     override fun onMarketAlbumOpen(market_album: MarketAlbum) {
         getMarketPlace(
             accountId,
-            market_album.getOwner_id(),
-            market_album.getId(),
+            market_album.owner_id,
+            market_album.id,
             false
         ).tryOpenWith(
             requireActivity()
@@ -234,7 +234,7 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
     }
 
     override fun onArtistOpen(artist: AudioArtist) {
-        getArtistPlace(accountId, artist.getId()).tryOpenWith(requireActivity())
+        getArtistPlace(accountId, artist.id).tryOpenWith(requireActivity())
     }
 
     override fun onFaveArticle(article: Article) {}

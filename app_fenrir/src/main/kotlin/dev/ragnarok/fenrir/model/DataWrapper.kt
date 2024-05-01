@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.model
 
-class DataWrapper<T>(private val data: MutableList<T>, var isEnabled: Boolean) {
+class DataWrapper<T>(val data: MutableList<T>, var isEnabled: Boolean) {
     fun setEnabled(enabled: Boolean): DataWrapper<*> {
         isEnabled = enabled
         return this
@@ -8,10 +8,6 @@ class DataWrapper<T>(private val data: MutableList<T>, var isEnabled: Boolean) {
 
     fun size(): Int {
         return data.size
-    }
-
-    fun get(): MutableList<T> {
-        return data
     }
 
     fun clear() {

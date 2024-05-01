@@ -13,8 +13,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 class DrawerCategory : Parcelable {
     @SwitchableCategory
-    private val id: String
-    private var active = false
+    val id: String
+    var active = false
+        private set
 
     constructor(@SwitchableCategory id: String, active: Boolean = true) {
         this.id = id
@@ -45,15 +46,6 @@ class DrawerCategory : Parcelable {
                 throw IllegalArgumentException()
             }
         }
-    }
-
-    @SwitchableCategory
-    fun getId(): String {
-        return id
-    }
-
-    fun isActive(): Boolean {
-        return active
     }
 
     fun setActive(checked: Boolean): DrawerCategory {

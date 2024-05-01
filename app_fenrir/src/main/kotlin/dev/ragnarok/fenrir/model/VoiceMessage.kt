@@ -6,16 +6,24 @@ import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
 
 class VoiceMessage : AbsModel {
-    private val id: Int
-    private val ownerId: Long
-    private var duration = 0
-    private var waveform: ByteArray? = null
-    private var linkOgg: String? = null
-    private var linkMp3: String? = null
-    private var accessKey: String? = null
-    private var showTranscript = false
-    private var transcript: String? = null
-    private var was_listened = false
+    val id: Int
+    val ownerId: Long
+    var duration = 0
+        private set
+    var waveform: ByteArray? = null
+        private set
+    var linkOgg: String? = null
+        private set
+    var linkMp3: String? = null
+        private set
+    var accessKey: String? = null
+        private set
+    var showTranscript = false
+        private set
+    var transcript: String? = null
+        private set
+    var was_listened = false
+        private set
 
     constructor(id: Int, ownerId: Long) {
         this.id = id
@@ -44,29 +52,9 @@ class VoiceMessage : AbsModel {
         return this
     }
 
-    fun wasListened(): Boolean {
-        return was_listened
-    }
-
-    fun isShowTranscript(): Boolean {
-        return showTranscript
-    }
-
     fun setShowTranscript(showTranscript: Boolean): VoiceMessage {
         this.showTranscript = showTranscript
         return this
-    }
-
-    fun getId(): Int {
-        return id
-    }
-
-    fun getOwnerId(): Long {
-        return ownerId
-    }
-
-    fun getAccessKey(): String? {
-        return accessKey
     }
 
     fun setAccessKey(accessKey: String?): VoiceMessage {
@@ -74,17 +62,9 @@ class VoiceMessage : AbsModel {
         return this
     }
 
-    fun getDuration(): Int {
-        return duration
-    }
-
     fun setDuration(duration: Int): VoiceMessage {
         this.duration = duration
         return this
-    }
-
-    fun getWaveform(): ByteArray? {
-        return waveform
     }
 
     fun setWaveform(waveform: ByteArray?): VoiceMessage {
@@ -92,26 +72,14 @@ class VoiceMessage : AbsModel {
         return this
     }
 
-    fun getLinkOgg(): String? {
-        return linkOgg
-    }
-
     fun setLinkOgg(linkOgg: String?): VoiceMessage {
         this.linkOgg = linkOgg
         return this
     }
 
-    fun getLinkMp3(): String? {
-        return linkMp3
-    }
-
     fun setLinkMp3(linkMp3: String?): VoiceMessage {
         this.linkMp3 = linkMp3
         return this
-    }
-
-    fun getTranscript(): String? {
-        return transcript
     }
 
     fun setTranscript(transcript: String?): VoiceMessage {

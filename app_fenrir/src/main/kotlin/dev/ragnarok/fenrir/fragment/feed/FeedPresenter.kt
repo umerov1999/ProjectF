@@ -249,7 +249,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun onFeedListsUpdated(lists: List<FeedList>) {
         val sources: MutableList<FeedSource> = ArrayList(lists.size)
         for (list in lists) {
-            sources.add(FeedSource("list" + list.getObjectId(), list.title, true))
+            sources.add(FeedSource("list" + list.id, list.title, true))
         }
         mFeedSources.clear()
         mFeedSources.addAll(createDefaultFeedSources())
@@ -265,13 +265,13 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
         var result = -1
         for (i in mFeedSources.indices) {
             val source = mFeedSources[i]
-            if (mSourceIds.isNullOrEmpty() && source.getValue().isNullOrEmpty()) {
+            if (mSourceIds.isNullOrEmpty() && source.value.isNullOrEmpty()) {
                 source.setActive(true)
                 result = i
                 continue
             }
-            if (mSourceIds.nonNullNoEmpty() && source.getValue()
-                    .nonNullNoEmpty() && mSourceIds == source.getValue()
+            if (mSourceIds.nonNullNoEmpty() && source.value
+                    .nonNullNoEmpty() && mSourceIds == source.value
             ) {
                 source.setActive(true)
                 result = i
@@ -384,7 +384,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireFeedSourceClick(entry: FeedSource) {
-        mSourceIds = entry.getValue()
+        mSourceIds = entry.value
         mNextFrom = null
         cacheLoadingHolder.dispose()
         loadingHolder.dispose()

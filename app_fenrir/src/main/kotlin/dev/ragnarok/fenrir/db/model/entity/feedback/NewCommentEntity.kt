@@ -11,7 +11,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("new_comment")
 class NewCommentEntity : FeedbackEntity {
-    private var commented: DboEntity? = null
+    var commented: DboEntity? = null
+        private set
 
     var comment: CommentEntity? = null
         private set
@@ -25,10 +26,6 @@ class NewCommentEntity : FeedbackEntity {
     fun setComment(comment: CommentEntity?): NewCommentEntity {
         this.comment = comment
         return this
-    }
-
-    fun getCommented(): DboEntity? {
-        return commented
     }
 
     fun setCommented(commented: DboEntity?): NewCommentEntity {

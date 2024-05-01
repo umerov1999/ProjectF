@@ -525,7 +525,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
             requireArguments().getInt(Extra.POST_ID),
             requireArguments().getLong(Extra.OWNER_ID),
             requireArguments().getParcelableCompat(Extra.POST),
-            wrapper?.get(),
+            wrapper?.owner,
             saveInstanceState
         )
     }

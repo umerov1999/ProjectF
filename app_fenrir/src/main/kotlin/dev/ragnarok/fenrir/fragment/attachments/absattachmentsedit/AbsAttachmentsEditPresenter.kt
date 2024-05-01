@@ -248,7 +248,7 @@ abstract class AbsAttachmentsEditPresenter<V : IBaseAttachmentsEditView> interna
 
     private fun doFinalUploadPhotos(photos: List<LocalPhoto>, size: Int) {
         if (size == Upload.IMAGE_SIZE_CROPPING && photos.size == 1) {
-            var to_up = photos[0].getFullImageUri()
+            var to_up = photos[0].fullImageUri
             if (to_up?.path?.let { File(it).isFile } == true) {
                 to_up = Uri.fromFile(to_up.path?.let { File(it) })
             }

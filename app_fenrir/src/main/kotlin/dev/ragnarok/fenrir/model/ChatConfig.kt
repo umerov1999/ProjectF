@@ -9,11 +9,16 @@ import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class ChatConfig : Parcelable {
-    private var models: ModelsBundle
-    private var closeOnSend = false
-    private var initialText: String? = null
-    private var uploadFiles: ArrayList<Uri>? = null
-    private var uploadFilesMimeType: String? = null
+    var models: ModelsBundle
+        private set
+    var closeOnSend = false
+        private set
+    var initialText: String? = null
+        private set
+    var uploadFiles: ArrayList<Uri>? = null
+        private set
+    var uploadFilesMimeType: String? = null
+        private set
 
     constructor() {
         models = ModelsBundle()
@@ -27,40 +32,20 @@ class ChatConfig : Parcelable {
         uploadFilesMimeType = parcel.readString()
     }
 
-    fun getModels(): ModelsBundle {
-        return models
-    }
-
     fun setModels(models: ModelsBundle) {
         this.models = models
-    }
-
-    fun isCloseOnSend(): Boolean {
-        return closeOnSend
     }
 
     fun setCloseOnSend(closeOnSend: Boolean) {
         this.closeOnSend = closeOnSend
     }
 
-    fun getInitialText(): String? {
-        return initialText
-    }
-
     fun setInitialText(initialText: String?) {
         this.initialText = initialText
     }
 
-    fun getUploadFiles(): ArrayList<Uri>? {
-        return uploadFiles
-    }
-
     fun setUploadFiles(uploadFiles: ArrayList<Uri>?) {
         this.uploadFiles = uploadFiles
-    }
-
-    fun getUploadFilesMimeType(): String? {
-        return uploadFilesMimeType
     }
 
     fun setUploadFilesMimeType(uploadFilesMimeType: String?) {

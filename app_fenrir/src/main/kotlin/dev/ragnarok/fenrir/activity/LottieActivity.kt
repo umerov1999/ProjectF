@@ -117,7 +117,7 @@ class LottieActivity : AppCompatActivity() {
     }
 
     @Suppress("DEPRECATION")
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
         Utils.prepareDensity(this)
         Utils.registerColorsThorVG(this)

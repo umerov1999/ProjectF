@@ -13,7 +13,8 @@ class LikeEntity : FeedbackEntity {
     var likesOwnerIds: LongArray? = null
         private set
 
-    private var liked: DboEntity? = null
+    var liked: DboEntity? = null
+        private set
 
     @Suppress("UNUSED")
     constructor()
@@ -24,10 +25,6 @@ class LikeEntity : FeedbackEntity {
     fun setLikesOwnerIds(likesOwnerIds: LongArray?): LikeEntity {
         this.likesOwnerIds = likesOwnerIds
         return this
-    }
-
-    fun getLiked(): DboEntity? {
-        return liked
     }
 
     fun setLiked(liked: DboEntity?): LikeEntity {

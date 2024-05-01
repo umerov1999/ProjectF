@@ -149,7 +149,7 @@ class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
         safeNotifyDataChanged()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
     }

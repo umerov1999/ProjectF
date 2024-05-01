@@ -151,7 +151,7 @@ class PrivacyAdapter(private val mContext: Context, private val mPrivacy: Privac
     private fun bindListEntry(holder: EntryViewHolder, friendList: FriendList, allow: Boolean) {
         with().cancelRequest(holder.avatar)
         holder.avatar.setImageResource(R.drawable.ic_privacy_friends_list)
-        holder.title.text = friendList.getName()
+        holder.title.text = friendList.name
         holder.buttonRemove.setOnClickListener {
             if (mActionListener != null) {
                 if (allow) {

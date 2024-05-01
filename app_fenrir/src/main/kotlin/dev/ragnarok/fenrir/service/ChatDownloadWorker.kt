@@ -272,7 +272,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     )
                     atcontent = Apply(
                         "<#IMAGE_LINK#>",
-                        if (att.getSizes() == null) null else att.getSizes()?.getUrlForSize(
+                        if (att.sizes == null) null else att.sizes?.getUrlForSize(
                             PhotoSize.Y,
                             false
                         ),

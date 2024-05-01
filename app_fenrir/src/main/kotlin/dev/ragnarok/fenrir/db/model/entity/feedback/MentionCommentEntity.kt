@@ -17,7 +17,8 @@ class MentionCommentEntity : FeedbackEntity {
     var where: CommentEntity? = null
         private set
 
-    private var commented: DboEntity? = null
+    var commented: DboEntity? = null
+        private set
 
     @Suppress("UNUSED")
     constructor()
@@ -28,10 +29,6 @@ class MentionCommentEntity : FeedbackEntity {
     fun setWhere(where: CommentEntity?): MentionCommentEntity {
         this.where = where
         return this
-    }
-
-    fun getCommented(): DboEntity? {
-        return commented
     }
 
     fun setCommented(commented: DboEntity?): MentionCommentEntity {

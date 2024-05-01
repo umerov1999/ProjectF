@@ -108,11 +108,11 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
     )
 
     override fun displayCounters(counters: FriendsCounters) {
-        setupTabCounterView(TAB_ALL_FRIENDS, counters.getAll())
-        setupTabCounterView(TAB_ONLINE, counters.getOnline())
-        setupTabCounterView(TAB_FOLLOWERS, counters.getFollowers())
+        setupTabCounterView(TAB_ALL_FRIENDS, counters.all)
+        setupTabCounterView(TAB_ONLINE, counters.online)
+        setupTabCounterView(TAB_FOLLOWERS, counters.followers)
         setupTabCounterView(TAB_REQUESTS, 0)
-        setupTabCounterView(TAB_MUTUAL, counters.getMutual())
+        setupTabCounterView(TAB_MUTUAL, counters.mutual)
         for (i in 0 until (tabLayout?.tabCount ?: 0)) {
             tabLayout?.getTabAt(i)?.text = adapter?.getPageTitle(i)
         }

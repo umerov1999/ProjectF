@@ -67,7 +67,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
             }) { t -> onActualDataGetError(t) })
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshing()
     }
@@ -97,14 +97,14 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
         actualEndOfContent = communities.isEmpty()
         if (do_scan && isNotFriendShow) {
             val not_communities = ArrayList<Owner>()
-            for (i in own.get()) {
+            for (i in own.data) {
                 if (indexOf(communities, i.ownerId) == -1) {
                     not_communities.add(i)
                 }
             }
             val add_communities = ArrayList<Owner>()
             for (i in communities) {
-                if (indexOf(own.get(), i.ownerId) == -1) {
+                if (indexOf(own.data, i.ownerId) == -1) {
                     add_communities.add(i)
                 }
             }
@@ -117,12 +117,12 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
             }
         }
         if (offset == 0) {
-            own.get().clear()
-            own.get().addAll(communities)
+            own.data.clear()
+            own.data.addAll(communities)
             view?.notifyDataSetChanged()
         } else {
             val startOwnSize = own.size()
-            own.get().addAll(communities)
+            own.data.addAll(communities)
             view?.notifyOwnDataAdded(
                 startOwnSize,
                 communities.size
@@ -156,8 +156,8 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
 
     private fun onCachedDataReceived(communities: List<Community>) {
         cacheLoadingNow = false
-        own.get().clear()
-        own.get().addAll(communities)
+        own.data.clear()
+        own.data.addAll(communities)
         view?.notifyDataSetChanged()
         if (isNotFriendShow) {
             requestActualData(communities.isNotEmpty())
@@ -185,7 +185,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
         netSearchNow = false
         if (searchNow) {
             filterDisposable.add(
-                filter(own.get(), filter)
+                filter(own.data, filter)
                     .fromIOToMainComputation()
                     .subscribe({ filteredData ->
                         onFilteredDataReceived(
@@ -384,7 +384,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
                 return false
             }
             for (i in 0 until data.size()) {
-                if (data.get()[i].ownerId == community.ownerId) {
+                if (data.data[i].ownerId == community.ownerId) {
                     return true
                 }
             }

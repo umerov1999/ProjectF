@@ -62,7 +62,7 @@ class GroupSearchCriteria : BaseSearchCriteria {
     }
 
     @Throws(CloneNotSupportedException::class)
-    public override fun clone(): GroupSearchCriteria {
+    override fun clone(): GroupSearchCriteria {
         return super.clone() as GroupSearchCriteria
     }
 

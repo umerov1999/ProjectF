@@ -397,7 +397,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         } else getInstance()?.dispatchTouchEvent(ev, this) == true || super.dispatchTouchEvent(ev)
     }
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         delegate.applyDayNight()
         if (savedInstanceState == null && getMainActivityTransform() == MainActivityTransforms.MAIN) {
             nextRandom()

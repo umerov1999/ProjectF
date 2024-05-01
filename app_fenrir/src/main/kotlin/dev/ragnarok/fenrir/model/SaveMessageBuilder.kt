@@ -3,20 +3,25 @@ package dev.ragnarok.fenrir.model
 import dev.ragnarok.fenrir.crypt.KeyLocationPolicy
 import java.io.File
 
-class SaveMessageBuilder(private val accountId: Long, private val peerId: Long) {
-    private var attachments: MutableList<AbsModel>? = null
-    private var forwardMessages: List<Message>? = null
-    private var text: String? = null
-    private var voiceMessageFile: File? = null
-    private var requireEncryption = false
-    private var draftMessageId: Int? = null
-    private var payload: String? = null
+class SaveMessageBuilder(val accountId: Long, val peerId: Long) {
+    var attachments: MutableList<AbsModel>? = null
+        private set
+    var forwardMessages: List<Message>? = null
+        private set
+    var text: String? = null
+        private set
+    var voiceMessageFile: File? = null
+        private set
+    var requireEncryption = false
+        private set
+    var draftMessageId: Int? = null
+        private set
+    var payload: String? = null
+        private set
 
     @KeyLocationPolicy
-    private var keyLocationPolicy: Int
-    fun getDraftMessageId(): Int? {
-        return draftMessageId
-    }
+    var keyLocationPolicy: Int
+        private set
 
     fun setDraftMessageId(draftMessageId: Int?): SaveMessageBuilder {
         this.draftMessageId = draftMessageId
@@ -42,29 +47,9 @@ class SaveMessageBuilder(private val accountId: Long, private val peerId: Long) 
         return this
     }
 
-    fun getAccountId(): Long {
-        return accountId
-    }
-
-    fun getPeerId(): Long {
-        return peerId
-    }
-
-    fun getAttachments(): List<AbsModel>? {
-        return attachments
-    }
-
-    fun getForwardMessages(): List<Message>? {
-        return forwardMessages
-    }
-
     fun setForwardMessages(forwardMessages: List<Message>?): SaveMessageBuilder {
         this.forwardMessages = forwardMessages
         return this
-    }
-
-    fun getText(): String? {
-        return text
     }
 
     fun setText(text: String?): SaveMessageBuilder {
@@ -72,17 +57,9 @@ class SaveMessageBuilder(private val accountId: Long, private val peerId: Long) 
         return this
     }
 
-    fun getVoiceMessageFile(): File? {
-        return voiceMessageFile
-    }
-
     fun setVoiceMessageFile(voiceMessageFile: File?): SaveMessageBuilder {
         this.voiceMessageFile = voiceMessageFile
         return this
-    }
-
-    fun isRequireEncryption(): Boolean {
-        return requireEncryption
     }
 
     fun setRequireEncryption(requireEncryption: Boolean): SaveMessageBuilder {
@@ -90,18 +67,9 @@ class SaveMessageBuilder(private val accountId: Long, private val peerId: Long) 
         return this
     }
 
-    @KeyLocationPolicy
-    fun getKeyLocationPolicy(): Int {
-        return keyLocationPolicy
-    }
-
     fun setKeyLocationPolicy(keyLocationPolicy: Int): SaveMessageBuilder {
         this.keyLocationPolicy = keyLocationPolicy
         return this
-    }
-
-    fun getPayload(): String? {
-        return payload
     }
 
     fun setPayload(payload: String?): SaveMessageBuilder {

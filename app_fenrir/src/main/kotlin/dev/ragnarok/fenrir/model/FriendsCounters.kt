@@ -4,10 +4,10 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class FriendsCounters : Parcelable {
-    private val all: Int
-    private val online: Int
-    private val followers: Int
-    private val mutual: Int
+    val all: Int
+    val online: Int
+    val followers: Int
+    val mutual: Int
 
     constructor(all: Int, online: Int, followers: Int, mutual: Int) {
         this.all = all
@@ -21,22 +21,6 @@ class FriendsCounters : Parcelable {
         online = parcel.readInt()
         followers = parcel.readInt()
         mutual = parcel.readInt()
-    }
-
-    fun getAll(): Int {
-        return all
-    }
-
-    fun getFollowers(): Int {
-        return followers
-    }
-
-    fun getMutual(): Int {
-        return mutual
-    }
-
-    fun getOnline(): Int {
-        return online
     }
 
     override fun describeContents(): Int {

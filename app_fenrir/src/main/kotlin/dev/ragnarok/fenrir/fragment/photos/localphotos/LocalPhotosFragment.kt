@@ -79,7 +79,7 @@ class LocalPhotosFragment : BaseMvpFragment<LocalPhotosPresenter, ILocalPhotosVi
 
     override fun onLongPhotoClick(holder: LocalPhotosAdapter.ViewHolder, photo: LocalPhoto) {
         getSingleURLPhotoPlace(
-            "file://" + photo.getFullImageUri()?.path,
+            "file://" + photo.fullImageUri?.path,
             "Preview",
             "Temp"
         ).tryOpenWith(

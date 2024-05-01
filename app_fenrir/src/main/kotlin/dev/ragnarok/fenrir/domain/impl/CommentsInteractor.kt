@@ -352,7 +352,7 @@ class CommentsInteractor(
         intent: CommentIntent
     ): Single<Comment> {
         val cachedAttachments: Single<List<IAttachmentToken>> =
-            intent.getDraftMessageId().requireNonNull({
+            intent.draftMessageId.requireNonNull({
                 getCachedAttachmentsToken(accountId, it)
             }, {
                 Single.just(emptyList())
@@ -361,8 +361,8 @@ class CommentsInteractor(
             .flatMap { cachedTokens ->
                 val tokens: MutableList<IAttachmentToken> = ArrayList()
                 tokens.addAll(cachedTokens)
-                if (intent.getModels().nonNullNoEmpty()) {
-                    tokens.addAll(createTokens(intent.getModels()))
+                intent.models.nonNullNoEmpty {
+                    tokens.addAll(createTokens(it))
                 }
                 sendComment(accountId, commented, intent, tokens)
                     .flatMap { id ->
@@ -375,7 +375,7 @@ class CommentsInteractor(
                         )
                     }
                     .flatMap { comment ->
-                        intent.getDraftMessageId().requireNonNull({
+                        intent.draftMessageId.requireNonNull({
                             cache.comments()
                                 .deleteByDbid(accountId, it)
                                 .andThen(Single.just(comment))
@@ -616,12 +616,12 @@ class CommentsInteractor(
         val apies = networker.vkDefault(accountId)
         return when (commented.sourceType) {
             CommentedType.POST -> {
-                val fromGroup = if (intent.getAuthorId() < 0) abs(intent.getAuthorId()) else null
+                val fromGroup = if (intent.authorId < 0) abs(intent.authorId) else null
                 apies.wall()
                     .createComment(
                         commented.sourceOwnerId, commented.sourceId,
-                        fromGroup, intent.getMessage(), intent.getReplyToComment(),
-                        attachments, intent.getStickerId(), intent.getDraftMessageId()
+                        fromGroup, intent.message, intent.replyToComment,
+                        attachments, intent.stickerId, intent.draftMessageId
                     )
             }
 
@@ -629,20 +629,20 @@ class CommentsInteractor(
                 .createComment(
                     commented.sourceOwnerId,
                     commented.sourceId,
-                    intent.getAuthorId() < 0,
-                    intent.getMessage(),
-                    intent.getReplyToComment(),
+                    intent.authorId < 0,
+                    intent.message,
+                    intent.replyToComment,
                     attachments,
-                    intent.getStickerId(),
+                    intent.stickerId,
                     commented.accessKey,
-                    intent.getDraftMessageId()
+                    intent.draftMessageId
                 )
 
             CommentedType.VIDEO -> apies.video()
                 .createComment(
                     commented.sourceOwnerId, commented.sourceId,
-                    intent.getMessage(), attachments, intent.getAuthorId() < 0,
-                    intent.getReplyToComment(), intent.getStickerId(), intent.getDraftMessageId()
+                    intent.message, attachments, intent.authorId < 0,
+                    intent.replyToComment, intent.stickerId, intent.draftMessageId
                 )
 
             CommentedType.TOPIC -> {
@@ -651,11 +651,11 @@ class CommentsInteractor(
                     .addComment(
                         topicGroupId,
                         commented.sourceId,
-                        intent.getMessage(),
+                        intent.message,
                         attachments,
-                        intent.getAuthorId() < 0,
-                        intent.getStickerId(),
-                        intent.getDraftMessageId()
+                        intent.authorId < 0,
+                        intent.stickerId,
+                        intent.draftMessageId
                     )
             }
 

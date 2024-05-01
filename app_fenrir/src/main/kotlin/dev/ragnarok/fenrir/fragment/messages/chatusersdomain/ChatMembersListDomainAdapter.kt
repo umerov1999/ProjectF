@@ -41,7 +41,7 @@ class ChatMembersListDomainAdapter(context: Context, private var data: List<AppC
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = data[position]
-        val user = item.getMember()
+        val user = item.member
         var online = false
         var onlineMobile = false
         @UserPlatform var platform = UserPlatform.UNKNOWN

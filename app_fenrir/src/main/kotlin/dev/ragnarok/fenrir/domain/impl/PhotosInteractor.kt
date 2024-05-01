@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.domain.impl
 
 import android.provider.BaseColumns
 import dev.ragnarok.fenrir.api.interfaces.INetworker
+import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.api.model.VKApiPhotoAlbum
 import dev.ragnarok.fenrir.db.interfaces.IStorages
 import dev.ragnarok.fenrir.db.model.PhotoPatch
@@ -23,7 +24,7 @@ import dev.ragnarok.fenrir.fragment.search.criteria.PhotoSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.options.SimpleDateOption
 import dev.ragnarok.fenrir.fragment.search.options.SimpleGPSOption
 import dev.ragnarok.fenrir.fragment.search.options.SpinnerOption
-import dev.ragnarok.fenrir.model.AccessIdPair
+import dev.ragnarok.fenrir.model.AccessIdPairModel
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.CommentedType
@@ -161,10 +162,8 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     ): Single<List<Photo>> {
         val criteria = PhotoCriteria(accountId).setAlbumId(albumId).setOwnerId(ownerId)
             .setSortInvert(sortInvert)
-        if (albumId == -15 || albumId == -9001) {
-            criteria.setOrderBy(BaseColumns._ID)
-        }
         if (albumId == -9001 || albumId == -9000) {
+            criteria.setOrderBy(BaseColumns._ID)
             return cache.photos()
                 .findPhotosExtendedByCriteriaRx(criteria)
                 .map { op ->
@@ -421,14 +420,14 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
 
     override fun getPhotosByIds(
         accountId: Long,
-        ids: Collection<AccessIdPair>
+        ids: Collection<AccessIdPairModel>
     ): Single<List<Photo>> {
-        val dtoPairs: MutableList<dev.ragnarok.fenrir.api.model.AccessIdPair> = ArrayList(ids.size)
+        val dtoPairs: MutableList<AccessIdPair> = ArrayList(ids.size)
         for (pair in ids) {
             dtoPairs.add(
-                dev.ragnarok.fenrir.api.model.AccessIdPair(
-                    pair.getId(),
-                    pair.getOwnerId(), pair.getAccessKey()
+                AccessIdPair(
+                    pair.id,
+                    pair.ownerId, pair.accessKey
                 )
             )
         }

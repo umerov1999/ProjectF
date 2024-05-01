@@ -20,11 +20,11 @@ class WallEditorAttrs : Parcelable {
     }
 
     fun getOwner(): Owner {
-        return owner.get()!!
+        return owner.owner!!
     }
 
     fun getEditor(): Owner {
-        return editor.get()!!
+        return editor.owner!!
     }
 
     override fun describeContents(): Int {

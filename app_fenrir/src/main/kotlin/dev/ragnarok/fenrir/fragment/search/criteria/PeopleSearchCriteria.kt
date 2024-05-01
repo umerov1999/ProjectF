@@ -155,7 +155,7 @@ class PeopleSearchCriteria : BaseSearchCriteria {
     }
 
     @Throws(CloneNotSupportedException::class)
-    public override fun clone(): PeopleSearchCriteria {
+    override fun clone(): PeopleSearchCriteria {
         return super.clone() as PeopleSearchCriteria
     }
 

@@ -372,7 +372,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
     }
 
     override fun onPlayListClick(item: AudioPlaylist, pos: Int) {
-        if (item.getOwnerId() == Settings.get()
+        if (item.owner_id == Settings.get()
                 .accounts().current
         ) presenter?.onDelete(item) else presenter?.onAdd(item)
     }

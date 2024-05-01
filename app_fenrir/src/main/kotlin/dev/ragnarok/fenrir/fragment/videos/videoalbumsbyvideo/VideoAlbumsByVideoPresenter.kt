@@ -68,9 +68,9 @@ class VideoAlbumsByVideoPresenter(
         view?.openAlbum(
             accountId,
             ownerId,
-            album.getId(),
+            album.id,
             null,
-            album.getTitle()
+            album.title
         )
     }
 

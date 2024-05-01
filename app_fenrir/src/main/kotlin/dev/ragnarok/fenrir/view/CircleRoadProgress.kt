@@ -29,7 +29,7 @@ class CircleRoadProgress(context: Context, attrs: AttributeSet) : View(context, 
         roadRadius = w.toFloat() / 2 - roadStrokeWidth / 2 - paddingInContainer
     }
 
-    public override fun onDraw(canvas: Canvas) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         drawRoad(canvas)
         drawArcLoading(canvas)

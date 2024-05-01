@@ -51,7 +51,7 @@ class VideoSearchCriteria : BaseSearchCriteria {
     }
 
     @Throws(CloneNotSupportedException::class)
-    public override fun clone(): VideoSearchCriteria {
+    override fun clone(): VideoSearchCriteria {
         val o = super.clone() as VideoSearchCriteria
         o.action = action
         return o

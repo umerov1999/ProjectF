@@ -119,12 +119,12 @@ class LogsFragment : BaseMvpFragment<LogsPresenter, ILogsView>(), ILogsView,
     }
 
     override fun onShareClick(wrapper: LogEventWrapper) {
-        val event = wrapper.getEvent()
+        val event = wrapper.event
         shareLink(requireActivity(), event?.body, event?.tag)
     }
 
     override fun onCopyClick(wrapper: LogEventWrapper) {
-        val event = wrapper.getEvent()
+        val event = wrapper.event
         val clipboard =
             requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
         val clip = ClipData.newPlainText(event?.tag, event?.body)

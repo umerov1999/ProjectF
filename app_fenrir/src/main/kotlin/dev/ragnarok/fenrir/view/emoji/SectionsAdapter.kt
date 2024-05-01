@@ -32,7 +32,7 @@ class SectionsAdapter(private val data: List<AbsSection>, private val mContext: 
 
             AbsSection.TYPE_STICKER -> {
                 val stickerSection = section as StickerSection
-                if (stickerSection.stickerSet.getTitle() != null && stickerSection.stickerSet.getTitle() == "recent") {
+                if (stickerSection.stickerSet.title != null && stickerSection.stickerSet.title == "recent") {
                     holder.icon.setImageResource(R.drawable.pin)
                     holder.icon.drawable.setTint(CurrentTheme.getColorPrimary(mContext))
                 } else {

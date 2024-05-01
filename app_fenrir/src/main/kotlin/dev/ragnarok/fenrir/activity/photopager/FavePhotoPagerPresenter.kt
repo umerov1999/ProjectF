@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.activity.photopager
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.model.AccessIdPair
+import dev.ragnarok.fenrir.model.AccessIdPairModel
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
@@ -78,7 +78,8 @@ class FavePhotoPagerPresenter : PhotoPagerPresenter {
         }
         refreshing[index] = true
         val photo = mPhotos[index]
-        val forUpdate = listOf(AccessIdPair(photo.getObjectId(), photo.ownerId, photo.accessKey))
+        val forUpdate =
+            listOf(AccessIdPairModel(photo.getObjectId(), photo.ownerId, photo.accessKey))
         appendDisposable(photosInteractor.getPhotosByIds(accountId, forUpdate)
             .fromIOToMain()
             .subscribe({ photos ->

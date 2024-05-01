@@ -21,7 +21,6 @@ import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.model.criteria.PhotoCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
@@ -252,27 +251,21 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
         }
 
         internal fun getSelectionForCriteria(criteria: PhotoCriteria): String {
-            var selection = "1 = 1"
-            selection = selection + " AND " + PhotosColumns.OWNER_ID + " = " + criteria.ownerId
-            selection = selection + " AND " + PhotosColumns.ALBUM_ID + " = " + criteria.albumId
-            val range = criteria.range
-            if (range != null) {
-                selection = selection + " AND " + BaseColumns._ID + " >= " + range.first +
-                        " AND " + BaseColumns._ID + " <= " + criteria.range?.last.orZero()
+            var selection = PhotosColumns.OWNER_ID + " = " + criteria.ownerId
+            selection += (" AND " + PhotosColumns.ALBUM_ID + " = " + criteria.albumId)
+            criteria.range?.let {
+                selection += (" AND " + BaseColumns._ID + " >= " + it.first +
+                        " AND " + BaseColumns._ID + " <= " + it.last)
             }
             return selection
         }
 
         internal fun getSelectionExtendedForCriteria(criteria: PhotoCriteria): String {
-            var selection = "1 = 1"
-            selection =
-                selection + " AND " + PhotosExtendedColumns.DB_OWNER_ID + " = " + criteria.ownerId
-            selection =
-                selection + " AND " + PhotosExtendedColumns.DB_ALBUM_ID + " = " + criteria.albumId
-            val range = criteria.range
-            if (range != null) {
-                selection = selection + " AND " + BaseColumns._ID + " >= " + range.first +
-                        " AND " + BaseColumns._ID + " <= " + criteria.range?.last.orZero()
+            var selection = PhotosExtendedColumns.DB_OWNER_ID + " = " + criteria.ownerId
+            selection += (" AND " + PhotosExtendedColumns.DB_ALBUM_ID + " = " + criteria.albumId)
+            criteria.range?.let {
+                selection += (" AND " + BaseColumns._ID + " >= " + it.first +
+                        " AND " + BaseColumns._ID + " <= " + it.last)
             }
             return selection
         }

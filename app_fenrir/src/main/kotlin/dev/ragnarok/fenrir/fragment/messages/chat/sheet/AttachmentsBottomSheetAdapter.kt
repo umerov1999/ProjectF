@@ -203,7 +203,7 @@ class AttachmentsBottomSheetAdapter(
 
     private fun bindPhotoAlbum(holder: EntryHolder, album: PhotoAlbum) {
         holder.title.setText(R.string.photo_album)
-        val photoLink = album.getSizes()?.getUrlForSize(
+        val photoLink = album.sizes?.getUrlForSize(
             PhotoSize.X,
             false
         )
@@ -243,11 +243,11 @@ class AttachmentsBottomSheetAdapter(
     }
 
     private fun bindMarketAlbum(holder: EntryHolder, market_album: MarketAlbum) {
-        holder.title.text = market_album.getTitle()
+        holder.title.text = market_album.title
         holder.progress.visibility = View.INVISIBLE
         holder.Retry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
-        val photoLink = market_album.getPhoto()?.getUrlForSize(
+        val photoLink = market_album.photo?.getUrlForSize(
             PhotoSize.X,
             false
         )
@@ -255,7 +255,7 @@ class AttachmentsBottomSheetAdapter(
     }
 
     private fun bindAudioArtist(holder: EntryHolder, artist: AudioArtist) {
-        holder.title.text = artist.getName()
+        holder.title.text = artist.name
         holder.progress.visibility = View.INVISIBLE
         holder.Retry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
@@ -264,11 +264,11 @@ class AttachmentsBottomSheetAdapter(
     }
 
     private fun bindAudioPlaylist(holder: EntryHolder, link: AudioPlaylist) {
-        holder.title.text = link.getTitle()
+        holder.title.text = link.title
         holder.progress.visibility = View.INVISIBLE
         holder.Retry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
-        val photoLink = link.getThumb_image()
+        val photoLink = link.thumb_image
         bindImageView(holder, photoLink)
     }
 

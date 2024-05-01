@@ -28,12 +28,12 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 class UserDetailsPresenter(
     accountId: Long,
     private val user: User,
-    details: UserDetails,
+    private val details: UserDetails,
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IUserDetailsView>(accountId, savedInstanceState) {
-    private var details: UserDetails = UserDetails()
-    private var photos_profile: List<Photo> = ArrayList(1)
+    private val photos_profile = ArrayList<Photo>()
     private var current_select = 0
+    private val userDetailsList = ArrayList<AdvancedItem>()
     fun fireChatClick() {
         val peer = Peer(
             Peer.fromUserId(
@@ -60,7 +60,7 @@ class UserDetailsPresenter(
             accountId,
             user.ownerId,
             -6,
-            ArrayList(photos_profile),
+            photos_profile,
             current_select
         )
     }
@@ -69,8 +69,8 @@ class UserDetailsPresenter(
         if (photos.isEmpty()) {
             return
         }
-        val currentAvatarPhotoId = details.getPhotoId()?.id
-        val currentAvatarOwner_id = details.getPhotoId()?.ownerId
+        val currentAvatarPhotoId = details.photoId?.id
+        val currentAvatarOwner_id = details.photoId?.ownerId
         var sel = 0
         if (currentAvatarPhotoId != null && currentAvatarOwner_id != null) {
             var ut = 0
@@ -83,17 +83,17 @@ class UserDetailsPresenter(
             }
         }
         current_select = sel
-        photos_profile = photos
+        photos_profile.clear()
+        photos_profile.addAll(photos)
         val finalSel = sel
         view?.onPhotosLoaded(photos[finalSel])
     }
 
-    private fun createData(): List<AdvancedItem> {
-        val items: MutableList<AdvancedItem> = ArrayList()
+    private fun createData() {
         val mainSection = Section(Text(R.string.mail_information))
         val domain =
             if (user.domain.nonNullNoEmpty()) "@" + user.domain else "@" + user.getOwnerObjectId()
-        items.add(
+        userDetailsList.add(
             AdvancedItem(
                 1, Text(R.string.id),
                 AdvancedItem.TYPE_COPY_DETAILS_ONLY,
@@ -103,7 +103,7 @@ class UserDetailsPresenter(
                 .setIcon(Icon.fromResources(R.drawable.person))
                 .setSection(mainSection)
         )
-        items.add(
+        userDetailsList.add(
             AdvancedItem(2, Text(R.string.sex))
                 .setSubtitle(
                     Text(
@@ -127,98 +127,98 @@ class UserDetailsPresenter(
         )
         if (user.bdate.nonNullNoEmpty()) {
             val formatted = getDateWithZeros(user.bdate)
-            items.add(
+            userDetailsList.add(
                 AdvancedItem(3, Text(R.string.birthday), autolink = false)
                     .setSubtitle(Text(formatted))
                     .setIcon(Icon.fromResources(R.drawable.cake))
                     .setSection(mainSection)
             )
         }
-        details.getCity().requireNonNull {
-            items.add(
+        details.city.requireNonNull {
+            userDetailsList.add(
                 AdvancedItem(4, Text(R.string.city))
                     .setSubtitle(Text(it.title))
                     .setIcon(Icon.fromResources(R.drawable.ic_city))
                     .setSection(mainSection)
             )
         }
-        details.getCountry().requireNonNull {
-            items.add(
+        details.country.requireNonNull {
+            userDetailsList.add(
                 AdvancedItem(5, Text(R.string.country))
                     .setSubtitle(Text(it.title))
                     .setIcon(Icon.fromResources(R.drawable.ic_country))
                     .setSection(mainSection)
             )
         }
-        if (details.getHometown().nonNullNoEmpty()) {
-            items.add(
+        details.hometown.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(6, Text(R.string.hometown))
-                    .setSubtitle(Text(details.getHometown()))
+                    .setSubtitle(Text(it))
                     .setIcon(Icon.fromResources(R.drawable.ic_city))
                     .setSection(mainSection)
             )
         }
-        if (details.getPhone().nonNullNoEmpty()) {
-            items.add(
+        details.phone.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(7, Text(R.string.mobile_phone_number))
-                    .setSubtitle(Text(details.getPhone()))
+                    .setSubtitle(Text(it))
                     .setIcon(R.drawable.cellphone)
                     .setSection(mainSection)
             )
         }
-        if (details.getHomePhone().nonNullNoEmpty()) {
-            items.add(
+        details.homePhone.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(8, Text(R.string.home_phone_number))
-                    .setSubtitle(Text(details.getHomePhone()))
+                    .setSubtitle(Text(it))
                     .setIcon(R.drawable.cellphone)
                     .setSection(mainSection)
             )
         }
-        if (details.getSkype().nonNullNoEmpty()) {
-            items.add(
+        details.skype.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(9, Text(R.string.skype), AdvancedItem.TYPE_COPY_DETAILS_ONLY)
-                    .setSubtitle(Text(details.getSkype()))
+                    .setSubtitle(Text(it))
                     .setIcon(R.drawable.ic_skype)
                     .setSection(mainSection)
             )
         }
-        if (details.getInstagram().nonNullNoEmpty()) {
-            items.add(
+        details.instagram.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(10, Text(R.string.instagram), AdvancedItem.TYPE_OPEN_URL)
-                    .setSubtitle(Text(details.getInstagram()))
+                    .setSubtitle(Text(it))
                     .setUrlPrefix("https://www.instagram.com")
                     .setIcon(R.drawable.instagram)
                     .setSection(mainSection)
             )
         }
-        if (details.getTwitter().nonNullNoEmpty()) {
-            items.add(
+        details.twitter.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(11, Text(R.string.twitter), AdvancedItem.TYPE_OPEN_URL)
-                    .setSubtitle(Text(details.getTwitter()))
+                    .setSubtitle(Text(it))
                     .setIcon(R.drawable.twitter)
                     .setUrlPrefix("https://mobile.twitter.com")
                     .setSection(mainSection)
             )
         }
-        if (details.getFacebook().nonNullNoEmpty()) {
-            items.add(
+        details.facebook.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(12, Text(R.string.facebook), AdvancedItem.TYPE_OPEN_URL)
-                    .setSubtitle(Text(details.getFacebook()))
+                    .setSubtitle(Text(it))
                     .setIcon(R.drawable.facebook)
                     .setUrlPrefix("https://m.facebook.com")
                     .setSection(mainSection)
             )
         }
-        if (user.status.nonNullNoEmpty()) {
-            items.add(
+        user.status.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(13, Text(R.string.status))
-                    .setSubtitle(Text(user.status))
+                    .setSubtitle(Text(it))
                     .setIcon(R.drawable.ic_profile_status)
                     .setSection(mainSection)
             )
         }
-        details.getLanguages().nonNullNoEmpty {
-            items.add(
+        details.languages.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(14, Text(R.string.languages))
                     .setIcon(R.drawable.ic_language)
                     .setSubtitle(
@@ -234,181 +234,181 @@ class UserDetailsPresenter(
                     .setSection(mainSection)
             )
         }
-        if (details.getSite().nonNullNoEmpty()) {
-            items.add(
+        details.site.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(15, Text(R.string.website))
                     .setIcon(R.drawable.ic_site)
                     .setSection(mainSection)
-                    .setSubtitle(Text(details.getSite()))
+                    .setSubtitle(Text(it))
             )
         }
-        items.add(
+        userDetailsList.add(
             AdvancedItem(16, Text(R.string.profile))
-                .setSubtitle(Text((if (details.isClosed()) R.string.closed else R.string.opened)))
+                .setSubtitle(Text((if (details.isClosed) R.string.closed else R.string.opened)))
                 .setIcon(R.drawable.lock_outline)
                 .setSection(mainSection)
         )
         val pesonal = Section(Text(R.string.personal_information))
         addPersonalInfo(
-            items,
+            userDetailsList,
             R.drawable.star,
             17,
             pesonal,
             R.string.interests,
-            details.getInterests()
+            details.interests
         )
         addPersonalInfo(
-            items,
+            userDetailsList,
             R.drawable.star,
             18,
             pesonal,
             R.string.activities,
-            details.getActivities()
+            details.activities
         )
         addPersonalInfo(
-            items,
+            userDetailsList,
             R.drawable.music,
             19,
             pesonal,
             R.string.favorite_music,
-            details.getMusic()
+            details.music
         )
         addPersonalInfo(
-            items,
+            userDetailsList,
             R.drawable.movie,
             20,
             pesonal,
             R.string.favorite_movies,
-            details.getMovies()
+            details.movies
         )
         addPersonalInfo(
-            items,
+            userDetailsList,
             R.drawable.ic_favorite_tv,
             21,
             pesonal,
             R.string.favorite_tv_shows,
-            details.getTv()
+            details.tv
         )
         addPersonalInfo(
-            items,
+            userDetailsList,
             R.drawable.ic_favorite_quotes,
             22,
             pesonal,
             R.string.favorite_quotes,
-            details.getQuotes()
+            details.quotes
         )
         addPersonalInfo(
-            items,
+            userDetailsList,
             R.drawable.ic_favorite_game,
             23,
             pesonal,
             R.string.favorite_games,
-            details.getGames()
+            details.games
         )
         addPersonalInfo(
-            items,
+            userDetailsList,
             R.drawable.ic_about_me,
             24,
             pesonal,
             R.string.about_me,
-            details.getAbout()
+            details.about
         )
         addPersonalInfo(
-            items,
+            userDetailsList,
             R.drawable.book,
             25,
             pesonal,
             R.string.favorite_books,
-            details.getBooks()
+            details.books
         )
         val beliefs = Section(Text(R.string.beliefs))
-        if (getPoliticalViewRes(details.getPolitical()) != null) {
-            items.add(
+        getPoliticalViewRes(details.political).requireNonNull {
+            userDetailsList.add(
                 AdvancedItem(26, Text(R.string.political_views))
                     .setSection(beliefs)
                     .setIcon(R.drawable.ic_profile_personal)
                     .setSubtitle(
                         Text(
                             getPoliticalViewRes(
-                                details.getPolitical()
+                                details.political
                             )
                         )
                     )
             )
         }
-        if (getLifeMainRes(details.getLifeMain()) != null) {
-            items.add(
+        getLifeMainRes(details.lifeMain).requireNonNull {
+            userDetailsList.add(
                 AdvancedItem(27, Text(R.string.personal_priority))
                     .setSection(beliefs)
                     .setIcon(R.drawable.ic_profile_personal)
                     .setSubtitle(
                         Text(
                             getLifeMainRes(
-                                details.getLifeMain()
+                                details.lifeMain
                             )
                         )
                     )
             )
         }
-        if (getPeopleMainRes(details.getPeopleMain()) != null) {
-            items.add(
+        getPeopleMainRes(details.peopleMain).requireNonNull {
+            userDetailsList.add(
                 AdvancedItem(28, Text(R.string.important_in_others))
                     .setSection(beliefs)
                     .setIcon(R.drawable.ic_profile_personal)
                     .setSubtitle(
                         Text(
                             getPeopleMainRes(
-                                details.getPeopleMain()
+                                details.peopleMain
                             )
                         )
                     )
             )
         }
-        if (getAlcoholOrSmokingViewRes(details.getSmoking()) != null) {
-            items.add(
+        getAlcoholOrSmokingViewRes(details.smoking).requireNonNull {
+            userDetailsList.add(
                 AdvancedItem(29, Text(R.string.views_on_smoking))
                     .setSection(beliefs)
                     .setIcon(R.drawable.ic_profile_personal)
                     .setSubtitle(
                         Text(
                             getAlcoholOrSmokingViewRes(
-                                details.getSmoking()
+                                details.smoking
                             )
                         )
                     )
             )
         }
-        if (getAlcoholOrSmokingViewRes(details.getAlcohol()) != null) {
-            items.add(
+        getAlcoholOrSmokingViewRes(details.alcohol).requireNonNull {
+            userDetailsList.add(
                 AdvancedItem(30, Text(R.string.views_on_alcohol))
                     .setSection(beliefs)
                     .setIcon(R.drawable.ic_profile_personal)
                     .setSubtitle(
                         Text(
                             getAlcoholOrSmokingViewRes(
-                                details.getAlcohol()
+                                details.alcohol
                             )
                         )
                     )
             )
         }
-        if (details.getInspiredBy().nonNullNoEmpty()) {
-            items.add(
+        details.inspiredBy.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(31, Text(R.string.inspired_by))
                     .setIcon(R.drawable.ic_profile_personal)
                     .setSection(beliefs)
-                    .setSubtitle(Text(details.getInspiredBy()))
+                    .setSubtitle(Text(it))
             )
         }
-        if (details.getReligion().nonNullNoEmpty()) {
-            items.add(
+        details.religion.nonNullNoEmpty {
+            userDetailsList.add(
                 AdvancedItem(32, Text(R.string.world_view))
                     .setSection(beliefs)
                     .setIcon(R.drawable.ic_profile_personal)
-                    .setSubtitle(Text(details.getReligion()))
+                    .setSubtitle(Text(it))
             )
         }
-        details.getCareers().nonNullNoEmpty {
+        details.careers.nonNullNoEmpty {
             val career = Section(Text(R.string.career))
             for (c in it) {
                 val icon =
@@ -419,7 +419,7 @@ class UserDetailsPresenter(
                     c.from.toString() + " - " + if (c.until == 0) getString(R.string.activity_until_now) else c.until.toString()
                 val company = if (c.group == null) c.company else c.group?.fullName
                 val title = if (c.position.isNullOrEmpty()) company else c.position + ", " + company
-                items.add(
+                userDetailsList.add(
                     AdvancedItem(33, Text(title))
                         .setSubtitle(Text(term))
                         .setIcon(icon)
@@ -428,12 +428,12 @@ class UserDetailsPresenter(
                 )
             }
         }
-        details.getMilitaries().nonNullNoEmpty {
+        details.militaries.nonNullNoEmpty {
             val section = Section(Text(R.string.military_service))
             for (m in it) {
                 val term =
                     m.from.toString() + " - " + if (m.until == 0) getString(R.string.activity_until_now) else m.until.toString()
-                items.add(
+                userDetailsList.add(
                     AdvancedItem(34, Text(m.unit))
                         .setSubtitle(Text(term))
                         .setIcon(R.drawable.ic_military)
@@ -441,20 +441,20 @@ class UserDetailsPresenter(
                 )
             }
         }
-        if (details.getUniversities().nonNullNoEmpty() || details.getSchools().nonNullNoEmpty()) {
+        if (details.universities.nonNullNoEmpty() || details.schools.nonNullNoEmpty()) {
             val section = Section(Text(R.string.education))
-            if (details.getUniversities().nonNullNoEmpty()) {
-                for (u in details.getUniversities().orEmpty()) {
-                    val title = u.getName()
+            if (details.universities.nonNullNoEmpty()) {
+                for (u in details.universities.orEmpty()) {
+                    val title = u.name
                     val subtitle =
                         joinNonEmptyStrings(
                             "\n",
-                            u.getFacultyName(),
-                            u.getChairName(),
-                            u.getForm(),
-                            u.getStatus()
+                            u.facultyName,
+                            u.chairName,
+                            u.form,
+                            u.status
                         )
-                    items.add(
+                    userDetailsList.add(
                         AdvancedItem(35, Text(title))
                             .setSection(section)
                             .setSubtitle(if (subtitle.isNullOrEmpty()) null else Text(subtitle))
@@ -462,7 +462,7 @@ class UserDetailsPresenter(
                     )
                 }
             }
-            details.getSchools().nonNullNoEmpty {
+            details.schools.nonNullNoEmpty {
                 for (s in it) {
                     val title = joinNonEmptyStrings(", ", s.name, s.clazz)
                     val term: Text? = if (s.from > 0) {
@@ -470,7 +470,7 @@ class UserDetailsPresenter(
                     } else {
                         null
                     }
-                    items.add(
+                    userDetailsList.add(
                         AdvancedItem(36, Text(title))
                             .setSection(section)
                             .setSubtitle(term)
@@ -479,20 +479,20 @@ class UserDetailsPresenter(
                 }
             }
         }
-        if (details.getRelation() > 0 || details.getRelatives()
-                .nonNullNoEmpty() || details.getRelationPartner() != null
+        if (details.relation > 0 || details.relatives
+                .nonNullNoEmpty() || details.relationPartner != null
         ) {
             val section = Section(Text(R.string.family))
-            if (details.getRelation() > 0 || details.getRelationPartner() != null) {
+            if (details.relation > 0 || details.relationPartner != null) {
                 val icon: Icon
                 val subtitle: Text
                 @StringRes val relationRes = getRelationStringByType(
-                    details.getRelation()
+                    details.relation
                 )
-                if (details.getRelationPartner() != null) {
-                    icon = Icon.fromUrl(details.getRelationPartner()?.get100photoOrSmaller())
+                if (details.relationPartner != null) {
+                    icon = Icon.fromUrl(details.relationPartner?.get100photoOrSmaller())
                     subtitle = Text(
-                        getString(relationRes) + details.getRelationPartner()?.fullName.nonNullNoEmpty(
+                        getString(relationRes) + details.relationPartner?.fullName.nonNullNoEmpty(
                             { " $it" },
                             { "" })
                     )
@@ -500,32 +500,31 @@ class UserDetailsPresenter(
                     subtitle = Text(relationRes)
                     icon = Icon.fromResources(R.drawable.ic_relation)
                 }
-                items.add(
+                userDetailsList.add(
                     AdvancedItem(37, Text(R.string.relationship))
                         .setSection(section)
                         .setSubtitle(subtitle)
                         .setIcon(icon)
-                        .setTag(details.getRelationPartner())
+                        .setTag(details.relationPartner)
                 )
             }
-            details.getRelatives().requireNonNull {
+            details.relatives.requireNonNull {
                 for (r in it) {
                     val icon =
-                        if (r.getUser() == null) Icon.fromResources(R.drawable.ic_relative_user) else Icon.fromUrl(
-                            r.getUser()?.get100photoOrSmaller()
+                        if (r.user == null) Icon.fromResources(R.drawable.ic_relative_user) else Icon.fromUrl(
+                            r.user?.get100photoOrSmaller()
                         )
-                    val subtitle = if (r.getUser() == null) r.getName() else r.getUser()?.fullName
-                    items.add(
-                        AdvancedItem(38, Text(getRelativeStringByType(r.getType())))
+                    val subtitle = if (r.user == null) r.name else r.user?.fullName
+                    userDetailsList.add(
+                        AdvancedItem(38, Text(getRelativeStringByType(r.type)))
                             .setIcon(icon)
                             .setSubtitle(Text(subtitle))
                             .setSection(section)
-                            .setTag(r.getUser())
+                            .setTag(r.user)
                     )
                 }
             }
         }
-        return items
     }
 
     @StringRes
@@ -572,7 +571,7 @@ class UserDetailsPresenter(
     override fun onGuiCreated(viewHost: IUserDetailsView) {
         super.onGuiCreated(viewHost)
         viewHost.displayToolbarTitle(user)
-        viewHost.displayData(createData())
+        viewHost.displayData(userDetailsList)
         if (photos_profile.isNotEmpty() && current_select >= 0 && current_select < photos_profile.size - 1) {
             viewHost.onPhotosLoaded(photos_profile[current_select])
         }
@@ -662,7 +661,8 @@ class UserDetailsPresenter(
     }
 
     init {
-        this.details = details
+        createData()
+        view?.notifyChanges()
         appendDisposable(
             InteractorFactory.createPhotosInteractor()[accountId, user.ownerId, -6, 50, 0, true]
                 .fromIOToMain()

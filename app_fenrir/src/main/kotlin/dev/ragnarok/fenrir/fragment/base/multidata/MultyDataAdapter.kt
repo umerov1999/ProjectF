@@ -35,7 +35,7 @@ abstract class MultyDataAdapter<T, VH : RecyclerView.ViewHolder>(
             val newOffset = offset + wrapper.size()
             if (adapterPosition < newOffset) {
                 val internalPosition = adapterPosition - offset
-                info.item = wrapper.get()[internalPosition]
+                info.item = wrapper.data[internalPosition]
                 info.internalPosition = internalPosition
                 info.sectionTitleRes = titles[i]
                 return
@@ -84,7 +84,7 @@ abstract class MultyDataAdapter<T, VH : RecyclerView.ViewHolder>(
             val newOffset = offset + dataWrapper.size()
             if (adapterPosition < newOffset) {
                 val internalPosition = adapterPosition - offset
-                return dataWrapper.get()[internalPosition]
+                return dataWrapper.data[internalPosition]
             }
             offset = newOffset
         }

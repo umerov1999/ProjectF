@@ -215,7 +215,7 @@ class VKPhotosPresenter(
         )
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         view?.setDrawerPhotosSelected(isMy)
@@ -392,7 +392,7 @@ class VKPhotosPresenter(
         // 2 - если я админ группы
         // 3 - если альбом мой
         // 4 - если альбом принадлежит группе, но разрешено в него грузить
-        return albumId >= 0 && (isAdmin || isMy || album?.isCanUpload() == true)
+        return albumId >= 0 && (isAdmin || isMy || album?.canUpload == true)
     }
 
     fun firePhotosForUploadSelected(photos: List<LocalPhoto>, size: Int) {
@@ -611,7 +611,7 @@ class VKPhotosPresenter(
             val ownerWrapper: ParcelableOwnerWrapper? = savedInstanceState.getParcelableCompat(
                 SAVE_OWNER
             )
-            this.owner = ownerWrapper?.get()
+            this.owner = ownerWrapper?.owner
         }
         loadInitialData()
         appendDisposable(uploadManager.observeAdding()

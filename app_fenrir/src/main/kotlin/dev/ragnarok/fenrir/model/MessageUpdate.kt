@@ -2,45 +2,26 @@ package dev.ragnarok.fenrir.model
 
 import dev.ragnarok.fenrir.db.model.entity.ReactionEntity
 
-class MessageUpdate(private val accountId: Long, private val messageId: Int) {
-    private var statusUpdate: StatusUpdate? = null
-    private var importantUpdate: ImportantUpdate? = null
-    private var deleteUpdate: DeleteUpdate? = null
-    private var reactionUpdate: ReactionUpdate? = null
-    fun getDeleteUpdate(): DeleteUpdate? {
-        return deleteUpdate
-    }
+class MessageUpdate(val accountId: Long, val messageId: Int) {
+    var statusUpdate: StatusUpdate? = null
+        private set
+    var importantUpdate: ImportantUpdate? = null
+        private set
+    var deleteUpdate: DeleteUpdate? = null
+        private set
+    var reactionUpdate: ReactionUpdate? = null
+        private set
 
     fun setReactionUpdate(reactionUpdate: ReactionUpdate?) {
         this.reactionUpdate = reactionUpdate
-    }
-
-    fun getReactionUpdate(): ReactionUpdate? {
-        return reactionUpdate
     }
 
     fun setDeleteUpdate(deleteUpdate: DeleteUpdate?) {
         this.deleteUpdate = deleteUpdate
     }
 
-    fun getImportantUpdate(): ImportantUpdate? {
-        return importantUpdate
-    }
-
     fun setImportantUpdate(importantUpdate: ImportantUpdate?) {
         this.importantUpdate = importantUpdate
-    }
-
-    fun getAccountId(): Long {
-        return accountId
-    }
-
-    fun getMessageId(): Int {
-        return messageId
-    }
-
-    fun getStatusUpdate(): StatusUpdate? {
-        return statusUpdate
     }
 
     fun setStatusUpdate(statusUpdate: StatusUpdate?) {
@@ -48,52 +29,13 @@ class MessageUpdate(private val accountId: Long, private val messageId: Int) {
     }
 
     class ReactionUpdate(
-        private val peerId: Long,
-        private val keepMyReaction: Boolean,
-        private val reactionId: Int,
-        private val reactions: List<ReactionEntity>
-    ) {
-        fun isKeepMyReaction(): Boolean {
-            return keepMyReaction
-        }
+        val peerId: Long,
+        val keepMyReaction: Boolean,
+        val reactionId: Int,
+        val reactions: List<ReactionEntity>
+    )
 
-        fun reactionId(): Int {
-            return reactionId
-        }
-
-        fun reactions(): List<ReactionEntity> {
-            return reactions
-        }
-
-        fun peerId(): Long {
-            return peerId
-        }
-    }
-
-    class ImportantUpdate(private val important: Boolean) {
-        fun isImportant(): Boolean {
-            return important
-        }
-    }
-
-    class DeleteUpdate(private val deleted: Boolean, private val deletedForAll: Boolean) {
-        fun isDeletedForAll(): Boolean {
-            return deletedForAll
-        }
-
-        fun isDeleted(): Boolean {
-            return deleted
-        }
-    }
-
-    class StatusUpdate(@MessageStatus private val status: Int, private val vkid: Int?) {
-        fun getVkid(): Int? {
-            return vkid
-        }
-
-        @MessageStatus
-        fun getStatus(): Int {
-            return status
-        }
-    }
+    class ImportantUpdate(val important: Boolean)
+    class DeleteUpdate(val deleted: Boolean, val deletedForAll: Boolean)
+    class StatusUpdate(@MessageStatus val status: Int, val vkid: Int?)
 }

@@ -83,7 +83,7 @@ class PostCreatePresenter(
         resolvePublishDialogVisibility()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         checkUploadUris()
     }

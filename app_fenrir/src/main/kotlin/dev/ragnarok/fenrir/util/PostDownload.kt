@@ -248,7 +248,7 @@ class PostDownload(private val context: Context) {
                     )
                     atcontent = Apply(
                         "<#IMAGE_LINK#>",
-                        if (att.getSizes() == null) null else att.getSizes()?.getUrlForSize(
+                        if (att.sizes == null) null else att.sizes?.getUrlForSize(
                             PhotoSize.Y,
                             false
                         ),

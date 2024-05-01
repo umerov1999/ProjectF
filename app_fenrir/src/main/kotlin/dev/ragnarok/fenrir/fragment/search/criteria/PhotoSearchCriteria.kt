@@ -28,7 +28,7 @@ class PhotoSearchCriteria : BaseSearchCriteria {
     }
 
     @Throws(CloneNotSupportedException::class)
-    public override fun clone(): PhotoSearchCriteria {
+    override fun clone(): PhotoSearchCriteria {
         return super.clone() as PhotoSearchCriteria
     }
 

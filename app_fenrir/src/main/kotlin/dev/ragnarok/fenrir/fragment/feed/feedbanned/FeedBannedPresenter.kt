@@ -28,7 +28,7 @@ class FeedBannedPresenter(
         )
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         view?.updateTitle(R.string.feed_ban)
         resolveRefreshingView()

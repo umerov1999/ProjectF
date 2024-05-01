@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class FeedSource : Entry, Parcelable {
-    private val value: String?
+    val value: String?
     private val title: Text?
     private var active = false
     private var custom: Boolean
@@ -33,10 +33,6 @@ class FeedSource : Entry, Parcelable {
         title = parcel.readTypedObjectCompat(Text.CREATOR)
         active = parcel.getBoolean()
         custom = parcel.getBoolean()
-    }
-
-    fun getValue(): String? {
-        return value
     }
 
     override fun describeContents(): Int {

@@ -135,7 +135,7 @@ class WallPostQueryAttachmentsPresenter(
             return false
         }
         for (i in docs) {
-            if (doCompare(i.getTitle(), str) || doCompare(i.getDescription(), str) || ids.contains(
+            if (doCompare(i.title, str) || doCompare(i.description, str) || ids.contains(
                     i.ownerId
                 )
             ) {
@@ -263,7 +263,7 @@ class WallPostQueryAttachmentsPresenter(
         resolveRefreshingView()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
     }

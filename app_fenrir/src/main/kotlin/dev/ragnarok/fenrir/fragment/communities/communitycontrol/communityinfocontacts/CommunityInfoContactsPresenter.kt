@@ -57,7 +57,7 @@ class CommunityInfoContactsPresenter(
 
     private fun findByIdU(contacts: List<ContactInfo>, user_id: Long): ContactInfo? {
         for (element in contacts) {
-            if (element.getUserId() == user_id) {
+            if (element.userId == user_id) {
                 return element
             }
         }
@@ -66,7 +66,7 @@ class CommunityInfoContactsPresenter(
 
     private fun onContactsReceived(contacts: List<ContactInfo>) {
         val Ids: MutableList<Long> = ArrayList(contacts.size)
-        for (it in contacts) Ids.add(it.getUserId())
+        for (it in contacts) Ids.add(it.userId)
         appendDisposable(
             networkInterfaces.vkDefault(accountId).users()[Ids, null, Fields.FIELDS_BASE_USER, null]
                 .fromIOToMain()
@@ -121,7 +121,7 @@ class CommunityInfoContactsPresenter(
         resolveRefreshingView()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
     }

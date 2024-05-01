@@ -4,8 +4,10 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class NotSupported : AbsModel {
-    private var type: String? = null
-    private var body: String? = null
+    var type: String? = null
+        private set
+    var body: String? = null
+        private set
 
     constructor()
     internal constructor(parcel: Parcel) {
@@ -23,17 +25,9 @@ class NotSupported : AbsModel {
         return AbsModelType.MODEL_NOT_SUPPORTED
     }
 
-    fun getType(): String? {
-        return type
-    }
-
     fun setType(type: String?): NotSupported {
         this.type = type
         return this
-    }
-
-    fun getBody(): String? {
-        return body
     }
 
     fun setBody(body: String?): NotSupported {

@@ -7,13 +7,17 @@ import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
 
 class LocalVideo : Parcelable, Comparable<LocalVideo>, ISelectable {
-    private val id: Long
-    private val data: Uri?
-    private var size: Long = 0
+    val id: Long
+    val data: Uri?
+    var size: Long = 0
+        private set
     private var selected = false
-    private var duration = 0
-    private var index = 0
-    private var title: String? = null
+    var duration = 0
+        private set
+    var index = 0
+        private set
+    var title: String? = null
+        private set
 
     constructor(id: Long, data: Uri?) {
         this.id = id
@@ -48,25 +52,9 @@ class LocalVideo : Parcelable, Comparable<LocalVideo>, ISelectable {
         dest.writeString(title)
     }
 
-    fun getId(): Long {
-        return id
-    }
-
-    fun getData(): Uri? {
-        return data
-    }
-
-    fun getSize(): Long {
-        return size
-    }
-
     fun setSize(size: Long): LocalVideo {
         this.size = size
         return this
-    }
-
-    fun getDuration(): Int {
-        return duration
     }
 
     fun setDuration(duration: Int): LocalVideo {
@@ -74,17 +62,9 @@ class LocalVideo : Parcelable, Comparable<LocalVideo>, ISelectable {
         return this
     }
 
-    fun getTitle(): String? {
-        return title
-    }
-
     fun setTitle(title: String?): LocalVideo {
         this.title = title
         return this
-    }
-
-    fun getIndex(): Int {
-        return index
     }
 
     fun setIndex(index: Int): LocalVideo {

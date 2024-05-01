@@ -280,28 +280,23 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         var where = PostsColumns.POST_ID + " != " + DRAFT_POST_ID +
                 " AND " + PostsColumns.POST_ID + " != " + TEMP_POST_ID +
                 " AND " + PostsColumns.OWNER_ID + " = " + criteria.ownerId
-        if (criteria.range != null) {
-            where = where +
-                    " AND " + BaseColumns._ID + " <= " + criteria.range?.last +
-                    " AND " + BaseColumns._ID + " >= " + criteria.range?.first
+
+        criteria.range?.let {
+            where += (" AND " + BaseColumns._ID + " <= " + it.last +
+                    " AND " + BaseColumns._ID + " >= " + it.first)
         }
         when (criteria.mode) {
             WallCriteria.MODE_ALL ->                 // Загружаем все посты, кроме отложенных и предлагаемых
-                where =
-                    where + " AND " + PostsColumns.POST_TYPE + " NOT IN (" + VKApiPost.Type.POSTPONE + ", " + VKApiPost.Type.SUGGEST + ") "
+                where += (" AND " + PostsColumns.POST_TYPE + " NOT IN (" + VKApiPost.Type.POSTPONE + ", " + VKApiPost.Type.SUGGEST + ") ")
 
-            WallCriteria.MODE_OWNER -> where = where +
-                    " AND " + PostsColumns.FROM_ID + " = " + criteria.ownerId +
-                    " AND " + PostsColumns.POST_TYPE + " NOT IN (" + VKApiPost.Type.POSTPONE + ", " + VKApiPost.Type.SUGGEST + ") "
+            WallCriteria.MODE_OWNER -> where += (" AND " + PostsColumns.FROM_ID + " = " + criteria.ownerId +
+                    " AND " + PostsColumns.POST_TYPE + " NOT IN (" + VKApiPost.Type.POSTPONE + ", " + VKApiPost.Type.SUGGEST + ") ")
 
-            WallCriteria.MODE_SCHEDULED -> where =
-                where + " AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.POSTPONE
+            WallCriteria.MODE_SCHEDULED -> where += (" AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.POSTPONE)
 
-            WallCriteria.MODE_SUGGEST -> where =
-                where + " AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.SUGGEST
+            WallCriteria.MODE_SUGGEST -> where += (" AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.SUGGEST)
 
-            WallCriteria.MODE_DONUT -> where =
-                where + " AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.DONUT
+            WallCriteria.MODE_DONUT -> where += (" AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.DONUT)
         }
         return contentResolver.query(
             getPostsContentUriFor(criteria.accountId), null, where, null,

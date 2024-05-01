@@ -51,7 +51,7 @@ class CommunityInfoContactsAdapter(private var users: List<Manager>) :
         } else {
             holder.onlineView.visibility = View.GONE
         }
-        manager.contactInfo?.getDescription().ifNonNull({
+        manager.contactInfo?.description.ifNonNull({
             holder.role.text = it
         }, {
             holder.role.setText(R.string.role_unknown)

@@ -22,7 +22,7 @@ class DrawerCategoriesAdapter(private var data: List<DrawerCategory>) :
         val category = data[position]
         holder.checkBox.setText(category.getTitleResCategory())
         holder.checkBox.setOnCheckedChangeListener(null)
-        holder.checkBox.isChecked = category.isActive()
+        holder.checkBox.isChecked = category.active
         holder.checkBox.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
             category.setActive(isChecked)
         }

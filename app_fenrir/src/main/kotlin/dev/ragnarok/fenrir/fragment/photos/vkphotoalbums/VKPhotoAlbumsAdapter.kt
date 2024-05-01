@@ -25,7 +25,7 @@ class VKPhotoAlbumsAdapter(private val context: Context, private var data: List<
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val photoAlbum = data[position]
-        val thumb = photoAlbum.getSizes()?.getUrlForSize(PhotoSize.Y, false)
+        val thumb = photoAlbum.sizes?.getUrlForSize(PhotoSize.Y, false)
         if (thumb.nonNullNoEmpty()) {
             with()
                 .load(thumb)
@@ -40,9 +40,9 @@ class VKPhotoAlbumsAdapter(private val context: Context, private var data: List<
         holder.imageView.setOnClickListener {
             clickListener?.onVkPhotoAlbumClick(photoAlbum)
         }
-        if (photoAlbum.getSize() >= 0) holder.counterText.text = context.getString(
+        if (photoAlbum.size >= 0) holder.counterText.text = context.getString(
             R.string.photos_count,
-            photoAlbum.getSize()
+            photoAlbum.size
         ) else holder.counterText.setText(R.string.unknown_photos_count)
         holder.imageView.setOnLongClickListener {
             clickListener?.onVkPhotoAlbumLongClick(

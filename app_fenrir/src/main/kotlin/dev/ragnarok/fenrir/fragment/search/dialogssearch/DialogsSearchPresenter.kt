@@ -65,7 +65,7 @@ class DialogsSearchPresenter(
     fun fireEntryClick(o: Conversation) {
         val messagesOwnerId = accountId // todo Community dialogs search !!!
         val peer =
-            Peer(Peer.fromOwnerId(o.getId())).setAvaUrl(o.imageUrl).setTitle(o.getDisplayTitle())
+            Peer(Peer.fromOwnerId(o.id)).setAvaUrl(o.imageUrl).setTitle(o.getDisplayTitle())
                 .setAvaUrl(o.imageUrl)
         view?.openChatWith(
             accountId,

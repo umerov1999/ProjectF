@@ -750,7 +750,10 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
     int currentTop = child.getTop();
     int newTop = currentTop - dy;
     if (dy > 0) { // Upward swipe
-      if (!draggableOnNestedScroll && target == scrollingChild && target.canScrollVertically(1)) {
+      if (!nestedScrolled
+          && !draggableOnNestedScroll
+          && target == scrollingChild
+          && target.canScrollVertically(1)) {
         // Prevent dragging if draggableOnNestedScroll=false and we can scroll the scrolling child.
         draggableOnNestedScrollLastDragIgnored = true;
         return;
@@ -771,7 +774,7 @@ public class BottomSheetBehavior<V extends View> extends CoordinatorLayout.Behav
       }
     } else if (dy < 0) { // Downward swipe
       boolean canScrollUp = target.canScrollVertically(-1);
-      if (!draggableOnNestedScroll && target == scrollingChild && canScrollUp) {
+      if (!nestedScrolled && !draggableOnNestedScroll && target == scrollingChild && canScrollUp) {
         // Prevent dragging if draggableOnNestedScroll=false and we can scroll the scrolling child.
         draggableOnNestedScrollLastDragIgnored = true;
         return;

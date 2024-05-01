@@ -12,7 +12,7 @@ class DocumentSearchCriteria : BaseSearchCriteria {
     }
 
     @Throws(CloneNotSupportedException::class)
-    public override fun clone(): DocumentSearchCriteria {
+    override fun clone(): DocumentSearchCriteria {
         return super.clone() as DocumentSearchCriteria
     }
 

@@ -34,7 +34,7 @@ class LocalAudioAlbumsAdapter(
         var ret = 0
         var iter = 0
         for (i in data) {
-            if (i.getId() == currentId) {
+            if (i.id == currentId) {
                 ret = iter
                 break
             }
@@ -57,13 +57,13 @@ class LocalAudioAlbumsAdapter(
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val album = data[position]
-        val uri = buildUriForPicasso(Content_Local.AUDIO, album.getCoverImageId())
-        if (album.getId() != 0) {
-            holder.title.text = album.getName()
+        val uri = buildUriForPicasso(Content_Local.AUDIO, album.coverImageId)
+        if (album.id != 0) {
+            holder.title.text = album.name
             holder.subtitle.text =
                 holder.itemView.context.getString(
                     R.string.local_audios_count,
-                    album.getPhotoCount()
+                    album.photoCount
                 )
             with()
                 .load(uri)
@@ -81,7 +81,7 @@ class LocalAudioAlbumsAdapter(
             clickListener?.onClick(album)
         }
 
-        val isSelected = currentId == album.getId()
+        val isSelected = currentId == album.id
         holder.selected.visibility = if (isSelected) View.VISIBLE else View.GONE
         if (Utils.hasMarshmallow() && FenrirNative.isNativeLoaded) {
             if (isSelected) {

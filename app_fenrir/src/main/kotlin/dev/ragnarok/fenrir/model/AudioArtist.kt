@@ -4,9 +4,11 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class AudioArtist : AbsModel {
-    private val id: String?
-    private var name: String? = null
-    private var photo: List<AudioArtistImage>? = null
+    val id: String?
+    var name: String? = null
+        private set
+    var photo: List<AudioArtistImage>? = null
+        private set
 
     constructor(id: String?) {
         this.id = id
@@ -23,21 +25,9 @@ class AudioArtist : AbsModel {
         return AbsModelType.MODEL_AUDIO_ARTIST
     }
 
-    fun getId(): String? {
-        return id
-    }
-
-    fun getName(): String? {
-        return name
-    }
-
     fun setName(name: String?): AudioArtist {
         this.name = name
         return this
-    }
-
-    fun getPhoto(): List<AudioArtistImage>? {
-        return photo
     }
 
     fun setPhoto(photo: List<AudioArtistImage>?): AudioArtist {

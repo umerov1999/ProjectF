@@ -52,9 +52,9 @@ class ArtistSearchPresenter(
     fun onAdd(album: AudioPlaylist) {
         appendDisposable(audioInteractor.followPlaylist(
             accountId,
-            album.getId(),
-            album.getOwnerId(),
-            album.getAccess_key()
+            album.id,
+            album.owner_id,
+            album.access_key
         )
             .fromIOToMain()
             .subscribe({

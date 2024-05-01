@@ -199,7 +199,7 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
         }.flatMap { comment ->
             stores
                 .attachments()
-                .getCount(accountId, AttachToType.COMMENT, comment.getId())
+                .getCount(accountId, AttachToType.COMMENT, comment.id)
                 .flatMapMaybe {
                     Maybe.just(
                         comment.setAttachmentsCount(
@@ -256,20 +256,20 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
     override fun commitMinorUpdate(update: CommentUpdate): Completable {
         return Completable.fromAction {
             val cv = ContentValues()
-            update.getLikeUpdate().requireNonNull {
-                cv.put(CommentsColumns.USER_LIKES, it.isUserLikes())
-                cv.put(CommentsColumns.LIKES, it.getCount())
+            update.likeUpdate.requireNonNull {
+                cv.put(CommentsColumns.USER_LIKES, it.userLikes)
+                cv.put(CommentsColumns.LIKES, it.count)
             }
-            update.getDeleteUpdate().requireNonNull {
-                cv.put(CommentsColumns.DELETED, it.isDeleted())
+            update.deleteUpdate.requireNonNull {
+                cv.put(CommentsColumns.DELETED, it.deleted)
             }
-            val uri = getCommentsContentUriFor(update.getAccountId())
+            val uri = getCommentsContentUriFor(update.accountId)
             val where =
                 CommentsColumns.SOURCE_OWNER_ID + " = ? AND " + CommentsColumns.COMMENT_ID + " = ?"
             val args =
                 arrayOf(
-                    update.getCommented().sourceOwnerId.toString(),
-                    update.getCommentId().toString()
+                    update.commented.sourceOwnerId.toString(),
+                    update.commentId.toString()
                 )
             contentResolver.update(uri, cv, where, args)
             minorUpdatesPublisher.onNext(update)

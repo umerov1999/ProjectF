@@ -61,6 +61,11 @@ abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresen
     }
 
     @CallSuper
+    protected open fun onViewStateRestored() {
+
+    }
+
+    @CallSuper
     protected fun onViewHostDetached() {
 
     }
@@ -107,6 +112,10 @@ abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresen
     override fun attachViewHost(view: V) {
         viewReference = WeakReference(view)
         onViewHostAttached(view)
+    }
+
+    override fun restoreViewState() {
+        onViewStateRestored()
     }
 
     override fun detachViewHost() {

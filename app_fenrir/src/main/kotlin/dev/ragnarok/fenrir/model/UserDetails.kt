@@ -9,63 +9,120 @@ import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class UserDetails : Parcelable {
-    private var photoId: IdPair? = null
-    private var statusAudio: Audio? = null
-    private var isFavorite = false
-    private var isSubscribed = false
-    private var friendsCount = 0
-    private var onlineFriendsCount = 0
-    private var mutualFriendsCount = 0
-    private var followersCount = 0
-    private var groupsCount = 0
-    private var photosCount = 0
-    private var audiosCount = 0
-    private var articlesCount = 0
-    private var productsCount = 0
-    private var videosCount = 0
-    private var allWallCount = 0
-    private var ownWallCount = 0
-    private var postponedWallCount = 0
-    private var giftCount = 0
-    private var productServicesCount = 0
-    private var narrativesCount = 0
-    private var clipsCount = 0
-    private var city: City? = null
-    private var country: Country? = null
-    private var hometown: String? = null
-    private var phone: String? = null
-    private var homePhone: String? = null
-    private var skype: String? = null
-    private var instagram: String? = null
-    private var twitter: String? = null
-    private var facebook: String? = null
-    private var careers: List<Career>? = null
-    private var militaries: List<Military>? = null
-    private var universities: List<University>? = null
-    private var schools: List<School>? = null
-    private var relatives: List<Relative>? = null
-    private var relation = 0
-    private var relationPartner: Owner? = null
-    private var languages: Array<String>? = null
-    private var political = 0
-    private var peopleMain = 0
-    private var lifeMain = 0
-    private var smoking = 0
-    private var alcohol = 0
-    private var inspiredBy: String? = null
-    private var religion: String? = null
-    private var site: String? = null
-    private var interests: String? = null
-    private var music: String? = null
-    private var activities: String? = null
-    private var movies: String? = null
-    private var tv: String? = null
-    private var games: String? = null
-    private var quotes: String? = null
-    private var about: String? = null
-    private var books: String? = null
-    private var isClosed: Boolean = false
-    private var cover: Cover? = null
+    var photoId: IdPair? = null
+        private set
+    var statusAudio: Audio? = null
+        private set
+    var isFavorite = false
+        private set
+    var isSubscribed = false
+        private set
+    var friendsCount = 0
+        private set
+    var onlineFriendsCount = 0
+        private set
+    var mutualFriendsCount = 0
+        private set
+    var followersCount = 0
+        private set
+    var groupsCount = 0
+        private set
+    var photosCount = 0
+        private set
+    var audiosCount = 0
+        private set
+    var articlesCount = 0
+        private set
+    var productsCount = 0
+        private set
+    var videosCount = 0
+        private set
+    var allWallCount = 0
+        private set
+    var ownWallCount = 0
+        private set
+    var postponedWallCount = 0
+        private set
+    var giftCount = 0
+        private set
+    var productServicesCount = 0
+        private set
+    var narrativesCount = 0
+        private set
+    var clipsCount = 0
+        private set
+    var city: City? = null
+        private set
+    var country: Country? = null
+        private set
+    var hometown: String? = null
+        private set
+    var phone: String? = null
+        private set
+    var homePhone: String? = null
+        private set
+    var skype: String? = null
+        private set
+    var instagram: String? = null
+        private set
+    var twitter: String? = null
+        private set
+    var facebook: String? = null
+        private set
+    var careers: List<Career>? = null
+        private set
+    var militaries: List<Military>? = null
+        private set
+    var universities: List<University>? = null
+        private set
+    var schools: List<School>? = null
+        private set
+    var relatives: List<Relative>? = null
+        private set
+    var relation = 0
+        private set
+    var relationPartner: Owner? = null
+        private set
+    var languages: Array<String>? = null
+        private set
+    var political = 0
+        private set
+    var peopleMain = 0
+        private set
+    var lifeMain = 0
+        private set
+    var smoking = 0
+        private set
+    var alcohol = 0
+        private set
+    var inspiredBy: String? = null
+        private set
+    var religion: String? = null
+        private set
+    var site: String? = null
+        private set
+    var interests: String? = null
+        private set
+    var music: String? = null
+        private set
+    var activities: String? = null
+        private set
+    var movies: String? = null
+        private set
+    var tv: String? = null
+        private set
+    var games: String? = null
+        private set
+    var quotes: String? = null
+        private set
+    var about: String? = null
+        private set
+    var books: String? = null
+        private set
+    var isClosed: Boolean = false
+        private set
+    var cover: Cover? = null
+        private set
 
     constructor()
     internal constructor(parcel: Parcel) {
@@ -101,7 +158,7 @@ class UserDetails : Parcelable {
         facebook = parcel.readString()
         relatives = parcel.createTypedArrayList(Relative)
         relation = parcel.readInt()
-        relationPartner = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!.get()
+        relationPartner = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!.owner
         languages = parcel.createStringArray()
         political = parcel.readInt()
         peopleMain = parcel.readInt()
@@ -129,17 +186,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getProductServicesCount(): Int {
-        return productServicesCount
-    }
-
     fun setNarrativesCount(narrativesCount: Int): UserDetails {
         this.narrativesCount = narrativesCount
         return this
-    }
-
-    fun getNarrativesCount(): Int {
-        return narrativesCount
     }
 
     fun setClipsCount(clipsCount: Int): UserDetails {
@@ -147,21 +196,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getClipsCount(): Int {
-        return clipsCount
-    }
-
-    fun getInterests(): String? {
-        return interests
-    }
-
     fun setInterests(interests: String?): UserDetails {
         this.interests = interests
         return this
-    }
-
-    fun getMusic(): String? {
-        return music
     }
 
     fun setMusic(music: String?): UserDetails {
@@ -169,17 +206,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun isSetFavorite(): Boolean {
-        return isFavorite
-    }
-
     fun setFavorite(isFavorite: Boolean): UserDetails {
         this.isFavorite = isFavorite
         return this
-    }
-
-    fun isSetSubscribed(): Boolean {
-        return isSubscribed
     }
 
     fun setSubscribed(isSubscribed: Boolean): UserDetails {
@@ -187,17 +216,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getActivities(): String? {
-        return activities
-    }
-
     fun setActivities(activities: String?): UserDetails {
         this.activities = activities
         return this
-    }
-
-    fun getMovies(): String? {
-        return movies
     }
 
     fun setMovies(movies: String?): UserDetails {
@@ -205,17 +226,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getTv(): String? {
-        return tv
-    }
-
     fun setTv(tv: String?): UserDetails {
         this.tv = tv
         return this
-    }
-
-    fun getGames(): String? {
-        return games
     }
 
     fun setGames(games: String?): UserDetails {
@@ -223,17 +236,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getQuotes(): String? {
-        return quotes
-    }
-
     fun setQuotes(quotes: String?): UserDetails {
         this.quotes = quotes
         return this
-    }
-
-    fun getCover(): Cover? {
-        return cover
     }
 
     fun setCover(cover: Cover?): UserDetails {
@@ -241,17 +246,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getAbout(): String? {
-        return about
-    }
-
     fun setAbout(about: String?): UserDetails {
         this.about = about
         return this
-    }
-
-    fun getBooks(): String? {
-        return books
     }
 
     fun setBooks(books: String?): UserDetails {
@@ -259,17 +256,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getSite(): String? {
-        return site
-    }
-
     fun setSite(site: String?): UserDetails {
         this.site = site
         return this
-    }
-
-    fun getAlcohol(): Int {
-        return alcohol
     }
 
     fun setAlcohol(alcohol: Int): UserDetails {
@@ -277,17 +266,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getLifeMain(): Int {
-        return lifeMain
-    }
-
     fun setLifeMain(lifeMain: Int): UserDetails {
         this.lifeMain = lifeMain
         return this
-    }
-
-    fun getPeopleMain(): Int {
-        return peopleMain
     }
 
     fun setPeopleMain(peopleMain: Int): UserDetails {
@@ -295,17 +276,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getPolitical(): Int {
-        return political
-    }
-
     fun setPolitical(political: Int): UserDetails {
         this.political = political
         return this
-    }
-
-    fun getSmoking(): Int {
-        return smoking
     }
 
     fun setSmoking(smoking: Int): UserDetails {
@@ -313,17 +286,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getInspiredBy(): String? {
-        return inspiredBy
-    }
-
     fun setInspiredBy(inspiredBy: String?): UserDetails {
         this.inspiredBy = inspiredBy
         return this
-    }
-
-    fun getReligion(): String? {
-        return religion
     }
 
     fun setReligion(religion: String?): UserDetails {
@@ -331,17 +296,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getLanguages(): Array<String>? {
-        return languages
-    }
-
     fun setLanguages(languages: Array<String>?): UserDetails {
         this.languages = languages
         return this
-    }
-
-    fun getRelation(): Int {
-        return relation
     }
 
     fun setRelation(relation: Int): UserDetails {
@@ -349,17 +306,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getRelationPartner(): Owner? {
-        return relationPartner
-    }
-
     fun setRelationPartner(relationPartner: Owner?): UserDetails {
         this.relationPartner = relationPartner
         return this
-    }
-
-    fun getRelatives(): List<Relative>? {
-        return relatives
     }
 
     fun setRelatives(relatives: List<Relative>?): UserDetails {
@@ -367,17 +316,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getSchools(): List<School>? {
-        return schools
-    }
-
     fun setSchools(schools: List<School>?): UserDetails {
         this.schools = schools
         return this
-    }
-
-    fun getUniversities(): List<University>? {
-        return universities
     }
 
     fun setUniversities(universities: List<University>?): UserDetails {
@@ -385,17 +326,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getMilitaries(): List<Military>? {
-        return militaries
-    }
-
     fun setMilitaries(militaries: List<Military>?): UserDetails {
         this.militaries = militaries
         return this
-    }
-
-    fun getCareers(): List<Career>? {
-        return careers
     }
 
     fun setCareers(careers: List<Career>?): UserDetails {
@@ -403,17 +336,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getSkype(): String? {
-        return skype
-    }
-
     fun setSkype(skype: String?): UserDetails {
         this.skype = skype
         return this
-    }
-
-    fun getInstagram(): String? {
-        return instagram
     }
 
     fun setInstagram(instagram: String?): UserDetails {
@@ -421,17 +346,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getTwitter(): String? {
-        return twitter
-    }
-
     fun setTwitter(twitter: String?): UserDetails {
         this.twitter = twitter
         return this
-    }
-
-    fun getFacebook(): String? {
-        return facebook
     }
 
     fun setFacebook(facebook: String?): UserDetails {
@@ -439,17 +356,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getHomePhone(): String? {
-        return homePhone
-    }
-
     fun setHomePhone(homePhone: String?): UserDetails {
         this.homePhone = homePhone
         return this
-    }
-
-    fun getPhone(): String? {
-        return phone
     }
 
     fun setPhone(phone: String?): UserDetails {
@@ -457,17 +366,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getHometown(): String? {
-        return hometown
-    }
-
     fun setHometown(hometown: String?): UserDetails {
         this.hometown = hometown
         return this
-    }
-
-    fun getCountry(): Country? {
-        return country
     }
 
     fun setCountry(country: Country?): UserDetails {
@@ -475,17 +376,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getCity(): City? {
-        return city
-    }
-
     fun setCity(city: City?): UserDetails {
         this.city = city
         return this
-    }
-
-    fun isClosed(): Boolean {
-        return isClosed
     }
 
     fun setClosed(closed: Boolean): UserDetails {
@@ -493,17 +386,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getPhotoId(): IdPair? {
-        return photoId
-    }
-
     fun setPhotoId(photoId: IdPair?): UserDetails {
         this.photoId = photoId
         return this
-    }
-
-    fun getStatusAudio(): Audio? {
-        return statusAudio
     }
 
     fun setStatusAudio(statusAudio: Audio?): UserDetails {
@@ -511,17 +396,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getFriendsCount(): Int {
-        return friendsCount
-    }
-
     fun setFriendsCount(friendsCount: Int): UserDetails {
         this.friendsCount = friendsCount
         return this
-    }
-
-    fun getOnlineFriendsCount(): Int {
-        return onlineFriendsCount
     }
 
     fun setOnlineFriendsCount(onlineFriendsCount: Int): UserDetails {
@@ -529,17 +406,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getMutualFriendsCount(): Int {
-        return mutualFriendsCount
-    }
-
     fun setMutualFriendsCount(mutualFriendsCount: Int): UserDetails {
         this.mutualFriendsCount = mutualFriendsCount
         return this
-    }
-
-    fun getFollowersCount(): Int {
-        return followersCount
     }
 
     fun setFollowersCount(followersCount: Int): UserDetails {
@@ -547,17 +416,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getGroupsCount(): Int {
-        return groupsCount
-    }
-
     fun setGroupsCount(groupsCount: Int): UserDetails {
         this.groupsCount = groupsCount
         return this
-    }
-
-    fun getPhotosCount(): Int {
-        return photosCount
     }
 
     fun setPhotosCount(photosCount: Int): UserDetails {
@@ -565,17 +426,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getAudiosCount(): Int {
-        return audiosCount
-    }
-
     fun setAudiosCount(audiosCount: Int): UserDetails {
         this.audiosCount = audiosCount
         return this
-    }
-
-    fun getArticlesCount(): Int {
-        return articlesCount
     }
 
     fun setArticlesCount(articlesCount: Int): UserDetails {
@@ -583,17 +436,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getProductsCount(): Int {
-        return productsCount
-    }
-
     fun setProductsCount(productsCount: Int): UserDetails {
         this.productsCount = productsCount
         return this
-    }
-
-    fun getVideosCount(): Int {
-        return videosCount
     }
 
     fun setVideosCount(videosCount: Int): UserDetails {
@@ -601,17 +446,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getAllWallCount(): Int {
-        return allWallCount
-    }
-
     fun setAllWallCount(allWallCount: Int): UserDetails {
         this.allWallCount = allWallCount
         return this
-    }
-
-    fun getOwnWallCount(): Int {
-        return ownWallCount
     }
 
     fun setOwnWallCount(ownWallCount: Int): UserDetails {
@@ -619,17 +456,9 @@ class UserDetails : Parcelable {
         return this
     }
 
-    fun getPostponedWallCount(): Int {
-        return postponedWallCount
-    }
-
     fun setPostponedWallCount(postponedWallCount: Int): UserDetails {
         this.postponedWallCount = postponedWallCount
         return this
-    }
-
-    fun getGiftCount(): Int {
-        return giftCount
     }
 
     fun setGiftCount(giftCount: Int): UserDetails {
@@ -638,9 +467,12 @@ class UserDetails : Parcelable {
     }
 
     class Relative() : Parcelable {
-        private var user: User? = null
-        private var type: String? = null
-        private var name: String? = null
+        var user: User? = null
+            private set
+        var type: String? = null
+            private set
+        var name: String? = null
+            private set
 
         constructor(parcel: Parcel) : this() {
             user = parcel.readTypedObjectCompat(User.CREATOR)
@@ -648,26 +480,14 @@ class UserDetails : Parcelable {
             name = parcel.readString()
         }
 
-        fun getName(): String? {
-            return name
-        }
-
         fun setName(name: String?): Relative {
             this.name = name
             return this
         }
 
-        fun getUser(): User? {
-            return user
-        }
-
         fun setUser(user: User?): Relative {
             this.user = user
             return this
-        }
-
-        fun getType(): String? {
-            return type
         }
 
         fun setType(type: String?): Relative {
@@ -697,25 +517,19 @@ class UserDetails : Parcelable {
     }
 
     class Cover() : Parcelable {
-        private var enabled = false
-        private var images: ArrayList<CoverImage>? = null
+        var enabled = false
+            private set
+        var images: ArrayList<CoverImage>? = null
+            private set
 
         constructor(parcel: Parcel) : this() {
             enabled = parcel.getBoolean()
             images = parcel.createTypedArrayList(CoverImage.CREATOR)
         }
 
-        fun getImages(): ArrayList<CoverImage>? {
-            return images
-        }
-
         fun setImages(images: ArrayList<CoverImage>?): Cover {
             this.images = images
             return this
-        }
-
-        fun isEnabled(): Boolean {
-            return enabled
         }
 
         fun setEnabled(enabled: Boolean): Cover {
@@ -743,25 +557,13 @@ class UserDetails : Parcelable {
         }
     }
 
-    class CoverImage(private val url: String?, private val height: Int, private val width: Int) :
+    class CoverImage(val url: String?, val height: Int, val width: Int) :
         Parcelable {
         constructor(parcel: Parcel) : this(
             parcel.readString(),
             parcel.readInt(),
             parcel.readInt()
         )
-
-        fun getHeight(): Int {
-            return height
-        }
-
-        fun getWidth(): Int {
-            return width
-        }
-
-        fun getUrl(): String? {
-            return url
-        }
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             parcel.writeString(url)

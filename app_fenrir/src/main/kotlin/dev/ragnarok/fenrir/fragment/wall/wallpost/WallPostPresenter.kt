@@ -459,7 +459,7 @@ class WallPostPresenter(
             val wrapper: ParcelableOwnerWrapper =
                 savedInstanceState.getParcelableCompat(SAVE_OWNER)!!
             this.post = savedInstanceState.getParcelableCompat(SAVE_POST)
-            this.owner = wrapper.get()
+            this.owner = wrapper.owner
         } else {
             this.post = post
             this.owner = owner

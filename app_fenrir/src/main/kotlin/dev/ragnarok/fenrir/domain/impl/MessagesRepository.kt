@@ -1046,30 +1046,30 @@ class MessagesRepository(
 
     @SuppressLint("UseSparseArrays")
     override fun put(builder: SaveMessageBuilder): Single<Message> {
-        val accountId = builder.getAccountId()
-        val draftMessageId = builder.getDraftMessageId()
-        val peerId = builder.getPeerId()
+        val accountId = builder.accountId
+        val draftMessageId = builder.draftMessageId
+        val peerId = builder.peerId
         return getTargetMessageStatus(builder)
             .flatMap { status ->
                 val patch = MessageEditEntity(status, accountId)
-                patch.setEncrypted(builder.isRequireEncryption())
-                patch.setPayload(builder.getPayload())
+                patch.setEncrypted(builder.requireEncryption)
+                patch.setPayload(builder.payload)
                 patch.setDate(now())
                 patch.setRead(false)
                 patch.setOut(true)
                 patch.setDeleted(false)
                 patch.setImportant(false)
-                val voice = builder.getVoiceMessageFile()
+                val voice = builder.voiceMessageFile
                 if (voice != null) {
                     val extras: MutableMap<Int, String> = HashMap(1)
                     extras[Message.Extra.VOICE_RECORD] =
                         voice.absolutePath
                     patch.setExtras(extras)
                 }
-                builder.getAttachments().nonNullNoEmpty {
+                builder.attachments.nonNullNoEmpty {
                     patch.setAttachments(buildDboAttachments(it))
                 }
-                val fwds = builder.getForwardMessages()
+                val fwds = builder.forwardMessages
                 if (fwds.nonNullNoEmpty()) {
                     val fwddbos: MutableList<MessageDboEntity> = ArrayList(fwds.size)
                     for (message in fwds) {
@@ -1107,8 +1107,8 @@ class MessagesRepository(
                                             throw NotFoundException()
                                         }
                                         val message = messages[0]
-                                        if (builder.isRequireEncryption()) {
-                                            message.decryptedText = builder.getText()
+                                        if (builder.requireEncryption) {
+                                            message.decryptedText = builder.text
                                             message.cryptStatus = CryptStatus.DECRYPTED
                                         }
                                         message
@@ -1311,8 +1311,8 @@ class MessagesRepository(
                             user.setJoin_date(dto.join_date)
                             user.setAdmin(dto.is_admin)
                             user.setOwner(dto.is_owner)
-                            if (user.getInvitedBy() != 0L) {
-                                user.setInviter(ownersBundle.getById(user.getInvitedBy()))
+                            if (user.invitedBy != 0L) {
+                                user.setInviter(ownersBundle.getById(user.invitedBy))
                             }
                             models.add(user)
                         }
@@ -1747,36 +1747,36 @@ class MessagesRepository(
     }
 
     private fun getFinalMessagesBody(builder: SaveMessageBuilder): Single<Optional<String>> {
-        if (builder.getText().isNullOrEmpty() || !builder.isRequireEncryption()) {
+        if (builder.text.isNullOrEmpty() || !builder.requireEncryption) {
             return Single.just(
                 wrap(
-                    builder.getText()
+                    builder.text
                 )
             )
         }
-        @KeyLocationPolicy val policy = builder.getKeyLocationPolicy()
+        @KeyLocationPolicy val policy = builder.keyLocationPolicy
         return storages.keys(policy)
-            .findLastKeyPair(builder.getAccountId(), builder.getPeerId())
+            .findLastKeyPair(builder.accountId, builder.peerId)
             .map {
                 if (it.isEmpty) {
                     throw KeyPairDoesNotExistException()
                 }
                 val pair = it.requireNonEmpty()
                 val encrypted = encryptWithAes(
-                    builder.getText().orEmpty(),
+                    builder.text.orEmpty(),
                     pair.myAesKey,
-                    builder.getText().orEmpty(),
+                    builder.text.orEmpty(),
                     pair.sessionId,
-                    builder.getKeyLocationPolicy()
+                    builder.keyLocationPolicy
                 )
                 wrap(encrypted)
             }
     }
 
     private fun getTargetMessageStatus(builder: SaveMessageBuilder): Single<Int> {
-        val accountId = builder.getAccountId()
+        val accountId = builder.accountId
         val destination =
-            forMessage(builder.getDraftMessageId() ?: return Single.just(MessageStatus.QUEUE))
+            forMessage(builder.draftMessageId ?: return Single.just(MessageStatus.QUEUE))
         return uploadManager[accountId, destination]
             .map { uploads ->
                 if (uploads.isEmpty()) {

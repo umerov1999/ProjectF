@@ -99,7 +99,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         Log.i(TAG, TAG)
     }
 
-    public override fun onFinishInflate() {
+    override fun onFinishInflate() {
         super.onFinishInflate()
         mRoot?.let { initControllerView(it) }
     }

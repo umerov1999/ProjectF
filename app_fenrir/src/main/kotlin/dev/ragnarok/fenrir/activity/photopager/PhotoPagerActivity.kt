@@ -909,10 +909,10 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
 
             var has = false
             for (i in tags.orEmpty()) {
-                val leftMargin = transX + i.getX() * preScaledBitmapWidth
-                val topMargin = transY + i.getY() * preScaledBitmapHeight
-                val layoutWidth = ((i.getX2() - i.getX()) * preScaledBitmapWidth)
-                val layoutHeight = ((i.getY2() - i.getY()) * preScaledBitmapHeight)
+                val leftMargin = transX + i.x * preScaledBitmapWidth
+                val topMargin = transY + i.y * preScaledBitmapHeight
+                val layoutWidth = ((i.x2 - i.x) * preScaledBitmapWidth)
+                val layoutHeight = ((i.y2 - i.y) * preScaledBitmapHeight)
 
                 if (leftMargin > stateValues.viewWidth || leftMargin < -50.0 || topMargin > stateValues.viewHeight || topMargin < -50.0) {
                     continue
@@ -924,14 +924,14 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                         layoutInflater.inflate(R.layout.photo_tag_item, null)
                     inflate.findViewById<TextView>(R.id.tv_ph_tag_name)?.let { txt ->
                         txt.visibility =
-                            if (i.getTaggedName().nonNullNoEmpty()) View.VISIBLE else View.GONE
-                        txt.text = i.getTaggedName()
+                            if (i.tagged_name.nonNullNoEmpty()) View.VISIBLE else View.GONE
+                        txt.text = i.tagged_name
                         txt.tag = i
                         txt.setOnClickListener {
                             val photoTag = txt.tag as? PhotoTags
                             if (photoTag != null) {
                                 PlaceFactory.getOwnerWallPlace(
-                                    Settings.get().accounts().current, photoTag.getUserId(), null
+                                    Settings.get().accounts().current, photoTag.user_id, null
                                 ).tryOpenWith(this@PhotoPagerActivity)
                             }
                         }

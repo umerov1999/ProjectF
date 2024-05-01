@@ -204,9 +204,9 @@ class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPl
         } else {
             getAudiosInAlbumPlace(
                 presenter?.accountId ?: Settings.get().accounts().current,
-                album.getOwnerId(),
-                album.getId(),
-                album.getAccess_key()
+                album.owner_id,
+                album.id,
+                album.access_key
             ).tryOpenWith(requireActivity())
         }
     }
@@ -214,9 +214,9 @@ class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPl
     override fun onOpenClick(index: Int, album: AudioPlaylist) {
         getAudiosInAlbumPlace(
             presenter?.accountId ?: Settings.get().accounts().current,
-            album.getOwnerId(),
-            album.getId(),
-            album.getAccess_key()
+            album.owner_id,
+            album.id,
+            album.access_key
         ).tryOpenWith(requireActivity())
     }
 

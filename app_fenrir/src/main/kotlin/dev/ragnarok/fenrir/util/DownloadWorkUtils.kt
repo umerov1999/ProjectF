@@ -302,21 +302,21 @@ object DownloadWorkUtils {
     }
 
     fun doDownloadVoice(context: Context, doc: VoiceMessage) {
-        if (doc.getLinkMp3().isNullOrEmpty() && doc.getLinkOgg().isNullOrEmpty())
+        if (doc.linkMp3.isNullOrEmpty() && doc.linkOgg.isNullOrEmpty())
             return
         val extDownload: String
         val urlDownload: String
-        if (doc.getLinkOgg().nonNullNoEmpty() && (doc.getLinkMp3().isNullOrEmpty() || Settings.get()
+        if (doc.linkOgg.nonNullNoEmpty() && (doc.linkMp3.isNullOrEmpty() || Settings.get()
                 .main().isDownload_voice_ogg)
         ) {
             extDownload = "ogg"
-            urlDownload = (doc.getLinkOgg() ?: return)
+            urlDownload = (doc.linkOgg ?: return)
         } else {
             extDownload = "mp3"
-            urlDownload = doc.getLinkMp3().toString()
+            urlDownload = doc.linkMp3.toString()
         }
         val result_filename = DownloadInfo(
-            makeLegalFilename("Голосовуха " + doc.getOwnerId() + "_" + doc.getId(), null),
+            makeLegalFilename("Голосовуха " + doc.ownerId + "_" + doc.id, null),
             Settings.get().main().docDir,
             extDownload
         )

@@ -32,7 +32,7 @@ abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
         tempDataUsage = true
     }
 
-    public override fun onGuiCreated(viewHost: V) {
+    override fun onGuiCreated(viewHost: V) {
         viewCreationCount++
         super.onGuiCreated(viewHost)
     }

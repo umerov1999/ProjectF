@@ -27,19 +27,19 @@ class MarketAlbumAdapter(private var data: List<MarketAlbum>, private val contex
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val market = data[position]
-        if (market.getPhoto() != null) {
-            val url = market.getPhoto()?.getUrlForSize(PhotoSize.X, true)
+        if (market.photo != null) {
+            val url = market.photo?.getUrlForSize(PhotoSize.X, true)
             displayAvatar(holder.thumb, null, url, Constants.PICASSO_TAG)
         } else holder.thumb.setImageResource(R.drawable.ic_market_colored_stack)
-        holder.title.text = market.getTitle()
-        if (market.getCount() == 0) holder.count.visibility = View.GONE else {
+        holder.title.text = market.title
+        if (market.count == 0) holder.count.visibility = View.GONE else {
             holder.count.visibility = View.VISIBLE
-            holder.count.text = context.getString(R.string.markets_count, market.getCount())
+            holder.count.text = context.getString(R.string.markets_count, market.count)
         }
-        if (market.getUpdated_time() == 0L) holder.time.visibility = View.GONE else {
+        if (market.updated_time == 0L) holder.time.visibility = View.GONE else {
             holder.time.visibility = View.VISIBLE
             holder.time.text =
-                AppTextUtils.getDateFromUnixTime(context, market.getUpdated_time())
+                AppTextUtils.getDateFromUnixTime(context, market.updated_time)
         }
         holder.market_container.setOnClickListener {
             clickListener?.onOpenClick(holder.bindingAdapterPosition, market)

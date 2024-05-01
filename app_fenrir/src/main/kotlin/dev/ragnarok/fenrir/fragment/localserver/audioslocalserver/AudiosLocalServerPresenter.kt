@@ -99,7 +99,7 @@ class AudiosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
         resolveRefreshingView()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doAudioLoadTabs = if (doAudioLoadTabs) {

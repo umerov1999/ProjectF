@@ -609,7 +609,7 @@ class Attachments : Parcelable, Cloneable {
         return if (needShowBigLinks()) {
             val result = ArrayList<Link>()
             for (link in links.orEmpty()) {
-                if (link.photo?.sizes?.getL()?.url.nonNullNoEmpty() || link.photo?.sizes?.getK()?.url.nonNullNoEmpty()) {
+                if (link.photo?.sizes?.l?.url.nonNullNoEmpty() || link.photo?.sizes?.k?.url.nonNullNoEmpty()) {
                     result.add(link)
                 }
             }
@@ -637,7 +637,7 @@ class Attachments : Parcelable, Cloneable {
         if (links != null) {
             for (link in links.orEmpty()) {
                 if (needShowBigLinks()) {
-                    if (link.photo?.sizes?.getL()?.url.isNullOrEmpty() && link.photo?.sizes?.getK()?.url.isNullOrEmpty()) {
+                    if (link.photo?.sizes?.l?.url.isNullOrEmpty() && link.photo?.sizes?.k?.url.isNullOrEmpty()) {
                         result.add(DocLink(link))
                     }
                 } else {

@@ -55,7 +55,7 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
         return R.layout.fragment_gif_pager
     }
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mFullscreen = savedInstanceState?.getBoolean("mFullscreen") ?: false
         mToolbar = findViewById(R.id.toolbar)

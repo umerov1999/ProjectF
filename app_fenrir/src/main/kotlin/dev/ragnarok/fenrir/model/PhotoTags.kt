@@ -7,16 +7,26 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class PhotoTags : Parcelable, ParcelNative.ParcelableNative {
-    private var id = 0
-    private var user_id = 0L
-    private var placer_id = 0L
-    private var tagged_name: String? = null
-    private var date: Long = 0L
-    private var x = 0.0
-    private var y = 0.0
-    private var x2 = 0.0
-    private var y2 = 0.0
-    private var viewed = 0
+    var id = 0
+        private set
+    var user_id = 0L
+        private set
+    var placer_id = 0L
+        private set
+    var tagged_name: String? = null
+        private set
+    var date: Long = 0L
+        private set
+    var x = 0.0
+        private set
+    var y = 0.0
+        private set
+    var x2 = 0.0
+        private set
+    var y2 = 0.0
+        private set
+    var viewed = 0
+        private set
 
     constructor(id: Int, user_id: Long) {
         this.id = id
@@ -75,25 +85,9 @@ class PhotoTags : Parcelable, ParcelNative.ParcelableNative {
         dest.writeInt(viewed)
     }
 
-    fun getId(): Int {
-        return id
-    }
-
-    fun getUserId(): Long {
-        return user_id
-    }
-
-    fun getPlacerId(): Long {
-        return placer_id
-    }
-
     fun setPlacerId(placer_id: Long): PhotoTags {
         this.placer_id = placer_id
         return this
-    }
-
-    fun getTaggedName(): String? {
-        return tagged_name
     }
 
     fun setTaggedName(tagged_name: String?): PhotoTags {
@@ -101,17 +95,9 @@ class PhotoTags : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun getDate(): Long {
-        return date
-    }
-
     fun setDate(date: Long): PhotoTags {
         this.date = date
         return this
-    }
-
-    fun getX(): Double {
-        return x
     }
 
     fun setX(x: Double): PhotoTags {
@@ -119,17 +105,9 @@ class PhotoTags : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun getY(): Double {
-        return y
-    }
-
     fun setY(y: Double): PhotoTags {
         this.y = y
         return this
-    }
-
-    fun getX2(): Double {
-        return x2
     }
 
     fun setX2(x2: Double): PhotoTags {
@@ -137,17 +115,9 @@ class PhotoTags : Parcelable, ParcelNative.ParcelableNative {
         return this
     }
 
-    fun getY2(): Double {
-        return y2
-    }
-
     fun setY2(y2: Double): PhotoTags {
         this.y2 = y2
         return this
-    }
-
-    fun getViewed(): Int {
-        return viewed
     }
 
     fun setViewed(viewed: Int): PhotoTags {

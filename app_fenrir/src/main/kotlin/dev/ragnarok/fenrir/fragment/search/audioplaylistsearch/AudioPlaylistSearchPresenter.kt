@@ -58,13 +58,13 @@ class AudioPlaylistSearchPresenter(
     fun onAdd(album: AudioPlaylist, clone: Boolean) {
         appendDisposable((if (clone) audioInteractor.clonePlaylist(
             accountId,
-            album.getId(),
-            album.getOwnerId()
+            album.id,
+            album.owner_id
         ) else audioInteractor.followPlaylist(
             accountId,
-            album.getId(),
-            album.getOwnerId(),
-            album.getAccess_key()
+            album.id,
+            album.owner_id,
+            album.access_key
         ))
             .fromIOToMain()
             .subscribe({

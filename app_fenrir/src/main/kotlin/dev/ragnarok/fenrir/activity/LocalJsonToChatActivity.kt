@@ -181,12 +181,12 @@ class LocalJsonToChatActivity : NoMainActivity(), PlaceProvider, AppStyleable, S
         }
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         ViewUtils.keyboardHide(this)
         super.onPause()
     }
 
-    public override fun onDestroy() {
+    override fun onDestroy() {
         supportFragmentManager.removeOnBackStackChangedListener(mOnBackStackChangedListener)
         ViewUtils.keyboardHide(this)
 

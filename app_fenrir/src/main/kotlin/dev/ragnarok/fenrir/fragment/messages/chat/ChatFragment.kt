@@ -532,7 +532,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                             icon = R.drawable.ic_outline_forward
                             iconColor = CurrentTheme.getColorSecondary(requireActivity())
                             onSelect {
-                                presenter?.onActionModeForwardClick()
+                                presenter?.fireForwardClick()
                             }
                         }
                         item(R.string.copy_data) {
@@ -627,7 +627,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 }
 
                 R.id.buttonForward -> {
-                    reference.get()?.presenter?.onActionModeForwardClick()
+                    reference.get()?.presenter?.fireForwardClick()
                     hide()
                 }
 
@@ -1151,7 +1151,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
             Upload.IMAGE_SIZE_CROPPING -> {
                 if (photos.size == 1) {
-                    var to_up = photos[0].getFullImageUri() ?: return
+                    var to_up = photos[0].fullImageUri ?: return
                     if (to_up.path?.let { File(it).isFile } == true) {
                         to_up = Uri.fromFile(to_up.path?.let { File(it) })
                     }
@@ -1752,7 +1752,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                 val photos: ArrayList<LocalPhoto>? =
                     result.data?.getParcelableArrayListExtraCompat(Extra.PHOTOS)
                 if (photos.nonNullNoEmpty()) {
-                    var to_up = photos[0].getFullImageUri()
+                    var to_up = photos[0].fullImageUri
                     if (File(to_up?.path ?: return@registerForActivityResult).isFile) {
                         to_up = Uri.fromFile(File(to_up.path ?: return@registerForActivityResult))
                     }
@@ -2017,7 +2017,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     private fun optionsMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.last_read -> {
-                presenter?.getConversation()?.getUnreadCount()?.let {
+                presenter?.getConversation()?.unreadCount?.let {
                     recyclerView?.smoothScrollToPosition(
                         it
                     )

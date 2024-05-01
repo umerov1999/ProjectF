@@ -37,33 +37,33 @@ class AudioPlaylistsAdapter(
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val playlist = data[position]
-        if (playlist.getThumb_image().nonNullNoEmpty()) displayAvatar(
+        if (playlist.thumb_image.nonNullNoEmpty()) displayAvatar(
             holder.thumb,
             null,
-            playlist.getThumb_image(),
+            playlist.thumb_image,
             Constants.PICASSO_TAG
         ) else holder.thumb.setImageResource(if (isDark) R.drawable.generic_audio_nowplaying_dark else R.drawable.generic_audio_nowplaying_light)
         holder.count.text =
-            playlist.getCount().toString() + " " + context.getString(R.string.audios_pattern_count)
-        holder.title.text = playlist.getTitle()
+            playlist.count.toString() + " " + context.getString(R.string.audios_pattern_count)
+        holder.title.text = playlist.title
         if (playlist.getDescriptionOrSubtitle().isNullOrEmpty()) holder.description.visibility =
             View.GONE else {
             holder.description.visibility = View.VISIBLE
             holder.description.text = playlist.getDescriptionOrSubtitle()
         }
-        if (playlist.getArtist_name().isNullOrEmpty()) holder.artist.visibility = View.GONE else {
+        if (playlist.artist_name.isNullOrEmpty()) holder.artist.visibility = View.GONE else {
             holder.artist.visibility = View.VISIBLE
-            holder.artist.text = playlist.getArtist_name()
+            holder.artist.text = playlist.artist_name
         }
-        if (playlist.getYear() == 0) holder.year.visibility = View.GONE else {
+        if (playlist.year == 0) holder.year.visibility = View.GONE else {
             holder.year.visibility = View.VISIBLE
-            holder.year.text = playlist.getYear().toString()
+            holder.year.text = playlist.year.toString()
         }
-        if (playlist.getGenre().isNullOrEmpty()) holder.genre.visibility = View.GONE else {
+        if (playlist.genre.isNullOrEmpty()) holder.genre.visibility = View.GONE else {
             holder.genre.visibility = View.VISIBLE
-            holder.genre.text = playlist.getGenre()
+            holder.genre.text = playlist.genre
         }
-        holder.update.text = AppTextUtils.getDateFromUnixTime(context, playlist.getUpdate_time())
+        holder.update.text = AppTextUtils.getDateFromUnixTime(context, playlist.update_time)
         holder.playlist_container.setOnClickListener {
             clickListener?.onAlbumClick(holder.bindingAdapterPosition, playlist)
         }
@@ -116,15 +116,15 @@ class AudioPlaylistsAdapter(
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
             val position = recyclerView?.getChildAdapterPosition(v) ?: 0
             val playlist = data[position]
-            if (!Utils.isValueAssigned(playlist.getId(), Settings.get().main().servicePlaylist)) {
-                if (Settings.get().accounts().current == playlist.getOwnerId()) {
+            if (!Utils.isValueAssigned(playlist.id, Settings.get().main().servicePlaylist)) {
+                if (Settings.get().accounts().current == playlist.owner_id) {
                     menu.add(0, v.id, 0, R.string.delete)
                         .setOnMenuItemClickListener {
                             clickListener?.onDelete(position, playlist)
                             true
                         }
-                    if (playlist.getOriginal_access_key()
-                            .isNullOrEmpty() || playlist.getOriginal_id() == 0 || playlist.getOriginal_owner_id() == 0L
+                    if (playlist.original_access_key
+                            .isNullOrEmpty() || playlist.original_id == 0 || playlist.original_owner_id == 0L
                     ) {
                         menu.add(0, v.id, 0, R.string.edit)
                             .setOnMenuItemClickListener {

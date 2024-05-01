@@ -22,7 +22,7 @@ class FaveVideosPresenter(accountId: Long, savedInstanceState: Bundle?) :
         view?.showRefreshing(netLoadingNow)
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doLoadTabs = if (doLoadTabs) {

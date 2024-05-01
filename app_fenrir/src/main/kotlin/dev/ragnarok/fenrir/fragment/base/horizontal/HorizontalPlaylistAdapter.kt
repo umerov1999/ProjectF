@@ -26,10 +26,10 @@ class HorizontalPlaylistAdapter(data: MutableList<AudioPlaylist>) :
     override fun onBindItemViewHolder(viewHolder: Holder, position: Int, type: Int) {
         val playlist = getItem(position)
         val context = viewHolder.itemView.context
-        if (playlist.getThumb_image().nonNullNoEmpty()) displayAvatar(
+        if (playlist.thumb_image.nonNullNoEmpty()) displayAvatar(
             viewHolder.thumb,
             PolyTransformation(),
-            playlist.getThumb_image(),
+            playlist.thumb_image,
             Constants.PICASSO_TAG
         ) else viewHolder.thumb.setImageBitmap(
             getEllipseBitmap(
@@ -42,41 +42,41 @@ class HorizontalPlaylistAdapter(data: MutableList<AudioPlaylist>) :
             )
         )
         viewHolder.count.text =
-            playlist.getCount().toString() + " " + context.getString(R.string.audios_pattern_count)
-        viewHolder.title.text = playlist.getTitle()
-        if (playlist.getSubtitle().isNullOrEmpty()) viewHolder.subtitle.visibility =
+            playlist.count.toString() + " " + context.getString(R.string.audios_pattern_count)
+        viewHolder.title.text = playlist.title
+        if (playlist.subtitle.isNullOrEmpty()) viewHolder.subtitle.visibility =
             View.GONE else {
             viewHolder.subtitle.visibility = View.VISIBLE
-            viewHolder.subtitle.text = playlist.getSubtitle()
+            viewHolder.subtitle.text = playlist.subtitle
             viewHolder.subtitle.setOnClickListener {
                 if (viewHolder.subtitle.maxLines == 1) viewHolder.subtitle.maxLines =
                     6 else viewHolder.subtitle.maxLines = 1
             }
         }
-        if (playlist.getDescription().isNullOrEmpty()) viewHolder.description.visibility =
+        if (playlist.description.isNullOrEmpty()) viewHolder.description.visibility =
             View.GONE else {
             viewHolder.description.visibility = View.VISIBLE
-            viewHolder.description.text = playlist.getDescription()
+            viewHolder.description.text = playlist.description
             viewHolder.description.setOnClickListener {
                 if (viewHolder.description.maxLines == 1) viewHolder.description.maxLines =
                     6 else viewHolder.description.maxLines = 1
             }
         }
-        if (playlist.getArtist_name().isNullOrEmpty()) viewHolder.artist.visibility =
+        if (playlist.artist_name.isNullOrEmpty()) viewHolder.artist.visibility =
             View.GONE else {
             viewHolder.artist.visibility = View.VISIBLE
-            viewHolder.artist.text = playlist.getArtist_name()
+            viewHolder.artist.text = playlist.artist_name
         }
-        if (playlist.getYear() == 0) viewHolder.year.visibility = View.GONE else {
+        if (playlist.year == 0) viewHolder.year.visibility = View.GONE else {
             viewHolder.year.visibility = View.VISIBLE
-            viewHolder.year.text = playlist.getYear().toString()
+            viewHolder.year.text = playlist.year.toString()
         }
-        if (playlist.getGenre().isNullOrEmpty()) viewHolder.genre.visibility = View.GONE else {
+        if (playlist.genre.isNullOrEmpty()) viewHolder.genre.visibility = View.GONE else {
             viewHolder.genre.visibility = View.VISIBLE
-            viewHolder.genre.text = playlist.getGenre()
+            viewHolder.genre.text = playlist.genre
         }
         viewHolder.update.text =
-            AppTextUtils.getDateFromUnixTime(context, playlist.getUpdate_time())
+            AppTextUtils.getDateFromUnixTime(context, playlist.update_time)
         viewHolder.add.setOnClickListener {
             listener?.onPlayListClick(
                 playlist,
@@ -89,10 +89,10 @@ class HorizontalPlaylistAdapter(data: MutableList<AudioPlaylist>) :
                 getItemRawPosition(viewHolder.bindingAdapterPosition)
             )
         }
-        if (playlist.getId() >= 0) {
+        if (playlist.id >= 0) {
             viewHolder.add.visibility = View.VISIBLE
             viewHolder.share.visibility = View.VISIBLE
-            if (playlist.getOwnerId() == Settings.get()
+            if (playlist.owner_id == Settings.get()
                     .accounts().current
             ) viewHolder.add.setImageResource(R.drawable.ic_outline_delete) else viewHolder.add.setImageResource(
                 R.drawable.plus

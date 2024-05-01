@@ -33,7 +33,7 @@ class LocalPhotosAdapter(private val context: Context, private val data: List<Lo
         val photo = data[position]
         holder.attachPhoto(photo)
         with()
-            .load(buildUriForPicasso(Content_Local.PHOTO, photo.getImageId()))
+            .load(buildUriForPicasso(Content_Local.PHOTO, photo.imageId))
             .tag(TAG)
             .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
             .placeholder(R.drawable.background_gray)
@@ -70,7 +70,7 @@ class LocalPhotosAdapter(private val context: Context, private val data: List<Lo
     }
 
     private fun resolveIndexText(photo: LocalPhoto, holder: ViewHolder) {
-        holder.tvIndex.text = if (photo.getIndex() == 0) "" else photo.getIndex().toString()
+        holder.tvIndex.text = if (photo.index == 0) "" else photo.index.toString()
     }
 
     fun setClickListener(clickListener: ClickListener?) {

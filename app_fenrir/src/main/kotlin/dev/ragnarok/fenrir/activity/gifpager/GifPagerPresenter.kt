@@ -77,7 +77,7 @@ class GifPagerPresenter(
         downloadImpl(context, view)
     }
 
-    public override fun onWritePermissionResolved(context: Context, view: View?) {
+    override fun onWritePermissionResolved(context: Context, view: View?) {
         if (hasReadWriteStoragePermission(context)) {
             downloadImpl(context, view)
         }

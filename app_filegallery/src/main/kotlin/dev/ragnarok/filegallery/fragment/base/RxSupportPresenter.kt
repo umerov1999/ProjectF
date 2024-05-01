@@ -22,7 +22,7 @@ abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
     protected val compositeDisposable = CompositeDisposable()
     private var viewCreationCount = 0
 
-    public override fun onGuiCreated(viewHost: V) {
+    override fun onGuiCreated(viewHost: V) {
         viewCreationCount++
         super.onGuiCreated(viewHost)
     }

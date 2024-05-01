@@ -217,7 +217,7 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
         view?.returnLoginViaWebAction()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveButtonLoginState()
     }

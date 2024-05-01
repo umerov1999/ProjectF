@@ -57,7 +57,7 @@ class FriendsTabsPresenter(
             })
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         view?.setDrawerFriendsSectionSelected(
             userId == accountId

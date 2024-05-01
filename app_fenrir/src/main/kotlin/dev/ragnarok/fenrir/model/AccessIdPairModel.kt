@@ -3,10 +3,10 @@ package dev.ragnarok.fenrir.model
 import android.os.Parcel
 import android.os.Parcelable
 
-class AccessIdPair : Parcelable {
-    private val id: Int
-    private val ownerId: Long
-    private val accessKey: String?
+class AccessIdPairModel : Parcelable {
+    val id: Int
+    val ownerId: Long
+    val accessKey: String?
 
     constructor(id: Int, ownerId: Long, accessKey: String?) {
         this.id = id
@@ -20,18 +20,6 @@ class AccessIdPair : Parcelable {
         accessKey = parcel.readString()
     }
 
-    fun getId(): Int {
-        return id
-    }
-
-    fun getOwnerId(): Long {
-        return ownerId
-    }
-
-    fun getAccessKey(): String? {
-        return accessKey
-    }
-
     override fun describeContents(): Int {
         return 0
     }
@@ -42,12 +30,12 @@ class AccessIdPair : Parcelable {
         parcel.writeString(accessKey)
     }
 
-    companion object CREATOR : Parcelable.Creator<AccessIdPair> {
-        override fun createFromParcel(parcel: Parcel): AccessIdPair {
-            return AccessIdPair(parcel)
+    companion object CREATOR : Parcelable.Creator<AccessIdPairModel> {
+        override fun createFromParcel(parcel: Parcel): AccessIdPairModel {
+            return AccessIdPairModel(parcel)
         }
 
-        override fun newArray(size: Int): Array<AccessIdPair?> {
+        override fun newArray(size: Int): Array<AccessIdPairModel?> {
             return arrayOfNulls(size)
         }
     }

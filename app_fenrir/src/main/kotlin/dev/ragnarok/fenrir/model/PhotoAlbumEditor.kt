@@ -8,12 +8,18 @@ import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class PhotoAlbumEditor : Parcelable {
-    private var title: String? = null
-    private var description: String? = null
-    private var privacyView: Privacy? = null
-    private var privacyComment: Privacy? = null
-    private var commentsDisabled = false
-    private var uploadByAdminsOnly = false
+    var title: String? = null
+        private set
+    var description: String? = null
+        private set
+    var privacyView: Privacy? = null
+        private set
+    var privacyComment: Privacy? = null
+        private set
+    var commentsDisabled = false
+        private set
+    var uploadByAdminsOnly = false
+        private set
 
     private constructor()
     internal constructor(parcel: Parcel) {
@@ -25,17 +31,9 @@ class PhotoAlbumEditor : Parcelable {
         uploadByAdminsOnly = parcel.getBoolean()
     }
 
-    fun getTitle(): String? {
-        return title
-    }
-
     fun setTitle(title: String?): PhotoAlbumEditor {
         this.title = title
         return this
-    }
-
-    fun getDescription(): String? {
-        return description
     }
 
     fun setDescription(description: String?): PhotoAlbumEditor {
@@ -43,17 +41,9 @@ class PhotoAlbumEditor : Parcelable {
         return this
     }
 
-    fun getPrivacyView(): Privacy? {
-        return privacyView
-    }
-
     fun setPrivacyView(privacyView: Privacy?): PhotoAlbumEditor {
         this.privacyView = privacyView
         return this
-    }
-
-    fun getPrivacyComment(): Privacy? {
-        return privacyComment
     }
 
     fun setPrivacyComment(privacyComment: Privacy?): PhotoAlbumEditor {
@@ -61,17 +51,9 @@ class PhotoAlbumEditor : Parcelable {
         return this
     }
 
-    fun isCommentsDisabled(): Boolean {
-        return commentsDisabled
-    }
-
     fun setCommentsDisabled(commentsDisabled: Boolean): PhotoAlbumEditor {
         this.commentsDisabled = commentsDisabled
         return this
-    }
-
-    fun isUploadByAdminsOnly(): Boolean {
-        return uploadByAdminsOnly
     }
 
     fun setUploadByAdminsOnly(uploadByAdminsOnly: Boolean): PhotoAlbumEditor {

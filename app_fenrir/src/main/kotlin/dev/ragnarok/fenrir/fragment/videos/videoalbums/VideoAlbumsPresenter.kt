@@ -30,7 +30,7 @@ class VideoAlbumsPresenter(
         )
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doLoadTabs = if (doLoadTabs) {
@@ -120,9 +120,9 @@ class VideoAlbumsPresenter(
         view?.openAlbum(
             accountId,
             ownerId,
-            album.getId(),
+            album.id,
             action,
-            album.getTitle()
+            album.title
         )
     }
 

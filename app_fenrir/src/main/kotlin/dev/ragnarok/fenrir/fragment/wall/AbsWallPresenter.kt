@@ -247,7 +247,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         requestWall(0)
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
     }
@@ -800,7 +800,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
 
     private fun doUploadStoryPhotos(photos: List<LocalPhoto>) {
         if (photos.size == 1) {
-            var to_up = photos[0].getFullImageUri() ?: return
+            var to_up = photos[0].fullImageUri ?: return
             if (to_up.path?.let { File(it).isFile } == true) {
                 to_up = Uri.fromFile(to_up.path?.let { File(it) })
             }
@@ -831,7 +831,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
             }
 
             video != null -> {
-                doUploadStoryVideo(video.getData().toString())
+                doUploadStoryVideo(video.data.toString())
             }
         }
     }

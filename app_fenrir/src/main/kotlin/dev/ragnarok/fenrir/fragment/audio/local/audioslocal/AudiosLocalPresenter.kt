@@ -145,7 +145,7 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
         updateCriteria()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doAudioLoadTabs = if (doAudioLoadTabs) {

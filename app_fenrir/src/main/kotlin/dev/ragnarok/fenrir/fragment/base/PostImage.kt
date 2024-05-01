@@ -26,7 +26,7 @@ class PostImage(val attachment: AbsModel, val type: Int) {
             TYPE_GIF -> {
                 val document = attachment as Document
                 val max = document.getMaxPreviewSize(false)
-                max?.getW() ?: 640
+                max?.width ?: 640
             }
 
             else -> throw UnsupportedOperationException()
@@ -64,7 +64,7 @@ class PostImage(val attachment: AbsModel, val type: Int) {
             TYPE_GIF -> {
                 val document = attachment as Document
                 val max = document.getMaxPreviewSize(false)
-                max?.getH() ?: 480
+                max?.height ?: 480
             }
 
             else -> throw UnsupportedOperationException()

@@ -36,7 +36,7 @@ class LogsPresenter(savedInstanceState: Bundle?) :
         resolveEmptyTextVisibility()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
     }

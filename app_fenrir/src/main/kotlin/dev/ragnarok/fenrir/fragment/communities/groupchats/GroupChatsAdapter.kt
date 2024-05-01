@@ -29,10 +29,10 @@ class GroupChatsAdapter(
     override fun onBindItemViewHolder(viewHolder: ViewHolder, position: Int, type: Int) {
         val item = getItem(position)
         val context = viewHolder.itemView.context
-        viewHolder.title.text = item.getTitle()
+        viewHolder.title.text = item.title
         viewHolder.subtitle.text = context.getString(
             R.string.group_chats_counter,
-            AppTextUtils.getDateFromUnixTime(item.getLastUpdateTime()), item.getMembers_count()
+            AppTextUtils.getDateFromUnixTime(item.lastUpdateTime), item.members_count
         )
         viewHolder.itemView.setOnLongClickListener {
             val popup = PopupMenu(context, viewHolder.itemView)
@@ -44,7 +44,7 @@ class GroupChatsAdapter(
                     val clip =
                         ClipData.newPlainText(
                             context.getString(R.string.link),
-                            item.getInvite_link()
+                            item.invite_link
                         )
                     clipboard?.setPrimaryClip(clip)
                     createCustomToast(context).showToast(R.string.copied)
@@ -55,7 +55,7 @@ class GroupChatsAdapter(
             popup.show()
             false
         }
-        val avaUrl = item.getPhoto()
+        val avaUrl = item.photo
         if (avaUrl.isNullOrEmpty()) {
             with()
                 .load(R.drawable.ic_avatar_unknown)

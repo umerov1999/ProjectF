@@ -99,27 +99,27 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
     override fun displayBaseCommunityData(community: Community, details: CommunityDetails) {
         if (mHeaderHolder == null) return
         mHeaderHolder?.tvName?.text = community.fullName
-        details.getCover()?.getImages().ifNonNullNoEmpty({
+        details.cover?.images.ifNonNullNoEmpty({
             var def = 0
             var url: String? = null
             for (i in it) {
-                if (i.getWidth() * i.getHeight() > def) {
-                    def = i.getWidth() * i.getHeight()
-                    url = i.getUrl()
+                if (i.width * i.height > def) {
+                    def = i.width * i.height
+                    url = i.url
                 }
             }
             displayCommunityCover(community.isBlacklisted, url, true)
         }, {
             displayCommunityCover(community.isBlacklisted, community.maxSquareAvatar, false)
         })
-        val statusText: String? = if (details.getStatusAudio() != null) {
-            details.getStatusAudio()?.artistAndTitle
+        val statusText: String? = if (details.statusAudio != null) {
+            details.statusAudio?.artistAndTitle
         } else {
-            details.getStatus()
+            details.status
         }
         mHeaderHolder?.tvStatus?.text = statusText
         mHeaderHolder?.tvAudioStatus?.visibility =
-            if (details.getStatusAudio() != null) View.VISIBLE else View.GONE
+            if (details.statusAudio != null) View.VISIBLE else View.GONE
         val domain =
             if (community.domain.nonNullNoEmpty()) "@" + community.domain else ("club" + community.id)
         mHeaderHolder?.tvDomain?.text = domain
@@ -189,7 +189,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         }
         mHeaderHolder?.ivVerified?.visibility =
             if (community.isVerified) View.VISIBLE else View.GONE
-        if (!details.isCanMessage()) mHeaderHolder?.fabMessage?.setImageResource(R.drawable.close) else mHeaderHolder?.fabMessage?.setImageResource(
+        if (!details.canMessage) mHeaderHolder?.fabMessage?.setImageResource(R.drawable.close) else mHeaderHolder?.fabMessage?.setImageResource(
             R.drawable.email
         )
         val photoUrl = community.maxSquareAvatar
@@ -308,7 +308,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         return GroupWallPresenter(
             accountId,
             ownerId,
-            wrapper?.get() as Community?,
+            wrapper?.owner as Community?,
             saveInstanceState
         )
     }
@@ -458,14 +458,14 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
     }
 
     override fun goToShowCommunityAboutInfo(accountId: Long, details: CommunityDetails) {
-        if (details.getDescription().isNullOrEmpty()) {
+        if (details.description.isNullOrEmpty()) {
             return
         }
         val root = View.inflate(requireActivity(), R.layout.dialog_selectable_text, null)
         val tvText: MaterialTextView = root.findViewById(R.id.selectable_text)
         val subtitle =
             OwnerLinkSpanFactory.withSpans(
-                details.getDescription(),
+                details.description,
                 owners = true,
                 topics = false,
                 listener = ownerLinkAdapter

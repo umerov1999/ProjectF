@@ -85,9 +85,9 @@ class LocalVideosFragment : BaseMvpFragment<LocalVideosPresenter, ILocalVideosVi
 
     override fun onVideoLongClick(holder: LocalVideosAdapter.ViewHolder, video: LocalVideo) {
         val target = Video().setOwnerId(Settings.get().accounts().current).setId(
-            video.getId().toInt()
+            video.id.toInt()
         )
-            .setMp4link1080(video.getData().toString()).setTitle(video.getTitle())
+            .setMp4link1080(video.data.toString()).setTitle(video.title)
         getVkInternalPlayerPlace(target, InternalVideoSize.SIZE_1080, true).tryOpenWith(
             requireActivity()
         )

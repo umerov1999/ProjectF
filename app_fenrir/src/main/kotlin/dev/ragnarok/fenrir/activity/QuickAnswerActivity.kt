@@ -232,15 +232,15 @@ class QuickAnswerActivity : AppCompatActivity() {
                     voiceMessage: VoiceMessage
                 ) {
                     val audio =
-                        Audio().setId(voiceMessage.getId()).setOwnerId(voiceMessage.getOwnerId())
+                        Audio().setId(voiceMessage.id).setOwnerId(voiceMessage.ownerId)
                             .setTitle(
-                                voiceMessage.getId().toString() + "_" + voiceMessage.getOwnerId()
+                                voiceMessage.id.toString() + "_" + voiceMessage.ownerId
                             )
                             .setArtist("Voice")
-                            .setIsLocal().setDuration(voiceMessage.getDuration()).setUrl(
+                            .setIsLocal().setDuration(voiceMessage.duration).setUrl(
                                 Utils.firstNonEmptyString(
-                                    voiceMessage.getLinkMp3(),
-                                    voiceMessage.getLinkOgg()
+                                    voiceMessage.linkMp3,
+                                    voiceMessage.linkOgg
                                 )
                             )
                     startForPlayList(this@QuickAnswerActivity, ArrayList(listOf(audio)), 0, false)

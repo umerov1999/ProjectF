@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 
 class AccountsActivity : NoMainActivity(), PlaceProvider {
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             supportFragmentManager

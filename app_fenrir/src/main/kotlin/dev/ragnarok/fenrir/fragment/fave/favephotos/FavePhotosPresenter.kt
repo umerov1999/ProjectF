@@ -29,7 +29,7 @@ class FavePhotosPresenter(accountId: Long, savedInstanceState: Bundle?) :
         view?.showRefreshing(requestNow)
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         resolveRefreshingView()
         doLoadTabs = if (doLoadTabs) {

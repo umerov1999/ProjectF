@@ -338,12 +338,12 @@ class ShortVideoPagerPresenter(
         onWritePermissionResolved()
     }
 
-    public override fun onGuiPaused() {
+    override fun onGuiPaused() {
         super.onGuiPaused()
         mShortVideoPlayer?.pause()
     }
 
-    public override fun onGuiResumed() {
+    override fun onGuiResumed() {
         super.onGuiResumed()
         if (mShortVideoPlayer != null) {
             try {

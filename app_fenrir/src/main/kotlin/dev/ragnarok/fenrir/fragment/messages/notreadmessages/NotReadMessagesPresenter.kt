@@ -253,7 +253,7 @@ class NotReadMessagesPresenter(
         )
     }
 
-    public override fun onMessageClick(message: Message, position: Int, x: Int?, y: Int?) {
+    override fun onMessageClick(message: Message, position: Int, x: Int?, y: Int?) {
         if (!readUnreadMessagesUpIfExists(message)) {
             if (x != null && y != null) {
                 resolvePopupMenu(message, position, x, y)
@@ -287,8 +287,8 @@ class NotReadMessagesPresenter(
     private fun readUnreadMessagesUpIfExists(message: Message): Boolean {
         if (isHiddenAccount(accountId)) return false
 
-        if (!message.isOut && message.originalId > lastReadId.getIncoming()) {
-            lastReadId.setIncoming(message.originalId)
+        if (!message.isOut && message.originalId > lastReadId.incoming) {
+            lastReadId.incoming = message.originalId
             view?.notifyDataChanged()
             appendDisposable(messagesInteractor.markAsRead(accountId, peer.id, message.originalId)
                 .fromIOToMain()
@@ -299,7 +299,7 @@ class NotReadMessagesPresenter(
                     )
                         .fromIOToMain()
                         .subscribe({ e ->
-                            unreadCount = e.getUnreadCount()
+                            unreadCount = e.unreadCount
                             resolveUnreadCount()
                         }) { s ->
                             showError(s)
@@ -328,8 +328,8 @@ class NotReadMessagesPresenter(
 
     fun fireFinish() {
         view?.doFinish(
-            lastReadId.getIncoming(),
-            lastReadId.getOutgoing(),
+            lastReadId.incoming,
+            lastReadId.outgoing,
             true
         )
     }
@@ -337,8 +337,8 @@ class NotReadMessagesPresenter(
     private fun onDownDataLoaded(messages: List<Message>) {
         if (messages.isEmpty()) {
             view?.doFinish(
-                lastReadId.getIncoming(),
-                lastReadId.getOutgoing(),
+                lastReadId.incoming,
+                lastReadId.outgoing,
                 false
             )
             loadingState.HeaderDisable()
@@ -422,8 +422,8 @@ class NotReadMessagesPresenter(
     }
 
     init {
-        lastReadId.setIncoming(incoming)
-        lastReadId.setOutgoing(outgoing)
+        lastReadId.incoming = incoming
+        lastReadId.outgoing = outgoing
         this.peer = peer
         this.unreadCount = unreadCount
         loadingState = LOADING_STATE(object : LOADING_STATE.NotifyChanges {

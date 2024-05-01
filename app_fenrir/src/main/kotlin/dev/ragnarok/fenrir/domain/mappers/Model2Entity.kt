@@ -541,7 +541,7 @@ object Model2Entity {
     }
 
     private fun buildNotSupportedDbo(dbo: NotSupported): NotSupportedDboEntity {
-        return NotSupportedDboEntity().setType(dbo.getType()).setBody(dbo.getBody())
+        return NotSupportedDboEntity().setType(dbo.type).setBody(dbo.body)
     }
 
     private fun buildEventDbo(dbo: Event): EventDboEntity {
@@ -565,12 +565,12 @@ object Model2Entity {
     }
 
     private fun buildMarketAlbumDbo(dbo: MarketAlbum): MarketAlbumDboEntity {
-        return MarketAlbumDboEntity().set(dbo.getId(), dbo.getOwner_id())
-            .setAccess_key(dbo.getAccess_key())
-            .setCount(dbo.getCount())
-            .setTitle(dbo.getTitle())
-            .setUpdated_time(dbo.getUpdated_time())
-            .setPhoto(dbo.getPhoto()?.let { buildPhotoEntity(it) })
+        return MarketAlbumDboEntity().set(dbo.id, dbo.owner_id)
+            .setAccess_key(dbo.access_key)
+            .setCount(dbo.count)
+            .setTitle(dbo.title)
+            .setUpdated_time(dbo.updated_time)
+            .setPhoto(dbo.photo?.let { buildPhotoEntity(it) })
     }
 
     private fun mapArtistImage(dbo: AudioArtistImage): AudioArtistImageEntity {
@@ -579,9 +579,9 @@ object Model2Entity {
 
     private fun buildAudioArtistDbo(dbo: AudioArtist): AudioArtistDboEntity {
         return AudioArtistDboEntity()
-            .setId(dbo.getId())
-            .setName(dbo.getName())
-            .setPhoto(mapAll(dbo.getPhoto()) {
+            .setId(dbo.id)
+            .setName(dbo.name)
+            .setPhoto(mapAll(dbo.photo) {
                 mapArtistImage(
                     it
                 )
@@ -700,21 +700,21 @@ object Model2Entity {
 
     private fun mapPrivacy(privacy: SimplePrivacy): PrivacyEntity {
         return PrivacyEntity().set(
-            privacy.getType(),
-            mapAll(privacy.getEntries()) { orig ->
-                PrivacyEntity.Entry().set(orig.getType(), orig.getId(), orig.isAllowed())
+            privacy.type,
+            mapAll(privacy.entries) { orig ->
+                PrivacyEntity.Entry().set(orig.type, orig.id, orig.allowed)
             })
     }
 
     private fun mapAudio(message: VoiceMessage): AudioMessageDboEntity {
-        return AudioMessageDboEntity().set(message.getId(), message.getOwnerId())
-            .setWaveform(message.getWaveform())
-            .setLinkOgg(message.getLinkOgg())
-            .setLinkMp3(message.getLinkMp3())
-            .setDuration(message.getDuration())
-            .setAccessKey(message.getAccessKey())
-            .setTranscript(message.getTranscript())
-            .setWasListened(message.wasListened())
+        return AudioMessageDboEntity().set(message.id, message.ownerId)
+            .setWaveform(message.waveform)
+            .setLinkOgg(message.linkOgg)
+            .setLinkMp3(message.linkMp3)
+            .setDuration(message.duration)
+            .setAccessKey(message.accessKey)
+            .setTranscript(message.transcript)
+            .setWasListened(message.was_listened)
     }
 
     private fun buildDocumentDbo(document: Document): DocumentDboEntity {
@@ -785,22 +785,22 @@ object Model2Entity {
 
     private fun buildAudioPlaylistEntity(dto: AudioPlaylist): AudioPlaylistDboEntity {
         return AudioPlaylistDboEntity()
-            .setId(dto.getId())
-            .setOwnerId(dto.getOwnerId())
-            .setAccess_key(dto.getAccess_key())
-            .setArtist_name(dto.getArtist_name())
-            .setCount(dto.getCount())
-            .setDescription(dto.getDescription())
-            .setGenre(dto.getGenre())
-            .setYear(dto.getYear())
-            .setTitle(dto.getTitle())
-            .setSubtitle(dto.getSubtitle())
-            .setSubtitleBadge(dto.getIsSubtitleBadge())
-            .setThumb_image(dto.getThumb_image())
-            .setUpdate_time(dto.getUpdate_time())
-            .setOriginal_access_key(dto.getOriginal_access_key())
-            .setOriginal_id(dto.getOriginal_id())
-            .setOriginal_owner_id(dto.getOriginal_owner_id())
+            .setId(dto.id)
+            .setOwnerId(dto.owner_id)
+            .setAccess_key(dto.access_key)
+            .setArtist_name(dto.artist_name)
+            .setCount(dto.count)
+            .setDescription(dto.description)
+            .setGenre(dto.genre)
+            .setYear(dto.year)
+            .setTitle(dto.title)
+            .setSubtitle(dto.subtitle)
+            .setSubtitleBadge(dto.subtitle_badge)
+            .setThumb_image(dto.thumb_image)
+            .setUpdate_time(dto.update_time)
+            .setOriginal_access_key(dto.original_access_key)
+            .setOriginal_id(dto.original_id)
+            .setOriginal_owner_id(dto.original_owner_id)
     }
 
     private fun buildPhotoEntity(photo: Photo): PhotoDboEntity {
@@ -824,41 +824,41 @@ object Model2Entity {
 
     private fun buildPhotoAlbumEntity(album: PhotoAlbum): PhotoAlbumDboEntity {
         return PhotoAlbumDboEntity().set(album.getObjectId(), album.ownerId)
-            .setSize(album.getSize())
-            .setTitle(album.getTitle())
-            .setDescription(album.getDescription())
-            .setCanUpload(album.isCanUpload())
-            .setUpdatedTime(album.getUpdatedTime())
-            .setCreatedTime(album.getCreatedTime())
-            .setSizes(album.getSizes()?.let { buildPhotoSizeEntity(it) })
-            .setPrivacyView(album.getPrivacyView()?.let { mapPrivacy(it) })
-            .setPrivacyComment(album.getPrivacyComment()?.let { mapPrivacy(it) })
-            .setUploadByAdminsOnly(album.isUploadByAdminsOnly())
-            .setCommentsDisabled(album.isCommentsDisabled())
+            .setSize(album.size)
+            .setTitle(album.title)
+            .setDescription(album.description)
+            .setCanUpload(album.canUpload)
+            .setUpdatedTime(album.updatedTime)
+            .setCreatedTime(album.createdTime)
+            .setSizes(album.sizes?.let { buildPhotoSizeEntity(it) })
+            .setPrivacyView(album.privacyView?.let { mapPrivacy(it) })
+            .setPrivacyComment(album.privacyComment?.let { mapPrivacy(it) })
+            .setUploadByAdminsOnly(album.uploadByAdminsOnly)
+            .setCommentsDisabled(album.commentsDisabled)
     }
 
     private fun model2entityNullable(size: PhotoSizes.Size?): PhotoSizeEntity.Size? {
         return if (size != null) {
             PhotoSizeEntity.Size()
                 .setUrl(size.url)
-                .setW(size.getW())
-                .setH(size.getH())
+                .setW(size.width)
+                .setH(size.height)
         } else null
     }
 
     private fun buildPhotoSizeEntity(sizes: PhotoSizes): PhotoSizeEntity {
         return PhotoSizeEntity()
-            .setS(model2entityNullable(sizes.getS()))
-            .setM(model2entityNullable(sizes.getM()))
-            .setX(model2entityNullable(sizes.getX()))
-            .setO(model2entityNullable(sizes.getO()))
-            .setP(model2entityNullable(sizes.getP()))
-            .setQ(model2entityNullable(sizes.getQ()))
-            .setR(model2entityNullable(sizes.getR()))
-            .setY(model2entityNullable(sizes.getY()))
-            .setZ(model2entityNullable(sizes.getZ()))
-            .setW(model2entityNullable(sizes.getW()))
-            .setK(model2entityNullable(sizes.getK()))
-            .setL(model2entityNullable(sizes.getL()))
+            .setS(model2entityNullable(sizes.s))
+            .setM(model2entityNullable(sizes.m))
+            .setX(model2entityNullable(sizes.x))
+            .setO(model2entityNullable(sizes.o))
+            .setP(model2entityNullable(sizes.p))
+            .setQ(model2entityNullable(sizes.q))
+            .setR(model2entityNullable(sizes.r))
+            .setY(model2entityNullable(sizes.y))
+            .setZ(model2entityNullable(sizes.z))
+            .setW(model2entityNullable(sizes.w))
+            .setK(model2entityNullable(sizes.k))
+            .setL(model2entityNullable(sizes.l))
     }
 }
