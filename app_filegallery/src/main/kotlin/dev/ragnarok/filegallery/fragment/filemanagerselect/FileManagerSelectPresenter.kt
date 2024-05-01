@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.fragment.filemanagerselect
 
-import android.os.Bundle
 import android.os.Environment
 import android.os.Parcelable
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
@@ -15,9 +14,8 @@ import java.util.Locale
 
 class FileManagerSelectPresenter(
     private var path: File,
-    private val ext: String?,
-    savedInstanceState: Bundle?
-) : RxSupportPresenter<IFileManagerSelectView>(savedInstanceState) {
+    private val ext: String?
+) : RxSupportPresenter<IFileManagerSelectView>() {
     private val fileList: ArrayList<FileItemSelect> = ArrayList()
     private val fileListSearch: ArrayList<FileItemSelect> = ArrayList()
     private var isLoading = false

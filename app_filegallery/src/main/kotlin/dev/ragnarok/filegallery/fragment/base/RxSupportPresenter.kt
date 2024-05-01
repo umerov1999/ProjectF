@@ -1,7 +1,6 @@
 package dev.ragnarok.filegallery.fragment.base
 
 import android.content.Context
-import android.os.Bundle
 import androidx.annotation.StringRes
 import dev.ragnarok.filegallery.App.Companion.instance
 import dev.ragnarok.filegallery.Constants
@@ -11,25 +10,19 @@ import dev.ragnarok.filegallery.fragment.base.core.IErrorView
 import dev.ragnarok.filegallery.fragment.base.core.IMvpView
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.util.ErrorLocalizer
-import dev.ragnarok.filegallery.util.InstancesCounter
 import dev.ragnarok.filegallery.util.Utils
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 
-abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
-    AbsPresenter<V>(savedInstanceState) {
-    protected var instanceId = 0L
+abstract class RxSupportPresenter<V : IMvpView> :
+    AbsPresenter<V>() {
     protected val compositeDisposable = CompositeDisposable()
-    private var viewCreationCount = 0
+    var viewCreationCount = 0
+        private set
 
     override fun onGuiCreated(viewHost: V) {
         viewCreationCount++
         super.onGuiCreated(viewHost)
-    }
-
-    override fun saveState(outState: Bundle) {
-        super.saveState(outState)
-        outState.putLong(SAVE_INSTANCE_ID, instanceId)
     }
 
     override fun onDestroyed() {
@@ -64,17 +57,5 @@ abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
 
     protected fun getString(@StringRes res: Int, vararg params: Any?): String {
         return instance.getString(res, *params)
-    }
-
-    companion object {
-        private const val SAVE_INSTANCE_ID = "save_instance_id"
-        private val instancesCounter = InstancesCounter()
-    }
-
-    init {
-        savedInstanceState?.let {
-            instanceId = savedInstanceState.getLong(SAVE_INSTANCE_ID)
-            instancesCounter.fireExists(javaClass, instanceId)
-        } ?: run { instanceId = instancesCounter.incrementAndGet(javaClass) }
     }
 }

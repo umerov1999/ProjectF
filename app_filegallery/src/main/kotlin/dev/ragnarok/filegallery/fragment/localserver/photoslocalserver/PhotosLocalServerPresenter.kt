@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.fragment.localserver.photoslocalserver
 
-import android.os.Bundle
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes.networkInterfaces
@@ -16,8 +15,8 @@ import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
-class PhotosLocalServerPresenter(savedInstanceState: Bundle?) :
-    RxSupportPresenter<IPhotosLocalServerView>(savedInstanceState) {
+class PhotosLocalServerPresenter :
+    RxSupportPresenter<IPhotosLocalServerView>() {
     private val photos: MutableList<Photo> = ArrayList()
     private val fInteractor: ILocalServerApi = networkInterfaces.localServerApi()
     private var actualDataDisposable = Disposable.disposed()

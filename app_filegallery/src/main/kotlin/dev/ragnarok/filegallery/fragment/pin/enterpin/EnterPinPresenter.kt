@@ -9,7 +9,7 @@ import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
 import dev.ragnarok.filegallery.settings.Settings
 import java.util.Arrays
 
-class EnterPinPresenter(savedState: Bundle?) : RxSupportPresenter<IEnterPinView>(savedState) {
+class EnterPinPresenter(savedState: Bundle?) : RxSupportPresenter<IEnterPinView>() {
     private val mValues: IntArray?
     private val mHandler = Handler(Looper.getMainLooper())
     private val mOnFullyEnteredRunnable = Runnable { onFullyEntered() }

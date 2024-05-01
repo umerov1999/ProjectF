@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.fragment.localserver.filemanagerremote
 
-import android.os.Bundle
 import android.os.Parcelable
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
@@ -16,9 +15,7 @@ import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.util.Objects.safeEquals
 import java.util.Locale
 
-class FileManagerRemotePresenter(
-    savedInstanceState: Bundle?
-) : RxSupportPresenter<IFileManagerRemoteView>(savedInstanceState) {
+class FileManagerRemotePresenter : RxSupportPresenter<IFileManagerRemoteView>() {
     private val fileList: ArrayList<FileRemote> = ArrayList()
     private val fileListSearch: ArrayList<FileRemote> = ArrayList()
     private var isLoading = false

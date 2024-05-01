@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.fragment.tagdir
 
-import android.os.Bundle
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes
@@ -15,8 +14,8 @@ import dev.ragnarok.filegallery.model.tags.TagDir
 import dev.ragnarok.filegallery.util.Objects
 import java.util.Locale
 
-class TagDirPresenter(private val owner_id: Int, savedInstanceState: Bundle?) :
-    RxSupportPresenter<ITagDirView>(savedInstanceState) {
+class TagDirPresenter(private val owner_id: Int) :
+    RxSupportPresenter<ITagDirView>() {
     private val tagDirData: ArrayList<TagDir> = ArrayList()
     private val tagDirDataSearch: ArrayList<TagDir> = ArrayList()
     private var q: String? = null

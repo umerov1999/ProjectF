@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.fragment.tagowner
 
-import android.os.Bundle
 import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.db.interfaces.ISearchRequestHelperStorage
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
@@ -8,8 +7,8 @@ import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.model.FileItem
 import dev.ragnarok.filegallery.model.tags.TagOwner
 
-class TagOwnerPresenter(savedInstanceState: Bundle?) :
-    RxSupportPresenter<ITagOwnerView>(savedInstanceState) {
+class TagOwnerPresenter :
+    RxSupportPresenter<ITagOwnerView>() {
     private val tagOwnerData: ArrayList<TagOwner> = ArrayList()
     private val storage: ISearchRequestHelperStorage =
         Includes.stores.searchQueriesStore()

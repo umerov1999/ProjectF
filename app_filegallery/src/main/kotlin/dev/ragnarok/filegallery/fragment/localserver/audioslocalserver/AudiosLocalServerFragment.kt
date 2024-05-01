@@ -91,9 +91,7 @@ class AudiosLocalServerFragment :
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?) = AudiosLocalServerPresenter(
-        saveInstanceState
-    )
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = AudiosLocalServerPresenter()
 
     override fun displayList(audios: List<Audio>) {
         mAudioRecyclerAdapter?.setItems(audios)

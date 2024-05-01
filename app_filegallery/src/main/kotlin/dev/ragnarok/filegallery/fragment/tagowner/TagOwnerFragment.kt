@@ -74,8 +74,7 @@ class TagOwnerFragment : BaseMvpFragment<TagOwnerPresenter, ITagOwnerView>(), IT
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?) =
-        TagOwnerPresenter(saveInstanceState)
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = TagOwnerPresenter()
 
     override fun displayData(data: List<TagOwner>) {
         mAdapter?.setData(data)

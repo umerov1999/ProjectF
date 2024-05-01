@@ -221,8 +221,7 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
                 }
             }
             val finalIndex = Index
-            val source = TmpSource(instanceId, 0)
-            fireTempDataUsage()
+            val source = TmpSource(fireTempDataUsage(), 0)
             appendDisposable(Stores.instance
                 .tempStore()
                 .putTemporaryData(

@@ -3,9 +3,8 @@ package dev.ragnarok.filegallery.fragment.base.core
 import android.os.Bundle
 import androidx.annotation.CallSuper
 import java.lang.ref.WeakReference
-import java.util.concurrent.atomic.AtomicLong
 
-abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresenter<V> {
+abstract class AbsPresenter<V : IMvpView> : IPresenter<V> {
 
     /**
      * V (View Host - это не значит, что существуют реальные вьюхи,
@@ -25,9 +24,6 @@ abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresen
     val guiIsResumed: Boolean
         get() = isGuiResumed
 
-    var id: Long
-        private set
-
     private var isDestroyed: Boolean = false
 
     private var isGuiResumed: Boolean = false
@@ -43,17 +39,6 @@ abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresen
 
     val viewHost: V?
         get() = viewReference.get()
-
-    init {
-        if (savedInstanceState != null) {
-            id = savedInstanceState.getLong(SAVE_ID)
-            if (id >= IDGEN.get()) {
-                IDGEN.set(id + 1)
-            }
-        } else {
-            id = IDGEN.incrementAndGet()
-        }
-    }
 
     @CallSuper
     protected open fun onViewHostAttached(view: V) {
@@ -88,10 +73,6 @@ abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresen
     @CallSuper
     protected open fun onGuiPaused() {
 
-    }
-
-    override fun getPresenterId(): Long {
-        return id
     }
 
     override fun destroy() {
@@ -140,15 +121,6 @@ abstract class AbsPresenter<V : IMvpView>(savedInstanceState: Bundle?) : IPresen
 
     @CallSuper
     override fun saveState(outState: Bundle) {
-        outState.putLong(SAVE_ID, id)
-    }
 
-    companion object {
-        private val IDGEN = AtomicLong()
-        private const val SAVE_ID = "save_presenter_id"
-
-        fun extractIdPresenter(savedInstanceState: Bundle?): Long {
-            return savedInstanceState?.getLong(SAVE_ID, -1) ?: -1
-        }
     }
 }

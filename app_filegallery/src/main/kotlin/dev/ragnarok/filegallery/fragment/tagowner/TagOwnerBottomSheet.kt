@@ -63,8 +63,7 @@ class TagOwnerBottomSheet : BaseMvpBottomSheetDialogFragment<TagOwnerPresenter, 
         return dialog
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?) =
-        TagOwnerPresenter(saveInstanceState)
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = TagOwnerPresenter()
 
     override fun displayData(data: List<TagOwner>) {
         mAdapter?.setData(data)

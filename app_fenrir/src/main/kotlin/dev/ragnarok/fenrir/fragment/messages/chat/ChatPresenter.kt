@@ -125,6 +125,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
 
 class ChatPresenter(
     accountId: Long, private val messagesOwnerId: Long,
@@ -197,9 +198,12 @@ class ChatPresenter(
 
     private var currentPhotoCameraUri: Uri? = null
 
-    init {
+    private var generatedId: Long
 
+    init {
         if (savedInstanceState == null) {
+            generatedId = IDGEN.incrementAndGet()
+
             peer = initialPeer
             outConfig = config
 
@@ -207,6 +211,10 @@ class ChatPresenter(
                 draftMessageText = config.initialText
             }
         } else {
+            generatedId = savedInstanceState.getLong(SAVE_ID)
+            if (generatedId >= IDGEN.get()) {
+                IDGEN.set(generatedId + 1)
+            }
             peer = savedInstanceState.getParcelableCompat(SAVE_PEER)!!
             outConfig = savedInstanceState.getParcelableCompat(SAVE_CONFIG)!!
             currentPhotoCameraUri = savedInstanceState.getParcelableCompat(SAVE_CAMERA_FILE_URI)
@@ -1602,13 +1610,13 @@ class ChatPresenter(
         super.onGuiResumed()
         checkLongpoll()
         Processors.realtimeMessages
-            .registerNotificationsInterceptor(id, Pair.create(messagesOwnerId, peerId))
+            .registerNotificationsInterceptor(generatedId, Pair.create(messagesOwnerId, peerId))
     }
 
     override fun onGuiPaused() {
         super.onGuiPaused()
         checkLongpoll()
-        Processors.realtimeMessages.unregisterNotificationsInterceptor(id)
+        Processors.realtimeMessages.unregisterNotificationsInterceptor(generatedId)
     }
 
     private fun tryToRestoreDraftMessage(ignoreBody: Boolean) {
@@ -2322,6 +2330,7 @@ class ChatPresenter(
 
     override fun saveState(outState: Bundle) {
         super.saveState(outState)
+        outState.putLong(SAVE_ID, generatedId)
         outState.putParcelable(SAVE_PEER, peer)
         outState.putString(SAVE_DRAFT_MESSAGE_TEXT, draftMessageText)
         outState.putInt(SAVE_DRAFT_MESSAGE_ATTACHMENTS_COUNT, draftMessageDbAttachmentsCount)
@@ -2854,6 +2863,8 @@ class ChatPresenter(
     }
 
     companion object {
+        private val IDGEN = AtomicLong()
+        private const val SAVE_ID = "save_presenter_chat_id"
 
         private const val COUNT = 30
 

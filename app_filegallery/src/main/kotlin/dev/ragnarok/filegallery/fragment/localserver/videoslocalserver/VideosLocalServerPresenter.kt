@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.fragment.localserver.videoslocalserver
 
-import android.os.Bundle
 import dev.ragnarok.filegallery.Includes.networkInterfaces
 import dev.ragnarok.filegallery.api.interfaces.ILocalServerApi
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
@@ -13,8 +12,8 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
-class VideosLocalServerPresenter(savedInstanceState: Bundle?) :
-    RxSupportPresenter<IVideosLocalServerView>(savedInstanceState) {
+class VideosLocalServerPresenter :
+    RxSupportPresenter<IVideosLocalServerView>() {
     private val videos: MutableList<Video> = ArrayList()
     private val fInteractor: ILocalServerApi = networkInterfaces.localServerApi()
     private var actualDataDisposable = Disposable.disposed()

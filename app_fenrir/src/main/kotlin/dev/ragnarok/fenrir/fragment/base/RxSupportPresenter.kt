@@ -14,22 +14,24 @@ import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 import dev.ragnarok.fenrir.fragment.base.core.IToastView
 import dev.ragnarok.fenrir.service.ErrorLocalizer
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.InstancesCounter
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
+import java.util.concurrent.atomic.AtomicLong
 
 abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
-    AbsPresenter<V>(savedInstanceState) {
-    protected var instanceId = 0L
+    AbsPresenter<V>() {
+    private var generatedId = -1L
     protected val compositeDisposable = CompositeDisposable()
-    private var tempDataUsage = false
     var viewCreationCount = 0
         private set
 
-    protected fun fireTempDataUsage() {
-        tempDataUsage = true
+    protected fun fireTempDataUsage(): Long {
+        if (generatedId < 0) {
+            generatedId = IDGEN.incrementAndGet()
+        }
+        return generatedId
     }
 
     override fun onGuiCreated(viewHost: V) {
@@ -39,19 +41,18 @@ abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
 
     override fun saveState(outState: Bundle) {
         super.saveState(outState)
-        outState.putLong(SAVE_INSTANCE_ID, instanceId)
-        outState.putBoolean(SAVE_TEMP_DATA_USAGE, tempDataUsage)
+        outState.putLong(SAVE_TEMP_DATA_USAGE_ID, generatedId)
     }
 
     override fun onDestroyed() {
         compositeDisposable.dispose()
-        if (tempDataUsage) {
+        if (generatedId >= 0) {
             RxUtils.subscribeOnIOAndIgnore(
                 Stores.instance
                     .tempStore()
-                    .deleteTemporaryData(instanceId)
+                    .deleteTemporaryData(generatedId)
             )
-            tempDataUsage = false
+            generatedId = -1
         }
         super.onDestroyed()
     }
@@ -114,15 +115,16 @@ abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
     }
 
     companion object {
-        private const val SAVE_INSTANCE_ID = "save_instance_id"
-        private const val SAVE_TEMP_DATA_USAGE = "save_temp_data_usage"
-        private val instancesCounter = InstancesCounter()
+        private val IDGEN = AtomicLong()
+        private const val SAVE_TEMP_DATA_USAGE_ID = "save_temp_data_usage_id"
     }
 
     init {
-        savedInstanceState?.let {
-            instanceId = savedInstanceState.getLong(SAVE_INSTANCE_ID)
-            instancesCounter.fireExists(javaClass, instanceId)
-        } ?: run { instanceId = instancesCounter.incrementAndGet(javaClass) }
+        if (savedInstanceState != null) {
+            generatedId = savedInstanceState.getLong(SAVE_TEMP_DATA_USAGE_ID, -1)
+            if (generatedId >= 0 && generatedId >= IDGEN.get()) {
+                IDGEN.set(generatedId + 1)
+            }
+        }
     }
 }

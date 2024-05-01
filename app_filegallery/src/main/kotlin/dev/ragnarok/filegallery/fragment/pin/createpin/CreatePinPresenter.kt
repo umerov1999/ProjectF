@@ -9,7 +9,7 @@ import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
 import java.util.Arrays
 
 class CreatePinPresenter(savedInstanceState: Bundle?) :
-    RxSupportPresenter<ICreatePinView>(savedInstanceState) {
+    RxSupportPresenter<ICreatePinView>() {
     private val mCreatedPin: IntArray?
     private val mRepeatedPin: IntArray?
     private val mHandler = Handler(Looper.getMainLooper())

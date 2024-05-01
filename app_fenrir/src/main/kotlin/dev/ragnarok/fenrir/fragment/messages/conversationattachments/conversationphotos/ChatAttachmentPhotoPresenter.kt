@@ -83,8 +83,7 @@ class ChatAttachmentPhotoPresenter(peerId: Long, accountId: Long, savedInstanceS
                 position
             )
         } else {
-            val source = TmpSource(instanceId, 0)
-            fireTempDataUsage()
+            val source = TmpSource(fireTempDataUsage(), 0)
             openGalleryDisposableHolder.append(Stores.instance
                 .tempStore()
                 .putTemporaryData(

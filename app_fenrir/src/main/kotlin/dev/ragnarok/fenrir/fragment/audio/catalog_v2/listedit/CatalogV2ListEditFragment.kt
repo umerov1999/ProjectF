@@ -96,9 +96,7 @@ class CatalogV2ListEditFragment :
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?) = CatalogV2ListEditPresenter(
-        saveInstanceState
-    )
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = CatalogV2ListEditPresenter()
 
     override fun displayData(data: List<Int>) {
         mAdapter?.setData(data)

@@ -107,9 +107,7 @@ class SideDrawerEditFragment : AbsMvpFragment<SideDrawerEditPresenter, IDrawerEd
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?) = SideDrawerEditPresenter(
-        saveInstanceState
-    )
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = SideDrawerEditPresenter()
 
     override fun displayData(data: List<DrawerCategory>) {
         mAdapter?.setData(data)

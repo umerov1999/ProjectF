@@ -78,8 +78,7 @@ class FileManagerRemoteFragment :
         animationDispose.dispose()
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?) =
-        FileManagerRemotePresenter(saveInstanceState)
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = FileManagerRemotePresenter()
 
     override fun onCreateView(
         inflater: LayoutInflater,

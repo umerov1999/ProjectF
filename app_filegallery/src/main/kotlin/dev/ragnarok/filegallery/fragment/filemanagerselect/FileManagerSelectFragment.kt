@@ -71,8 +71,7 @@ class FileManagerSelectFragment :
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) = FileManagerSelectPresenter(
         File(requireArguments().getString(Extra.PATH)!!),
-        requireArguments().getString(Extra.EXT),
-        saveInstanceState
+        requireArguments().getString(Extra.EXT)
     )
 
     override fun onCreateView(

@@ -116,8 +116,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) = FileManagerPresenter(
         File(requireArguments().getString(Extra.PATH)!!),
-        requireArguments().getBoolean(Extra.POSITION),
-        saveInstanceState
+        requireArguments().getBoolean(Extra.POSITION)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

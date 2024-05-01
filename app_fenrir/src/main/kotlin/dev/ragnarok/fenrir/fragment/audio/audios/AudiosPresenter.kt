@@ -18,6 +18,7 @@ import dev.ragnarok.fenrir.model.AudioPlaylist
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.swap
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.TrackIsDownloaded
 import dev.ragnarok.fenrir.util.FindAtWithContent
 import dev.ragnarok.fenrir.util.HelperSimple
@@ -29,7 +30,6 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
-import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -344,11 +344,11 @@ class AudiosPresenter(
     private fun tempSwap(fromPosition: Int, toPosition: Int) {
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
-                Collections.swap(audios, i, i + 1)
+                audios.swap(i, i + 1)
             }
         } else {
             for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(audios, i, i - 1)
+                audios.swap(i, i - 1)
             }
         }
         view?.notifyItemMoved(
@@ -364,11 +364,11 @@ class AudiosPresenter(
         val audio_from = audios[fromPosition]
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
-                Collections.swap(audios, i, i + 1)
+                audios.swap(i, i + 1)
             }
         } else {
             for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(audios, i, i - 1)
+                audios.swap(i, i - 1)
             }
         }
         view?.notifyItemMoved(

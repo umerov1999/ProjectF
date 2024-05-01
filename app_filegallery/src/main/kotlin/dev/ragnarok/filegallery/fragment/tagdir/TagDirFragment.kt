@@ -103,7 +103,7 @@ class TagDirFragment : BaseMvpFragment<TagDirPresenter, ITagDirView>(), ITagDirV
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) =
-        TagDirPresenter(requireArguments().getInt(Extra.OWNER_ID), saveInstanceState)
+        TagDirPresenter(requireArguments().getInt(Extra.OWNER_ID))
 
     override fun displayData(data: List<TagDir>) {
         mAdapter?.setItems(data)

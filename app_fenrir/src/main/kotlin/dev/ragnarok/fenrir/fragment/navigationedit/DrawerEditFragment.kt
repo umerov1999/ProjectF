@@ -107,8 +107,7 @@ class DrawerEditFragment : AbsMvpFragment<DrawerEditPresenter, IDrawerEditView>(
         }
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?) =
-        DrawerEditPresenter(saveInstanceState)
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = DrawerEditPresenter()
 
     @SuppressLint("NotifyDataSetChanged")
     override fun notifyDataSetChanged() {

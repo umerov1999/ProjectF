@@ -92,9 +92,7 @@ class PhotosLocalServerFragment :
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?) = PhotosLocalServerPresenter(
-        saveInstanceState
-    )
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = PhotosLocalServerPresenter()
 
     override fun displayList(photos: List<Photo>) {
         mPhotoRecyclerAdapter?.setData(photos)

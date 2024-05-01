@@ -336,8 +336,7 @@ class WallMultiAttachmentsPresenter(
                 position
             )
         } else {
-            val source = TmpSource(instanceId, 0)
-            fireTempDataUsage()
+            val source = TmpSource(fireTempDataUsage(), 0)
             actualDataDisposable.add(
                 Stores.instance
                     .tempStore()

@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.activity.photopager
 
-import android.os.Bundle
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.fromIOToMain
@@ -9,9 +8,8 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 
 class TmpGalleryPagerPresenter(
-    source: Long, index: Int,
-    savedInstanceState: Bundle?
-) : PhotoPagerPresenter(ArrayList(0), savedInstanceState) {
+    source: Long, index: Int
+) : PhotoPagerPresenter(ArrayList(0)) {
     override fun close() {
         if (mPhotos.isEmpty()) {
             view?.closeOnly()

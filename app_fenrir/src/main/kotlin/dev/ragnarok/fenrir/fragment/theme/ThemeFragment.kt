@@ -47,7 +47,7 @@ class ThemeFragment : AbsMvpFragment<ThemePresenter, IThemeView>(), IThemeView,
             .apply(requireActivity())
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?) = ThemePresenter(saveInstanceState)
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = ThemePresenter()
 
     override fun displayData(data: Array<ThemeValue>) {
         mAdapter?.setData(data)

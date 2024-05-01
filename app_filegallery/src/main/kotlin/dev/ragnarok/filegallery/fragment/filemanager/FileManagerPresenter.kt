@@ -2,7 +2,6 @@ package dev.ragnarok.filegallery.fragment.filemanager
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.os.Bundle
 import android.os.Environment
 import android.os.Parcelable
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
@@ -31,9 +30,8 @@ import java.util.Locale
 
 class FileManagerPresenter(
     private var path: File,
-    private val base: Boolean,
-    savedInstanceState: Bundle?
-) : RxSupportPresenter<IFileManagerView>(savedInstanceState) {
+    private val base: Boolean
+) : RxSupportPresenter<IFileManagerView>() {
     private val fileList: ArrayList<FileItem> = ArrayList()
     private val fileListSearch: ArrayList<FileItem> = ArrayList()
     private var isLoading = false

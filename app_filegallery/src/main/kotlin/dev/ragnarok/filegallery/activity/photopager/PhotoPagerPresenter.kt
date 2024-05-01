@@ -11,7 +11,6 @@ import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Bundle
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
@@ -35,9 +34,8 @@ import java.io.File
 import java.util.Calendar
 
 open class PhotoPagerPresenter internal constructor(
-    initialData: ArrayList<Photo>,
-    savedInstanceState: Bundle?
-) : RxSupportPresenter<IPhotoPagerView>(savedInstanceState) {
+    initialData: ArrayList<Photo>
+) : RxSupportPresenter<IPhotoPagerView>() {
     protected var mPhotos: ArrayList<Photo> = initialData
     protected var currentIndex = 0
     private var mLoadingNow = false

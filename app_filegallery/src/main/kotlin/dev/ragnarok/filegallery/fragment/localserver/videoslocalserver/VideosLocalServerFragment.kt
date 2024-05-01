@@ -64,9 +64,7 @@ class VideosLocalServerFragment :
         return root
     }
 
-    override fun getPresenterFactory(saveInstanceState: Bundle?) = VideosLocalServerPresenter(
-        saveInstanceState
-    )
+    override fun getPresenterFactory(saveInstanceState: Bundle?) = VideosLocalServerPresenter()
 
     override fun displayList(videos: List<Video>) {
         mVideoRecyclerAdapter?.setData(videos)

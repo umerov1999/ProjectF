@@ -293,8 +293,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 return PhotoAlbumPagerPresenter(
                     requireArguments().getInt(Extra.INDEX),
                     source,
-                    requireArguments().getBoolean(Extra.INVERT),
-                    saveInstanceState
+                    requireArguments().getBoolean(Extra.INVERT)
                 )
             }
 
@@ -307,8 +306,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 Utils.unregisterParcelNative(source)
                 return TmpGalleryPagerPresenter(
                     source,
-                    requireArguments().getInt(Extra.INDEX),
-                    saveInstanceState
+                    requireArguments().getInt(Extra.INDEX)
                 )
             }
         }

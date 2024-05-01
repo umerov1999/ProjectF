@@ -4,11 +4,9 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-import dev.ragnarok.filegallery.fragment.base.core.AbsPresenter
 import dev.ragnarok.filegallery.fragment.base.core.IMvpView
 import dev.ragnarok.filegallery.fragment.base.core.IPresenter
 import java.lang.ref.WeakReference
-import java.util.Collections
 
 class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
 
@@ -41,10 +39,10 @@ class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
         )["fenrirPresenters", PresenterLoader::class] as PresenterLoader<P, V>
 
         presenter = loader.make(lastKnownPresenterState, factoryProvider)
-        presenter?.run {
-            attachViewHost(view)
+        presenter?.let {
+            it.attachViewHost(view)
             for (action in onReceivePresenterActions) {
-                apply(action)
+                it.apply(action)
             }
             onReceivePresenterActions.clear()
         }
@@ -101,22 +99,18 @@ class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
     }
 
     internal class PresenterLoader<P : IPresenter<V>, V : IMvpView> : ViewModel() {
-        val list: MutableMap<Long, P> = Collections.synchronizedMap(HashMap<Long, P>(1))
+        var presenter: P? = null
 
-        fun make(savedInstanceState: Bundle?, factory: IFactoryProvider<P, V>): P {
-            var presenter: P? = list[AbsPresenter.extractIdPresenter(savedInstanceState)]
+        fun make(savedInstanceState: Bundle?, factory: IFactoryProvider<P, V>): P? {
             if (presenter == null) {
                 presenter = factory.getPresenterFactory(savedInstanceState)
-                list[presenter.getPresenterId()] = presenter
             }
             return presenter
         }
 
         override fun onCleared() {
-            for (i in list) {
-                i.value.destroy()
-            }
-            list.clear()
+            presenter?.destroy()
+            presenter = null
             super.onCleared()
         }
     }
