@@ -150,6 +150,7 @@ dependencies {
     implementation("com.squareup.okio:okio:$okioVersion")
     implementation("androidx.constraintlayout:constraintlayout:$constraintlayoutVersion")
     implementation("androidx.biometric:biometric-ktx:$biometricVersion")
+    implementation("androidx.documentfile:documentfile:$documentfile")
     implementation("androidx.media:media:$mediaVersion")
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("androidx.media3:media3-exoplayer-hls:$media3Version")
@@ -167,7 +168,8 @@ dependencies {
     //implementation("androidx.camera:camera-view:$cameraVersion")
     //implementation("androidx.camera:camera-camera2:$cameraVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlin_serializer")
-    implementation("com.google.errorprone:error_prone_annotations:${errorProneVersion}")
+    implementation("com.google.errorprone:error_prone_annotations:$errorProneVersion")
+    implementation("com.google.android.gms:play-services-base:$playServicesBase")
 
     modules {
         module("com.google.guava:listenablefuture") {

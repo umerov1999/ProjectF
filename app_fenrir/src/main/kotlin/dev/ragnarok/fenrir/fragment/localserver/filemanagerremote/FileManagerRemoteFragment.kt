@@ -14,8 +14,8 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -56,9 +56,8 @@ import java.util.concurrent.TimeUnit
 class FileManagerRemoteFragment :
     BaseMvpFragment<FileManagerRemotePresenter, IFileManagerRemoteView>(),
     IFileManagerRemoteView, FileManagerRemoteAdapter.ClickListener, BackPressCallback {
-    // Stores names of traversed directories
     private var mRecyclerView: RecyclerView? = null
-    private var mLayoutManager: StaggeredGridLayoutManager? = null
+    private var mLayoutManager: GridLayoutManager? = null
     private var empty: TextView? = null
     private var loading: RLottieImageView? = null
     private var tvCurrentDir: TextView? = null
@@ -69,6 +68,7 @@ class FileManagerRemoteFragment :
     private var mAnimationLoaded = false
     private var animLoad: ObjectAnimator? = null
     private var mySearchView: MySearchView? = null
+    private var musicButton: FloatingActionButton? = null
 
     override fun onBackPressed(): Boolean {
         if (presenter?.canLoadUp() == true) {
@@ -120,7 +120,7 @@ class FileManagerRemoteFragment :
         })
 
         val columns = resources.getInteger(R.integer.files_column_count)
-        mLayoutManager = StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
+        mLayoutManager = GridLayoutManager(requireActivity(), columns, RecyclerView.VERTICAL, false)
         mRecyclerView?.layoutManager = mLayoutManager
         PicassoPauseOnScrollListener.addListener(mRecyclerView)
         tvCurrentDir = root.findViewById(R.id.current_path)
@@ -155,8 +155,8 @@ class FileManagerRemoteFragment :
         mAdapter?.setClickListener(this)
         mRecyclerView?.adapter = mAdapter
 
-        val Goto: FloatingActionButton = root.findViewById(R.id.music_button)
-        Goto.setOnLongClickListener {
+        musicButton = root.findViewById(R.id.music_button)
+        musicButton?.setOnLongClickListener {
             val curr = MusicPlaybackController.currentAudio
             if (curr != null) {
                 PlaceFactory.getPlayerPlace(Settings.get().accounts().current)
@@ -165,7 +165,7 @@ class FileManagerRemoteFragment :
                 .showToastError(R.string.null_audio)
             false
         }
-        Goto.setOnClickListener {
+        musicButton?.setOnClickListener {
             val curr = MusicPlaybackController.currentAudio
             if (curr != null) {
                 if (presenter?.scrollTo(curr.id, curr.ownerId) != true) {
@@ -289,6 +289,7 @@ class FileManagerRemoteFragment :
     }
 
     override fun notifyAllChanged() {
+        musicButton?.show()
         mAdapter?.notifyDataSetChanged()
     }
 

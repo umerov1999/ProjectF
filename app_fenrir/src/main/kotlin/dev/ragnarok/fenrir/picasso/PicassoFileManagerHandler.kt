@@ -61,7 +61,6 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
     private val filter: FilenameFilter = FilenameFilter { dir: File, filename: String ->
         val sel = File(dir, filename)
         var ret = !sel.isHidden && sel.canRead() && !sel.isDirectory
-        // Filters based on whether the file is hidden or not
         if (ret) {
             ret = false
             for (i in Settings.get().main().photoExt) {

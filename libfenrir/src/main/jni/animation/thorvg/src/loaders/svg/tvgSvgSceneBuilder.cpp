@@ -79,7 +79,7 @@ static void _transformMultiply(const Matrix* mBBox, Matrix* gradTransf)
 }
 
 
-static unique_ptr<LinearGradient> _applyLinearGradientProperty(SvgStyleGradient* g, const Shape* vg, const Box& vBox, int opacity)
+static unique_ptr<LinearGradient> _applyLinearGradientProperty(SvgStyleGradient* g, const Box& vBox, int opacity)
 {
     Fill::ColorStop* stops;
     int stopCount = 0;
@@ -134,7 +134,7 @@ static unique_ptr<LinearGradient> _applyLinearGradientProperty(SvgStyleGradient*
 }
 
 
-static unique_ptr<RadialGradient> _applyRadialGradientProperty(SvgStyleGradient* g, const Shape* vg, const Box& vBox, int opacity)
+static unique_ptr<RadialGradient> _applyRadialGradientProperty(SvgStyleGradient* g, const Box& vBox, int opacity)
 {
     Fill::ColorStop *stops;
     int stopCount = 0;
@@ -310,7 +310,7 @@ static void _applyProperty(SvgLoaderData& loaderData, SvgNode* node, Shape* vg, 
 
     //Clip transformation is applied directly to the path in the _appendClipShape function
     if (node->transform && !clip) vg->transform(*node->transform);
-    if (node->type == SvgNodeType::Doc || !node->display) return;
+    if (node->type == SvgNodeType::Doc || !node->style->display) return;
 
     //If fill property is nullptr then do nothing
     if (style->fill.paint.none) {
@@ -320,10 +320,10 @@ static void _applyProperty(SvgLoaderData& loaderData, SvgNode* node, Shape* vg, 
         if (!style->fill.paint.gradient->userSpace) bBox = _boundingBox(vg);
 
         if (style->fill.paint.gradient->type == SvgGradientType::Linear) {
-             auto linear = _applyLinearGradientProperty(style->fill.paint.gradient, vg, bBox, style->fill.opacity);
+             auto linear = _applyLinearGradientProperty(style->fill.paint.gradient, bBox, style->fill.opacity);
              vg->fill(std::move(linear));
         } else if (style->fill.paint.gradient->type == SvgGradientType::Radial) {
-             auto radial = _applyRadialGradientProperty(style->fill.paint.gradient, vg, bBox, style->fill.opacity);
+             auto radial = _applyRadialGradientProperty(style->fill.paint.gradient, bBox, style->fill.opacity);
              vg->fill(std::move(radial));
         }
     } else if (style->fill.paint.url) {
@@ -363,10 +363,10 @@ static void _applyProperty(SvgLoaderData& loaderData, SvgNode* node, Shape* vg, 
         if (!style->stroke.paint.gradient->userSpace) bBox = _boundingBox(vg);
 
         if (style->stroke.paint.gradient->type == SvgGradientType::Linear) {
-             auto linear = _applyLinearGradientProperty(style->stroke.paint.gradient, vg, bBox, style->stroke.opacity);
+             auto linear = _applyLinearGradientProperty(style->stroke.paint.gradient, bBox, style->stroke.opacity);
              vg->strokeFill(std::move(linear));
         } else if (style->stroke.paint.gradient->type == SvgGradientType::Radial) {
-             auto radial = _applyRadialGradientProperty(style->stroke.paint.gradient, vg, bBox, style->stroke.opacity);
+             auto radial = _applyRadialGradientProperty(style->stroke.paint.gradient, bBox, style->stroke.opacity);
              vg->strokeFill(std::move(radial));
         }
     } else if (style->stroke.paint.url) {
@@ -782,13 +782,13 @@ static unique_ptr<Scene> _sceneBuildHelper(SvgLoaderData& loaderData, const SvgN
         // For a Symbol node, the viewBox transformation has to be applied first - see _useBuildHelper()
         if (!mask && node->transform && node->type != SvgNodeType::Symbol) scene->transform(*node->transform);
 
-        if (node->display && node->style->opacity != 0) {
+        if (node->style->display && node->style->opacity != 0) {
             auto child = node->child.data;
             for (uint32_t i = 0; i < node->child.count; ++i, ++child) {
                 if (_isGroupType((*child)->type)) {
                     if ((*child)->type == SvgNodeType::Use)
                         scene->push(_useBuildHelper(loaderData, *child, vBox, svgPath, depth + 1, isMaskWhite));
-                    else
+                    else if (!((*child)->type == SvgNodeType::Symbol && node->type != SvgNodeType::Use))
                         scene->push(_sceneBuildHelper(loaderData, *child, vBox, svgPath, false, depth + 1, isMaskWhite));
                 } else if ((*child)->type == SvgNodeType::Image) {
                     auto image = _imageBuildHelper(loaderData, *child, vBox, svgPath);

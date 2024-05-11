@@ -10,8 +10,8 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.activity.ActivityFeatures
@@ -29,11 +29,10 @@ import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.view.MySearchView
 import java.io.File
 
-
 class TagDirFragment : BaseMvpFragment<TagDirPresenter, ITagDirView>(), ITagDirView,
     TagDirAdapter.ClickListener {
     private var mAdapter: TagDirAdapter? = null
-    private var mLayoutManager: StaggeredGridLayoutManager? = null
+    private var mLayoutManager: GridLayoutManager? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,7 +42,7 @@ class TagDirFragment : BaseMvpFragment<TagDirPresenter, ITagDirView>(), ITagDirV
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
         val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
         val columns = resources.getInteger(R.integer.files_column_count)
-        mLayoutManager = StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
+        mLayoutManager = GridLayoutManager(requireActivity(), columns, RecyclerView.VERTICAL, false)
         recyclerView.layoutManager = mLayoutManager
         mAdapter = TagDirAdapter(requireActivity(), emptyList())
         mAdapter?.setClickListener(this)

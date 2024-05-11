@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
 import android.os.Parcelable
+import androidx.recyclerview.widget.LinearLayoutManager_SavedState
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes
@@ -59,7 +60,6 @@ class FileManagerPresenter(
         }
         var ret = !sel.isHidden && sel.canRead() && (sel.isDirectory && (sel.list()?.size
             ?: 0) > 0 || !sel.isDirectory)
-        // Filters based on whether the file is hidden or not
         if (!sel.isDirectory && ret) {
             ret = false
             for (i in Settings.get().main().photoExt) {
@@ -230,7 +230,7 @@ class FileManagerPresenter(
                     view?.notifyAllChanged()
                     directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
                         view?.restoreScroll(scroll)
-                    }
+                    } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
                     if (back && fileList.isEmpty() || !back) {
                         loadFiles(
                             back = false, caches = false, fromCache = true
@@ -240,6 +240,7 @@ class FileManagerPresenter(
                         view?.resolveLoading(isLoading)
                     }
                 }, {
+                    view?.restoreScroll(LinearLayoutManager_SavedState())
                     view?.showThrowable(it)
                     loadFiles(
                         back = false, caches = false, fromCache = true
@@ -268,9 +269,6 @@ class FileManagerPresenter(
             view?.resolveEmptyText(fileList.isEmpty())
             view?.resolveLoading(isLoading)
             view?.notifyAllChanged()
-            directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
-                view?.restoreScroll(scroll)
-            }
         }, {
             view?.showThrowable(it)
             isLoading = false
@@ -334,7 +332,7 @@ class FileManagerPresenter(
         if (!Settings.get().main().isEnable_dirs_files_count) {
             return -1
         }
-        return file.listFiles()?.size?.toLong() ?: -1
+        return file.list()?.size?.toLong() ?: -1
     }
 
     private fun rxLoadFileList(): Single<ArrayList<FileItem>> {

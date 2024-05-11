@@ -12,8 +12,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textview.MaterialTextView
 import dev.ragnarok.filegallery.Extra
@@ -39,9 +39,8 @@ import java.util.concurrent.TimeUnit
 class FileManagerSelectFragment :
     BaseMvpFragment<FileManagerSelectPresenter, IFileManagerSelectView>(),
     IFileManagerSelectView, FileManagerSelectAdapter.ClickListener, BackPressCallback {
-    // Stores names of traversed directories
     private var mRecyclerView: RecyclerView? = null
-    private var mLayoutManager: StaggeredGridLayoutManager? = null
+    private var mLayoutManager: GridLayoutManager? = null
     private var empty: TextView? = null
     private var loading: RLottieImageView? = null
     private var tvCurrentDir: TextView? = null
@@ -105,7 +104,7 @@ class FileManagerSelectFragment :
         })
 
         val columns = resources.getInteger(R.integer.files_column_count)
-        mLayoutManager = StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
+        mLayoutManager = GridLayoutManager(requireActivity(), columns, RecyclerView.VERTICAL, false)
         mRecyclerView?.layoutManager = mLayoutManager
         PicassoPauseOnScrollListener.addListener(mRecyclerView)
         tvCurrentDir = root.findViewById(R.id.current_path)

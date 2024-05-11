@@ -175,14 +175,14 @@ static float _toFloat(const SvgParser* svgParse, const char* str, SvgParserLengt
     else if (strstr(str, "pc")) parsedValue *= PX_PER_PC;
     else if (strstr(str, "in")) parsedValue *= PX_PER_IN;
     else if (strstr(str, "%")) {
-        if (type == SvgParserLengthType::Vertical) parsedValue = (parsedValue / 100.0) * svgParse->global.h;
-        else if (type == SvgParserLengthType::Horizontal) parsedValue = (parsedValue / 100.0) * svgParse->global.w;
-        else //if other then it's radius
+        if (type == SvgParserLengthType::Vertical) parsedValue = (parsedValue / 100.0f) * svgParse->global.h;
+        else if (type == SvgParserLengthType::Horizontal) parsedValue = (parsedValue / 100.0f) * svgParse->global.w;
+        else //if other than it's radius
         {
             float max = svgParse->global.w;
             if (max < svgParse->global.h)
                 max = svgParse->global.h;
-            parsedValue = (parsedValue / 100.0) * max;
+            parsedValue = (parsedValue / 100.0f) * max;
         }
     }
     //TODO: Implement 'em', 'ex' attributes
@@ -580,7 +580,7 @@ static constexpr struct
 };
 
 
-static bool _hslToRgb(float hue, float satuation, float brightness, uint8_t* red, uint8_t* green, uint8_t* blue)
+static bool _hslToRgb(float hue, float saturation, float brightness, uint8_t* red, uint8_t* green, uint8_t* blue)
 {
     if (!red || !green || !blue) return false;
 
@@ -588,12 +588,12 @@ static bool _hslToRgb(float hue, float satuation, float brightness, uint8_t* red
     float _red = 0, _green = 0, _blue = 0;
     uint32_t i = 0;
 
-    if (mathZero(satuation))  _red = _green = _blue = brightness;
+    if (mathZero(saturation))  _red = _green = _blue = brightness;
     else {
         if (mathEqual(hue, 360.0)) hue = 0.0f;
         hue /= 60.0f;
 
-        v = (brightness <= 0.5f) ? (brightness * (1.0f + satuation)) : (brightness + satuation - (brightness * satuation));
+        v = (brightness <= 0.5f) ? (brightness * (1.0f + saturation)) : (brightness + saturation - (brightness * saturation));
         p = brightness + brightness - v;
 
         if (!mathZero(v)) sv = (v - p) / v;
@@ -713,8 +713,8 @@ static bool _toColor(const char* str, uint8_t* r, uint8_t* g, uint8_t* b, char**
         *ref = _idFromUrl((const char*)(str + 3));
         return true;
     } else if (len >= 10 && (str[0] == 'h' || str[0] == 'H') && (str[1] == 's' || str[1] == 'S') && (str[2] == 'l' || str[2] == 'L') && str[3] == '(' && str[len - 1] == ')') {
-        float_t th, ts, tb;
-        const char *content, *hue, *satuation, *brightness;
+        float th, ts, tb;
+        const char *content, *hue, *saturation, *brightness;
         content = str + 4;
         content = _skipSpace(content, nullptr);
         if (_parseNumber(&content, &hue, &th) && hue) {
@@ -722,12 +722,12 @@ static bool _toColor(const char* str, uint8_t* r, uint8_t* g, uint8_t* b, char**
             hue = _skipSpace(hue, nullptr);
             hue = (char*)_skipComma(hue);
             hue = _skipSpace(hue, nullptr);
-            if (_parseNumber(&hue, &satuation, &ts) && satuation && *satuation == '%') {
+            if (_parseNumber(&hue, &saturation, &ts) && saturation && *saturation == '%') {
                 ts /= 100.0f;
-                satuation = _skipSpace(satuation + 1, nullptr);
-                satuation = (char*)_skipComma(satuation);
-                satuation = _skipSpace(satuation, nullptr);
-                if (_parseNumber(&satuation, &brightness, &tb) && brightness && *brightness == '%') {
+                saturation = _skipSpace(saturation + 1, nullptr);
+                saturation = (char*)_skipComma(saturation);
+                saturation = _skipSpace(saturation, nullptr);
+                if (_parseNumber(&saturation, &brightness, &tb) && brightness && *brightness == '%') {
                     tb /= 100.0f;
                     brightness = _skipSpace(brightness + 1, nullptr);
                     if (brightness && brightness[0] == ')' && brightness[1] == '\0') {
@@ -1160,8 +1160,9 @@ static void _handleDisplayAttr(TVG_UNUSED SvgLoaderData* loader, SvgNode* node, 
     //       The default is "inline" which means visible and "none" means invisible.
     //       Depending on the type of node, additional functionality may be required.
     //       refer to https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/display
-    if (!strcmp(value, "none")) node->display = false;
-    else node->display = true;
+    node->style->flags = (node->style->flags | SvgStyleFlags::Display);
+    if (!strcmp(value, "none")) node->style->display = false;
+    else node->style->display = true;
 }
 
 
@@ -1446,7 +1447,7 @@ static SvgNode* _createNode(SvgNode* parent, SvgNodeType type)
     node->style->paintOrder = _toPaintOrder("fill stroke");
 
     //Default display is true("inline").
-    node->display = true;
+    node->style->display = true;
 
     node->parent = parent;
     node->type = type;
@@ -1522,7 +1523,7 @@ static SvgNode* _createClipPathNode(SvgLoaderData* loader, SvgNode* parent, cons
     loader->svgParse->node = _createNode(parent, SvgNodeType::ClipPath);
     if (!loader->svgParse->node) return nullptr;
 
-    loader->svgParse->node->display = false;
+    loader->svgParse->node->style->display = false;
     loader->svgParse->node->node.clip.userSpace = true;
 
     func(buf, bufLength, _attrParseClipPathNode, loader);
@@ -1547,7 +1548,6 @@ static SvgNode* _createSymbolNode(SvgLoaderData* loader, SvgNode* parent, const 
     loader->svgParse->node = _createNode(parent, SvgNodeType::Symbol);
     if (!loader->svgParse->node) return nullptr;
 
-    loader->svgParse->node->display = false;
     loader->svgParse->node->node.symbol.align = AspectRatioAlign::XMidYMid;
     loader->svgParse->node->node.symbol.meetOrSlice = AspectRatioMeetOrSlice::Meet;
     loader->svgParse->node->node.symbol.overflowVisible = false;
@@ -2973,6 +2973,9 @@ static void _styleCopy(SvgStyleProperty* to, const SvgStyleProperty* from)
     if (from->flags & SvgStyleFlags::PaintOrder) {
         to->paintOrder = from->paintOrder;
     }
+    if (from->flags & SvgStyleFlags::Display) {
+        to->display = from->display;
+    }
     //Fill
     to->fill.flags = (to->fill.flags | from->fill.flags);
     if (from->fill.flags & SvgFillFlags::Paint) {
@@ -3033,7 +3036,6 @@ static void _styleCopy(SvgStyleProperty* to, const SvgStyleProperty* from)
 
 static void _copyAttr(SvgNode* to, const SvgNode* from)
 {
-    to->display = from->display;
     //Copy matrix attribute
     if (from->transform) {
         to->transform = (Matrix*)malloc(sizeof(Matrix));
@@ -3176,27 +3178,12 @@ static void _clonePostponedNodes(Array<SvgNodeIdPair>* cloneNodes, SvgNode* doc)
 }
 
 
-static constexpr struct
-{
-    const char* tag;
-    size_t sz;
-} popArray[] = {
-    {"g", sizeof("g")},
-    {"svg", sizeof("svg")},
-    {"defs", sizeof("defs")},
-    {"mask", sizeof("mask")},
-    {"clipPath", sizeof("clipPath")},
-    {"style", sizeof("style")},
-    {"symbol", sizeof("symbol")}
-};
-
-
 static void _svgLoaderParserXmlClose(SvgLoaderData* loader, const char* content)
 {
     content = _skipSpace(content, nullptr);
 
-    for (unsigned int i = 0; i < sizeof(popArray) / sizeof(popArray[0]); i++) {
-        if (!strncmp(content, popArray[i].tag, popArray[i].sz - 1)) {
+    for (unsigned int i = 0; i < sizeof(groupTags) / sizeof(groupTags[0]); i++) {
+        if (!strncmp(content, groupTags[i].tag, groupTags[i].sz - 1)) {
             loader->stack.pop();
             break;
         }
@@ -3392,7 +3379,7 @@ static void _inefficientNodeCheck(TVG_UNUSED SvgNode* node)
 #ifdef THORVG_LOG_ENABLED
     auto type = simpleXmlNodeTypeToString(node->type);
 
-    if (!node->display && node->type != SvgNodeType::ClipPath && node->type != SvgNodeType::Symbol) TVGLOG("SVG", "Inefficient elements used [Display is none][Node Type : %s]", type);
+    if (!node->style->display && node->type != SvgNodeType::ClipPath) TVGLOG("SVG", "Inefficient elements used [Display is none][Node Type : %s]", type);
     if (node->style->opacity == 0) TVGLOG("SVG", "Inefficient elements used [Opacity is zero][Node Type : %s]", type);
     if (node->style->fill.opacity == 0 && node->style->stroke.opacity == 0) TVGLOG("SVG", "Inefficient elements used [Fill opacity and stroke opacity are zero][Node Type : %s]", type);
 

@@ -23,17 +23,16 @@ import com.squareup.picasso3.Utils.VERB_CANCELED
 import com.squareup.picasso3.Utils.log
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-@OptIn(DelicateCoroutinesApi::class)
 internal class InternalCoroutineDispatcher internal constructor(
     context: Context,
     mainThreadHandler: Handler,
@@ -48,8 +47,8 @@ internal class InternalCoroutineDispatcher internal constructor(
     init {
         // Using a channel to enforce sequential access for this class' internal state
         scope.launch {
-            while (!channel.isClosedForReceive) {
-                channel.receive().invoke()
+            channel.receiveAsFlow().collect {
+                it.invoke()
             }
         }
 

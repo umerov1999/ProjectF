@@ -346,7 +346,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
         if (!Settings.get().main().isEnable_dirs_files_count) {
             return -1
         }
-        return (File(path).listFiles()?.size ?: -1).toLong()
+        return (File(path).list()?.size ?: -1).toLong()
     }
 
     private fun getFileSize(path: String?): Long {

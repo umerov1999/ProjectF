@@ -3,21 +3,21 @@ package dev.ragnarok.filegallery.model.menu.options
 import androidx.annotation.IntDef
 
 @IntDef(
-    AudioLocalOption.play_item_audio,
-    AudioLocalOption.play_item_after_current_audio,
-    AudioLocalOption.bitrate_item_audio,
-    AudioLocalOption.share_item,
-    AudioLocalOption.open_with_item,
-    AudioLocalOption.fix_dir_time_item,
-    AudioLocalOption.update_file_time_item,
-    AudioLocalOption.add_dir_tag_item,
-    AudioLocalOption.delete_item,
-    AudioLocalOption.play_via_local_server
+    FileManagerOption.play_item_audio,
+    FileManagerOption.play_item_after_current_audio,
+    FileManagerOption.bitrate_item_audio,
+    FileManagerOption.share_item,
+    FileManagerOption.open_with_item,
+    FileManagerOption.fix_dir_time_item,
+    FileManagerOption.update_file_time_item,
+    FileManagerOption.add_dir_tag_item,
+    FileManagerOption.delete_item,
+    FileManagerOption.play_via_local_server
 )
 @Retention(
     AnnotationRetention.SOURCE
 )
-annotation class AudioLocalOption {
+annotation class FileManagerOption {
     companion object {
         const val play_item_audio = 1
         const val play_item_after_current_audio = 2

@@ -32,7 +32,7 @@ class VKApiCatalogV2Block {
     @SerialName("next_from")
     var next_from: String? = null
 
-    @SerialName("buttons")
+    @SerialName("actions")
     var buttons: List<VKApiCatalogV2Button>? = null
 
     @SerialName("layout")

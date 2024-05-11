@@ -485,11 +485,12 @@ struct SvgStyleProperty
     SvgComposite mask;
     int opacity;
     SvgColor color;
-    bool curColorSet;
     char* cssClass;
-    bool paintOrder; //true if default (fill, stroke), false otherwise
     SvgStyleFlags flags;
     SvgStyleFlags flagsImportance; //indicates the importance of the flag - if set, higher priority is applied (https://drafts.csswg.org/css-cascade-4/#importance)
+    bool curColorSet;
+    bool paintOrder; //true if default (fill, stroke), false otherwise
+    bool display;
 };
 
 struct SvgNode
@@ -518,7 +519,6 @@ struct SvgNode
         SvgCssStyleNode cssStyle;
         SvgSymbolNode symbol;
     } node;
-    bool display;
     ~SvgNode();
 };
 
@@ -549,7 +549,7 @@ struct SvgLoaderData
 {
     Array<SvgNode*> stack;
     SvgNode* doc = nullptr;
-    SvgNode* def = nullptr;
+    SvgNode* def = nullptr; //also used to store nested graphic nodes
     SvgNode* cssStyle = nullptr;
     Array<SvgStyleGradient*> gradients;
     SvgStyleGradient* latestGradient = nullptr; //For stops

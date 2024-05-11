@@ -57,7 +57,6 @@ import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
@@ -1444,8 +1443,8 @@ public class TabLayout extends HorizontalScrollView {
   /**
    * Sets the ripple color for this TabLayout.
    *
-   * <p>When running on devices with KitKat or below, we draw this color as a filled overlay rather
-   * than a ripple.
+   * <p>When running on devices with KitKat, we draw this color as a filled overlay rather than a
+   * ripple.
    *
    * @param color color (or ColorStateList) to use for the ripple
    * @attr ref com.google.android.material.R.styleable#TabLayout_tabRippleColor
@@ -1466,8 +1465,8 @@ public class TabLayout extends HorizontalScrollView {
   /**
    * Sets the ripple color resource for this TabLayout.
    *
-   * <p>When running on devices with KitKat or below, we draw this color as a filled overlay rather
-   * than a ripple.
+   * <p>When running on devices with KitKat, we draw this color as a filled overlay rather than a
+   * ripple.
    *
    * @param tabRippleColorResourceId A color resource to use as ripple color.
    * @see #getTabRippleColor()
@@ -2658,11 +2657,6 @@ public class TabLayout extends HorizontalScrollView {
 
       super.setSelected(selected);
 
-      if (changed && selected && Build.VERSION.SDK_INT < 16) {
-        // Pre-JB we need to manually send the TYPE_VIEW_SELECTED event
-        sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SELECTED);
-      }
-
       // Always dispatch this to the child views, regardless of whether the value has
       // changed
       if (textView != null) {
@@ -2722,6 +2716,9 @@ public class TabLayout extends HorizontalScrollView {
       // We need to switch the text size based on whether the text is spanning 2 lines or not
       if (textView != null) {
         float textSize = tabTextSize;
+        if (isSelected() && selectedTabTextAppearance != -1) {
+          textSize = selectedTabTextSize;
+        }
         int maxLines = defaultMaxLines;
 
         if (iconView != null && iconView.getVisibility() == VISIBLE) {

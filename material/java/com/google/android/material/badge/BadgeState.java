@@ -613,10 +613,14 @@ public final class BadgeState {
     currentState.notSaveColor = notSaveColor;
   }
 
+  /** Deprecated; badges now adjust to within bounds of first ancestor that clips its children */
+  @Deprecated
   boolean isAutoAdjustedToGrandparentBounds() {
     return currentState.autoAdjustToWithinGrandparentBounds;
   }
 
+  /** Deprecated; badges now adjust to within bounds of first ancestor that clips its children */
+  @Deprecated
   void setAutoAdjustToGrandparentBounds(boolean autoAdjustToGrandparentBounds) {
     overridingState.autoAdjustToWithinGrandparentBounds = autoAdjustToGrandparentBounds;
     currentState.autoAdjustToWithinGrandparentBounds = autoAdjustToGrandparentBounds;

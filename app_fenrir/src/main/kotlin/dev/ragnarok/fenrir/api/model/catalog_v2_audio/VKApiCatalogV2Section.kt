@@ -8,7 +8,7 @@ class VKApiCatalogV2Section {
     @SerialName("blocks")
     var blocks: List<VKApiCatalogV2Block>? = null
 
-    //@SerialName("buttons")
+    //@SerialName("actions")
     //var buttons: List<VKApiCatalogV2Button>? = null
 
     @SerialName("id")

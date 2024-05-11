@@ -14,7 +14,7 @@ object Constants {
     @AccountType
     val DEFAULT_ACCOUNT_TYPE: Int = AccountType.toAccountType(BuildConfig.DEFAULT_ACCOUNT_TYPE)
 
-    const val FILE_PROVIDER_AUTHORITY: String = BuildConfig.APPLICATION_ID + ".file_provider"
+    const val FILE_PROVIDER_AUTHORITY: String = "${BuildConfig.APPLICATION_ID}.file_provider"
     const val VK_ANDROID_APP_VERSION_NAME = "8.15"
     const val VK_ANDROID_APP_VERSION_CODE = "15271"
     const val KATE_APP_VERSION_NAME = "114 lite"

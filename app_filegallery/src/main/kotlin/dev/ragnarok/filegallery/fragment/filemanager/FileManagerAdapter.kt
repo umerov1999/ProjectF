@@ -29,7 +29,7 @@ import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileItem
 import dev.ragnarok.filegallery.model.FileType
-import dev.ragnarok.filegallery.model.menu.options.AudioLocalOption
+import dev.ragnarok.filegallery.model.menu.options.FileManagerOption
 import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.filegallery.settings.CurrentTheme
@@ -246,7 +246,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         val menus = ModalBottomSheetDialogFragment.Builder()
         menus.add(
             OptionRequest(
-                AudioLocalOption.play_item_audio,
+                FileManagerOption.play_item_audio,
                 context.getString(R.string.play),
                 R.drawable.play,
                 true
@@ -255,7 +255,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         if (MusicPlaybackController.canPlayAfterCurrent(t)) {
             menus.add(
                 OptionRequest(
-                    AudioLocalOption.play_item_after_current_audio,
+                    FileManagerOption.play_item_after_current_audio,
                     context.getString(R.string.play_audio_after_current),
                     R.drawable.play_next,
                     false
@@ -264,7 +264,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         }
         menus.add(
             OptionRequest(
-                AudioLocalOption.bitrate_item_audio,
+                FileManagerOption.bitrate_item_audio,
                 context.getString(R.string.get_bitrate),
                 R.drawable.high_quality,
                 false
@@ -272,7 +272,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         )
         menus.add(
             OptionRequest(
-                AudioLocalOption.open_with_item,
+                FileManagerOption.open_with_item,
                 context.getString(R.string.open_with),
                 R.drawable.ic_external,
                 false
@@ -280,7 +280,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         )
         menus.add(
             OptionRequest(
-                AudioLocalOption.share_item,
+                FileManagerOption.share_item,
                 context.getString(R.string.share),
                 R.drawable.ic_share,
                 false
@@ -288,7 +288,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         )
         menus.add(
             OptionRequest(
-                AudioLocalOption.update_file_time_item,
+                FileManagerOption.update_file_time_item,
                 context.getString(R.string.update_time),
                 R.drawable.ic_recent,
                 false
@@ -297,7 +297,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         if (Settings.get().main().localServer.enabled) {
             menus.add(
                 OptionRequest(
-                    AudioLocalOption.play_via_local_server,
+                    FileManagerOption.play_via_local_server,
                     context.getString(R.string.play_remote),
                     R.drawable.remote_cloud,
                     false
@@ -306,7 +306,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         }
         menus.add(
             OptionRequest(
-                AudioLocalOption.add_dir_tag_item,
+                FileManagerOption.add_dir_tag_item,
                 if (audio.isHasTag) context.getString(R.string.remove_dir_tag) else context.getString(
                     R.string.add_dir_tag
                 ),
@@ -316,7 +316,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         )
         menus.add(
             OptionRequest(
-                AudioLocalOption.delete_item,
+                FileManagerOption.delete_item,
                 context.getString(R.string.delete),
                 R.drawable.ic_outline_delete,
                 false
@@ -333,30 +333,30 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
             "audio_options"
         ) { _, option ->
             when (option.id) {
-                AudioLocalOption.play_via_local_server -> {
+                FileManagerOption.play_via_local_server -> {
                     clickListener?.onRemotePlay(audio)
                 }
 
-                AudioLocalOption.add_dir_tag_item -> {
+                FileManagerOption.add_dir_tag_item -> {
                     clickListener?.onDirTag(audio)
                 }
 
-                AudioLocalOption.delete_item -> {
+                FileManagerOption.delete_item -> {
                     clickListener?.onDelete(audio)
                 }
 
-                AudioLocalOption.play_item_audio -> {
+                FileManagerOption.play_item_audio -> {
                     clickListener?.onClick(position, audio)
                     if (Settings.get().main().isShow_mini_player) getPlayerPlace(
                     ).tryOpenWith(context)
                 }
 
-                AudioLocalOption.play_item_after_current_audio -> MusicPlaybackController.playAfterCurrent(
+                FileManagerOption.play_item_after_current_audio -> MusicPlaybackController.playAfterCurrent(
                     t
                 )
 
-                AudioLocalOption.bitrate_item_audio -> getLocalBitrate(t.url)
-                AudioLocalOption.open_with_item -> {
+                FileManagerOption.bitrate_item_audio -> getLocalBitrate(t.url)
+                FileManagerOption.open_with_item -> {
                     val intent_open = Intent(Intent.ACTION_VIEW)
                     intent_open.setDataAndType(
                         FileProvider.getUriForFile(
@@ -369,7 +369,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                     context.startActivity(intent_open)
                 }
 
-                AudioLocalOption.share_item -> {
+                FileManagerOption.share_item -> {
                     val intent_send = Intent(Intent.ACTION_SEND)
                     intent_send.type = MimeTypeMap.getSingleton()
                         .getMimeTypeFromExtension(File(audio.file_path ?: return@show).extension)
@@ -383,7 +383,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                     context.startActivity(intent_send)
                 }
 
-                AudioLocalOption.update_file_time_item -> {
+                FileManagerOption.update_file_time_item -> {
                     clickListener?.onUpdateTimeFile(audio)
                 }
 
@@ -456,7 +456,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         val menus = ModalBottomSheetDialogFragment.Builder()
         menus.add(
             OptionRequest(
-                AudioLocalOption.open_with_item,
+                FileManagerOption.open_with_item,
                 context.getString(R.string.open_with),
                 R.drawable.ic_external,
                 false
@@ -464,7 +464,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         )
         menus.add(
             OptionRequest(
-                AudioLocalOption.share_item,
+                FileManagerOption.share_item,
                 context.getString(R.string.share),
                 R.drawable.ic_share,
                 false
@@ -472,7 +472,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         )
         menus.add(
             OptionRequest(
-                AudioLocalOption.update_file_time_item,
+                FileManagerOption.update_file_time_item,
                 context.getString(R.string.update_time),
                 R.drawable.ic_recent,
                 false
@@ -480,7 +480,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         )
         menus.add(
             OptionRequest(
-                AudioLocalOption.add_dir_tag_item,
+                FileManagerOption.add_dir_tag_item,
                 if (file.isHasTag) context.getString(R.string.remove_dir_tag) else context.getString(
                     R.string.add_dir_tag
                 ),
@@ -490,7 +490,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         )
         menus.add(
             OptionRequest(
-                AudioLocalOption.delete_item,
+                FileManagerOption.delete_item,
                 context.getString(R.string.delete),
                 R.drawable.ic_outline_delete,
                 false
@@ -507,15 +507,15 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
             "file_options"
         ) { _, option ->
             when (option.id) {
-                AudioLocalOption.add_dir_tag_item -> {
+                FileManagerOption.add_dir_tag_item -> {
                     clickListener?.onDirTag(file)
                 }
 
-                AudioLocalOption.delete_item -> {
+                FileManagerOption.delete_item -> {
                     clickListener?.onDelete(file)
                 }
 
-                AudioLocalOption.open_with_item -> {
+                FileManagerOption.open_with_item -> {
                     val intent_open = Intent(Intent.ACTION_VIEW)
                     intent_open.setDataAndType(
                         FileProvider.getUriForFile(
@@ -528,7 +528,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                     context.startActivity(intent_open)
                 }
 
-                AudioLocalOption.share_item -> {
+                FileManagerOption.share_item -> {
                     val intent_send = Intent(Intent.ACTION_SEND)
                     intent_send.type = MimeTypeMap.getSingleton()
                         .getMimeTypeFromExtension(File(file.file_path ?: return@show).extension)
@@ -542,7 +542,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                     context.startActivity(intent_send)
                 }
 
-                AudioLocalOption.update_file_time_item -> {
+                FileManagerOption.update_file_time_item -> {
                     clickListener?.onUpdateTimeFile(file)
                 }
 
@@ -555,7 +555,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         val menus = ModalBottomSheetDialogFragment.Builder()
         menus.add(
             OptionRequest(
-                AudioLocalOption.delete_item,
+                FileManagerOption.delete_item,
                 context.getString(R.string.delete),
                 R.drawable.ic_outline_delete,
                 false
@@ -563,7 +563,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         )
         menus.add(
             OptionRequest(
-                AudioLocalOption.fix_dir_time_item,
+                FileManagerOption.fix_dir_time_item,
                 context.getString(R.string.fix_dir_time),
                 R.drawable.ic_recent,
                 false
@@ -571,7 +571,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         )
         menus.add(
             OptionRequest(
-                AudioLocalOption.add_dir_tag_item,
+                FileManagerOption.add_dir_tag_item,
                 if (file.isHasTag) context.getString(R.string.remove_dir_tag) else context.getString(
                     R.string.add_dir_tag
                 ),
@@ -585,15 +585,15 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
             "folder_options"
         ) { _, option ->
             when (option.id) {
-                AudioLocalOption.fix_dir_time_item -> {
+                FileManagerOption.fix_dir_time_item -> {
                     clickListener?.onFixDir(file)
                 }
 
-                AudioLocalOption.add_dir_tag_item -> {
+                FileManagerOption.add_dir_tag_item -> {
                     clickListener?.onDirTag(file)
                 }
 
-                AudioLocalOption.delete_item -> {
+                FileManagerOption.delete_item -> {
                     clickListener?.onDelete(file)
                 }
 

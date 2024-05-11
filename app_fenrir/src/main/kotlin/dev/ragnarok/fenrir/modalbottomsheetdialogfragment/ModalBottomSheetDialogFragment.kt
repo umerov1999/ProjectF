@@ -56,6 +56,7 @@ class ModalBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private lateinit var list: RecyclerView
     private lateinit var adapter: Adapter
     private var listener: Listener? = null
+    private var hasResult = false
 
     private val menuInflater by lazy {
         MenuInflater(context)
@@ -72,6 +73,9 @@ class ModalBottomSheetDialogFragment : BottomSheetDialogFragment() {
     override fun onPause() {
         super.onPause()
         if (bindHost() == null) {
+            if (!hasResult) {
+                listener?.onDismissed(tag)
+            }
             dismiss()
         }
     }
@@ -106,6 +110,7 @@ class ModalBottomSheetDialogFragment : BottomSheetDialogFragment() {
         }
 
         adapter = Adapter {
+            hasResult = true
             listener?.onModalOptionSelected(this@ModalBottomSheetDialogFragment.tag, it)
             dismissAllowingStateLoss()
         }
@@ -256,11 +261,32 @@ class ModalBottomSheetDialogFragment : BottomSheetDialogFragment() {
         inline fun show(
             fragmentManager: FragmentManager,
             tag: String,
-            crossinline granted: (String?, Option) -> Unit
+            crossinline modalOptionSelected: (String?, Option) -> Unit
         ): ModalBottomSheetDialogFragment {
             val dialog = build(object : Listener {
                 override fun onModalOptionSelected(tag: String?, option: Option) {
-                    granted.invoke(tag, option)
+                    modalOptionSelected.invoke(tag, option)
+                }
+
+                override fun onDismissed(tag: String?) {}
+            })
+            dialog.show(fragmentManager, tag)
+            return dialog
+        }
+
+        inline fun show(
+            fragmentManager: FragmentManager,
+            tag: String,
+            crossinline modalOptionSelected: (String?, Option) -> Unit,
+            crossinline dismissed: (String?) -> Unit
+        ): ModalBottomSheetDialogFragment {
+            val dialog = build(object : Listener {
+                override fun onModalOptionSelected(tag: String?, option: Option) {
+                    modalOptionSelected.invoke(tag, option)
+                }
+
+                override fun onDismissed(tag: String?) {
+                    dismissed.invoke(tag)
                 }
             })
             dialog.show(fragmentManager, tag)
@@ -268,14 +294,9 @@ class ModalBottomSheetDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    /**
-     * Listener for when the modal options are selected
-     */
     interface Listener {
-        /**
-         * A modal option has been selected
-         */
         fun onModalOptionSelected(tag: String?, option: Option)
+        fun onDismissed(tag: String?)
     }
 
     internal class Adapter(private val callback: (option: Option) -> Unit) :

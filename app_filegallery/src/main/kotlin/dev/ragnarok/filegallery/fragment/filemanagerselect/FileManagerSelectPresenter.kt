@@ -2,6 +2,7 @@ package dev.ragnarok.filegallery.fragment.filemanagerselect
 
 import android.os.Environment
 import android.os.Parcelable
+import androidx.recyclerview.widget.LinearLayoutManager_SavedState
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
 import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.model.FileItemSelect
@@ -33,7 +34,6 @@ class FileManagerSelectPresenter(
             return@FilenameFilter false
         }
         val ret = !sel.isHidden && sel.canRead()
-        // Filters based on whether the file is hidden or not
         if ("dirs" == ext && sel.isDirectory && ret) {
             return@FilenameFilter true
         } else if (ext == null && ret) {
@@ -156,7 +156,7 @@ class FileManagerSelectPresenter(
             view?.notifyAllChanged()
             directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
                 view?.restoreScroll(scroll)
-            }
+            } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
         }, {
             view?.showThrowable(it)
             isLoading = false
@@ -168,7 +168,7 @@ class FileManagerSelectPresenter(
         if (!Settings.get().main().isEnable_dirs_files_count) {
             return -1
         }
-        return file.listFiles()?.size?.toLong() ?: -1
+        return file.list()?.size?.toLong() ?: -1
     }
 
     private fun rxLoadFileList(): Single<ArrayList<FileItemSelect>> {

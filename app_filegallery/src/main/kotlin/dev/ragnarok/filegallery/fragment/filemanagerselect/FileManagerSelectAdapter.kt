@@ -15,7 +15,6 @@ import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.util.Utils
 import io.reactivex.rxjava3.disposables.Disposable
 
-
 class FileManagerSelectAdapter(private var data: List<FileItemSelect>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var clickListener: ClickListener? = null
