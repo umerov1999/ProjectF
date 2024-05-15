@@ -1782,6 +1782,9 @@
     <string name="gps">GPS</string>
     <string name="restore_login_info">Login: %1$s, Password %2$s, Validation %3$s</string>
     <string name="registration_date_info">Registered: %1$s\nAuth: %2$s\nWall Changed %3$s</string>
+    <string name="registered_at">Registered: %1$s</string>
+    <string name="auth_at">Auth: %1$s</string>
+    <string name="changes_wall">Wall Changed: %1$s</string>
     <string name="all_photos">All Photos</string>
     <string name="detect_qr">Detect QR</string>
     <string name="show_photos_line">Show photos carousel</string>

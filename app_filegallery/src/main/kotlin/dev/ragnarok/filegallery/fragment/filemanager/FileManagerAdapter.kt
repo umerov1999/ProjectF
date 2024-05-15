@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -46,6 +47,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val colorPrimary = CurrentTheme.getColorPrimary(context)
     private val colorOnSurface = CurrentTheme.getColorOnSurface(context)
+    private val messageBubbleColor = CurrentTheme.getMessageBubbleColor(context)
     private var clickListener: ClickListener? = null
     private var mPlayerDisposable = Disposable.disposed()
     private var audioListDisposable = Disposable.disposed()
@@ -330,66 +332,72 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         menus.columns(2)
         menus.show(
             (context as FragmentActivity).supportFragmentManager,
-            "audio_options"
-        ) { _, option ->
-            when (option.id) {
-                FileManagerOption.play_via_local_server -> {
-                    clickListener?.onRemotePlay(audio)
+            "audio_options", { _, option ->
+                notifyItemChanged(position)
+                when (option.id) {
+                    FileManagerOption.play_via_local_server -> {
+                        clickListener?.onRemotePlay(audio)
+                    }
+
+                    FileManagerOption.add_dir_tag_item -> {
+                        clickListener?.onDirTag(audio)
+                    }
+
+                    FileManagerOption.delete_item -> {
+                        clickListener?.onDelete(audio)
+                    }
+
+                    FileManagerOption.play_item_audio -> {
+                        clickListener?.onClick(position, audio)
+                        if (Settings.get().main().isShow_mini_player) getPlayerPlace(
+                        ).tryOpenWith(context)
+                    }
+
+                    FileManagerOption.play_item_after_current_audio -> MusicPlaybackController.playAfterCurrent(
+                        t
+                    )
+
+                    FileManagerOption.bitrate_item_audio -> getLocalBitrate(t.url)
+                    FileManagerOption.open_with_item -> {
+                        val intent_open = Intent(Intent.ACTION_VIEW)
+                        intent_open.setDataAndType(
+                            FileProvider.getUriForFile(
+                                context,
+                                Constants.FILE_PROVIDER_AUTHORITY,
+                                File(audio.file_path ?: return@show)
+                            ), MimeTypeMap.getSingleton()
+                                .getMimeTypeFromExtension(File(audio.file_path).extension)
+                        ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        context.startActivity(intent_open)
+                    }
+
+                    FileManagerOption.share_item -> {
+                        val intent_send = Intent(Intent.ACTION_SEND)
+                        intent_send.type = MimeTypeMap.getSingleton()
+                            .getMimeTypeFromExtension(
+                                File(
+                                    audio.file_path ?: return@show
+                                ).extension
+                            )
+                        intent_send.putExtra(
+                            Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+                                context,
+                                Constants.FILE_PROVIDER_AUTHORITY,
+                                File(audio.file_path)
+                            )
+                        ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        context.startActivity(intent_send)
+                    }
+
+                    FileManagerOption.update_file_time_item -> {
+                        clickListener?.onUpdateTimeFile(audio)
+                    }
+
+                    else -> {}
                 }
-
-                FileManagerOption.add_dir_tag_item -> {
-                    clickListener?.onDirTag(audio)
-                }
-
-                FileManagerOption.delete_item -> {
-                    clickListener?.onDelete(audio)
-                }
-
-                FileManagerOption.play_item_audio -> {
-                    clickListener?.onClick(position, audio)
-                    if (Settings.get().main().isShow_mini_player) getPlayerPlace(
-                    ).tryOpenWith(context)
-                }
-
-                FileManagerOption.play_item_after_current_audio -> MusicPlaybackController.playAfterCurrent(
-                    t
-                )
-
-                FileManagerOption.bitrate_item_audio -> getLocalBitrate(t.url)
-                FileManagerOption.open_with_item -> {
-                    val intent_open = Intent(Intent.ACTION_VIEW)
-                    intent_open.setDataAndType(
-                        FileProvider.getUriForFile(
-                            context,
-                            Constants.FILE_PROVIDER_AUTHORITY,
-                            File(audio.file_path ?: return@show)
-                        ), MimeTypeMap.getSingleton()
-                            .getMimeTypeFromExtension(File(audio.file_path).extension)
-                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    context.startActivity(intent_open)
-                }
-
-                FileManagerOption.share_item -> {
-                    val intent_send = Intent(Intent.ACTION_SEND)
-                    intent_send.type = MimeTypeMap.getSingleton()
-                        .getMimeTypeFromExtension(File(audio.file_path ?: return@show).extension)
-                    intent_send.putExtra(
-                        Intent.EXTRA_STREAM, FileProvider.getUriForFile(
-                            context,
-                            Constants.FILE_PROVIDER_AUTHORITY,
-                            File(audio.file_path)
-                        )
-                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    context.startActivity(intent_send)
-                }
-
-                FileManagerOption.update_file_time_item -> {
-                    clickListener?.onUpdateTimeFile(audio)
-                }
-
-                else -> {}
-            }
-        }
+            }, {
+                notifyItemChanged(position)
+            })
     }
 
     private fun onBindAudioHolder(holder: AudioHolder, position: Int) {
@@ -411,6 +419,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                 holder.current.clearAnimationDrawable()
             }
         }
+        holder.fileInfo.setBackgroundColor(messageBubbleColor)
 
         PicassoInstance.with()
             .load("thumb_file://${item.file_path}").tag(Constants.PICASSO_TAG)
@@ -446,13 +455,14 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
             }
         }
         holder.itemView.setOnLongClickListener {
+            holder.fileInfo.setBackgroundColor(colorPrimary)
             doAudioMenu(holder.bindingAdapterPosition, item)
             true
         }
         updateAudioStatus(holder, item)
     }
 
-    private fun doFileMenu(file: FileItem) {
+    private fun doFileMenu(position: Int, file: FileItem) {
         val menus = ModalBottomSheetDialogFragment.Builder()
         menus.add(
             OptionRequest(
@@ -504,54 +514,56 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         menus.columns(2)
         menus.show(
             (context as FragmentActivity).supportFragmentManager,
-            "file_options"
-        ) { _, option ->
-            when (option.id) {
-                FileManagerOption.add_dir_tag_item -> {
-                    clickListener?.onDirTag(file)
-                }
+            "file_options", { _, option ->
+                notifyItemChanged(position)
+                when (option.id) {
+                    FileManagerOption.add_dir_tag_item -> {
+                        clickListener?.onDirTag(file)
+                    }
 
-                FileManagerOption.delete_item -> {
-                    clickListener?.onDelete(file)
-                }
+                    FileManagerOption.delete_item -> {
+                        clickListener?.onDelete(file)
+                    }
 
-                FileManagerOption.open_with_item -> {
-                    val intent_open = Intent(Intent.ACTION_VIEW)
-                    intent_open.setDataAndType(
-                        FileProvider.getUriForFile(
-                            context,
-                            Constants.FILE_PROVIDER_AUTHORITY,
-                            File(file.file_path ?: return@show)
-                        ), MimeTypeMap.getSingleton()
-                            .getMimeTypeFromExtension(File(file.file_path).extension)
-                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    context.startActivity(intent_open)
-                }
+                    FileManagerOption.open_with_item -> {
+                        val intent_open = Intent(Intent.ACTION_VIEW)
+                        intent_open.setDataAndType(
+                            FileProvider.getUriForFile(
+                                context,
+                                Constants.FILE_PROVIDER_AUTHORITY,
+                                File(file.file_path ?: return@show)
+                            ), MimeTypeMap.getSingleton()
+                                .getMimeTypeFromExtension(File(file.file_path).extension)
+                        ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        context.startActivity(intent_open)
+                    }
 
-                FileManagerOption.share_item -> {
-                    val intent_send = Intent(Intent.ACTION_SEND)
-                    intent_send.type = MimeTypeMap.getSingleton()
-                        .getMimeTypeFromExtension(File(file.file_path ?: return@show).extension)
-                    intent_send.putExtra(
-                        Intent.EXTRA_STREAM, FileProvider.getUriForFile(
-                            context,
-                            Constants.FILE_PROVIDER_AUTHORITY,
-                            File(file.file_path)
-                        )
-                    ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    context.startActivity(intent_send)
-                }
+                    FileManagerOption.share_item -> {
+                        val intent_send = Intent(Intent.ACTION_SEND)
+                        intent_send.type = MimeTypeMap.getSingleton()
+                            .getMimeTypeFromExtension(File(file.file_path ?: return@show).extension)
+                        intent_send.putExtra(
+                            Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+                                context,
+                                Constants.FILE_PROVIDER_AUTHORITY,
+                                File(file.file_path)
+                            )
+                        ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        context.startActivity(intent_send)
+                    }
 
-                FileManagerOption.update_file_time_item -> {
-                    clickListener?.onUpdateTimeFile(file)
-                }
+                    FileManagerOption.update_file_time_item -> {
+                        clickListener?.onUpdateTimeFile(file)
+                    }
 
-                else -> {}
-            }
-        }
+                    else -> {}
+                }
+            }, {
+                notifyItemChanged(position)
+            })
     }
 
-    private fun doFolderMenu(file: FileItem) {
+    private fun doFolderMenu(position: Int, file: FileItem) {
         val menus = ModalBottomSheetDialogFragment.Builder()
         menus.add(
             OptionRequest(
@@ -582,24 +594,26 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         menus.columns(1)
         menus.show(
             (context as FragmentActivity).supportFragmentManager,
-            "folder_options"
-        ) { _, option ->
-            when (option.id) {
-                FileManagerOption.fix_dir_time_item -> {
-                    clickListener?.onFixDir(file)
-                }
+            "folder_options", { _, option ->
+                notifyItemChanged(position)
+                when (option.id) {
+                    FileManagerOption.fix_dir_time_item -> {
+                        clickListener?.onFixDir(file)
+                    }
 
-                FileManagerOption.add_dir_tag_item -> {
-                    clickListener?.onDirTag(file)
-                }
+                    FileManagerOption.add_dir_tag_item -> {
+                        clickListener?.onDirTag(file)
+                    }
 
-                FileManagerOption.delete_item -> {
-                    clickListener?.onDelete(file)
-                }
+                    FileManagerOption.delete_item -> {
+                        clickListener?.onDelete(file)
+                    }
 
-                else -> {}
-            }
-        }
+                    else -> {}
+                }
+            }, {
+                notifyItemChanged(position)
+            })
     }
 
     private fun onBindFileHolder(holder: FileHolder, position: Int) {
@@ -622,6 +636,8 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
             }
         }
 
+        holder.fileInfo.setBackgroundColor(messageBubbleColor)
+
         PicassoInstance.with()
             .load("thumb_file://${item.file_path}").tag(Constants.PICASSO_TAG)
             .priority(Picasso.Priority.LOW)
@@ -638,12 +654,14 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         }
         holder.itemView.setOnLongClickListener {
             if (item.type != FileType.folder) {
-                doFileMenu(item)
+                holder.fileInfo.setBackgroundColor(colorPrimary)
+                doFileMenu(holder.bindingAdapterPosition, item)
             } else {
                 if (isSelectMode) {
                     clickListener?.onToggleDirTag(item)
                 } else {
-                    doFolderMenu(item)
+                    holder.fileInfo.setBackgroundColor(colorPrimary)
+                    doFolderMenu(holder.bindingAdapterPosition, item)
                 }
             }
             true
@@ -674,6 +692,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         val icon: ImageView = itemView.findViewById(R.id.item_file_icon)
         val current: RLottieImageView = itemView.findViewById(R.id.current)
         val tagged: ImageView = itemView.findViewById(R.id.item_tagged)
+        val fileInfo: LinearLayout = itemView.findViewById(R.id.item_file_info)
     }
 
     class AudioHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -683,5 +702,6 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         val current: RLottieImageView = itemView.findViewById(R.id.current)
         val visual: RLottieImageView = itemView.findViewById(R.id.item_audio_visual)
         val tagged: ImageView = itemView.findViewById(R.id.item_tagged)
+        val fileInfo: LinearLayout = itemView.findViewById(R.id.item_file_info)
     }
 }

@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<dev.ragnarok.filegallery.view.RoundCornerLinearView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/search_root"
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:layout_marginStart="6dp"
     android:layout_marginTop="4dp"
     android:layout_marginEnd="6dp"
     android:layout_marginBottom="2dp"
-    android:background="@drawable/background_rectangle_stroke"
     android:orientation="horizontal"
     android:paddingStart="2dp"
-    android:paddingEnd="2dp">
+    android:paddingEnd="2dp"
+    app:radius_bottom_left="10dp"
+    app:radius_bottom_right="10dp"
+    app:radius_top_left="10dp"
+    app:radius_top_right="10dp"
+    app:view_color="?dividerColor"
+    app:view_is_stroke="true"
+    app:view_stroke_width="1dp">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/button_back"
@@ -59,4 +66,4 @@
         android:padding="12dp"
         android:src="@drawable/dots_vertical"
         app:tint="?colorOnSurface" />
-</LinearLayout>
+</dev.ragnarok.filegallery.view.RoundCornerLinearView>

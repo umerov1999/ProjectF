@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<dev.ragnarok.fenrir.view.RoundCornerLinearView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@drawable/background_rectangle_stroke"
     android:baselineAligned="false"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    app:radius_bottom_left="10dp"
+    app:radius_bottom_right="10dp"
+    app:radius_top_left="10dp"
+    app:radius_top_right="10dp"
+    app:view_color="?dividerColor"
+    app:view_is_stroke="true"
+    app:view_stroke_width="1dp">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_short_link"
@@ -103,4 +109,4 @@
             android:stateListAnimator="@animator/clicked"
             app:tint="?colorPrimary" />
     </RelativeLayout>
-</LinearLayout>
+</dev.ragnarok.fenrir.view.RoundCornerLinearView>

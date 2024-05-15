@@ -124,6 +124,9 @@
 #  include <intrin.h>               /* only present in VS2005+ */
 #  pragma warning(disable : 4127)   /* disable: C4127: conditional expression is constant */
 #  pragma warning(disable : 6237)   /* disable: C6237: conditional expression is always 0 */
+#  pragma warning(disable : 6239)   /* disable: C6239: (<non-zero constant> && <expression>) always evaluates to the result of <expression> */
+#  pragma warning(disable : 6240)   /* disable: C6240: (<expression> && <non-zero constant>) always evaluates to the result of <expression> */
+#  pragma warning(disable : 6326)   /* disable: C6326: Potential comparison of a constant with another constant */
 #endif  /* _MSC_VER */
 
 #ifndef LZ4_FORCE_INLINE
@@ -430,7 +433,7 @@ static U16 LZ4_readLE16(const void* memPtr)
         return LZ4_read16(memPtr);
     } else {
         const BYTE* p = (const BYTE*)memPtr;
-        return (U16)((U16)p[0] + (p[1]<<8));
+        return (U16)((U16)p[0] | (p[1]<<8));
     }
 }
 
@@ -441,7 +444,7 @@ static U32 LZ4_readLE32(const void* memPtr)
         return LZ4_read32(memPtr);
     } else {
         const BYTE* p = (const BYTE*)memPtr;
-        return (U32)p[0] + (p[1]<<8) + (p[2]<<16) + (p[3]<<24);
+        return (U32)p[0] | (p[1]<<8) | (p[2]<<16) | (p[3]<<24);
     }
 }
 #endif
@@ -527,7 +530,7 @@ LZ4_wildCopy32(void* dstPtr, const void* srcPtr, void* dstEnd)
 
 /* LZ4_memcpy_using_offset()  presumes :
  * - dstEnd >= dstPtr + MINMATCH
- * - there is at least 8 bytes available to write after dstEnd */
+ * - there is at least 12 bytes available to write after dstEnd */
 LZ4_FORCE_INLINE void
 LZ4_memcpy_using_offset(BYTE* dstPtr, const BYTE* srcPtr, BYTE* dstEnd, const size_t offset)
 {
@@ -1118,7 +1121,7 @@ LZ4_FORCE_INLINE int LZ4_compress_generic_validated(
                 goto _last_literals;
             }
             if (litLength >= RUN_MASK) {
-                int len = (int)(litLength - RUN_MASK);
+                unsigned len = litLength - RUN_MASK;
                 *token = (RUN_MASK<<ML_BITS);
                 for(; len >= 255 ; len-=255) *op++ = 255;
                 *op++ = (BYTE)len;

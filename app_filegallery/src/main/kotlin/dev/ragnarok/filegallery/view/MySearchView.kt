@@ -10,8 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView.OnEditorActionListener
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
@@ -21,13 +21,16 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.getParcelableCompat
 import dev.ragnarok.filegallery.listener.TextWatcherAdapter
+import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.trimmedNonNullNoEmpty
 import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.ViewUtils
 import io.reactivex.rxjava3.disposables.Disposable
 
-class MySearchView : LinearLayout {
+class MySearchView : FrameLayout {
     private var mQuery: String? = null
     private var mInput: MaterialAutoCompleteTextView? = null
+    private var mSearchRoot: RoundCornerLinearView? = null
     private var mButtonBack: ImageView? = null
     private var mButtonClear: ImageView? = null
     private var mButtonAdditional: ImageView? = null
@@ -36,7 +39,9 @@ class MySearchView : LinearLayout {
     private var listQueries = ArrayList<String?>()
     private var isFetchedListQueries = false
     private var searchId = 0
-    private val mOnEditorActionListener = OnEditorActionListener { _, actionId, event ->
+    private val mOnEditorActionListener = OnEditorActionListener { _, _, _ ->
+        ViewUtils.keyboardHide(context)
+        mInput?.clearFocus()
         onSubmitQuery()
         true
     }
@@ -107,8 +112,18 @@ class MySearchView : LinearLayout {
         } finally {
             a.recycle()
         }
+        mSearchRoot = findViewById(R.id.search_root)
         mInput = findViewById(R.id.input)
         mInput?.setOnEditorActionListener(mOnEditorActionListener)
+        mInput?.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                mSearchRoot?.setStrokeWidth(Utils.dpf2(2f))
+                mSearchRoot?.setViewColor(CurrentTheme.getColorPrimary(context))
+            } else {
+                mSearchRoot?.setStrokeWidth(Utils.dpf2(1f))
+                mSearchRoot?.setViewColor(CurrentTheme.getDividerColorColor(context))
+            }
+        }
         mButtonBack = findViewById(R.id.button_back)
         mButtonClear = findViewById(R.id.clear)
         mButtonAdditional = findViewById(R.id.additional)
@@ -119,14 +134,24 @@ class MySearchView : LinearLayout {
                 resolveCloseButton()
             }
         })
-        mButtonClear?.setOnClickListener { clear() }
+        mButtonClear?.setOnClickListener {
+            mInput?.clearFocus()
+            ViewUtils.keyboardHide(context)
+            clear()
+        }
         mButtonBack?.setOnClickListener {
+            mInput?.clearFocus()
+            ViewUtils.keyboardHide(context)
             mOnBackButtonClickListener?.onBackButtonClick()
         }
         mButtonAdditional?.setOnClickListener {
+            mInput?.clearFocus()
+            ViewUtils.keyboardHide(context)
             mOnAdditionalButtonClickListener?.onAdditionalButtonClick()
         }
         mButtonAdditional?.setOnLongClickListener {
+            mInput?.clearFocus()
+            ViewUtils.keyboardHide(context)
             mOnAdditionalButtonLongClickListener?.onAdditionalButtonLongClick()
             true
         }

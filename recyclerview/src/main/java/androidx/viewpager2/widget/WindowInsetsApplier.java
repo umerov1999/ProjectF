@@ -111,7 +111,7 @@ public final class WindowInsetsApplier implements OnApplyWindowInsetsListener {
         return consumeAllInsets(applied);
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") // consumeSystemWindowInsets, consumeStableInsets
     private WindowInsetsCompat consumeAllInsets(@NonNull WindowInsetsCompat insets) {
         if (WindowInsetsCompat.CONSUMED.toWindowInsets() != null) {
             return WindowInsetsCompat.CONSUMED;

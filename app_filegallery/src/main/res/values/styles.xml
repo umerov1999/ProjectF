@@ -828,6 +828,12 @@
         <item name="cornerSize">12dp</item>
     </style>
 
+    <style name="OutlinedBoxAutoCompleteTextView">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.Material3.AutoCompleteTextView.OutlinedBox
+        </item>
+    </style>
+
     <style name="Widget.MPM.Menu.Material3" parent="Widget.Material3.PopupMenu.Overflow">
         <item name="android:popupBackground">@drawable/mpm_popup_menu_background</item>
         <item name="mpm_paddingBottom">0dp</item>

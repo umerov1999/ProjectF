@@ -1,8 +1,9 @@
 plugins {
     id("com.android.library")
+    id("kotlin-android")
 }
 
-//1.3.3
+//1.4.0-beta01
 
 android {
     namespace "androidx.camera"
@@ -18,6 +19,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
         encoding = "utf-8"
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
     sourceSets {
         main.res.srcDirs "res", "res-public"
@@ -35,14 +39,14 @@ dependencies {
     implementation("com.google.guava:guava:$guavaVersion")
     implementation("androidx.annotation:annotation:$annotationVersion")
     implementation("androidx.appcompat:appcompat:$appcompatVersion")
-    implementation("androidx.core:core:$coreVersion")
-    implementation("androidx.activity:activity:$activityVersion")
-    implementation("androidx.fragment:fragment:$fragmentVersion")
+    implementation("androidx.core:core-ktx:$coreVersion")
+    implementation("androidx.activity:activity-ktx:$activityVersion")
+    implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
     implementation("androidx.collection:collection:$collectionVersion")
     implementation("androidx.tracing:tracing:$tracingVersion")
     implementation("com.google.errorprone:error_prone_annotations:${errorProneVersion}")
     implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
-    implementation("androidx.concurrent:concurrent-futures:$concurentVersion")
+    implementation("androidx.concurrent:concurrent-futures-ktx:$concurentVersion")
     annotationProcessor("com.google.auto.value:auto-value:$autoValueVersion")
 
     modules {

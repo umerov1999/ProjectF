@@ -2,6 +2,10 @@ package dev.ragnarok.fenrir.fragment.wall.userwall
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
@@ -19,11 +23,13 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textview.MaterialTextView
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso
 import com.yalantis.ucrop.UCrop
@@ -41,6 +47,7 @@ import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.ParcelableOwnerWrapper
 import dev.ragnarok.fenrir.model.PostFilter
+import dev.ragnarok.fenrir.model.RegistrationInfoResult
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.UserDetails
 import dev.ragnarok.fenrir.module.FenrirNative
@@ -66,6 +73,7 @@ import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.getVerifiedColor
 import dev.ragnarok.fenrir.util.Utils.setBackgroundTint
 import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
+import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.OnlineView
 import dev.ragnarok.fenrir.view.ProfileCoverDrawable
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
@@ -348,25 +356,49 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         SelectionUtils.addSelectionProfileSupport(getContext(), mHeaderHolder.avatarRoot, user);
     }*/
 
-    override fun showRegistrationDate(
-        @StringRes info: Int,
-        registered: String?,
-        auth: String?,
-        changes: String?
-    ) {
-        MaterialAlertDialogBuilder(requireActivity())
-            .setIcon(R.drawable.dir_person)
-            .setMessage(
-                getString(
-                    info,
-                    registered,
-                    auth,
-                    changes
-                )
-            )
-            .setTitle(getString(R.string.registration_date))
-            .setCancelable(true)
-            .show()
+    class RegistrationDateDialog : DialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val root = View.inflate(requireActivity(), R.layout.dialog_registration_date, null)
+            val registrationInfoResult =
+                requireArguments().getParcelableCompat<RegistrationInfoResult>(Extra.SOURCE)!!
+            root.findViewById<MaterialTextView>(R.id.item_registered).text =
+                getString(R.string.registered_at, registrationInfoResult.registered)
+
+            root.findViewById<MaterialTextView>(R.id.item_auth).text =
+                getString(R.string.auth_at, registrationInfoResult.auth)
+
+            root.findViewById<MaterialTextView>(R.id.item_changes).text =
+                getString(R.string.changes_wall, registrationInfoResult.changes)
+            return MaterialAlertDialogBuilder(requireActivity())
+                .setView(root)
+                .setIcon(R.drawable.dir_person)
+                .setCancelable(true)
+                .setTitle(R.string.registration_date)
+                .setNegativeButton(R.string.button_cancel, null)
+                .setPositiveButton(R.string.copy_text) { _: DialogInterface?, _: Int ->
+                    val clipboard =
+                        requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                    val clip = ClipData.newPlainText(
+                        "response", getString(
+                            R.string.registration_date_info,
+                            registrationInfoResult.registered,
+                            registrationInfoResult.auth,
+                            registrationInfoResult.changes
+                        )
+                    )
+                    clipboard?.setPrimaryClip(clip)
+                    CustomToast.createCustomToast(context).showToast(R.string.copied_to_clipboard)
+                    dismiss()
+                }.create()
+        }
+    }
+
+    override fun showRegistrationDate(registrationInfoResult: RegistrationInfoResult) {
+        val dialog = RegistrationDateDialog()
+        val bundle = Bundle()
+        bundle.putParcelable(Extra.SOURCE, registrationInfoResult)
+        dialog.arguments = bundle
+        dialog.show(parentFragmentManager, "RegistrationInfoResult")
     }
 
     override fun displayCounters(

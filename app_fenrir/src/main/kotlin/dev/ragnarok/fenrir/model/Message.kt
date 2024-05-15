@@ -147,6 +147,26 @@ class Message : AbsModel, Identificable, ISelectable {
         return AbsModelType.MODEL_MESSAGE
     }
 
+    fun getReactionById(id: Int): Reaction? {
+        for (i in reactions.orEmpty()) {
+            if (i.reaction_id == id) {
+                return i
+            }
+        }
+        return null
+    }
+
+    fun getReactionIndexById(id: Int): Int? {
+        reactions?.let {
+            for (i in it.indices) {
+                if (it[i].reaction_id == id) {
+                    return i
+                }
+            }
+        }
+        return null
+    }
+
     fun setHasAttachments(hasAttachments: Boolean): Message {
         isHasAttachments = hasAttachments
         return this

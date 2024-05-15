@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.fragment.accounts
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
+import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -23,6 +24,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -313,6 +315,18 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                 isSave
             )
         }
+
+        parentFragmentManager.setFragmentResultListener(
+            ENTRY_ACCOUNT_RESULT,
+            this
+        ) { _: String?, result: Bundle ->
+            result.getString(Extra.TOKEN)?.let {
+                presenter?.processAccountByAccessToken(
+                    it,
+                    result.getInt(Extra.TYPE)
+                )
+            }
+        }
     }
 
     override fun resolveEmptyText(isEmpty: Boolean) {
@@ -581,6 +595,57 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         )
     }
 
+    private class EntryAccountDialog : DialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val root = View.inflate(requireActivity(), R.layout.entry_account, null)
+            val spinnerItems = ArrayAdapter(
+                requireActivity(),
+                R.layout.spinner_item,
+                resources.getStringArray(R.array.array_accounts_input)
+            )
+            root.findViewById<MaterialAutoCompleteTextView>(R.id.access_token_type)
+                .setText(spinnerItems.getItem(0))
+            root.findViewById<MaterialAutoCompleteTextView>(R.id.access_token_type)
+                .setAdapter(spinnerItems)
+            var selectedItem = 0
+            root.findViewById<MaterialAutoCompleteTextView>(R.id.access_token_type)
+                .setOnItemClickListener { _, _, position, _ ->
+                    selectedItem = position
+                }
+            return MaterialAlertDialogBuilder(requireActivity())
+                .setView(root)
+                .setCancelable(true)
+                .setTitle(R.string.entry_account)
+                .setNegativeButton(R.string.button_cancel, null)
+                .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                    try {
+                        val access_token =
+                            root.findViewById<TextInputEditText>(R.id.edit_access_token).text.toString()
+                                .trim { it <= ' ' }
+                        val types = intArrayOf(
+                            AccountType.VK_ANDROID,
+                            AccountType.KATE,
+                            AccountType.VK_ANDROID_HIDDEN,
+                            AccountType.KATE_HIDDEN,
+                            AccountType.IOS_HIDDEN
+                        )
+                        if (access_token.isNotEmpty() && selectedItem >= 0 && selectedItem < types.size) {
+                            val res = Bundle()
+                            res.putString(Extra.TOKEN, access_token)
+                            res.putInt(Extra.TYPE, types[selectedItem])
+                            parentFragmentManager.setFragmentResult(
+                                ENTRY_ACCOUNT_RESULT,
+                                res
+                            )
+                        }
+                    } catch (e: Exception) {
+                        createCustomToast(requireActivity()).showToastError(e.localizedMessage)
+                    }
+                    dismiss()
+                }.create()
+        }
+    }
+
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.action_proxy -> {
@@ -596,49 +661,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
             }
 
             R.id.entry_account -> {
-                val root = View.inflate(requireActivity(), R.layout.entry_account, null)
-                val spinnerItems = ArrayAdapter(
-                    requireActivity(),
-                    R.layout.spinner_item,
-                    resources.getStringArray(R.array.array_accounts_input)
-                )
-                root.findViewById<MaterialAutoCompleteTextView>(R.id.access_token_type)
-                    .setText(spinnerItems.getItem(0))
-                root.findViewById<MaterialAutoCompleteTextView>(R.id.access_token_type)
-                    .setAdapter(spinnerItems)
-                var selectedItem = 0
-                root.findViewById<MaterialAutoCompleteTextView>(R.id.access_token_type)
-                    .setOnItemClickListener { _, _, position, _ ->
-                        selectedItem = position
-                    }
-                MaterialAlertDialogBuilder(requireActivity())
-                    .setTitle(R.string.entry_account)
-                    .setCancelable(true)
-                    .setView(root)
-                    .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
-                        try {
-                            val access_token =
-                                root.findViewById<TextInputEditText>(R.id.edit_access_token).text.toString()
-                                    .trim { it <= ' ' }
-                            val types = intArrayOf(
-                                AccountType.VK_ANDROID,
-                                AccountType.KATE,
-                                AccountType.VK_ANDROID_HIDDEN,
-                                AccountType.KATE_HIDDEN,
-                                AccountType.IOS_HIDDEN
-                            )
-                            if (access_token.isNotEmpty() && selectedItem >= 0 && selectedItem < types.size) {
-                                presenter?.processAccountByAccessToken(
-                                    access_token,
-                                    types[selectedItem]
-                                )
-                            }
-                        } catch (e: Exception) {
-                            createCustomToast(requireActivity()).showToastError(e.localizedMessage)
-                        }
-                    }
-                    .setNegativeButton(R.string.button_cancel, null)
-                    .show()
+                EntryAccountDialog().show(parentFragmentManager, "EntryAccountDialog")
                 return true
             }
 
@@ -707,5 +730,9 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
 
     override fun isLoading(loading: Boolean) {
         mSwipeRefreshLayout?.isRefreshing = loading
+    }
+
+    companion object {
+        const val ENTRY_ACCOUNT_RESULT = "entry_account_result"
     }
 }

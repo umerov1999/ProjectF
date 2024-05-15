@@ -3,6 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="auto">
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+        </intent>
+        <intent>
+            <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL" />
+        </intent>
+    </queries>
+
     <uses-feature
         android:name="android.hardware.wifi"
         android:required="false" />

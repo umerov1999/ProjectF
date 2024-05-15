@@ -67,6 +67,7 @@ import dev.ragnarok.fenrir.model.MessageUpdate
 import dev.ragnarok.fenrir.model.ModelsBundle
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.model.PeerUpdate
+import dev.ragnarok.fenrir.model.Reaction
 import dev.ragnarok.fenrir.model.SaveMessageBuilder
 import dev.ragnarok.fenrir.model.Sticker
 import dev.ragnarok.fenrir.model.UserUpdate
@@ -114,6 +115,7 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.subscribeOnIOAndIgnore
 import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.functions.Consumer
@@ -156,6 +158,7 @@ class ChatPresenter(
     private var cacheLoadingDisposable = Disposable.disposed()
     private var netLoadingDisposable = Disposable.disposed()
     private var fetchConversationDisposable = Disposable.disposed()
+    private var waitReactionUpdateDisposable = Disposable.disposed()
 
     private var conversation: Conversation? = null
     private var chatAdminsIds: ArrayList<Long>? = null
@@ -434,7 +437,7 @@ class ChatPresenter(
         view?.notifyDataChanged()
     }
 
-    override fun fireReactionModeCopyClick(position: Int) {
+    override fun fireReactionModeClick(position: Int) {
         if (isHiddenAccount(messagesOwnerId) || isHiddenAccount(accountId)) {
             return
         }
@@ -1347,7 +1350,7 @@ class ChatPresenter(
                     data[targetIndex].setDeleted(it.deleted)
                     data[targetIndex].setDeletedForAll(it.deletedForAll)
                     if (!needReload) {
-                        needReload = true
+                        view?.notifyItemChanged(targetIndex)
                     }
                 }
             }
@@ -1357,12 +1360,13 @@ class ChatPresenter(
                 if (targetIndex != -1) {
                     data[targetIndex].setImportant(it.important)
                     if (!needReload) {
-                        needReload = true
+                        view?.notifyItemChanged(targetIndex)
                     }
                 }
             }
 
             update.reactionUpdate.requireNonNull {
+                waitReactionUpdateDisposable.dispose()
                 val targetIndex = indexOf(update.messageId, it.peerId)
                 if (targetIndex != -1) {
                     if (!it.keepMyReaction) {
@@ -1374,8 +1378,9 @@ class ChatPresenter(
                         data[targetIndex].prepareReactions(it.reactions.size)
                             .add(Entity2Model.buildReactionFromDbo(react))
                     }
+                    data[targetIndex].setReactionEditMode(false)
                     if (!needReload) {
-                        needReload = true
+                        view?.notifyItemChanged(targetIndex)
                     }
                 }
             }
@@ -1713,6 +1718,7 @@ class ChatPresenter(
         cacheLoadingDisposable.dispose()
         netLoadingDisposable.dispose()
         fetchConversationDisposable.dispose()
+        waitReactionUpdateDisposable.dispose()
 
         saveDraftMessageBody()
 
@@ -2463,11 +2469,50 @@ class ChatPresenter(
         )
             .fromIOToMain()
             .subscribe({
-                val res = indexOf(conversation_message_id, peerId)
-                if (res != -1) {
-                    data[res].setReactionEditMode(false)
-                    view?.notifyItemChanged(res)
-                }
+                waitReactionUpdateDisposable.dispose()
+                waitReactionUpdateDisposable = Observable.just(Any())
+                    .delay(1, TimeUnit.SECONDS)
+                    .toMainThread()
+                    .subscribe {
+                        val res = indexOf(conversation_message_id, peerId)
+                        if (res != -1) {
+                            data[res].setReactionEditMode(false)
+                            if (data[res].reactions == null) {
+                                data[res].setReactions(ArrayList())
+                            }
+                            if (reaction_id != null) {
+                                val reaction = data[res].getReactionById(reaction_id)
+                                if (reaction != null) {
+                                    reaction.setCount(reaction.count + 1)
+                                } else {
+                                    data[res].reactions?.add(
+                                        Reaction().setReactionId(reaction_id).setCount(1)
+                                    )
+                                }
+                                if (data[res].reaction_id != 0) {
+                                    data[res].getReactionById(data[res].reaction_id)?.let {
+                                        it.setCount(it.count - 1)
+                                        if (it.count <= 0) {
+                                            data[res].getReactionIndexById(data[res].reaction_id)
+                                                ?.let { it1 -> data[res].reactions?.removeAt(it1) }
+                                        }
+                                    }
+                                }
+                                data[res].setReactionId(reaction_id)
+                            } else if (data[res].reaction_id != 0) {
+                                val reaction = data[res].getReactionById(data[res].reaction_id)
+                                reaction?.let {
+                                    reaction.setCount(reaction.count - 1)
+                                    if (reaction.count <= 0) {
+                                        data[res].getReactionIndexById(data[res].reaction_id)
+                                            ?.let { it1 -> data[res].reactions?.removeAt(it1) }
+                                    }
+                                }
+                                data[res].setReactionId(0)
+                            }
+                            view?.notifyItemChanged(res)
+                        }
+                    }
             }, { onConversationFetchFail(it) })
     }
 

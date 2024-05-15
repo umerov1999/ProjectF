@@ -18,9 +18,11 @@ package androidx.camera.core.impl;
 
 import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
+import android.hardware.camera2.CaptureRequest;
 import android.util.Size;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
@@ -53,6 +55,26 @@ public interface CameraInfoInternal extends CameraInfo {
     String getCameraId();
 
     /**
+     * Returns the camera characteristics of this camera. The actual type is determined by the
+     * underlying camera implementation. For camera2 implementation, the actual type of the
+     * returned object is {@link android.hardware.camera2.CameraCharacteristics}.
+     */
+    @NonNull
+    Object getCameraCharacteristics();
+
+    /**
+     * Returns the camera characteristics of the specified physical camera id associated with
+     * the current camera.
+     *
+     * <p>It returns {@code null} if the physical camera id does not belong to
+     * the current logical camera. The actual type is determined by the underlying camera
+     * implementation. For camera2 implementation, the actual type of the returned object is
+     * {@link android.hardware.camera2.CameraCharacteristics}.
+     */
+    @Nullable
+    Object getPhysicalCameraCharacteristics(@NonNull String physicalCameraId);
+
+    /**
      * Adds a {@link CameraCaptureCallback} which will be invoked when session capture request is
      * completed, failed or cancelled.
      *
@@ -78,6 +100,14 @@ public interface CameraInfoInternal extends CameraInfo {
     /** Returns the {@link Timebase} of frame output by this camera. */
     @NonNull
     Timebase getTimebase();
+
+    /**
+     * Returns the supported output formats of this camera.
+     *
+     * @return a set of supported output format, or an empty set if no output format is supported.
+     */
+    @NonNull
+    Set<Integer> getSupportedOutputFormats();
 
     /**
      * Returns the supported resolutions of this camera based on the input image format.
@@ -106,6 +136,27 @@ public interface CameraInfoInternal extends CameraInfo {
     Set<DynamicRange> getSupportedDynamicRanges();
 
     /**
+     * Returns if preview stabilization is supported on the device.
+     *
+     * @return true if
+     * {@link CaptureRequest#CONTROL_VIDEO_STABILIZATION_MODE_PREVIEW_STABILIZATION} is supported,
+     * otherwise false.
+     *
+     * @see CaptureRequest#CONTROL_VIDEO_STABILIZATION_MODE
+     */
+    boolean isPreviewStabilizationSupported();
+
+    /**
+     * Returns if video stabilization is supported on the device.
+     *
+     * @return true if {@link CaptureRequest#CONTROL_VIDEO_STABILIZATION_MODE_ON} is supported,
+     * otherwise false.
+     *
+     * @see CaptureRequest#CONTROL_VIDEO_STABILIZATION_MODE
+     */
+    boolean isVideoStabilizationSupported();
+
+    /**
      * Gets the underlying implementation instance which could be cast into an implementation
      * specific class for further use in implementation module. Returns <code>this</code> if this
      * instance is the implementation instance.
@@ -115,6 +166,19 @@ public interface CameraInfoInternal extends CameraInfo {
         return this;
     }
 
+    /**
+     * Returns if postview is supported or not.
+     */
+    default boolean isPostviewSupported() {
+        return false;
+    }
+
+    /**
+     * Returns if capture process progress is supported or not.
+     */
+    default boolean isCaptureProcessProgressSupported() {
+        return false;
+    }
 
     /** {@inheritDoc} */
     @NonNull

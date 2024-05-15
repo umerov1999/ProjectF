@@ -419,4 +419,16 @@ object CurrentTheme {
         array.recycle()
         return ret
     }
+
+    fun getSecondaryTextColor(context: Context): Int {
+        return getColorFromAttrs(android.R.attr.textColorSecondary, context, "#000000")
+    }
+
+    fun getMessageBubbleColor(context: Context): Int {
+        return getColorFromAttrs(R.attr.message_bubble_color, context, "#000000")
+    }
+
+    fun getDividerColorColor(context: Context): Int {
+        return getColorFromAttrs(R.attr.dividerColor, context, "#000000")
+    }
 }

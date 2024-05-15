@@ -615,6 +615,35 @@ public final class GuaranteedConfigurationsUtil {
     }
 
     /**
+     * Returns the minimally guaranteed stream combinations for Ultra HDR.
+     */
+    @NonNull
+    public static List<SurfaceCombination> getUltraHdrSupportedCombinationList() {
+        // Due to the unique characteristics of JPEG/R, some devices might configure an extra 8-bit
+        // JPEG stream internally in addition to the 10-bit YUV stream. The 10-bit mandatory
+        // stream combination table is actually not suitable for use. Adds only (PRIV, PREVIEW) +
+        // (JPEG_R, MAXIMUM), which is guaranteed by CTS test, as the supported combination.
+
+        List<SurfaceCombination> combinationList = new ArrayList<>();
+
+        // (JPEG_R, MAXIMUM)
+        SurfaceCombination surfaceCombination1 = new SurfaceCombination();
+        surfaceCombination1.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.JPEG_R, ConfigSize.MAXIMUM));
+        combinationList.add(surfaceCombination1);
+
+        // (PRIV, PREVIEW) + (JPEG_R, MAXIMUM)
+        SurfaceCombination surfaceCombination2 = new SurfaceCombination();
+        surfaceCombination2.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.PRIV, ConfigSize.PREVIEW));
+        surfaceCombination2.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.JPEG_R, ConfigSize.MAXIMUM));
+        combinationList.add(surfaceCombination2);
+
+        return combinationList;
+    }
+
+    /**
      * Returns the at least supported stream combinations for concurrent cameras.
      */
     @NonNull
@@ -828,6 +857,93 @@ public final class GuaranteedConfigurationsUtil {
                 SurfaceConfig.create(ConfigType.JPEG, ConfigSize.MAXIMUM,
                         CameraMetadata.SCALER_AVAILABLE_STREAM_USE_CASES_STILL_CAPTURE));
         combinationList.add(surfaceCombination14);
+
+        return combinationList;
+    }
+
+    /**
+     * Returns the supported stream combinations for preview stabilization.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    @NonNull
+    public static List<SurfaceCombination> getPreviewStabilizationSupportedCombinationList() {
+        List<SurfaceCombination> combinationList = new ArrayList<>();
+
+        // (PRIV, s1440p)
+        SurfaceCombination surfaceCombination1 = new SurfaceCombination();
+        surfaceCombination1.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.PRIV, ConfigSize.s1440p));
+        combinationList.add(surfaceCombination1);
+
+        // (YUV, s1440p)
+        SurfaceCombination surfaceCombination2 = new SurfaceCombination();
+        surfaceCombination2.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.YUV, ConfigSize.s1440p));
+        combinationList.add(surfaceCombination2);
+
+        // (PRIV, s1440p) + (JPEG, MAXIMUM)
+        SurfaceCombination surfaceCombination3 = new SurfaceCombination();
+        surfaceCombination3.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.PRIV, ConfigSize.s1440p));
+        surfaceCombination3.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.JPEG, ConfigSize.MAXIMUM));
+        combinationList.add(surfaceCombination3);
+
+        // (YUV, s1440p) + (JPEG, MAXIMUM)
+        SurfaceCombination surfaceCombination4 = new SurfaceCombination();
+        surfaceCombination4.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.YUV, ConfigSize.s1440p));
+        surfaceCombination4.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.JPEG, ConfigSize.MAXIMUM));
+        combinationList.add(surfaceCombination4);
+
+        // (PRIV, s1440p) + (YUV, MAXIMUM)
+        SurfaceCombination surfaceCombination5 = new SurfaceCombination();
+        surfaceCombination5.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.PRIV, ConfigSize.s1440p));
+        surfaceCombination5.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.YUV, ConfigSize.MAXIMUM));
+        combinationList.add(surfaceCombination5);
+
+        // (YUV, s1440p) + (YUV, MAXIMUM)
+        SurfaceCombination surfaceCombination6 = new SurfaceCombination();
+        surfaceCombination6.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.YUV, ConfigSize.s1440p));
+        surfaceCombination6.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.YUV, ConfigSize.MAXIMUM));
+        combinationList.add(surfaceCombination6);
+
+        // (PRIV, PREVIEW) + (PRIV, s1440)
+        SurfaceCombination surfaceCombination7 = new SurfaceCombination();
+        surfaceCombination7.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.PRIV, ConfigSize.PREVIEW));
+        surfaceCombination7.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.PRIV, ConfigSize.s1440p));
+        combinationList.add(surfaceCombination7);
+
+        // (YUV, PREVIEW) + (PRIV, s1440)
+        SurfaceCombination surfaceCombination8 = new SurfaceCombination();
+        surfaceCombination8.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.YUV, ConfigSize.PREVIEW));
+        surfaceCombination8.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.PRIV, ConfigSize.s1440p));
+        combinationList.add(surfaceCombination8);
+
+        // (PRIV, PREVIEW) + (YUV, s1440)
+        SurfaceCombination surfaceCombination9 = new SurfaceCombination();
+        surfaceCombination9.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.PRIV, ConfigSize.PREVIEW));
+        surfaceCombination9.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.YUV, ConfigSize.s1440p));
+        combinationList.add(surfaceCombination9);
+
+        // (YUV, PREVIEW) + (YUV, s1440)
+        SurfaceCombination surfaceCombination10 = new SurfaceCombination();
+        surfaceCombination10.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.YUV, ConfigSize.PREVIEW));
+        surfaceCombination10.addSurfaceConfig(
+                SurfaceConfig.create(ConfigType.YUV, ConfigSize.s1440p));
+        combinationList.add(surfaceCombination10);
 
         return combinationList;
     }

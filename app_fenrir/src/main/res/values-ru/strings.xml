@@ -1536,6 +1536,9 @@
     <string name="gps">Геолокация</string>
     <string name="restore_login_info">Логин: %1$s, Пароль %2$s, Валидация %3$s</string>
     <string name="registration_date_info">Зарегистрирован: %1$s\nАвторизация: %2$s\nИзменение стены %3$s</string>
+    <string name="registered_at">Зарегистрирован: %1$s</string>
+    <string name="auth_at">Авторизация: %1$s</string>
+    <string name="changes_wall">Изменение стены: %1$s</string>
     <string name="all_photos">Все фото</string>
     <string name="detect_qr">Распознать QR</string>
     <string name="show_photos_line">Показывать трекбар с фотками</string>

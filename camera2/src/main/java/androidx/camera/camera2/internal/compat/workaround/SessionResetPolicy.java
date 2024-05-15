@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
-package androidx.camera.core.impl.quirk;
-
-import android.media.EncoderProfiles;
-import android.util.Size;
+package androidx.camera.camera2.internal.compat.workaround;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.camera.core.impl.Quirk;
-
-import java.util.List;
+import androidx.camera.camera2.internal.compat.quirk.Preview3AThreadCrashQuirk;
+import androidx.camera.core.impl.Quirks;
 
 /**
- * A Quirk interface which denotes that CameraX should validate video resolutions returned from
- * {@link EncoderProfiles} instead of using them directly.
+ * Indicate the required actions when going to switch CameraCaptureSession.
  *
- * <p>Subclasses of this quirk should provide a list of supported resolutions for CameraX to
- * verify.
+ * @see Preview3AThreadCrashQuirk
  */
 @RequiresApi(21) // TODO(b/200306659): Remove and replace with annotation on package-info.java
-public interface ProfileResolutionQuirk extends Quirk {
+public class SessionResetPolicy {
 
-    /** Returns a list of supported resolutions. */
-    @NonNull
-    List<Size> getSupportedResolutions();
+    private final boolean mNeedAbortCapture;
+
+    public SessionResetPolicy(@NonNull Quirks deviceQuirks) {
+        mNeedAbortCapture = deviceQuirks.contains(Preview3AThreadCrashQuirk.class);
+    }
+
+    /**
+     * @return true if it needs to call abortCapture before the CameraCaptureSession is closed.
+     */
+    public boolean needAbortCapture() {
+        return mNeedAbortCapture;
+    }
 }

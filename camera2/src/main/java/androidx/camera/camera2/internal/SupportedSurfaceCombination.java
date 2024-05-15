@@ -19,6 +19,7 @@ package androidx.camera.camera2.internal;
 import static android.content.pm.PackageManager.FEATURE_CAMERA_CONCURRENT;
 import static android.hardware.camera2.CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES;
 
+import static androidx.camera.core.impl.StreamSpec.FRAME_RATE_RANGE_UNSPECIFIED;
 import static androidx.camera.core.internal.utils.SizeUtil.RESOLUTION_1080P;
 import static androidx.camera.core.internal.utils.SizeUtil.RESOLUTION_480P;
 import static androidx.camera.core.internal.utils.SizeUtil.RESOLUTION_VGA;
@@ -97,9 +98,12 @@ final class SupportedSurfaceCombination {
     private final List<SurfaceCombination> mSurfaceCombinations = new ArrayList<>();
     private final List<SurfaceCombination> mUltraHighSurfaceCombinations = new ArrayList<>();
     private final List<SurfaceCombination> mConcurrentSurfaceCombinations = new ArrayList<>();
+    private final List<SurfaceCombination> mPreviewStabilizationSurfaceCombinations =
+            new ArrayList<>();
     private final Map<FeatureSettings, List<SurfaceCombination>>
             mFeatureSettingsToSupportedCombinationsMap = new HashMap<>();
     private final List<SurfaceCombination> mSurfaceCombinations10Bit = new ArrayList<>();
+    private final List<SurfaceCombination> mSurfaceCombinationsUltraHdr = new ArrayList<>();
     private final List<SurfaceCombination> mSurfaceCombinationsStreamUseCase = new ArrayList<>();
     private final String mCameraId;
     private final CamcorderProfileHelper mCamcorderProfileHelper;
@@ -112,6 +116,7 @@ final class SupportedSurfaceCombination {
     private boolean mIsConcurrentCameraModeSupported = false;
     private boolean mIsStreamUseCaseSupported = false;
     private boolean mIsUltraHighResolutionSensorSupported = false;
+    private boolean mIsPreviewStabilizationSupported = false;
     @VisibleForTesting
     SurfaceSizeDefinition mSurfaceSizeDefinition;
     List<Integer> mSurfaceSizeDefinitionFormats = new ArrayList<>();
@@ -179,11 +184,21 @@ final class SupportedSurfaceCombination {
 
         if (mDynamicRangeResolver.is10BitDynamicRangeSupported()) {
             generate10BitSupportedCombinationList();
+
+            if (isUltraHdrSupported()) {
+                generateUltraHdrSupportedCombinationList();
+            }
         }
 
         mIsStreamUseCaseSupported = StreamUseCaseUtil.isStreamUseCaseSupported(mCharacteristics);
         if (mIsStreamUseCaseSupported) {
             generateStreamUseCaseSupportedCombinationList();
+        }
+
+        mIsPreviewStabilizationSupported =
+                VideoStabilizationUtil.isPreviewStabilizationSupported(mCharacteristics);
+        if (mIsPreviewStabilizationSupported) {
+            generatePreviewStabilizationSupportedCombinationList();
         }
 
         generateSurfaceSizeDefinition();
@@ -200,6 +215,22 @@ final class SupportedSurfaceCombination {
 
     boolean isBurstCaptureSupported() {
         return mIsBurstCaptureSupported;
+    }
+
+    private boolean isUltraHdrSupported() {
+        StreamConfigurationMapCompat mapCompat = mCharacteristics.getStreamConfigurationMapCompat();
+        int[] formats = mapCompat.getOutputFormats();
+        if (formats == null) {
+            return false;
+        }
+
+        for (int format : formats) {
+            if (format == ImageFormat.JPEG_R) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -269,13 +300,18 @@ final class SupportedSurfaceCombination {
                     supportedSurfaceCombinations.addAll(mSurfaceCombinations);
                     break;
                 default:
-                    supportedSurfaceCombinations.addAll(mSurfaceCombinations);
+                    supportedSurfaceCombinations.addAll(featureSettings.isPreviewStabilizationOn()
+                            ? mPreviewStabilizationSurfaceCombinations : mSurfaceCombinations);
                     break;
             }
         } else if (featureSettings.getRequiredMaxBitDepth() == DynamicRange.BIT_DEPTH_10_BIT) {
             // For 10-bit outputs, only the default camera mode is currently supported.
             if (featureSettings.getCameraMode() == CameraMode.DEFAULT) {
-                supportedSurfaceCombinations.addAll(mSurfaceCombinations10Bit);
+                if (featureSettings.isUltraHdrOn()) {
+                    supportedSurfaceCombinations.addAll(mSurfaceCombinationsUltraHdr);
+                } else {
+                    supportedSurfaceCombinations.addAll(mSurfaceCombinations10Bit);
+                }
             }
         }
 
@@ -397,12 +433,11 @@ final class SupportedSurfaceCombination {
      *                        and incoming new use cases
      * @return a frame rate range supported by the device that is closest to targetFrameRate
      */
-
     @NonNull
-    private Range<Integer> getClosestSupportedDeviceFrameRate(Range<Integer> targetFrameRate,
-            int maxFps) {
-        if (targetFrameRate == null) {
-            return StreamSpec.FRAME_RATE_RANGE_UNSPECIFIED;
+    private Range<Integer> getClosestSupportedDeviceFrameRate(
+            @Nullable Range<Integer> targetFrameRate, int maxFps) {
+        if (targetFrameRate == null || targetFrameRate.equals(FRAME_RATE_RANGE_UNSPECIFIED)) {
+            return FRAME_RATE_RANGE_UNSPECIFIED;
         }
 
         // get all fps ranges supported by device
@@ -410,7 +445,7 @@ final class SupportedSurfaceCombination {
                 mCharacteristics.get(CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
 
         if (availableFpsRanges == null) {
-            return StreamSpec.FRAME_RATE_RANGE_UNSPECIFIED;
+            return FRAME_RATE_RANGE_UNSPECIFIED;
         }
         // if  whole target framerate range > maxFps of configuration, the target for this
         // calculation will be [max,max].
@@ -422,14 +457,14 @@ final class SupportedSurfaceCombination {
                 Math.min(targetFrameRate.getUpper(), maxFps)
         );
 
-        Range<Integer> bestRange = StreamSpec.FRAME_RATE_RANGE_UNSPECIFIED;
+        Range<Integer> bestRange = FRAME_RATE_RANGE_UNSPECIFIED;
         int currentIntersectSize = 0;
 
 
         for (Range<Integer> potentialRange : availableFpsRanges) {
             // ignore ranges completely larger than configuration's maximum fps
             if (maxFps >= potentialRange.getLower()) {
-                if (bestRange.equals(StreamSpec.FRAME_RATE_RANGE_UNSPECIFIED)) {
+                if (bestRange.equals(FRAME_RATE_RANGE_UNSPECIFIED)) {
                     bestRange = potentialRange;
                 }
                 // take if range is a perfect match
@@ -523,6 +558,7 @@ final class SupportedSurfaceCombination {
      * @param attachedSurfaces                  the existing surfaces.
      * @param newUseCaseConfigsSupportedSizeMap newly added UseCaseConfig to supported output
      *                                          sizes map.
+     * @param isPreviewStabilizationOn          whether the preview stabilization is enabled.
      * @return the suggested stream specifications, which is a pair of mappings. The first
      * mapping is from UseCaseConfig to the suggested stream specification representing new
      * UseCases. The second mapping is from attachedSurfaceInfo to the suggested stream
@@ -538,7 +574,8 @@ final class SupportedSurfaceCombination {
             getSuggestedStreamSpecifications(
             @CameraMode.Mode int cameraMode,
             @NonNull List<AttachedSurfaceInfo> attachedSurfaces,
-            @NonNull Map<UseCaseConfig<?>, List<Size>> newUseCaseConfigsSupportedSizeMap) {
+            @NonNull Map<UseCaseConfig<?>, List<Size>> newUseCaseConfigsSupportedSizeMap,
+            boolean isPreviewStabilizationOn) {
         // Refresh Preview Size based on current display configurations.
         refreshPreviewSize();
 
@@ -551,7 +588,9 @@ final class SupportedSurfaceCombination {
                 mDynamicRangeResolver.resolveAndValidateDynamicRanges(attachedSurfaces,
                         newUseCaseConfigs, useCasesPriorityOrder);
 
-        FeatureSettings featureSettings = createFeatureSettings(cameraMode, resolvedDynamicRanges);
+        boolean isUltraHdrOn = isUltraHdrOn(attachedSurfaces, newUseCaseConfigsSupportedSizeMap);
+        FeatureSettings featureSettings = createFeatureSettings(cameraMode, resolvedDynamicRanges,
+                isPreviewStabilizationOn, isUltraHdrOn);
 
         boolean isSurfaceCombinationSupported = isUseCasesCombinationSupported(featureSettings,
                 attachedSurfaces, newUseCaseConfigsSupportedSizeMap);
@@ -793,16 +832,36 @@ final class SupportedSurfaceCombination {
         return new Pair<>(suggestedStreamSpecMap, attachedSurfaceStreamSpecMap);
     }
 
+    private static boolean isUltraHdrOn(@NonNull List<AttachedSurfaceInfo> attachedSurfaces,
+            @NonNull Map<UseCaseConfig<?>, List<Size>> newUseCaseConfigsSupportedSizeMap) {
+        for (AttachedSurfaceInfo surfaceInfo : attachedSurfaces) {
+            if (surfaceInfo.getImageFormat() == ImageFormat.JPEG_R) {
+                return true;
+            }
+        }
+
+        for (UseCaseConfig<?> useCaseConfig : newUseCaseConfigsSupportedSizeMap.keySet()) {
+            if (useCaseConfig.getInputFormat() == ImageFormat.JPEG_R) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Creates the feature settings from the related info.
      *
      * @param cameraMode               the working camera mode.
      * @param resolvedDynamicRanges    the resolved dynamic range list of the newly added UseCases
+     * @param isPreviewStabilizationOn whether the preview stabilization is enabled.
+     * @param isUltraHdrOn             whether the Ultra HDR image capture is enabled.
      */
     @NonNull
     private FeatureSettings createFeatureSettings(
             @CameraMode.Mode int cameraMode,
-            @NonNull Map<UseCaseConfig<?>, DynamicRange> resolvedDynamicRanges) {
+            @NonNull Map<UseCaseConfig<?>, DynamicRange> resolvedDynamicRanges,
+            boolean isPreviewStabilizationOn, boolean isUltraHdrOn) {
         int requiredMaxBitDepth = getRequiredMaxBitDepth(resolvedDynamicRanges);
 
         if (cameraMode != CameraMode.DEFAULT
@@ -813,7 +872,8 @@ final class SupportedSurfaceCombination {
                     CameraMode.toLabelString(cameraMode)));
         }
 
-        return FeatureSettings.of(cameraMode, requiredMaxBitDepth);
+        return FeatureSettings.of(cameraMode, requiredMaxBitDepth, isPreviewStabilizationOn,
+                isUltraHdrOn);
     }
 
     /**
@@ -1093,7 +1153,8 @@ final class SupportedSurfaceCombination {
         return DynamicRange.BIT_DEPTH_8_BIT;
     }
 
-    private List<Integer> getUseCasesPriorityOrder(List<UseCaseConfig<?>> newUseCaseConfigs) {
+    private static List<Integer> getUseCasesPriorityOrder(
+            List<UseCaseConfig<?>> newUseCaseConfigs) {
         List<Integer> priorityOrder = new ArrayList<>();
 
         /*
@@ -1248,10 +1309,22 @@ final class SupportedSurfaceCombination {
                 GuaranteedConfigurationsUtil.get10BitSupportedCombinationList());
     }
 
+    private void generateUltraHdrSupportedCombinationList() {
+        mSurfaceCombinationsUltraHdr.addAll(
+                GuaranteedConfigurationsUtil.getUltraHdrSupportedCombinationList());
+    }
+
     private void generateStreamUseCaseSupportedCombinationList() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             mSurfaceCombinationsStreamUseCase.addAll(
                     GuaranteedConfigurationsUtil.getStreamUseCaseSupportedCombinationList());
+        }
+    }
+
+    private void generatePreviewStabilizationSupportedCombinationList() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mPreviewStabilizationSurfaceCombinations.addAll(
+                    GuaranteedConfigurationsUtil.getPreviewStabilizationSupportedCombinationList());
         }
     }
 
@@ -1485,9 +1558,10 @@ final class SupportedSurfaceCombination {
     abstract static class FeatureSettings {
         @NonNull
         static FeatureSettings of(@CameraMode.Mode int cameraMode,
-                @RequiredMaxBitDepth int requiredMaxBitDepth) {
-            return new AutoValue_SupportedSurfaceCombination_FeatureSettings(
-                    cameraMode, requiredMaxBitDepth);
+                @RequiredMaxBitDepth int requiredMaxBitDepth, boolean isPreviewStabilizationOn,
+                boolean isUltraHdrOn) {
+            return new AutoValue_SupportedSurfaceCombination_FeatureSettings(cameraMode,
+                    requiredMaxBitDepth, isPreviewStabilizationOn, isUltraHdrOn);
         }
 
         /**
@@ -1515,5 +1589,15 @@ final class SupportedSurfaceCombination {
          * {@link CameraCharacteristics#REQUEST_AVAILABLE_CAPABILITIES_DYNAMIC_RANGE_TEN_BIT}.
          */
         abstract @RequiredMaxBitDepth int getRequiredMaxBitDepth();
+
+        /**
+         * Whether the preview stabilization is enabled.
+         */
+        abstract boolean isPreviewStabilizationOn();
+
+        /**
+         * Whether the Ultra HDR image capture is enabled.
+         */
+        abstract boolean isUltraHdrOn();
     }
 }

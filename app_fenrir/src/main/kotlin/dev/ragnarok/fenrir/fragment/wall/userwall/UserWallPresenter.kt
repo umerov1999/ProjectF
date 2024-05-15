@@ -35,6 +35,7 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PostFilter
+import dev.ragnarok.fenrir.model.RegistrationInfoResult
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.UserDetails
 import dev.ragnarok.fenrir.model.criteria.WallCriteria
@@ -609,14 +610,7 @@ class UserWallPresenter(
         } else null
     }
 
-    private class RegistrationResult(
-        @StringRes var info: Int,
-        var registered: String?,
-        var auth: String?,
-        var changes: String?
-    )
-
-    private fun getRegistrationDate(owner_id: Long): Single<RegistrationResult> {
+    private fun getRegistrationDate(owner_id: Long): Single<RegistrationInfoResult> {
         return Single.create { emitter ->
             val builder: OkHttpClient.Builder = OkHttpClient.Builder()
                 .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
@@ -688,12 +682,8 @@ class UserWallPresenter(
                             }
                         }
                         emitter.onSuccess(
-                            RegistrationResult(
-                                R.string.registration_date_info,
-                                registered,
-                                auth,
-                                changes
-                            )
+                            RegistrationInfoResult().setRegistered(registered).setAuth(auth)
+                                .setChanges(changes)
                         )
                     } catch (e: ParseException) {
                         emitter.tryOnError(e)
@@ -710,7 +700,7 @@ class UserWallPresenter(
         appendDisposable(
             getRegistrationDate(ownerId).fromIOToMain()
                 .subscribe({
-                    view?.showRegistrationDate(it.info, it.registered, it.auth, it.changes)
+                    view?.showRegistrationDate(it)
                 }, { showError(it) })
         )
     }

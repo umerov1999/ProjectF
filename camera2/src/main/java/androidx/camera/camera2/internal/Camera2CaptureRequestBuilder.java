@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
-import androidx.camera.camera2.impl.Camera2ImplConfig;
+import androidx.annotation.VisibleForTesting;
 import androidx.camera.camera2.interop.CaptureRequestOptions;
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop;
 import androidx.camera.core.Logger;
@@ -37,6 +37,7 @@ import androidx.camera.core.impl.CaptureConfig;
 import androidx.camera.core.impl.Config;
 import androidx.camera.core.impl.DeferrableSurface;
 import androidx.camera.core.impl.StreamSpec;
+import androidx.camera.core.impl.stabilization.StabilizationMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,11 +100,7 @@ class Camera2CaptureRequestBuilder {
     @OptIn(markerClass = ExperimentalCamera2Interop.class)
     private static void applyAeFpsRange(@NonNull CaptureConfig captureConfig,
             @NonNull CaptureRequest.Builder builder) {
-        boolean containsTargetFpsRange = CaptureRequestOptions.Builder.from(
-                captureConfig.getImplementationOptions()).build().containsOption(
-                Camera2ImplConfig.createCaptureRequestOption(
-                        CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE));
-        if (!containsTargetFpsRange && !captureConfig.getExpectedFrameRateRange().equals(
+        if (!captureConfig.getExpectedFrameRateRange().equals(
                 StreamSpec.FRAME_RATE_RANGE_UNSPECIFIED)) {
             builder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,
                     captureConfig.getExpectedFrameRateRange());
@@ -111,6 +108,21 @@ class Camera2CaptureRequestBuilder {
 
     }
 
+    @VisibleForTesting
+    static void applyVideoStabilization(@NonNull CaptureConfig captureConfig,
+            @NonNull CaptureRequest.Builder builder) {
+        if (captureConfig.getPreviewStabilizationMode() == StabilizationMode.OFF
+                || captureConfig.getVideoStabilizationMode() == StabilizationMode.OFF) {
+            builder.set(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE,
+                    CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_OFF);
+        } else if (captureConfig.getPreviewStabilizationMode() == StabilizationMode.ON) {
+            builder.set(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE,
+                    CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_PREVIEW_STABILIZATION);
+        } else if (captureConfig.getVideoStabilizationMode() == StabilizationMode.ON) {
+            builder.set(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE,
+                    CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_ON);
+        }
+    }
 
     /**
      * Builds a {@link CaptureRequest} from a {@link CaptureConfig} and a {@link CameraDevice}.
@@ -120,11 +132,13 @@ class Camera2CaptureRequestBuilder {
      * @param captureConfig        which {@link CaptureConfig} to build {@link CaptureRequest}
      * @param device               {@link CameraDevice} to create the {@link CaptureRequest}
      * @param configuredSurfaceMap A map of {@link DeferrableSurface} to {@link Surface}
+     * @param isRepeatingRequest   whether it is building a repeating request or not
      */
     @Nullable
     public static CaptureRequest build(@NonNull CaptureConfig captureConfig,
             @Nullable CameraDevice device,
-            @NonNull Map<DeferrableSurface, Surface> configuredSurfaceMap)
+            @NonNull Map<DeferrableSurface, Surface> configuredSurfaceMap,
+            boolean isRepeatingRequest)
             throws CameraAccessException {
         if (device == null) {
             return null;
@@ -147,13 +161,19 @@ class Camera2CaptureRequestBuilder {
                     device, (TotalCaptureResult) cameraCaptureResult.getCaptureResult());
         } else {
             Logger.d(TAG, "createCaptureRequest");
-            builder = device.createCaptureRequest(captureConfig.getTemplateType());
+            if (captureConfig.getTemplateType() == CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG) {
+                // Fallback template type to the same as regular capture mode when ZSL is disabled
+                int templateType = isRepeatingRequest ? CameraDevice.TEMPLATE_PREVIEW :
+                        CameraDevice.TEMPLATE_STILL_CAPTURE;
+                builder = device.createCaptureRequest(templateType);
+            } else {
+                builder = device.createCaptureRequest(captureConfig.getTemplateType());
+            }
         }
 
-        applyImplementationOptionToCaptureBuilder(builder,
-                captureConfig.getImplementationOptions());
-
         applyAeFpsRange(captureConfig, builder);
+
+        applyVideoStabilization(captureConfig, builder);
 
         if (captureConfig.getImplementationOptions().containsOption(
                 CaptureConfig.OPTION_ROTATION)) {
@@ -168,6 +188,12 @@ class Camera2CaptureRequestBuilder {
                     captureConfig.getImplementationOptions().retrieveOption(
                             CaptureConfig.OPTION_JPEG_QUALITY).byteValue());
         }
+
+        // This should be the last to be applied due to Camera2Interop values with higher priority
+        // TODO: Properly use option priorities and tokens to ensure priorities are respected, but
+        //  doesn't seem to have any issue due to this right now (still a bit error-prone).
+        applyImplementationOptionToCaptureBuilder(builder,
+                captureConfig.getImplementationOptions());
 
         for (Surface surface : surfaceList) {
             builder.addTarget(surface);

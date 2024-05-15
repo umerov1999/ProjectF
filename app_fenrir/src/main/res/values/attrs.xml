@@ -148,6 +148,9 @@
         <attr name="radius_top_right" format="dimension" />
         <attr name="radius_top_left" format="dimension" />
         <attr name="view_color" format="color" />
+        <attr name="view_alpha" format="integer" />
+        <attr name="view_is_stroke" format="boolean" />
+        <attr name="view_stroke_width" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="BotKeyboardView">

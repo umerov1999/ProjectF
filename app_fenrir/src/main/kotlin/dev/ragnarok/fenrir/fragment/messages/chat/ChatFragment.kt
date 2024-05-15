@@ -546,7 +546,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                             icon = R.drawable.emoticon
                             iconColor = CurrentTheme.getColorSecondary(requireActivity())
                             onSelect {
-                                presenter?.fireReactionModeCopyClick(position)
+                                presenter?.fireReactionModeClick(position)
                             }
                         }
                         item(R.string.select_more) {

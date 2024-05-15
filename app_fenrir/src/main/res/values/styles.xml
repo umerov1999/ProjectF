@@ -998,6 +998,12 @@
         <item name="cornerSize">12dp</item>
     </style>
 
+    <style name="OutlinedBoxAutoCompleteTextView">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.Material3.AutoCompleteTextView.OutlinedBox
+        </item>
+    </style>
+
     <style name="ShapeAppearance.RoundedPlayList" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamilyBottomLeft">rounded</item>
         <item name="cornerFamilyBottomRight">rounded</item>
