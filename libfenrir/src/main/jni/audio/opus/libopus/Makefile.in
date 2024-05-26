@@ -172,7 +172,7 @@ host_triplet = @host@
 @EXTRA_PROGRAMS_TRUE@@OPUS_ARM_EXTERNAL_ASM_TRUE@am__append_42 = libarmasm.la
 @CUSTOM_MODES_TRUE@am__append_43 = include/opus_custom.h
 @CUSTOM_MODES_TRUE@@EXTRA_PROGRAMS_TRUE@am__append_44 = opus_custom_demo
-@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@am__append_45 = lpcnet_demo dump_data dump_weights_blob
+@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@am__append_45 = fargan_demo dump_data dump_weights_blob
 @ENABLE_DRED_TRUE@@EXTRA_PROGRAMS_TRUE@am__append_46 = tests/test_opus_dred
 @ENABLE_LOSSGEN_TRUE@@EXTRA_PROGRAMS_TRUE@am__append_47 = lossgen_demo
 subdir = .
@@ -196,7 +196,7 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = opus.pc opus-uninstalled.pc celt/arm/armopts.s
 CONFIG_CLEAN_VPATH_FILES =
 @CUSTOM_MODES_TRUE@@EXTRA_PROGRAMS_TRUE@am__EXEEXT_1 = opus_custom_demo$(EXEEXT)
-@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@am__EXEEXT_2 = lpcnet_demo$(EXEEXT) \
+@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@am__EXEEXT_2 = fargan_demo$(EXEEXT) \
 @ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@	dump_data$(EXEEXT) \
 @ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@	dump_weights_blob$(EXEEXT)
 @ENABLE_LOSSGEN_TRUE@@EXTRA_PROGRAMS_TRUE@am__EXEEXT_3 = lossgen_demo$(EXEEXT)
@@ -688,6 +688,12 @@ dump_weights_blob_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(dump_weights_blob_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
+am__fargan_demo_SOURCES_DIST = dnn/fargan_demo.c
+@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@am_fargan_demo_OBJECTS = dnn/fargan_demo.$(OBJEXT)
+fargan_demo_OBJECTS = $(am_fargan_demo_OBJECTS)
+@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@fargan_demo_DEPENDENCIES = $(am__DEPENDENCIES_41) \
+@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@	$(am__DEPENDENCIES_19) \
+@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@	$(am__DEPENDENCIES_1)
 am__lossgen_demo_SOURCES_DIST = dnn/lossgen_demo.c dnn/lossgen.c \
 	dnn/lossgen_data.c
 am__objects_64 = dnn/lossgen.$(OBJEXT) dnn/lossgen_data.$(OBJEXT)
@@ -695,12 +701,6 @@ am__objects_64 = dnn/lossgen.$(OBJEXT) dnn/lossgen_data.$(OBJEXT)
 @ENABLE_LOSSGEN_TRUE@@EXTRA_PROGRAMS_TRUE@	$(am__objects_64)
 lossgen_demo_OBJECTS = $(am_lossgen_demo_OBJECTS)
 @ENABLE_LOSSGEN_TRUE@@EXTRA_PROGRAMS_TRUE@lossgen_demo_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am__lpcnet_demo_SOURCES_DIST = dnn/lpcnet_demo.c
-@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@am_lpcnet_demo_OBJECTS = dnn/lpcnet_demo.$(OBJEXT)
-lpcnet_demo_OBJECTS = $(am_lpcnet_demo_OBJECTS)
-@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@lpcnet_demo_DEPENDENCIES = $(am__DEPENDENCIES_41) \
-@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@	$(am__DEPENDENCIES_19) \
-@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@	$(am__DEPENDENCIES_1)
 am__opus_compare_SOURCES_DIST = src/opus_compare.c
 @EXTRA_PROGRAMS_TRUE@am_opus_compare_OBJECTS =  \
 @EXTRA_PROGRAMS_TRUE@	src/opus_compare.$(OBJEXT)
@@ -992,9 +992,9 @@ am__depfiles_remade = celt/$(DEPDIR)/bands.Plo celt/$(DEPDIR)/celt.Plo \
 	dnn/$(DEPDIR)/dump_data.Po \
 	dnn/$(DEPDIR)/dump_weights_blob-write_lpcnet_weights.Po \
 	dnn/$(DEPDIR)/fargan.Plo dnn/$(DEPDIR)/fargan_data.Plo \
-	dnn/$(DEPDIR)/freq.Plo dnn/$(DEPDIR)/lace_data.Plo \
-	dnn/$(DEPDIR)/lossgen.Po dnn/$(DEPDIR)/lossgen_data.Po \
-	dnn/$(DEPDIR)/lossgen_demo.Po dnn/$(DEPDIR)/lpcnet_demo.Po \
+	dnn/$(DEPDIR)/fargan_demo.Po dnn/$(DEPDIR)/freq.Plo \
+	dnn/$(DEPDIR)/lace_data.Plo dnn/$(DEPDIR)/lossgen.Po \
+	dnn/$(DEPDIR)/lossgen_data.Po dnn/$(DEPDIR)/lossgen_demo.Po \
 	dnn/$(DEPDIR)/lpcnet_enc.Plo dnn/$(DEPDIR)/lpcnet_plc.Plo \
 	dnn/$(DEPDIR)/lpcnet_tables.Plo dnn/$(DEPDIR)/nndsp.Plo \
 	dnn/$(DEPDIR)/nnet.Plo dnn/$(DEPDIR)/nnet_default.Plo \
@@ -1194,8 +1194,8 @@ SOURCES = $(libarmasm_la_SOURCES) $(libopus_la_SOURCES) \
 	$(celt_tests_test_unit_mdct_SOURCES) \
 	$(celt_tests_test_unit_rotation_SOURCES) \
 	$(celt_tests_test_unit_types_SOURCES) $(dump_data_SOURCES) \
-	$(dump_weights_blob_SOURCES) $(lossgen_demo_SOURCES) \
-	$(lpcnet_demo_SOURCES) $(opus_compare_SOURCES) \
+	$(dump_weights_blob_SOURCES) $(fargan_demo_SOURCES) \
+	$(lossgen_demo_SOURCES) $(opus_compare_SOURCES) \
 	$(opus_custom_demo_SOURCES) $(opus_demo_SOURCES) \
 	$(repacketizer_demo_SOURCES) \
 	$(silk_tests_test_unit_LPC_inv_pred_gain_SOURCES) \
@@ -1219,8 +1219,8 @@ DIST_SOURCES = $(am__libarmasm_la_SOURCES_DIST) \
 	$(am__celt_tests_test_unit_types_SOURCES_DIST) \
 	$(am__dump_data_SOURCES_DIST) \
 	$(am__dump_weights_blob_SOURCES_DIST) \
+	$(am__fargan_demo_SOURCES_DIST) \
 	$(am__lossgen_demo_SOURCES_DIST) \
-	$(am__lpcnet_demo_SOURCES_DIST) \
 	$(am__opus_compare_SOURCES_DIST) \
 	$(am__opus_custom_demo_SOURCES_DIST) \
 	$(am__opus_demo_SOURCES_DIST) \
@@ -2182,8 +2182,8 @@ noinst_HEADERS = $(OPUS_HEAD) $(SILK_HEAD) $(CELT_HEAD) $(LPCNET_HEAD)
 @EXTRA_PROGRAMS_TRUE@celt_tests_test_unit_types_LDADD = $(LIBM)
 @CUSTOM_MODES_TRUE@@EXTRA_PROGRAMS_TRUE@opus_custom_demo_SOURCES = celt/opus_custom_demo.c
 @CUSTOM_MODES_TRUE@@EXTRA_PROGRAMS_TRUE@opus_custom_demo_LDADD = libopus.la $(LIBM)
-@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@lpcnet_demo_SOURCES = dnn/lpcnet_demo.c
-@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@lpcnet_demo_LDADD = $(LPCNET_OBJ) $(CELT_OBJ) $(LIBM)
+@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@fargan_demo_SOURCES = dnn/fargan_demo.c
+@ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@fargan_demo_LDADD = $(LPCNET_OBJ) $(CELT_OBJ) $(LIBM)
 @ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@dump_data_SOURCES = dnn/dump_data.c
 @ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@dump_data_LDADD = $(LPCNET_OBJ) $(CELT_OBJ) $(LIBM)
 @ENABLE_DEEP_PLC_TRUE@@EXTRA_PROGRAMS_TRUE@dump_weights_blob_SOURCES = dnn/write_lpcnet_weights.c
@@ -2204,6 +2204,7 @@ EXTRA_DIST = opus.pc.in \
              cmake/OpusFunctions.cmake \
              cmake/OpusPackageVersion.cmake \
              cmake/OpusSources.cmake \
+             cmake/README.md \
              cmake/RunTest.cmake \
              cmake/config.h.cmake.in \
              cmake/vla.c \
@@ -2211,12 +2212,14 @@ EXTRA_DIST = opus.pc.in \
              cmake/cpu_info_by_c.c \
              meson/get-version.py \
              meson/read-sources-list.py \
+             meson/README.md \
              meson.build \
              meson_options.txt \
              include/meson.build \
              celt/meson.build \
              celt/tests/meson.build \
              dnn/meson.build \
+             dnn/README.md \
              silk/meson.build \
              silk/tests/meson.build \
              src/meson.build \
@@ -2927,6 +2930,12 @@ dnn/dump_weights_blob-write_lpcnet_weights.$(OBJEXT):  \
 dump_weights_blob$(EXEEXT): $(dump_weights_blob_OBJECTS) $(dump_weights_blob_DEPENDENCIES) $(EXTRA_dump_weights_blob_DEPENDENCIES) 
 	@rm -f dump_weights_blob$(EXEEXT)
 	$(AM_V_CCLD)$(dump_weights_blob_LINK) $(dump_weights_blob_OBJECTS) $(dump_weights_blob_LDADD) $(LIBS)
+dnn/fargan_demo.$(OBJEXT): dnn/$(am__dirstamp) \
+	dnn/$(DEPDIR)/$(am__dirstamp)
+
+fargan_demo$(EXEEXT): $(fargan_demo_OBJECTS) $(fargan_demo_DEPENDENCIES) $(EXTRA_fargan_demo_DEPENDENCIES) 
+	@rm -f fargan_demo$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(fargan_demo_OBJECTS) $(fargan_demo_LDADD) $(LIBS)
 dnn/lossgen_demo.$(OBJEXT): dnn/$(am__dirstamp) \
 	dnn/$(DEPDIR)/$(am__dirstamp)
 dnn/lossgen.$(OBJEXT): dnn/$(am__dirstamp) \
@@ -2937,12 +2946,6 @@ dnn/lossgen_data.$(OBJEXT): dnn/$(am__dirstamp) \
 lossgen_demo$(EXEEXT): $(lossgen_demo_OBJECTS) $(lossgen_demo_DEPENDENCIES) $(EXTRA_lossgen_demo_DEPENDENCIES) 
 	@rm -f lossgen_demo$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(lossgen_demo_OBJECTS) $(lossgen_demo_LDADD) $(LIBS)
-dnn/lpcnet_demo.$(OBJEXT): dnn/$(am__dirstamp) \
-	dnn/$(DEPDIR)/$(am__dirstamp)
-
-lpcnet_demo$(EXEEXT): $(lpcnet_demo_OBJECTS) $(lpcnet_demo_DEPENDENCIES) $(EXTRA_lpcnet_demo_DEPENDENCIES) 
-	@rm -f lpcnet_demo$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(lpcnet_demo_OBJECTS) $(lpcnet_demo_LDADD) $(LIBS)
 src/opus_compare.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 
@@ -3138,12 +3141,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/dump_weights_blob-write_lpcnet_weights.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/fargan.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/fargan_data.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/fargan_demo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/freq.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/lace_data.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/lossgen.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/lossgen_data.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/lossgen_demo.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/lpcnet_demo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/lpcnet_enc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/lpcnet_plc.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@dnn/$(DEPDIR)/lpcnet_tables.Plo@am__quote@ # am--include-marker
@@ -4214,12 +4217,12 @@ distclean: distclean-recursive
 	-rm -f dnn/$(DEPDIR)/dump_weights_blob-write_lpcnet_weights.Po
 	-rm -f dnn/$(DEPDIR)/fargan.Plo
 	-rm -f dnn/$(DEPDIR)/fargan_data.Plo
+	-rm -f dnn/$(DEPDIR)/fargan_demo.Po
 	-rm -f dnn/$(DEPDIR)/freq.Plo
 	-rm -f dnn/$(DEPDIR)/lace_data.Plo
 	-rm -f dnn/$(DEPDIR)/lossgen.Po
 	-rm -f dnn/$(DEPDIR)/lossgen_data.Po
 	-rm -f dnn/$(DEPDIR)/lossgen_demo.Po
-	-rm -f dnn/$(DEPDIR)/lpcnet_demo.Po
 	-rm -f dnn/$(DEPDIR)/lpcnet_enc.Plo
 	-rm -f dnn/$(DEPDIR)/lpcnet_plc.Plo
 	-rm -f dnn/$(DEPDIR)/lpcnet_tables.Plo
@@ -4513,12 +4516,12 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f dnn/$(DEPDIR)/dump_weights_blob-write_lpcnet_weights.Po
 	-rm -f dnn/$(DEPDIR)/fargan.Plo
 	-rm -f dnn/$(DEPDIR)/fargan_data.Plo
+	-rm -f dnn/$(DEPDIR)/fargan_demo.Po
 	-rm -f dnn/$(DEPDIR)/freq.Plo
 	-rm -f dnn/$(DEPDIR)/lace_data.Plo
 	-rm -f dnn/$(DEPDIR)/lossgen.Po
 	-rm -f dnn/$(DEPDIR)/lossgen_data.Po
 	-rm -f dnn/$(DEPDIR)/lossgen_demo.Po
-	-rm -f dnn/$(DEPDIR)/lpcnet_demo.Po
 	-rm -f dnn/$(DEPDIR)/lpcnet_enc.Plo
 	-rm -f dnn/$(DEPDIR)/lpcnet_plc.Plo
 	-rm -f dnn/$(DEPDIR)/lpcnet_tables.Plo

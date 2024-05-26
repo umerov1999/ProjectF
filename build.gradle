@@ -57,9 +57,9 @@ buildscript {
     ext.autoValueVersion = "1.10.4"
 
     //common libraries
-    ext.kotlin_version = "2.0.0-RC3"
+    ext.kotlin_version = "2.0.0"
     ext.kotlin_coroutines = "1.8.1"
-    ext.kotlin_serializer = "1.6.3"
+    ext.kotlin_serializer = "1.7.0-RC"
     //ext.okhttpLibraryVersion = "5.0.0-SNAPSHOT"
     ext.okhttpLibraryVersion = "5.0.0-alpha.14"
     ext.okioVersion = "3.9.0"
@@ -93,7 +93,7 @@ buildscript {
         //maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.4.0"
+        classpath "com.android.tools.build:gradle:8.4.1"
         classpath "com.google.gms:google-services:4.4.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"

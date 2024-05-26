@@ -20,7 +20,7 @@ class JsonConfiguration @OptIn(ExperimentalSerializationApi::class) internal con
     val isLenient: Boolean = false,
     val allowStructuredMapKeys: Boolean = false,
     val prettyPrint: Boolean = false,
-    @ExperimentalSerializationApi val explicitNulls: Boolean = true,
+    val explicitNulls: Boolean = true,
     @ExperimentalSerializationApi val prettyPrintIndent: String = "    ",
     val coerceInputValues: Boolean = false,
     val useArrayPolymorphism: Boolean = false,
@@ -30,6 +30,7 @@ class JsonConfiguration @OptIn(ExperimentalSerializationApi::class) internal con
     @ExperimentalSerializationApi val namingStrategy: JsonNamingStrategy? = null,
     @ExperimentalSerializationApi val decodeEnumsCaseInsensitive: Boolean = false,
     @ExperimentalSerializationApi val allowTrailingComma: Boolean = false,
+    @ExperimentalSerializationApi val allowComments: Boolean = false,
     @ExperimentalSerializationApi var classDiscriminatorMode: ClassDiscriminatorMode = ClassDiscriminatorMode.POLYMORPHIC,
 ) {
 
@@ -41,7 +42,7 @@ class JsonConfiguration @OptIn(ExperimentalSerializationApi::class) internal con
                 "prettyPrintIndent='$prettyPrintIndent', coerceInputValues=$coerceInputValues, useArrayPolymorphism=$useArrayPolymorphism, " +
                 "classDiscriminator='$classDiscriminator', allowSpecialFloatingPointValues=$allowSpecialFloatingPointValues, " +
                 "useAlternativeNames=$useAlternativeNames, namingStrategy=$namingStrategy, decodeEnumsCaseInsensitive=$decodeEnumsCaseInsensitive, " +
-                "allowTrailingComma=$allowTrailingComma, classDiscriminatorMode=$classDiscriminatorMode)"
+                "allowTrailingComma=$allowTrailingComma, allowComments=$allowComments, classDiscriminatorMode=$classDiscriminatorMode)"
     }
 }
 

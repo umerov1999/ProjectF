@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir
 import android.content.res.Resources
 
 object Constants {
-    const val API_VERSION = "5.154"
+    const val API_VERSION = "5.186"
     const val AUTH_VERSION = API_VERSION
 
     const val DATABASE_FENRIR_VERSION = 45

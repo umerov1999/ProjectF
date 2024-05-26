@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2024 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package dev.ragnarok.fenrir.util.serializeble.json
@@ -48,29 +48,48 @@ import okio.BufferedSource
  * Example of usage:
  * ```
  * @Serializable
- * class DataHolder(val id: Int, val data: String, val extensions: JsonElement)
+ * data class Data(val id: Int, val data: String, val extensions: JsonElement)
  *
- * val json = Json
- * val instance = DataHolder(42, "some data", buildJsonObject { put("additional key", "value") }
+ * val json = Json { ignoreUnknownKeys = true }
+ * val instance = Data(42, "some data", buildJsonObject { put("key", "value") })
  *
- * // Plain StringFormat usage
- * val stringOutput: String = json.encodeToString(instance)
+ * // Plain Json usage: returns '{"id": 42, "some data", "extensions": {"key": "value" } }'
+ * val jsonString: String = json.encodeToString(instance)
  *
- * // JsonElement serialization specific for JSON only
- * val jsonTree: JsonElement = json.encodeToJsonElement(instance)
+ * // JsonElement serialization, specific for JSON format
+ * val jsonElement: JsonElement = json.encodeToJsonElement(instance)
  *
  * // Deserialize from string
- * val deserialized: DataHolder = json.decodeFromString<DataHolder>(stringOutput)
+ * val deserialized: Data = json.decodeFromString<Data>(jsonString)
  *
- * // Deserialize from json tree, JSON-specific
- * val deserializedFromTree: DataHolder = json.decodeFromJsonElement<DataHolder>(jsonTree)
+ * // Deserialize from json element, JSON-specific
+ * val deserializedFromElement: Data = json.decodeFromJsonElement<Data>(jsonElement)
  *
  *  // Deserialize from string to JSON tree, JSON-specific
- *  val deserializedToTree: JsonElement = json.parseToJsonElement(stringOutput)
+ * val deserializedElement: JsonElement = json.parseToJsonElement(jsonString)
+ *
+ * // Deserialize a stream of a single item from an input stream
+ * val sequence = Json.decodeToSequence<Data>(ByteArrayInputStream(jsonString.encodeToByteArray()))
+ * for (item in sequence) {
+ *     println(item) // Prints deserialized Data value
+ * }
  * ```
  *
  * Json instance also exposes its [configuration] that can be used in custom serializers
  * that rely on [JsonDecoder] and [JsonEncoder] for customizable behaviour.
+ *
+ * Json format configuration can be refined using the corresponding constructor:
+ * ```
+ * val defaultJson = Json {
+ *     encodeDefaults = true
+ *     ignoreUnknownKeys = true
+ * }
+ * // Will inherit the properties of defaultJson
+ * val debugEndpointJson = Json(defaultJson) {
+ *     // ignoreUnknownKeys and encodeDefaults are set to true
+ *     prettyPrint = true
+ * }
+ * ```
  */
 sealed class Json(
     val configuration: JsonConfiguration,
@@ -86,19 +105,41 @@ sealed class Json(
 
     /**
      * The default instance of [Json] with default configuration.
+     *
+     * Example of usage:
+     * ```
+     * @Serializable
+     * class Project(val name: String, val language: String)
+     *
+     * val data = Project("kotlinx.serialization", "Kotlin")
+     * // Prints {"name":"kotlinx.serialization","language":"Kotlin"}
+     * println(Json.encodeToString(data))
+     * ```
      */
     @OptIn(ExperimentalSerializationApi::class)
     companion object Default : Json(JsonConfiguration(), EmptySerializersModule())
 
     /**
      * Serializes the [value] into an equivalent JSON using the given [serializer].
+     * This method is recommended to be used with an explicit serializer (e.g. the custom or third-party one),
+     * otherwise the `encodeToString(value: T)` version might be preferred as the most concise one.
+     *
+     * Example of usage:
+     * ```
+     * @Serializable
+     * class Project(val name: String, val language: String)
+     *
+     * val data = Project("kotlinx.serialization", "Kotlin")
+     *
+     * // Prints {"name":"kotlinx.serialization","language":"Kotlin"}
+     * println(Json.encodeToString(Project.serializer(), data))
+     * // The same as Json.encodeToString<T>(value: T) overload
+     * println(Json.encodeToString(data))
+     * ```
      *
      * @throws [SerializationException] if the given value cannot be serialized to JSON.
      */
-    final override fun <T> encodeToString(
-        serializer: SerializationStrategy<T>,
-        value: T
-    ): String {
+    final override fun <T> encodeToString(serializer: SerializationStrategy<T>, value: T): String {
         val result = JsonToStringWriter()
         try {
             encodeByWriter(this@Json, result, serializer, value)
@@ -111,21 +152,29 @@ sealed class Json(
     /**
      * Decodes and deserializes the given JSON [string] to the value of type [T] using deserializer
      * retrieved from the reified type parameter.
+     * Example:
+     * ```
+     * @Serializable
+     * data class Project(val name: String, val language: String)
+     * //  Project(name=kotlinx.serialization, language=Kotlin)
+     * println(Json.decodeFromString<Project>("""{"name":"kotlinx.serialization","language":"Kotlin"}"""))
+     * ```
      *
      * @throws SerializationException in case of any decoding-specific error
      * @throws IllegalArgumentException if the decoded input is not a valid instance of [T]
      */
-    inline fun <reified T> decodeFromString(
-        @FormatLanguage(
-            "json",
-            "",
-            ""
-        ) string: String
-    ): T =
+    inline fun <reified T> decodeFromString(@FormatLanguage("json", "", "") string: String): T =
         decodeFromString(serializersModule.serializer(), string)
 
     /**
      * Deserializes the given JSON [string] into a value of type [T] using the given [deserializer].
+     * Example:
+     * ```
+     * @Serializable
+     * data class Project(val name: String, val language: String)
+     * //  Project(name=kotlinx.serialization, language=Kotlin)
+     * println(Json.decodeFromString(Project.serializer(), """{"name":"kotlinx.serialization","language":"Kotlin"}"""))
+     * ```
      *
      * @throws [SerializationException] if the given JSON string is not a valid JSON input for the type [T]
      * @throws [IllegalArgumentException] if the decoded input cannot be represented as a valid instance of type [T]
@@ -134,7 +183,7 @@ sealed class Json(
         deserializer: DeserializationStrategy<T>,
         @FormatLanguage("json", "", "") string: String
     ): T {
-        val lexer = StringJsonLexer(string)
+        val lexer = StringJsonLexer(this, string)
         val input = StreamingJsonDecoder(this, WriteMode.OBJ, lexer, deserializer.descriptor, null)
         val result = input.decodeSerializableValue(deserializer)
         lexer.expectEof()
@@ -146,10 +195,7 @@ sealed class Json(
      *
      * @throws [SerializationException] if the given value cannot be serialized to JSON
      */
-    fun <T> encodeToJsonElement(
-        serializer: SerializationStrategy<T>,
-        value: T
-    ): JsonElement {
+    fun <T> encodeToJsonElement(serializer: SerializationStrategy<T>, value: T): JsonElement {
         return writeJson(this@Json, value, serializer)
     }
 
@@ -191,6 +237,21 @@ sealed class Json(
  * [DecodeSequenceMode] defines a separator between these objects.
  * Typically, these objects are not separated by meaningful characters ([WHITESPACE_SEPARATED]),
  * or the whole stream is a large array of objects separated with commas ([ARRAY_WRAPPED]).
+ *
+ * It is used in `Json.decodeToSequence` family of functions:
+ * ```
+ * @Serializable
+ * data class Game(val name: String)
+ * val input = """{"name": "Gothic"} {"name": "Planescape"} {"name": "Fallout"}"""
+ * // On multiplatform, Okio's Source can be used
+ * val inputStream = ByteArrayInputStream(input.encodeToByteArray())
+ *
+ * val sequence = Json.decodeToSequence<Game>(inputStream, DecodeSequenceMode.WHITESPACE_SEPARATED)
+ * // Prints Game(name=Gothic), Game(name=Planescape) and Game(name=Fallout)
+ * for (game in sequence) {
+ *     println(game)
+ * }
+ * ```
  */
 @ExperimentalSerializationApi
 enum class DecodeSequenceMode {
@@ -219,7 +280,7 @@ enum class DecodeSequenceMode {
      *
      * Example of `ARRAY_WRAPPED` stream content:
      * ```
-     * """[{"key": "value"}, {"key": "value2"},{"key2": "value2"}]"""
+     * """[{"key": "value"},   {"key": "value2"},{"key2": "value2"}]"""
      * ```
      */
     ARRAY_WRAPPED,
@@ -240,6 +301,19 @@ enum class DecodeSequenceMode {
 
 /**
  * Creates an instance of [Json] configured from the optionally given [Json instance][from] and adjusted with [builderAction].
+ *
+ * Example of usage:
+ * ```
+ * val defaultJson = Json {
+ *     encodeDefaults = true
+ *     ignoreUnknownKeys = true
+ * }
+ * // Will inherit the properties of defaultJson
+ * val debugEndpointJson = Json(defaultJson) {
+ *     // ignoreUnknownKeys and encodeDefaults are set to true
+ *     prettyPrint = true
+ * }
+ * ```
  */
 fun Json(from: Json = Json.Default, builderAction: JsonBuilder.() -> Unit): Json {
     val builder = JsonBuilder(from)
@@ -278,13 +352,36 @@ inline fun <reified T> Json.decodeFromJsonElementOrNull(
     json?.let { decodeFromJsonElement(serializer, it) }
 
 /**
- * Builder of the [Json] instance provided by `Json { ... }` factory function.
+ * Builder of the [Json] instance provided by `Json { ... }` factory function:
+ *
+ * ```
+ * val json = Json { // this: JsonBuilder
+ *     encodeDefaults = true
+ *     ignoreUnknownKeys = true
+ * }
+ * ```
  */
+@Suppress("unused")
 @OptIn(ExperimentalSerializationApi::class)
 class JsonBuilder internal constructor(json: Json) {
     /**
      * Specifies whether default values of Kotlin properties should be encoded.
      * `false` by default.
+     *
+     * Example:
+     * ```
+     * @Serializable
+     * class Project(val name: String, val language: String = "kotlin")
+     *
+     * // Prints {"name":"test-project"}
+     * println(Json.encodeToString(Project("test-project")))
+     *
+     * // Prints {"name":"test-project","language":"kotlin"}
+     * val withDefaults = Json { encodeDefaults = true }
+     * println(withDefaults.encodeToString(Project("test-project")))
+     * ```
+     *
+     * This option does not affect decoding.
      */
     var encodeDefaults: Boolean = json.configuration.encodeDefaults
 
@@ -292,18 +389,71 @@ class JsonBuilder internal constructor(json: Json) {
      * Specifies whether `null` values should be encoded for nullable properties and must be present in JSON object
      * during decoding.
      *
-     * When this flag is disabled properties with `null` values without default are not encoded;
+     * When this flag is disabled properties with `null` values are not encoded;
      * during decoding, the absence of a field value is treated as `null` for nullable properties without a default value.
      *
      * `true` by default.
+     *
+     * It is possible to make decoder treat some invalid input data as the missing field to enhance the functionality of this flag.
+     * See [coerceInputValues] documentation for details.
+     *
+     * Example of usage:
+     * ```
+     * @Serializable
+     * data class Project(val name: String, val description: String?)
+     * val implicitNulls = Json { explicitNulls = false }
+     *
+     * // Encoding
+     * // Prints '{"name":"unknown","description":null}'. null is explicit
+     * println(Json.encodeToString(Project("unknown", null)))
+     * // Prints '{"name":"unknown"}', null is omitted
+     * println(implicitNulls.encodeToString(Project("unknown", null)))
+     *
+     * // Decoding
+     * // Prints Project(name=unknown, description=null)
+     * println(implicitNulls.decodeFromString<Project>("""{"name":"unknown"}"""))
+     * // Fails with "MissingFieldException: Field 'description' is required"
+     * Json.decodeFromString<Project>("""{"name":"unknown"}""")
+     * ```
+     *
+     * Exercise extra caution if you want to use this flag and have non-typical classes with properties
+     * that are nullable, but have default value that is not `null`. In that case, encoding and decoding will not
+     * be symmetrical if `null` is omitted from the output.
+     * Example of such a pitfall:
+     *
+     * ```
+     * @Serializable
+     * data class Example(val nullable: String? = "non-null default")
+     *
+     * val json = Json { explicitNulls = false }
+     *
+     * val original = Example(null)
+     * val s = json.encodeToString(original)
+     * // prints "{}" because of explicitNulls flag
+     * println(s)
+     * val decoded = json.decodeFromString<Example>(s)
+     * // Prints "non-null default" because default value is inserted since `nullable` field is missing in the input
+     * println(decoded.nullable)
+     * println(decoded != original) // true
+     * ```
      */
-    @ExperimentalSerializationApi
     var explicitNulls: Boolean = json.configuration.explicitNulls
 
     /**
      * Specifies whether encounters of unknown properties in the input JSON
      * should be ignored instead of throwing [SerializationException].
      * `false` by default.
+     *
+     * Example of usage:
+     * ```
+     * @Serializable
+     * data class Project(val name: String)
+     * val withUnknownKeys = Json { ignoreUnknownKeys = true }
+     * // Project(name=unknown), "version" is ignored completely
+     * println(withUnknownKeys.decodeFromString<Project>("""{"name":"unknown", "version": 2.0}"""))
+     * // Fails with "Encountered an unknown key 'version'"
+     * Json.decodeFromString<Project>("""{"name":"unknown", "version": 2.0}""")
+     * ```
      */
     var ignoreUnknownKeys: Boolean = json.configuration.ignoreUnknownKeys
 
@@ -319,21 +469,31 @@ class JsonBuilder internal constructor(json: Json) {
     var isLenient: Boolean = json.configuration.isLenient
 
     /**
-     * Enables structured objects to be serialized as map keys by
-     * changing serialized form of the map from JSON object (key-value pairs) to flat array like `[k1, v1, k2, v2]`.
+     * Specifies whether resulting JSON should be pretty-printed: formatted and optimized for human readability.
      * `false` by default.
-     */
-    var allowStructuredMapKeys: Boolean = json.configuration.allowStructuredMapKeys
-
-    /**
-     * Specifies whether resulting JSON should be pretty-printed.
-     *  `false` by default.
+     *
+     * Example of usage:
+     * ```
+     * @Serializable
+     * class Key(val type: String, val opens: String)
+     * val pretty = Json { prettyPrint = true }
+     * /*
+     *  * Prints
+     *  * {
+     *  *     "type": "keycard",
+     *  *     "opens": "secret door"
+     *  * }
+     *  */
+     * println(pretty.encodeToString(Key("keycard", "secret door")))
+     * ```
      */
     var prettyPrint: Boolean = json.configuration.prettyPrint
 
     /**
-     * Specifies indent string to use with [prettyPrint] mode
+     * Specifies indent string to use with [prettyPrint] mode.
+     * Only whitespace characters are allowed: ' ', '\n', '\r' or '\t'.
      * 4 spaces by default.
+     *
      * Experimentality note: this API is experimental because
      * it is not clear whether this option has compelling use-cases.
      */
@@ -341,29 +501,42 @@ class JsonBuilder internal constructor(json: Json) {
     var prettyPrintIndent: String = json.configuration.prettyPrintIndent
 
     /**
-     * Enables coercing incorrect JSON values to the default property value (if exists) in the following cases:
+     * Enables coercing incorrect JSON values in the following cases:
+     *
      *   1. JSON value is `null` but the property type is non-nullable.
-     *   2. Property type is an enum type, but JSON value contains unknown enum member.
+     *   2. Property type is an enum type, but JSON value contains an unknown enum member.
+     *
+     * Coerced values are treated as missing; they are replaced either with a default property value if it exists, or with a `null` if [explicitNulls] flag
+     * is set to `false` and a property is nullable (for enums).
+     *
+     * Example of usage:
+     * ```
+     * enum class Choice { A, B, C }
+     *
+     * @Serializable
+     * data class Example1(val a: String = "default", b: Choice = Choice.A, c: Choice? = null)
+     *
+     * val coercingJson = Json { coerceInputValues = true }
+     * // Decodes Example1("default", Choice.A, null) instance
+     * coercingJson.decodeFromString<Example1>("""{"a": null, "b": "unknown", "c": "unknown"}""")
+     *
+     * @Serializable
+     * data class Example2(val c: Choice?)
+     *
+     * val coercingImplicitJson = Json(coercingJson) { explicitNulls = false }
+     * // Decodes Example2(null) instance.
+     * coercingImplicitJson.decodeFromString<Example1>("""{"c": "unknown"}""")
+     * ```
      *
      * `false` by default.
      */
     var coerceInputValues: Boolean = json.configuration.coerceInputValues
 
     /**
-     * Switches polymorphic serialization to the default array format.
-     * This is an option for legacy JSON format and should not be generally used.
-     * `false` by default.
-     *
-     * This option can only be used if [classDiscriminatorMode] in a default [ClassDiscriminatorMode.POLYMORPHIC] state.
-     */
-    var useArrayPolymorphism: Boolean = json.configuration.useArrayPolymorphism
-
-    /**
      * Name of the class descriptor property for polymorphic serialization.
-     * "type" by default.
+     * `type` by default.
      */
     var classDiscriminator: String = json.configuration.classDiscriminator
-
 
     /**
      * Defines which classes and objects should have class discriminator added to the output.
@@ -372,17 +545,7 @@ class JsonBuilder internal constructor(json: Json) {
      * Other modes are generally intended to produce JSON for consumption by third-party libraries,
      * therefore, this setting does not affect the deserialization process.
      */
-    var classDiscriminatorMode: ClassDiscriminatorMode =
-        json.configuration.classDiscriminatorMode
-
-    /**
-     * Removes JSON specification restriction on
-     * special floating-point values such as `NaN` and `Infinity` and enables their serialization and deserialization.
-     * When enabling it, please ensure that the receiving party will be able to encode and decode these special values.
-     * `false` by default.
-     */
-    var allowSpecialFloatingPointValues: Boolean =
-        json.configuration.allowSpecialFloatingPointValues
+    var classDiscriminatorMode: ClassDiscriminatorMode = json.configuration.classDiscriminatorMode
 
     /**
      * Specifies whether Json instance makes use of [JsonNames] annotation.
@@ -405,28 +568,30 @@ class JsonBuilder internal constructor(json: Json) {
 
     /**
      * Enables decoding enum values in a case-insensitive manner.
-     * Encoding is not affected.
+     * Encoding is not affected by this option.
      *
-     * This affects both enum serial names and alternative names (specified with the [JsonNames] annotation).
-     * In the following example, string `[VALUE_A, VALUE_B]` will be printed:
+     * It affects both enum serial names and alternative names (specified with the [JsonNames] annotation).
+     * Example of usage:
      * ```
      * enum class E { VALUE_A, @JsonNames("ALTERNATIVE") VALUE_B }
      *
      * @Serializable
      * data class Outer(val enums: List<E>)
      *
-     * val j = Json { decodeEnumsCaseInsensitive = true }
-     * println(j.decodeFromString<Outer>("""{"enums":["value_A", "alternative"]}""").enums)
+     * val json = Json { decodeEnumsCaseInsensitive = true }
+     * // Prints [VALUE_A, VALUE_B]
+     * println(json.decodeFromString<Outer>("""{"enums":["Value_A", "alternative"]}""").enums)
+     * // Will fail with SerializationException: no such enum as 'Value_A'
+     * Json.decodeFromString<Outer>("""{"enums":["Value_A", "alternative"]}""")
      * ```
      *
-     * If this feature is enabled,
-     * it is no longer possible to decode enum values that have the same name in a lowercase form.
+     * With this feature enabled, it is no longer possible to decode enum values that have the same name in a lowercase form.
      * The following code will throw a serialization exception:
-     *
      * ```
-     * enum class BadEnum { Bad, BAD }
-     * val j = Json { decodeEnumsCaseInsensitive = true }
-     * j.decodeFromString<Box<BadEnum>>("""{"boxed":"bad"}""")
+     * enum class CaseSensitiveEnum { One, ONE }
+     * val json = Json { decodeEnumsCaseInsensitive = true }
+     * // Fails with SerializationException: The suggested name 'one' for enum value ONE is already one of the names for enum value One
+     * json.decodeFromString<CaseSensitiveEnum>("ONE")
      * ```
      */
     @ExperimentalSerializationApi
@@ -434,13 +599,64 @@ class JsonBuilder internal constructor(json: Json) {
 
     /**
      * Allows parser to accept trailing (ending) commas in JSON objects and arrays,
-     * making inputs like `[1, 2, 3,]` valid.
-     *
+     * making inputs like `[1, 2, 3,]` and `{"key": "value",}` valid.
      * Does not affect encoding.
      * `false` by default.
      */
     @ExperimentalSerializationApi
     var allowTrailingComma: Boolean = json.configuration.allowTrailingComma
+
+    /**
+     * Allows parser to accept C/Java-style comments in JSON input.
+     *
+     * Comments are being skipped and are not stored anywhere; this setting does not affect encoding in any way.
+     *
+     * More specifically, a comment is a substring that is not a part of JSON key or value, conforming to one of those:
+     *
+     * 1. Starts with `//` characters and ends with a newline character `\n`.
+     * 2. Starts with `/*` characters and ends with `*/` characters. Nesting block comments
+     *  is not supported: no matter how many `/*` characters you have, first `*/` will end the comment.
+     *
+     *  `false` by default.
+     */
+    @ExperimentalSerializationApi
+    var allowComments: Boolean = json.configuration.allowComments
+
+    /**
+     * Removes JSON specification restriction on special floating-point values such as `NaN` and `Infinity`
+     * and enables their serialization and deserialization as float literals without quotes.
+     * When enabling it, please ensure that the receiving party will be able to encode and decode these special values.
+     * This option affects both encoding and decoding.
+     * `false` by default.
+     *
+     * Example of usage:
+     * ```
+     * val floats = listOf(1.0, 2.0, Double.NaN, Double.NEGATIVE_INFINITY)
+     * val json = Json { allowSpecialFloatingPointValues = true }
+     * // Prints [1.0,2.0,NaN,-Infinity]
+     * println(json.encodeToString(floats))
+     * // Prints [1.0, 2.0, NaN, -Infinity]
+     * println(json.decodeFromString<List<Double>>("[1.0,2.0,NaN,-Infinity]"))
+     * ```
+     */
+    var allowSpecialFloatingPointValues: Boolean =
+        json.configuration.allowSpecialFloatingPointValues
+
+    /**
+     * Enables structured objects to be serialized as map keys by
+     * changing serialized form of the map from JSON object (key-value pairs) to flat array like `[k1, v1, k2, v2]`.
+     * `false` by default.
+     */
+    var allowStructuredMapKeys: Boolean = json.configuration.allowStructuredMapKeys
+
+    /**
+     * Switches polymorphic serialization to the default array format.
+     * This is an option for legacy JSON format and should not be generally used.
+     * `false` by default.
+     *
+     * This option can only be used if [classDiscriminatorMode] in a default [ClassDiscriminatorMode.POLYMORPHIC] state.
+     */
+    var useArrayPolymorphism: Boolean = json.configuration.useArrayPolymorphism
 
     /**
      * Module with contextual and polymorphic serializers to be used in the resulting [Json] instance.
@@ -476,11 +692,23 @@ class JsonBuilder internal constructor(json: Json) {
         }
 
         return JsonConfiguration(
-            encodeDefaults, ignoreUnknownKeys, isLenient,
-            allowStructuredMapKeys, prettyPrint, explicitNulls, prettyPrintIndent,
-            coerceInputValues, useArrayPolymorphism,
-            classDiscriminator, allowSpecialFloatingPointValues, useAlternativeNames,
-            namingStrategy, decodeEnumsCaseInsensitive, allowTrailingComma, classDiscriminatorMode
+            encodeDefaults,
+            ignoreUnknownKeys,
+            isLenient,
+            allowStructuredMapKeys,
+            prettyPrint,
+            explicitNulls,
+            prettyPrintIndent,
+            coerceInputValues,
+            useArrayPolymorphism,
+            classDiscriminator,
+            allowSpecialFloatingPointValues,
+            useAlternativeNames,
+            namingStrategy,
+            decodeEnumsCaseInsensitive,
+            allowTrailingComma,
+            allowComments,
+            classDiscriminatorMode
         )
     }
 }

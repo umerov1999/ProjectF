@@ -4,8 +4,10 @@
 
 package dev.ragnarok.fenrir.util.serializeble.json.internal.lexer
 
+import dev.ragnarok.fenrir.util.serializeble.json.Json
 import dev.ragnarok.fenrir.util.serializeble.json.internal.CharArrayPoolBatchSize
 import dev.ragnarok.fenrir.util.serializeble.json.internal.InternalJsonReader
+import kotlinx.serialization.ExperimentalSerializationApi
 
 internal const val BATCH_SIZE: Int = 16 * 1024
 private const val DEFAULT_THRESHOLD = 128
@@ -35,26 +37,29 @@ internal class ArrayAsSequence(internal val buffer: CharArray) : CharSequence {
     override fun toString(): String = substring(0, length)
 }
 
-internal class ReaderJsonLexer(
-    private val reader: InternalJsonReader,
-    private val buffer: CharArray = CharArrayPoolBatchSize.take()
+@OptIn(ExperimentalSerializationApi::class)
+internal fun ReaderJsonLexer(
+    json: Json,
+    reader: InternalJsonReader,
+    buffer: CharArray = CharArrayPoolBatchSize.take()
+) =
+    if (!json.configuration.allowComments) ReaderJsonLexer(
+        reader,
+        buffer
+    ) else ReaderJsonLexerWithComments(reader, buffer)
+
+internal open class ReaderJsonLexer(
+    val reader: InternalJsonReader,
+    val buffer: CharArray = CharArrayPoolBatchSize.take()
 ) : AbstractJsonLexer() {
-    private var threshold: Int = DEFAULT_THRESHOLD // chars
+
+    @JvmField
+    protected var threshold: Int = DEFAULT_THRESHOLD // chars
 
     override val source: ArrayAsSequence = ArrayAsSequence(buffer)
 
     init {
         preload(0)
-    }
-
-    override fun tryConsumeComma(): Boolean {
-        val current = skipWhitespaces()
-        if (current >= source.length || current == -1) return false
-        if (source[current] == ',') {
-            ++currentPosition
-            return true
-        }
-        return false
     }
 
     override fun canConsumeValue(): Boolean {
@@ -65,7 +70,7 @@ internal class ReaderJsonLexer(
             if (current == -1) break // could be inline function but KT-1436
             val c = source[current]
             // Inlined skipWhitespaces without field spill and nested loop. Also faster then char2TokenClass
-            if (c == ' ' || c == '\n' || c == '\r' || c == '\t') {
+            if (c.isWs()) {
                 ++current
                 continue
             }
@@ -126,6 +131,41 @@ internal class ReaderJsonLexer(
         }
         currentPosition = cpos
         return TC_EOF
+    }
+
+    override fun consumeNextToken(expected: Char) {
+        ensureHaveChars()
+        val source = source
+        var cpos = currentPosition
+        while (true) {
+            cpos = prefetchOrEof(cpos)
+            if (cpos == -1) break // could be inline function but KT-1436
+            val c = source[cpos++]
+            if (c.isWs()) continue
+            currentPosition = cpos
+            if (c == expected) return
+            unexpectedToken(expected)
+        }
+        currentPosition = cpos
+        unexpectedToken(expected) // EOF
+    }
+
+    override fun skipWhitespaces(): Int {
+        var current = currentPosition
+        // Skip whitespaces
+        while (true) {
+            current = prefetchOrEof(current)
+            if (current == -1) break
+            val c = source[current]
+            // Faster than char2TokenClass actually
+            if (c.isWs()) {
+                ++current
+            } else {
+                break
+            }
+        }
+        currentPosition = current
+        return current
     }
 
     override fun ensureHaveChars() {

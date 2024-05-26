@@ -46,7 +46,7 @@ fun <T> decodeByReader(
     deserializer: DeserializationStrategy<T>,
     reader: InternalJsonReader
 ): T {
-    val lexer = ReaderJsonLexer(reader)
+    val lexer = ReaderJsonLexer(json, reader)
     try {
         val input = StreamingJsonDecoder(json, WriteMode.OBJ, lexer, deserializer.descriptor, null)
         val result = input.decodeSerializableValue(deserializer)
@@ -66,6 +66,7 @@ fun <T> decodeToSequenceByReader(
     format: DecodeSequenceMode = DecodeSequenceMode.AUTO_DETECT
 ): Sequence<T> {
     val lexer = ReaderJsonLexer(
+        json,
         reader,
         CharArray(BATCH_SIZE)
     ) // Unpooled buffer due to lazy nature of sequence

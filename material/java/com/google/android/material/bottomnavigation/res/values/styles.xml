@@ -26,7 +26,8 @@
     <item name="itemIconSize">@dimen/design_bottom_navigation_icon_size</item>
     <item name="labelVisibilityMode">auto</item>
     <item name="itemPaddingTop">@dimen/design_bottom_navigation_margin</item>
-    <item name="itemPaddingBottom">@dimen/design_bottom_navigation_label_padding</item>
+    <item name="itemPaddingBottom">0dp</item>
+    <item name="activeIndicatorLabelPadding">1dp</item>
     <item name="itemActiveIndicatorStyle">@null</item>
     <item name="android:minHeight">@dimen/design_bottom_navigation_height</item>
   </style>

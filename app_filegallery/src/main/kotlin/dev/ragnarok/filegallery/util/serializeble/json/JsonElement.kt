@@ -47,7 +47,8 @@ sealed class JsonPrimitive : JsonElement() {
     abstract val isString: Boolean
 
     /**
-     * Content of given element without quotes. For [JsonNull] this methods returns `null`
+     * Content of given element without quotes. For [JsonNull], this method returns a "null" string.
+     * [JsonPrimitive.contentOrNull] should be used for [JsonNull] to get a `null`.
      */
     abstract val content: String
 
@@ -172,7 +173,8 @@ internal class JsonLiteral internal constructor(
         if (other == null || this::class != other::class) return false
         other as JsonLiteral
         if (isString != other.isString) return false
-        return content == other.content
+        if (content != other.content) return false
+        return true
     }
 
     @SuppressAnimalSniffer // Boolean.hashCode(boolean)

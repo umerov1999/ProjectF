@@ -84,7 +84,7 @@ internal open class StreamingJsonDecoder(
             val discriminator = deserializer.descriptor.classDiscriminator(json)
             val type = lexer.peekLeadingMatchingValue(discriminator, configuration.isLenient)
                 ?: // Fallback to slow path if we haven't found discriminator on first try
-                return decodeSerializableValuePolymorphic(deserializer as DeserializationStrategy<T>)
+                return decodeSerializableValuePolymorphic(deserializer as DeserializationStrategy<T>) { lexer.path.getPath() }
 
             @Suppress("UNCHECKED_CAST")
             val actualSerializer = try {
@@ -385,7 +385,7 @@ fun <T> decodeStringToJsonTree(
     deserializer: DeserializationStrategy<T>,
     source: String
 ): JsonElement {
-    val lexer = StringJsonLexer(source)
+    val lexer = StringJsonLexer(json, source)
     val input = StreamingJsonDecoder(json, WriteMode.OBJ, lexer, deserializer.descriptor, null)
     val tree = input.decodeJsonElement()
     lexer.expectEof()

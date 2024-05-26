@@ -31,7 +31,7 @@ import kotlinx.serialization.internal.jsonCachedSerialNames
 internal inline fun <T> JsonEncoder.encodePolymorphically(
     serializer: SerializationStrategy<T>,
     value: T,
-    ifPolymorphic: (String) -> Unit
+    ifPolymorphic: (discriminatorName: String, serialName: String) -> Unit
 ) {
     if (json.configuration.useArrayPolymorphism) {
         serializer.serialize(this, value)
@@ -62,7 +62,10 @@ internal inline fun <T> JsonEncoder.encodePolymorphically(
         actual as SerializationStrategy<T>
     } else serializer
 
-    if (baseClassDiscriminator != null) ifPolymorphic(baseClassDiscriminator)
+    if (baseClassDiscriminator != null) ifPolymorphic(
+        baseClassDiscriminator,
+        actualSerializer.descriptor.serialName
+    )
     actualSerializer.serialize(this, value)
 }
 
@@ -91,14 +94,17 @@ internal fun checkKind(kind: SerialKind) {
     if (kind is PolymorphicKind) error("Actual serializer for polymorphic cannot be polymorphic itself")
 }
 
-internal fun <T> JsonDecoder.decodeSerializableValuePolymorphic(deserializer: DeserializationStrategy<T>): T {
+internal inline fun <T> JsonDecoder.decodeSerializableValuePolymorphic(
+    deserializer: DeserializationStrategy<T>,
+    path: () -> String
+): T {
     // NB: changes in this method should be reflected in StreamingJsonDecoder#decodeSerializableValue
     if (deserializer !is AbstractPolymorphicSerializer<*> || json.configuration.useArrayPolymorphism) {
         return deserializer.deserialize(this)
     }
     val discriminator = deserializer.descriptor.classDiscriminator(json)
 
-    val jsonTree = cast<JsonObject>(decodeJsonElement(), deserializer.descriptor)
+    val jsonTree = cast<JsonObject>(decodeJsonElement(), deserializer.descriptor.serialName, path)
     val type =
         jsonTree[discriminator]?.jsonPrimitive?.contentOrNull // differentiate between `"type":"null"` and `"type":null`.
 

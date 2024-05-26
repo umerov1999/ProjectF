@@ -595,7 +595,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         )
     }
 
-    private class EntryAccountDialog : DialogFragment() {
+    class EntryAccountDialog : DialogFragment() {
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             val root = View.inflate(requireActivity(), R.layout.entry_account, null)
             val spinnerItems = ArrayAdapter(

@@ -1293,33 +1293,31 @@ void MergeARGB16To8Row_NEON(const uint16_t* src_r,
                             uint8_t* dst_argb,
                             int depth,
                             int width) {
-  int shift = 8 - depth;
+  // Shift is 8 - depth, +8 so the result is in the top half of each lane.
+  int shift = 16 - depth;
   asm volatile(
-
       "dup         v31.8h, %w6                   \n"
       "1:                                        \n"
-      "ldr         q2, [%0], #16                 \n"  // R
+      "ldr         q0, [%0], #16                 \n"  // B
       "ldr         q1, [%1], #16                 \n"  // G
-      "ldr         q0, [%2], #16                 \n"  // B
+      "ldr         q2, [%2], #16                 \n"  // R
       "ldr         q3, [%3], #16                 \n"  // A
-      "ushl        v2.8h, v2.8h, v31.8h          \n"
+      "uqshl       v0.8h, v0.8h, v31.8h          \n"
       "prfm        pldl1keep, [%0, 448]          \n"
-      "ushl        v1.8h, v1.8h, v31.8h          \n"
+      "uqshl       v1.8h, v1.8h, v31.8h          \n"
       "prfm        pldl1keep, [%1, 448]          \n"
-      "ushl        v0.8h, v0.8h, v31.8h          \n"
+      "uqshl       v2.8h, v2.8h, v31.8h          \n"
       "prfm        pldl1keep, [%2, 448]          \n"
-      "ushl        v3.8h, v3.8h, v31.8h          \n"
+      "uqshl       v3.8h, v3.8h, v31.8h          \n"
       "prfm        pldl1keep, [%3, 448]          \n"
-      "uqxtn       v2.8b, v2.8h                  \n"
-      "uqxtn       v1.8b, v1.8h                  \n"
-      "uqxtn       v0.8b, v0.8h                  \n"
-      "uqxtn       v3.8b, v3.8h                  \n"
+      "trn2        v0.16b, v0.16b, v1.16b        \n"
+      "trn2        v1.16b, v2.16b, v3.16b        \n"
       "subs        %w5, %w5, #8                  \n"
-      "st4         {v0.8b, v1.8b, v2.8b, v3.8b}, [%4], #32 \n"
+      "st2         {v0.8h, v1.8h}, [%4], #32     \n"
       "b.gt        1b                            \n"
-      : "+r"(src_r),     // %0
+      : "+r"(src_b),     // %0
         "+r"(src_g),     // %1
-        "+r"(src_b),     // %2
+        "+r"(src_r),     // %2
         "+r"(src_a),     // %3
         "+r"(dst_argb),  // %4
         "+r"(width)      // %5
@@ -1333,30 +1331,29 @@ void MergeXRGB16To8Row_NEON(const uint16_t* src_r,
                             uint8_t* dst_argb,
                             int depth,
                             int width) {
-  int shift = 8 - depth;
+  // Shift is 8 - depth, +8 so the result is in the top half of each lane.
+  int shift = 16 - depth;
   asm volatile(
-
       "dup         v31.8h, %w5                   \n"
-      "movi        v3.8b, #0xff                  \n"  // A (0xff)
+      "movi        v3.16b, #0xff                 \n"  // A (0xff)
       "1:                                        \n"
-      "ldr         q2, [%0], #16                 \n"  // R
+      "ldr         q0, [%0], #16                 \n"  // B
       "ldr         q1, [%1], #16                 \n"  // G
-      "ldr         q0, [%2], #16                 \n"  // B
-      "ushl        v2.8h, v2.8h, v31.8h          \n"
+      "ldr         q2, [%2], #16                 \n"  // R
+      "uqshl       v0.8h, v0.8h, v31.8h          \n"
       "prfm        pldl1keep, [%0, 448]          \n"
-      "ushl        v1.8h, v1.8h, v31.8h          \n"
+      "uqshl       v1.8h, v1.8h, v31.8h          \n"
       "prfm        pldl1keep, [%1, 448]          \n"
-      "ushl        v0.8h, v0.8h, v31.8h          \n"
+      "uqshl       v2.8h, v2.8h, v31.8h          \n"
       "prfm        pldl1keep, [%2, 448]          \n"
-      "uqxtn       v2.8b, v2.8h                  \n"
-      "uqxtn       v1.8b, v1.8h                  \n"
-      "uqxtn       v0.8b, v0.8h                  \n"
+      "trn2        v0.16b, v0.16b, v1.16b        \n"
+      "trn2        v1.16b, v2.16b, v3.16b        \n"
       "subs        %w4, %w4, #8                  \n"
-      "st4         {v0.8b, v1.8b, v2.8b, v3.8b}, [%3], #32 \n"
+      "st2         {v0.8h, v1.8h}, [%3], #32     \n"
       "b.gt        1b                            \n"
-      : "+r"(src_r),     // %0
+      : "+r"(src_b),     // %0
         "+r"(src_g),     // %1
-        "+r"(src_b),     // %2
+        "+r"(src_r),     // %2
         "+r"(dst_argb),  // %3
         "+r"(width)      // %4
       : "r"(shift)       // %5
@@ -1684,19 +1681,25 @@ void ARGB1555ToARGBRow_NEON(const uint8_t* src_argb1555,
   );
 }
 
-// Convert v0.8h to b = v0.8b g = v1.8b r = v2.8b
-// clobbers v3
-#define ARGB4444TOARGB                                                      \
-  "shrn       v1.8b,  v0.8h, #8              \n" /* v1(l) AR             */ \
-  "xtn2       v1.16b, v0.8h                  \n" /* v1(h) GB             */ \
-  "shl        v2.16b, v1.16b, #4             \n" /* B,R BBBB0000         */ \
-  "ushr       v3.16b, v1.16b, #4             \n" /* G,A 0000GGGG         */ \
-  "ushr       v0.16b, v2.16b, #4             \n" /* B,R 0000BBBB         */ \
-  "shl        v1.16b, v3.16b, #4             \n" /* G,A GGGG0000         */ \
-  "orr        v2.16b, v0.16b, v2.16b         \n" /* B,R BBBBBBBB         */ \
-  "orr        v3.16b, v1.16b, v3.16b         \n" /* G,A GGGGGGGG         */ \
-  "dup        v0.2D, v2.D[1]                 \n"                            \
-  "dup        v1.2D, v3.D[1]                 \n"
+#define ARGB4444TOARGB                               \
+  /* Input: v0.8h = AAAARRRRGGGGBBBB */              \
+  "xtn        v1.8b, v0.8h        \n" /* GGGGBBBB */ \
+  "shrn       v2.8b, v0.8h, #4    \n" /* RRRRxxxx */ \
+  "shrn       v3.8b, v0.8h, #8    \n" /* AAAAxxxx */ \
+  "shl        v0.8b, v1.8b, #4    \n" /* BBBB0000 */ \
+  "sri        v1.8b, v1.8b, #4    \n" /* GGGGGGGG */ \
+  "sri        v2.8b, v2.8b, #4    \n" /* RRRRRRRR */ \
+  "sri        v3.8b, v3.8b, #4    \n" /* AAAAAAAA */ \
+  "sri        v0.8b, v0.8b, #4    \n" /* BBBBBBBB */
+
+#define ARGB4444TORGB                                \
+  /* Input: v0.8h = xxxxRRRRGGGGBBBB */              \
+  "xtn        v1.8b, v0.8h        \n" /* GGGGBBBB */ \
+  "shrn       v2.8b, v0.8h, #4    \n" /* RRRRxxxx */ \
+  "shl        v0.8b, v1.8b, #4    \n" /* BBBB0000 */ \
+  "sri        v1.8b, v1.8b, #4    \n" /* GGGGGGGG */ \
+  "sri        v2.8b, v2.8b, #4    \n" /* RRRRRRRR */ \
+  "sri        v0.8b, v0.8b, #4    \n" /* BBBBBBBB */
 
 void ARGB4444ToARGBRow_NEON(const uint8_t* src_argb4444,
                             uint8_t* dst_argb,
@@ -1714,6 +1717,59 @@ void ARGB4444ToARGBRow_NEON(const uint8_t* src_argb4444,
       :
       : "cc", "memory", "v0", "v1", "v2", "v3", "v4"  // Clobber List
   );
+}
+
+static const int16_t kAR30Row_BoxShifts[] = {0, -6, 0, -6, 0, -6, 0, -6};
+
+static const uint8_t kABGRToAR30Row_BoxIndices[] = {
+    2, 2, 1, 1, 6, 6, 5, 5, 10, 10, 9,  9,  14, 14, 13, 13,
+    0, 0, 3, 3, 4, 4, 7, 7, 8,  8,  11, 11, 12, 12, 15, 15};
+static const uint8_t kARGBToAR30Row_BoxIndices[] = {
+    0, 0, 1, 1, 4, 4, 5, 5, 8,  8,  9,  9,  12, 12, 13, 13,
+    2, 2, 3, 3, 6, 6, 7, 7, 10, 10, 11, 11, 14, 14, 15, 15};
+
+// ARGB or ABGR as input, reordering based on TBL indices parameter.
+static void ABCDToAR30Row_NEON(const uint8_t* src_abcd,
+                               uint8_t* dst_ar30,
+                               int width,
+                               const uint8_t* indices) {
+  asm volatile(
+      "movi      v2.4s, #0xf, msl 16             \n"  // 0xfffff
+      "ldr       q3, [%[kAR30Row_BoxShifts]]     \n"
+      "ldp       q4, q5, [%[indices]]            \n"
+      "1:                                        \n"
+      "ldp       q0, q20, [%[src]], #32          \n"
+      "subs      %w[width], %w[width], #8        \n"
+      "tbl       v1.16b, {v0.16b}, v5.16b        \n"
+      "tbl       v21.16b, {v20.16b}, v5.16b      \n"
+      "tbl       v0.16b, {v0.16b}, v4.16b        \n"
+      "tbl       v20.16b, {v20.16b}, v4.16b      \n"
+      "ushl      v0.8h, v0.8h, v3.8h             \n"
+      "ushl      v20.8h, v20.8h, v3.8h           \n"
+      "ushl      v1.8h, v1.8h, v3.8h             \n"
+      "ushl      v21.8h, v21.8h, v3.8h           \n"
+      "ushr      v0.4s, v0.4s, #6                \n"
+      "ushr      v20.4s, v20.4s, #6              \n"
+      "shl       v1.4s, v1.4s, #14               \n"
+      "shl       v21.4s, v21.4s, #14             \n"
+      "bif       v0.16b, v1.16b, v2.16b          \n"
+      "bif       v20.16b, v21.16b, v2.16b        \n"
+      "stp       q0, q20, [%[dst]], #32          \n"
+      "b.gt      1b                              \n"
+      : [src] "+r"(src_abcd),                          // %[src]
+        [dst] "+r"(dst_ar30),                          // %[dst]
+        [width] "+r"(width)                            // %[width]
+      : [kAR30Row_BoxShifts] "r"(kAR30Row_BoxShifts),  // %[kAR30Row_BoxShifts]
+        [indices] "r"(indices)                         // %[indices]
+      : "cc", "memory", "v0", "v1", "v2", "v3", "v4", "v5", "v20", "v21");
+}
+
+void ABGRToAR30Row_NEON(const uint8_t* src_abgr, uint8_t* dst_ar30, int width) {
+  ABCDToAR30Row_NEON(src_abgr, dst_ar30, width, kABGRToAR30Row_BoxIndices);
+}
+
+void ARGBToAR30Row_NEON(const uint8_t* src_argb, uint8_t* dst_ar30, int width) {
+  ABCDToAR30Row_NEON(src_argb, dst_ar30, width, kARGBToAR30Row_BoxIndices);
 }
 
 void ARGBToRGB24Row_NEON(const uint8_t* src_argb,
@@ -2870,25 +2926,25 @@ void ARGB4444ToUVRow_NEON(const uint8_t* src_argb4444,
       RGBTOUV_SETUP_REG  // sets v20-v25
       "1:                                        \n"
       "ld1         {v0.16b}, [%0], #16           \n"  // load 8 ARGB4444 pixels.
-      ARGB4444TOARGB
+      ARGB4444TORGB
       "uaddlp      v16.4h, v0.8b                 \n"  // B 8 bytes -> 4 shorts.
       "prfm        pldl1keep, [%0, 448]          \n"
       "uaddlp      v17.4h, v1.8b                 \n"  // G 8 bytes -> 4 shorts.
       "uaddlp      v18.4h, v2.8b                 \n"  // R 8 bytes -> 4 shorts.
       "ld1         {v0.16b}, [%0], #16           \n"  // next 8 ARGB4444 pixels.
-      ARGB4444TOARGB
+      ARGB4444TORGB
       "uaddlp      v26.4h, v0.8b                 \n"  // B 8 bytes -> 4 shorts.
       "uaddlp      v27.4h, v1.8b                 \n"  // G 8 bytes -> 4 shorts.
       "uaddlp      v28.4h, v2.8b                 \n"  // R 8 bytes -> 4 shorts.
 
       "ld1         {v0.16b}, [%1], #16           \n"  // load 8 ARGB4444 pixels.
-      ARGB4444TOARGB
+      ARGB4444TORGB
       "uadalp      v16.4h, v0.8b                 \n"  // B 8 bytes -> 4 shorts.
       "prfm        pldl1keep, [%1, 448]          \n"
       "uadalp      v17.4h, v1.8b                 \n"  // G 8 bytes -> 4 shorts.
       "uadalp      v18.4h, v2.8b                 \n"  // R 8 bytes -> 4 shorts.
       "ld1         {v0.16b}, [%1], #16           \n"  // next 8 ARGB4444 pixels.
-      ARGB4444TOARGB
+      ARGB4444TORGB
       "uadalp      v26.4h, v0.8b                 \n"  // B 8 bytes -> 4 shorts.
       "uadalp      v27.4h, v1.8b                 \n"  // G 8 bytes -> 4 shorts.
       "uadalp      v28.4h, v2.8b                 \n"  // R 8 bytes -> 4 shorts.
@@ -2983,7 +3039,7 @@ void ARGB4444ToYRow_NEON(const uint8_t* src_argb4444,
       "1:                                        \n"
       "ld1         {v0.16b}, [%0], #16           \n"  // load 8 ARGB4444 pixels.
       "subs        %w2, %w2, #8                  \n"  // 8 processed per loop.
-      ARGB4444TOARGB
+      ARGB4444TORGB
       "umull       v3.8h, v0.8b, v24.8b          \n"  // B
       "prfm        pldl1keep, [%0, 448]          \n"
       "umlal       v3.8h, v1.8b, v25.8b          \n"  // G
@@ -4560,28 +4616,23 @@ void AYUVToYRow_NEON(const uint8_t* src_ayuv, uint8_t* dst_y, int width) {
       : "cc", "memory", "v0", "v1", "v2", "v3");
 }
 
-// Shuffle table for swapping UV bytes.
-static const uvec8 kShuffleSwapUV = {1u, 0u, 3u,  2u,  5u,  4u,  7u,  6u,
-                                     9u, 8u, 11u, 10u, 13u, 12u, 15u, 14u};
-
 // Convert UV plane of NV12 to VU of NV21.
 void SwapUVRow_NEON(const uint8_t* src_uv, uint8_t* dst_vu, int width) {
   asm volatile(
-      "ld1         {v2.16b}, [%3]                \n"  // shuffler
       "1:                                        \n"
       "ld1         {v0.16b}, [%0], 16            \n"  // load 16 UV values
       "ld1         {v1.16b}, [%0], 16            \n"
       "subs        %w2, %w2, #16                 \n"  // 16 pixels per loop
-      "tbl         v0.16b, {v0.16b}, v2.16b      \n"
+      "rev16       v0.16b, v0.16b                \n"
       "prfm        pldl1keep, [%0, 448]          \n"
-      "tbl         v1.16b, {v1.16b}, v2.16b      \n"
+      "rev16       v1.16b, v1.16b                \n"
       "stp         q0, q1, [%1], 32              \n"  // store 16 VU pixels
       "b.gt        1b                            \n"
-      : "+r"(src_uv),         // %0
-        "+r"(dst_vu),         // %1
-        "+r"(width)           // %2
-      : "r"(&kShuffleSwapUV)  // %3
-      : "cc", "memory", "v0", "v1", "v2");
+      : "+r"(src_uv),  // %0
+        "+r"(dst_vu),  // %1
+        "+r"(width)    // %2
+      :
+      : "cc", "memory", "v0", "v1");
 }
 
 void HalfMergeUVRow_NEON(const uint8_t* src_u,
