@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +21,7 @@ import dev.ragnarok.fenrir.picasso.transforms.PolyTransformation
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.media.MediaActionDrawable
@@ -83,7 +83,7 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             MusicPlaybackController.playOrPause()
             if (MusicPlaybackController.isPlaying) {
                 mVisualDrawable.setIcon(MediaActionDrawable.ICON_PAUSE, true)
-                playCover.setColorFilter(Color.parseColor("#44000000"))
+                playCover.setColorFilter("#44000000".toColor())
             } else {
                 mVisualDrawable.setIcon(MediaActionDrawable.ICON_PLAY, true)
                 playCover.clearColorFilter()
@@ -130,7 +130,7 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     private fun updatePlaybackControls() {
         if (MusicPlaybackController.isPlaying) {
             mVisualDrawable.setIcon(MediaActionDrawable.ICON_PAUSE, true)
-            playCover.setColorFilter(Color.parseColor("#44000000"))
+            playCover.setColorFilter("#44000000".toColor())
         } else {
             mVisualDrawable.setIcon(MediaActionDrawable.ICON_PLAY, true)
             playCover.clearColorFilter()

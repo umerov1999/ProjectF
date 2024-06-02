@@ -2366,35 +2366,40 @@ class ChatPresenter(
             )
                 .flatMap { server ->
                     val file = File(filePath.path)
-                    val sInput = arrayOfNulls<InputStream>(1)
+                    var inputStream: InputStream? = null
                     try {
-                        sInput[0] = FileInputStream(file)
+                        inputStream = FileInputStream(file)
                         return@flatMap Includes.networkInterfaces.uploads()
                             .uploadDocumentRx(
-                                server.url ?: throw NotFoundException("upload url empty"),
+                                server.url ?: throw NotFoundException("Upload url empty!"),
                                 if (filePath.isAnimated) filePath.animationName else file.name,
-                                sInput[0]!!,
+                                inputStream,
                                 null
                             )
-                            .doFinally(safelyCloseAction(sInput[0]))
+                            .doFinally(safelyCloseAction(inputStream))
                             .flatMap { uploadDto ->
-                                docsApi
-                                    .save(uploadDto.file, null, null)
-                                    .map { dtos ->
-                                        if (dtos.type.isEmpty()) {
-                                            throw NotFoundException("Unable to save graffiti message")
+                                if (uploadDto.file.isNullOrEmpty()) {
+                                    Single.error(NotFoundException("VK doesn't upload this file"))
+                                } else {
+                                    docsApi
+                                        .save(uploadDto.file, null, null)
+                                        .flatMap { dtos ->
+                                            if (dtos.type.isEmpty()) {
+                                                Single.error(NotFoundException("Unable to save graffiti message"))
+                                            } else {
+                                                val dto = dtos.doc
+                                                val token = AttachmentsTokenCreator.ofDocument(
+                                                    dto.id,
+                                                    dto.ownerId,
+                                                    dto.accessKey
+                                                )
+                                                Single.just(Optional.wrap(token))
+                                            }
                                         }
-                                        val dto = dtos.doc
-                                        val token = AttachmentsTokenCreator.ofDocument(
-                                            dto.id,
-                                            dto.ownerId,
-                                            dto.accessKey
-                                        )
-                                        Optional.wrap(token)
-                                    }
+                                }
                             }
                     } catch (e: FileNotFoundException) {
-                        safelyClose(sInput[0])
+                        safelyClose(inputStream)
                         return@flatMap Single.error(e)
                     }
                 }

@@ -1,7 +1,6 @@
 package dev.ragnarok.filegallery.fragment.tagdir
 
 import android.content.Context
-import android.graphics.Color
 import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +22,7 @@ import dev.ragnarok.filegallery.model.tags.TagDir
 import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
+import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
@@ -187,12 +187,12 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
         when (MusicPlaybackController.playerStatus()) {
             1 -> {
                 Utils.doWavesLottieBig(holder.visual, true)
-                holder.icon.setColorFilter(Color.parseColor("#44000000"))
+                holder.icon.setColorFilter("#44000000".toColor())
             }
 
             2 -> {
                 Utils.doWavesLottieBig(holder.visual, false)
-                holder.icon.setColorFilter(Color.parseColor("#44000000"))
+                holder.icon.setColorFilter("#44000000".toColor())
             }
         }
     }

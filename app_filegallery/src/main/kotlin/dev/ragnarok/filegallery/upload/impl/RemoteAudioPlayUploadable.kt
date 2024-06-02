@@ -3,6 +3,7 @@ package dev.ragnarok.filegallery.upload.impl
 import android.content.Context
 import dev.ragnarok.filegallery.api.PercentagePublisher
 import dev.ragnarok.filegallery.api.interfaces.INetworker
+import dev.ragnarok.filegallery.exception.NotFoundException
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.upload.IUploadable
@@ -35,7 +36,7 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
                 server_url += "?password=" + URLEncoder.encode(local_settings.password, "utf-8")
             }
             val uri = upload.fileUri
-            val file = File(uri!!.path!!)
+            val file = File(uri?.path ?: throw NotFoundException("uri.path is empty"))
             inputStream = if (file.isFile) {
                 FileInputStream(file)
             } else {
@@ -43,7 +44,7 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
             }
             if (inputStream == null) {
                 return Single.error(
-                    Exception(
+                    NotFoundException(
                         "Unable to open InputStream, URI: $uri"
                     )
                 )
@@ -58,7 +59,7 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
                     Single.just(
                         UploadResult(
                             Audio().setId(
-                                dto.response ?: throw Exception()
+                                dto.response ?: throw NotFoundException()
                             )
                         )
                     )

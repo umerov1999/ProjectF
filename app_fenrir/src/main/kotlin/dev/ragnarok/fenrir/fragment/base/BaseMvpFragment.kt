@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.base
 
-import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
@@ -22,6 +21,7 @@ import dev.ragnarok.fenrir.fragment.base.core.IProgressView
 import dev.ragnarok.fenrir.fragment.base.core.IToastView
 import dev.ragnarok.fenrir.fragment.base.core.IToolbarView
 import dev.ragnarok.fenrir.service.ErrorLocalizer.localizeThrowable
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.ViewUtils
 import dev.ragnarok.fenrir.util.spots.SpotsDialog
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
@@ -48,7 +48,7 @@ abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragme
             CustomSnackbars.createCustomSnackbars(view)?.let {
                 val snack = it.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG).coloredSnack(
                     localizeThrowable(provideApplicationContext(), throwable),
-                    Color.parseColor("#eeff0000")
+                    "#eeff0000".toColor()
                 )
                 if (throwable !is ApiException && throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
                     snack.setAction(R.string.more_info) {

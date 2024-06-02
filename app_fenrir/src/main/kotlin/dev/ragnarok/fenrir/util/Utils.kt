@@ -78,6 +78,7 @@ import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppTextUtils.updateDateLang
 import dev.ragnarok.fenrir.util.FileUtil.updateDateLang
 import dev.ragnarok.fenrir.util.Pair.Companion.create
@@ -1214,8 +1215,8 @@ object Utils {
             0f,
             width.toFloat(),
             height.toFloat(),
-            Color.parseColor(color1),
-            Color.parseColor(color2),
+            color1.toColor(),
+            color2.toColor(),
             Shader.TileMode.CLAMP
         )
         val canvas = Canvas(bitmap)
@@ -1285,7 +1286,7 @@ object Utils {
     }
 
     fun getVerifiedColor(context: Context, verified: Boolean): Int {
-        return if (!verified) CurrentTheme.getPrimaryTextColorCode(context) else Color.parseColor("#009900")
+        return if (!verified) CurrentTheme.getPrimaryTextColorCode(context) else "#009900".toColor()
     }
 
     fun dp(value: Float): Int {

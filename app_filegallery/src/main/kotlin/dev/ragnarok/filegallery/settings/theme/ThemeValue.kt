@@ -1,7 +1,7 @@
 package dev.ragnarok.filegallery.settings.theme
 
-import android.graphics.Color
 import androidx.annotation.StyleRes
+import dev.ragnarok.filegallery.toColor
 
 class ThemeValue {
     val id: String
@@ -31,8 +31,8 @@ class ThemeValue {
         @StyleRes themeAmoledRes: Int,
         @StyleRes themeMD1Res: Int
     ) {
-        colorDayPrimary = Color.parseColor(colorPrimary)
-        colorDaySecondary = Color.parseColor(colorSecondary)
+        colorDayPrimary = colorPrimary.toColor()
+        colorDaySecondary = colorSecondary.toColor()
         colorNightPrimary = colorDayPrimary
         colorNightSecondary = colorDaySecondary
         disabled = false
@@ -55,10 +55,10 @@ class ThemeValue {
         @StyleRes themeAmoledRes: Int,
         @StyleRes themeMD1Res: Int
     ) {
-        this.colorDayPrimary = Color.parseColor(colorDayPrimary)
-        this.colorDaySecondary = Color.parseColor(colorDaySecondary)
-        this.colorNightPrimary = Color.parseColor(colorNightPrimary)
-        this.colorNightSecondary = Color.parseColor(colorNightSecondary)
+        this.colorDayPrimary = colorDayPrimary.toColor()
+        this.colorDaySecondary = colorDaySecondary.toColor()
+        this.colorNightPrimary = colorNightPrimary.toColor()
+        this.colorNightSecondary = colorNightSecondary.toColor()
         disabled = false
         special = false
         this.id = id

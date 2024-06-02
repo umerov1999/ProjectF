@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.products
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 
@@ -53,12 +53,12 @@ class MarketAdapter(private var data: List<Market>, private val context: Context
             }
 
             2 -> {
-                holder.available.setTextColor(Color.parseColor("#ffaa00"))
+                holder.available.setTextColor("#ffaa00".toColor())
                 holder.available.setText(R.string.markets_not_available)
             }
 
             else -> {
-                holder.available.setTextColor(Color.parseColor("#ff0000"))
+                holder.available.setTextColor("#ff0000".toColor())
                 holder.available.setText(R.string.markets_deleted)
             }
         }

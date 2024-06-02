@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.view.emoji
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -16,6 +15,7 @@ import com.google.android.material.button.MaterialButton
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.Keyboard
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 
 class BotKeyboardView : ScrollView {
@@ -146,16 +146,16 @@ class BotKeyboardView : ScrollView {
                     )
                     holder.button.tag = button
                     holder.button.text = button.label
-                    holder.button.setTextColor(Color.parseColor("#ffffff"))
+                    holder.button.setTextColor("#ffffff".toColor())
                     when (button.color) {
                         "default", "secondary" -> {
-                            holder.button.setTextColor(Color.parseColor("#000000"))
-                            holder.button.setBackgroundColor(Color.parseColor("#eeeeee"))
+                            holder.button.setTextColor("#000000".toColor())
+                            holder.button.setBackgroundColor("#eeeeee".toColor())
                         }
 
-                        "negative" -> holder.button.setBackgroundColor(Color.parseColor("#E64646"))
-                        "positive" -> holder.button.setBackgroundColor(Color.parseColor("#4BB34B"))
-                        else -> holder.button.setBackgroundColor(Color.parseColor("#5181B8"))
+                        "negative" -> holder.button.setBackgroundColor("#E64646".toColor())
+                        "positive" -> holder.button.setBackgroundColor("#4BB34B".toColor())
+                        else -> holder.button.setBackgroundColor("#5181B8".toColor())
                     }
                     layout.addView(
                         holder.itemView,

@@ -41,26 +41,38 @@ class OwnerPhotoUploadable(
             var inputStream: InputStream? = null
             try {
                 inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
+                if (inputStream == null) {
+                    return@flatMap Single.error(
+                        NotFoundException(
+                            "Unable to open InputStream, URI: ${upload.fileUri}"
+                        )
+                    )
+                }
                 networker.uploads()
                     .uploadOwnerPhotoRx(
-                        server.url ?: throw NotFoundException("upload url empty"),
-                        inputStream!!,
+                        server.url ?: throw NotFoundException("Upload url empty!"),
+                        inputStream,
                         listener
                     )
                     .doFinally { safelyClose(inputStream) }
                     .flatMap { dto ->
-                        networker.vkDefault(accountId)
-                            .photos()
-                            .saveOwnerPhoto(dto.server, dto.hash, dto.photo)
-                            .flatMap { response ->
-                                if (response.postId == 0) {
-                                    Single.error<UploadResult<Post>>(
-                                        NotFoundException("Post id=0")
-                                    )
+                        if (dto.photo.isNullOrEmpty()) {
+                            Single.error(NotFoundException("VK doesn't upload this file"))
+                        } else {
+                            networker.vkDefault(accountId)
+                                .photos()
+                                .saveOwnerPhoto(dto.server, dto.hash, dto.photo)
+                                .flatMap { response ->
+                                    if (response.postId == 0) {
+                                        Single.error(
+                                            NotFoundException("Post id=0")
+                                        )
+                                    } else {
+                                        walls.getById(accountId, ownerId, response.postId)
+                                            .map { post -> UploadResult(server, post) }
+                                    }
                                 }
-                                walls.getById(accountId, ownerId, response.postId)
-                                    .map { post -> UploadResult(server, post) }
-                            }
+                        }
                     }
             } catch (e: Exception) {
                 safelyClose(inputStream)

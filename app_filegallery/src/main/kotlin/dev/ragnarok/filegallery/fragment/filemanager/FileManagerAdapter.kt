@@ -2,7 +2,6 @@ package dev.ragnarok.filegallery.fragment.filemanager
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.view.LayoutInflater
@@ -35,6 +34,7 @@ import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
+import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.toast.CustomToast
@@ -169,12 +169,12 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         when (MusicPlaybackController.playerStatus()) {
             1 -> {
                 Utils.doWavesLottieBig(holder.visual, true)
-                holder.icon.setColorFilter(Color.parseColor("#44000000"))
+                holder.icon.setColorFilter("#44000000".toColor())
             }
 
             2 -> {
                 Utils.doWavesLottieBig(holder.visual, false)
-                holder.icon.setColorFilter(Color.parseColor("#44000000"))
+                holder.icon.setColorFilter("#44000000".toColor())
             }
         }
     }
@@ -183,7 +183,14 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         return Single.create { v ->
             try {
                 val retriever = MediaMetadataRetriever()
-                retriever.setDataSource(url)
+                var finalUrl = url
+                if (!Utils.hasR()) {
+                    val uri = Uri.parse(url)
+                    if ("file" == uri.scheme) {
+                        finalUrl = uri.path.toString()
+                    }
+                }
+                retriever.setDataSource(finalUrl)
                 val bitrate =
                     retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
                 if (bitrate != null) {
@@ -219,9 +226,9 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                         )
                     )
                 }
-            ) { e: Throwable? ->
+            ) {
                 CustomToast.createCustomToast(context, null)?.setDuration(Toast.LENGTH_LONG)
-                    ?.showToastThrowable(e)
+                    ?.showToastThrowable(it)
             }
     }
 

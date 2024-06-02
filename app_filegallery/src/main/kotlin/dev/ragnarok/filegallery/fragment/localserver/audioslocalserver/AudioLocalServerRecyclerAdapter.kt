@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Color
 import android.media.MediaMetadataRetriever
 import android.view.LayoutInflater
 import android.view.View
@@ -40,6 +39,7 @@ import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorPrimary
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorSecondary
 import dev.ragnarok.filegallery.settings.Settings.get
+import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.DownloadWorkUtils.doDownloadAudio
 import dev.ragnarok.filegallery.util.Utils
@@ -101,9 +101,9 @@ class AudioLocalServerRecyclerAdapter(
                         )
                     )
                 }
-            ) { e: Throwable? ->
+            ) {
                 createCustomToast(mContext, null)?.setDuration(Toast.LENGTH_LONG)
-                    ?.showToastThrowable(e)
+                    ?.showToastThrowable(it)
             }
     }
 
@@ -126,12 +126,12 @@ class AudioLocalServerRecyclerAdapter(
         when (MusicPlaybackController.playerStatus()) {
             1 -> {
                 Utils.doWavesLottie(holder.visual, true)
-                holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
+                holder.play_cover.setColorFilter("#44000000".toColor())
             }
 
             2 -> {
                 Utils.doWavesLottie(holder.visual, false)
-                holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
+                holder.play_cover.setColorFilter("#44000000".toColor())
             }
         }
     }
@@ -270,11 +270,11 @@ class AudioLocalServerRecyclerAdapter(
                                 createCustomToast(
                                     mContext, view
                                 )?.showToast(R.string.success)
-                            }) { t: Throwable? ->
+                            }) {
                             createCustomToast(
                                 mContext,
                                 view
-                            )?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(t)
+                            )?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
                         }
                 }
 
@@ -285,7 +285,7 @@ class AudioLocalServerRecyclerAdapter(
                     }
                     audioListDisposable = mAudioInteractor.get_file_name(hash2)
                         .fromIOToMain().subscribe(
-                            { t: String? ->
+                            { t ->
                                 val root =
                                     View.inflate(mContext, R.layout.entry_file_name, null)
                                 root.findViewById<TextInputEditText>(R.id.edit_file_name).setText(
@@ -308,21 +308,21 @@ class AudioLocalServerRecyclerAdapter(
                                                     )?.showToast(
                                                         R.string.success
                                                     )
-                                                }) { o: Throwable? ->
+                                                }) {
                                                     createCustomToast(
                                                         mContext,
                                                         view
                                                     )?.setDuration(Toast.LENGTH_LONG)
-                                                        ?.showToastThrowable(o)
+                                                        ?.showToastThrowable(it)
                                                 }
                                     }
                                     .setNegativeButton(R.string.button_cancel, null)
                                     .show()
-                            }) { t: Throwable? ->
+                            }) {
                             createCustomToast(
                                 mContext,
                                 view
-                            )?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(t)
+                            )?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
                         }
                 }
 
@@ -343,11 +343,11 @@ class AudioLocalServerRecyclerAdapter(
                                     createCustomToast(
                                         mContext, view
                                     )?.showToast(R.string.success)
-                                }) { o: Throwable? ->
+                                }) {
                                 createCustomToast(
                                     mContext,
                                     view
-                                )?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(o)
+                                )?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
                             }
                     }
                     .setNegativeButton(R.string.button_cancel, null)

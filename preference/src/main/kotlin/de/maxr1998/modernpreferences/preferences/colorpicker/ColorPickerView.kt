@@ -14,6 +14,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.graphics.toColorInt
 import com.google.android.material.textfield.TextInputEditText
 import de.maxr1998.modernpreferences.R
 import de.maxr1998.modernpreferences.preferences.colorpicker.builder.ColorWheelRendererBuilder
@@ -51,7 +52,7 @@ class ColorPickerView : View {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             try {
-                val color = Color.parseColor(s.toString())
+                val color = s.toString().toColorInt()
 
                 // set the color without changing the edit text preventing stack overflow
                 setColor(color, false)

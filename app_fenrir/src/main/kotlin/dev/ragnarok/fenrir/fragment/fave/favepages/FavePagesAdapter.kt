@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.fave.favepages
 
 import android.content.Context
-import android.graphics.Color
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
 import android.view.LayoutInflater
@@ -22,6 +21,7 @@ import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
@@ -81,7 +81,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
             if (user?.blacklisted == true) {
                 holder.blacklisted.visibility = View.VISIBLE
                 holder.blacklisted.setImageResource(R.drawable.audio_died)
-                Utils.setColorFilter(holder.blacklisted, Color.parseColor("#ff0000"))
+                Utils.setColorFilter(holder.blacklisted, "#ff0000".toColor())
             } else if (user?.isFriend == true && Utils.hasMarshmallow() && FenrirNative.isNativeLoaded) {
                 holder.blacklisted.visibility = View.VISIBLE
                 holder.blacklisted.setImageResource(R.drawable.is_friend)
@@ -125,7 +125,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
             if (group?.isBlacklisted == true) {
                 holder.blacklisted.setImageResource(R.drawable.audio_died)
                 holder.blacklisted.visibility = View.VISIBLE
-                Utils.setColorFilter(holder.blacklisted, Color.parseColor("#ff0000"))
+                Utils.setColorFilter(holder.blacklisted, "#ff0000".toColor())
             } else {
                 holder.blacklisted.visibility = View.GONE
             }

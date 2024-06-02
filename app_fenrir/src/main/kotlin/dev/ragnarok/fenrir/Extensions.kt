@@ -10,11 +10,13 @@ import android.content.pm.PackageManager.GET_SIGNING_CERTIFICATES
 import android.content.pm.Signature
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.core.database.getBlobOrNull
 import androidx.core.database.getStringOrNull
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
@@ -529,4 +531,14 @@ inline fun <reified T> MutableList<T>.swap(index1: Int, index2: Int) {
     val tmp = this[index1]
     this[index1] = this[index2]
     this[index2] = tmp
+}
+
+@ColorInt
+fun String.toColor(): Int {
+    try {
+        return Color.parseColor(this)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return Color.RED
 }

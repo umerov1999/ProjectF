@@ -169,13 +169,13 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                     .fromIOToMain()
                     .subscribe(
                         RxUtils.dummy()
-                    ) { t: Throwable? ->
+                    ) {
                         if (Settings.get().main().isDeveloper_mode) {
                             createCustomToast(
                                 this,
                                 mViewFragment,
                                 mBottomNavigation
-                            )?.showToastThrowable(t)
+                            )?.showToastThrowable(it)
                         }
                     })
             }
@@ -183,10 +183,10 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                 .fromIOToMain()
                 .subscribe(
                     RxUtils.dummy()
-                ) { t: Throwable? ->
+                ) {
                     if (Settings.get().main().isDeveloper_mode) {
                         createCustomToast(this, mViewFragment, mBottomNavigation)
-                            ?.showToastThrowable(t)
+                            ?.showToastThrowable(it)
                     }
                 })
         }

@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment
 
 import android.Manifest
 import android.content.DialogInterface
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -35,6 +34,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.place.PlaceUtil.goToPostCreation
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils.getSizeString
@@ -267,7 +267,7 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
     private fun onDeleteSuccess() {
         CustomSnackbars.createCustomSnackbars(rootView)
             ?.setDurationSnack(Snackbar.LENGTH_LONG)
-            ?.coloredSnack(R.string.deleted, Color.parseColor("#AA48BE2D"))?.show()
+            ?.coloredSnack(R.string.deleted, "#AA48BE2D".toColor())?.show()
         deleted = true
         resolveButtons()
     }
@@ -349,7 +349,7 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
     private fun onDocumentAdded() {
         CustomSnackbars.createCustomSnackbars(rootView)
             ?.setDurationSnack(Snackbar.LENGTH_LONG)
-            ?.coloredSnack(R.string.added, Color.parseColor("#AA48BE2D"))?.show()
+            ?.coloredSnack(R.string.added, "#AA48BE2D".toColor())?.show()
         deleted = false
         resolveButtons()
     }

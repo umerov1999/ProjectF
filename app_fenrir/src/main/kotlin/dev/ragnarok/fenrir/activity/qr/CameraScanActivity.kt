@@ -55,6 +55,7 @@ import dev.ragnarok.fenrir.activity.slidr.Slidr
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsResultAbs
 import dev.ragnarok.fenrir.util.Utils
@@ -329,8 +330,8 @@ class CameraScanActivity : NoMainActivity() {
         }
 
         init {
-            cornerPaint.color = Color.parseColor("#ffffff")
-            paint.color = Color.parseColor("#88000000")
+            cornerPaint.color = "#ffffff".toColor()
+            paint.color = "#88000000".toColor()
             laserPaint.color = CurrentTheme.getColorInActive(context)
             pointPaint.color = CurrentTheme.getColorPrimary(context)
         }

@@ -8,7 +8,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
@@ -20,6 +19,7 @@ import dev.ragnarok.fenrir.longpoll.ILongpollManager
 import dev.ragnarok.fenrir.longpoll.LongpollInstance
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
@@ -117,7 +117,7 @@ class KeepLongpollService : Service() {
             .setContentText(getString(R.string.may_down_charge))
             .setSmallIcon(R.drawable.client_round)
             .addAction(action_stop)
-            .setColor(Color.parseColor("#dd0000"))
+            .setColor("#dd0000".toColor())
             .setOngoing(true)
             .build()
         val War = NotificationCompat.WearableExtender()

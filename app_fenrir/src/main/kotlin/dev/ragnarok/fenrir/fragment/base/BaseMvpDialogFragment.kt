@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.base
 
-import android.graphics.Color
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -15,6 +14,7 @@ import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 import dev.ragnarok.fenrir.fragment.base.core.IProgressView
 import dev.ragnarok.fenrir.fragment.base.core.IToastView
 import dev.ragnarok.fenrir.service.ErrorLocalizer
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.spots.SpotsDialog
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast
@@ -42,7 +42,7 @@ abstract class BaseMvpDialogFragment<P : AbsPresenter<V>, V : IMvpView> :
             CustomSnackbars.createCustomSnackbars(view)?.let {
                 val snack = it.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG).coloredSnack(
                     ErrorLocalizer.localizeThrowable(provideApplicationContext(), throwable),
-                    Color.parseColor("#eeff0000")
+                    "#eeff0000".toColor()
                 )
                 if (throwable !is ApiException && throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
                     snack.setAction(R.string.more_info) {

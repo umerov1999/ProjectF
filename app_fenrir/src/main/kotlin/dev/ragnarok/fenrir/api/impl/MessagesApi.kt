@@ -21,6 +21,7 @@ import dev.ragnarok.fenrir.api.model.response.ConversationsResponse
 import dev.ragnarok.fenrir.api.model.response.DialogsResponse
 import dev.ragnarok.fenrir.api.model.response.ItemsProfilesGroupsResponse
 import dev.ragnarok.fenrir.api.model.response.LongpollHistoryResponse
+import dev.ragnarok.fenrir.api.model.response.MessageDeleteResponse
 import dev.ragnarok.fenrir.api.model.response.MessageHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
 import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
@@ -179,7 +180,7 @@ internal class MessagesApi(accountId: Long, provider: IServiceProvider) :
         messageIds: Collection<Int>,
         deleteForAll: Boolean?,
         spam: Boolean?
-    ): Single<Map<String, Int>> {
+    ): Single<List<MessageDeleteResponse>> {
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service

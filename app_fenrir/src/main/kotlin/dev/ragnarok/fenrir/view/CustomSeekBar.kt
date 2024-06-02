@@ -17,6 +17,7 @@ import androidx.annotation.StyleRes
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.settings.CurrentTheme.getColorPrimary
 import dev.ragnarok.fenrir.settings.CurrentTheme.getColorSecondary
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 import kotlin.math.ceil
 
@@ -307,7 +308,7 @@ class CustomSeekBar @JvmOverloads constructor(
         progressColor =
             a.getColor(R.styleable.CustomSeekBar_progressColor, getColorPrimary(context))
         cacheColor = a.getColor(R.styleable.CustomSeekBar_bufferedColor, Color.RED)
-        lineColor = a.getColor(R.styleable.CustomSeekBar_lineColor, Color.parseColor("#aa666666"))
+        lineColor = a.getColor(R.styleable.CustomSeekBar_lineColor, "#aa666666".toColor())
         circleColor = a.getColor(R.styleable.CustomSeekBar_progressColor, getColorPrimary(context))
         pressedCircleColor =
             a.getColor(R.styleable.CustomSeekBar_pressedCircleColor, getColorSecondary(context))

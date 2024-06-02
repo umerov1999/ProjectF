@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.accounts
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -46,6 +45,7 @@ import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.service.ErrorLocalizer
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.backup.SettingsBackup
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.ShortcutUtils
 import dev.ragnarok.fenrir.util.Utils
@@ -266,7 +266,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                     )
                 }, { it2 ->
                     it2.localizedMessage?.let {
-                        view?.showColoredSnack(it, Color.parseColor("#eeff0000"))
+                        view?.showColoredSnack(it, "#eeff0000".toColor())
                     }
                 })
         )
@@ -285,11 +285,11 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 user.maxSquareAvatar ?: VKApiUser.CAMERA_50
             ).fromIOToMain().subscribe(
                 {
-                    view?.showColoredSnack(R.string.success, Color.parseColor("#AA48BE2D"))
+                    view?.showColoredSnack(R.string.success, "#AA48BE2D".toColor())
                 }
             ) { t ->
                 t.localizedMessage?.let {
-                    view?.showColoredSnack(it, Color.parseColor("#eeff0000"))
+                    view?.showColoredSnack(it, "#eeff0000".toColor())
                 }
             })
     }
@@ -437,7 +437,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                             isCurrent = false,
                             needSave = false
                         )
-                        view?.showColoredSnack(R.string.success, Color.parseColor("#AA48BE2D"))
+                        view?.showColoredSnack(R.string.success, "#AA48BE2D".toColor())
 
                         if (hasPrimitive(elem, "login")) {
                             Settings.get().accounts().storeLogin(

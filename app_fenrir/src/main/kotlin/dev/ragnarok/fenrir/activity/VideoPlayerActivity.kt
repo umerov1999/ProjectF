@@ -59,6 +59,7 @@ import dev.ragnarok.fenrir.push.OwnerInfo
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.toast.CustomToast
@@ -274,17 +275,13 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         mPlaySpeed = findViewById(R.id.toolbar_play_speed)
         Utils.setTint(
             mPlaySpeed,
-            if (mPlayer?.isPlaybackSpeed == true) CurrentTheme.getColorPrimary(this) else Color.parseColor(
-                "#ffffff"
-            )
+            if (mPlayer?.isPlaybackSpeed == true) CurrentTheme.getColorPrimary(this) else "#ffffff".toColor()
         )
         mPlaySpeed?.setOnClickListener {
             mPlayer?.togglePlaybackSpeed()
             Utils.setTint(
                 mPlaySpeed,
-                if (mPlayer?.isPlaybackSpeed == true) CurrentTheme.getColorPrimary(this) else Color.parseColor(
-                    "#ffffff"
-                )
+                if (mPlayer?.isPlaybackSpeed == true) CurrentTheme.getColorPrimary(this) else "#ffffff".toColor()
             )
         }
         mControllerView?.setMediaPlayer(this)

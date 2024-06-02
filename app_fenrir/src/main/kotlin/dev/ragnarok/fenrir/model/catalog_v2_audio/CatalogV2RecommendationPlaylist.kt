@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.ColorInt
-import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.api.model.VKApiAudioPlaylist
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.api.model.VKApiUser
@@ -19,6 +18,7 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.ParcelableOwnerWrapper
 import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.readTypedObjectCompat
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 import kotlin.math.abs
 
@@ -51,13 +51,7 @@ class CatalogV2RecommendationPlaylist : AbsModel {
     ) {
         id = res.id
         owner_id = res.owner_id
-        try {
-            color = Color.parseColor(res.color)
-        } catch (e: Exception) {
-            if (Constants.IS_DEBUG) {
-                e.printStackTrace()
-            }
-        }
+        color = res.color?.toColor() ?: Color.BLACK
         percentage = res.percentage ?: 0.0
         percentage_title = res.percentage_title
 

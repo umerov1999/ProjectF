@@ -39,7 +39,7 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
                 server_url += "?password=" + URLEncoder.encode(local_settings.password, "utf-8")
             }
             val uri = upload.fileUri
-            val file = File(uri!!.path!!)
+            val file = File(uri?.path ?: throw NotFoundException("uri.path is empty"))
             inputStream = if (file.isFile) {
                 FileInputStream(file)
             } else {

@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.docs
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.holder.IdentificableHolder
 import dev.ragnarok.fenrir.fragment.base.holder.SharedHolders
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.view.CircleRoadProgress
 
@@ -96,7 +96,7 @@ class DocsUploadAdapter(
     }
 
     companion object {
-        private val ERROR_COLOR = Color.parseColor("#ff0000")
+        private val ERROR_COLOR = "#ff0000".toColor()
         private var idGenerator = 0
         internal fun generateNextHolderId(): Int {
             idGenerator++

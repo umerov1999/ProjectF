@@ -49,44 +49,56 @@ class Photo2WallUploadable(
             var inputStream: InputStream? = null
             try {
                 inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
+                if (inputStream == null) {
+                    return@flatMap Single.error(
+                        NotFoundException(
+                            "Unable to open InputStream, URI: ${upload.fileUri}"
+                        )
+                    )
+                }
                 networker.uploads()
                     .uploadPhotoToWallRx(
-                        server.url ?: throw NotFoundException("upload url empty"),
-                        inputStream!!,
+                        server.url ?: throw NotFoundException("Upload url empty!"),
+                        inputStream,
                         listener
                     )
                     .doFinally(safelyCloseAction(inputStream))
                     .flatMap { dto ->
-                        networker.vkDefault(accountId)
-                            .photos()
-                            .saveWallPhoto(
-                                userId,
-                                groupId,
-                                dto.photo,
-                                dto.server,
-                                dto.hash,
-                                null,
-                                null,
-                                null
-                            )
-                            .flatMap {
-                                if (it.isEmpty()) {
-                                    Single.error<UploadResult<Photo>>(
-                                        NotFoundException()
-                                    )
+                        if (dto.photo.isNullOrEmpty()) {
+                            Single.error(NotFoundException("VK doesn't upload this file"))
+                        } else {
+                            networker.vkDefault(accountId)
+                                .photos()
+                                .saveWallPhoto(
+                                    userId,
+                                    groupId,
+                                    dto.photo,
+                                    dto.server,
+                                    dto.hash,
+                                    null,
+                                    null,
+                                    null
+                                )
+                                .flatMap {
+                                    if (it.isEmpty()) {
+                                        Single.error(
+                                            NotFoundException()
+                                        )
+                                    } else {
+                                        val photo = Dto2Model.transform(it[0])
+                                        val result = UploadResult(server, photo)
+                                        if (upload.isAutoCommit) {
+                                            commit(
+                                                attachmentsRepository,
+                                                upload,
+                                                photo
+                                            ).andThen(Single.just(result))
+                                        } else {
+                                            Single.just(result)
+                                        }
+                                    }
                                 }
-                                val photo = Dto2Model.transform(it[0])
-                                val result = UploadResult(server, photo)
-                                if (upload.isAutoCommit) {
-                                    commit(
-                                        attachmentsRepository,
-                                        upload,
-                                        photo
-                                    ).andThen(Single.just(result))
-                                } else {
-                                    Single.just(result)
-                                }
-                            }
+                        }
                     }
             } catch (e: Exception) {
                 safelyClose(inputStream)

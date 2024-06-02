@@ -9,12 +9,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.cardview.widget.CardView
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.graphics.ColorUtils
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.settings.CurrentTheme
+import dev.ragnarok.filegallery.settings.theme.ThemesController
+import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.ErrorLocalizer
 import dev.ragnarok.filegallery.util.Utils
 
@@ -41,7 +44,7 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
     }
 
     override fun showToastSuccessBottom(message: String?) {
-        val t = getToast(mContext, message, Color.parseColor("#AA48BE2D"))
+        val t = getToast(mContext, message, "#AA48BE2D".toColor())
         t.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM, 0, 40)
         t.show()
     }
@@ -51,7 +54,7 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
     }
 
     override fun showToastWarningBottom(message: String?) {
-        val t = getToast(mContext, message, Color.parseColor("#AAED760E"))
+        val t = getToast(mContext, message, "#AAED760E".toColor())
         t.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM, 0, 40)
         t.show()
     }
@@ -125,12 +128,14 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
         }
     }
 
+    /*
     private fun getToastS(context: Context, message: String?): Toast {
         val toast = Toast(context)
         toast.setText(message)
         toast.duration = duration
         return toast
     }
+     */
 
     @Suppress("DEPRECATION")
     private fun getToast(context: Context, message: String?, bgColor: Int): Toast {
@@ -141,7 +146,7 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
          */
         val toast = Toast(context)
         val view: View = View.inflate(context, R.layout.custom_toast_base, null)
-        val cardView: CardView = view.findViewById(R.id.toast_card_view)
+        val cardView: MaterialCardView = view.findViewById(R.id.toast_card_view)
         cardView.setCardBackgroundColor(bgColor)
         val textView: TextView = view.findViewById(R.id.toast_text_view)
         if (message != null) textView.text = message
@@ -159,6 +164,10 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
 
     init {
         duration = Toast.LENGTH_SHORT
-        mContext = context
+        mContext = if (context !is Activity) {
+            ContextThemeWrapper(context, ThemesController.currentStyle())
+        } else {
+            context
+        }
     }
 }

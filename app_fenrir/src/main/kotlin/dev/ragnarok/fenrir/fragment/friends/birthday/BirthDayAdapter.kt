@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.friends.birthday
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,7 @@ import dev.ragnarok.fenrir.activity.SelectionUtils.addSelectionProfileSupport
 import dev.ragnarok.fenrir.model.BirthDay
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
@@ -115,7 +115,7 @@ class BirthDayAdapter(private val mContext: Context, private var mData: List<Bir
     }
 
     companion object {
-        private val STATUS_COLOR_OFFLINE = Color.parseColor("#999999")
+        private val STATUS_COLOR_OFFLINE = "#999999".toColor()
     }
 
 }

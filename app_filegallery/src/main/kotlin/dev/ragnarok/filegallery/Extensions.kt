@@ -6,11 +6,13 @@ import android.animation.PropertyValuesHolder
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.view.View
+import androidx.annotation.ColorInt
 import dev.ragnarok.filegallery.util.rxutils.RxUtils
 import dev.ragnarok.filegallery.util.rxutils.io.AndroidSchedulers
 import dev.ragnarok.filegallery.util.serializeble.json.Json
@@ -504,4 +506,14 @@ inline fun <reified T> MutableList<T>.swap(index1: Int, index2: Int) {
     val tmp = this[index1]
     this[index1] = this[index2]
     this[index2] = tmp
+}
+
+@ColorInt
+fun String.toColor(): Int {
+    try {
+        return Color.parseColor(this)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return Color.RED
 }

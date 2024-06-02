@@ -274,6 +274,10 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
                         logger.log(Json {
                             prettyPrint = false
                         }.printJsonElement(kJson.parseToJsonElement(buffer.clone())))
+                    } else if (headers["Content-Type"].orEmpty().lowercase()
+                            .contains("text/html")
+                    ) {
+                        logger.log(buffer.clone().readUtf8())
                     }
                 } catch (ignored: Exception) {
                 }

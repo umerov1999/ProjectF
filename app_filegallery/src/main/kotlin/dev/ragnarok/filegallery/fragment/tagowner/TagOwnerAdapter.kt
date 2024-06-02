@@ -3,7 +3,6 @@ package dev.ragnarok.filegallery.fragment.tagowner
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Shader
@@ -19,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.model.tags.TagOwner
 import dev.ragnarok.filegallery.nonNullNoEmpty
+import dev.ragnarok.filegallery.toColor
 
 
 class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Context) :
@@ -104,8 +104,8 @@ class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Con
             0f,
             width.toFloat(),
             height.toFloat(),
-            Color.parseColor(color1),
-            Color.parseColor(color2),
+            color1.toColor(),
+            color2.toColor(),
             Shader.TileMode.CLAMP
         )
         val canvas = Canvas(bitmap)

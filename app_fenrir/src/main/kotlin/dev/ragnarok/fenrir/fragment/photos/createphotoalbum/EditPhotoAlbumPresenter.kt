@@ -117,7 +117,7 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
                     null, uploadsByAdminsOnly, commentsDisabled
                 )
                     .fromIOToMain()
-                    .subscribe({ t: Boolean? -> view?.goToEditedAlbum(accountId, album, t) }) { l ->
+                    .subscribe({ t -> view?.goToEditedAlbum(accountId, album, t) }) { l ->
                         showError(
                             getCauseIfRuntime(l)
                         )

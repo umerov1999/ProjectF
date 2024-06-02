@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.localserver.filemanagerremote
 
 import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,6 +35,7 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Utils
@@ -166,12 +166,12 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
         when (MusicPlaybackController.playerStatus()) {
             1 -> {
                 Utils.doWavesLottieBig(holder.visual, true)
-                holder.icon.setColorFilter(Color.parseColor("#44000000"))
+                holder.icon.setColorFilter("#44000000".toColor())
             }
 
             2 -> {
                 Utils.doWavesLottieBig(holder.visual, false)
-                holder.icon.setColorFilter(Color.parseColor("#44000000"))
+                holder.icon.setColorFilter("#44000000".toColor())
             }
         }
     }
@@ -348,8 +348,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                     factory
                                         .delete_media(hash1)
                                         .fromIOToMain().subscribe(
-                                            { createCustomToast(context).showToast(R.string.success) }) { o: Throwable? ->
-                                            createCustomToast(context).showToastThrowable(o)
+                                            { createCustomToast(context).showToast(R.string.success) }) {
+                                            createCustomToast(context).showToastThrowable(it)
                                         }
                             }
                             .setNegativeButton(R.string.button_cancel, null)
@@ -365,8 +365,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         audioListDisposable =
                             factory.update_time(hash)
                                 .fromIOToMain().subscribe(
-                                    { createCustomToast(context).showToast(R.string.success) }) { t: Throwable? ->
-                                    createCustomToast(context).showToastThrowable(t)
+                                    { createCustomToast(context).showToast(R.string.success) }) {
+                                    createCustomToast(context).showToastThrowable(it)
                                 }
                     }
 
@@ -379,7 +379,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         audioListDisposable =
                             factory.get_file_name(hash2)
                                 .fromIOToMain().subscribe(
-                                    { t: String? ->
+                                    { t ->
                                         val root =
                                             View.inflate(
                                                 context,
@@ -406,16 +406,16 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                                             createCustomToast(context).showToast(
                                                                 R.string.success
                                                             )
-                                                        }) { o: Throwable? ->
+                                                        }) {
                                                             createCustomToast(context).showToastThrowable(
-                                                                o
+                                                                it
                                                             )
                                                         }
                                             }
                                             .setNegativeButton(R.string.button_cancel, null)
                                             .show()
-                                    }) { t: Throwable? ->
-                                    createCustomToast(context).showToastThrowable(t)
+                                    }) {
+                                    createCustomToast(context).showToastThrowable(it)
                                 }
                     }
 
@@ -548,8 +548,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                     factory
                                         .delete_media(hash1)
                                         .fromIOToMain().subscribe(
-                                            { createCustomToast(context).showToast(R.string.success) }) { o: Throwable? ->
-                                            createCustomToast(context).showToastThrowable(o)
+                                            { createCustomToast(context).showToast(R.string.success) }) {
+                                            createCustomToast(context).showToastThrowable(it)
                                         }
                             }
                             .setNegativeButton(R.string.button_cancel, null)
@@ -565,8 +565,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         audioListDisposable =
                             factory.update_time(hash)
                                 .fromIOToMain().subscribe(
-                                    { createCustomToast(context).showToast(R.string.success) }) { t: Throwable? ->
-                                    createCustomToast(context).showToastThrowable(t)
+                                    { createCustomToast(context).showToast(R.string.success) }) {
+                                    createCustomToast(context).showToastThrowable(it)
                                 }
                     }
 
@@ -579,7 +579,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         audioListDisposable =
                             factory.get_file_name(hash2)
                                 .fromIOToMain().subscribe(
-                                    { t: String? ->
+                                    { t ->
                                         val root =
                                             View.inflate(
                                                 context,
@@ -606,16 +606,16 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                                             createCustomToast(context).showToast(
                                                                 R.string.success
                                                             )
-                                                        }) { o: Throwable? ->
+                                                        }) {
                                                             createCustomToast(context).showToastThrowable(
-                                                                o
+                                                                it
                                                             )
                                                         }
                                             }
                                             .setNegativeButton(R.string.button_cancel, null)
                                             .show()
-                                    }) { t: Throwable? ->
-                                    createCustomToast(context).showToastThrowable(t)
+                                    }) {
+                                    createCustomToast(context).showToastThrowable(it)
                                 }
                     }
 

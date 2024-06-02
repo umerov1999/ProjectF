@@ -1,13 +1,13 @@
 package dev.ragnarok.fenrir.view.steppers.base
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.fragment.base.holder.SharedHolders
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 
 abstract class AbsSteppersVerticalAdapter<H : AbsStepsHost<*>>(
@@ -34,7 +34,7 @@ abstract class AbsSteppersVerticalAdapter<H : AbsStepsHost<*>>(
         val isLast = position == itemCount - 1
         val isActive = position <= mHost.currentStep
         val activeColor = CurrentTheme.getColorPrimary(holder.itemView.context)
-        val inactiveColor = Color.parseColor("#2cb1b1b1")
+        val inactiveColor = "#2cb1b1b1".toColor()
         val tintColor = if (isActive) activeColor else inactiveColor
         holder.counterRoot.isEnabled = isCurrent
         Utils.setBackgroundTint(holder.counterRoot, tintColor)

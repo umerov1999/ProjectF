@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.fragment.base
 
-import android.graphics.Color
 import android.view.View
 import android.widget.CompoundButton
 import android.widget.TextView
@@ -18,6 +17,7 @@ import dev.ragnarok.filegallery.fragment.base.core.IErrorView
 import dev.ragnarok.filegallery.fragment.base.core.IMvpView
 import dev.ragnarok.filegallery.fragment.base.core.IToastView
 import dev.ragnarok.filegallery.fragment.base.core.IToolbarView
+import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.ErrorLocalizer.localizeThrowable
 import dev.ragnarok.filegallery.util.ViewUtils
 import dev.ragnarok.filegallery.util.toast.AbsCustomToast
@@ -49,7 +49,7 @@ abstract class BaseMvpBottomSheetDialogFragment<P : AbsPresenter<V>, V : IMvpVie
             CustomSnackbars.createCustomSnackbars(view)?.let {
                 val snack = it.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG).coloredSnack(
                     localizeThrowable(provideApplicationContext(), throwable),
-                    Color.parseColor("#eeff0000")
+                    "#eeff0000".toColor()
                 )
                 if (throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
                     snack.setAction(R.string.more_info) {

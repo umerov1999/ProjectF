@@ -59,6 +59,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils
@@ -124,9 +125,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
             val stateSpeed = presenter?.togglePlaybackSpeed() ?: false
             Utils.setTint(
                 mPlaySpeed,
-                if (stateSpeed) CurrentTheme.getColorPrimary(this) else Color.parseColor(
-                    "#ffffff"
-                )
+                if (stateSpeed) CurrentTheme.getColorPrimary(this) else "#ffffff".toColor()
             )
         }
         val mHelper = findViewById<RLottieImageView?>(R.id.swipe_helper)
@@ -400,9 +399,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         }
         Utils.setTint(
             mPlaySpeed,
-            if (isPlaySpeed) CurrentTheme.getColorPrimary(this) else Color.parseColor(
-                "#ffffff"
-            )
+            if (isPlaySpeed) CurrentTheme.getColorPrimary(this) else "#ffffff".toColor()
         )
         if (story.target_url.isNullOrEmpty()) {
             mLink?.visibility = View.GONE

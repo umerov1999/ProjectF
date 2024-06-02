@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.shortedlinks
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +27,7 @@ import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.ShortLink
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
@@ -150,21 +150,21 @@ class ShortedLinksFragment : BaseMvpFragment<ShortedLinksPresenter, IShortedLink
 
     override fun showLinkStatus(status: String?) {
         var stat = ""
-        var color = Color.parseColor("#ff0000")
+        var color = "#ff0000".toColor()
         when (status) {
             "not_banned" -> {
                 stat = getString(R.string.link_not_banned)
-                color = Color.parseColor("#cc00aa00")
+                color = "#cc00aa00".toColor()
             }
 
             "banned" -> {
                 stat = getString(R.string.link_banned)
-                color = Color.parseColor("#ccaa0000")
+                color = "#ccaa0000".toColor()
             }
 
             "processing" -> {
                 stat = getString(R.string.link_processing)
-                color = Color.parseColor("#cc0000aa")
+                color = "#cc0000aa".toColor()
             }
         }
         CustomSnackbars.createCustomSnackbars(mLink, view?.findViewById(R.id.recycler_view))

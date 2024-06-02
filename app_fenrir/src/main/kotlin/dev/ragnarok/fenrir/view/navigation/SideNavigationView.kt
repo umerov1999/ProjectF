@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.view.navigation
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -34,6 +33,7 @@ import dev.ragnarok.fenrir.settings.AvatarStyle
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils.dp
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.getVerifiedColor
@@ -352,9 +352,9 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
             if (donate_anim == 2) {
                 val cur = Settings.get().ui().mainThemeKey
                 if ("fire" == cur || "orange" == cur || "orange_gray" == cur || "yellow_violet" == cur) {
-                    tvUserName?.setTextColor(Color.parseColor("#df9d00"))
-                    tvDomain?.setTextColor(Color.parseColor("#df9d00"))
-                    setBackgroundTint(ivVerified, Color.parseColor("#df9d00"))
+                    tvUserName?.setTextColor("#df9d00".toColor())
+                    tvDomain?.setTextColor("#df9d00".toColor())
+                    setBackgroundTint(ivVerified, "#df9d00".toColor())
                     bDonate?.fromRes(
                         dev.ragnarok.fenrir_common.R.raw.donater_fire,
                         dp(100f),

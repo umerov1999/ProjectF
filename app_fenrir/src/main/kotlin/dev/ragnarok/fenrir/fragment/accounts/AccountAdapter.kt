@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.accounts
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +17,7 @@ import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.UserInfoResolveUtil
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
@@ -139,6 +139,6 @@ class AccountAdapter(
     }
 
     companion object {
-        private val STATUS_COLOR_OFFLINE = Color.parseColor("#999999")
+        private val STATUS_COLOR_OFFLINE = "#999999".toColor()
     }
 }

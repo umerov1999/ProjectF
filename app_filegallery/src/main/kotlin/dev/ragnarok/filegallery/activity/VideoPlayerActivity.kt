@@ -45,6 +45,7 @@ import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarColor
 import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.settings.theme.ThemesController.currentStyle
+import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.Logger
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.toast.CustomToast
@@ -188,13 +189,13 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         mPlaySpeed = findViewById(R.id.toolbar_play_speed)
         Utils.setTint(
             mPlaySpeed,
-            if (mPlayer?.isPlaybackSpeed == true) getColorPrimary(this) else Color.parseColor("#ffffff")
+            if (mPlayer?.isPlaybackSpeed == true) getColorPrimary(this) else "#ffffff".toColor()
         )
         mPlaySpeed?.setOnClickListener {
             mPlayer?.togglePlaybackSpeed()
             Utils.setTint(
                 mPlaySpeed,
-                if (mPlayer?.isPlaybackSpeed == true) getColorPrimary(this) else Color.parseColor("#ffffff")
+                if (mPlayer?.isPlaybackSpeed == true) getColorPrimary(this) else "#ffffff".toColor()
             )
         }
         mControllerView?.setMediaPlayer(this)

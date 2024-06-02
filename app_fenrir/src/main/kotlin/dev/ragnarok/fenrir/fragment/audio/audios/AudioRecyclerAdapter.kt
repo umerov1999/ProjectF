@@ -6,7 +6,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -54,6 +53,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleTabSearchPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.AppTextUtils
@@ -279,12 +279,12 @@ class AudioRecyclerAdapter(
         when (playerStatus()) {
             1 -> {
                 Utils.doWavesLottie(holder.visual, true)
-                holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
+                holder.play_cover.setColorFilter("#44000000".toColor())
             }
 
             2 -> {
                 Utils.doWavesLottie(holder.visual, false)
-                holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
+                holder.play_cover.setColorFilter("#44000000".toColor())
             }
         }
     }
@@ -667,11 +667,11 @@ class AudioRecyclerAdapter(
         if (audio.isSelected) {
             when {
                 audio.url.isNullOrEmpty() -> {
-                    viewHolder.isSelectedView.setCardBackgroundColor(Color.parseColor("#ff0000"))
+                    viewHolder.isSelectedView.setCardBackgroundColor("#ff0000".toColor())
                 }
 
                 TrackIsDownloaded(audio) != 0 -> {
-                    viewHolder.isSelectedView.setCardBackgroundColor(Color.parseColor("#00aa00"))
+                    viewHolder.isSelectedView.setCardBackgroundColor("#00aa00".toColor())
                 }
 
                 else -> {
@@ -799,11 +799,11 @@ class AudioRecyclerAdapter(
                     if (audio.isSelected) View.VISIBLE else View.GONE
                 when {
                     audio.url.isNullOrEmpty() -> {
-                        viewHolder.isSelectedView.setCardBackgroundColor(Color.parseColor("#ff0000"))
+                        viewHolder.isSelectedView.setCardBackgroundColor("#ff0000".toColor())
                     }
 
                     TrackIsDownloaded(audio) != 0 -> {
-                        viewHolder.isSelectedView.setCardBackgroundColor(Color.parseColor("#00aa00"))
+                        viewHolder.isSelectedView.setCardBackgroundColor("#00aa00".toColor())
                     }
 
                     else -> {

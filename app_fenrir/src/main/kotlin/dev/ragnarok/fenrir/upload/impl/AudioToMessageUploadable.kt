@@ -47,14 +47,14 @@ class AudioToMessageUploadable(
             var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
-                val file = File(uri!!.path!!)
+                val file = File(uri?.path ?: throw NotFoundException("uri.path is empty"))
                 inputStream = if (file.isFile) {
                     FileInputStream(file)
                 } else {
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    return@flatMap Single.error<UploadResult<Audio>>(
+                    return@flatMap Single.error(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
@@ -72,33 +72,37 @@ class AudioToMessageUploadable(
                 val finalTrackName = TrackName
                 return@flatMap networker.uploads()
                     .uploadAudioRx(
-                        server.url ?: throw NotFoundException("upload url empty"),
+                        server.url ?: throw NotFoundException("Upload url empty!"),
                         filename,
                         inputStream,
                         listener
                     )
                     .doFinally(safelyCloseAction(inputStream))
                     .flatMap { dto ->
-                        networker
-                            .vkDefault(accountId)
-                            .audio()
-                            .save(dto.server, dto.audio, dto.hash, finalArtist, finalTrackName)
-                            .flatMap {
-                                val audio = Dto2Model.transform(it)
-                                val result = UploadResult(server, audio)
-                                if (upload.isAutoCommit) {
-                                    attachIntoDatabaseRx(
-                                        attachmentsRepository,
-                                        messagesStorage,
-                                        accountId,
-                                        messageId,
-                                        audio
-                                    )
-                                        .andThen(Single.just(result))
-                                } else {
-                                    Single.just(result)
+                        if (dto.audio.isNullOrEmpty()) {
+                            Single.error(NotFoundException("VK doesn't upload this file"))
+                        } else {
+                            networker
+                                .vkDefault(accountId)
+                                .audio()
+                                .save(dto.server, dto.audio, dto.hash, finalArtist, finalTrackName)
+                                .flatMap {
+                                    val audio = Dto2Model.transform(it)
+                                    val result = UploadResult(server, audio)
+                                    if (upload.isAutoCommit) {
+                                        attachIntoDatabaseRx(
+                                            attachmentsRepository,
+                                            messagesStorage,
+                                            accountId,
+                                            messageId,
+                                            audio
+                                        )
+                                            .andThen(Single.just(result))
+                                    } else {
+                                        Single.just(result)
+                                    }
                                 }
-                            }
+                        }
                     }
             } catch (e: Exception) {
                 safelyClose(inputStream)

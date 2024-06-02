@@ -8,7 +8,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.webkit.MimeTypeMap
@@ -43,6 +42,7 @@ import dev.ragnarok.fenrir.service.QuickReplyService
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.hls.M3U8
 import dev.ragnarok.fenrir.util.rxutils.RxUtils
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
@@ -612,7 +612,7 @@ object DownloadWorkUtils {
                     R.drawable.ic_error_toast_vector,
                     true
                 )
-                mBuilder.color = Color.parseColor("#ff0000")
+                mBuilder.color = "#ff0000".toColor()
                 show_notification(
                     mBuilder,
                     NotificationHelper.NOTIFICATION_DOWNLOAD,
@@ -769,7 +769,7 @@ object DownloadWorkUtils {
                     R.drawable.ic_error_toast_vector,
                     true
                 )
-                mBuilder.color = Color.parseColor("#ff0000")
+                mBuilder.color = "#ff0000".toColor()
                 show_notification(
                     mBuilder,
                     NotificationHelper.NOTIFICATION_DOWNLOAD,
@@ -807,7 +807,7 @@ object DownloadWorkUtils {
             builder.setContentTitle(applicationContext.getString(R.string.work_manager))
                 .setContentText(applicationContext.getString(R.string.foreground_downloader))
                 .setSmallIcon(R.drawable.web)
-                .setColor(Color.parseColor("#dd0000"))
+                .setColor("#dd0000".toColor())
                 .setOngoing(true)
 
             setForegroundAsync(

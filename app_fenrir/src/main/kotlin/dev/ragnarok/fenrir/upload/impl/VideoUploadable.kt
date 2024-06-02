@@ -4,7 +4,6 @@ import android.content.Context
 import dev.ragnarok.fenrir.api.PercentagePublisher
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.server.UploadServer
-import dev.ragnarok.fenrir.api.model.server.VKApiVideosUploadServer
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.upload.IUploadable
@@ -36,19 +35,18 @@ class VideoUploadable(private val context: Context, private val networker: INetw
                     context, upload.fileUri
                 )
             )
-            .map<UploadServer> { s: VKApiVideosUploadServer -> s }
         return serverSingle.flatMap { server ->
             var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
-                val file = File(uri!!.path!!)
+                val file = File(uri?.path ?: throw NotFoundException("uri.path is empty"))
                 inputStream = if (file.isFile) {
                     FileInputStream(file)
                 } else {
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    return@flatMap Single.error<UploadResult<Video>>(
+                    return@flatMap Single.error(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
@@ -57,7 +55,7 @@ class VideoUploadable(private val context: Context, private val networker: INetw
                 val filename = UploadUtils.findFileName(context, uri)
                 return@flatMap networker.uploads()
                     .uploadVideoRx(
-                        server.url ?: throw NotFoundException("upload url empty"),
+                        server.url ?: throw NotFoundException("Upload url empty!"),
                         filename,
                         inputStream,
                         listener

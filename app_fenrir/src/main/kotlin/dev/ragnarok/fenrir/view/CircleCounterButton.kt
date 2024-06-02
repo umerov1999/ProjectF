@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
 
@@ -128,10 +129,10 @@ class CircleCounterButton @JvmOverloads constructor(context: Context, attrs: Att
         }
 
     companion object {
-        private val DEF_ACTIVE_ICON_COLOR = Color.parseColor("#f0f0f0")
-        private val DEF_NOACTIVE_ICON_COLOR = Color.parseColor("#b0b0b0")
+        private val DEF_ACTIVE_ICON_COLOR = "#f0f0f0".toColor()
+        private val DEF_NOACTIVE_ICON_COLOR = "#b0b0b0".toColor()
         private const val DEF_ACTIVE_BACKGROUND_COLOR = Color.RED
-        private val DEF_NOACTIVE_BACKGROUND_COLOR = Color.parseColor("#45dcdcdc")
+        private val DEF_NOACTIVE_BACKGROUND_COLOR = "#45dcdcdc".toColor()
     }
 
     init {

@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.domain.mappers
 
-import android.graphics.Color
 import dev.ragnarok.fenrir.api.model.PhotoSizeDto
 import dev.ragnarok.fenrir.api.model.VKApiArticle
 import dev.ragnarok.fenrir.api.model.VKApiAttachments
@@ -145,6 +144,7 @@ import dev.ragnarok.fenrir.model.feedback.FeedbackType
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.requireNonNull
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.transformNonNullNullable
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
@@ -1154,7 +1154,7 @@ object Dto2Entity {
             if (i.color.nonNullNoEmpty()) {
                 try {
                     val pp = PollDboEntity.BackgroundPointEntity(
-                        Color.parseColor("#" + i.color),
+                        ("#" + i.color).toColor(),
                         i.position
                     )
                     list.add(pp)

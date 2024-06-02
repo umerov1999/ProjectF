@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.search.peoplesearch
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +17,7 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.UserInfoResolveUtil
 import dev.ragnarok.fenrir.util.Utils
@@ -162,7 +162,7 @@ class PeopleAdapter(private val mContext: Context, private var mData: List<Owner
     }
 
     companion object {
-        private val STATUS_COLOR_OFFLINE = Color.parseColor("#999999")
+        private val STATUS_COLOR_OFFLINE = "#999999".toColor()
         private const val TYPE_USER = 0
         private const val TYPE_COMMUNITY = 1
     }

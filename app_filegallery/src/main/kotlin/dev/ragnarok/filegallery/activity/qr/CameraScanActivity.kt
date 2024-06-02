@@ -55,6 +55,7 @@ import dev.ragnarok.filegallery.activity.slidr.Slidr
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrConfig
 import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.settings.CurrentTheme
+import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.AppPerms
 import dev.ragnarok.filegallery.util.AppPerms.requestPermissionsResultAbs
 import dev.ragnarok.filegallery.util.Utils
@@ -329,9 +330,9 @@ class CameraScanActivity : NoMainActivity() {
         }
 
         init {
-            cornerPaint.color = Color.parseColor("#ffffff")
-            paint.color = Color.parseColor("#88000000")
-            laserPaint.color = Color.parseColor("#aaff0000")
+            cornerPaint.color = "#ffffff".toColor()
+            paint.color = "#88000000".toColor()
+            laserPaint.color = "#aaff0000".toColor()
             pointPaint.color = CurrentTheme.getColorPrimary(context)
         }
 

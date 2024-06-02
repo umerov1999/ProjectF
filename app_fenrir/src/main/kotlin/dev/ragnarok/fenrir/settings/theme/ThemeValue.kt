@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.settings.theme
 
-import android.graphics.Color
 import androidx.annotation.StyleRes
+import dev.ragnarok.fenrir.toColor
 
 class ThemeValue {
     val id: String
@@ -33,12 +33,12 @@ class ThemeValue {
         @StyleRes themeAmoledRes: Int,
         @StyleRes themeMD1Res: Int
     ) {
-        colorDayPrimary = Color.parseColor(colorPrimary)
-        colorDaySecondary = Color.parseColor(colorSecondary)
+        colorDayPrimary = colorPrimary.toColor()
+        colorDaySecondary = colorSecondary.toColor()
         colorNightPrimary = colorDayPrimary
         colorNightSecondary = colorDaySecondary
-        colorToast = Color.parseColor(colorPrimary)
-        colorReadToast = Color.parseColor(colorPrimary)
+        colorToast = colorPrimary.toColor()
+        colorReadToast = colorPrimary.toColor()
         disabled = false
         special = false
         this.id = id
@@ -59,12 +59,12 @@ class ThemeValue {
         @StyleRes themeAmoledRes: Int,
         @StyleRes themeMD1Res: Int
     ) {
-        this.colorDayPrimary = Color.parseColor(colorDayPrimary)
-        this.colorDaySecondary = Color.parseColor(colorDaySecondary)
-        this.colorNightPrimary = Color.parseColor(colorNightPrimary)
-        this.colorNightSecondary = Color.parseColor(colorNightSecondary)
-        colorToast = Color.parseColor(colorDayPrimary)
-        colorReadToast = Color.parseColor(colorDayPrimary)
+        this.colorDayPrimary = colorDayPrimary.toColor()
+        this.colorDaySecondary = colorDaySecondary.toColor()
+        this.colorNightPrimary = colorNightPrimary.toColor()
+        this.colorNightSecondary = colorNightSecondary.toColor()
+        colorToast = colorDayPrimary.toColor()
+        colorReadToast = colorDayPrimary.toColor()
         disabled = false
         special = false
         this.id = id
@@ -75,8 +75,8 @@ class ThemeValue {
     }
 
     fun toast(colorToast: String): ThemeValue {
-        this.colorToast = Color.parseColor(colorToast)
-        this.colorReadToast = Color.parseColor(colorToast)
+        this.colorToast = colorToast.toColor()
+        this.colorReadToast = colorToast.toColor()
         return this
     }
 
@@ -87,8 +87,8 @@ class ThemeValue {
     }
 
     fun toast(colorToast: String, colorReadToast: String): ThemeValue {
-        this.colorToast = Color.parseColor(colorToast)
-        this.colorReadToast = Color.parseColor(colorReadToast)
+        this.colorToast = colorToast.toColor()
+        this.colorReadToast = colorReadToast.toColor()
         return this
     }
 

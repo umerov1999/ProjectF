@@ -6,7 +6,6 @@ import android.app.Dialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
@@ -517,7 +516,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         CustomSnackbars.createCustomSnackbars(view)?.let {
             val snack = it.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG).coloredSnack(
                 ErrorLocalizer.localizeThrowable(Includes.provideApplicationContext(), throwable),
-                Color.parseColor("#eeff0000")
+                "#eeff0000".toColor()
             )
             if (throwable !is ApiException && throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
                 snack.setAction(R.string.more_info) {
@@ -820,7 +819,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         } catch (ignored: ActivityNotFoundException) {
             CustomSnackbars.createCustomSnackbars(view, mPlayPauseButton)
                 ?.setDurationSnack(Snackbar.LENGTH_LONG)
-                ?.coloredSnack(R.string.no_system_equalizer, Color.parseColor("#eeff0000"))?.show()
+                ?.coloredSnack(R.string.no_system_equalizer, "#eeff0000".toColor())?.show()
         }
     }
 

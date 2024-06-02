@@ -137,9 +137,9 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                     createCustomToast(
                                         context, holder.card
                                     )?.showToast(R.string.success)
-                                }) { t: Throwable? ->
+                                }) {
                                 createCustomToast(context, holder.card)
-                                    ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(t)
+                                    ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
                             }
                     }
 
@@ -150,7 +150,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                         }
                         listDisposable = mVideoInteractor.get_file_name(hash2)
                             .fromIOToMain().subscribe(
-                                { t: String? ->
+                                { t ->
                                     val root = View.inflate(
                                         context, R.layout.entry_file_name, null
                                     )
@@ -173,20 +173,20 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                                         createCustomToast(
                                                             context, holder.card
                                                         )?.showToast(R.string.success)
-                                                    }) { o: Throwable? ->
+                                                    }) {
                                                         createCustomToast(
                                                             context,
                                                             holder.card
                                                         )
                                                             ?.setDuration(Toast.LENGTH_LONG)
-                                                            ?.showToastThrowable(o)
+                                                            ?.showToastThrowable(it)
                                                     }
                                         }
                                         .setNegativeButton(R.string.button_cancel, null)
                                         .show()
-                                }) { t: Throwable? ->
+                                }) {
                                 createCustomToast(context, holder.card)
-                                    ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(t)
+                                    ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
                             }
                     }
 
@@ -207,10 +207,10 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                         createCustomToast(
                                             context, holder.card
                                         )?.showToast(R.string.success)
-                                    }) { o: Throwable? ->
+                                    }) {
                                     createCustomToast(context, holder.card)
                                         ?.setDuration(Toast.LENGTH_LONG)
-                                        ?.showToastThrowable(o)
+                                        ?.showToastThrowable(it)
                                 }
                         }
                         .setNegativeButton(R.string.button_cancel, null)

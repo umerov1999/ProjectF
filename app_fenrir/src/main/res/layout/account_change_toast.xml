@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<dev.ragnarok.fenrir.view.RoundCornerRelativeView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#EEFFFFFF"
-    android:padding="8dp">
+    android:padding="8dp"
+    app:radius_bottom_left="10dp"
+    app:radius_bottom_right="10dp"
+    app:radius_top_left="0dp"
+    app:radius_top_right="0dp"
+    app:view_color="#eeffffff">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/avatar"
@@ -29,6 +34,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@string/account_switched_to"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:textColor="#aa000000"
             android:textSize="@dimen/font_size_additional" />
 
@@ -39,7 +45,8 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textAllCaps="false"
-            android:textColor="#EE000000"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textColor="#ee000000"
             android:textSize="@dimen/font_size_title"
             android:textStyle="bold"
             tools:text="Thor Odinson" />
@@ -56,4 +63,4 @@
         android:padding="8dp"
         android:src="@drawable/client_round" />
 
-</RelativeLayout>
+</dev.ragnarok.fenrir.view.RoundCornerRelativeView>

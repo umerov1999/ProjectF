@@ -7,7 +7,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.util.Base64
@@ -36,6 +35,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.push.OwnerInfo
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.CheckDirectory
@@ -745,7 +745,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
         builder.setContentTitle(applicationContext.getString(R.string.work_manager))
             .setContentText(applicationContext.getString(R.string.foreground_downloader))
             .setSmallIcon(R.drawable.web)
-            .setColor(Color.parseColor("#dd0000"))
+            .setColor("#dd0000".toColor())
             .setOngoing(true)
         setForegroundAsync(
             ForegroundInfo(

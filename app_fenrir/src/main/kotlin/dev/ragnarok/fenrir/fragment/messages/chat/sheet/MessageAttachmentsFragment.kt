@@ -6,7 +6,6 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -47,6 +46,7 @@ import dev.ragnarok.fenrir.model.selection.Sources
 import dev.ragnarok.fenrir.model.selection.VKPhotosSelectableSource
 import dev.ragnarok.fenrir.service.ErrorLocalizer.localizeThrowable
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils.hasScopedStorage
@@ -371,7 +371,7 @@ class MessageAttachmentsFragment :
             CustomSnackbars.createCustomSnackbars(view)?.let {
                 val snack = it.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG).coloredSnack(
                     localizeThrowable(provideApplicationContext(), throwable),
-                    Color.parseColor("#eeff0000")
+                    "#eeff0000".toColor()
                 )
                 if (throwable !is ApiException && throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
                     snack.setAction(R.string.more_info) {

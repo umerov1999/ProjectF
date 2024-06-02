@@ -75,15 +75,31 @@ class AndroidLongpollManager internal constructor(
     override fun onUpdates(aid: Long, updates: VKApiLongpollUpdates) {
         d(TAG, "updates, accountId: $aid")
         updates.add_message_updates.nonNullNoEmpty {
+            val deletes = ArrayList<Int>()
+            updates.message_reaction_changed_updates.nonNullNoEmpty { st ->
+                for (i in st.indices) {
+                    for (s in it) {
+                        if (s.conversationMessageId == st[i].conversation_message_id && s.peerId == st[i].peer_id) {
+                            deletes.add(i)
+                        }
+                    }
+                }
+            }
+            for (i in deletes.reversed()) {
+                it.removeAt(i)
+            }
+
             messagesProcessor.process(aid, it)
         }
-        compositeDisposable.add(
-            LongPollEventSaver()
-                .save(aid, updates)
-                .subscribeOn(MONO_SCHEDULER)
-                .observeOn(provideMainThreadScheduler())
-                .subscribe({ onUpdatesSaved(updates) }, ignore())
-        )
+        if (!updates.isOnlyAddMessages()) {
+            compositeDisposable.add(
+                LongPollEventSaver()
+                    .save(aid, updates)
+                    .subscribeOn(MONO_SCHEDULER)
+                    .observeOn(provideMainThreadScheduler())
+                    .subscribe({ onUpdatesSaved(updates) }, ignore())
+            )
+        }
     }
 
     private fun onUpdatesSaved(updates: VKApiLongpollUpdates) {

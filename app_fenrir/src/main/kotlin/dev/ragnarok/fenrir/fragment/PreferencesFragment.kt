@@ -1146,7 +1146,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.custom_message_color
                 alphaSlider = true
                 density = 12
-                defaultValue = Color.parseColor("#CBD438FF")
+                defaultValue = "#CBD438FF".toColor()
                 lightSlider = true
             }
 
@@ -1155,7 +1155,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.custom_second_message_color
                 alphaSlider = true
                 density = 12
-                defaultValue = Color.parseColor("#BF6539DF")
+                defaultValue = "#BF6539DF".toColor()
                 lightSlider = true
             }
 

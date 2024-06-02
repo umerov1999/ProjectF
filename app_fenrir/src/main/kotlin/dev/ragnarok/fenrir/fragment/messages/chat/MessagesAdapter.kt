@@ -37,6 +37,7 @@ import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.doDownloadSticker
@@ -357,7 +358,7 @@ class MessagesAdapter(
         if (!message.isGraffiti) {
             when (message.cryptStatus) {
                 CryptStatus.ENCRYPTED, CryptStatus.DECRYPT_FAILED -> holder.bubble.setNonGradientColor(
-                    Color.parseColor("#D4ff0000")
+                    "#D4ff0000".toColor()
                 )
 
                 CryptStatus.NO_ENCRYPTION, CryptStatus.DECRYPTED -> if (message.isOut) {

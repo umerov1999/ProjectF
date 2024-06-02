@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toast_card_view"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:alpha="0.95"
-    app:cardBackgroundColor="@color/white"
+    app:cardBackgroundColor="#ffffff"
     app:cardCornerRadius="4dp"
     app:cardElevation="1dp"
     app:contentPaddingBottom="8dp"
@@ -32,10 +32,11 @@
             android:id="@+id/toast_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textColor="#000000"
             android:textSize="15sp"
             tools:text="Sample Text" />
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

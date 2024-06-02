@@ -107,8 +107,6 @@ import dev.ragnarok.fenrir.upload.Method
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.upload.UploadDestination.Companion.forMessage
 import dev.ragnarok.fenrir.util.Optional
-import dev.ragnarok.fenrir.util.Optional.Companion.empty
-import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Unixtime.now
 import dev.ragnarok.fenrir.util.Utils
@@ -470,11 +468,11 @@ class MessagesRepository(
             .findPeerDialog(accountId, peerId)
             .flatMap { optional ->
                 if (optional.isEmpty) {
-                    return@flatMap Single.just(empty<Conversation>())
+                    return@flatMap Single.just(Optional.empty<Conversation>())
                 } else {
                     Single.just(optional.requireNonEmpty())
                         .compose(simpleEntity2Conversation(accountId, emptyList()))
-                        .map { wrap(it) }
+                        .map { Optional.wrap(it) }
                 }
             }
     }
@@ -485,15 +483,12 @@ class MessagesRepository(
             .getConversations(listOf(peerId), true, Fields.FIELDS_BASE_OWNER)
             .flatMap { response ->
                 if (response.items.isNullOrEmpty()) {
-                    return@flatMap Single.error<Conversation>(NotFoundException())
+                    return@flatMap Single.error(NotFoundException())
                 }
-                val dto = response.items?.get(0) ?: return@flatMap Single.error<Conversation>(
+                val dto = response.items?.get(0) ?: return@flatMap Single.error(NotFoundException())
+                val entity = mapPeerDialog(dto, response.contacts) ?: return@flatMap Single.error(
                     NotFoundException()
                 )
-                val entity = mapPeerDialog(dto, response.contacts)
-                    ?: return@flatMap Single.error<Conversation>(
-                        NotFoundException()
-                    )
                 val existsOwners = transformOwners(response.profiles, response.groups)
                 val ownerEntities = mapOwners(response.profiles, response.groups)
                 ownersRepository.insertOwners(accountId, ownerEntities)
@@ -689,7 +684,7 @@ class MessagesRepository(
             .compose(entities2Models(accountId))
             .flatMap { messages ->
                 if (messages.isEmpty()) {
-                    return@flatMap Single.error<Message>(NotFoundException())
+                    return@flatMap Single.error(NotFoundException())
                 }
                 Single.just(messages[0])
             }
@@ -1156,10 +1151,13 @@ class MessagesRepository(
             .findFirstUnsentMessage(accountIds, withAttachments = true, withForwardMessages = false)
             .flatMap { optional ->
                 if (optional.isEmpty) {
-                    return@flatMap Single.error<SentMsg>(NotFoundException())
+                    return@flatMap Single.error(NotFoundException())
                 }
-                val entity = optional.get()!!.second
-                val accountId = optional.get()!!.first
+                val entity = optional.get()?.second
+                val accountId = optional.get()?.first
+                if (entity == null || accountId == null) {
+                    return@flatMap Single.error(NotFoundException())
+                }
                 val dbid = entity.id
                 val peerId = entity.peerId
                 changeMessageStatus(accountId, dbid, MessageStatus.SENDING, null, null)
@@ -1264,11 +1262,11 @@ class MessagesRepository(
                 val ids = VKOwnIds().append(dtos)
                 ownersRepository
                     .findBaseOwnersDataAsBundle(accountId, ids.all, IOwnersRepository.MODE_ANY)
-                    .map<List<Message>> { bundle: IOwnersBundle? ->
+                    .map<List<Message>> {
                         val data: MutableList<Message> =
                             ArrayList(dtos.size)
                         for (dto in dtos) {
-                            val message = transform(accountId, dto, bundle!!)
+                            val message = transform(accountId, dto, it)
                             data.add(message)
                         }
                         data
@@ -1383,13 +1381,11 @@ class MessagesRepository(
         return networker.vkDefault(accountId)
             .messages()
             .delete(ids, forAll, spam)
-            .flatMapCompletable { result: Map<String, Int> ->
-                val patches: MutableList<MessagePatch> = ArrayList(result.size)
-                for ((key, value) in result) {
-                    val removed = value == 1
-                    val removedId = key.toInt()
-                    if (removed) {
-                        val patch = MessagePatch(removedId, peerId)
+            .flatMapCompletable {
+                val patches: MutableList<MessagePatch> = ArrayList(it.size)
+                for (i in it) {
+                    if (i.response == 1) {
+                        val patch = MessagePatch(i.message_id, peerId)
                         patch.deletion = MessagePatch.Deletion(true, forAll)
                         patches.add(patch)
                     }
@@ -1688,13 +1684,13 @@ class MessagesRepository(
         dbo: MessageDboEntity
     ): Single<Pair<Boolean, Optional<List<Int>>>> {
         return if (dbo.forwardCount == 0) {
-            Single.just(Pair(false, empty()))
+            Single.just(Pair(false, Optional.empty()))
         } else storages.messages()
             .getForwardMessageIds(accountId, dbo.id, dbo.peerId)
             .map {
                 Pair(
                     it.first,
-                    wrap(it.second)
+                    Optional.wrap(it.second)
                 )
             }
     }
@@ -1709,47 +1705,48 @@ class MessagesRepository(
             val docsApi = networker.vkDefault(accountId).docs()
             return docsApi.getMessagesUploadServer(dbo.peerId, "audio_message")
                 .flatMap { server ->
-                    val file = File(filePath!!)
-                    val inputStream = arrayOfNulls<InputStream>(1)
+                    val file = File(filePath ?: throw NotFoundException("filePath is empty"))
+                    var inputStream: InputStream? = null
                     try {
-                        inputStream[0] = FileInputStream(file)
+                        inputStream = FileInputStream(file)
                         return@flatMap networker.uploads()
                             .uploadDocumentRx(
-                                server.url ?: throw NotFoundException("upload url empty"),
+                                server.url ?: throw NotFoundException("Upload url empty!"),
                                 file.name,
-                                inputStream[0]!!,
+                                inputStream,
                                 null
                             )
-                            .doFinally(safelyCloseAction(inputStream[0]))
+                            .doFinally(safelyCloseAction(inputStream))
                             .flatMap { uploadDto ->
                                 docsApi
                                     .save(uploadDto.file, null, null)
-                                    .map { dtos ->
+                                    .flatMap { dtos ->
                                         if (dtos.type.isEmpty()) {
-                                            throw NotFoundException("Unable to save voice message")
+                                            Single.error(NotFoundException("Unable to save voice message"))
+                                        } else {
+                                            val dto = dtos.doc
+                                            val token = AttachmentsTokenCreator.ofDocument(
+                                                dto.id,
+                                                dto.ownerId,
+                                                dto.accessKey
+                                            )
+                                            Single.just(Optional.wrap(token))
                                         }
-                                        val dto = dtos.doc
-                                        val token = AttachmentsTokenCreator.ofDocument(
-                                            dto.id,
-                                            dto.ownerId,
-                                            dto.accessKey
-                                        )
-                                        wrap(token)
                                     }
                             }
                     } catch (e: FileNotFoundException) {
-                        safelyClose(inputStream[0])
-                        return@flatMap Single.error<Optional<IAttachmentToken>>(e)
+                        safelyClose(inputStream)
+                        return@flatMap Single.error(e)
                     }
                 }
         }
-        return Single.just(empty())
+        return Single.just(Optional.empty())
     }
 
     private fun getFinalMessagesBody(builder: SaveMessageBuilder): Single<Optional<String>> {
         if (builder.text.isNullOrEmpty() || !builder.requireEncryption) {
             return Single.just(
-                wrap(
+                Optional.wrap(
                     builder.text
                 )
             )
@@ -1769,7 +1766,7 @@ class MessagesRepository(
                     pair.sessionId,
                     builder.keyLocationPolicy
                 )
-                wrap(encrypted)
+                Optional.wrap(encrypted)
             }
     }
 

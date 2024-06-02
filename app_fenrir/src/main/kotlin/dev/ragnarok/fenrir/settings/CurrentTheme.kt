@@ -15,6 +15,7 @@ import dev.ragnarok.fenrir.picasso.transforms.EllipseTransformation
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.picasso.transforms.stroke.EllipseStrokeTransformation
 import dev.ragnarok.fenrir.picasso.transforms.stroke.RoundStrokeTransformation
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils.setColorFilter
 import dev.ragnarok.fenrir.view.media.PathAnimator
 import java.io.File
@@ -119,9 +120,9 @@ object CurrentTheme {
             .ui()
             .avatarStyle
         return when (style) {
-            AvatarStyle.OVAL -> EllipseStrokeTransformation(Color.parseColor("#447bba"))
-            AvatarStyle.CIRCLE -> RoundStrokeTransformation(Color.parseColor("#447bba"))
-            else -> RoundStrokeTransformation(Color.parseColor("#447bba"))
+            AvatarStyle.OVAL -> EllipseStrokeTransformation("#447bba".toColor())
+            AvatarStyle.CIRCLE -> RoundStrokeTransformation("#447bba".toColor())
+            else -> RoundStrokeTransformation("#447bba".toColor())
         }
     }
 
@@ -399,7 +400,7 @@ object CurrentTheme {
     fun getColorFromAttrs(resId: Int, context: Context, defaultColor: String): Int {
         val attribute = intArrayOf(resId)
         val array = context.theme.obtainStyledAttributes(attribute)
-        val color = array.getColor(0, Color.parseColor(defaultColor))
+        val color = array.getColor(0, defaultColor.toColor())
         array.recycle()
         return color
     }

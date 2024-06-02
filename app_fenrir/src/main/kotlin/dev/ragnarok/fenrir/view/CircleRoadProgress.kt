@@ -3,13 +3,13 @@ package dev.ragnarok.fenrir.view
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Property
 import android.view.View
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.toColor
 
 class CircleRoadProgress(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private var circleCenterPointX = 0f
@@ -40,13 +40,13 @@ class CircleRoadProgress(context: Context, attrs: AttributeSet) : View(context, 
         circleCenterPointX = ta.getFloat(R.styleable.CircleRoadProgress_circleCenterPointX, 54f)
         circleCenterPointY = ta.getFloat(R.styleable.CircleRoadProgress_circleCenterPointY, 54f)
         roadColor =
-            ta.getColor(R.styleable.CircleRoadProgress_roadColor, Color.parseColor("#575757"))
+            ta.getColor(R.styleable.CircleRoadProgress_roadColor, "#575757".toColor())
         roadStrokeWidth =
             ta.getDimensionPixelSize(R.styleable.CircleRoadProgress_roadStrokeWidth, 10).toFloat()
         roadRadius =
             ta.getDimensionPixelSize(R.styleable.CircleRoadProgress_roadRadius, 42).toFloat()
         arcLoadingColor =
-            ta.getColor(R.styleable.CircleRoadProgress_arcLoadingColor, Color.parseColor("#f5d600"))
+            ta.getColor(R.styleable.CircleRoadProgress_arcLoadingColor, "#f5d600".toColor())
         arcLoadingStrokeWidth =
             ta.getDimensionPixelSize(R.styleable.CircleRoadProgress_arcLoadingStrokeWidth, 3)
                 .toFloat()

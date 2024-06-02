@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.util.toast
 
-import android.graphics.Color
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.ColorInt
@@ -12,6 +11,7 @@ import com.google.android.material.snackbar.Snackbar
 import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.settings.CurrentTheme
+import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.ErrorLocalizer
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -55,7 +55,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
         @ColorInt color: Int
     ): Snackbar {
         val text_color =
-            if (isColorDark(color)) Color.parseColor("#ffffff") else Color.parseColor("#000000")
+            if (isColorDark(color)) "#ffffff".toColor() else "#000000".toColor()
         val ret = Snackbar.make(view, text.orEmpty(), duration).setBackgroundTint(color)
             .setActionTextColor(text_color).setTextColor(text_color).setAnchorView(anchorView)
         return ret.setOnClickListener { ret.dismiss() }
@@ -72,7 +72,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
     ): Snackbar {
         val color = CurrentTheme.getColorPrimary(view.context)
         val text_color =
-            if (isColorDark(color)) Color.parseColor("#ffffff") else Color.parseColor("#000000")
+            if (isColorDark(color)) "#ffffff".toColor() else "#000000".toColor()
         val ret = Snackbar.make(view, text.orEmpty(), duration).setBackgroundTint(color)
             .setActionTextColor(text_color).setTextColor(text_color).setAnchorView(anchorView)
         return ret.setOnClickListener { ret.dismiss() }
@@ -106,19 +106,19 @@ class CustomSnackbars private constructor(private val view: View, private var an
     }
 
     override fun showToastSuccessBottom(message: String?) {
-        coloredSnack(message, Color.parseColor("#AA48BE2D")).show()
+        coloredSnack(message, "#AA48BE2D".toColor()).show()
     }
 
     override fun showToastSuccessBottom(@StringRes message: Int, vararg params: Any?) {
-        coloredSnack(message, Color.parseColor("#AA48BE2D"), params).show()
+        coloredSnack(message, "#AA48BE2D".toColor(), params).show()
     }
 
     override fun showToastWarningBottom(message: String?) {
-        coloredSnack(message, Color.parseColor("#AAED760E")).show()
+        coloredSnack(message, "#AAED760E".toColor()).show()
     }
 
     override fun showToastWarningBottom(@StringRes message: Int, vararg params: Any?) {
-        coloredSnack(message, Color.parseColor("#AAED760E"), params).show()
+        coloredSnack(message, "#AAED760E".toColor(), params).show()
     }
 
     override fun showToastInfo(message: String?) {
@@ -130,11 +130,11 @@ class CustomSnackbars private constructor(private val view: View, private var an
     }
 
     override fun showToastError(message: String?) {
-        coloredSnack(message, Color.parseColor("#F44336")).show()
+        coloredSnack(message, "#F44336".toColor()).show()
     }
 
     override fun showToastError(message: Int, vararg params: Any?) {
-        coloredSnack(message, Color.parseColor("#F44336"), params).show()
+        coloredSnack(message, "#F44336".toColor(), params).show()
     }
 
     override fun showToastThrowable(throwable: Throwable?) {
@@ -142,7 +142,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
             ErrorLocalizer.localizeThrowable(
                 Includes.provideApplicationContext(),
                 throwable
-            ), Color.parseColor("#F44336")
+            ), "#F44336".toColor()
         )
         if (throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
             ret.setAction(R.string.more_info) {

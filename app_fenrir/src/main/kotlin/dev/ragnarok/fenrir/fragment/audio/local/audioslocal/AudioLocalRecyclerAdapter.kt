@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.audio.local.audioslocal
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Color
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.BaseColumns
@@ -45,6 +44,7 @@ import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Pair
@@ -175,12 +175,12 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
         when (playerStatus()) {
             1 -> {
                 Utils.doWavesLottie(holder.visual, true)
-                holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
+                holder.play_cover.setColorFilter("#44000000".toColor())
             }
 
             2 -> {
                 Utils.doWavesLottie(holder.visual, false)
-                holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
+                holder.play_cover.setColorFilter("#44000000".toColor())
             }
         }
     }
@@ -286,7 +286,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                                     ?.setDurationSnack(Snackbar.LENGTH_LONG)
                                     ?.coloredSnack(
                                         R.string.success,
-                                        Color.parseColor("#AA48BE2D")
+                                        "#AA48BE2D".toColor()
                                     )
                                     ?.show()
                             },
@@ -301,7 +301,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                     ) {
                         CustomSnackbars.createCustomSnackbars(view)
                             ?.setDurationSnack(Snackbar.LENGTH_LONG)
-                            ?.coloredSnack(R.string.success, Color.parseColor("#AA48BE2D"))
+                            ?.coloredSnack(R.string.success, "#AA48BE2D".toColor())
                             ?.show()
                         mClickListener?.onDelete(position)
                     }

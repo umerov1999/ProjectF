@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -35,6 +34,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.view.CircleRoadProgress
 
@@ -500,7 +500,7 @@ class AttchmentsEditorAdapter(
     }
 
     companion object {
-        private val ERROR_COLOR = Color.parseColor("#ff0000")
+        private val ERROR_COLOR = "#ff0000".toColor()
         private var idGenerator = 0
         internal fun generateNextHolderId(): Int {
             idGenerator++

@@ -10,8 +10,10 @@ class VKApiLongpollUpdates {
     //{"ts":1841741106,"updates":[[5,1200880,51,26632922,1528116889,"и тд",{"title":""},{},1000771599]]}
     var ts: Long = 0
     var failed = 0
-    var write_text_in_dialog_updates: MutableList<WriteTextInDialogUpdate>? = null
+
     var add_message_updates: MutableList<AddMessageUpdate>? = null
+
+    var write_text_in_dialog_updates: MutableList<WriteTextInDialogUpdate>? = null
     var user_is_online_updates: MutableList<UserIsOnlineUpdate>? = null
     var user_is_offline_updates: MutableList<UserIsOfflineUpdate>? = null
     var message_flags_reset_updates: MutableList<MessageFlagsResetUpdate>? = null
@@ -20,6 +22,12 @@ class VKApiLongpollUpdates {
     var output_messages_set_read_updates: MutableList<OutputMessagesSetReadUpdate>? = null
     var badge_count_change_updates: MutableList<BadgeCountChangeUpdate>? = null
     var message_reaction_changed_updates: MutableList<ReactionMessageChangeUpdate>? = null
+
+    fun isOnlyAddMessages(): Boolean {
+        return write_text_in_dialog_updates.isNullOrEmpty() && user_is_online_updates.isNullOrEmpty() && user_is_offline_updates.isNullOrEmpty() &&
+                message_flags_reset_updates.isNullOrEmpty() && message_flags_set_updates.isNullOrEmpty() && input_messages_set_read_updates.isNullOrEmpty() &&
+                output_messages_set_read_updates.isNullOrEmpty() && badge_count_change_updates.isNullOrEmpty() && message_reaction_changed_updates.isNullOrEmpty()
+    }
 
     //public VkApiLongpollUpdates(int account_id) {
     //    this.account_id = account_id;

@@ -20,6 +20,7 @@ import dev.ragnarok.fenrir.module.FileUtils
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.ISettings.IMainSettings
 import dev.ragnarok.fenrir.settings.theme.ThemeOverlay
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.empty
@@ -450,11 +451,11 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val isCustom_chat_color: Boolean
         get() = getPreferences(app).getBoolean("custom_chat_color_usage", false)
     override val colorMyMessage: Int
-        get() = getPreferences(app).getInt("custom_message_color", Color.parseColor("#CBD438FF"))
+        get() = getPreferences(app).getInt("custom_message_color", "#CBD438FF".toColor())
     override val secondColorMyMessage: Int
         get() = getPreferences(app).getInt(
             "custom_second_message_color",
-            Color.parseColor("#BF6539DF")
+            "#BF6539DF".toColor()
         )
     override val isCustom_MyMessage: Boolean
         get() = getPreferences(app).getBoolean("custom_message_color_usage", false)

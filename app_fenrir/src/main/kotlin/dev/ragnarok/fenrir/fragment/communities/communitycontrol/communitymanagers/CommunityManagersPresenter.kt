@@ -7,7 +7,6 @@ import dev.ragnarok.fenrir.Includes.stores
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
-import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.domain.IGroupSettingsInteractor
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.impl.GroupSettingsInteractor
@@ -22,7 +21,6 @@ import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 
 class CommunityManagersPresenter(
     accountId: Long,
@@ -75,10 +73,9 @@ class CommunityManagersPresenter(
         appendDisposable(
             networkInterfaces.vkDefault(accountId).users()[Ids, null, Fields.FIELDS_BASE_USER, null]
                 .fromIOToMain()
-                .subscribe({ t: List<VKApiUser>? ->
-                    val users = listEmptyIfNull(t)
-                    val managers: MutableList<Manager> = ArrayList(users.size)
-                    for (user in users) {
+                .subscribe({
+                    val managers: MutableList<Manager> = ArrayList(it.size)
+                    for (user in it) {
                         val contact = findByIdU(contacts, user.id)
                         val manager = Manager(transformUser(user), user.role)
                         if (contact != null) {

@@ -7,7 +7,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -55,6 +54,7 @@ import dev.ragnarok.fenrir.place.PlaceUtil.goToPostCreation
 import dev.ragnarok.fenrir.settings.AppPrefs
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
@@ -422,7 +422,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             items.add(
                 Item(Menu.HLS, Text(R.string.play_hls))
                     .setIcon(R.drawable.video)
-                    .setColor(Color.parseColor("#ff0000"))
+                    .setColor("#ff0000".toColor())
                     .setSection(section)
             )
         }
@@ -430,7 +430,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             items.add(
                 Item(Menu.LIVE, Text(R.string.player_live))
                     .setSection(section)
-                    .setColor(Color.parseColor("#ff0000"))
+                    .setColor("#ff0000".toColor())
                     .setIcon(R.drawable.video)
             )
         }

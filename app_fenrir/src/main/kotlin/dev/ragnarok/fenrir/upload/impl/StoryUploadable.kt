@@ -45,14 +45,14 @@ class StoryUploadable(private val context: Context, private val networker: INetw
             var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
-                val file = File(uri!!.path!!)
+                val file = File(uri?.path ?: throw NotFoundException("uri.path is empty"))
                 inputStream = if (file.isFile) {
                     FileInputStream(file)
                 } else {
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    return@flatMap Single.error<UploadResult<Story>>(
+                    return@flatMap Single.error(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
@@ -61,7 +61,7 @@ class StoryUploadable(private val context: Context, private val networker: INetw
                 val filename = UploadUtils.findFileName(context, uri)
                 return@flatMap networker.uploads()
                     .uploadStoryRx(
-                        server.url ?: throw NotFoundException("upload url empty"),
+                        server.url ?: throw NotFoundException("Upload url empty!"),
                         filename,
                         inputStream,
                         listener,
@@ -70,28 +70,32 @@ class StoryUploadable(private val context: Context, private val networker: INetw
                     .doFinally(safelyCloseAction(inputStream))
                     .flatMap { dto ->
                         if (dto.error.nonNullNoEmpty()) {
-                            throw Exception(dto.error)
-                        }
-                        networker
-                            .vkDefault(accountId)
-                            .stories()
-                            .stories_save(dto.response?.upload_result)
-                            .map {
-                                listEmptyIfNull(it.items)
-                            }
-                            .flatMap { tmpList ->
-                                owners.findBaseOwnersDataAsBundle(
-                                    accountId, listOf(
-                                        Settings.get().accounts().current
-                                    ), IOwnersRepository.MODE_ANY, null
-                                )
-                                    .flatMap {
-                                        val document =
-                                            Dto2Model.transformStory(tmpList[0], it)
-                                        val result = UploadResult(server, document)
-                                        Single.just(result)
+                            Single.error(Exception(dto.error))
+                        } else {
+                            networker
+                                .vkDefault(accountId)
+                                .stories()
+                                .stories_save(dto.response?.upload_result)
+                                .map {
+                                    listEmptyIfNull(it.items)
+                                }
+                                .flatMap { tmpList ->
+                                    if (tmpList.isEmpty()) {
+                                        Single.error(NotFoundException("[stories_save] returned empty list"))
+                                    } else {
+                                        owners.findBaseOwnersDataAsBundle(
+                                            accountId, listOf(
+                                                Settings.get().accounts().current
+                                            ), IOwnersRepository.MODE_ANY, null
+                                        ).flatMap {
+                                            val document =
+                                                Dto2Model.transformStory(tmpList[0], it)
+                                            val result = UploadResult(server, document)
+                                            Single.just(result)
+                                        }
                                     }
-                            }
+                                }
+                        }
                     }
             } catch (e: Exception) {
                 safelyClose(inputStream)

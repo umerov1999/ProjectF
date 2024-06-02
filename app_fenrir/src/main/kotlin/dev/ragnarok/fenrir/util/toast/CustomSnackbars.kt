@@ -1,13 +1,13 @@
 package dev.ragnarok.fenrir.util.toast
 
-import android.graphics.Color
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import dev.ragnarok.fenrir.settings.CurrentTheme
-import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.toColor
+import dev.ragnarok.fenrir.util.Utils.isColorDark
 
 class CustomSnackbars private constructor(private val view: View, private val anchorView: View?) {
     @BaseTransientBottomBar.Duration
@@ -42,7 +42,7 @@ class CustomSnackbars private constructor(private val view: View, private val an
         @ColorInt color: Int
     ): Snackbar {
         val text_color =
-            if (Utils.isColorDark(color)) Color.parseColor("#ffffff") else Color.parseColor("#000000")
+            if (isColorDark(color)) "#ffffff".toColor() else "#000000".toColor()
         val ret = Snackbar.make(view, text.orEmpty(), duration).setBackgroundTint(color)
             .setActionTextColor(text_color).setTextColor(text_color).setAnchorView(anchorView)
         return ret.setOnClickListener { ret.dismiss() }
@@ -59,7 +59,7 @@ class CustomSnackbars private constructor(private val view: View, private val an
     ): Snackbar {
         val color = CurrentTheme.getColorPrimary(view.context)
         val text_color =
-            if (Utils.isColorDark(color)) Color.parseColor("#ffffff") else Color.parseColor("#000000")
+            if (isColorDark(color)) "#ffffff".toColor() else "#000000".toColor()
         val ret = Snackbar.make(view, text.orEmpty(), duration).setBackgroundTint(color)
             .setActionTextColor(text_color).setTextColor(text_color).setAnchorView(anchorView)
         return ret.setOnClickListener { ret.dismiss() }

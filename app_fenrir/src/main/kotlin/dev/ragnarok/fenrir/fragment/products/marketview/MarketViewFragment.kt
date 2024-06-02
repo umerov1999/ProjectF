@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.products.marketview
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +25,7 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getTmpSourceGalleryPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.view.AspectRatioImageView
@@ -112,12 +112,12 @@ class MarketViewFragment : BaseMvpFragment<MarketViewPresenter, IMarketViewView>
             }
 
             2 -> {
-                available?.setTextColor(Color.parseColor("#ffaa00"))
+                available?.setTextColor("#ffaa00".toColor())
                 available?.setText(R.string.markets_not_available)
             }
 
             else -> {
-                available?.setTextColor(Color.parseColor("#ff0000"))
+                available?.setTextColor("#ff0000".toColor())
                 available?.setText(R.string.markets_deleted)
             }
         }

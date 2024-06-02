@@ -46,6 +46,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils
@@ -108,9 +109,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
             val stateSpeed = presenter?.togglePlaybackSpeed() ?: false
             Utils.setTint(
                 mPlaySpeed,
-                if (stateSpeed) CurrentTheme.getColorPrimary(this) else Color.parseColor(
-                    "#ffffff"
-                )
+                if (stateSpeed) CurrentTheme.getColorPrimary(this) else "#ffffff".toColor()
             )
         }
         commentsButton?.setOnClickListener {
@@ -260,7 +259,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         CustomSnackbars.createCustomSnackbars(mContentRoot, null, true)
             ?.setDurationSnack(Snackbar.LENGTH_LONG)?.let {
                 if (error) {
-                    it.coloredSnack(message, Color.parseColor("#ff0000")).show()
+                    it.coloredSnack(message, "#ff0000".toColor()).show()
                 } else {
                     it.defaultSnack(message).show()
                 }
@@ -271,7 +270,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         CustomSnackbars.createCustomSnackbars(mContentRoot, null, true)
             ?.setDurationSnack(Snackbar.LENGTH_LONG)?.let {
                 if (error) {
-                    it.coloredSnack(message, Color.parseColor("#ff0000")).show()
+                    it.coloredSnack(message, "#ff0000".toColor()).show()
                 } else {
                     it.defaultSnack(message).show()
                 }
@@ -443,9 +442,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         }
         Utils.setTint(
             mPlaySpeed,
-            if (isPlaySpeed) CurrentTheme.getColorPrimary(this) else Color.parseColor(
-                "#ffffff"
-            )
+            if (isPlaySpeed) CurrentTheme.getColorPrimary(this) else "#ffffff".toColor()
         )
         shortVideoDuration?.text = AppTextUtils.getDurationString(shortVideo.duration)
         displayLikes(shortVideo.likesCount, shortVideo.isUserLikes)

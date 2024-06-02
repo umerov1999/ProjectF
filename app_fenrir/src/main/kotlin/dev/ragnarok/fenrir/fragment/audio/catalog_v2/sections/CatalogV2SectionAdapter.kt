@@ -8,7 +8,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.view.ContextMenu
 import android.view.View
 import android.view.ViewGroup
@@ -82,6 +81,7 @@ import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppTextUtils
@@ -740,12 +740,12 @@ class CatalogV2SectionAdapter(
         when (MusicPlaybackController.playerStatus()) {
             1 -> {
                 Utils.doWavesLottie(holder.visual, true)
-                holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
+                holder.play_cover.setColorFilter("#44000000".toColor())
             }
 
             2 -> {
                 Utils.doWavesLottie(holder.visual, false)
-                holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
+                holder.play_cover.setColorFilter("#44000000".toColor())
             }
         }
     }
@@ -1215,11 +1215,11 @@ class CatalogV2SectionAdapter(
             if (audio.isSelected) {
                 when {
                     audio.url.isNullOrEmpty() -> {
-                        isSelectedView.setCardBackgroundColor(Color.parseColor("#ff0000"))
+                        isSelectedView.setCardBackgroundColor("#ff0000".toColor())
                     }
 
                     DownloadWorkUtils.TrackIsDownloaded(audio) != 0 -> {
-                        isSelectedView.setCardBackgroundColor(Color.parseColor("#00aa00"))
+                        isSelectedView.setCardBackgroundColor("#00aa00".toColor())
                     }
 
                     else -> {

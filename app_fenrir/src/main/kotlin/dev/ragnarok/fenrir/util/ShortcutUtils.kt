@@ -212,7 +212,7 @@ object ShortcutUtils {
             with()
                 .load(url)
                 .transform(RoundTransformation())
-                .get()!!
+                .get() ?: throw UnsupportedOperationException()
         }
     }
 
@@ -222,7 +222,7 @@ object ShortcutUtils {
     fun addDynamicShortcut(context: Context, accountId: Long, peer: Peer): Completable {
         val app = context.applicationContext
         return loadRoundAvatar(peer.avaUrl ?: VKApiUser.CAMERA_50)
-            .flatMapCompletable { bitmap: Bitmap? ->
+            .flatMapCompletable {
                 Completable.fromAction {
                     val manager = app.getSystemService(ShortcutManager::class.java)
                     val infos: ArrayList<ShortcutInfo> = ArrayList(manager.dynamicShortcuts)
@@ -243,7 +243,7 @@ object ShortcutUtils {
                         .setShortLabel(title ?: ("id" + peer.id))
                         .setIntent(intent)
                         .setRank(rank)
-                    val icon = Icon.createWithBitmap(bitmap)
+                    val icon = Icon.createWithBitmap(it)
                     builder.setIcon(icon)
                     if (mustBeRemoved.isNotEmpty()) {
                         manager.removeDynamicShortcuts(mustBeRemoved)

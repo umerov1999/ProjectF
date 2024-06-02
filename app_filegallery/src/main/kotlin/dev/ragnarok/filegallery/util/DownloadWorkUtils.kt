@@ -8,7 +8,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.webkit.MimeTypeMap
@@ -30,6 +29,7 @@ import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.settings.theme.ThemesController
+import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.toast.CustomToast
 import okhttp3.Request
 import java.io.BufferedInputStream
@@ -468,7 +468,7 @@ object DownloadWorkUtils {
                     R.drawable.ic_error_toast_vector,
                     true
                 )
-                mBuilder.color = Color.parseColor("#ff0000")
+                mBuilder.color = "#ff0000".toColor()
                 show_notification(
                     mBuilder,
                     NotificationHelper.NOTIFICATION_DOWNLOAD,
@@ -506,7 +506,7 @@ object DownloadWorkUtils {
             builder.setContentTitle(applicationContext.getString(R.string.work_manager))
                 .setContentText(applicationContext.getString(R.string.foreground_downloader))
                 .setSmallIcon(R.drawable.web)
-                .setColor(Color.parseColor("#dd0000"))
+                .setColor("#dd0000".toColor())
                 .setOngoing(true)
 
             setForegroundAsync(

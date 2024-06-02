@@ -49,14 +49,14 @@ class DocumentUploadable(
             var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
-                val file = File(uri!!.path!!)
+                val file = File(uri?.path ?: throw NotFoundException("uri.path is empty"))
                 inputStream = if (file.isFile) {
                     FileInputStream(file)
                 } else {
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    return@flatMap Single.error<UploadResult<Document>>(
+                    return@flatMap Single.error(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
@@ -65,36 +65,41 @@ class DocumentUploadable(
                 val filename = UploadUtils.findFileName(context, uri)
                 networker.uploads()
                     .uploadDocumentRx(
-                        server.url ?: throw NotFoundException("upload url empty"),
+                        server.url ?: throw NotFoundException("Upload url empty!"),
                         filename,
                         inputStream,
                         listener
                     )
                     .doFinally(safelyCloseAction(inputStream))
                     .flatMap { dto ->
-                        networker
-                            .vkDefault(accountId)
-                            .docs()
-                            .save(dto.file, filename, null)
-                            .flatMap { tmpList ->
-                                if (tmpList.type.isEmpty()) {
-                                    Single.error<UploadResult<Document>>(
-                                        NotFoundException()
-                                    )
+                        if (dto.file.isNullOrEmpty()) {
+                            Single.error(NotFoundException("VK doesn't upload this file"))
+                        } else {
+                            networker
+                                .vkDefault(accountId)
+                                .docs()
+                                .save(dto.file, filename, null)
+                                .flatMap { tmpList ->
+                                    if (tmpList.type.isEmpty()) {
+                                        Single.error(
+                                            NotFoundException()
+                                        )
+                                    } else {
+                                        val document = Dto2Model.transform(tmpList.doc)
+                                        val result = UploadResult(server, document)
+                                        if (upload.isAutoCommit) {
+                                            val entity = Dto2Entity.mapDoc(tmpList.doc)
+                                            commit(
+                                                storage,
+                                                upload,
+                                                entity
+                                            ).andThen(Single.just(result))
+                                        } else {
+                                            Single.just(result)
+                                        }
+                                    }
                                 }
-                                val document = Dto2Model.transform(tmpList.doc)
-                                val result = UploadResult(server, document)
-                                if (upload.isAutoCommit) {
-                                    val entity = Dto2Entity.mapDoc(tmpList.doc)
-                                    commit(
-                                        storage,
-                                        upload,
-                                        entity
-                                    ).andThen(Single.just(result))
-                                } else {
-                                    Single.just(result)
-                                }
-                            }
+                        }
                     }
             } catch (e: Exception) {
                 safelyClose(inputStream)

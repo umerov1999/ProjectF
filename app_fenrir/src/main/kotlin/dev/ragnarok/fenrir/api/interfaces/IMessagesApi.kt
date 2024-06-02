@@ -17,6 +17,7 @@ import dev.ragnarok.fenrir.api.model.response.ConversationsResponse
 import dev.ragnarok.fenrir.api.model.response.DialogsResponse
 import dev.ragnarok.fenrir.api.model.response.ItemsProfilesGroupsResponse
 import dev.ragnarok.fenrir.api.model.response.LongpollHistoryResponse
+import dev.ragnarok.fenrir.api.model.response.MessageDeleteResponse
 import dev.ragnarok.fenrir.api.model.response.MessageHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
 import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
@@ -74,7 +75,7 @@ interface IMessagesApi {
         messageIds: Collection<Int>,
         deleteForAll: Boolean?,
         spam: Boolean?
-    ): Single<Map<String, Int>>
+    ): Single<List<MessageDeleteResponse>>
 
     @CheckResult
     fun markAsRead(peerId: Long?, startMessageId: Int?): Single<Boolean>

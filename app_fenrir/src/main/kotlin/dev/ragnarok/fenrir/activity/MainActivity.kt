@@ -803,7 +803,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         }
     }
 
-    internal fun onSetOffline(success: Boolean) {
+    private fun onSetOffline(success: Boolean) {
         if (success) createCustomToast(this).showToast(R.string.succ_offline) else createCustomToast(
             this
         ).showToastError(R.string.err_offline)

@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Color
 import android.media.MediaMetadataRetriever
 import android.view.LayoutInflater
 import android.view.View
@@ -46,6 +45,7 @@ import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.doDownloadAudio
@@ -96,11 +96,11 @@ class AudioLocalServerRecyclerAdapter(
         }
         audioListDisposable = doBitrate(url).fromIOToMain()
             .subscribe(
-                { r: Int? ->
+                {
                     createCustomToast(mContext).showToast(
                         mContext.resources.getString(
                             R.string.bitrate,
-                            r,
+                            it,
                             Utils.BytesToSize(size.toLong())
                         )
                     )
@@ -127,12 +127,12 @@ class AudioLocalServerRecyclerAdapter(
         when (playerStatus()) {
             1 -> {
                 Utils.doWavesLottie(holder.visual, true)
-                holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
+                holder.play_cover.setColorFilter("#44000000".toColor())
             }
 
             2 -> {
                 Utils.doWavesLottie(holder.visual, false)
-                holder.play_cover.setColorFilter(Color.parseColor("#44000000"))
+                holder.play_cover.setColorFilter("#44000000".toColor())
             }
         }
     }
@@ -305,7 +305,7 @@ class AudioLocalServerRecyclerAdapter(
                     }
                     audioListDisposable =
                         mAudioInteractor.get_file_name(hash2).fromIOToMain().subscribe(
-                            { t: String? ->
+                            { t ->
                                 val root =
                                     View.inflate(mContext, R.layout.entry_file_name, null)
                                 root.findViewById<TextInputEditText>(R.id.edit_file_name).setText(

@@ -20,6 +20,9 @@ import dev.ragnarok.fenrir.settings.Settings
 object Accounts {
     @Suppress("DEPRECATION")
     fun showAccountSwitchedToast(context: Activity) {
+        if (context.isFinishing || context.isDestroyed) {
+            return
+        }
         val aid = Settings.get()
             .accounts()
             .current

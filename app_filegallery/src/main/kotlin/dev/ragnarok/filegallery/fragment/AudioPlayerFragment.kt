@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
@@ -37,6 +36,7 @@ import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.picasso.transforms.BlurTransformation
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
+import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.DownloadWorkUtils.TrackIsDownloaded
 import dev.ragnarok.filegallery.util.DownloadWorkUtils.doDownloadAudio
@@ -488,7 +488,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
             view?.let {
                 CustomSnackbars.createCustomSnackbars(view, mPlayPauseButton)
                     ?.setDurationSnack(Snackbar.LENGTH_LONG)
-                    ?.coloredSnack(R.string.no_system_equalizer, Color.parseColor("#eeff0000"))
+                    ?.coloredSnack(R.string.no_system_equalizer, "#eeff0000".toColor())
                     ?.show()
             }
         }

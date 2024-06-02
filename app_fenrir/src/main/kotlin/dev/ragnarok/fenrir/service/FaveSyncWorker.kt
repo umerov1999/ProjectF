@@ -6,7 +6,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -37,6 +36,7 @@ import dev.ragnarok.fenrir.model.ShortcutStored
 import dev.ragnarok.fenrir.model.criteria.WallCriteria
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Utils
@@ -92,7 +92,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         builder.setContentTitle(applicationContext.getString(R.string.work_manager))
             .setContentText(applicationContext.getString(R.string.foreground_downloader))
             .setSmallIcon(R.drawable.web)
-            .setColor(Color.parseColor("#dd0000"))
+            .setColor("#dd0000".toColor())
             .setOngoing(true)
         setForegroundAsync(
             ForegroundInfo(

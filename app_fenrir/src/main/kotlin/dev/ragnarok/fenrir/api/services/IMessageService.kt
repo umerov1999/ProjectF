@@ -16,13 +16,13 @@ import dev.ragnarok.fenrir.api.model.response.ConversationsResponse
 import dev.ragnarok.fenrir.api.model.response.DialogsResponse
 import dev.ragnarok.fenrir.api.model.response.ItemsProfilesGroupsResponse
 import dev.ragnarok.fenrir.api.model.response.LongpollHistoryResponse
+import dev.ragnarok.fenrir.api.model.response.MessageDeleteResponse
 import dev.ragnarok.fenrir.api.model.response.MessageHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
 import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
 import dev.ragnarok.fenrir.api.model.response.UploadChatPhotoResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import io.reactivex.rxjava3.core.Single
-import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 
 class IMessageService : IServiceRest() {
@@ -239,7 +239,7 @@ class IMessageService : IServiceRest() {
         messageIds: String?,
         deleteForAll: Int?,
         spam: Int?
-    ): Single<BaseResponse<Map<String, Int>>> {
+    ): Single<BaseResponse<List<MessageDeleteResponse>>> {
         return rest.request(
             "messages.delete",
             form(
@@ -247,7 +247,7 @@ class IMessageService : IServiceRest() {
                 "delete_for_all" to deleteForAll,
                 "spam" to spam
             ),
-            base(MapSerializer(String.serializer(), Int.serializer()))
+            baseList(MessageDeleteResponse.serializer())
         )
     }
 

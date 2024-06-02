@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.domain.mappers
 
-import android.graphics.Color
 import dev.ragnarok.fenrir.api.model.FaveLinkDto
 import dev.ragnarok.fenrir.api.model.PhotoSizeDto
 import dev.ragnarok.fenrir.api.model.VKApiArticle
@@ -119,6 +118,7 @@ import dev.ragnarok.fenrir.model.WikiPage
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.requireNonNull
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 
@@ -794,7 +794,7 @@ object Dto2Model {
             if (i.color.nonNullNoEmpty()) {
                 try {
                     list.add(
-                        Poll.PollBackgroundPoint().setColor(Color.parseColor("#" + i.color))
+                        Poll.PollBackgroundPoint().setColor(("#" + i.color).toColor())
                             .setPosition(i.position)
                     )
                 } catch (e: Exception) {

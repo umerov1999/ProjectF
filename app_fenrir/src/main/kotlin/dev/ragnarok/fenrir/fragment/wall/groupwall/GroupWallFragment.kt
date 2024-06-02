@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.wall.groupwall
 import android.app.Activity
 import android.content.DialogInterface
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -66,6 +65,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getTopicsPlace
 import dev.ragnarok.fenrir.settings.AvatarStyle
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.dp
 import dev.ragnarok.fenrir.util.Utils.getVerifiedColor
@@ -142,9 +142,9 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
             if (donate_anim == 2) {
                 val cur = Settings.get().ui().mainThemeKey
                 if ("fire" == cur || "yellow_violet" == cur) {
-                    mHeaderHolder?.tvName?.setTextColor(Color.parseColor("#df9d00"))
-                    mHeaderHolder?.tvDomain?.setTextColor(Color.parseColor("#df9d00"))
-                    setBackgroundTint(mHeaderHolder?.ivVerified, Color.parseColor("#df9d00"))
+                    mHeaderHolder?.tvName?.setTextColor("#df9d00".toColor())
+                    mHeaderHolder?.tvDomain?.setTextColor("#df9d00".toColor())
+                    setBackgroundTint(mHeaderHolder?.ivVerified, "#df9d00".toColor())
                     mHeaderHolder?.bDonate?.fromRes(
                         dev.ragnarok.fenrir_common.R.raw.donater_fire,
                         dp(100f),
@@ -223,7 +223,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
                 mHeaderHolder?.blacklisted?.playAnimation()
             } else {
                 mHeaderHolder?.blacklisted?.setImageResource(R.drawable.audio_died)
-                mHeaderHolder?.blacklisted?.setColorFilter(Color.parseColor("#AAFF0000"))
+                mHeaderHolder?.blacklisted?.setColorFilter("#AAFF0000".toColor())
             }
         } else {
             mHeaderHolder?.blacklisted?.visibility = View.GONE

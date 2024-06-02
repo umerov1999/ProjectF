@@ -3,6 +3,7 @@ package dev.ragnarok.filegallery.settings
 import android.content.Context
 import android.graphics.Color
 import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.view.media.PathAnimator
 
 
@@ -133,7 +134,7 @@ object CurrentTheme {
     fun getColorFromAttrs(resId: Int, context: Context, defaultColor: String): Int {
         val attribute = intArrayOf(resId)
         val array = context.theme.obtainStyledAttributes(attribute)
-        val color = array.getColor(0, Color.parseColor(defaultColor))
+        val color = array.getColor(0, defaultColor.toColor())
         array.recycle()
         return color
     }

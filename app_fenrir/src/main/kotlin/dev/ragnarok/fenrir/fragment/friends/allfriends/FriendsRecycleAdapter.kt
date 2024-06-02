@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.friends.allfriends
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,7 @@ import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.UsersPart
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.UserInfoResolveUtil
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
@@ -141,7 +141,7 @@ class FriendsRecycleAdapter(private var data: List<UsersPart>, private val conte
     }
 
     companion object {
-        private val STATUS_COLOR_OFFLINE = Color.parseColor("#999999")
+        private val STATUS_COLOR_OFFLINE = "#999999".toColor()
     }
 
 }

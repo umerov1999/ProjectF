@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.messages.chat.sheet
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +34,7 @@ import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.view.CircleRoadProgress
@@ -487,7 +487,7 @@ class AttachmentsBottomSheetAdapter(
     }
 
     companion object {
-        private val ERROR_COLOR = Color.parseColor("#ff0000")
+        private val ERROR_COLOR = "#ff0000".toColor()
         private const val VTYPE_BUTTON = 0
         private const val VTYPE_ENTRY = 1
     }
