@@ -39,30 +39,31 @@ class MessagesDecryptor(private val store: IStorages) : IMessagesDecryptor {
                         }
                     }
                     if (needDecryption.isEmpty()) {
-                        return@flatMap Single.just(messages)
-                    }
-                    getKeyPairs(accountId, sessions)
-                        .map { keys ->
-                            for (pair in needDecryption) {
-                                val message = pair.first
-                                val em = pair.second
-                                try {
-                                    val keyPair = keys[em.sessionId]
-                                    if (keyPair == null) {
+                        Single.just(messages)
+                    } else {
+                        getKeyPairs(accountId, sessions)
+                            .map { keys ->
+                                for (pair in needDecryption) {
+                                    val message = pair.first
+                                    val em = pair.second
+                                    try {
+                                        val keyPair = keys[em.sessionId]
+                                        if (keyPair == null) {
+                                            message.cryptStatus = CryptStatus.DECRYPT_FAILED
+                                            continue
+                                        }
+                                        val key =
+                                            if (message.isOut) keyPair.myAesKey else keyPair.hisAesKey
+                                        val decryptedText = decryptWithAes(em.originalText, key)
+                                        message.decryptedText = decryptedText
+                                        message.cryptStatus = CryptStatus.DECRYPTED
+                                    } catch (e: Exception) {
                                         message.cryptStatus = CryptStatus.DECRYPT_FAILED
-                                        continue
                                     }
-                                    val key =
-                                        if (message.isOut) keyPair.myAesKey else keyPair.hisAesKey
-                                    val decryptedText = decryptWithAes(em.originalText, key)
-                                    message.decryptedText = decryptedText
-                                    message.cryptStatus = CryptStatus.DECRYPTED
-                                } catch (e: Exception) {
-                                    message.cryptStatus = CryptStatus.DECRYPT_FAILED
                                 }
+                                messages
                             }
-                            messages
-                        }
+                    }
                 }
         }
     }

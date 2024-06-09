@@ -335,7 +335,7 @@ internal class MessagesApi(accountId: Long, provider: IServiceProvider) :
         extended: Boolean?,
         fields: String?
     ): Single<ItemsProfilesGroupsResponse<VKApiConversation>> {
-        val ids = join(peers, ",") { obj: Any -> obj.toString() }
+        val ids = join(peers, ",") { it.toString() }
         return serviceRx(TokenType.USER, TokenType.COMMUNITY)
             .flatMap { service ->
                 service

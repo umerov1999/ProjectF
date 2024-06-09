@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.poll
 import android.content.Context
 import android.content.res.ColorStateList
 import android.view.View
-import android.widget.CompoundButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -33,7 +32,7 @@ class PollAnswersAdapter(private val context: Context, items: MutableList<Poll.A
         val isMyAnswer = checkedIds.contains(answer.id)
         viewHolder.rbButton.setOnCheckedChangeListener(null)
         viewHolder.rbButton.isChecked = isMyAnswer
-        viewHolder.rbButton.setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
+        viewHolder.rbButton.setOnCheckedChangeListener { _, checked ->
             changeChecked(
                 answer.id, checked
             )

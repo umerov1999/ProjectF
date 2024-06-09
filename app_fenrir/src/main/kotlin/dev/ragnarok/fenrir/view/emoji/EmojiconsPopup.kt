@@ -206,7 +206,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
         val topSectionAdapter = SectionsAdapter(sections, mContext)
         recyclerView.adapter = topSectionAdapter
         view.findViewById<View>(R.id.backspace)
-            .setOnTouchListener(RepeatListener(700, 50) { v: View ->
+            .setOnTouchListener(RepeatListener(700, 50) { v ->
                 onEmojiconBackspaceClickedListener?.onEmojiconBackspaceClicked(v)
             })
         topSectionAdapter.setListener(object : SectionsAdapter.Listener {

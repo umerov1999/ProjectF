@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.messages.dialogs
 
 import android.Manifest
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -13,7 +12,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
@@ -80,7 +78,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
     DialogsAdapter.ClickListener, MenuProvider {
     private val requestSelectProfile = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val users: ArrayList<Owner> = (result.data
                 ?: return@registerForActivityResult).getParcelableArrayListExtraCompat(Extra.OWNERS)
@@ -96,7 +94,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
     private var mFab: UpEditFab? = null
     private val requestEnterPin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             Settings.get().security().showHiddenDialogs = true
             reconfigureOptionsHide(true)
@@ -233,7 +231,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
 
     override fun notifyHasAttachments(has: Boolean) {
         if (has) {
-            ItemTouchHelper(MessagesReplyItemCallback { o: Int ->
+            ItemTouchHelper(MessagesReplyItemCallback { o ->
                 if (mAdapter?.checkPosition(o) == true) {
                     val dialog = mAdapter?.getByPosition(o) ?: return@MessagesReplyItemCallback
                     presenter?.fireRepost(
@@ -508,12 +506,12 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
             .setTitle(R.string.info)
             .setCancelable(true)
             .setMessage(R.string.what_search)
-            .setNeutralButton(R.string.search_dialogs) { _: DialogInterface?, _: Int ->
+            .setNeutralButton(R.string.search_dialogs) { _, _ ->
                 val criteria = DialogsSearchCriteria("")
                 getSingleTabSearchPlace(accountId, SearchContentType.DIALOGS, criteria)
                     .tryOpenWith(requireActivity())
             }
-            .setPositiveButton(R.string.search_messages) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.search_messages) { _, _ ->
                 val criteria = MessageSearchCriteria("")
                 getSingleTabSearchPlace(accountId, SearchContentType.MESSAGES, criteria)
                     .tryOpenWith(requireActivity())

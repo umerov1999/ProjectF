@@ -24,7 +24,6 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 
@@ -120,7 +119,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
         attachToDbid: Int,
         generatedAttachmentId: Int
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val uri = uriForType(attachToType, accountId)
             val selection = idColumnFor(attachToType) + " = ?"
             val args = arrayOf(generatedAttachmentId.toString())

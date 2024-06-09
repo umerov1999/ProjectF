@@ -31,7 +31,6 @@ import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import kotlinx.serialization.builtins.ListSerializer
@@ -117,7 +116,7 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
     }
 
     override fun storeLists(accountId: Long, entities: List<FeedListEntity>): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val uri = getFeedListsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             operations.add(

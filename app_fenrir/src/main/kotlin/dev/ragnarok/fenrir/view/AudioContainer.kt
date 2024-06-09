@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -163,7 +162,7 @@ class AudioContainer : LinearLayout {
         audioListDisposable = if (audio.isHLS) {
             M3U8(pUrl).length.fromIOToMain()
                 .subscribe(
-                    { r: Long ->
+                    { r ->
                         createCustomToast(context).showToast(
                             getBitrate(
                                 context, audio.duration, r
@@ -176,7 +175,7 @@ class AudioContainer : LinearLayout {
         } else {
             getLength(pUrl).fromIOToMain()
                 .subscribe(
-                    { r: Long ->
+                    { r ->
                         createCustomToast(context).showToast(
                             getBitrate(
                                 context, audio.duration, r
@@ -205,7 +204,7 @@ class AudioContainer : LinearLayout {
             .setMessage(Text)
             .setTitle(title)
             .setPositiveButton(R.string.button_ok, null)
-            .setNeutralButton(R.string.copy_text) { _: DialogInterface?, _: Int ->
+            .setNeutralButton(R.string.copy_text) { _, _ ->
                 val clipboard = context.getSystemService(
                     Context.CLIPBOARD_SERVICE
                 ) as ClipboardManager?
@@ -539,7 +538,7 @@ class AudioContainer : LinearLayout {
                     val artists = Utils.getArrayFromHash(audio.main_artists)
                     if (audio.main_artists?.keys?.size.orZero() > 1) {
                         MaterialAlertDialogBuilder(context)
-                            .setItems(artists[1]) { _: DialogInterface?, which: Int ->
+                            .setItems(artists[1]) { _, which ->
                                 getArtistPlace(
                                     Settings.get().accounts().current,
                                     artists[0][which]
@@ -660,7 +659,7 @@ class AudioContainer : LinearLayout {
                 }
                 true
             }
-            check.ibPlay.setOnClickListener { v: View ->
+            check.ibPlay.setOnClickListener { v ->
                 if (Settings.get().main().isRevert_play_audio) {
                     doMenu(check, mAttachmentsActionCallback, g, v, audio, audios)
                 } else {
@@ -721,7 +720,7 @@ class AudioContainer : LinearLayout {
                 }
                 true
             }
-            check.Track.setOnClickListener { view: View ->
+            check.Track.setOnClickListener { view ->
                 check.cancelSelectionAnimation()
                 check.startSomeAnimation()
                 if (Settings.get().main().isRevert_play_audio) {

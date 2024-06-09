@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.fave.favelinks
 
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -163,7 +162,7 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
             .setTitle(R.string.enter_link)
             .setCancelable(true)
             .setView(root)
-            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_ok) { _, _ ->
                 actualDisposable.add(faveInteractor.addLink(
                     accountId,
                     root.findViewById<TextInputEditText>(R.id.edit_link).text.toString()

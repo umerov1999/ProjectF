@@ -6,7 +6,6 @@ import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
@@ -19,7 +18,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.fragment.app.DialogFragment
@@ -81,7 +79,7 @@ import java.io.File
 
 class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IUserWallView {
     private val openRequestResizeAvatar =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 lazyPresenter {
                     fireNewAvatarPhotoSelected(
@@ -94,7 +92,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
             }
         }
     private val openRequestSelectAvatar =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val photos: ArrayList<LocalPhoto>? =
                     result.data?.getParcelableArrayListExtraCompat(Extra.PHOTOS)
@@ -375,7 +373,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                 .setCancelable(true)
                 .setTitle(R.string.registration_date)
                 .setNegativeButton(R.string.button_cancel, null)
-                .setPositiveButton(R.string.copy_text) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.copy_text) { _, _ ->
                     val clipboard =
                         requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                     val clip = ClipData.newPlainText(
@@ -547,20 +545,20 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
     override fun showDeleteFromFriendsMessageDialog() {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.delete_from_friends)
-            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_yes) { _, _ ->
                 presenter?.fireDeleteFromFriends()
             }
-            .setNegativeButton(R.string.cancel) { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
+            .setNegativeButton(R.string.cancel) { dialogInterface, _ -> dialogInterface.dismiss() }
             .show()
     }
 
     override fun showUnbanMessageDialog() {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.is_to_blacklist)
-            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_yes) { _, _ ->
                 presenter?.fireRemoveBlacklistClick()
             }
-            .setNegativeButton(R.string.cancel) { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
+            .setNegativeButton(R.string.cancel) { dialogInterface, _ -> dialogInterface.dismiss() }
             .show()
     }
 
@@ -575,7 +573,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         } else {
             arrayOf(getString(R.string.open_photo), getString(R.string.open_avatar))
         }
-        MaterialAlertDialogBuilder(requireActivity()).setItems(items) { _: DialogInterface?, i: Int ->
+        MaterialAlertDialogBuilder(requireActivity()).setItems(items) { _, i ->
             when (i) {
                 0 -> presenter?.fireOpenAvatarsPhotoAlbum()
                 1 -> {
@@ -653,10 +651,10 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                 menu.add(R.string.add_to_blacklist).setOnMenuItemClickListener {
                     MaterialAlertDialogBuilder(requireActivity())
                         .setTitle(R.string.add_to_blacklist)
-                        .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                        .setPositiveButton(R.string.button_yes) { _, _ ->
                             presenter?.fireAddToBlacklistClick()
                         }
-                        .setNegativeButton(R.string.cancel) { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
+                        .setNegativeButton(R.string.cancel) { dialogInterface, _ -> dialogInterface.dismiss() }
                         .show()
                     true
                 }

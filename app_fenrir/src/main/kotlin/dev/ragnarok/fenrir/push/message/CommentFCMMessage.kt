@@ -58,7 +58,7 @@ class CommentFCMMessage {
         val app = context.applicationContext
         getRx(context, accountId, from_id)
             .subscribeOn(INSTANCE)
-            .subscribe({ ownerInfo: OwnerInfo -> notifyImpl(app, ownerInfo) }, RxUtils.ignore())
+            .subscribe({ ownerInfo -> notifyImpl(app, ownerInfo) }, RxUtils.ignore())
     }
 
     private fun notifyImpl(context: Context, ownerInfo: OwnerInfo) {

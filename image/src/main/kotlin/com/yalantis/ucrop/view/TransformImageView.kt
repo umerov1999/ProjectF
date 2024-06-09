@@ -108,7 +108,7 @@ open class TransformImageView @JvmOverloads constructor(
                     setImageBitmap(bitmap)
                 }
 
-                override fun onFailure(bitmapWorkerException: Exception) {
+                override fun onFailure(bitmapWorkerException: Throwable) {
                     Log.e(TAG, "onFailure: setImageUri", bitmapWorkerException)
                     mTransformImageListener?.onLoadFailure(bitmapWorkerException)
                 }
@@ -274,7 +274,7 @@ open class TransformImageView @JvmOverloads constructor(
      */
     interface TransformImageListener {
         fun onLoadComplete()
-        fun onLoadFailure(e: Exception)
+        fun onLoadFailure(e: Throwable)
         fun onRotate(currentAngle: Float)
         fun onScale(currentScale: Float)
     }

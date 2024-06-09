@@ -38,46 +38,47 @@ class ChatPhotoUploadable(private val context: Context, private val networker: I
             try {
                 inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 if (inputStream == null) {
-                    return@flatMap Single.error(
+                    Single.error(
                         NotFoundException(
                             "Unable to open InputStream, URI: ${upload.fileUri}"
                         )
                     )
-                }
-                networker.uploads()
-                    .uploadChatPhotoRx(
-                        server.url ?: throw NotFoundException("Upload url empty!"),
-                        inputStream,
-                        listener
-                    )
-                    .doFinally { safelyClose(inputStream) }
-                    .flatMap { dto ->
-                        if (dto.response.isNullOrEmpty()) {
-                            Single.error(NotFoundException("VK doesn't upload this file"))
-                        } else {
-                            networker.vkDefault(accountId)
-                                .photos()
-                                .setChatPhoto(dto.response)
-                                .flatMap { response ->
-                                    if (response.message_id == 0 || response.chat == null) {
-                                        Single.error(
-                                            NotFoundException("message_id=0")
-                                        )
-                                    } else {
-                                        Single.just(
-                                            UploadResult(
-                                                server,
-                                                firstNonEmptyString(
-                                                    response.chat?.photo_200,
-                                                    response.chat?.photo_100,
-                                                    response.chat?.photo_50
-                                                ) ?: ""
+                } else {
+                    networker.uploads()
+                        .uploadChatPhotoRx(
+                            server.url ?: throw NotFoundException("Upload url empty!"),
+                            inputStream,
+                            listener
+                        )
+                        .doFinally { safelyClose(inputStream) }
+                        .flatMap { dto ->
+                            if (dto.response.isNullOrEmpty()) {
+                                Single.error(NotFoundException("VK doesn't upload this file"))
+                            } else {
+                                networker.vkDefault(accountId)
+                                    .photos()
+                                    .setChatPhoto(dto.response)
+                                    .flatMap { response ->
+                                        if (response.message_id == 0 || response.chat == null) {
+                                            Single.error(
+                                                NotFoundException("message_id=0")
                                             )
-                                        )
+                                        } else {
+                                            Single.just(
+                                                UploadResult(
+                                                    server,
+                                                    firstNonEmptyString(
+                                                        response.chat?.photo_200,
+                                                        response.chat?.photo_100,
+                                                        response.chat?.photo_50
+                                                    ) ?: ""
+                                                )
+                                            )
+                                        }
                                     }
-                                }
+                            }
                         }
-                    }
+                }
             } catch (e: Exception) {
                 safelyClose(inputStream)
                 Single.error(e)

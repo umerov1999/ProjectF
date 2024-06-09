@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.comments
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import androidx.annotation.StringRes
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -291,7 +290,7 @@ class CommentsPresenter(
         )
             .fromIOToMain()
             .subscribe(
-                { bundle: CommentsBundle -> onCommentsPortionPortionReceived(bundle) }
+                { bundle -> onCommentsPortionPortionReceived(bundle) }
             ) { throwable -> onCommentPortionError(getCauseIfRuntime(throwable)) })
     }
 
@@ -312,7 +311,7 @@ class CommentsPresenter(
         )
             .fromIOToMain()
             .subscribe(
-                { bundle: CommentsBundle -> onCommentsPortionPortionReceived(bundle) }
+                { bundle -> onCommentsPortionPortionReceived(bundle) }
             ) { throwable -> onCommentPortionError(getCauseIfRuntime(throwable)) })
     }
 
@@ -688,7 +687,7 @@ class CommentsPresenter(
         )
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.report)
-            .setItems(items) { dialog: DialogInterface, item: Int ->
+            .setItems(items) { dialog, item ->
                 appendDisposable(interactor.reportComment(
                     authorId, comment.fromId, comment.getObjectId(), item
                 )

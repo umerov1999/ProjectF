@@ -16,7 +16,6 @@ import dev.ragnarok.filegallery.view.natives.animation.AnimationNetworkCache.Com
 import dev.ragnarok.filegallery.view.natives.animation.AnimationNetworkCache.Companion.parentResDir
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.core.SingleOnSubscribe
 import io.reactivex.rxjava3.disposables.Disposable
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -107,7 +106,7 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
             setAnimationByUrlCache(key, true)
             return
         }
-        mDisposable = Single.create(SingleOnSubscribe { u: SingleEmitter<Boolean> ->
+        mDisposable = Single.create { u: SingleEmitter<Boolean> ->
             try {
                 val request: Request = Request.Builder()
                     .url(url)
@@ -115,7 +114,7 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
                 val response: Response = client.build().newCall(request).execute()
                 if (!response.isSuccessful) {
                     u.onSuccess(false)
-                    return@SingleOnSubscribe
+                    return@create
                 }
                 val bfr = response.body.byteStream()
                 val input = BufferedInputStream(bfr)
@@ -125,12 +124,12 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
                 cache.renameTempFile(key)
             } catch (e: Exception) {
                 u.onSuccess(false)
-                return@SingleOnSubscribe
+                return@create
             }
             u.onSuccess(true)
-        }).fromIOToMain()
+        }.fromIOToMain()
             .subscribe(
-                { u: Boolean ->
+                { u ->
                     if (u) {
                         setAnimationByUrlCache(key, true)
                     } else {
@@ -150,21 +149,21 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
             setAnimationByResCache(res, true)
             return
         }
-        mDisposable = Single.create(SingleOnSubscribe { u: SingleEmitter<Boolean> ->
+        mDisposable = Single.create { u: SingleEmitter<Boolean> ->
             try {
                 if (!copyRes(res)) {
                     u.onSuccess(false)
-                    return@SingleOnSubscribe
+                    return@create
                 }
                 cache.renameTempFile(res)
             } catch (e: Exception) {
                 u.onSuccess(false)
-                return@SingleOnSubscribe
+                return@create
             }
             u.onSuccess(true)
-        }).fromIOToMain()
+        }.fromIOToMain()
             .subscribe(
-                { u: Boolean ->
+                { u ->
                     if (u) {
                         setAnimationByResCache(res, true)
                     } else {

@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.util
 
 import android.content.Context
-import android.content.DialogInterface
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
@@ -31,7 +30,7 @@ class InputTextDialog internal constructor(val context: Context) {
         }
         input.inputType = inputType
         builder.setView(view)
-        builder.setPositiveButton(R.string.button_ok) { dialog: DialogInterface, _: Int ->
+        builder.setPositiveButton(R.string.button_ok) { dialog, _ ->
             input.error = null
             val newValue = input.text.toString().trim { it <= ' ' }
             if (newValue.isEmpty() && !allowEmpty) {
@@ -50,7 +49,7 @@ class InputTextDialog internal constructor(val context: Context) {
                 }
             }
         }
-        builder.setNegativeButton(R.string.button_cancel) { dialog: DialogInterface, _: Int ->
+        builder.setNegativeButton(R.string.button_cancel) { dialog, _ ->
             callback?.onCanceled()
             dialog.dismiss()
         }

@@ -52,75 +52,76 @@ class Photo2AlbumUploadable(
             try {
                 inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 if (inputStream == null) {
-                    return@flatMap Single.error(
+                    Single.error(
                         NotFoundException(
                             "Unable to open InputStream, URI: ${upload.fileUri}"
                         )
                     )
-                }
-                networker.uploads()
-                    .uploadPhotoToAlbumRx(
-                        server.url ?: throw NotFoundException("Upload url empty!"),
-                        inputStream,
-                        listener
-                    )
-                    .doFinally(safelyCloseAction(inputStream))
-                    .flatMap { dto ->
-                        var latitude: Double? = null
-                        var longitude: Double? = null
-                        try {
-                            val exif = UploadUtils.createStream(
-                                context, upload.fileUri
-                            )?.let {
-                                ExifInterface(
-                                    it
-                                )
-                            }
-                            val exifGeoDegree = exif?.let { ExifGeoDegree(it) }
-                            exifGeoDegree?.let {
-                                if (it.isValid) {
-                                    latitude = it.latitude
-                                    longitude = it.longitude
+                } else {
+                    networker.uploads()
+                        .uploadPhotoToAlbumRx(
+                            server.url ?: throw NotFoundException("Upload url empty!"),
+                            inputStream,
+                            listener
+                        )
+                        .doFinally(safelyCloseAction(inputStream))
+                        .flatMap { dto ->
+                            var latitude: Double? = null
+                            var longitude: Double? = null
+                            try {
+                                val exif = UploadUtils.createStream(
+                                    context, upload.fileUri
+                                )?.let {
+                                    ExifInterface(
+                                        it
+                                    )
                                 }
-                            }
-                        } catch (ignored: Exception) {
-                        }
-                        if (dto.photos_list.isNullOrEmpty()) {
-                            Single.error(NotFoundException("VK doesn't upload this file"))
-                        } else {
-                            networker
-                                .vkDefault(accountId)
-                                .photos()
-                                .save(
-                                    albumId,
-                                    groupId,
-                                    dto.server,
-                                    dto.photos_list,
-                                    dto.hash,
-                                    latitude,
-                                    longitude,
-                                    null
-                                )
-                                .flatMap { photos ->
-                                    if (photos.isEmpty()) {
-                                        Single.error(
-                                            NotFoundException()
-                                        )
-                                    } else {
-                                        val entity = Dto2Entity.mapPhoto(photos[0])
-                                        val photo = Dto2Model.transform(photos[0])
-                                        val result = Single.just(UploadResult(server, photo))
-                                        if (upload.isAutoCommit) commit(
-                                            storage,
-                                            upload,
-                                            entity
-                                        ).andThen(
-                                            result
-                                        ) else result
+                                val exifGeoDegree = exif?.let { ExifGeoDegree(it) }
+                                exifGeoDegree?.let {
+                                    if (it.isValid) {
+                                        latitude = it.latitude
+                                        longitude = it.longitude
                                     }
                                 }
+                            } catch (ignored: Exception) {
+                            }
+                            if (dto.photos_list.isNullOrEmpty()) {
+                                Single.error(NotFoundException("VK doesn't upload this file"))
+                            } else {
+                                networker
+                                    .vkDefault(accountId)
+                                    .photos()
+                                    .save(
+                                        albumId,
+                                        groupId,
+                                        dto.server,
+                                        dto.photos_list,
+                                        dto.hash,
+                                        latitude,
+                                        longitude,
+                                        null
+                                    )
+                                    .flatMap { photos ->
+                                        if (photos.isEmpty()) {
+                                            Single.error(
+                                                NotFoundException()
+                                            )
+                                        } else {
+                                            val entity = Dto2Entity.mapPhoto(photos[0])
+                                            val photo = Dto2Model.transform(photos[0])
+                                            val result = Single.just(UploadResult(server, photo))
+                                            if (upload.isAutoCommit) commit(
+                                                storage,
+                                                upload,
+                                                entity
+                                            ).andThen(
+                                                result
+                                            ) else result
+                                        }
+                                    }
+                            }
                         }
-                    }
+                }
             } catch (e: Exception) {
                 safelyClose(inputStream)
                 Single.error(e)

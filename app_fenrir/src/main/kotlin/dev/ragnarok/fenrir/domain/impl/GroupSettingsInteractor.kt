@@ -123,7 +123,7 @@ class GroupSettingsInteractor(
                             .setContactInfo(info)
                             .setDisplayAsContact(asContact)
                     }
-                    .flatMapCompletable { manager: Manager ->
+                    .flatMapCompletable { manager ->
                         repository.fireManagementChangeAction(
                             create(groupId, manager)
                         )
@@ -226,7 +226,7 @@ class GroupSettingsInteractor(
                         }
                         listEmptyIfNull(communities.groups?.get(0)?.contacts)
                     }
-                    .map<List<Manager>> {
+                    .map {
                         val users = listEmptyIfNull(
                             items.items
                         )

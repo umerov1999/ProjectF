@@ -12,7 +12,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -76,7 +75,7 @@ class VideosTabsFragment : BaseFragment(), MenuProvider {
         TabLayoutMediator(
             view.findViewById(R.id.fragment_videos_tabs),
             viewPager
-        ) { tab: TabLayout.Tab, position: Int ->
+        ) { tab, position ->
             when (adapter.pFragments[position]) {
                 LOCAL_SERVER -> tab.setText(R.string.on_server)
                 VIDEOS -> tab.setText(R.string.videos_my)

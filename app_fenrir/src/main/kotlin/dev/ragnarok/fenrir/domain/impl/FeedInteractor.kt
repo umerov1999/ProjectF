@@ -326,7 +326,7 @@ class FeedInteractor(
                 }
                 stores.feed()
                     .storeLists(accountId, entities)
-                    .andThen(Single.just<List<FeedList>>(lists))
+                    .andThen(Single.just(lists))
             }
     }
 
@@ -344,7 +344,7 @@ class FeedInteractor(
                     ownIds.all,
                     IOwnersRepository.MODE_ANY
                 )
-                    .map<List<News>> {
+                    .map {
                         val news: MutableList<News> = ArrayList(dbos.size)
                         for (dbo in dbos) {
                             news.add(buildNewsFromDbo(dbo, it))

@@ -34,7 +34,7 @@ class DocsInteractor(private val networker: INetworker, private val cache: IDocs
                     entities.add(mapDoc(dto))
                 }
                 cache.store(accountId, ownerId, entities, true)
-                    .andThen(Single.just<List<Document>>(documents))
+                    .andThen(Single.just(documents))
             }
     }
 

@@ -76,7 +76,7 @@ class PostPublishPrepareActivity : AppCompatActivity(), RecyclerMenuAdapter.Acti
                         accountId,
                         IOwnersRepository.MODE_NET
                     )
-                ) { owners: List<Owner>, owner: Owner ->
+                ) { owners, owner ->
                     val result: MutableList<Owner> = ArrayList()
                     result.add(owner)
                     result.addAll(owners)

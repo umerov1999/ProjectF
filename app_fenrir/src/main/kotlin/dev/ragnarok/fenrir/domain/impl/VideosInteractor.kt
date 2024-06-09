@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.VideoAlbum
 import dev.ragnarok.fenrir.model.VideoAlbumCriteria
 import dev.ragnarok.fenrir.model.VideoCriteria
-import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.join
@@ -49,7 +48,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.videos()
                     .insertData(accountId, ownerId, albumId, dbos, offset == 0)
-                    .andThen(Single.just<List<Video>>(videos))
+                    .andThen(Single.just(videos))
             }
     }
 
@@ -80,20 +79,23 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         val ids: Collection<AccessIdPair> = listOf(AccessIdPair(videoId, ownerId, accessKey))
         return networker.vkDefault(accountId)
             .video()[null, ids, null, null, null, true]
-            .map { items ->
-                items.items.nonNullNoEmpty {
-                    return@map it[0]
+            .flatMap { items ->
+                val tmp = items.items
+                if (tmp.isNullOrEmpty()) {
+                    Single.error(NotFoundException())
+                } else {
+                    Single.just(tmp[0])
                 }
-                throw NotFoundException()
             }
             .flatMap { dto ->
                 if (cache) {
                     val dbo = mapVideo(dto)
-                    return@flatMap this.cache.videos()
+                    this.cache.videos()
                         .insertData(accountId, ownerId, dto.album_id, listOf(dbo), false)
                         .andThen(Single.just(dto))
+                } else {
+                    Single.just(dto)
                 }
-                Single.just(dto)
             }
             .map { transform(it) }
     }
@@ -202,7 +204,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
                     val dbo = buildVideoAlbumDbo(dto)
                     albums.add(buildVideoAlbumFromDbo(dbo))
                 }
-                Single.just<List<VideoAlbum>>(albums)
+                Single.just(albums)
             }
     }
 
@@ -228,7 +230,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.videoAlbums()
                     .insertData(accountId, ownerId, dbos, offset == 0)
-                    .andThen(Single.just<List<VideoAlbum>>(albums))
+                    .andThen(Single.just(albums))
             }
     }
 

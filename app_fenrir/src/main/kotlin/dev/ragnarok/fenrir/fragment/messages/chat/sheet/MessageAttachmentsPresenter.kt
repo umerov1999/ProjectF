@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.messages.chat.sheet
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -39,6 +38,7 @@ import dev.ragnarok.fenrir.util.Utils.findIndexByPredicate
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
 import dev.ragnarok.fenrir.util.rxutils.RxUtils.subscribeOnIOAndIgnore
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.functions.Predicate
 import java.io.File
 import java.io.IOException
 
@@ -171,7 +171,7 @@ class MessageAttachmentsPresenter(
             .map { entities2entries(it) }
             .zipWith(
                 uploadManager[messageOwnerId, destination]
-            ) { atts: List<AttachmentEntry>, uploads: List<Upload> ->
+            ) { atts, uploads ->
                 val data: MutableList<AttachmentEntry> = ArrayList(atts.size + uploads.size)
                 for (u in uploads) {
                     data.add(AttachmentEntry(true, u))
@@ -278,21 +278,21 @@ class MessageAttachmentsPresenter(
         }
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.select)
-            .setNegativeButton(R.string.video) { _: DialogInterface?, _: Int ->
+            .setNegativeButton(R.string.video) { _, _ ->
                 doUploadFile(
                     file,
                     0,
                     0
                 )
             }
-            .setNeutralButton(R.string.select_audio) { _: DialogInterface?, _: Int ->
+            .setNeutralButton(R.string.select_audio) { _, _ ->
                 doUploadFile(
                     file,
                     0,
                     2
                 )
             }
-            .setPositiveButton(R.string.photo) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.photo) { _, _ ->
                 val size = Settings.get()
                     .main()
                     .uploadImageSize
@@ -473,7 +473,7 @@ class MessageAttachmentsPresenter(
             .setSingleChoiceItems(
                 R.array.array_image_sizes_settings_names,
                 Settings.get().main().uploadImageSizePref
-            ) { dialogInterface: DialogInterface, j: Int ->
+            ) { dialogInterface, j ->
                 Settings.get().main().uploadImageSize = j
                 dialogInterface.dismiss()
             }
@@ -590,7 +590,7 @@ class MessageAttachmentsPresenter(
             handleInputModels(bundle)
         }
         val predicate =
-            io.reactivex.rxjava3.functions.Predicate { event: IBaseEvent -> event.attachToType == AttachToType.MESSAGE && event.attachToId == messageId && event.accountId == messageOwnerId }
+            Predicate { event: IBaseEvent -> event.attachToType == AttachToType.MESSAGE && event.attachToId == messageId && event.accountId == messageOwnerId }
         appendDisposable(attachmentsRepository
             .observeAdding()
             .filter(predicate)

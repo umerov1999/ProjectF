@@ -153,7 +153,7 @@ class AuthApi(private val service: IDirectLoginSeviceProvider) : IAuthApi {
 
     companion object {
         fun <T : Any> extractResponseWithErrorHandling(): Function<BaseResponse<T>, T> {
-            return Function { response: BaseResponse<T> ->
+            return Function { response ->
                 response.error?.let { throw Exceptions.propagate(ApiException(it)) }
                     ?: (response.response
                         ?: throw NullPointerException("VK return null response"))

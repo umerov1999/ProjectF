@@ -16,7 +16,6 @@ import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.newPostChannelId
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.push.NotificationScheduler.INSTANCE
 import dev.ragnarok.fenrir.push.NotificationUtils.configOtherPushNotification
-import dev.ragnarok.fenrir.push.OwnerInfo
 import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.settings.theme.ThemesController.toastColor
@@ -51,7 +50,7 @@ class NewPostPushMessage {
                 val app = context.applicationContext
                 getRx(app, accountId, it.toLong())
                     .subscribeOn(INSTANCE)
-                    .subscribe({ ownerInfo: OwnerInfo ->
+                    .subscribe({ ownerInfo ->
                         notifyImpl(
                             app,
                             ownerInfo.avatar

@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.messages.chat
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -2369,7 +2368,7 @@ class ChatPresenter(
                     var inputStream: InputStream? = null
                     try {
                         inputStream = FileInputStream(file)
-                        return@flatMap Includes.networkInterfaces.uploads()
+                        Includes.networkInterfaces.uploads()
                             .uploadDocumentRx(
                                 server.url ?: throw NotFoundException("Upload url empty!"),
                                 if (filePath.isAnimated) filePath.animationName else file.name,
@@ -2400,7 +2399,7 @@ class ChatPresenter(
                             }
                     } catch (e: FileNotFoundException) {
                         safelyClose(inputStream)
-                        return@flatMap Single.error(e)
+                        Single.error(e)
                     }
                 }
         }
@@ -2752,7 +2751,7 @@ class ChatPresenter(
             .setSingleChoiceItems(
                 R.array.array_image_sizes_settings_names,
                 Settings.get().main().uploadImageSizePref
-            ) { dialogInterface: DialogInterface, j: Int ->
+            ) { dialogInterface, j ->
                 Settings.get().main().uploadImageSize = j
                 dialogInterface.dismiss()
             }

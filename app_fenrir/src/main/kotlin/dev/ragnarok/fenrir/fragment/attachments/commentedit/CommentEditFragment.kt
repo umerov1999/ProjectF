@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.attachments.commentedit
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -73,10 +72,10 @@ class CommentEditFragment : AbsAttachmentsEditFragment<CommentEditPresenter, ICo
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.confirmation)
             .setMessage(R.string.save_changes_question)
-            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_yes) { _, _ ->
                 presenter?.fireReadyClick()
             }
-            .setNegativeButton(R.string.button_no) { _: DialogInterface?, _: Int ->
+            .setNegativeButton(R.string.button_no) { _, _ ->
                 presenter?.fireSavingCancelClick()
             }
             .setNeutralButton(R.string.button_cancel, null)

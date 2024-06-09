@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -72,7 +71,7 @@ class TagDirFragment : BaseMvpFragment<TagDirPresenter, ITagDirView>(), ITagDirV
 
     private val requestPhotoUpdate = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null && (result.data
                 ?: return@registerForActivityResult)
                 .extras != null

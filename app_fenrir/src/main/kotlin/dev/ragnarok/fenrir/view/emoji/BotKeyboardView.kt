@@ -169,7 +169,7 @@ class BotKeyboardView : ScrollView {
                             0
                         )
                     )
-                    holder.button.setOnClickListener { v: View ->
+                    holder.button.setOnClickListener { v ->
                         delegate?.didPressedButton(
                             v.tag as Keyboard.Button,
                             needClose

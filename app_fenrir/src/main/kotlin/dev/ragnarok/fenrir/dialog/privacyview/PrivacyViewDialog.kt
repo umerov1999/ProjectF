@@ -2,10 +2,8 @@ package dev.ragnarok.fenrir.dialog.privacyview
 
 import android.app.Activity
 import android.app.Dialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -26,7 +24,7 @@ class PrivacyViewDialog : AccountDependencyDialogFragment(), PrivacyAdapter.Acti
     private var mAdapter: PrivacyAdapter? = null
     private val requestSelectUsersAllowed = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             val users: ArrayList<Owner>? =
                 result.data?.getParcelableArrayListExtraCompat(Extra.OWNERS)
@@ -41,7 +39,7 @@ class PrivacyViewDialog : AccountDependencyDialogFragment(), PrivacyAdapter.Acti
     }
     private val requestSelectUsersDisAllowed = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             val users: ArrayList<Owner>? =
                 result.data?.getParcelableArrayListExtraCompat(Extra.OWNERS)
@@ -77,7 +75,7 @@ class PrivacyViewDialog : AccountDependencyDialogFragment(), PrivacyAdapter.Acti
         return MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.privacy_settings)
             .setView(root)
-            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int -> returnResult() }
+            .setPositiveButton(R.string.button_ok) { _, _ -> returnResult() }
             .setNegativeButton(R.string.button_cancel, null)
             .show()
     }
@@ -96,7 +94,7 @@ class PrivacyViewDialog : AccountDependencyDialogFragment(), PrivacyAdapter.Acti
             getString(R.string.privacy_to_only_me)
         )
         MaterialAlertDialogBuilder(requireActivity())
-            .setItems(items) { _: DialogInterface?, which: Int ->
+            .setItems(items) { _, which ->
                 when (which) {
                     0 -> mPrivacy?.setType(Privacy.Type.ALL)
                     1 -> mPrivacy?.setType(Privacy.Type.FRIENDS)

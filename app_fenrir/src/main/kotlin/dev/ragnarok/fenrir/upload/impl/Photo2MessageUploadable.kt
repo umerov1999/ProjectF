@@ -47,48 +47,49 @@ class Photo2MessageUploadable(
             try {
                 inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 if (inputStream == null) {
-                    return@flatMap Single.error(
+                    Single.error(
                         NotFoundException(
                             "Unable to open InputStream, URI: ${upload.fileUri}"
                         )
                     )
-                }
-                networker.uploads()
-                    .uploadPhotoToMessageRx(
-                        server.url ?: throw NotFoundException("Upload url empty!"),
-                        inputStream,
-                        listener
-                    )
-                    .doFinally(safelyCloseAction(inputStream))
-                    .flatMap { dto ->
-                        if (dto.photo.isNullOrEmpty()) {
-                            Single.error(NotFoundException("VK doesn't upload this file"))
-                        } else {
-                            networker.vkDefault(accountId)
-                                .photos()
-                                .saveMessagesPhoto(dto.server, dto.photo, dto.hash)
-                                .flatMap { photos ->
-                                    if (photos.isEmpty()) {
-                                        Single.error(NotFoundException("[saveMessagesPhoto] returned empty list"))
-                                    } else {
-                                        val photo = Dto2Model.transform(photos[0])
-                                        val result = UploadResult(server, photo)
-                                        if (upload.isAutoCommit) {
-                                            attachIntoDatabaseRx(
-                                                attachmentsRepository,
-                                                messagesStorage,
-                                                accountId,
-                                                messageId,
-                                                photo
-                                            )
-                                                .andThen(Single.just(result))
+                } else {
+                    networker.uploads()
+                        .uploadPhotoToMessageRx(
+                            server.url ?: throw NotFoundException("Upload url empty!"),
+                            inputStream,
+                            listener
+                        )
+                        .doFinally(safelyCloseAction(inputStream))
+                        .flatMap { dto ->
+                            if (dto.photo.isNullOrEmpty()) {
+                                Single.error(NotFoundException("VK doesn't upload this file"))
+                            } else {
+                                networker.vkDefault(accountId)
+                                    .photos()
+                                    .saveMessagesPhoto(dto.server, dto.photo, dto.hash)
+                                    .flatMap { photos ->
+                                        if (photos.isEmpty()) {
+                                            Single.error(NotFoundException("[saveMessagesPhoto] returned empty list"))
                                         } else {
-                                            Single.just(result)
+                                            val photo = Dto2Model.transform(photos[0])
+                                            val result = UploadResult(server, photo)
+                                            if (upload.isAutoCommit) {
+                                                attachIntoDatabaseRx(
+                                                    attachmentsRepository,
+                                                    messagesStorage,
+                                                    accountId,
+                                                    messageId,
+                                                    photo
+                                                )
+                                                    .andThen(Single.just(result))
+                                            } else {
+                                                Single.just(result)
+                                            }
                                         }
                                     }
-                                }
+                            }
                         }
-                    }
+                }
             } catch (e: Exception) {
                 safelyClose(inputStream)
                 Single.error(e)

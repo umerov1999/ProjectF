@@ -59,7 +59,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
             ?: throw FileNotFoundException("can't open input stream, uri: $uri")
     }
 
-    private val filter: FilenameFilter = FilenameFilter { dir: File, filename: String ->
+    private val filter: FilenameFilter = FilenameFilter { dir, filename ->
         val sel = File(dir, filename)
         var ret = !sel.isHidden && sel.canRead() && !sel.isDirectory
         if (ret) {

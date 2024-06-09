@@ -10,7 +10,6 @@ import dev.ragnarok.fenrir.util.serializeble.json.internal.OkioSerialReader
 import dev.ragnarok.fenrir.util.serializeble.json.internal.WriteMode
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.ReaderJsonLexer
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import okio.buffer
 import okio.source
 import java.io.File
@@ -103,7 +102,7 @@ class FileExistJVM : AbsFileExist {
     }
 
     override fun findLocalImages(photos: List<SelectablePhotoWrapper>): Completable {
-        return Completable.create { t: CompletableEmitter ->
+        return Completable.create { t ->
             if (!setBusy(true)) {
                 return@create
             }
@@ -150,7 +149,7 @@ class FileExistJVM : AbsFileExist {
     }
 
     override fun findAllAudios(context: Context): Completable {
-        return if (!hasReadStoragePermissionSimple(context)) Completable.complete() else Completable.create { t: CompletableEmitter ->
+        return if (!hasReadStoragePermissionSimple(context)) Completable.complete() else Completable.create { t ->
             if (!setBusy(true)) {
                 t.onComplete()
                 return@create

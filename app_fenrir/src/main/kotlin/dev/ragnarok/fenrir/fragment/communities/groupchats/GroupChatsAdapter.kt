@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.communities.groupchats
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.PopupMenu
@@ -37,7 +36,7 @@ class GroupChatsAdapter(
         viewHolder.itemView.setOnLongClickListener {
             val popup = PopupMenu(context, viewHolder.itemView)
             popup.inflate(R.menu.topics_item_menu)
-            popup.setOnMenuItemClickListener { item1: MenuItem ->
+            popup.setOnMenuItemClickListener { item1 ->
                 if (item1.itemId == R.id.copy_url) {
                     val clipboard =
                         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?

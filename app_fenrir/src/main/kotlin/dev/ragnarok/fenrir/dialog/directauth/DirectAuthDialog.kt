@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.CompoundButton
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -77,7 +76,7 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
         })
         mCaptchaImage = view.findViewById(R.id.captcha_img)
         mSavePassword = view.findViewById(R.id.save_password)
-        mSavePassword?.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        mSavePassword?.setOnCheckedChangeListener { _, isChecked ->
             presenter?.fireSaveEdit(
                 isChecked
             )
@@ -85,7 +84,7 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
         builder.setView(view)
         builder.setPositiveButton(R.string.button_login, null)
         if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.KATE) {
-            builder.setNeutralButton(R.string.button_login_via_web) { _: DialogInterface?, _: Int ->
+            builder.setNeutralButton(R.string.button_login_via_web) { _, _ ->
                 presenter?.fireLoginViaWebClick()
             }
         }

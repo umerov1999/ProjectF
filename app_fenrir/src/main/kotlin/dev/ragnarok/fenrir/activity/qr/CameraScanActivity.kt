@@ -209,7 +209,7 @@ class CameraScanActivity : NoMainActivity() {
             .build()
         imageAnalysis.setAnalyzer(
             ContextCompat.getMainExecutor(this)
-        ) { imageProxy: ImageProxy ->
+        ) { imageProxy ->
             if (ImageFormat.YUV_420_888 != imageProxy.getFormat() && ImageFormat.YUV_422_888 != imageProxy.getFormat() && ImageFormat.YUV_444_888 != imageProxy.getFormat() && imageProxy.planes.size == 3) {
                 imageProxy.close()
                 return@setAnalyzer

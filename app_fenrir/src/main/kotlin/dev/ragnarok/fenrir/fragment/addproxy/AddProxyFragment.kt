@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textfield.TextInputEditText
@@ -40,7 +39,7 @@ class AddProxyFragment : BaseMvpFragment<AddProxyPresenter, IAddProxyView>(), IA
             }
         })
         mAuth = root.findViewById(R.id.authorization)
-        mAuth?.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        mAuth?.setOnCheckedChangeListener { _, isChecked ->
             presenter?.fireAuthChecked(
                 isChecked
             )

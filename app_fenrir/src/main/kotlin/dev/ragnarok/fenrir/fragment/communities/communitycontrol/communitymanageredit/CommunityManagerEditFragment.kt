@@ -7,7 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -78,7 +77,7 @@ class CommunityManagerEditFragment :
         mButtonEditor = root.findViewById(R.id.button_editor)
         mButtonAdmin = root.findViewById(R.id.button_admin)
         mRadioGroupRoles = root.findViewById(R.id.radio_group_roles)
-        mRadioGroupRoles?.setOnCheckedChangeListener { _: RadioGroup?, checkedId: Int ->
+        mRadioGroupRoles?.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.button_moderator -> {
                     presenter?.fireModeratorChecked()
@@ -95,7 +94,7 @@ class CommunityManagerEditFragment :
         }
         mRadioGroupCreator = root.findViewById(R.id.radio_group_creator)
         mShowAsContact = root.findViewById(R.id.community_manager_show_in_contacts)
-        mShowAsContact?.setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
+        mShowAsContact?.setOnCheckedChangeListener { _, checked ->
             presenter?.fireShowAsContactChecked(
                 checked
             )

@@ -5,7 +5,6 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Matrix
@@ -438,8 +437,8 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             addPhotoSizeToMenu(popupMenu, key, value, current)
         }
         popupMenu.menu.setGroupCheckable(0, true, true)
-        popupMenu.setOnMenuItemClickListener { item: MenuItem ->
-            val key = item.itemId
+        popupMenu.setOnMenuItemClickListener {
+            val key = it.itemId
             Settings.get()
                 .main()
                 .setPrefDisplayImageSize(SIZES[key])
@@ -702,7 +701,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             getString(R.string.repost_to_wall)
         )
         MaterialAlertDialogBuilder(this)
-            .setItems(items) { _: DialogInterface?, i: Int ->
+            .setItems(items) { _, i ->
                 when (i) {
                     0 -> Utils.shareLink(this, photo.generateWebLink(), photo.text)
                     1 -> SendAttachmentsActivity.startForSendAttachments(
@@ -1117,7 +1116,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     }
                 }
             })
-            ret.photo.setOnTouchListener { view: View, event: MotionEvent ->
+            ret.photo.setOnTouchListener { view, event ->
                 if (event.pointerCount >= 2 || view.canScrollHorizontally(1) && view.canScrollHorizontally(
                         -1
                     )

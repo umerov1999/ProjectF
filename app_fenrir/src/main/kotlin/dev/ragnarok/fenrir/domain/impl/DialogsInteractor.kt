@@ -16,19 +16,20 @@ class DialogsInteractor(private val networker: INetworker, private val repositor
             .findChatById(accountId, peerId)
             .flatMap { optional ->
                 if (optional.nonEmpty()) {
-                    return@flatMap Single.just(optional.requireNonEmpty())
-                }
-                val chatId = Peer.toChatId(peerId)
-                networker.vkDefault(accountId)
-                    .messages()
-                    .getChat(chatId, null, null, null)
-                    .map { chats ->
-                        if (chats.isEmpty()) {
-                            throw NotFoundException()
+                    Single.just(optional.requireNonEmpty())
+                } else {
+                    val chatId = Peer.toChatId(peerId)
+                    networker.vkDefault(accountId)
+                        .messages()
+                        .getChat(chatId, null, null, null)
+                        .map { chats ->
+                            if (chats.isEmpty()) {
+                                throw NotFoundException()
+                            }
+                            chats[0]
                         }
-                        chats[0]
-                    }
-                    .map { transform(it) }
+                        .map { transform(it) }
+                }
             }
     }
 }

@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -51,7 +50,7 @@ class DocsFragment : BaseMvpFragment<DocsListPresenter, IDocListView>(), IDocLis
     DocsAsImagesAdapter.ActionListener {
     private val requestFile = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val file = result.data?.getStringExtra(Extra.PATH)
             val photos: ArrayList<LocalPhoto>? =

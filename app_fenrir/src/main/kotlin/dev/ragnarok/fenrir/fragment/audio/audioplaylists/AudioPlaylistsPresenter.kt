@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.audio.audioplaylists
 
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -217,7 +216,7 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
             .setTitle(R.string.edit)
             .setCancelable(true)
             .setView(root)
-            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_ok) { _, _ ->
                 appendDisposable(fInteractor.editPlaylist(
                     accountId, album.owner_id, album.id,
                     root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
@@ -246,7 +245,7 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
             .setTitle(R.string.create_playlist)
             .setCancelable(true)
             .setView(root)
-            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_ok) { _, _ ->
                 appendDisposable(fInteractor.createPlaylist(
                     accountId, owner_id,
                     root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),

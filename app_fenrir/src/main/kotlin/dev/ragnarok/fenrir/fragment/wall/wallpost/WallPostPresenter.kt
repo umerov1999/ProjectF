@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.wall.wallpost
 
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
@@ -377,7 +376,7 @@ class WallPostPresenter(
         )
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.report)
-            .setItems(items) { dialog: DialogInterface, item: Int ->
+            .setItems(items) { dialog, item ->
                 appendDisposable(wallInteractor.reportPost(accountId, ownerId, postId, item)
                     .fromIOToMain()
                     .subscribe({ p ->

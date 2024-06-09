@@ -23,7 +23,6 @@ import dev.ragnarok.fenrir.util.Exestime.log
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 
@@ -64,7 +63,7 @@ internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
         entities: List<DocumentDboEntity>,
         clearBeforeInsert: Boolean
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val start = System.currentTimeMillis()
             val uri = getDocsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()

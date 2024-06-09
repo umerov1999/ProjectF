@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.search.filteredit
 
 import android.view.View
-import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -113,7 +112,7 @@ class SearchOptionsAdapter(items: MutableList<BaseOption>) :
         holder.checkableView.setText(option.title)
         holder.checkableView.setOnCheckedChangeListener(null)
         holder.checkableView.isChecked = option.checked
-        holder.checkableView.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        holder.checkableView.setOnCheckedChangeListener { _, isChecked ->
             option.checked = isChecked
             mOptionClickListener?.onSimpleBooleanOptionChanged(option)
         }

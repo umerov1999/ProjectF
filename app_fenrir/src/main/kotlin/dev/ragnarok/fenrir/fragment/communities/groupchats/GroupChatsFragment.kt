@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.communities.groupchats
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -110,7 +109,7 @@ class GroupChatsFragment : BaseMvpFragment<GroupChatsPresenter, IGroupChatsView>
     override fun onGroupChatsClick(chat: GroupChats) {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.enter_to_group_chat)
-            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_yes) { _, _ ->
                 presenter?.fireGroupChatsClick(
                     chat
                 )

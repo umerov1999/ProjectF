@@ -8,7 +8,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
@@ -100,17 +99,17 @@ class CreatePollFragment : BaseMvpFragment<CreatePollPresenter, ICreatePollView>
                 )
             }
         })
-        mAnonymous?.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        mAnonymous?.setOnCheckedChangeListener { _, isChecked ->
             presenter?.fireAnonyamousChecked(
                 isChecked
             )
         }
-        mMultiply?.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        mMultiply?.setOnCheckedChangeListener { _, isChecked ->
             presenter?.fireMultiplyChecked(
                 isChecked
             )
         }
-        mDisableUnvote?.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        mDisableUnvote?.setOnCheckedChangeListener { _, isChecked ->
             presenter?.fireDisableUnvoteChecked(
                 isChecked
             )

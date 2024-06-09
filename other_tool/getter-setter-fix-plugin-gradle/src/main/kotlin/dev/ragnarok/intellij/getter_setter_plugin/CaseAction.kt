@@ -21,10 +21,27 @@ open class CaseActionAction : AnAction() {
             val primaryCaret = editor.caretModel.primaryCaret
             var selected: String = primaryCaret.selectedText ?: return
             if (selected.isNotEmpty()) {
-                selected = if (selected[0].isLowerCase()) {
-                    selected.uppercase()
+                var uppers = 0
+                var lowers = 0
+                for (i in selected) {
+                    if (i.isLowerCase()) {
+                        lowers++
+                    } else {
+                        uppers++
+                    }
+                }
+                selected = if (lowers > 0 && uppers > 0) {
+                    if (uppers >= lowers) {
+                        selected.uppercase()
+                    } else {
+                        selected.lowercase()
+                    }
                 } else {
-                    selected.lowercase()
+                    if (selected[0].isLowerCase()) {
+                        selected.uppercase()
+                    } else {
+                        selected.lowercase()
+                    }
                 }
             }
 

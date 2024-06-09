@@ -28,7 +28,6 @@ import dev.ragnarok.fenrir.model.AccessIdPairModel
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.CommentedType
-import dev.ragnarok.fenrir.model.IOwnersBundle
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoTags
@@ -63,7 +62,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.photos()
                     .insertPhotosRx(accountId, ownerId, albumId, dbos, offset == 0)
-                    .andThen(Single.just<List<Photo>>(photos))
+                    .andThen(Single.just(photos))
             }
     }
 
@@ -88,7 +87,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.photos()
                     .insertPhotosExtendedRx(accountId, ownerId, -9000, dbos, offset == 0)
-                    .andThen(Single.just<List<Photo>>(photos))
+                    .andThen(Single.just(photos))
             }
     }
 
@@ -113,7 +112,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.photos()
                     .insertPhotosExtendedRx(accountId, ownerId, -9001, dbos, offset == 0)
-                    .andThen(Single.just<List<Photo>>(photos))
+                    .andThen(Single.just(photos))
             }
     }
 
@@ -150,7 +149,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                 for (dto in dtos) {
                     photos.add(transform(dto))
                 }
-                Single.just<List<Photo>>(photos)
+                Single.just(photos)
             }
     }
 
@@ -252,7 +251,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                         IOwnersRepository.MODE_ANY,
                         emptyList()
                     )
-                    .map<List<Comment>> { bundle: IOwnersBundle ->
+                    .map { bundle ->
                         val dbos: MutableList<Comment> = ArrayList(dtos.size)
                         for (i in dtos) {
                             val commented = Commented(i.pid, ownerId, CommentedType.PHOTO, null)
@@ -331,7 +330,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.photoAlbums()
                     .store(accountId, ownerId, dbos, offset == 0)
-                    .andThen(Single.just<List<PhotoAlbum>>(albums))
+                    .andThen(Single.just(albums))
             }
     }
 

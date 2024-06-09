@@ -1,12 +1,10 @@
 package dev.ragnarok.fenrir.fragment.messages.chatmembers
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,7 +32,7 @@ class ChatMembersFragment : BaseMvpFragment<ChatMembersPresenter, IChatMembersVi
     IChatMembersView, ChatMembersListAdapter.ActionListener {
     private val requestAddUser = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             val users: ArrayList<Owner>? =
                 result.data?.getParcelableArrayListExtraCompat(Extra.OWNERS)
@@ -107,7 +105,7 @@ class ChatMembersFragment : BaseMvpFragment<ChatMembersPresenter, IChatMembersVi
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.confirmation)
             .setMessage(getString(R.string.remove_chat_user_commit, user.member?.fullName))
-            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_ok) { _, _ ->
                 presenter?.fireUserDeleteConfirmed(
                     user
                 )

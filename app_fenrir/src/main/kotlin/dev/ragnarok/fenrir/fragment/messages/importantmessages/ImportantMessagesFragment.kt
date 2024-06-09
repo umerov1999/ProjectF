@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.messages.importantmessages
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -70,12 +69,12 @@ class ImportantMessagesFragment :
         downMenuGroup = root.findViewById(R.id.down_menu)
         toolbarRootView = root.findViewById(R.id.toolbar_root)
 
-        ItemTouchHelper(MessagesReplyItemCallback { o: Int ->
+        ItemTouchHelper(MessagesReplyItemCallback { o ->
             MaterialAlertDialogBuilder(requireActivity())
                 .setMessage(R.string.do_unimportant)
                 .setTitle(R.string.confirmation)
                 .setCancelable(true)
-                .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.button_yes) { _, _ ->
                     presenter?.fireRemoveImportant(
                         o
                     )
@@ -373,11 +372,11 @@ class ImportantMessagesFragment :
                         .setIcon(R.drawable.report_red)
                         .setMessage(R.string.do_report)
                         .setTitle(R.string.select)
-                        .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                        .setPositiveButton(R.string.button_yes) { _, _ ->
                             reference.get()?.presenter?.fireActionModeSpamClick()
                             hide()
                         }
-                        .setNeutralButton(R.string.delete) { _: DialogInterface?, _: Int ->
+                        .setNeutralButton(R.string.delete) { _, _ ->
                             reference.get()?.presenter?.fireActionModeDeleteClick()
                             hide()
                         }

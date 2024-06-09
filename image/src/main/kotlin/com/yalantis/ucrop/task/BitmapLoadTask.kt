@@ -46,9 +46,9 @@ class BitmapLoadTask(
     @SuppressLint("CheckResult")
     fun execute() {
         doInBackground().fromIOToMain().subscribe(
-            { result: BitmapWorkerResult -> onPostExecute(result) }) { e: Throwable ->
+            { onPostExecute(it) }) {
             onPostExecute(
-                BitmapWorkerResult(e as Exception)
+                BitmapWorkerResult(it)
             )
         }
     }
@@ -215,14 +215,14 @@ class BitmapLoadTask(
     class BitmapWorkerResult {
         lateinit var mBitmapResult: Bitmap
         lateinit var mExifInfo: ExifInfo
-        var mBitmapWorkerException: Exception? = null
+        var mBitmapWorkerException: Throwable? = null
 
         constructor(bitmapResult: Bitmap, exifInfo: ExifInfo) {
             mBitmapResult = bitmapResult
             mExifInfo = exifInfo
         }
 
-        constructor(bitmapWorkerException: Exception) {
+        constructor(bitmapWorkerException: Throwable) {
             mBitmapWorkerException = bitmapWorkerException
         }
     }

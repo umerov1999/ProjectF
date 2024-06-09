@@ -1,12 +1,10 @@
 package dev.ragnarok.fenrir.fragment.communities.communitycontrol.communityblacklist
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,7 +33,7 @@ class CommunityBlacklistFragment :
     ICommunityBlacklistView, CommunityBannedAdapter.ActionListener {
     private val requestSelectProfile = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val users: ArrayList<Owner> = (result.data
                 ?: return@registerForActivityResult).getParcelableArrayListExtraCompat(Extra.OWNERS)
@@ -135,7 +133,7 @@ class CommunityBlacklistFragment :
         val items = arrayOf(getString(R.string.delete))
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(banned.banned.fullName)
-            .setItems(items) { _: DialogInterface?, _: Int ->
+            .setItems(items) { _, _ ->
                 presenter?.fireBannedRemoveClick(
                     banned
                 )

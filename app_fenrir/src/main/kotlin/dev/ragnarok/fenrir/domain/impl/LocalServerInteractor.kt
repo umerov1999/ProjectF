@@ -26,7 +26,7 @@ class LocalServerInteractor(private val networker: INetworker) : ILocalServerInt
                     dbos.add(mapVideo(dto))
                     videos.add(transform(dto))
                 }
-                Single.just<List<Video>>(videos)
+                Single.just(videos)
             }
     }
 
@@ -93,7 +93,7 @@ class LocalServerInteractor(private val networker: INetworker) : ILocalServerInt
                     dbos.add(mapVideo(dto))
                     videos.add(transform(dto))
                 }
-                Single.just<List<Video>>(videos)
+                Single.just(videos)
             }
     }
 

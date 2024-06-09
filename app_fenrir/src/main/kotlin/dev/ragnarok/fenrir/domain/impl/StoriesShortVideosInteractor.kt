@@ -12,7 +12,6 @@ import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformNarrative
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformOwner
 import dev.ragnarok.fenrir.domain.mappers.MapUtil
-import dev.ragnarok.fenrir.model.IOwnersBundle
 import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.Story
@@ -107,7 +106,7 @@ class StoriesShortVideosInteractor(
                     IOwnersRepository.MODE_ANY,
                     owners
                 )
-                    .map<List<Story>> { owners1: IOwnersBundle ->
+                    .map { owners1 ->
                         val storiesDto: MutableList<Story> = ArrayList(dtos.size)
                         for (dto in dtos) {
                             storiesDto.add(Dto2Model.transformStory(dto, owners1))
@@ -143,7 +142,7 @@ class StoriesShortVideosInteractor(
                     IOwnersRepository.MODE_ANY,
                     owners
                 )
-                    .map<List<Story>> { owners1: IOwnersBundle ->
+                    .map { owners1 ->
                         val blockAds = Settings.get().main().isAd_block_story_news
                         val stories: MutableList<Story> = ArrayList()
                         for (dto in dtos) {
@@ -182,7 +181,7 @@ class StoriesShortVideosInteractor(
                     IOwnersRepository.MODE_ANY,
                     owners
                 )
-                    .map<List<Story>> { owners1: IOwnersBundle ->
+                    .map { owners1 ->
                         val stories: MutableList<Story> = ArrayList(dtos.size)
                         for (dto in dtos) {
                             stories.add(Dto2Model.transformStory(dto, owners1))

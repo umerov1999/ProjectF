@@ -40,7 +40,6 @@ import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
@@ -83,7 +82,7 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
     }
 
     override fun removePeerWithId(accountId: Long, peerId: Long): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val uri = getDialogsContentUriFor(accountId)
             contentResolver.delete(uri, BaseColumns._ID + " = ?", arrayOf(peerId.toString()))
             emitter.onComplete()
@@ -95,7 +94,7 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         dbos: List<DialogDboEntity>,
         clearBefore: Boolean
     ): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val start = System.currentTimeMillis()
             val uri = getDialogsContentUriFor(accountId)
             val peersUri = getPeersContentUriFor(accountId)
@@ -187,7 +186,7 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
     }
 
     override fun savePeerDialog(accountId: Long, entity: PeerDialogEntity): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val uri = getPeersContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             operations.add(
@@ -203,7 +202,7 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         peerId: Long,
         keyboardEntity: KeyboardEntity?
     ): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val uri = getPeersContentUriFor(accountId)
             val args = arrayOf(peerId.toString())
             val operations = ArrayList<ContentProviderOperation>(1)
@@ -339,23 +338,23 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         return Single.create { e: SingleEmitter<Collection<Long>> ->
             if (ids.isEmpty()) {
                 e.onSuccess(emptyList())
-                return@create
-            }
-            val peerIds: MutableSet<Long> = HashSet(ids)
-            val projection = arrayOf(BaseColumns._ID)
-            val uri = getDialogsContentUriFor(accountId)
-            val cursor = contentResolver.query(
-                uri, projection,
-                DialogsColumns.FULL_ID + " IN (" + join(",", peerIds) + ")", null, null
-            )
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    val peerId = cursor.getLong(BaseColumns._ID)
-                    peerIds.remove(peerId)
+            } else {
+                val peerIds: MutableSet<Long> = HashSet(ids)
+                val projection = arrayOf(BaseColumns._ID)
+                val uri = getDialogsContentUriFor(accountId)
+                val cursor = contentResolver.query(
+                    uri, projection,
+                    DialogsColumns.FULL_ID + " IN (" + join(",", peerIds) + ")", null, null
+                )
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        val peerId = cursor.getLong(BaseColumns._ID)
+                        peerIds.remove(peerId)
+                    }
+                    cursor.close()
                 }
-                cursor.close()
+                e.onSuccess(peerIds)
             }
-            e.onSuccess(peerIds)
         }
     }
 
@@ -375,7 +374,7 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
     }
 
     override fun applyPatches(accountId: Long, patches: List<PeerPatch>): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val dialogsUri = getDialogsContentUriFor(accountId)
             val peersUri = getPeersContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(patches.size * 2)

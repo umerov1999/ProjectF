@@ -54,7 +54,7 @@ class LocalPhotoAlbumsAdapter(
                 with().cancelRequest(holder.image)
                 holder.image.setImageResource(if (isDark) R.drawable.generic_audio_nowplaying_dark else R.drawable.generic_audio_nowplaying_light)
                 holder.title.setText(R.string.all_audios)
-                holder.subtitle.text = ""
+                holder.subtitle.text = null
             }
         } else {
             holder.title.text = album.name

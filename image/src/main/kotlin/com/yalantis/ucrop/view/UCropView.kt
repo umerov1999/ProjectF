@@ -32,8 +32,8 @@ class UCropView @JvmOverloads constructor(
 
     private fun setListenersToViews() {
         cropImageView.cropBoundsChangeListener =
-            CropBoundsChangeListener { targetAspectRatio: Float ->
-                overlayView.setTargetAspectRatio(targetAspectRatio)
+            CropBoundsChangeListener {
+                overlayView.setTargetAspectRatio(it)
             }
         overlayView.overlayViewChangeListener = OverlayViewChangeListener {
             cropImageView.setCropRect(

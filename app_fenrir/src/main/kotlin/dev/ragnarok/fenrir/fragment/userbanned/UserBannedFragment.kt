@@ -1,14 +1,12 @@
 package dev.ragnarok.fenrir.fragment.userbanned
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,7 +35,7 @@ class UserBannedFragment : BaseMvpFragment<UserBannedPresenter, IUserBannedView>
     IUserBannedView, PeopleAdapter.LongClickListener {
     private val requestSelect = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val owners: ArrayList<Owner>? =
                 result.data?.getParcelableArrayListExtraCompat(Extra.OWNERS)
@@ -175,7 +173,7 @@ class UserBannedFragment : BaseMvpFragment<UserBannedPresenter, IUserBannedView>
     override fun onOwnerLongClick(owner: Owner): Boolean {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(owner.fullName)
-            .setItems(arrayOf(getString(R.string.delete))) { _: DialogInterface?, _: Int ->
+            .setItems(arrayOf(getString(R.string.delete))) { _, _ ->
                 presenter?.fireRemoveClick(owner)
             }
             .setNegativeButton(R.string.button_cancel, null)

@@ -47,7 +47,7 @@ class AttachmentsRepository(
     ): Completable {
         val entities = buildDboAttachments(models)
         return store.attachDbos(accountId, attachToType, attachToDbid, entities)
-            .doAfterSuccess { ids: IntArray ->
+            .doAfterSuccess { ids ->
                 val events: MutableList<Pair<Int, AbsModel>> = ArrayList(models.size)
                 for (i in models.indices) {
                     val model = models[i]
@@ -73,7 +73,7 @@ class AttachmentsRepository(
                 }
                 ownersRepository
                     .findBaseOwnersDataAsBundle(accountId, ids.all, IOwnersRepository.MODE_ANY)
-                    .map<List<Pair<Int, AbsModel>>> {
+                    .map {
                         val models: MutableList<Pair<Int, AbsModel>> = ArrayList(pairs.size)
                         for (pair in pairs) {
                             val model = buildAttachmentFromDbo(pair.second, it)

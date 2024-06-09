@@ -88,7 +88,7 @@ class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
         appendDisposable(interactor.getBanned(accountId, 50, offset)
             .fromIOToMain()
             .subscribe(
-                { part: BannedPart -> onBannedPartReceived(offset, part) }
+                { part -> onBannedPartReceived(offset, part) }
             ) { throwable -> onBannedPartGetError(getCauseIfRuntime(throwable)) })
     }
 

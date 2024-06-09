@@ -616,7 +616,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 LayoutInflater.from(container.context)
                     .inflate(R.layout.content_photo_page, container, false)
             )
-            ret.photo.setOnTouchListener { view: View, event: MotionEvent ->
+            ret.photo.setOnTouchListener { view, event ->
                 if (event.pointerCount >= 2 || view.canScrollHorizontally(1) && view.canScrollHorizontally(
                         -1
                     )

@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -75,7 +74,7 @@ class DualTabPhotosFragment : BaseFragment(), BackPressCallback {
         TabLayoutMediator(
             root.findViewById(R.id.tablayout),
             viewPager
-        ) { tab: TabLayout.Tab, position: Int ->
+        ) { tab, position ->
             tab.text = mPagerAdapter?.getPageTitle(position)
         }.attach()
         return root

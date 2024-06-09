@@ -36,7 +36,7 @@ abstract class AbsPreferencesFragment : Fragment() {
 
         parentFragmentManager.setFragmentResultListener(
             PreferencesExtra.EDIT_DIALOG_REQUEST, this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             preferencesAdapter?.applyToPreferenceInScreen(
                 result.getString(PreferencesExtra.PREFERENCE_SCREEN_KEY),
                 result.getString(PreferencesExtra.PREFERENCE_KEY)
@@ -47,7 +47,7 @@ abstract class AbsPreferencesFragment : Fragment() {
         }
         parentFragmentManager.setFragmentResultListener(
             PreferencesExtra.SEPARATOR_DIALOG_REQUEST, this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             preferencesAdapter?.applyToPreferenceInScreen(
                 result.getString(PreferencesExtra.PREFERENCE_SCREEN_KEY),
                 result.getString(PreferencesExtra.PREFERENCE_KEY)
@@ -58,7 +58,7 @@ abstract class AbsPreferencesFragment : Fragment() {
         }
         parentFragmentManager.setFragmentResultListener(
             PreferencesExtra.MULTI_LINE_EDIT_DIALOG_REQUEST, this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             preferencesAdapter?.applyToPreferenceInScreen(
                 result.getString(PreferencesExtra.PREFERENCE_SCREEN_KEY),
                 result.getString(PreferencesExtra.PREFERENCE_KEY)
@@ -69,7 +69,7 @@ abstract class AbsPreferencesFragment : Fragment() {
         }
         parentFragmentManager.setFragmentResultListener(
             PreferencesExtra.CUSTOM_TEXT_DIALOG_REQUEST, this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             preferencesAdapter?.applyToPreferenceInScreen(
                 result.getString(PreferencesExtra.PREFERENCE_SCREEN_KEY),
                 result.getString(PreferencesExtra.PREFERENCE_KEY)
@@ -80,7 +80,7 @@ abstract class AbsPreferencesFragment : Fragment() {
         }
         parentFragmentManager.setFragmentResultListener(
             PreferencesExtra.MULTI_CHOOSE_DIALOG_REQUEST, this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             preferencesAdapter?.applyToPreferenceInScreen(
                 result.getString(PreferencesExtra.PREFERENCE_SCREEN_KEY),
                 result.getString(PreferencesExtra.PREFERENCE_KEY)
@@ -95,7 +95,7 @@ abstract class AbsPreferencesFragment : Fragment() {
         }
         parentFragmentManager.setFragmentResultListener(
             PreferencesExtra.SINGLE_CHOOSE_DIALOG_REQUEST, this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             preferencesAdapter?.applyToPreferenceInScreen(
                 result.getString(PreferencesExtra.PREFERENCE_SCREEN_KEY),
                 result.getString(PreferencesExtra.PREFERENCE_KEY)
@@ -110,7 +110,7 @@ abstract class AbsPreferencesFragment : Fragment() {
         }
         parentFragmentManager.setFragmentResultListener(
             PreferencesExtra.COLOR_DIALOG_REQUEST, this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             preferencesAdapter?.applyToPreferenceInScreen(
                 result.getString(PreferencesExtra.PREFERENCE_SCREEN_KEY),
                 result.getString(PreferencesExtra.PREFERENCE_KEY)
@@ -121,7 +121,7 @@ abstract class AbsPreferencesFragment : Fragment() {
         }
         parentFragmentManager.setFragmentResultListener(
             PreferencesExtra.RECREATE_ACTIVITY_REQUEST, this
-        ) { _: String?, _: Bundle ->
+        ) { _, _ ->
             requireActivity().recreate()
         }
     }

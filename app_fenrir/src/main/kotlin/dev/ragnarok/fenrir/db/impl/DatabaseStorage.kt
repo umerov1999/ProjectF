@@ -12,13 +12,12 @@ import dev.ragnarok.fenrir.getInt
 import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 
 class DatabaseStorage internal constructor(base: AppStorages) : AbsStorage(base), IDatabaseStore {
     override fun storeCountries(accountId: Long, dbos: List<CountryDboEntity>): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val uri = getCountriesContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(dbos.size + 1)
             operations.add(ContentProviderOperation.newDelete(uri).build())

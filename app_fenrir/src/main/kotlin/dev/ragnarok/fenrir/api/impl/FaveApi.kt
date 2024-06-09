@@ -51,7 +51,7 @@ internal class FaveApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
                         for (i in temp) {
                             if (i.attachment is VKApiVideo) videos.add(i.attachment)
                         }
-                        Single.just<List<VKApiVideo>>(videos)
+                        Single.just(videos)
                     }
             }
     }
@@ -67,7 +67,7 @@ internal class FaveApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
                         for (i in temp) {
                             if (i.attachment is VKApiArticle) articles.add(i.attachment)
                         }
-                        Single.just<List<VKApiArticle>>(articles)
+                        Single.just(articles)
                     }
             }
     }
@@ -142,7 +142,7 @@ internal class FaveApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
                         for (i in temp) {
                             if (i.attachment is VKApiMarket) markets.add(i.attachment)
                         }
-                        Single.just<List<VKApiMarket>>(markets)
+                        Single.just(markets)
                     }
             }
     }

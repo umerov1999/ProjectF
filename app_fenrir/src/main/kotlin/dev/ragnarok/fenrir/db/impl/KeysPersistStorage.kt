@@ -15,7 +15,6 @@ import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.MaybeEmitter
 import io.reactivex.rxjava3.core.Single
@@ -35,25 +34,27 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
     }
 
     override fun saveKeyPair(pair: AesKeyPair): Completable {
-        return Completable.create { e: CompletableEmitter ->
-            val alreadyExist = findKeyPairFor(pair.accountId, pair.sessionId)
-                .blockingGet()
+        return Completable.create { e ->
+            val alreadyExist = findKeyPairFor(pair.accountId, pair.sessionId).blockingGet()
             if (alreadyExist != null) {
                 e.tryOnError(DatabaseException("Key pair with the session ID is already in the database"))
-                return@create
+            } else {
+                val cv = ContentValues()
+                cv.put(EncryptionKeysForMessagesColumns.VERSION, pair.version)
+                cv.put(EncryptionKeysForMessagesColumns.PEER_ID, pair.peerId)
+                cv.put(EncryptionKeysForMessagesColumns.SESSION_ID, pair.sessionId)
+                cv.put(EncryptionKeysForMessagesColumns.DATE, pair.date)
+                cv.put(
+                    EncryptionKeysForMessagesColumns.START_SESSION_MESSAGE_ID,
+                    pair.startMessageId
+                )
+                cv.put(EncryptionKeysForMessagesColumns.END_SESSION_MESSAGE_ID, pair.endMessageId)
+                cv.put(EncryptionKeysForMessagesColumns.OUT_KEY, pair.myAesKey)
+                cv.put(EncryptionKeysForMessagesColumns.IN_KEY, pair.hisAesKey)
+                val uri = getKeysContentUriFor(pair.accountId)
+                context.contentResolver.insert(uri, cv)
+                e.onComplete()
             }
-            val cv = ContentValues()
-            cv.put(EncryptionKeysForMessagesColumns.VERSION, pair.version)
-            cv.put(EncryptionKeysForMessagesColumns.PEER_ID, pair.peerId)
-            cv.put(EncryptionKeysForMessagesColumns.SESSION_ID, pair.sessionId)
-            cv.put(EncryptionKeysForMessagesColumns.DATE, pair.date)
-            cv.put(EncryptionKeysForMessagesColumns.START_SESSION_MESSAGE_ID, pair.startMessageId)
-            cv.put(EncryptionKeysForMessagesColumns.END_SESSION_MESSAGE_ID, pair.endMessageId)
-            cv.put(EncryptionKeysForMessagesColumns.OUT_KEY, pair.myAesKey)
-            cv.put(EncryptionKeysForMessagesColumns.IN_KEY, pair.hisAesKey)
-            val uri = getKeysContentUriFor(pair.accountId)
-            context.contentResolver.insert(uri, cv)
-            e.onComplete()
         }
     }
 
@@ -148,7 +149,7 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
     }
 
     override fun deleteAll(accountId: Long): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val uri = getKeysContentUriFor(accountId)
             context.contentResolver.delete(uri, null, null)
             e.onComplete()

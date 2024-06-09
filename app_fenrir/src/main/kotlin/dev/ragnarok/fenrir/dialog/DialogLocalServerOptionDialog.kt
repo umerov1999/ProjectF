@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -38,7 +37,7 @@ class DialogLocalServerOptionDialog : BottomSheetDialogFragment() {
         sync.setOnClickListener { listener?.onRemoteSync() }
         get.setOnClickListener { listener?.onRemoteGet() }
         scReverse.isChecked = isReverse
-        scReverse.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        scReverse.setOnCheckedChangeListener { _, isChecked ->
             isReverse = isChecked
             listener?.onReverse(isChecked)
         }

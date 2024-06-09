@@ -22,7 +22,7 @@ class PhotoAlbumPagerPresenter(
         changeLoadingNowState(true)
         appendDisposable(photosInteractor.getPhotos(mPhotos.size, COUNT_PER_LOAD, invertPhotoRev)
             .fromIOToMain()
-            .subscribe({ data: MutableList<Photo> -> onActualPhotosReceived(data) }) { t: Throwable ->
+            .subscribe({ data -> onActualPhotosReceived(data) }) { t ->
                 onActualDataGetError(
                     t
                 )

@@ -78,7 +78,7 @@ class CommentCreatePresenter(
 
     private fun loadAttachments() {
         appendDisposable(attachmentsSingle()
-            .zipWith(uploadsSingle()) { first: List<AttachmentEntry>, second: List<AttachmentEntry> ->
+            .zipWith(uploadsSingle()) { first, second ->
                 combine(
                     first, second
                 )

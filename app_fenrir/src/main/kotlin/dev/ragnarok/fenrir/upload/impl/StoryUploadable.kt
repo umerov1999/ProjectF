@@ -52,51 +52,52 @@ class StoryUploadable(private val context: Context, private val networker: INetw
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    return@flatMap Single.error(
+                    Single.error(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
                     )
-                }
-                val filename = UploadUtils.findFileName(context, uri)
-                return@flatMap networker.uploads()
-                    .uploadStoryRx(
-                        server.url ?: throw NotFoundException("Upload url empty!"),
-                        filename,
-                        inputStream,
-                        listener,
-                        upload.destination.messageMethod == MessageMethod.VIDEO
-                    )
-                    .doFinally(safelyCloseAction(inputStream))
-                    .flatMap { dto ->
-                        if (dto.error.nonNullNoEmpty()) {
-                            Single.error(Exception(dto.error))
-                        } else {
-                            networker
-                                .vkDefault(accountId)
-                                .stories()
-                                .stories_save(dto.response?.upload_result)
-                                .map {
-                                    listEmptyIfNull(it.items)
-                                }
-                                .flatMap { tmpList ->
-                                    if (tmpList.isEmpty()) {
-                                        Single.error(NotFoundException("[stories_save] returned empty list"))
-                                    } else {
-                                        owners.findBaseOwnersDataAsBundle(
-                                            accountId, listOf(
-                                                Settings.get().accounts().current
-                                            ), IOwnersRepository.MODE_ANY, null
-                                        ).flatMap {
-                                            val document =
-                                                Dto2Model.transformStory(tmpList[0], it)
-                                            val result = UploadResult(server, document)
-                                            Single.just(result)
+                } else {
+                    val filename = UploadUtils.findFileName(context, uri)
+                    networker.uploads()
+                        .uploadStoryRx(
+                            server.url ?: throw NotFoundException("Upload url empty!"),
+                            filename,
+                            inputStream,
+                            listener,
+                            upload.destination.messageMethod == MessageMethod.VIDEO
+                        )
+                        .doFinally(safelyCloseAction(inputStream))
+                        .flatMap { dto ->
+                            if (dto.error.nonNullNoEmpty()) {
+                                Single.error(Exception(dto.error))
+                            } else {
+                                networker
+                                    .vkDefault(accountId)
+                                    .stories()
+                                    .stories_save(dto.response?.upload_result)
+                                    .map {
+                                        listEmptyIfNull(it.items)
+                                    }
+                                    .flatMap { tmpList ->
+                                        if (tmpList.isEmpty()) {
+                                            Single.error(NotFoundException("[stories_save] returned empty list"))
+                                        } else {
+                                            owners.findBaseOwnersDataAsBundle(
+                                                accountId, listOf(
+                                                    Settings.get().accounts().current
+                                                ), IOwnersRepository.MODE_ANY, null
+                                            ).flatMap {
+                                                val document =
+                                                    Dto2Model.transformStory(tmpList[0], it)
+                                                val result = UploadResult(server, document)
+                                                Single.just(result)
+                                            }
                                         }
                                     }
-                                }
+                            }
                         }
-                    }
+                }
             } catch (e: Exception) {
                 safelyClose(inputStream)
                 Single.error(e)

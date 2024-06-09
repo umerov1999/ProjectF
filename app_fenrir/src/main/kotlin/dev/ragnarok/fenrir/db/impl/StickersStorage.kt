@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.util.Exestime.log
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import kotlinx.serialization.builtins.ListSerializer
@@ -30,7 +29,7 @@ import kotlinx.serialization.builtins.serializer
 
 internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersStorage {
     override fun storeStickerSets(accountId: Long, sets: List<StickerSetEntity>): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()
@@ -55,7 +54,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         accountId: Long,
         sets: List<StickerSetEntity>
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()
@@ -88,7 +87,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         Settings.get().main().del_last_sticker_sets_sync(accountId)
         Settings.get().main().del_last_sticker_sets_custom_sync(accountId)
         Settings.get().main().del_last_sticker_keywords_sync(accountId)
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()
             try {
@@ -117,7 +116,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
     }
 
     override fun storeKeyWords(accountId: Long, sets: List<StickersKeywordsEntity>): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()

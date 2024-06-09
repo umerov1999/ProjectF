@@ -1,5 +1,6 @@
 package me.minetsh.imaging
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
@@ -42,6 +43,7 @@ class IMGTextEditDialog(context: Context, callback: Callback?) : Dialog(
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onStart() {
         super.onStart()
         if (mDefaultText != null) {

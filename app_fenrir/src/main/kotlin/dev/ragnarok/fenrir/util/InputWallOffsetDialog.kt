@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.util
 
 import android.content.Context
-import android.content.DialogInterface
 import android.text.Editable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -36,7 +35,7 @@ class InputWallOffsetDialog internal constructor(
         input.setText(value.toString())
         input.setSelection(input.text?.length ?: 0)
         builder.setView(view)
-        builder.setPositiveButton(R.string.button_ok) { dialog: DialogInterface, _: Int ->
+        builder.setPositiveButton(R.string.button_ok) { dialog, _ ->
             input.error = null
             var newValue: Int = -1
             try {
@@ -60,7 +59,7 @@ class InputWallOffsetDialog internal constructor(
                 }
             }
         }
-        builder.setNegativeButton(R.string.button_cancel) { dialog: DialogInterface, _: Int ->
+        builder.setNegativeButton(R.string.button_cancel) { dialog, _ ->
             callback?.onCanceled()
             dialog.dismiss()
         }

@@ -66,7 +66,7 @@ class CommentsInteractor(
                 }
                 ownersRepository
                     .findBaseOwnersDataAsBundle(accountId, ownids.all, IOwnersRepository.MODE_ANY)
-                    .map<List<Comment>> {
+                    .map {
                         val comments: MutableList<Comment> = ArrayList(dbos.size)
                         for (dbo in dbos) {
                             buildCommentFromDbo(dbo, it)?.let { it1 -> comments.add(it1) }
@@ -119,7 +119,7 @@ class CommentsInteractor(
                     val cm = buildComment(commented, dto, it)
                     data.add(cm)
                 }
-                data.sortWith { o1: Comment, o2: Comment ->
+                data.sortWith { o1, o2 ->
                     o2.getObjectId().compareTo(o1.getObjectId())
                 }
                 data
@@ -183,7 +183,7 @@ class CommentsInteractor(
                     )
                 )
                 if (threadComment != null) {
-                    return@flatMap modelsSingle.map { data ->
+                    modelsSingle.map { data ->
                         val bundle = CommentsBundle(data)
                             .setAdminLevel(response.admin_level)
                             .setFirstCommentId(response.firstId)
@@ -195,20 +195,21 @@ class CommentsInteractor(
                         }
                         bundle
                     }
+                } else {
+                    cacheData(accountId, commented, dbos, mapOwners(users, groups), invalidateCache)
+                        .andThen(modelsSingle.map { data ->
+                            val bundle = CommentsBundle(data)
+                                .setAdminLevel(response.admin_level)
+                                .setFirstCommentId(response.firstId)
+                                .setLastCommentId(response.lastId)
+                            response.main?.poll.requireNonNull {
+                                val poll = transform(it)
+                                poll.setBoard(true) // так как это может быть только из топика
+                                bundle.setTopicPoll(poll)
+                            }
+                            bundle
+                        })
                 }
-                cacheData(accountId, commented, dbos, mapOwners(users, groups), invalidateCache)
-                    .andThen(modelsSingle.map { data ->
-                        val bundle = CommentsBundle(data)
-                            .setAdminLevel(response.admin_level)
-                            .setFirstCommentId(response.firstId)
-                            .setLastCommentId(response.lastId)
-                        response.main?.poll.requireNonNull {
-                            val poll = transform(it)
-                            poll.setBoard(true) // так как это может быть только из топика
-                            bundle.setTopicPoll(poll)
-                        }
-                        bundle
-                    })
             }
     }
 
@@ -274,13 +275,13 @@ class CommentsInteractor(
         val update = CommentUpdate.create(accountId, commented, commentId)
         return if (add) {
             api.add(type, commented.sourceOwnerId, commentId, commented.accessKey)
-                .flatMapCompletable { count: Int ->
+                .flatMapCompletable { count ->
                     update.withLikes(true, count)
                     cache.comments().commitMinorUpdate(update)
                 }
         } else {
             api.delete(type, commented.sourceOwnerId, commentId, commented.accessKey)
-                .flatMapCompletable { count: Int ->
+                .flatMapCompletable { count ->
                     update.withLikes(false, count)
                     cache.comments().commitMinorUpdate(update)
                 }
@@ -437,7 +438,7 @@ class CommentsInteractor(
                 networker.vkDefault(accountId)
                     .groups()[accountId, true, "admin,editor", Fields.FIELDS_BASE_OWNER, null, 1000]
                     .map { obj -> obj.items.orEmpty() }
-                    .map<List<Owner>> {
+                    .map {
                         val owners: MutableList<Owner> = ArrayList(it.size + 1)
                         owners.add(owner)
                         owners.addAll(transformCommunities(it))
@@ -522,7 +523,7 @@ class CommentsInteractor(
                     throw NotFoundException()
                 }
                 older.id
-            }.flatMapCompletable { id: Int ->
+            }.flatMapCompletable { id ->
                 getDefaultCommentsService(
                     accountId,
                     commented,

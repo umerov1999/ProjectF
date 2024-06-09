@@ -12,7 +12,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -66,7 +65,7 @@ class AudiosTabsFragment : BaseFragment(), MenuProvider {
         TabLayoutMediator(
             view.findViewById(R.id.fragment_audios_tabs),
             viewPager
-        ) { tab: TabLayout.Tab, position: Int ->
+        ) { tab, position ->
             when (val fid = adapter.pFragments[position]) {
                 MY_AUDIO -> tab.text =
                     getString(R.string.my_saved)

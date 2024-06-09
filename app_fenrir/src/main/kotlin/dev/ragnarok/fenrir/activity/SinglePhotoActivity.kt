@@ -131,7 +131,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         mDownload?.setOnClickListener { doSaveOnDrive(true) }
         resolveFullscreenViews()
 
-        ret.photo.setOnTouchListener { view: View, event: MotionEvent ->
+        ret.photo.setOnTouchListener { view, event ->
             if (event.pointerCount >= 2 || view.canScrollHorizontally(1) && view.canScrollHorizontally(
                     -1
                 )

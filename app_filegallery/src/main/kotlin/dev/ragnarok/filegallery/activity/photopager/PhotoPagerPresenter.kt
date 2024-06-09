@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -201,10 +200,10 @@ open class PhotoPagerPresenter internal constructor(
                         .setIcon(R.drawable.qr_code)
                         .setMessage(data)
                         .setTitle(getString(R.string.qr))
-                        .setPositiveButton(R.string.button_open) { _: DialogInterface?, _: Int ->
+                        .setPositiveButton(R.string.button_open) { _, _ ->
                             openLinkInBrowser(context, data)
                         }
-                        .setNeutralButton(R.string.button_copy) { _: DialogInterface?, _: Int ->
+                        .setNeutralButton(R.string.button_copy) { _, _ ->
                             val clipboard = context.getSystemService(
                                 Context.CLIPBOARD_SERVICE
                             ) as ClipboardManager?

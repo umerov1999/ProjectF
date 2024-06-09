@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.wall
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -417,7 +416,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
             .setTitle(R.string.edit)
             .setCancelable(true)
             .setView(root)
-            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_ok) { _, _ ->
                 appendDisposable(InteractorFactory.createAccountInteractor().saveProfileInfo(
                     accountId,
                     checkEditInfo(
@@ -525,7 +524,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         MaterialAlertDialogBuilder(context)
             .setCancelable(true)
             .setNegativeButton(R.string.button_cancel, null)
-            .setPositiveButton(R.string.save) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.save) { _, _ ->
                 val path = Environment.getExternalStorageDirectory().absolutePath
                 val fOutputStream: OutputStream
                 val file = File(
@@ -742,14 +741,14 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         }
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.select)
-            .setNegativeButton(R.string.video) { _: DialogInterface?, _: Int ->
+            .setNegativeButton(R.string.video) { _, _ ->
                 doUploadStoryFile(
                     file,
                     0,
                     true
                 )
             }
-            .setPositiveButton(R.string.photo) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.photo) { _, _ ->
                 view?.doEditStoryPhoto(
                     Uri.fromFile(
                         File(

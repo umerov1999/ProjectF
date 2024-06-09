@@ -236,20 +236,26 @@ class RelationshipInteractor(
         return networker.vkDefault(accountId)
             .friends()
             .delete(userId)
-            .map { response ->
-                if (response.friend_deleted) {
-                    return@map DeletedCodes.FRIEND_DELETED
+            .flatMap { response ->
+                when {
+                    response.friend_deleted -> {
+                        Single.just(DeletedCodes.FRIEND_DELETED)
+                    }
+
+                    response.in_request_deleted -> {
+                        Single.just(DeletedCodes.IN_REQUEST_DELETED)
+                    }
+
+                    response.out_request_deleted -> {
+                        Single.just(DeletedCodes.OUT_REQUEST_DELETED)
+                    }
+
+                    response.suggestion_deleted -> {
+                        Single.just(DeletedCodes.SUGGESTION_DELETED)
+                    }
+
+                    else -> Single.error(UnepectedResultException())
                 }
-                if (response.in_request_deleted) {
-                    return@map DeletedCodes.IN_REQUEST_DELETED
-                }
-                if (response.out_request_deleted) {
-                    return@map DeletedCodes.OUT_REQUEST_DELETED
-                }
-                if (response.suggestion_deleted) {
-                    return@map DeletedCodes.SUGGESTION_DELETED
-                }
-                throw UnepectedResultException()
             }
     }
 }

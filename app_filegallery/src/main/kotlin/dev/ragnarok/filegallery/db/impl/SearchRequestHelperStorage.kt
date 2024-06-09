@@ -22,7 +22,6 @@ import dev.ragnarok.filegallery.model.tags.TagOwner
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.trimmedIsNullOrEmpty
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import java.io.File
@@ -59,7 +58,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
         val queryClean = query.trim { it <= ' ' }
         return if (queryClean.isEmpty()) {
             Completable.complete()
-        } else Completable.create { emitter: CompletableEmitter ->
+        } else Completable.create { emitter ->
             val db = helper.writableDatabase
             db.beginTransaction()
             if (emitter.isDisposed) {
@@ -121,7 +120,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
     }
 
     override fun insertFiles(parent: String, files: List<FileItem>): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val db = helper.writableDatabase
             db.beginTransaction()
             if (emitter.isDisposed) {
@@ -310,7 +309,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
     override fun insertTagDir(ownerId: Int, item: FileItem): Completable {
         return if (item.file_name.isNullOrEmpty() || item.file_path.isNullOrEmpty()) {
             Completable.complete()
-        } else Completable.create { emitter: CompletableEmitter ->
+        } else Completable.create { emitter ->
             val db = helper.writableDatabase
             db.beginTransaction()
             if (emitter.isDisposed) {
@@ -432,7 +431,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
     }
 
     override fun putTagFull(pp: List<TagFull>): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             clearTagsAll()
             val db = helper.writableDatabase
             db.beginTransaction()

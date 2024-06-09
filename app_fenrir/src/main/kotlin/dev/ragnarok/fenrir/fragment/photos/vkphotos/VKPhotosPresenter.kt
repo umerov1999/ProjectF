@@ -314,7 +314,7 @@ class VKPhotosPresenter(
         cacheDisposable.add(interactor.getAllCachedData(accountId, ownerId, albumId, invertPhotoRev)
             .zipWith(
                 uploadManager[accountId, destination]
-            ) { first: List<Photo>, second: List<Upload> ->
+            ) { first, second ->
                 Pair.create(
                     first,
                     second

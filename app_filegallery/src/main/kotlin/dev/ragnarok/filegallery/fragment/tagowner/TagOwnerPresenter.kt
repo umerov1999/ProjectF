@@ -23,7 +23,7 @@ class TagOwnerPresenter :
             storage.getTagOwners()
                 .fromIOToMain()
                 .subscribe({ onActualDataReceived(it) },
-                    { t: Throwable -> onActualDataGetError(t) })
+                    { t -> onActualDataGetError(t) })
         )
     }
 
@@ -34,7 +34,7 @@ class TagOwnerPresenter :
                 .subscribe(
                     {
                         view?.successAdd(owner, item)
-                    }, { t: Throwable -> onActualDataGetError(t) })
+                    }, { t -> onActualDataGetError(t) })
         )
     }
 
@@ -46,7 +46,7 @@ class TagOwnerPresenter :
                     {
                         tagOwnerData.removeAt(pos)
                         view?.notifyRemove(pos)
-                    }, { t: Throwable -> onActualDataGetError(t) })
+                    }, { t -> onActualDataGetError(t) })
         )
     }
 
@@ -60,7 +60,7 @@ class TagOwnerPresenter :
                 .subscribe(
                     {
                         loadActualData()
-                    }, { t: Throwable -> onActualDataGetError(t) })
+                    }, { t -> onActualDataGetError(t) })
         )
     }
 
@@ -85,7 +85,7 @@ class TagOwnerPresenter :
                     {
                         tagOwnerData.add(0, it)
                         view?.notifyAdd(0)
-                    }, { t: Throwable -> onActualDataGetError(t) })
+                    }, { t -> onActualDataGetError(t) })
         )
     }
 

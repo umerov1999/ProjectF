@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.getLong
 import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import kotlin.math.abs
@@ -33,7 +32,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         userId: Long,
         data: Collection<FriendListEntity>
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val uri = getFriendListsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(data.size)
             operations.add(
@@ -81,7 +80,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         relationType: Int,
         clear: Boolean
     ): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val uri = getRelativeshipContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clear) {
@@ -178,7 +177,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         userId: Long,
         invalidateBefore: Boolean
     ): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val uri = getRelativeshipContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(communities.size * 2 + 1)
             if (invalidateBefore) {

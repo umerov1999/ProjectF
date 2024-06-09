@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -53,7 +52,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
 
     private val requestChangePin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val values = CreatePinFragment.extractValueFromIntent(result.data)
             Settings.get()
@@ -63,7 +62,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
     }
     private val requestCreatePin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val values = CreatePinFragment.extractValueFromIntent(result.data)
             Settings.get()

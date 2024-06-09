@@ -6,7 +6,6 @@ import dev.ragnarok.fenrir.db.interfaces.IStorages
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.MaybeEmitter
 import io.reactivex.rxjava3.core.Single
@@ -25,7 +24,7 @@ internal class KeysRamStorage : IKeysStorage {
     }
 
     override fun saveKeyPair(pair: AesKeyPair): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             prepareKeysFor(pair.accountId).add(pair)
             e.onComplete()
         }
@@ -92,7 +91,7 @@ internal class KeysRamStorage : IKeysStorage {
     }
 
     override fun deleteAll(accountId: Long): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             mData.remove(accountId)
             e.onComplete()
         }

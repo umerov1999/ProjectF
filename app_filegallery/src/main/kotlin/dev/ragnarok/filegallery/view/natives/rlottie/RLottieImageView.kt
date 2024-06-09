@@ -14,7 +14,6 @@ import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.util.rxutils.RxUtils
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.core.SingleOnSubscribe
 import io.reactivex.rxjava3.disposables.Disposable
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -77,7 +76,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
             setAnimationByUrlCache(url, w, h)
             return
         }
-        mDisposable = Single.create(SingleOnSubscribe { u: SingleEmitter<Boolean> ->
+        mDisposable = Single.create { u: SingleEmitter<Boolean> ->
             try {
                 val request: Request = Request.Builder()
                     .url(url)
@@ -85,7 +84,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
                 val response: Response = client.build().newCall(request).execute()
                 if (!response.isSuccessful) {
                     u.onSuccess(false)
-                    return@SingleOnSubscribe
+                    return@create
                 }
                 val bfr = response.body.byteStream()
                 val input = BufferedInputStream(bfr)
@@ -95,12 +94,12 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
                 cache.renameTempFile(url)
             } catch (e: Exception) {
                 u.onSuccess(false)
-                return@SingleOnSubscribe
+                return@create
             }
             u.onSuccess(true)
-        }).fromIOToMain()
+        }.fromIOToMain()
             .subscribe(
-                { u: Boolean ->
+                { u ->
                     if (u) {
                         setAnimationByUrlCache(url, w, h)
                     }

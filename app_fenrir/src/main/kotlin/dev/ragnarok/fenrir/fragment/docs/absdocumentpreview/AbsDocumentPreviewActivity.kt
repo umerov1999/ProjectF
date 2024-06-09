@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.docs.absdocumentpreview
 
-import android.content.DialogInterface
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.BaseMvpActivity
@@ -27,7 +26,7 @@ abstract class AbsDocumentPreviewActivity<P : BaseDocumentPresenter<V>, V : IBas
             getString(R.string.repost_to_wall)
         )
         MaterialAlertDialogBuilder(this)
-            .setItems(items) { _: DialogInterface?, i: Int ->
+            .setItems(items) { _, i ->
                 when (i) {
                     0 -> shareLink(this, document.generateWebLink(), document.title)
                     1 -> startForSendAttachments(this, accountId, document)

@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.feedback.feedbackvkofficial
 
-import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -61,13 +60,13 @@ class FeedbackVKOfficialFragment :
                 presenter?.fireScrollToEnd()
             }
         })
-        ItemTouchHelper(MessagesReplyItemCallback { o: Int ->
+        ItemTouchHelper(MessagesReplyItemCallback { o ->
             if (mAdapter?.checkPosition(o) == true) {
                 MaterialAlertDialogBuilder(requireActivity())
                     .setMessage(R.string.remove_feedback)
                     .setTitle(R.string.confirmation)
                     .setCancelable(true)
-                    .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                    .setPositiveButton(R.string.button_yes) { _, _ ->
                         val notification = mAdapter?.getByPosition(o)
                         if (notification != null && !notification.hide_query.isNullOrEmpty()) {
                             presenter?.hideNotification(

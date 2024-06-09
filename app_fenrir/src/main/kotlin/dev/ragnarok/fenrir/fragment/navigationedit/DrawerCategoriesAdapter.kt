@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.navigationedit
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
 import dev.ragnarok.fenrir.R
@@ -23,7 +22,7 @@ class DrawerCategoriesAdapter(private var data: List<DrawerCategory>) :
         holder.checkBox.setText(category.getTitleResCategory())
         holder.checkBox.setOnCheckedChangeListener(null)
         holder.checkBox.isChecked = category.active
-        holder.checkBox.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
             category.setActive(isChecked)
         }
     }

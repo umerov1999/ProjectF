@@ -67,7 +67,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         super.onAttachedToRecyclerView(recyclerView)
         mPlayerDisposable = MusicPlaybackController.observeServiceBinding()
             .toMainThread()
-            .subscribe { status: Int ->
+            .subscribe { status ->
                 onServiceBindEvent(
                     status
                 )

@@ -6,7 +6,6 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -17,7 +16,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
@@ -179,7 +177,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
     }
 
     private val openRequestStory =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.data != null && result.resultCode == Activity.RESULT_OK) {
                 val localPhotos: ArrayList<LocalPhoto>? =
                     result.data?.getParcelableArrayListExtraCompat(Extra.PHOTOS)
@@ -192,7 +190,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         }
 
     private val openRequestResizeStoryPhoto =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 lazyPresenter {
                     doUploadStoryFile(
@@ -225,7 +223,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.success)
             .setMessage(R.string.avatar_was_changed_successfully)
-            .setPositiveButton(R.string.button_show) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_show) { _, _ ->
                 PlaceFactory.getPostPreviewPlace(
                     accountId,
                     post.vkid,
@@ -335,7 +333,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
                 } else {
                     arrayOf(getString(R.string.answer), getString(R.string.views))
                 }
-                MaterialAlertDialogBuilder(requireActivity()).setItems(items) { _: DialogInterface?, i: Int ->
+                MaterialAlertDialogBuilder(requireActivity()).setItems(items) { _, i ->
                     when (i) {
                         0 -> {
                             if (!isMy) {
@@ -350,7 +348,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
                                 ).setMessage(R.string.do_delete)
                                     .setTitle(R.string.confirmation)
                                     .setCancelable(true)
-                                    .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                                    .setPositiveButton(R.string.button_yes) { _, _ ->
                                         presenter?.fireRemoveStoryClick(item.ownerId, item.id)
                                     }.setNegativeButton(R.string.button_cancel, null)
                                     .show()

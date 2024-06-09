@@ -4,13 +4,11 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -77,7 +75,7 @@ class MessageAttachmentsFragment :
             presenter?.fireCameraPermissionResolved()
         }
     private val openCameraRequest =
-        registerForActivityResult(ActivityResultContracts.TakePicture()) { result: Boolean ->
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { result ->
             if (result) {
                 lazyPresenter {
                     firePhotoMaked()
@@ -85,7 +83,7 @@ class MessageAttachmentsFragment :
             }
         }
     private val openRequestAudioVideoDoc =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.data != null && result.resultCode == Activity.RESULT_OK) {
                 val attachments: ArrayList<AbsModel> =
                     (result.data
@@ -99,7 +97,7 @@ class MessageAttachmentsFragment :
             }
         }
     private val openRequestPhoto =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.data != null && result.resultCode == Activity.RESULT_OK) {
                 val vkphotos: ArrayList<Photo>? =
                     result.data?.getParcelableArrayListExtraCompat(Extra.ATTACHMENTS)
@@ -113,7 +111,7 @@ class MessageAttachmentsFragment :
             }
         }
     private val openRequestResizePhoto =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 assert(result.data != null)
                 lazyPresenter {
@@ -186,7 +184,7 @@ class MessageAttachmentsFragment :
         parentFragmentManager.setFragmentResultListener(
             CreatePollDialogFragment.REQUEST_CREATE_POLL,
             this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             val poll: Poll = result.getParcelableCompat("poll") ?: return@setFragmentResultListener
             presenter?.fireAttachmentsSelected(arrayListOf(poll))
         }
@@ -252,7 +250,7 @@ class MessageAttachmentsFragment :
         )
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.select_image_size_title)
-            .setItems(R.array.array_image_sizes_names) { _: DialogInterface?, j: Int ->
+            .setItems(R.array.array_image_sizes_names) { _, j ->
                 presenter?.fireUploadPhotoSizeSelected(
                     photos,
                     values[j]
@@ -286,7 +284,7 @@ class MessageAttachmentsFragment :
         )
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.select_image_size_title)
-            .setItems(R.array.array_image_sizes_names) { _: DialogInterface?, j: Int ->
+            .setItems(R.array.array_image_sizes_names) { _, j ->
                 presenter?.fireUploadFileSizeSelected(
                     file,
                     values[j]

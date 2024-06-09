@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.localserver.videoslocalserver
 
 import android.content.Context
-import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -169,7 +168,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                         .setTitle(R.string.change_name)
                                         .setCancelable(true)
                                         .setView(root)
-                                        .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                                        .setPositiveButton(R.string.button_ok) { _, _ ->
                                             listDisposable =
                                                 mVideoInteractor.update_file_name(
                                                     hash2,
@@ -199,7 +198,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                         .setMessage(R.string.do_delete)
                         .setTitle(R.string.confirmation)
                         .setCancelable(true)
-                        .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                        .setPositiveButton(R.string.button_yes) { _, _ ->
                             val hash1 = VKLinkParser.parseLocalServerURL(video.mp4link720)
                             if (hash1.isNullOrEmpty()) {
                                 return@setPositiveButton

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -30,18 +29,18 @@ abstract class AbsPostEditFragment<P : AbsPostEditPresenter<V>, V : IBasePostEdi
         val signatureRoot =
             inflater.inflate(R.layout.content_post_edit_under_body, underBodyContainer, false)
         mFromGroupCheckBox = signatureRoot.findViewById(R.id.check_from_group)
-        mFromGroupCheckBox?.setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
+        mFromGroupCheckBox?.setOnCheckedChangeListener { _, checked ->
             presenter?.fireFromGroupChecked(checked)
         }
         mFrindsOnlyCheckBox = signatureRoot.findViewById(R.id.check_friends_only)
-        mFrindsOnlyCheckBox?.setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
+        mFrindsOnlyCheckBox?.setOnCheckedChangeListener { _, checked ->
             presenter?.fireFriendsOnlyChecked(checked)
         }
         mSignerRoot = signatureRoot.findViewById(R.id.signer_root)
         mSignerAvatar = signatureRoot.findViewById(R.id.signer_avatar)
         mSignerName = signatureRoot.findViewById(R.id.signer_name)
         mShowAuthorCheckbox = signatureRoot.findViewById(R.id.check_show_author)
-        mShowAuthorCheckbox?.setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
+        mShowAuthorCheckbox?.setOnCheckedChangeListener { _, checked ->
             presenter?.fireShowAuthorChecked(checked)
         }
         underBodyContainer?.addView(signatureRoot)

@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.photos.photoallcomment
 
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Includes.networkInterfaces
@@ -176,7 +175,7 @@ class PhotoAllCommentPresenter(
         )
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.report)
-            .setItems(items) { dialog: DialogInterface, item: Int ->
+            .setItems(items) { dialog, item ->
                 appendDisposable(
                     interactor.reportComment(
                         accountId,

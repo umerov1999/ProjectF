@@ -31,7 +31,7 @@ class JsonConfiguration @OptIn(ExperimentalSerializationApi::class) internal con
     @ExperimentalSerializationApi val decodeEnumsCaseInsensitive: Boolean = false,
     @ExperimentalSerializationApi val allowTrailingComma: Boolean = false,
     @ExperimentalSerializationApi val allowComments: Boolean = false,
-    @ExperimentalSerializationApi var classDiscriminatorMode: ClassDiscriminatorMode = ClassDiscriminatorMode.POLYMORPHIC,
+    @ExperimentalSerializationApi val classDiscriminatorMode: ClassDiscriminatorMode = ClassDiscriminatorMode.POLYMORPHIC,
 ) {
 
     /** @suppress Dokka **/

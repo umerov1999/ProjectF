@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.communities.communitycontrol.communityban
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -9,7 +8,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -97,7 +95,7 @@ class CommunityBanEditFragment :
             }
         })
         mShowComment = root.findViewById(R.id.community_ban_show_comment_to_user)
-        mShowComment?.setOnCheckedChangeListener { _: CompoundButton?, checked: Boolean ->
+        mShowComment?.setOnCheckedChangeListener { _, checked ->
             presenter?.fireShowCommentCheck(
                 checked
             )
@@ -222,7 +220,7 @@ class CommunityBanEditFragment :
         }
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.select_from_list_title)
-            .setItems(strings) { _: DialogInterface?, which: Int ->
+            .setItems(strings) { _, which ->
                 presenter?.fireOptionSelected(
                     requestCode,
                     options[which]

@@ -191,12 +191,12 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
         actualDataLoading = true
         resolveRefreshingView()
         appendDisposable(
-            Single.create { v: SingleEmitter<List<Photo>> ->
-                val p = ParcelNative.fromNative(ptr).readParcelableList(Photo.NativeCreator)
-                    ?: return@create
-                v.onSuccess(
-                    p
-                )
+            Single.create { v ->
+                ParcelNative.fromNative(ptr).readParcelableList(Photo.NativeCreator)?.let {
+                    v.onSuccess(
+                        it
+                    )
+                }
             }.fromIOToMain()
                 .subscribe({
                     actualDataLoading = false
@@ -206,7 +206,7 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
                     view?.scrollTo(
                         position
                     )
-                }) { obj -> obj.printStackTrace() })
+                }) { it.printStackTrace() })
     }
 
     fun firePhotoClick(wrapper: Photo) {

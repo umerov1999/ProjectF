@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -59,7 +57,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
     DocsUploadAdapter.ActionListener, VideosAdapter.VideoOnClickListener {
     private val requestFile = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val file = result.data?.getStringExtra(Extra.PATH)
             val vid: LocalVideo? = result.data?.getParcelableExtraCompat(Extra.VIDEO)
@@ -459,7 +457,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
             }
         }
         MaterialAlertDialogBuilder(requireActivity())
-            .setItems(items) { _: DialogInterface?, i: Int ->
+            .setItems(items) { _, i ->
                 if (video.private) {
                     when (i) {
                         0 -> startForSendAttachments(requireActivity(), accountId, video)

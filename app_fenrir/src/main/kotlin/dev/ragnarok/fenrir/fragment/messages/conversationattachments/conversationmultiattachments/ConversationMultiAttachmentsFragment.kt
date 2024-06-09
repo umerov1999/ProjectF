@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +17,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -115,7 +113,7 @@ class ConversationMultiAttachmentsFragment :
         TabLayoutMediator(
             root.findViewById(R.id.tablayout),
             viewpager
-        ) { tab: TabLayout.Tab, position: Int ->
+        ) { tab, position ->
             frameAdapter?.getTitle(position)
                 ?.let { tab.setText(it) }
         }.attach()
@@ -191,7 +189,7 @@ class ConversationMultiAttachmentsFragment :
 
     private val requestPhotoUpdate = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null && (result.data
                 ?: return@registerForActivityResult)
                 .extras != null

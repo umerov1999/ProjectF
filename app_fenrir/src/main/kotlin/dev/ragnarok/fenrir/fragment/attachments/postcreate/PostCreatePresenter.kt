@@ -245,7 +245,7 @@ class PostCreatePresenter(
         appendDisposable(attachmentsSingle(postDbid)
             .zipWith(
                 uploadsSingle(postDbid)
-            ) { first: List<AttachmentEntry>, second: List<AttachmentEntry> ->
+            ) { first, second ->
                 combine(
                     first,
                     second

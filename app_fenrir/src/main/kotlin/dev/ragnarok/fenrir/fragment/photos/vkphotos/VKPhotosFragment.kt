@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
@@ -54,7 +53,7 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
     BigVKPhotosAdapter.PhotosActionListener, UploadActionListener, IVKPhotosView, MenuProvider {
     private val requestUploadPhoto = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val photos: ArrayList<LocalPhoto>? =
                 result.data?.getParcelableArrayListExtraCompat(Extra.PHOTOS)
@@ -73,7 +72,7 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
         ) { presenter?.loadDownload() }
     private val requestPhotoUpdate = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null && (result.data
                 ?: return@registerForActivityResult)
                 .extras != null

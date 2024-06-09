@@ -5,8 +5,6 @@ import dev.ragnarok.fenrir.util.ValidationUtil
 import okhttp3.Authenticator
 import okhttp3.Credentials.basic
 import okhttp3.OkHttpClient
-import okhttp3.Response
-import okhttp3.Route
 import java.net.InetSocketAddress
 import java.net.Proxy
 
@@ -28,7 +26,7 @@ object ProxyUtil {
             )
             builder.proxy(proxy)
             if (config.isAuthEnabled()) {
-                val authenticator = Authenticator { _: Route?, response: Response ->
+                val authenticator = Authenticator { _, response ->
                     val credential = config.getUser()?.let {
                         config.getPass()?.let { it1 ->
                             basic(

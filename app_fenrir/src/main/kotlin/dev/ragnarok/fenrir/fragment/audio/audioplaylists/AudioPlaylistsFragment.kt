@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -44,7 +43,7 @@ class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPl
     IAudioPlaylistsView, AudioPlaylistsAdapter.ClickListener {
     private val requestAudioSelect = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val audios: ArrayList<Audio>? =
                 result.data?.getParcelableArrayListExtraCompat("attachments")

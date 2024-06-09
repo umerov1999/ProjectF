@@ -23,7 +23,7 @@ object CrashUtils {
 
     fun install(context: Context) {
         try {
-            Thread.setDefaultUncaughtExceptionHandler { _: Thread?, throwable: Throwable ->
+            Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
                 if (isStackTraceLikelyConflictive(
                         throwable,
                         DefaultErrorActivity::class.java

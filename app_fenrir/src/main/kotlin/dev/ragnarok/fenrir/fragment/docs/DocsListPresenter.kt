@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.docs
 
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -132,7 +131,7 @@ class DocsListPresenter(
             DocsOption.delete_item_doc -> MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.remove_confirm)
                 .setMessage(R.string.doc_remove_confirm_message)
-                .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.button_yes) { _, _ ->
                     doRemove(
                         doc,
                         index
@@ -169,7 +168,7 @@ class DocsListPresenter(
             getString(R.string.repost_to_wall)
         )
         MaterialAlertDialogBuilder(context)
-            .setItems(items) { _: DialogInterface?, i: Int ->
+            .setItems(items) { _, i ->
                 when (i) {
                     0 -> shareLink(
                         (context as Activity),

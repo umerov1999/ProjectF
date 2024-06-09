@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -47,7 +46,7 @@ class DialogNotifOptionsDialog : BottomSheetDialogFragment() {
         val save: MaterialButton = root.findViewById(R.id.buttonSave)
         val restore: MaterialButton = root.findViewById(R.id.button_restore)
         scEnable?.isChecked = hasFlag(mask, INotificationSettings.FLAG_SHOW_NOTIF)
-        scEnable?.setOnCheckedChangeListener { _: CompoundButton?, _: Boolean -> resolveOtherSwitches() }
+        scEnable?.setOnCheckedChangeListener { _, _ -> resolveOtherSwitches() }
         scSound?.isChecked = hasFlag(mask, INotificationSettings.FLAG_SOUND)
         scHighPriority?.isChecked = hasFlag(mask, INotificationSettings.FLAG_HIGH_PRIORITY)
         scVibro?.isChecked = hasFlag(mask, INotificationSettings.FLAG_VIBRO)

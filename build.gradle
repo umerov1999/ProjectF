@@ -59,7 +59,7 @@ buildscript {
     //common libraries
     ext.kotlin_version = "2.0.0"
     ext.kotlin_coroutines = "1.9.0-RC"
-    ext.kotlin_serializer = "1.7.0-RC"
+    ext.kotlin_serializer = "1.7.0"
     //ext.okhttpLibraryVersion = "5.0.0-SNAPSHOT"
     ext.okhttpLibraryVersion = "5.0.0-alpha.14"
     ext.okioVersion = "3.9.0"
@@ -93,11 +93,10 @@ buildscript {
         //maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.4.1"
+        classpath "com.android.tools.build:gradle:8.5.0-rc01"
         classpath "com.google.gms:google-services:4.4.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
-        //https://plugins.jetbrains.com/plugin/6954-kotlin/versions/eap
         //https://github.com/esensar/kotlinx-serialization-msgpack
     }
 }

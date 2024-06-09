@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.comments
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -97,7 +96,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         parentFragmentManager.setFragmentResultListener(
             CommentCreateFragment.REQUEST_CREATE_COMMENT,
             this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             val body = result.getString(Extra.BODY)
             lazyPresenter {
                 fireEditBodyResult(body)
@@ -107,7 +106,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         parentFragmentManager.setFragmentResultListener(
             CommentEditFragment.REQUEST_COMMENT_EDIT,
             this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             val comment1: Comment? = result.getParcelableCompat(
                 Extra.COMMENT
             )
@@ -183,7 +182,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         mRecyclerView?.adapter = mAdapter
         mCenterProgressBar = root.findViewById(R.id.progress_bar)
         mEmptyView = root.findViewById(R.id.empty_text)
-        ItemTouchHelper(MessagesReplyItemCallback { o: Int ->
+        ItemTouchHelper(MessagesReplyItemCallback { o ->
             presenter?.fireReplyToCommentClick(mAdapter?.getItemRawPosition(o) ?: 0)
         }).attachToRecyclerView(mRecyclerView)
         return root
@@ -355,7 +354,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         val adapter = OwnersListAdapter(requireActivity(), data)
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.select_comment_author)
-            .setAdapter(adapter) { _: DialogInterface?, which: Int ->
+            .setAdapter(adapter) { _, which ->
                 if (Settings.get().accounts().registered.contains(data[which].ownerId)) {
                     presenter?.fireAuthorSelected(
                         data[which]

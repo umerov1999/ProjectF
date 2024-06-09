@@ -302,10 +302,14 @@ class UploadManagerImpl(
     override fun observeProgress(): Flowable<List<IProgressUpdate>> {
         return timer.map {
             synchronized(this) {
-                val pCurrent = current ?: return@map emptyList()
-                val update: IProgressUpdate =
-                    ProgressUpdate(pCurrent.id, pCurrent.progress)
-                return@map listOf(update)
+                val pCurrent = current
+                if (pCurrent == null) {
+                    emptyList()
+                } else {
+                    val update: IProgressUpdate =
+                        ProgressUpdate(pCurrent.id, pCurrent.progress)
+                    listOf(update)
+                }
             }
         }
     }

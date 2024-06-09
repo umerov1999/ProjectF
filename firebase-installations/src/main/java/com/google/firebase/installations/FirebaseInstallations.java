@@ -438,7 +438,7 @@ public class FirebaseInstallations implements FirebaseInstallationsApi {
 
     private synchronized void updateFidListener(
             PersistedInstallationEntry prefs, PersistedInstallationEntry updatedPrefs) {
-        if (fidListeners.size() != 0
+        if (!fidListeners.isEmpty()
                 && !TextUtils.equals(
                 prefs.getFirebaseInstallationId(), updatedPrefs.getFirebaseInstallationId())) {
             // Update all the registered FidListener about fid changes.

@@ -7,9 +7,7 @@ import dev.ragnarok.fenrir.api.model.longpoll.UserIsOfflineUpdate
 import dev.ragnarok.fenrir.api.model.longpoll.UserIsOnlineUpdate
 import dev.ragnarok.fenrir.db.interfaces.IOwnersStorage
 import dev.ragnarok.fenrir.db.model.UserPatch
-import dev.ragnarok.fenrir.db.model.entity.CommunityEntity
 import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
-import dev.ragnarok.fenrir.db.model.entity.UserEntity
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapCommunities
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapCommunity
@@ -68,35 +66,36 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         return cache.getUserDetails(accountId, userId)
             .flatMap { optional ->
                 if (optional.isEmpty) {
-                    return@flatMap Single.just(empty<UserDetails>())
-                }
-                val entity = optional.requireNonEmpty()
-                val requiredIds: MutableSet<Long> = HashSet(1)
-                entity.careers.nonNullNoEmpty {
-                    for (career in it) {
-                        if (career.groupId != 0L) {
-                            requiredIds.add(-career.groupId)
+                    Single.just(empty())
+                } else {
+                    val entity = optional.requireNonEmpty()
+                    val requiredIds: MutableSet<Long> = HashSet(1)
+                    entity.careers.nonNullNoEmpty {
+                        for (career in it) {
+                            if (career.groupId != 0L) {
+                                requiredIds.add(-career.groupId)
+                            }
                         }
                     }
-                }
-                entity.relatives.nonNullNoEmpty {
-                    for (e in it) {
-                        if (e.id > 0) {
-                            requiredIds.add(e.id)
+                    entity.relatives.nonNullNoEmpty {
+                        for (e in it) {
+                            if (e.id > 0) {
+                                requiredIds.add(e.id)
+                            }
                         }
                     }
-                }
-                if (entity.relationPartnerId != 0L) {
-                    requiredIds.add(entity.relationPartnerId)
-                }
-                findBaseOwnersDataAsBundle(accountId, requiredIds, IOwnersRepository.MODE_ANY)
-                    .map { bundle ->
-                        wrap(
-                            buildUserDetailsFromDbo(
-                                entity, bundle
+                    if (entity.relationPartnerId != 0L) {
+                        requiredIds.add(entity.relationPartnerId)
+                    }
+                    findBaseOwnersDataAsBundle(accountId, requiredIds, IOwnersRepository.MODE_ANY)
+                        .map { bundle ->
+                            wrap(
+                                buildUserDetailsFromDbo(
+                                    entity, bundle
+                                )
                             )
-                        )
-                    }
+                        }
+                }
             }
     }
 
@@ -107,16 +106,17 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         return cache.getGroupsDetails(accountId, groupId)
             .flatMap { optional ->
                 if (optional.isEmpty) {
-                    return@flatMap Single.just(empty<CommunityDetails>())
-                }
-                val entity = optional.requireNonEmpty()
-                Single.just(
-                    wrap(
-                        buildCommunityDetailsFromDbo(
-                            entity
+                    Single.just(empty())
+                } else {
+                    val entity = optional.requireNonEmpty()
+                    Single.just(
+                        wrap(
+                            buildCommunityDetailsFromDbo(
+                                entity
+                            )
                         )
                     )
-                )
+                }
             }
     }
 
@@ -127,7 +127,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         return cache.findCommunityDboById(accountId, groupId)
             .zipWith(
                 getCachedGroupsDetails(accountId, groupId)
-            ) { groupsEntityOptional: Optional<CommunityEntity>, groupsDetailsOptional: Optional<CommunityDetails> ->
+            ) { groupsEntityOptional, groupsDetailsOptional ->
                 create(map(groupsEntityOptional.get()), groupsDetailsOptional.get())
             }
     }
@@ -139,7 +139,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         return cache.findUserDboById(accountId, userId)
             .zipWith(
                 getCachedDetails(accountId, userId)
-            ) { userEntityOptional: Optional<UserEntity>, userDetailsOptional: Optional<UserDetails> ->
+            ) { userEntityOptional, userDetailsOptional ->
                 create(map(userEntityOptional.get()), userDetailsOptional.get())
             }
     }
@@ -510,7 +510,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
                     dividedIds.gids,
                     mode
                 )
-            ) { users: List<User>, communities: List<Community> ->
+            ) { users, communities ->
                 val owners: MutableList<Owner> = ArrayList(users.size + communities.size)
                 owners.addAll(users)
                 owners.addAll(communities)
@@ -548,13 +548,14 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             .flatMap { bundle ->
                 val missing = bundle.getMissing(ids)
                 if (missing.isEmpty()) {
-                    return@flatMap Single.just(bundle)
+                    Single.just(bundle)
+                } else {
+                    findBaseOwnersDataAsList(accountId, missing, mode)
+                        .map { owners ->
+                            bundle.putAll(owners)
+                            bundle
+                        }
                 }
-                findBaseOwnersDataAsList(accountId, missing, mode)
-                    .map { owners ->
-                        bundle.putAll(owners)
-                        bundle
-                    }
             }
     }
 
@@ -598,9 +599,10 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             IOwnersRepository.MODE_ANY -> return cache.findCommunityDbosByIds(accountId, gids)
                 .flatMap { dbos ->
                     if (dbos.size == gids.size) {
-                        return@flatMap Single.just(buildCommunitiesFromDbos(dbos))
+                        Single.just(buildCommunitiesFromDbos(dbos))
+                    } else {
+                        getActualCommunitiesAndStore(accountId, gids)
                     }
-                    getActualCommunitiesAndStore(accountId, gids)
                 }
 
             IOwnersRepository.MODE_NET -> return getActualCommunitiesAndStore(accountId, gids)
@@ -663,9 +665,10 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             IOwnersRepository.MODE_ANY -> return cache.findUserDbosByIds(accountId, uids)
                 .flatMap { dbos ->
                     if (dbos.size == uids.size) {
-                        return@flatMap Single.just(buildUsersFromDbo(dbos))
+                        Single.just(buildUsersFromDbo(dbos))
+                    } else {
+                        getActualUsersAndStore(accountId, uids)
                     }
-                    getActualUsersAndStore(accountId, uids)
                 }
 
             IOwnersRepository.MODE_NET -> return getActualUsersAndStore(accountId, uids)
@@ -699,7 +702,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
 
     companion object {
         private val TO_BUNDLE_FUNCTION =
-            BiFunction<List<User>, List<Community>, IOwnersBundle> { users: List<User>, communities: List<Community> ->
+            BiFunction<List<User>, List<Community>, IOwnersBundle> { users, communities ->
                 val bundle = SparseArrayOwnersBundle(users.size + communities.size)
                 bundle.putAll(users)
                 bundle.putAll(communities)

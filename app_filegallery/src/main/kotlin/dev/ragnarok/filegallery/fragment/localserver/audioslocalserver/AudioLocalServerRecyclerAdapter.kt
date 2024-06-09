@@ -3,7 +3,6 @@ package dev.ragnarok.filegallery.fragment.localserver.audioslocalserver
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.content.DialogInterface
 import android.media.MediaMetadataRetriever
 import android.view.LayoutInflater
 import android.view.View
@@ -295,7 +294,7 @@ class AudioLocalServerRecyclerAdapter(
                                     .setTitle(R.string.change_name)
                                     .setCancelable(true)
                                     .setView(root)
-                                    .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                                    .setPositiveButton(R.string.button_ok) { _, _ ->
                                         audioListDisposable =
                                             mAudioInteractor.update_file_name(
                                                 hash2,
@@ -332,7 +331,7 @@ class AudioLocalServerRecyclerAdapter(
                     .setMessage(R.string.do_delete)
                     .setTitle(R.string.confirmation)
                     .setCancelable(true)
-                    .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                    .setPositiveButton(R.string.button_yes) { _, _ ->
                         val hash1 = parseLocalServerURL(audio.url)
                         if (hash1.isNullOrEmpty()) {
                             return@setPositiveButton
@@ -410,9 +409,9 @@ class AudioLocalServerRecyclerAdapter(
             with().cancelRequest(holder.play_cover)
             holder.play_cover.setImageResource(audioCoverSimple)
         }
-        holder.play.setOnClickListener { v: View ->
+        holder.play.setOnClickListener {
             if (get().main().isRevert_play_audio) {
-                doMenu(holder, holder.bindingAdapterPosition, v, audio)
+                doMenu(holder, holder.bindingAdapterPosition, it, audio)
             } else {
                 doPlay(holder.bindingAdapterPosition, audio)
             }
@@ -447,13 +446,13 @@ class AudioLocalServerRecyclerAdapter(
             }
             true
         }
-        holder.Track.setOnClickListener { view: View ->
+        holder.Track.setOnClickListener {
             holder.cancelSelectionAnimation()
             holder.startSomeAnimation()
             if (get().main().isRevert_play_audio) {
                 doPlay(holder.bindingAdapterPosition, audio)
             } else {
-                doMenu(holder, holder.bindingAdapterPosition, view, audio)
+                doMenu(holder, holder.bindingAdapterPosition, it, audio)
             }
         }
     }
@@ -466,7 +465,7 @@ class AudioLocalServerRecyclerAdapter(
         super.onAttachedToRecyclerView(recyclerView)
         mPlayerDisposable = MusicPlaybackController.observeServiceBinding()
             .toMainThread()
-            .subscribe { status: Int -> onServiceBindEvent(status) }
+            .subscribe { status -> onServiceBindEvent(status) }
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {

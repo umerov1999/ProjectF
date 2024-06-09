@@ -126,7 +126,7 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
                 TabLayoutMediator(
                     it,
                     it1
-                ) { tab: TabLayout.Tab, position: Int ->
+                ) { tab, position ->
                     tab.text = adapter?.getPageTitle(position)
                 }.attach()
             }

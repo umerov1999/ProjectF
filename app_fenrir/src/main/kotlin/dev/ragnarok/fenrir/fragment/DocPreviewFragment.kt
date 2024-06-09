@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment
 
 import android.Manifest
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -276,7 +275,7 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.remove_confirm)
             .setMessage(R.string.doc_remove_confirm_message)
-            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int -> doRemove() }
+            .setPositiveButton(R.string.button_yes) { _, _ -> doRemove() }
             .setNegativeButton(R.string.cancel, null)
             .show()
     }
@@ -288,7 +287,7 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
             getString(R.string.repost_to_wall)
         )
         MaterialAlertDialogBuilder(requireActivity())
-            .setItems(items) { _: DialogInterface?, i: Int ->
+            .setItems(items) { _, i ->
                 when (i) {
                     0 -> shareLink(requireActivity(), genLink(), document?.title)
                     1 -> document?.let { startForSendAttachments(requireActivity(), accountId, it) }
@@ -358,7 +357,7 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.confirmation)
             .setMessage(R.string.add_document_to_yourself_commit)
-            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int -> doAddYourSelf() }
+            .setPositiveButton(R.string.button_yes) { _, _ -> doAddYourSelf() }
             .setNegativeButton(R.string.button_cancel, null)
             .show()
     }

@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.link
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -188,7 +187,7 @@ object LinkHelper {
                 MaterialAlertDialogBuilder(context)
                     .setTitle(R.string.info)
                     .setMessage(R.string.open_branch)
-                    .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                    .setPositiveButton(R.string.button_yes) { _, _ ->
                         getCommentsThreadPlace(
                             accountId,
                             commentedThread,
@@ -196,7 +195,7 @@ object LinkHelper {
                             wallCommentThreadLink.threadId
                         ).tryOpenWith(context)
                     }
-                    .setNegativeButton(R.string.button_no) { _: DialogInterface?, _: Int ->
+                    .setNegativeButton(R.string.button_no) { _, _ ->
                         getCommentsPlace(
                             accountId,
                             commentedThread,

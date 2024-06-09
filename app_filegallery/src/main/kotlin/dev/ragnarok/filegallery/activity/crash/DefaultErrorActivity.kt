@@ -3,7 +3,6 @@ package dev.ragnarok.filegallery.activity.crash
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.DialogInterface
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
@@ -65,7 +64,7 @@ class DefaultErrorActivity : AppCompatActivity() {
                 .setPositiveButton(R.string.crash_error_activity_error_details_close, null)
                 .setNeutralButton(
                     R.string.crash_error_activity_error_details_copy
-                ) { _: DialogInterface?, _: Int -> copyErrorToClipboard() }
+                ) { _, _ -> copyErrorToClipboard() }
                 .show()
             val textView = dialog.findViewById<TextView>(android.R.id.message)
             textView?.setTextSize(

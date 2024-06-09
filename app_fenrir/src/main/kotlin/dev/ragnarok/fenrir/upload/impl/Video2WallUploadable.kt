@@ -49,36 +49,38 @@ class Video2WallUploadable(
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    return@flatMap Single.error(
+                    Single.error(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
                     )
-                }
-                val filename = UploadUtils.findFileName(context, uri)
-                networker.uploads()
-                    .uploadVideoRx(
-                        server.url ?: throw NotFoundException("Upload url empty!"),
-                        filename,
-                        inputStream,
-                        listener
-                    )
-                    .doFinally(safelyCloseAction(inputStream))
-                    .flatMap { dto ->
-                        val video = Video().setId(dto.video_id).setOwnerId(dto.owner_id).setTitle(
-                            UploadUtils.findFileName(
-                                context, upload.fileUri
-                            )
+                } else {
+                    val filename = UploadUtils.findFileName(context, uri)
+                    networker.uploads()
+                        .uploadVideoRx(
+                            server.url ?: throw NotFoundException("Upload url empty!"),
+                            filename,
+                            inputStream,
+                            listener
                         )
-                        val result = UploadResult(server, video)
-                        if (upload.isAutoCommit) {
-                            commit(attachmentsRepository, upload, video).andThen(
+                        .doFinally(safelyCloseAction(inputStream))
+                        .flatMap { dto ->
+                            val video =
+                                Video().setId(dto.video_id).setOwnerId(dto.owner_id).setTitle(
+                                    UploadUtils.findFileName(
+                                        context, upload.fileUri
+                                    )
+                                )
+                            val result = UploadResult(server, video)
+                            if (upload.isAutoCommit) {
+                                commit(attachmentsRepository, upload, video).andThen(
+                                    Single.just(result)
+                                )
+                            } else {
                                 Single.just(result)
-                            )
-                        } else {
-                            Single.just(result)
+                            }
                         }
-                    }
+                }
             } catch (e: Exception) {
                 safelyClose(inputStream)
                 Single.error(e)

@@ -5,7 +5,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -376,7 +375,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             }
         }
         MaterialAlertDialogBuilder(requireActivity())
-            .setItems(items) { _: DialogInterface?, i: Int ->
+            .setItems(items) { _, i ->
                 if (video.private) {
                     when (i) {
                         0 -> startForSendAttachments(requireActivity(), accountId, video)
@@ -587,7 +586,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         }
         val adapter = MenuAdapter(requireActivity(), items, false)
         MaterialAlertDialogBuilder(requireActivity())
-            .setAdapter(adapter) { _: DialogInterface?, which: Int ->
+            .setAdapter(adapter) { _, which ->
                 onPlayMenuItemClick(
                     video,
                     items[which]
@@ -720,7 +719,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         val items = createDirectVkPlayItems(video, section, false)
         val adapter = MenuAdapter(requireActivity(), items, false)
         MaterialAlertDialogBuilder(requireActivity())
-            .setAdapter(adapter) { _: DialogInterface?, which: Int ->
+            .setAdapter(adapter) { _, which ->
                 val item = items[which]
                 when (item.key) {
                     Menu.P_240 -> video.mp4link240?.let { playDirectVkLinkInExternalPlayer(it) }
@@ -743,7 +742,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         val items = createDirectVkPlayItems(video, section, true)
         val adapter = MenuAdapter(requireActivity(), items, false)
         MaterialAlertDialogBuilder(requireActivity())
-            .setAdapter(adapter) { _: DialogInterface?, which: Int ->
+            .setAdapter(adapter) { _, which ->
                 val item = items[which]
                 when (item.key) {
                     Menu.P_240 -> video.mp4link240?.let {

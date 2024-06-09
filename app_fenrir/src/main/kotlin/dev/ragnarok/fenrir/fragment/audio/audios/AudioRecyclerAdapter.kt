@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -101,7 +100,7 @@ class AudioRecyclerAdapter(
                     )
                 )
             ).fromIOToMain().subscribe(
-                { t: Int ->
+                { t ->
                     if (t != 0) {
                         createCustomToast(mContext).showToast(R.string.deleted)
                         mClickListener?.onDelete(position)
@@ -140,7 +139,7 @@ class AudioRecyclerAdapter(
         audioListDisposable = if (audio.isHLS) {
             M3U8(pUrl).length.fromIOToMain()
                 .subscribe(
-                    { r: Long ->
+                    { r ->
                         createCustomToast(mContext).showToast(
                             getBitrate(
                                 mContext,
@@ -153,7 +152,7 @@ class AudioRecyclerAdapter(
         } else {
             getLength(pUrl).fromIOToMain()
                 .subscribe(
-                    { r: Long ->
+                    { r ->
                         createCustomToast(mContext).showToast(
                             getBitrate(
                                 mContext,
@@ -189,7 +188,7 @@ class AudioRecyclerAdapter(
             .setMessage(Text)
             .setTitle(title)
             .setPositiveButton(R.string.button_ok, null)
-            .setNeutralButton(R.string.copy_text) { _: DialogInterface?, _: Int ->
+            .setNeutralButton(R.string.copy_text) { _, _ ->
                 val clipboard = mContext.getSystemService(
                     Context.CLIPBOARD_SERVICE
                 ) as ClipboardManager?
@@ -605,7 +604,7 @@ class AudioRecyclerAdapter(
                     )
                     if (audio.main_artists?.keys?.size.orZero() > 1) {
                         MaterialAlertDialogBuilder(mContext)
-                            .setItems(artists[1]) { _: DialogInterface?, which: Int ->
+                            .setItems(artists[1]) { _, which ->
                                 getArtistPlace(
                                     Settings.get().accounts().current,
                                     artists[0][which]
@@ -724,9 +723,9 @@ class AudioRecyclerAdapter(
             }
             true
         }
-        viewHolder.play.setOnClickListener { v: View ->
+        viewHolder.play.setOnClickListener {
             if (Settings.get().main().isRevert_play_audio) {
-                doMenu(viewHolder, getItemRawPosition(viewHolder.bindingAdapterPosition), v, audio)
+                doMenu(viewHolder, getItemRawPosition(viewHolder.bindingAdapterPosition), it, audio)
             } else {
                 doPlay(getItemRawPosition(viewHolder.bindingAdapterPosition), audio)
             }
@@ -778,7 +777,7 @@ class AudioRecyclerAdapter(
                     true
                 }
             }
-            viewHolder.Track.setOnClickListener { view: View ->
+            viewHolder.Track.setOnClickListener {
                 viewHolder.cancelSelectionAnimation()
                 viewHolder.startSomeAnimation()
                 if (Settings.get().main().isRevert_play_audio) {
@@ -787,7 +786,7 @@ class AudioRecyclerAdapter(
                     doMenu(
                         viewHolder,
                         getItemRawPosition(viewHolder.bindingAdapterPosition),
-                        view,
+                        it,
                         audio
                     )
                 }

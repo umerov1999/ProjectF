@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 
@@ -65,7 +64,7 @@ internal class VideoAlbumsStorage(base: AppStorages) : AbsStorage(base), IVideoA
         data: List<VideoAlbumDboEntity>,
         invalidateBefore: Boolean
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val uri = getVideoAlbumsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (invalidateBefore) {

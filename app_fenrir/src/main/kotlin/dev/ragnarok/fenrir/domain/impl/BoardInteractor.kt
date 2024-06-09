@@ -37,7 +37,7 @@ class BoardInteractor(
                     ids.all,
                     IOwnersRepository.MODE_ANY
                 )
-                    .map<List<Topic>> {
+                    .map {
                         val topics: MutableList<Topic> = ArrayList(dbos.size)
                         for (dbo in dbos) {
                             topics.add(buildTopicFromDbo(dbo, it))
@@ -100,7 +100,7 @@ class BoardInteractor(
                             IOwnersRepository.MODE_ANY,
                             owners
                         )
-                            .map<List<Topic>> {
+                            .map {
                                 val topics: MutableList<Topic> = ArrayList(dbos.size)
                                 for (dbo in dbos) {
                                     topics.add(buildTopicFromDbo(dbo, it))

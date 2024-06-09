@@ -23,7 +23,6 @@ import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 
@@ -80,7 +79,7 @@ internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoA
         albums: List<PhotoAlbumDboEntity>,
         clearBefore: Boolean
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val operations =
                 ArrayList<ContentProviderOperation>(if (clearBefore) albums.size + 1 else albums.size)
             val uri = getPhotoAlbumsContentUriFor(accountId)
@@ -109,7 +108,7 @@ internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoA
     }
 
     override fun removeAlbumById(accountId: Long, ownerId: Long, albumId: Int): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val where =
                 PhotoAlbumsColumns.OWNER_ID + " = ? AND " + PhotoAlbumsColumns.ALBUM_ID + " = ?"
             val args = arrayOf(ownerId.toString(), albumId.toString())

@@ -7,7 +7,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Color
@@ -23,7 +22,6 @@ import android.view.WindowManager
 import android.view.animation.LinearInterpolator
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
@@ -220,7 +218,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     private val postResumeActions: MutableList<Action<MainActivity>> = ArrayList(0)
     private val requestEnterPin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode != RESULT_OK) {
             finish()
         }
@@ -228,7 +226,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     protected var mAccountId = 0L
     private val requestEnterPinZero = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode != RESULT_OK) {
             finish()
         } else {
@@ -237,7 +235,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
     private val requestQRScan = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val scanner = result.data?.extras?.getString(Extra.URL)
             if (scanner.nonNullNoEmpty()) {
@@ -260,14 +258,14 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     .setIcon(R.drawable.qr_code)
                     .setMessage(scanner)
                     .setTitle(getString(R.string.scan_qr))
-                    .setPositiveButton(R.string.open) { _: DialogInterface?, _: Int ->
+                    .setPositiveButton(R.string.open) { _, _ ->
                         LinkHelper.openUrl(
                             this,
                             mAccountId,
                             scanner, false
                         )
                     }
-                    .setNeutralButton(R.string.copy_text) { _: DialogInterface?, _: Int ->
+                    .setNeutralButton(R.string.copy_text) { _, _ ->
                         val clipboard = getSystemService(
                             CLIPBOARD_SERVICE
                         ) as ClipboardManager?
@@ -295,7 +293,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
     private val requestCreatePin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val values = CreatePinFragment.extractValueFromIntent(result.data)
             Settings.get()
@@ -339,7 +337,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     .setTitle(R.string.info)
                     .setMessage(R.string.lollipop21)
                     .setCancelable(false)
-                    .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                    .setPositiveButton(R.string.button_ok) { _, _ ->
                         if (!Settings.get().security().isUsePinForSecurity) {
                             startCreatePinActivity()
                         }

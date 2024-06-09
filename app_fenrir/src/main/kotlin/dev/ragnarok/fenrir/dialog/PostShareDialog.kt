@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.dialog
 
 import android.app.Dialog
-import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -70,7 +69,7 @@ class PostShareDialog : DialogFragment() {
         mAdapter = MenuAdapter(requireActivity(), items, true)
         val builder = MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.repost_title)
-            .setAdapter(mAdapter) { _: DialogInterface?, which: Int -> onItemClick(items[which]) }
+            .setAdapter(mAdapter) { _, which -> onItemClick(items[which]) }
             .setNegativeButton(R.string.button_cancel, null)
         val iAmOwnerAndAuthor = mPost?.ownerId == mAccountId && mPost?.authorId == mAccountId
 

@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.view.WindowManager
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.documentfile.provider.DocumentFile
@@ -42,7 +41,7 @@ class LottieActivity : AppCompatActivity() {
 
     private val fManager = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             val v = DocumentFile.fromSingleUri(
                 this,

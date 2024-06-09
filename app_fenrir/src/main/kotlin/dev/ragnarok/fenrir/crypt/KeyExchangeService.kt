@@ -56,8 +56,8 @@ class KeyExchangeService : Service() {
         LongSparseArray(1)
     private var mFinishedSessionsIds: MutableSet<Long> = HashSet(1)
     private var mNotificationManager: NotificationManagerCompat? = null
-    private val mStopServiceHandler = Handler(Looper.getMainLooper()) { msg: Message ->
-        if (msg.what == WHAT_STOP_SERVICE) {
+    private val mStopServiceHandler = Handler(Looper.getMainLooper()) {
+        if (it.what == WHAT_STOP_SERVICE) {
             finishAllByTimeout()
             stopSelf()
         }

@@ -6,7 +6,6 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -101,17 +100,17 @@ class CreatePollDialogFragment :
                 )
             }
         })
-        mAnonymous?.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        mAnonymous?.setOnCheckedChangeListener { _, isChecked ->
             presenter?.fireAnonyamousChecked(
                 isChecked
             )
         }
-        mMultiply?.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        mMultiply?.setOnCheckedChangeListener { _, isChecked ->
             presenter?.fireMultiplyChecked(
                 isChecked
             )
         }
-        mDisableUnvote?.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+        mDisableUnvote?.setOnCheckedChangeListener { _, isChecked ->
             presenter?.fireDisableUnvoteChecked(
                 isChecked
             )

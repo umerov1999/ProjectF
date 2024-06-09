@@ -20,11 +20,11 @@ class CreatePhotoAlbumStep2Holder(parent: ViewGroup, private val mActionListener
         mUploadByAdminsOnly = contentView.findViewById(R.id.upload_only_admins)
         mDisableComments = contentView.findViewById(R.id.disable_comments)
         val uploadByAdminsOnlyListener =
-            CompoundButton.OnCheckedChangeListener { _: CompoundButton?, b: Boolean ->
+            CompoundButton.OnCheckedChangeListener { _, b ->
                 mActionListener.onUploadByAdminsOnlyChecked(b)
             }
         val disableCommentsListener =
-            CompoundButton.OnCheckedChangeListener { _: CompoundButton?, b: Boolean ->
+            CompoundButton.OnCheckedChangeListener { _, b ->
                 mActionListener.onCommentsDisableChecked(b)
             }
         mUploadByAdminsOnly?.setOnCheckedChangeListener(uploadByAdminsOnlyListener)

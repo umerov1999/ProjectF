@@ -96,7 +96,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
             supportInvalidateOptionsMenu()
         }
 
-        override fun onLoadFailure(e: Exception) {
+        override fun onLoadFailure(e: Throwable) {
             setResultError(e)
             finish()
         }
@@ -105,9 +105,9 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
     private var mCompressFormat = DEFAULT_COMPRESS_FORMAT
     private var mCompressQuality = DEFAULT_COMPRESS_QUALITY
     private var mAllowedGestures = intArrayOf(SCALE, ROTATE, ALL)
-    private val mStateClickListener = View.OnClickListener { v: View ->
-        if (!v.isSelected) {
-            setWidgetState(v.id)
+    private val mStateClickListener = View.OnClickListener {
+        if (!it.isSelected) {
+            setWidgetState(it.id)
         }
     }
 
@@ -512,13 +512,13 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
         }
         mCropAspectRatioViews[aspectRationSelectedByDefault].isSelected = true
         for (cropAspectRatioView in mCropAspectRatioViews) {
-            cropAspectRatioView.setOnClickListener { v: View ->
+            cropAspectRatioView.setOnClickListener {
                 mGestureCropImageView?.targetAspectRatio =
-                    ((v as ViewGroup).getChildAt(0) as AspectRatioTextView).getAspectRatio(v.isSelected())
+                    ((it as ViewGroup).getChildAt(0) as AspectRatioTextView).getAspectRatio(it.isSelected)
                 mGestureCropImageView?.setImageToWrapCropBounds()
-                if (!v.isSelected()) {
+                if (!it.isSelected) {
                     for (cropAspectRatioView1 in mCropAspectRatioViews) {
-                        cropAspectRatioView1.isSelected = cropAspectRatioView1 === v
+                        cropAspectRatioView1.isSelected = cropAspectRatioView1 === it
                     }
                 }
             }

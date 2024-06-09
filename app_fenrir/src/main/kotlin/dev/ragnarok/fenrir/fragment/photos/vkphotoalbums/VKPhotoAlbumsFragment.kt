@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.photos.vkphotoalbums
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -108,7 +107,7 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.remove_confirm)
             .setMessage(R.string.album_remove_confirm_message)
-            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_yes) { _, _ ->
                 presenter?.fireAlbumDeletingConfirmed(
                     album
                 )
@@ -166,7 +165,7 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
         val items = arrayOf(getString(R.string.delete), getString(R.string.edit))
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(album.getDisplayTitle(requireActivity()))
-            .setItems(items) { _: DialogInterface?, which: Int ->
+            .setItems(items) { _, which ->
                 when (which) {
                     0 -> presenter?.fireAlbumDeleteClick(
                         album

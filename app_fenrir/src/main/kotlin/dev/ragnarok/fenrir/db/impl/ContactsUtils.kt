@@ -127,25 +127,25 @@ object ContactsUtils {
             )
             if (cursor == null) {
                 it.tryOnError(Throwable("Can't collect contact list!"))
-                return@create
-            }
-            if (cursor.count > 0) {
-                while (cursor.moveToNext()) {
-                    val stmp = ContactData(cursor)
-                    stmp.findPhones(cr)
-                    stmp.findMails(cr)
-                    if (stmp.check()) {
-                        contacts.add(stmp)
+            } else {
+                if (cursor.count > 0) {
+                    while (cursor.moveToNext()) {
+                        val stmp = ContactData(cursor)
+                        stmp.findPhones(cr)
+                        stmp.findMails(cr)
+                        if (stmp.check()) {
+                            contacts.add(stmp)
+                        }
                     }
+                    cursor.close()
                 }
-                cursor.close()
+                if (contacts.isEmpty()) {
+                    it.tryOnError(Throwable("Can't collect contact list!"))
+                }
+                it.onSuccess(
+                    kJson.encodeToString(ListSerializer(ContactData.serializer()), contacts)
+                )
             }
-            if (contacts.isEmpty()) {
-                it.tryOnError(Throwable("Can't collect contact list!"))
-            }
-            it.onSuccess(
-                kJson.encodeToString(ListSerializer(ContactData.serializer()), contacts)
-            )
         }
     }
 }

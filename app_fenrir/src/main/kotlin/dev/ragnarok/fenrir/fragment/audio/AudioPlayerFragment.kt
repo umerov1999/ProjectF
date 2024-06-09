@@ -611,7 +611,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         dlgAlert.setMessage(Text)
         dlgAlert.setTitle(title ?: requireActivity().getString(R.string.get_lyrics))
         dlgAlert.setPositiveButton(R.string.button_ok, null)
-        dlgAlert.setNeutralButton(requireActivity().getString(R.string.copy_text)) { _: DialogInterface, _: Int ->
+        dlgAlert.setNeutralButton(requireActivity().getString(R.string.copy_text)) { _, _ ->
             val clipboard =
                 requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
             val clip = ClipData.newPlainText("response", Text)
@@ -962,6 +962,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         mCurrentTime?.text = MusicPlaybackController.makeTimeString(requireActivity(), pos / 1000)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun refreshCurrentTime(): Long {
         if (!MusicPlaybackController.isInitialized) {
             mCurrentTime?.text = "--:--"

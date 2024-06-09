@@ -6,7 +6,6 @@ import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
@@ -18,7 +17,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
@@ -71,7 +69,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
     MenuProvider {
     private val requestPinForExportAccount = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK) {
             startExportAccounts()
         }
@@ -129,7 +127,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
     private var mAdapter: AccountAdapter? = null
     private val requestEnterPinForShowPassword = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK) {
             val accountFromTmp = presenter?.fireResetAndGetTempAccount() ?: 0L
             if (accountFromTmp == 0L) {
@@ -150,7 +148,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
             MaterialAlertDialogBuilder(requireActivity())
                 .setMessage(messageData)
                 .setTitle(R.string.login_password_hint)
-                .setNeutralButton(R.string.login_password_hint) { _: DialogInterface?, _: Int ->
+                .setNeutralButton(R.string.login_password_hint) { _, _ ->
                     val clipboard = requireActivity().getSystemService(
                         Context.CLIPBOARD_SERVICE
                     ) as ClipboardManager?
@@ -158,7 +156,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                     clipboard?.setPrimaryClip(clip)
                     createCustomToast(requireActivity()).showToast(R.string.copied_to_clipboard)
                 }
-                .setNegativeButton(R.string.login_hint) { _: DialogInterface?, _: Int ->
+                .setNegativeButton(R.string.login_hint) { _, _ ->
                     val clipboard = requireActivity().getSystemService(
                         Context.CLIPBOARD_SERVICE
                     ) as ClipboardManager?
@@ -176,7 +174,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
 
     private val requestEnterPinForExchangeToken = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK) {
             presenter?.createExchangeToken(requireActivity())
         }
@@ -184,7 +182,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
 
     private val requestLoginWeb = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK) {
             val uid = result.data?.extras?.getLong(Extra.USER_ID)
             val token = result.data?.getStringExtra(Extra.TOKEN)
@@ -211,7 +209,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
 
     private val importExchangeToken = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             result.data?.getStringExtra(Extra.PATH)
                 ?.let { presenter?.importExchangeToken(requireActivity(), it) }
@@ -220,7 +218,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
 
     private val importAccounts = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             result.data?.getStringExtra(Extra.PATH)?.let { presenter?.importAccounts(it) }
         }
@@ -228,7 +226,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
 
     private val exportAccounts = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             result.data?.getStringExtra(Extra.PATH)
                 ?.let { presenter?.exportAccounts(requireActivity(), it) }
@@ -252,7 +250,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener { presenter?.fireLoad(true) }
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
-        ItemTouchHelper(MessagesReplyItemCallback { o: Int ->
+        ItemTouchHelper(MessagesReplyItemCallback { o ->
             if (mAdapter?.checkPosition(o) == true) {
                 val account = mAdapter?.getByPosition(o) ?: return@MessagesReplyItemCallback
                 val idCurrent = account.getOwnerObjectId() == Settings.get()
@@ -286,7 +284,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         parentFragmentManager.setFragmentResultListener(
             DirectAuthDialog.ACTION_VALIDATE_VIA_WEB,
             this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             val url = result.getString(Extra.URL)
             val Login = result.getString(Extra.LOGIN)
             val Password = result.getString(Extra.PASSWORD)
@@ -297,7 +295,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         parentFragmentManager.setFragmentResultListener(
             DirectAuthDialog.ACTION_LOGIN_COMPLETE,
             this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             val uid = result.getLong(Extra.USER_ID)
             val token = result.getString(Extra.TOKEN)
             val Login = result.getString(Extra.LOGIN)
@@ -319,7 +317,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         parentFragmentManager.setFragmentResultListener(
             ENTRY_ACCOUNT_RESULT,
             this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             result.getString(Extra.TOKEN)?.let {
                 presenter?.processAccountByAccessToken(
                     it,
@@ -541,7 +539,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                         .setTitle(R.string.set_device)
                         .setCancelable(true)
                         .setView(root)
-                        .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                        .setPositiveButton(R.string.button_ok) { _, _ ->
                             Settings.get().accounts().storeDevice(
                                 account.getOwnerObjectId(),
                                 root.findViewById<TextInputEditText>(R.id.editText).editableText.toString()
@@ -617,7 +615,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                 .setCancelable(true)
                 .setTitle(R.string.entry_account)
                 .setNegativeButton(R.string.button_cancel, null)
-                .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.button_ok) { _, _ ->
                     try {
                         val access_token =
                             root.findViewById<TextInputEditText>(R.id.edit_access_token).text.toString()

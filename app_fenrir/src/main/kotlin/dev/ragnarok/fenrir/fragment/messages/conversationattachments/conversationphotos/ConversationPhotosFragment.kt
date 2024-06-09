@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.messages.conversationattachments.conversati
 
 import android.app.Activity
 import android.os.Bundle
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +19,7 @@ class ConversationPhotosFragment :
     FavePhotosAdapter.PhotoSelectionListener, PhotoConversationListener, IChatAttachmentPhotosView {
     private val requestPhotoUpdate = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null && (result.data
                 ?: return@registerForActivityResult)
                 .extras != null

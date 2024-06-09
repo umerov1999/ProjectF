@@ -36,7 +36,6 @@ import dev.ragnarok.fenrir.util.rxutils.RxUtils
 import dev.ragnarok.fenrir.view.natives.animation.AnimationNetworkCache
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.core.SingleOnSubscribe
 import io.reactivex.rxjava3.disposables.Disposable
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -257,7 +256,7 @@ open class TouchImageView @JvmOverloads constructor(
             setAnimationByUrlCache(key, fallback, true)
             return
         }
-        mDisposable = Single.create(SingleOnSubscribe { u: SingleEmitter<Boolean> ->
+        mDisposable = Single.create { u: SingleEmitter<Boolean> ->
             try {
                 val request: Request = Request.Builder()
                     .url(url)
@@ -265,7 +264,7 @@ open class TouchImageView @JvmOverloads constructor(
                 val response: Response = client.build().newCall(request).execute()
                 if (!response.isSuccessful) {
                     u.onSuccess(false)
-                    return@SingleOnSubscribe
+                    return@create
                 }
                 val bfr = response.body.byteStream()
                 val input = BufferedInputStream(bfr)
@@ -274,12 +273,12 @@ open class TouchImageView @JvmOverloads constructor(
                 cache.renameTempFile(key)
             } catch (e: Exception) {
                 u.onSuccess(false)
-                return@SingleOnSubscribe
+                return@create
             }
             u.onSuccess(true)
-        }).fromIOToMain()
+        }.fromIOToMain()
             .subscribe(
-                { u: Boolean ->
+                { u ->
                     if (u) {
                         setAnimationByUrlCache(key, fallback, true)
                     } else {

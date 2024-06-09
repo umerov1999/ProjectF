@@ -28,7 +28,6 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Exestime.log
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
@@ -70,7 +69,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         data: List<T>,
         serializer: ISerializeAdapter<T>
     ): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val start = System.currentTimeMillis()
             val db = helper.writableDatabase
             db.beginTransaction()
@@ -140,30 +139,30 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         val queryClean = query.trim { it <= ' ' }
         return if (queryClean.isEmpty()) {
             Completable.complete()
-        } else Completable.create { emitter: CompletableEmitter ->
+        } else Completable.create { emitter ->
             val db = helper.writableDatabase
             db.beginTransaction()
             if (emitter.isDisposed) {
                 db.endTransaction()
                 emitter.onComplete()
-                return@create
-            }
-            db.delete(
-                SearchRequestColumns.TABLENAME,
-                SearchRequestColumns.QUERY + " = ?", arrayOf(queryClean)
-            )
-            try {
-                val cv = ContentValues()
-                cv.put(SearchRequestColumns.SOURCE_ID, sourceId)
-                cv.put(SearchRequestColumns.QUERY, queryClean)
-                db.insert(SearchRequestColumns.TABLENAME, null, cv)
-                if (!emitter.isDisposed) {
-                    db.setTransactionSuccessful()
+            } else {
+                db.delete(
+                    SearchRequestColumns.TABLENAME,
+                    SearchRequestColumns.QUERY + " = ?", arrayOf(queryClean)
+                )
+                try {
+                    val cv = ContentValues()
+                    cv.put(SearchRequestColumns.SOURCE_ID, sourceId)
+                    cv.put(SearchRequestColumns.QUERY, queryClean)
+                    db.insert(SearchRequestColumns.TABLENAME, null, cv)
+                    if (!emitter.isDisposed) {
+                        db.setTransactionSuccessful()
+                    }
+                } finally {
+                    db.endTransaction()
                 }
-            } finally {
-                db.endTransaction()
+                emitter.onComplete()
             }
-            emitter.onComplete()
         }
     }
 
@@ -185,25 +184,25 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             if (it.isDisposed) {
                 db.endTransaction()
                 it.onComplete()
-                return@create
-            }
-            db.delete(
-                ShortcutsColumns.TABLENAME,
-                ShortcutsColumns.ACTION + " = ?", arrayOf(action)
-            )
-            try {
-                val cv = ContentValues()
-                cv.put(ShortcutsColumns.ACTION, action)
-                cv.put(ShortcutsColumns.NAME, name)
-                cv.put(ShortcutsColumns.COVER, cover)
-                db.insert(ShortcutsColumns.TABLENAME, null, cv)
-                if (!it.isDisposed) {
-                    db.setTransactionSuccessful()
+            } else {
+                db.delete(
+                    ShortcutsColumns.TABLENAME,
+                    ShortcutsColumns.ACTION + " = ?", arrayOf(action)
+                )
+                try {
+                    val cv = ContentValues()
+                    cv.put(ShortcutsColumns.ACTION, action)
+                    cv.put(ShortcutsColumns.NAME, name)
+                    cv.put(ShortcutsColumns.COVER, cover)
+                    db.insert(ShortcutsColumns.TABLENAME, null, cv)
+                    if (!it.isDisposed) {
+                        db.setTransactionSuccessful()
+                    }
+                } finally {
+                    db.endTransaction()
                 }
-            } finally {
-                db.endTransaction()
+                it.onComplete()
             }
-            it.onComplete()
         }
     }
 
@@ -214,27 +213,27 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             if (it.isDisposed) {
                 db.endTransaction()
                 it.onComplete()
-                return@create
-            }
-            try {
-                for (i in list) {
-                    db.delete(
-                        ShortcutsColumns.TABLENAME,
-                        ShortcutsColumns.ACTION + " = ?", arrayOf(i.action)
-                    )
-                    val cv = ContentValues()
-                    cv.put(ShortcutsColumns.ACTION, i.action)
-                    cv.put(ShortcutsColumns.NAME, i.name)
-                    cv.put(ShortcutsColumns.COVER, i.cover)
-                    db.insert(ShortcutsColumns.TABLENAME, null, cv)
+            } else {
+                try {
+                    for (i in list) {
+                        db.delete(
+                            ShortcutsColumns.TABLENAME,
+                            ShortcutsColumns.ACTION + " = ?", arrayOf(i.action)
+                        )
+                        val cv = ContentValues()
+                        cv.put(ShortcutsColumns.ACTION, i.action)
+                        cv.put(ShortcutsColumns.NAME, i.name)
+                        cv.put(ShortcutsColumns.COVER, i.cover)
+                        db.insert(ShortcutsColumns.TABLENAME, null, cv)
+                    }
+                    if (!it.isDisposed) {
+                        db.setTransactionSuccessful()
+                    }
+                } finally {
+                    db.endTransaction()
                 }
-                if (!it.isDisposed) {
-                    db.setTransactionSuccessful()
-                }
-            } finally {
-                db.endTransaction()
+                it.onComplete()
             }
-            it.onComplete()
         }
     }
 
@@ -245,29 +244,29 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             if (it.isDisposed) {
                 db.endTransaction()
                 it.onComplete()
-                return@create
-            }
-            try {
-                db.delete(
-                    ReactionsColumns.TABLENAME,
-                    ReactionsColumns.ACCOUNT_ID + " = ?", arrayOf(accountId.toString())
-                )
-                for (i in list) {
-                    val cv = ContentValues()
-                    cv.put(ReactionsColumns.REACTION_ID, i.reaction_id)
-                    cv.put(ReactionsColumns.ACCOUNT_ID, accountId)
-                    cv.put(ReactionsColumns.BIG_ANIMATION, i.big_animation)
-                    cv.put(ReactionsColumns.SMALL_ANIMATION, i.small_animation)
-                    cv.put(ReactionsColumns.STATIC, i.static)
-                    db.insert(ReactionsColumns.TABLENAME, null, cv)
+            } else {
+                try {
+                    db.delete(
+                        ReactionsColumns.TABLENAME,
+                        ReactionsColumns.ACCOUNT_ID + " = ?", arrayOf(accountId.toString())
+                    )
+                    for (i in list) {
+                        val cv = ContentValues()
+                        cv.put(ReactionsColumns.REACTION_ID, i.reaction_id)
+                        cv.put(ReactionsColumns.ACCOUNT_ID, accountId)
+                        cv.put(ReactionsColumns.BIG_ANIMATION, i.big_animation)
+                        cv.put(ReactionsColumns.SMALL_ANIMATION, i.small_animation)
+                        cv.put(ReactionsColumns.STATIC, i.static)
+                        db.insert(ReactionsColumns.TABLENAME, null, cv)
+                    }
+                    if (!it.isDisposed) {
+                        db.setTransactionSuccessful()
+                    }
+                } finally {
+                    db.endTransaction()
                 }
-                if (!it.isDisposed) {
-                    db.setTransactionSuccessful()
-                }
-            } finally {
-                db.endTransaction()
+                it.onComplete()
             }
-            it.onComplete()
         }
     }
 
@@ -298,7 +297,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
 
     override fun clearReactionAssets(accountId: Long): Completable {
         Settings.get().main().del_last_reaction_assets_sync(accountId)
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()
             try {
@@ -408,60 +407,60 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             if (it1.isDisposed) {
                 db.endTransaction()
                 it1.onComplete()
-                return@create
-            }
-            Settings.get().main().set_last_audio_sync(System.currentTimeMillis() / 1000L)
-            try {
-                if (clear) {
-                    db.delete(
-                        AudiosColumns.TABLENAME,
-                        AudiosColumns.SOURCE_OWNER_ID + " = ?", arrayOf(sourceOwner.toString())
-                    )
-                }
-                for (i in list) {
-                    val cv = ContentValues()
-                    cv.put(AudiosColumns.SOURCE_OWNER_ID, sourceOwner)
-                    cv.put(AudiosColumns.AUDIO_ID, i.id)
-                    cv.put(AudiosColumns.AUDIO_OWNER_ID, i.ownerId)
-                    cv.put(AudiosColumns.ARTIST, i.artist)
-                    cv.put(AudiosColumns.TITLE, i.title)
-                    cv.put(AudiosColumns.DURATION, i.duration)
-                    cv.put(AudiosColumns.URL, i.url)
-                    cv.put(AudiosColumns.LYRICS_ID, i.lyricsId)
-                    cv.put(AudiosColumns.DATE, i.date)
-                    cv.put(AudiosColumns.ALBUM_ID, i.albumId)
-                    cv.put(AudiosColumns.ALBUM_OWNER_ID, i.album_owner_id)
-                    cv.put(AudiosColumns.ALBUM_ACCESS_KEY, i.album_access_key)
-                    cv.put(AudiosColumns.GENRE, i.genre)
-                    cv.put(AudiosColumns.DELETED, i.isDeleted)
-                    cv.put(AudiosColumns.ACCESS_KEY, i.accessKey)
-                    cv.put(AudiosColumns.THUMB_IMAGE_BIG, i.thumb_image_big)
-                    cv.put(AudiosColumns.THUMB_IMAGE_VERY_BIG, i.thumb_image_very_big)
-                    cv.put(AudiosColumns.THUMB_IMAGE_LITTLE, i.thumb_image_little)
-                    cv.put(AudiosColumns.ALBUM_TITLE, i.album_title)
-                    i.main_artists.ifNonNull({
-                        cv.put(
-                            AudiosColumns.MAIN_ARTISTS,
-                            MsgPack.encodeToByteArrayEx(
-                                MapSerializer(
-                                    String.serializer(),
-                                    String.serializer()
-                                ), it
-                            )
+            } else {
+                Settings.get().main().set_last_audio_sync(System.currentTimeMillis() / 1000L)
+                try {
+                    if (clear) {
+                        db.delete(
+                            AudiosColumns.TABLENAME,
+                            AudiosColumns.SOURCE_OWNER_ID + " = ?", arrayOf(sourceOwner.toString())
                         )
-                    }, {
-                        cv.putNull(AudiosColumns.MAIN_ARTISTS)
-                    })
-                    cv.put(AudiosColumns.IS_HQ, i.isHq)
-                    db.insert(AudiosColumns.TABLENAME, null, cv)
+                    }
+                    for (i in list) {
+                        val cv = ContentValues()
+                        cv.put(AudiosColumns.SOURCE_OWNER_ID, sourceOwner)
+                        cv.put(AudiosColumns.AUDIO_ID, i.id)
+                        cv.put(AudiosColumns.AUDIO_OWNER_ID, i.ownerId)
+                        cv.put(AudiosColumns.ARTIST, i.artist)
+                        cv.put(AudiosColumns.TITLE, i.title)
+                        cv.put(AudiosColumns.DURATION, i.duration)
+                        cv.put(AudiosColumns.URL, i.url)
+                        cv.put(AudiosColumns.LYRICS_ID, i.lyricsId)
+                        cv.put(AudiosColumns.DATE, i.date)
+                        cv.put(AudiosColumns.ALBUM_ID, i.albumId)
+                        cv.put(AudiosColumns.ALBUM_OWNER_ID, i.album_owner_id)
+                        cv.put(AudiosColumns.ALBUM_ACCESS_KEY, i.album_access_key)
+                        cv.put(AudiosColumns.GENRE, i.genre)
+                        cv.put(AudiosColumns.DELETED, i.isDeleted)
+                        cv.put(AudiosColumns.ACCESS_KEY, i.accessKey)
+                        cv.put(AudiosColumns.THUMB_IMAGE_BIG, i.thumb_image_big)
+                        cv.put(AudiosColumns.THUMB_IMAGE_VERY_BIG, i.thumb_image_very_big)
+                        cv.put(AudiosColumns.THUMB_IMAGE_LITTLE, i.thumb_image_little)
+                        cv.put(AudiosColumns.ALBUM_TITLE, i.album_title)
+                        i.main_artists.ifNonNull({
+                            cv.put(
+                                AudiosColumns.MAIN_ARTISTS,
+                                MsgPack.encodeToByteArrayEx(
+                                    MapSerializer(
+                                        String.serializer(),
+                                        String.serializer()
+                                    ), it
+                                )
+                            )
+                        }, {
+                            cv.putNull(AudiosColumns.MAIN_ARTISTS)
+                        })
+                        cv.put(AudiosColumns.IS_HQ, i.isHq)
+                        db.insert(AudiosColumns.TABLENAME, null, cv)
+                    }
+                    if (!it1.isDisposed) {
+                        db.setTransactionSuccessful()
+                    }
+                } finally {
+                    db.endTransaction()
                 }
-                if (!it1.isDisposed) {
-                    db.setTransactionSuccessful()
-                }
-            } finally {
-                db.endTransaction()
+                it1.onComplete()
             }
-            it1.onComplete()
         }
     }
 

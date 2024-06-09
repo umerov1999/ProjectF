@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -67,7 +65,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
 
     private val requestChangePin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val values = CreatePinFragment.extractValueFromIntent(result.data)
             Settings.get()
@@ -78,7 +76,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
 
     private val requestCreatePin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val values = CreatePinFragment.extractValueFromIntent(result.data)
             Settings.get()
@@ -335,7 +333,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
             getString(R.string.for_all_accounts)
         )
         MaterialAlertDialogBuilder(requireActivity())
-            .setItems(items) { _: DialogInterface?, which: Int ->
+            .setItems(items) { _, which ->
                 onClearKeysClick(
                     which == 1
                 )

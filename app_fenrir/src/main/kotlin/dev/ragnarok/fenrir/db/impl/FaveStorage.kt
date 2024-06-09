@@ -44,7 +44,6 @@ import dev.ragnarok.fenrir.model.criteria.FaveVideosCriteria
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import kotlin.math.abs
@@ -75,7 +74,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         owners: OwnerEntities?,
         clearBeforeStore: Boolean
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val uri = getFavePostsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBeforeStore) {
@@ -140,7 +139,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         entities: List<FaveLinkEntity>,
         clearBefore: Boolean
     ): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val uri = getFaveLinksContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBefore) {
@@ -538,7 +537,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         users: List<FavePageEntity>,
         clearBeforeStore: Boolean
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val uri = getFaveUsersContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBeforeStore) {
@@ -570,7 +569,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         groups: List<FavePageEntity>,
         clearBeforeStore: Boolean
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val uri = getFaveGroupsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBeforeStore) {

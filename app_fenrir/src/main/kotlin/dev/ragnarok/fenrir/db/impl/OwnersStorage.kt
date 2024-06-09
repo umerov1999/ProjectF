@@ -44,7 +44,6 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.MaybeEmitter
 import io.reactivex.rxjava3.core.Observable
@@ -158,7 +157,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     override fun applyPathes(accountId: Long, patches: List<UserPatch>): Completable {
         return if (patches.isEmpty()) {
             Completable.complete()
-        } else Completable.create { emitter: CompletableEmitter ->
+        } else Completable.create { emitter ->
             val uri = getUserContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(patches.size)
             for (patch in patches) {
@@ -392,7 +391,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     override fun storeUserDbos(accountId: Long, users: List<UserEntity>): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val operations = ArrayList<ContentProviderOperation>(users.size)
             appendUsersInsertOperation(operations, accountId, users)
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
@@ -401,15 +400,18 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     }
 
     override fun storeOwnerEntities(accountId: Long, entities: OwnerEntities?): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
-            entities ?: return@create emitter.onComplete()
-            val operations = ArrayList<ContentProviderOperation>(
-                entities.size()
-            )
-            appendUsersInsertOperation(operations, accountId, entities.userEntities)
-            appendCommunitiesInsertOperation(operations, accountId, entities.communityEntities)
-            contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emitter.onComplete()
+        return Completable.create { emitter ->
+            if (entities == null) {
+                emitter.onComplete()
+            } else {
+                val operations = ArrayList<ContentProviderOperation>(
+                    entities.size()
+                )
+                appendUsersInsertOperation(operations, accountId, entities.userEntities)
+                appendCommunitiesInsertOperation(operations, accountId, entities.communityEntities)
+                contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
+                emitter.onComplete()
+            }
         }
     }
 
@@ -417,7 +419,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         accountId: Long,
         communityEntities: List<CommunityEntity>
     ): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val operations = ArrayList<ContentProviderOperation>(communityEntities.size)
             appendCommunitiesInsertOperation(operations, accountId, communityEntities)
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
@@ -432,22 +434,22 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         return Single.create { e: SingleEmitter<Collection<Long>> ->
             if (ids.isEmpty()) {
                 e.onSuccess(emptyList())
-                return@create
-            }
-            val copy: MutableSet<Long> = HashSet(ids)
-            val projection = arrayOf(BaseColumns._ID)
-            val cursor = contentResolver.query(
-                getUserContentUriFor(accountId),
-                projection, BaseColumns._ID + " IN ( " + Utils.join(",", copy) + ")", null, null
-            )
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    val id = cursor.getLong(BaseColumns._ID)
-                    copy.remove(id)
+            } else {
+                val copy: MutableSet<Long> = HashSet(ids)
+                val projection = arrayOf(BaseColumns._ID)
+                val cursor = contentResolver.query(
+                    getUserContentUriFor(accountId),
+                    projection, BaseColumns._ID + " IN ( " + Utils.join(",", copy) + ")", null, null
+                )
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        val id = cursor.getLong(BaseColumns._ID)
+                        copy.remove(id)
+                    }
+                    cursor.close()
                 }
-                cursor.close()
+                e.onSuccess(copy)
             }
-            e.onSuccess(copy)
         }
     }
 
@@ -458,22 +460,22 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         return Single.create { e: SingleEmitter<Collection<Long>> ->
             if (ids.isEmpty()) {
                 e.onSuccess(emptyList())
-                return@create
-            }
-            val copy: MutableSet<Long> = HashSet(ids)
-            val projection = arrayOf(BaseColumns._ID)
-            val cursor = contentResolver.query(
-                getGroupsContentUriFor(accountId),
-                projection, BaseColumns._ID + " IN ( " + Utils.join(",", copy) + ")", null, null
-            )
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    val id = cursor.getLong(BaseColumns._ID)
-                    copy.remove(id)
+            } else {
+                val copy: MutableSet<Long> = HashSet(ids)
+                val projection = arrayOf(BaseColumns._ID)
+                val cursor = contentResolver.query(
+                    getGroupsContentUriFor(accountId),
+                    projection, BaseColumns._ID + " IN ( " + Utils.join(",", copy) + ")", null, null
+                )
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        val id = cursor.getLong(BaseColumns._ID)
+                        copy.remove(id)
+                    }
+                    cursor.close()
                 }
-                cursor.close()
+                e.onSuccess(copy)
             }
-            e.onSuccess(copy)
         }
     }
 

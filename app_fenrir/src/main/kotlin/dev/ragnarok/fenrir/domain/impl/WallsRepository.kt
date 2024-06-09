@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.domain.mappers.Model2Dto.createTokens
 import dev.ragnarok.fenrir.domain.mappers.Model2Entity.buildPostDbo
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.model.AbsModel
-import dev.ragnarok.fenrir.model.IOwnersBundle
 import dev.ragnarok.fenrir.model.IdPair
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.criteria.WallCriteria
@@ -241,7 +240,7 @@ class WallsRepository(
                     fillOwnerIds(ids, dbos)
                     ownersRepository
                         .findBaseOwnersDataAsBundle(accountId, ids.all, IOwnersRepository.MODE_ANY)
-                        .map<List<Post>> { owners: IOwnersBundle ->
+                        .map { owners ->
                             val posts: MutableList<Post> = ArrayList(dbos.size)
                             for (dbo in dbos) {
                                 posts.add(buildPostFromDbo(dbo, owners))
@@ -253,7 +252,7 @@ class WallsRepository(
     }
 
     private fun entity2model(accountId: Long): SingleTransformer<PostDboEntity, Post> {
-        return SingleTransformer { single: Single<PostDboEntity> ->
+        return SingleTransformer { single ->
             single
                 .flatMap { dbo ->
                     val ids = VKOwnIds()

@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.dialog
 
 import android.app.Activity
-import android.content.DialogInterface
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.settings.Settings
@@ -14,7 +13,7 @@ class ImageSizeAlertDialog internal constructor(builder: Builder) {
     fun show() {
         MaterialAlertDialogBuilder(mActivity)
             .setTitle(mActivity.getString(R.string.select_image_size_title))
-            .setItems(R.array.array_image_sizes_names) { _: DialogInterface?, j: Int ->
+            .setItems(R.array.array_image_sizes_names) { _, j ->
                 var selectedSize = Upload.IMAGE_SIZE_FULL
                 when (j) {
                     0 -> selectedSize = Upload.IMAGE_SIZE_800
@@ -25,7 +24,7 @@ class ImageSizeAlertDialog internal constructor(builder: Builder) {
                 mOnSelectedCallback?.onSizeSelected(selectedSize)
             }
             .setCancelable(false)
-            .setNegativeButton(R.string.button_cancel) { _: DialogInterface?, _: Int -> mOnCancelCallback?.onCancel() }
+            .setNegativeButton(R.string.button_cancel) { _, _ -> mOnCancelCallback?.onCancel() }
             .show()
     }
 
@@ -72,7 +71,7 @@ class ImageSizeAlertDialog internal constructor(builder: Builder) {
             if (size == null) {
                 val dialog = MaterialAlertDialogBuilder(activity)
                     .setTitle(activity.getString(R.string.select_image_size_title))
-                    .setItems(R.array.array_image_sizes_names) { _: DialogInterface?, j: Int ->
+                    .setItems(R.array.array_image_sizes_names) { _, j ->
                         var selectedSize = Upload.IMAGE_SIZE_FULL
                         when (j) {
                             0 -> selectedSize = Upload.IMAGE_SIZE_800

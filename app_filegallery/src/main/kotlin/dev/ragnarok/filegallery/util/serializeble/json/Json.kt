@@ -545,6 +545,7 @@ class JsonBuilder internal constructor(json: Json) {
      * Other modes are generally intended to produce JSON for consumption by third-party libraries,
      * therefore, this setting does not affect the deserialization process.
      */
+    @ExperimentalSerializationApi
     var classDiscriminatorMode: ClassDiscriminatorMode = json.configuration.classDiscriminatorMode
 
     /**

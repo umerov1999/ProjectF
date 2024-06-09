@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.dialog.audioduplicate
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.provider.BaseColumns
@@ -59,12 +58,12 @@ class AudioDuplicateDialog :
             .setTitle(R.string.save)
             .setIcon(R.drawable.dir_song)
             .setView(view)
-            .setPositiveButton(R.string.dual_track) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.dual_track) { _, _ ->
                 returnSelection(
                     true
                 )
             }
-            .setNegativeButton(R.string.new_track) { _: DialogInterface?, _: Int ->
+            .setNegativeButton(R.string.new_track) { _, _ ->
                 returnSelection(
                     false
                 )

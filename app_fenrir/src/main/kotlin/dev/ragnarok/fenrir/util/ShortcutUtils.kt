@@ -228,7 +228,7 @@ object ShortcutUtils {
                     val infos: ArrayList<ShortcutInfo> = ArrayList(manager.dynamicShortcuts)
                     val mustBeRemoved: MutableList<String> = ArrayList(1)
                     if (infos.size >= MAX_DYNAMIC_COUNT) {
-                        infos.sortWith { o1: ShortcutInfo, o2: ShortcutInfo ->
+                        infos.sortWith { o1, o2 ->
                             o1.rank.compareTo(o2.rank)
                         }
                         val infoWhichMustBeRemoved = infos[infos.size - 1]

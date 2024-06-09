@@ -35,7 +35,6 @@ import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 
@@ -127,18 +126,19 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         return findPostById(accountId, ownerId, vkPostId, includeAttachment)
             .flatMap {
                 if (it.nonEmpty()) {
-                    return@flatMap Single.just(it.requireNonEmpty())
+                    Single.just(it.requireNonEmpty())
+                } else {
+                    insertNew(accountId, vkPostId, ownerId, accountId)
+                        .flatMap {
+                            findPostById(accountId, ownerId, vkPostId, includeAttachment)
+                                .map { obj -> obj.requireNonEmpty() }
+                        }
                 }
-                insertNew(accountId, vkPostId, ownerId, accountId)
-                    .flatMap {
-                        findPostById(accountId, ownerId, vkPostId, includeAttachment)
-                            .map { obj -> obj.requireNonEmpty() }
-                    }
             }
     }
 
     override fun deletePost(accountId: Long, dbid: Int): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             contentResolver.delete(
                 getPostsContentUriFor(accountId),
                 BaseColumns._ID + " = ?", arrayOf(dbid.toString())
@@ -242,7 +242,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         postId: Int,
         update: PostPatch
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val cv = ContentValues()
             update.deletePatch.requireNonNull {
                 cv.put(PostsColumns.DELETED, it.isDeleted)

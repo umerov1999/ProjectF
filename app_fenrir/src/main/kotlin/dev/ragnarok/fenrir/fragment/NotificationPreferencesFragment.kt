@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
 import android.media.Ringtone
@@ -13,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,7 +60,7 @@ class NotificationPreferencesFragment : AbsPreferencesFragment(),
 
     private val requestRingTone = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val uri = result.data?.data?.path
             Settings.get()
@@ -435,7 +433,7 @@ class NotificationPreferencesFragment : AbsPreferencesFragment(),
         selection = array.indexOf(selectionKey)
         MaterialAlertDialogBuilder(requireActivity()).setSingleChoiceItems(
             array, selection
-        ) { _: DialogInterface?, which: Int ->
+        ) { _, which ->
             selection = which
             stopRingtoneIfExist()
             val title = array[which]
@@ -457,7 +455,7 @@ class NotificationPreferencesFragment : AbsPreferencesFragment(),
         }
             .setNegativeButton(
                 R.string.cancel
-            ) { _: DialogInterface?, _: Int -> stopRingtoneIfExist() }
+            ) { _, _ -> stopRingtoneIfExist() }
             .setNeutralButton(R.string.ringtone_custom) { _, _ ->
                 val intent = Intent(Intent.ACTION_GET_CONTENT)
                 intent.type = "file/audio"

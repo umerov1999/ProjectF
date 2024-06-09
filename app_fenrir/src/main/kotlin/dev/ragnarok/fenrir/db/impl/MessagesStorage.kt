@@ -41,7 +41,6 @@ import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.MaybeEmitter
 import io.reactivex.rxjava3.core.Single
@@ -57,7 +56,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
         dbos: List<MessageDboEntity>,
         clearHistory: Boolean
     ): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val operations = ArrayList<ContentProviderOperation>()
             if (clearHistory) {
                 val uri = getMessageContentUriFor(accountId)
@@ -366,24 +365,25 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
                 arrayOf(peerId.toString(), MessageStatus.EDITING.toString()),
                 null
             )
-            if (e.isDisposed) return@create
-            var message: DraftMessage? = null
-            if (cursor != null) {
-                if (cursor.moveToNext()) {
-                    val id = cursor.getInt(MessagesColumns._ID)
-                    val body = cursor.getString(MessagesColumns.TEXT)
-                    message = DraftMessage(id, body)
+            if (!e.isDisposed) {
+                var message: DraftMessage? = null
+                if (cursor != null) {
+                    if (cursor.moveToNext()) {
+                        val id = cursor.getInt(MessagesColumns._ID)
+                        val body = cursor.getString(MessagesColumns.TEXT)
+                        message = DraftMessage(id, body)
+                    }
+                    cursor.close()
                 }
-                cursor.close()
+                if (message != null) {
+                    val count = stores.attachments()
+                        .getCount(accountId, AttachToType.MESSAGE, message.id)
+                        .blockingGet()
+                    message.setAttachmentsCount(count)
+                    e.onSuccess(message)
+                }
+                e.onComplete()
             }
-            if (message != null) {
-                val count = stores.attachments()
-                    .getCount(accountId, AttachToType.MESSAGE, message.id)
-                    .blockingGet()
-                message.setAttachmentsCount(count)
-                e.onSuccess(message)
-            }
-            e.onComplete()
         }
     }
 
@@ -415,7 +415,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
     }
 
     override fun applyPatches(accountId: Long, patches: Collection<MessagePatch>): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return Completable.create { emitter ->
             val uri = getMessageContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(patches.size)
             for (patch in patches) {
@@ -526,7 +526,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
         vkid: Int?,
         cmid: Int?
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val contentValues = ContentValues()
             contentValues.put(MessagesColumns.STATUS, status)
             if (vkid != null) {
@@ -576,7 +576,7 @@ internal class MessagesStorage(base: AppStorages) : AbsStorage(base), IMessagesS
         ids: Collection<Int>,
         @MessageStatus status: Int
     ): Completable {
-        return Completable.create { e: CompletableEmitter ->
+        return Completable.create { e ->
             val copy: Set<Int> = HashSet(ids)
             val contentValues = ContentValues()
             contentValues.put(MessagesColumns.STATUS, status)

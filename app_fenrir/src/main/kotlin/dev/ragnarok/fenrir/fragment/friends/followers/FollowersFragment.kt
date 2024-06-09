@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.friends.followers
 
-import android.content.DialogInterface
 import android.os.Bundle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Extra
@@ -30,7 +29,7 @@ class FollowersFragment : AbsOwnersListFragment<FollowersPresenter, IFollowersVi
             MaterialAlertDialogBuilder(requireActivity()).setIcon(R.drawable.report_red)
                 .setTitle(R.string.select)
                 .setMessage(R.string.block_or_delete)
-                .setPositiveButton(R.string.block_user) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.block_user) { _, _ ->
                     Utils.follower_kick_mode = true
                     presenter?.removeFollower(owner)
                 }

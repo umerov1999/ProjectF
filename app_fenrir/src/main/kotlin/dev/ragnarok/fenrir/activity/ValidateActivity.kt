@@ -95,10 +95,10 @@ class ValidateActivity : AppCompatActivity() {
         //Чтобы получать уведомления об окончании загрузки страницы
         webview.webViewClient = VkontakteWebViewClient()
         val cookieManager = CookieManager.getInstance()
-        cookieManager.removeAllCookies { aBoolean: Boolean ->
+        cookieManager.removeAllCookies {
             Log.d(
                 TAG,
-                "Cookie removed: $aBoolean"
+                "Cookie removed: $it"
             )
         }
         webview.loadUrl(urlVal ?: "")

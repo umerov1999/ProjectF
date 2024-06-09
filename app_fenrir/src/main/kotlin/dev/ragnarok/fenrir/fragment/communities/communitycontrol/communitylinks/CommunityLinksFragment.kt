@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.communities.communitycontrol.communitylinks
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -76,7 +75,7 @@ class CommunityLinksFragment : BaseMvpFragment<CommunityLinksPresenter, ICommuni
         val items = arrayOf(getString(R.string.edit), getString(R.string.delete))
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(link.name)
-            .setItems(items) { _: DialogInterface?, which: Int ->
+            .setItems(items) { _, which ->
                 when (which) {
                     0 -> presenter?.fireLinkEditClick()
                     1 -> presenter?.fireLinkDeleteClick()

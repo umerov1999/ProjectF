@@ -7,7 +7,6 @@ import dev.ragnarok.fenrir.api.model.response.VKApiChatResponse
 import dev.ragnarok.fenrir.api.model.response.VKApiLinkResponse
 import dev.ragnarok.fenrir.db.interfaces.IStorages
 import dev.ragnarok.fenrir.db.model.entity.FriendListEntity
-import dev.ragnarok.fenrir.db.model.entity.UserEntity
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.IUtilsInteractor
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
@@ -75,60 +74,62 @@ class UtilsInteractor(
     override fun resolveDomain(accountId: Long, domain: String?): Single<Optional<Owner>> {
         return stores.owners()
             .findUserByDomain(accountId, domain)
-            .flatMap<Optional<Owner>> { optionalUserEntity: Optional<UserEntity> ->
+            .flatMap { optionalUserEntity ->
                 if (optionalUserEntity.nonEmpty()) {
                     val user = map(optionalUserEntity.get())
-                    return@flatMap Single.just(wrap<Owner>(user))
-                }
-                stores.owners()
-                    .findCommunityByDomain(accountId, domain)
-                    .flatMap { optionalCommunityEntity ->
-                        if (optionalCommunityEntity.nonEmpty()) {
-                            val community =
-                                buildCommunityFromDbo(optionalCommunityEntity.requireNonEmpty())
-                            Single.just(wrap(community))
-                        } else {
-                            Single.just(empty())
+                    Single.just(wrap<Owner>(user))
+                } else {
+                    stores.owners()
+                        .findCommunityByDomain(accountId, domain)
+                        .flatMap { optionalCommunityEntity ->
+                            if (optionalCommunityEntity.nonEmpty()) {
+                                val community =
+                                    buildCommunityFromDbo(optionalCommunityEntity.requireNonEmpty())
+                                Single.just(wrap<Owner>(community))
+                            } else {
+                                Single.just(empty())
+                            }
                         }
-                    }
+                }
             }
             .flatMap { optionalOwner ->
                 if (optionalOwner.nonEmpty()) {
-                    return@flatMap Single.just(optionalOwner)
+                    Single.just(optionalOwner)
+                } else {
+                    networker.vkDefault(accountId)
+                        .utils()
+                        .resolveScreenName(domain)
+                        .flatMap { response ->
+                            response.object_id?.let {
+                                when (response.type) {
+                                    "user" -> {
+                                        val userId =
+                                            it.toLong()
+                                        ownersRepository.getBaseOwnerInfo(
+                                            accountId,
+                                            userId,
+                                            IOwnersRepository.MODE_ANY
+                                        )
+                                            .map { pp -> wrap(pp) }
+                                    }
+
+                                    "group" -> {
+                                        val ownerId = -abs(
+                                            it.toLong()
+                                        )
+                                        ownersRepository.getBaseOwnerInfo(
+                                            accountId,
+                                            ownerId,
+                                            IOwnersRepository.MODE_ANY
+                                        )
+                                            .map { pp -> wrap(pp) }
+                                    }
+
+                                    else -> Single.just(empty())
+                                }
+                            } ?: Single.just(empty())
+                        }
                 }
-                networker.vkDefault(accountId)
-                    .utils()
-                    .resolveScreenName(domain)
-                    .flatMap { response ->
-                        response.object_id?.let {
-                            when (response.type) {
-                                "user" -> {
-                                    val userId =
-                                        it.toLong()
-                                    ownersRepository.getBaseOwnerInfo(
-                                        accountId,
-                                        userId,
-                                        IOwnersRepository.MODE_ANY
-                                    )
-                                        .map { pp -> wrap(pp) }
-                                }
-
-                                "group" -> {
-                                    val ownerId = -abs(
-                                        it.toLong()
-                                    )
-                                    ownersRepository.getBaseOwnerInfo(
-                                        accountId,
-                                        ownerId,
-                                        IOwnersRepository.MODE_ANY
-                                    )
-                                        .map { pp -> wrap(pp) }
-                                }
-
-                                else -> Single.just(empty())
-                            }
-                        } ?: Single.just(empty())
-                    }
             }
     }
 
@@ -149,39 +150,40 @@ class UtilsInteractor(
                         val dbo = mp[id] ?: continue
                         data[id] = FriendList(dbo.id, dbo.name)
                     }
-                    return@flatMap Single.just(data)
-                }
-                networker.vkDefault(accountId)
-                    .friends()
-                    .getLists(userId, true)
-                    .map { items ->
-                        listEmptyIfNull(
-                            items.items
-                        )
-                    }
-                    .flatMap { dtos ->
-                        val dbos: MutableList<FriendListEntity> = ArrayList(dtos.size)
-                        val data: MutableMap<Long, FriendList> = HashMap(mp.size)
-                        for (dto in dtos) {
-                            dbos.add(FriendListEntity(dto.id, dto.name))
+                    Single.just(data)
+                } else {
+                    networker.vkDefault(accountId)
+                        .friends()
+                        .getLists(userId, true)
+                        .map { items ->
+                            listEmptyIfNull(
+                                items.items
+                            )
                         }
-                        for (id in ids) {
-                            var found = false
+                        .flatMap { dtos ->
+                            val dbos: MutableList<FriendListEntity> = ArrayList(dtos.size)
+                            val data: MutableMap<Long, FriendList> = HashMap(mp.size)
                             for (dto in dtos) {
-                                if (dto.id == id) {
-                                    data[id] = transform(dto)
-                                    found = true
-                                    break
+                                dbos.add(FriendListEntity(dto.id, dto.name))
+                            }
+                            for (id in ids) {
+                                var found = false
+                                for (dto in dtos) {
+                                    if (dto.id == id) {
+                                        data[id] = transform(dto)
+                                        found = true
+                                        break
+                                    }
+                                }
+                                if (!found) {
+                                    mp[id] = FriendListEntity(id, "UNKNOWN")
                                 }
                             }
-                            if (!found) {
-                                mp[id] = FriendListEntity(id, "UNKNOWN")
-                            }
+                            stores.relativeship()
+                                .storeFriendsList(accountId, userId, dbos)
+                                .andThen(Single.just(data))
                         }
-                        stores.relativeship()
-                            .storeFriendsList(accountId, userId, dbos)
-                            .andThen(Single.just(data))
-                    }
+                }
             }
     }
 

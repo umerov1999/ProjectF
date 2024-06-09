@@ -45,45 +45,52 @@ class AudioUploadable(private val context: Context, private val networker: INetw
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    return@flatMap Single.error(
+                    Single.error(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
                     )
-                }
-                val filename = UploadUtils.findFileName(context, uri)
-                var TrackName = filename?.replace(".mp3", "").orEmpty()
-                var Artist = ""
-                val arr = TrackName.split(" - ".toRegex()).toTypedArray()
-                if (arr.size > 1) {
-                    Artist = arr[0]
-                    TrackName = TrackName.replace("$Artist - ", "")
-                }
-                val finalArtist = Artist
-                val finalTrackName = TrackName
-                return@flatMap networker.uploads()
-                    .uploadAudioRx(
-                        server.url ?: throw NotFoundException("Upload url empty!"),
-                        filename,
-                        inputStream,
-                        listener
-                    )
-                    .doFinally(safelyCloseAction(inputStream))
-                    .flatMap { dto ->
-                        if (dto.audio.isNullOrEmpty()) {
-                            Single.error(NotFoundException("VK doesn't upload this file"))
-                        } else {
-                            networker
-                                .vkDefault(accountId)
-                                .audio()
-                                .save(dto.server, dto.audio, dto.hash, finalArtist, finalTrackName)
-                                .flatMap {
-                                    val document = Dto2Model.transform(it)
-                                    val result = UploadResult(server, document)
-                                    Single.just(result)
-                                }
-                        }
+                } else {
+                    val filename = UploadUtils.findFileName(context, uri)
+                    var TrackName = filename?.replace(".mp3", "").orEmpty()
+                    var Artist = ""
+                    val arr = TrackName.split(" - ".toRegex()).toTypedArray()
+                    if (arr.size > 1) {
+                        Artist = arr[0]
+                        TrackName = TrackName.replace("$Artist - ", "")
                     }
+                    val finalArtist = Artist
+                    val finalTrackName = TrackName
+                    networker.uploads()
+                        .uploadAudioRx(
+                            server.url ?: throw NotFoundException("Upload url empty!"),
+                            filename,
+                            inputStream,
+                            listener
+                        )
+                        .doFinally(safelyCloseAction(inputStream))
+                        .flatMap { dto ->
+                            if (dto.audio.isNullOrEmpty()) {
+                                Single.error(NotFoundException("VK doesn't upload this file"))
+                            } else {
+                                networker
+                                    .vkDefault(accountId)
+                                    .audio()
+                                    .save(
+                                        dto.server,
+                                        dto.audio,
+                                        dto.hash,
+                                        finalArtist,
+                                        finalTrackName
+                                    )
+                                    .flatMap {
+                                        val document = Dto2Model.transform(it)
+                                        val result = UploadResult(server, document)
+                                        Single.just(result)
+                                    }
+                            }
+                        }
+                }
             } catch (e: Exception) {
                 safelyClose(inputStream)
                 Single.error(e)

@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.messages.notreadmessages
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -183,10 +182,10 @@ class NotReadMessagesFragment :
                                     dlgAlert.setTitle(R.string.select)
                                     dlgAlert.setPositiveButton(
                                         R.string.button_yes
-                                    ) { _: DialogInterface?, _: Int -> presenter?.fireActionModeSpamClick() }
+                                    ) { _, _ -> presenter?.fireActionModeSpamClick() }
                                     dlgAlert.setNeutralButton(
                                         R.string.delete
-                                    ) { _: DialogInterface?, _: Int -> presenter?.fireActionModeDeleteClick() }
+                                    ) { _, _ -> presenter?.fireActionModeDeleteClick() }
                                     dlgAlert.setCancelable(true)
                                     dlgAlert.create().show()
                                 }
@@ -518,11 +517,11 @@ class NotReadMessagesFragment :
                         .setIcon(R.drawable.report_red)
                         .setMessage(R.string.do_report)
                         .setTitle(R.string.select)
-                        .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                        .setPositiveButton(R.string.button_yes) { _, _ ->
                             reference.get()?.presenter?.fireActionModeSpamClick()
                             hide()
                         }
-                        .setNeutralButton(R.string.delete) { _: DialogInterface?, _: Int ->
+                        .setNeutralButton(R.string.delete) { _, _ ->
                             reference.get()?.presenter?.fireActionModeDeleteClick()
                             hide()
                         }

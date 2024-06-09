@@ -3,7 +3,6 @@ package dev.ragnarok.filegallery.fragment.filemanager
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.app.Activity.RESULT_OK
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -13,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -83,7 +81,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
 
     private val requestPhotoUpdate = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null && (result.data
                 ?: return@registerForActivityResult)
                 .extras != null
@@ -124,7 +122,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
 
         parentFragmentManager.setFragmentResultListener(
             TagOwnerBottomSheetSelected.SELECTED_OWNER_KEY, this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             presenter?.setSelectedOwner(
                 result.getParcelableCompat(Extra.NAME) ?: return@setFragmentResultListener
             )
@@ -290,7 +288,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
         if (item.isHasTag) {
             MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.attention)
                 .setMessage(requireActivity().getString(R.string.do_tag_remove, item.file_name))
-                .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.button_yes) { _, _ ->
                     presenter?.fireRemoveDirTag(item)
                 }
                 .setNegativeButton(R.string.button_cancel, null)
@@ -307,7 +305,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
         parentFragmentManager.setFragmentResultListener(
             REQUEST_TAG,
             this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             if (result.containsKey(Extra.PATH)) {
                 result.getParcelableCompat<FileItem>(Extra.PATH)
                     ?.let { presenter?.onAddTagFromDialog(it) }
@@ -321,7 +319,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
 
     private val requestEnterPin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK) {
             result.data?.getParcelableExtraCompat<FileItem>(Extra.PATH)
                 ?.let { presenter?.fireDelete(it) }
@@ -341,7 +339,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
         }
         MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.attention)
             .setMessage(requireActivity().getString(R.string.do_remove, item.file_name))
-            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_yes) { _, _ ->
                 if (Settings.get().security().isUsePinForEntrance && Settings.get().security()
                         .hasPinHash
                 ) {

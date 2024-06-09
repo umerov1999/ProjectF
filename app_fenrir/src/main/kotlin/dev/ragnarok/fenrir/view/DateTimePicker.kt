@@ -3,8 +3,6 @@ package dev.ragnarok.fenrir.view
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
-import android.widget.DatePicker
-import android.widget.TimePicker
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.Unixtime
 import java.util.Calendar
@@ -25,7 +23,7 @@ class DateTimePicker internal constructor(builder: Builder) {
         Logger.d(TAG, "onTimerClick, init time: " + Date(time))
         DatePickerDialog(
             context,
-            { _: DatePicker?, newYear: Int, newMonth: Int, newDay: Int ->
+            { _, newYear, newMonth, newDay ->
                 showTime(
                     newYear,
                     newMonth,
@@ -43,7 +41,7 @@ class DateTimePicker internal constructor(builder: Builder) {
     private fun showTime(year: Int, month: Int, day: Int, hour: Int, minutes: Int) {
         TimePickerDialog(
             context,
-            { _: TimePicker?, newHourOfDay: Int, newMinutes: Int ->
+            { _, newHourOfDay, newMinutes ->
                 callback?.onDateTimeSelected(
                     Unixtime.of(
                         year,

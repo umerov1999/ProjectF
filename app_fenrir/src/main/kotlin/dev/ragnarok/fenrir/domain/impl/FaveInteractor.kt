@@ -108,7 +108,7 @@ class FaveInteractor(
                     ids.all,
                     IOwnersRepository.MODE_ANY
                 )
-                    .map<List<Post>> {
+                    .map {
                         val posts: MutableList<Post> = ArrayList()
                         for (dbo in postDbos) {
                             posts.add(buildPostFromDbo(dbo, it))
@@ -146,7 +146,7 @@ class FaveInteractor(
                     photos.add(transform(dto))
                 }
                 cache.fave().storePhotos(accountId, dbos, offset == 0)
-                    .map<List<Photo>> { photos }
+                    .map { photos }
             }
     }
 
@@ -204,7 +204,7 @@ class FaveInteractor(
                     videos.add(transform(dto))
                 }
                 cache.fave().storeVideos(accountId, dbos, offset == 0)
-                    .map<List<Video>> { videos }
+                    .map { videos }
             }
     }
 
@@ -220,7 +220,7 @@ class FaveInteractor(
                     articles.add(transform(dto))
                 }
                 cache.fave().storeArticles(accountId, dbos, offset == 0)
-                    .map<List<Article>> { articles }
+                    .map { articles }
             }
     }
 
@@ -236,7 +236,7 @@ class FaveInteractor(
                     markets.add(transform(dto))
                 }
                 cache.fave().storeProducts(accountId, dbos, offset == 0)
-                    .map<List<Market>> { markets }
+                    .map { markets }
             }
     }
 
@@ -319,7 +319,7 @@ class FaveInteractor(
                     transformFaveUser(it)
                 }
                 if (isUser) {
-                    return@flatMap cache.fave()
+                    cache.fave()
                         .storePages(accountId, entities, offset == 0)
                         .andThen(
                             cache.owners().storeOwnerEntities(
@@ -329,7 +329,7 @@ class FaveInteractor(
                         )
                         .andThen(Single.just(pages))
                 } else {
-                    return@flatMap cache.fave()
+                    cache.fave()
                         .storeGroups(accountId, entities, offset == 0)
                         .andThen(
                             cache.owners().storeOwnerEntities(
@@ -371,7 +371,7 @@ class FaveInteractor(
                 }
                 cache.fave()
                     .storeLinks(accountId, entities, offset == 0)
-                    .andThen(Single.just<List<FaveLink>>(links))
+                    .andThen(Single.just(links))
             }
     }
 

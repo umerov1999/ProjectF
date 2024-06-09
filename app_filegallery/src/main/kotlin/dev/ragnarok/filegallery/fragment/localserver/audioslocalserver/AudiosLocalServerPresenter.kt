@@ -68,7 +68,7 @@ class AudiosLocalServerPresenter :
                     offset,
                     it
                 )
-            }) { t: Throwable -> onActualDataGetError(t) })
+            }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {

@@ -61,7 +61,7 @@ class TagDirPresenter(private val owner_id: Int) :
             storage.getTagDirs(owner_id)
                 .fromIOToMain()
                 .subscribe({ onActualDataReceived(it) },
-                    { t: Throwable -> onActualDataGetError(t) })
+                    { t -> onActualDataGetError(t) })
         )
     }
 
@@ -73,7 +73,7 @@ class TagDirPresenter(private val owner_id: Int) :
                     {
                         tagDirData.removeAt(pos)
                         view?.notifyRemove(pos)
-                    }, { t: Throwable -> onActualDataGetError(t) })
+                    }, { t -> onActualDataGetError(t) })
         )
     }
 

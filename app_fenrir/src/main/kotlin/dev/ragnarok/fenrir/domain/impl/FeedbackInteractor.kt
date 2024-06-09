@@ -50,7 +50,7 @@ class FeedbackInteractor(
                     ownIds.all,
                     IOwnersRepository.MODE_ANY
                 )
-                    .map<List<Feedback>> {
+                    .map {
                         val feedbacks: MutableList<Feedback> = ArrayList(dbos.size)
                         for (dbo in dbos) {
                             feedbacks.add(buildFeedback(dbo, it))

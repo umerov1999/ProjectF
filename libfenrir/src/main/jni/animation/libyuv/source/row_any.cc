@@ -142,6 +142,27 @@ ANY41C(I422AlphaToARGBRow_Any_LASX, I422AlphaToARGBRow_LASX, 1, 0, 4, 15)
     memcpy(dst_ptr + (n >> DUVSHIFT) * BPP, vout, SS(r, DUVSHIFT) * BPP);      \
   }
 
+#ifdef HAS_I210ALPHATOARGBROW_NEON
+ANY41CT(I210AlphaToARGBRow_Any_NEON,
+        I210AlphaToARGBRow_NEON,
+        1,
+        0,
+        uint16_t,
+        2,
+        4,
+        7);
+#endif
+#ifdef HAS_I410ALPHATOARGBROW_NEON
+ANY41CT(I410AlphaToARGBRow_Any_NEON,
+        I410AlphaToARGBRow_NEON,
+        0,
+        0,
+        uint16_t,
+        2,
+        4,
+        7);
+#endif
+
 #ifdef HAS_I210ALPHATOARGBROW_SSSE3
 ANY41CT(I210AlphaToARGBRow_Any_SSSE3,
         I210AlphaToARGBRow_SSSE3,
@@ -495,6 +516,18 @@ ANY31CT(I212ToARGBRow_Any_AVX2, I212ToARGBRow_AVX2, 1, 0, uint16_t, 2, 4, 15)
 #ifdef HAS_I212TOAR30ROW_AVX2
 ANY31CT(I212ToAR30Row_Any_AVX2, I212ToAR30Row_AVX2, 1, 0, uint16_t, 2, 4, 15)
 #endif
+#ifdef HAS_I210TOARGBROW_NEON
+ANY31CT(I210ToARGBRow_Any_NEON, I210ToARGBRow_NEON, 1, 0, uint16_t, 2, 4, 7)
+#endif
+#ifdef HAS_I410TOARGBROW_NEON
+ANY31CT(I410ToARGBRow_Any_NEON, I410ToARGBRow_NEON, 0, 0, uint16_t, 2, 4, 7)
+#endif
+#ifdef HAS_I210TOAR30ROW_NEON
+ANY31CT(I210ToAR30Row_Any_NEON, I210ToAR30Row_NEON, 1, 0, uint16_t, 2, 4, 7)
+#endif
+#ifdef HAS_I410TOAR30ROW_NEON
+ANY31CT(I410ToAR30Row_Any_NEON, I410ToAR30Row_NEON, 0, 0, uint16_t, 2, 4, 7)
+#endif
 #undef ANY31CT
 
 // Any 3 planes to 1 plane with parameter
@@ -528,7 +561,7 @@ ANY31PT(MergeXR30Row_10_Any_NEON,
         2,
         uint8_t,
         4,
-        3)
+        7)
 #endif
 
 #ifdef HAS_MERGEXR64ROW_AVX2
@@ -2412,6 +2445,12 @@ ANY12S(UYVYToUVRow_Any_LASX, UYVYToUVRow_LASX, 1, 4, 31)
 #ifdef HAS_AYUVTOVUROW_NEON
 ANY11S(AYUVToUVRow_Any_NEON, AYUVToUVRow_NEON, 0, 4, 15)
 ANY11S(AYUVToVURow_Any_NEON, AYUVToVURow_NEON, 0, 4, 15)
+#endif
+#ifdef HAS_AYUVTOUVROW_SVE2
+ANY11S(AYUVToUVRow_Any_SVE2, AYUVToUVRow_SVE2, 0, 4, 1)
+#endif
+#ifdef HAS_AYUVTOVUROW_SVE2
+ANY11S(AYUVToVURow_Any_SVE2, AYUVToVURow_SVE2, 0, 4, 1)
 #endif
 #undef ANY11S
 

@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.audio.audios
 
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -325,7 +324,7 @@ class AudiosPresenter(
             .setTitle(R.string.enter_audio_info)
             .setCancelable(true)
             .setView(root)
-            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_ok) { _, _ ->
                 audioListDisposable.add(audioInteractor.edit(
                     accountId,
                     audio.ownerId,

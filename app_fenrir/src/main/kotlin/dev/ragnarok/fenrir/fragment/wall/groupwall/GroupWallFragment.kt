@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.wall.groupwall
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -13,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -77,7 +75,7 @@ import kotlin.math.abs
 class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(), IGroupWallView {
     private val requestCommunity = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val tokens = extractGroupTokens(
                 result.data ?: return@registerForActivityResult
@@ -388,10 +386,10 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         menu.add(R.string.add_to_blacklist).setOnMenuItemClickListener {
             MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(R.string.add_to_blacklist)
-                .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.button_yes) { _, _ ->
                     presenter?.fireAddToBlacklistClick()
                 }
-                .setNegativeButton(R.string.cancel) { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
+                .setNegativeButton(R.string.cancel) { dialogInterface, _ -> dialogInterface.dismiss() }
                 .show()
             true
         }
@@ -482,10 +480,10 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
     override fun showCommunityMemberStatusChangeDialog(isAdd: Boolean) {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(if (isAdd) R.string.subscribe_to_community else R.string.unsubscribe_from_community)
-            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_yes) { _, _ ->
                 presenter?.firePrimaryButtonRequest()
             }
-            .setNegativeButton(R.string.cancel) { dialogInterface: DialogInterface, _: Int -> dialogInterface.dismiss() }
+            .setNegativeButton(R.string.cancel) { dialogInterface, _ -> dialogInterface.dismiss() }
             .show()
     }
 

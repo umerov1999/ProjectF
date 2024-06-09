@@ -20,7 +20,7 @@ internal class DatabaseApi(accountId: Long, provider: IServiceProvider) :
         return provideService(IDatabaseService(), TokenType.USER, TokenType.SERVICE)
             .flatMap { service ->
                 service
-                    .getCitiesById(join(cityIds, ",") { obj: Any -> obj.toString() })
+                    .getCitiesById(join(cityIds, ",") { it.toString() })
                     .map(extractResponseWithErrorHandling())
             }
     }

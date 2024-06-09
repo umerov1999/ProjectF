@@ -11,5 +11,5 @@ interface BitmapLoadCallback {
         imageOutputPath: String?
     )
 
-    fun onFailure(bitmapWorkerException: Exception)
+    fun onFailure(bitmapWorkerException: Throwable)
 }

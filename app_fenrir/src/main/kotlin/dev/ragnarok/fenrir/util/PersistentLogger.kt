@@ -17,7 +17,7 @@ object PersistentLogger {
         val cause = Utils.getCauseIfRuntime(throwable)
         cause.printStackTrace()
         getStackTrace(cause)
-            .flatMapCompletable { s: String ->
+            .flatMapCompletable { s ->
                 store.addLog(LogEvent.Type.ERROR, tag, s)
                     .ignoreElement()
             }
@@ -31,7 +31,7 @@ object PersistentLogger {
         val store = Includes.stores.tempStore()
         val cause = Utils.getCauseIfRuntime(throwable)
         getStackTrace(cause)
-            .flatMapCompletable { s: String ->
+            .flatMapCompletable { s ->
                 store.addLog(LogEvent.Type.ERROR, tag, s)
                     .ignoreElement()
             }

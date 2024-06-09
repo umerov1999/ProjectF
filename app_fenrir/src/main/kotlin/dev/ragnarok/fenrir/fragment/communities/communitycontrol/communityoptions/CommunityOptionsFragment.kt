@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.communities.communitycontrol.communityoptions
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -184,7 +183,7 @@ class CommunityOptionsFragment :
         }
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.select_from_list_title)
-            .setItems(strings) { _: DialogInterface?, which: Int ->
+            .setItems(strings) { _, which ->
                 presenter?.fireOptionSelected(
                     requestCode,
                     data[which]

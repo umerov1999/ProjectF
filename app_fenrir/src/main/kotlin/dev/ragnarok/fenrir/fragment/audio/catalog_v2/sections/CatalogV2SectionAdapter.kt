@@ -6,7 +6,6 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.BitmapFactory
 import android.view.ContextMenu
 import android.view.View
@@ -646,7 +645,7 @@ class CatalogV2SectionAdapter(
         audioListDisposable = if (audio.isHLS) {
             M3U8(pUrl).length.fromIOToMain()
                 .subscribe(
-                    { r: Long ->
+                    { r ->
                         CustomToast.createCustomToast(mContext).showToast(
                             Mp3InfoHelper.getBitrate(
                                 mContext,
@@ -659,7 +658,7 @@ class CatalogV2SectionAdapter(
         } else {
             Mp3InfoHelper.getLength(pUrl).fromIOToMain()
                 .subscribe(
-                    { r: Long ->
+                    { r ->
                         CustomToast.createCustomToast(mContext).showToast(
                             Mp3InfoHelper.getBitrate(
                                 mContext,
@@ -691,7 +690,7 @@ class CatalogV2SectionAdapter(
             .setMessage(Text)
             .setTitle(title)
             .setPositiveButton(R.string.button_ok, null)
-            .setNeutralButton(R.string.copy_text) { _: DialogInterface?, _: Int ->
+            .setNeutralButton(R.string.copy_text) { _, _ ->
                 val clipboard = mContext.getSystemService(
                     Context.CLIPBOARD_SERVICE
                 ) as ClipboardManager?
@@ -770,7 +769,7 @@ class CatalogV2SectionAdapter(
             .setTitle(R.string.enter_audio_info)
             .setCancelable(true)
             .setView(root)
-            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_ok) { _, _ ->
                 val artist =
                     root.findViewById<TextInputEditText>(R.id.edit_artist).text.toString()
                 val title =
@@ -1089,7 +1088,7 @@ class CatalogV2SectionAdapter(
                     )
                     if (audio.main_artists?.keys?.size.orZero() > 1) {
                         MaterialAlertDialogBuilder(mContext)
-                            .setItems(artists[1]) { _: DialogInterface?, which: Int ->
+                            .setItems(artists[1]) { _, which ->
                                 PlaceFactory.getArtistPlace(
                                     Settings.get().accounts().current,
                                     artists[0][which]
@@ -1271,9 +1270,9 @@ class CatalogV2SectionAdapter(
                 }
                 true
             }
-            play.setOnClickListener { v: View ->
+            play.setOnClickListener {
                 if (Settings.get().main().isRevert_play_audio) {
-                    doMenu(this, getItemRawPosition(bindingAdapterPosition), v, audio)
+                    doMenu(this, getItemRawPosition(bindingAdapterPosition), it, audio)
                 } else {
                     doPlay(getItemRawPosition(bindingAdapterPosition), audio)
                 }
@@ -1327,13 +1326,13 @@ class CatalogV2SectionAdapter(
                     true
                 }
             }
-            Track.setOnClickListener { view: View ->
+            Track.setOnClickListener {
                 cancelSelectionAnimation()
                 startSomeAnimation()
                 if (Settings.get().main().isRevert_play_audio) {
                     doPlay(getItemRawPosition(bindingAdapterPosition), audio)
                 } else {
-                    doMenu(this, getItemRawPosition(bindingAdapterPosition), view, audio)
+                    doMenu(this, getItemRawPosition(bindingAdapterPosition), it, audio)
                 }
             }
         }

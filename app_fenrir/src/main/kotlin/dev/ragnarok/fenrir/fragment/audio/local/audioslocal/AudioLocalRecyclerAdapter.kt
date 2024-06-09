@@ -122,7 +122,6 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                     if (fl.nonNullNoEmpty()) {
                         if (FileUtils.audioTagStrip(fl)) {
                             it.onComplete()
-                            return@create
                         } else {
                             it.tryOnError(Throwable("Can't strip metadata"))
                         }
@@ -367,20 +366,20 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
             with().cancelRequest(holder.play_cover)
             holder.play_cover.setImageResource(audioCoverSimple)
         }
-        holder.play.setOnClickListener { v: View ->
+        holder.play.setOnClickListener {
             if (Settings.get().main().isRevert_play_audio) {
-                doMenu(holder.bindingAdapterPosition, v, audio)
+                doMenu(holder.bindingAdapterPosition, it, audio)
             } else {
                 doPlay(holder.bindingAdapterPosition, audio)
             }
         }
-        holder.Track.setOnClickListener { view: View ->
+        holder.Track.setOnClickListener {
             holder.cancelSelectionAnimation()
             holder.startSomeAnimation()
             if (Settings.get().main().isRevert_play_audio) {
                 doPlay(holder.bindingAdapterPosition, audio)
             } else {
-                doMenu(holder.bindingAdapterPosition, view, audio)
+                doMenu(holder.bindingAdapterPosition, it, audio)
             }
         }
     }

@@ -13,9 +13,9 @@ object RxUtils {
     }
 
     inline fun <reified T : Any> ignore(): Consumer<T> {
-        return Consumer { t: T ->
-            if (t is Throwable && Constants.IS_DEBUG) {
-                (t as Throwable).printStackTrace()
+        return Consumer {
+            if (it is Throwable && Constants.IS_DEBUG) {
+                it.printStackTrace()
             }
         }
     }

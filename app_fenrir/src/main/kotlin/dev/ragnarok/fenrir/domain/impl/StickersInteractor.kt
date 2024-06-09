@@ -28,7 +28,6 @@ import dev.ragnarok.fenrir.util.Utils.listEmptyIfNullMutable
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import java.io.File
-import java.util.Arrays
 
 class StickersInteractor(private val networker: INetworker, private val storage: IStickersStorage) :
     IStickersInteractor {
@@ -124,22 +123,22 @@ class StickersInteractor(private val networker: INetworker, private val storage:
                 val temp = File(Settings.get().main().stickerDir)
                 if (!temp.exists()) {
                     t.onComplete()
-                    return@create
-                }
-                val file_list = temp.listFiles()
-                if (file_list == null || file_list.isEmpty()) {
-                    t.onComplete()
-                    return@create
-                }
-                Arrays.sort(file_list) { o1: File, o2: File ->
-                    o2.lastModified().compareTo(o1.lastModified())
-                }
-                getCachedMyStickers().clear()
-                for (u in file_list) {
-                    if (u.isFile && (u.name.contains(".png") || u.name.contains(".webp"))) {
-                        getCachedMyStickers().add(LocalSticker(u.absolutePath, false))
-                    } else if (u.isFile && u.name.contains(".json")) {
-                        getCachedMyStickers().add(LocalSticker(u.absolutePath, true))
+                } else {
+                    val file_list = temp.listFiles()
+                    if (file_list == null || file_list.isEmpty()) {
+                        t.onComplete()
+                    } else {
+                        file_list.sortBy {
+                            it.lastModified()
+                        }
+                        getCachedMyStickers().clear()
+                        for (u in file_list) {
+                            if (u.isFile && (u.name.contains(".png") || u.name.contains(".webp"))) {
+                                getCachedMyStickers().add(LocalSticker(u.absolutePath, false))
+                            } else if (u.isFile && u.name.contains(".json")) {
+                                getCachedMyStickers().add(LocalSticker(u.absolutePath, true))
+                            }
+                        }
                     }
                 }
             }

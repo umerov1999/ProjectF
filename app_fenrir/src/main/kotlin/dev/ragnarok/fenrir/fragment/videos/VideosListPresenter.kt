@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.videos
 
 import android.content.Context
-import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -323,7 +322,7 @@ class VideosListPresenter(
             .setTitle(R.string.edit)
             .setCancelable(true)
             .setView(root)
-            .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+            .setPositiveButton(R.string.button_ok) { _, _ ->
                 val title = root.findViewById<TextInputEditText>(R.id.edit_title).text.toString()
                 val description =
                     root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
@@ -488,7 +487,7 @@ class VideosListPresenter(
             MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.confirmation)
                 .setMessage(R.string.do_upload_video)
-                .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int -> doUpload() }
+                .setPositiveButton(R.string.button_yes) { _, _ -> doUpload() }
                 .setNegativeButton(R.string.button_no, null)
                 .show()
         }

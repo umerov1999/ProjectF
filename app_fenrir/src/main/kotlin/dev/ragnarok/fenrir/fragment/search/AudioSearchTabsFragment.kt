@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -42,7 +41,7 @@ class AudioSearchTabsFragment : Fragment() {
         TabLayoutMediator(
             root.findViewById(R.id.tablayout),
             mViewPager
-        ) { tab: TabLayout.Tab, position: Int ->
+        ) { tab, position ->
             when (position) {
                 TAB_MUSIC -> tab.setText(R.string.music)
                 TAB_AUDIO_PLAYLISTS -> tab.setText(R.string.playlists)

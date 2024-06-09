@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit
 
 import android.Manifest
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -10,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -80,7 +78,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
             }
         }
     private val openCameraRequest =
-        registerForActivityResult(ActivityResultContracts.TakePicture()) { result: Boolean ->
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { result ->
             if (result) {
                 lazyPresenter {
                     firePhotoMaked()
@@ -88,7 +86,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
             }
         }
     private val openRequestAudioVideoDoc =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.data != null && result.resultCode == Activity.RESULT_OK) {
                 val attachments: ArrayList<AbsModel> =
                     (result.data
@@ -102,7 +100,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
             }
         }
     private val openRequestPhotoFromVK =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.data != null && result.resultCode == Activity.RESULT_OK) {
                 val photos: ArrayList<Photo> =
                     (result.data
@@ -114,7 +112,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
             }
         }
     private val openRequestPhotoFromGallery =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.data != null && result.resultCode == Activity.RESULT_OK) {
                 val photos: ArrayList<LocalPhoto> =
                     (result.data
@@ -128,7 +126,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
             }
         }
     private val openRequestResizePhoto =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 lazyPresenter {
                     fireFileSelected(
@@ -322,7 +320,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
             .setTitle(R.string.select_image_size_title)
             .setItems(
                 R.array.array_image_sizes_names
-            ) { _: DialogInterface?, index: Int ->
+            ) { _, index ->
                 presenter?.fireUploadPhotoSizeSelected(
                     photos,
                     values[index]
@@ -351,7 +349,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
         parentFragmentManager.setFragmentResultListener(
             CreatePollFragment.REQUEST_CREATE_POLL,
             this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             val poll: Poll = result.getParcelableCompat("poll") ?: return@setFragmentResultListener
             presenter?.firePollCreated(poll)
         }
@@ -368,7 +366,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
             getString(R.string.from_local_albums),
             getString(R.string.from_camera)
         )
-        MaterialAlertDialogBuilder(requireActivity()).setItems(items) { _: DialogInterface?, i: Int ->
+        MaterialAlertDialogBuilder(requireActivity()).setItems(items) { _, i ->
             when (i) {
                 0 -> presenter?.firePhotoFromVkChoose()
                 1 -> presenter?.firePhotoFromLocalGalleryChoose()

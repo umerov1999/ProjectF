@@ -90,7 +90,7 @@ internal class PollsApi(accountId: Long, provider: IServiceProvider) :
         isBoard: Int?,
         answer_ids: List<Long>, offset: Int?, count: Int?
     ): Single<List<VKApiUser>> {
-        val ids = join(answer_ids, ",") { obj: Any -> obj.toString() } ?: return Single.just(
+        val ids = join(answer_ids, ",") { it.toString() } ?: return Single.just(
             emptyList()
         )
         return provideService(IPollsService(), TokenType.USER)

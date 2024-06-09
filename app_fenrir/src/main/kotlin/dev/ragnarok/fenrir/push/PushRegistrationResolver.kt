@@ -10,9 +10,6 @@ import dev.ragnarok.fenrir.service.ApiErrorCodes
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.VKPushRegistration
 import dev.ragnarok.fenrir.util.Logger.d
-import dev.ragnarok.fenrir.util.Optional
-import dev.ragnarok.fenrir.util.Optional.Companion.empty
-import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Utils.deviceName
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import io.reactivex.rxjava3.core.Completable
@@ -42,56 +39,57 @@ class PushRegistrationResolver(
     override fun resolvePushRegistration(): Completable {
         return info
             .observeOn(Schedulers.io())
-            .flatMapCompletable { data: Data ->
+            .flatMapCompletable { data ->
                 val available = settings.pushSettings().registrations
                 val accountId = settings.accounts().current
-                val hasAuth = accountId != ISettings.IAccountsSettings.INVALID_ID
-                if (!hasAuth && available.isEmpty()) {
-                    d(TAG, "No auth, no regsitrations, OK")
-                    return@flatMapCompletable Completable.complete()
-                }
-                if (accountId <= 0 || settings.accounts()
-                        .getType(settings.accounts().current) != Constants.DEFAULT_ACCOUNT_TYPE
-                ) return@flatMapCompletable Completable.never()
-                val needUnregister: MutableSet<VKPushRegistration> = HashSet(0)
-                val optionalAccountId: Optional<Long> = if (hasAuth) wrap(accountId) else empty()
-                var hasOk = false
-                var hasRemove = false
-                for (registered in available) {
-                    val reason = analyzeRegistration(registered, data, optionalAccountId)
-                    d(TAG, "Reason: $reason")
-                    when (reason) {
-                        Reason.UNREGISTER_AND_REMOVE -> needUnregister.add(registered)
-                        Reason.REMOVE -> hasRemove = true
-                        Reason.OK -> hasOk = true
+                if (accountId == ISettings.IAccountsSettings.INVALID_ID && available.isEmpty() || accountId <= 0 || settings.accounts()
+                        .getType(accountId) != Constants.DEFAULT_ACCOUNT_TYPE
+                ) {
+                    Completable.complete()
+                } else {
+                    val needUnregister: MutableSet<VKPushRegistration> = HashSet(0)
+                    var hasOk = false
+                    var hasRemove = false
+                    for (registered in available) {
+                        val reason = analyzeRegistration(registered, data, accountId)
+                        d(TAG, "Reason: $reason")
+                        when (reason) {
+                            Reason.UNREGISTER_AND_REMOVE -> needUnregister.add(registered)
+                            Reason.REMOVE -> hasRemove = true
+                            Reason.OK -> hasOk = true
+                        }
+                    }
+                    if (hasOk && !hasRemove && needUnregister.isEmpty()) {
+                        d(TAG, "Has auth, valid registration, OK")
+                        Completable.complete()
+                    } else {
+                        var completable = Completable.complete()
+                        for (unregistered in needUnregister) {
+                            completable = completable.andThen(unregister(unregistered))
+                        }
+                        val target: MutableList<VKPushRegistration> = ArrayList()
+                        if (!hasOk) {
+                            val vkToken = settings.accounts().getAccessToken(accountId)
+                            if (vkToken != null) {
+                                val current =
+                                    VKPushRegistration().set(
+                                        accountId,
+                                        data.deviceId,
+                                        vkToken,
+                                        data.fcmToken
+                                    )
+                                target.add(current)
+                                completable = completable.andThen(register(current))
+                            }
+                        }
+                        completable
+                            .doOnComplete {
+                                settings.pushSettings().savePushRegistrations(target)
+                                d(TAG, "Register success")
+                            }
+                            .doOnError { d(TAG, "Register error, t: $it") }
                     }
                 }
-                if (hasAuth && hasOk && !hasRemove && needUnregister.isEmpty()) {
-                    d(TAG, "Has auth, valid registration, OK")
-                    return@flatMapCompletable Completable.complete()
-                }
-                var completable = Completable.complete()
-                for (unreg in needUnregister) {
-                    completable = completable.andThen(unregister(unreg))
-                }
-                val target: MutableList<VKPushRegistration> = ArrayList()
-                if (!hasOk && hasAuth) {
-                    val vkToken = settings.accounts().getAccessToken(accountId)
-                    vkToken ?: return@flatMapCompletable Completable.complete()
-                    val current =
-                        VKPushRegistration().set(
-                            accountId,
-                            data.deviceId,
-                            vkToken,
-                            data.fcmToken
-                        )
-                    target.add(current)
-                    completable = completable.andThen(register(current))
-                }
-                completable
-                    .doOnComplete { settings.pushSettings().savePushRegistrations(target) }
-                    .doOnComplete { d(TAG, "Register success") }
-                    .doOnError { throwable -> d(TAG, "Register error, t: $throwable") }
             }
     }
 
@@ -185,25 +183,27 @@ class PushRegistrationResolver(
     private fun analyzeRegistration(
         available: VKPushRegistration,
         data: Data,
-        optionAccountId: Optional<Long>
+        accountId: Long
     ): Reason {
-        if (data.deviceId != available.deviceId) {
-            return Reason.REMOVE
+        when {
+            data.deviceId != available.deviceId -> {
+                return Reason.REMOVE
+            }
+
+            data.fcmToken != available.fcmToken -> {
+                return Reason.REMOVE
+            }
+
+            else -> {
+                if (available.userId != accountId) {
+                    return Reason.UNREGISTER_AND_REMOVE
+                }
+                val currentVkToken = settings.accounts().getAccessToken(accountId)
+                return if (available.vkAccessToken != currentVkToken) {
+                    Reason.REMOVE
+                } else Reason.OK
+            }
         }
-        if (data.fcmToken != available.fcmToken) {
-            return Reason.REMOVE
-        }
-        if (optionAccountId.isEmpty) {
-            return Reason.UNREGISTER_AND_REMOVE
-        }
-        val currentAccountId = optionAccountId.get()
-        if (available.userId != currentAccountId) {
-            return Reason.UNREGISTER_AND_REMOVE
-        }
-        val currentVkToken = settings.accounts().getAccessToken(currentAccountId)
-        return if (available.vkAccessToken != currentVkToken) {
-            Reason.REMOVE
-        } else Reason.OK
     }
 
     private val info: Single<Data>

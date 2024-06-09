@@ -86,7 +86,7 @@ class ColorPickerDialogBuilder private constructor(context: Context, theme: Int 
         text: CharSequence?,
         onClickListener: ColorPickerClickListener
     ): ColorPickerDialogBuilder {
-        builder.setPositiveButton(text) { dialog: DialogInterface, _: Int ->
+        builder.setPositiveButton(text) { dialog, _ ->
             positiveButtonOnClick(
                 dialog,
                 onClickListener
@@ -99,7 +99,7 @@ class ColorPickerDialogBuilder private constructor(context: Context, theme: Int 
         textId: Int,
         onClickListener: ColorPickerClickListener
     ): ColorPickerDialogBuilder {
-        builder.setPositiveButton(textId) { dialog: DialogInterface, _: Int ->
+        builder.setPositiveButton(textId) { dialog, _ ->
             positiveButtonOnClick(
                 dialog,
                 onClickListener

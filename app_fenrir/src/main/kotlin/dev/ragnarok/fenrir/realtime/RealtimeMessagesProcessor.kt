@@ -176,10 +176,11 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
                         removeIf(result.data) { it.isAlreadyExists }
                     }
                     if (result.data.isEmpty()) {
-                        return@flatMap Single.just(result)
+                        Single.just(result)
+                    } else {
+                        Single.just(result)
+                            .compose(andStore)
                     }
-                    Single.just(result)
-                        .compose(andStore)
                 }
                 .compose(NotificationScheduler.fromNotificationThreadToMain())
                 .subscribe({ result ->
@@ -202,12 +203,13 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
                             it.dto == null
                         }
                     if (needGetFromNet.isEmpty()) {
-                        return@flatMap Single.just(result)
+                        Single.just(result)
+                    } else {
+                        networker.vkDefault(result.accountId)
+                            .messages()
+                            .getById(needGetFromNet)
+                            .map { result.appendDtos(it) }
                     }
-                    networker.vkDefault(result.accountId)
-                        .messages()
-                        .getById(needGetFromNet)
-                        .map { result.appendDtos(it) }
                 }
                 .map { result ->
                     // отсеиваем сообщения, которые имеют отношение к обмену ключами
@@ -224,11 +226,12 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
                 }
                 .flatMap { result ->
                     if (result.data.isEmpty()) {
-                        return@flatMap Single.just(result)
+                        Single.just(result)
+                    } else {
+                        identifyMissingObjectsGetAndStore(result)
+                            .andThen(Single.just(result)) // сохраняем сообщения в локальную базу и получаем оттуда "тяжелые" обьекты сообщений
+                            .compose(storeToCacheAndReturn())
                     }
-                    identifyMissingObjectsGetAndStore(result)
-                        .andThen(Single.just(result)) // сохраняем сообщения в локальную базу и получаем оттуда "тяжелые" обьекты сообщений
-                        .compose(storeToCacheAndReturn())
                 }
         }
 
@@ -303,27 +306,29 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
     private fun findMissingChatsGetAndStore(accountId: Long, ids: Collection<Long>): Completable {
         return repositories.dialogs()
             .getMissingGroupChats(accountId, ids)
-            .flatMapCompletable { integers: Collection<Long> ->
+            .flatMapCompletable { integers ->
                 if (integers.isEmpty()) {
-                    return@flatMapCompletable Completable.complete()
+                    Completable.complete()
+                } else {
+                    networker.vkDefault(accountId)
+                        .messages()
+                        .getChat(null, integers, null, null)
+                        .flatMapCompletable {
+                            repositories.dialogs()
+                                .insertChats(accountId, it)
+                        }
                 }
-                networker.vkDefault(accountId)
-                    .messages()
-                    .getChat(null, integers, null, null)
-                    .flatMapCompletable {
-                        repositories.dialogs()
-                            .insertChats(accountId, it)
-                    }
             }
     }
 
     private fun findMissingOwnersGetAndStore(accountId: Long, ids: VKOwnIds): Completable {
         return findMissingOwnerIds(accountId, ids)
-            .flatMapCompletable { integers: List<Long> ->
+            .flatMapCompletable { integers ->
                 if (integers.isEmpty()) {
-                    return@flatMapCompletable Completable.complete()
+                    Completable.complete()
+                } else {
+                    ownersRepository.cacheActualOwnersData(accountId, integers)
                 }
-                ownersRepository.cacheActualOwnersData(accountId, integers)
             }
     }
 
@@ -332,14 +337,15 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
             .getMissingUserIds(accountId, ids.getUids())
             .zipWith(
                 repositories.owners().getMissingCommunityIds(accountId, ids.getGids())
-            ) { integers: Collection<Long>, integers2: Collection<Long> ->
+            ) { integers, integers2 ->
                 if (integers.isEmpty() && integers2.isEmpty()) {
-                    return@zipWith emptyList<Long>()
+                    emptyList()
+                } else {
+                    val result: MutableList<Long> = ArrayList(integers.size + integers2.size)
+                    result.addAll(integers)
+                    result.addAll(integers2)
+                    result
                 }
-                val result: MutableList<Long> = ArrayList(integers.size + integers2.size)
-                result.addAll(integers)
-                result.addAll(integers2)
-                result
             }
     }
 

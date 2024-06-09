@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -97,7 +96,7 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
         parentFragmentManager.setFragmentResultListener(
             REQUEST_FILTER_OPTION,
             this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             val key = result.getInt(Extra.KEY)
             val id = if (result.containsKey(Extra.ID)) result.getInt(Extra.ID) else null
             val title = if (result.containsKey(Extra.TITLE)) result.getString(Extra.TITLE) else null
@@ -115,11 +114,11 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
     override fun onSpinnerOptionClick(spinnerOption: SpinnerOption) {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(spinnerOption.title)
-            .setItems(spinnerOption.createAvailableNames(requireActivity())) { _: DialogInterface?, which: Int ->
+            .setItems(spinnerOption.createAvailableNames(requireActivity())) { _, which ->
                 spinnerOption.value = spinnerOption.available[which]
                 mAdapter?.notifyDataSetChanged()
             }
-            .setNegativeButton(R.string.clear) { _: DialogInterface?, _: Int ->
+            .setNegativeButton(R.string.clear) { _, _ ->
                 spinnerOption.value = null
                 mAdapter?.notifyDataSetChanged()
             }

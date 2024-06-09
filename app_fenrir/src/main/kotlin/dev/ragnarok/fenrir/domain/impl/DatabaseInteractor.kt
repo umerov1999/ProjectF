@@ -60,11 +60,11 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
                                     countriesg.add(Country(dto.id, dto.title))
                                 }
                                 cache.storeCountries(accountId, dbosg)
-                                    .andThen(Single.just<List<Country>>(countriesg))
+                                    .andThen(Single.just(countriesg))
                             }
                     } else {
                         cache.storeCountries(accountId, dbos)
-                            .andThen(Single.just<List<Country>>(countries))
+                            .andThen(Single.just(countries))
                     }
                 }
         } else cache.getCountries(accountId)
@@ -74,9 +74,10 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
                     for (dbo in dbos) {
                         countries.add(Country(dbo.id, dbo.title))
                     }
-                    return@flatMap Single.just<List<Country>>(countries)
+                    Single.just(countries)
+                } else {
+                    getCountries(accountId, true)
                 }
-                getCountries(accountId, true)
             }
     }
 

@@ -223,7 +223,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
     }
 
     fun <T : Any> extractResponseWithErrorHandling(): Function<BaseResponse<T>, T> {
-        return Function { response: BaseResponse<T> ->
+        return Function { response ->
             response.error.requireNonNull {
                 val params = it.requests()
 
@@ -256,7 +256,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
     }
 
     fun checkResponseWithErrorHandling(): Function<VKResponse, Completable> {
-        return Function { response: VKResponse ->
+        return Function { response ->
             response.error.requireNonNull {
                 val params = it.requests()
                 if (!handleError(it, params)) {

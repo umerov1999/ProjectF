@@ -607,6 +607,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         mCurrentTime?.text = MusicPlaybackController.makeTimeString(requireActivity(), pos / 1000)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun refreshCurrentTime(): Long {
         if (!MusicPlaybackController.isInitialized) {
             mCurrentTime?.text = "--:--"

@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.videos.videopreview
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -98,7 +97,7 @@ class VideoPreviewPresenter(
                 .setTitle(R.string.edit)
                 .setCancelable(true)
                 .setView(root)
-                .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.button_ok) { _, _ ->
                     appendDisposable(interactor.edit(
                         accountId, vd.ownerId, vd.id,
                         root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),

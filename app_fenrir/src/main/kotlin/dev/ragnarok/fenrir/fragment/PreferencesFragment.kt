@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ShortcutManager
 import android.graphics.Bitmap
@@ -26,7 +25,6 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -117,21 +115,21 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
     private val requestLightBackground = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             changeDrawerBackground(false, result.data)
         }
     }
     private val requestDarkBackground = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             changeDrawerBackground(true, result.data)
         }
     }
     private val requestPin = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK) {
             PlaceFactory.securitySettingsPlace.tryOpenWith(requireActivity())
         }
@@ -139,7 +137,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
     private val requestPinForAdditionalInfo = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK) {
             showAdditionalInfo(false)
         }
@@ -259,7 +257,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
     private val fixTimeDir = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             try {
                 doFixDirTime(
@@ -279,7 +277,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
     private val musicDir = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
                 .edit().putString(
@@ -293,7 +291,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
     private val photoDir = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
                 .edit().putString(
@@ -306,7 +304,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
     private val videoDir = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
                 .edit().putString(
@@ -319,7 +317,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
     private val docDir = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
                 .edit().putString(
@@ -333,7 +331,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
     private val stickerDir = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
                 .edit().putString(
@@ -1781,7 +1779,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         MaterialAlertDialogBuilder(requireActivity()).setIcon(R.drawable.ic_outline_delete)
                             .setTitle(R.string.select)
                             .setMessage(R.string.ask_account_cache_cleaner)
-                            .setPositiveButton(R.string.button_yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(R.string.button_yes) { _, _ ->
                                 DBHelper.removeDatabaseFor(requireActivity(), accountId)
                                 cleanCache(requireActivity(), true)
                                 Includes.stores.stickers().clearAccount(accountId).fromIOToMain()
@@ -2072,7 +2070,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
     private val internalDataIntent = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             try {
                 val file = File(
@@ -2082,10 +2080,10 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     MaterialAlertDialogBuilder(requireActivity())
                         .setTitle(R.string.confirmation)
                         .setMessage(R.string.data)
-                        .setPositiveButton(R.string.delete) { _: DialogInterface?, _: Int ->
+                        .setPositiveButton(R.string.delete) { _, _ ->
                             file.delete()
                         }
-                        .setNegativeButton(R.string.button_save) { _: DialogInterface?, _: Int ->
+                        .setNegativeButton(R.string.button_save) { _, _ ->
                             file.copyTo(
                                 File(Environment.getExternalStorageDirectory(), file.name),
                                 true
@@ -2129,7 +2127,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             .setTitle(R.string.additional_info)
             .setView(view)
         if (Utils.hasNougat()) {
-            ot.setNegativeButton(R.string.data) { _: DialogInterface?, _: Int ->
+            ot.setNegativeButton(R.string.data) { _, _ ->
                 internalDataIntent.launch(
                     FileManagerSelectActivity.makeFileManager(
                         requireActivity(),
@@ -2283,7 +2281,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             return MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(R.string.avatar_style_title)
                 .setView(view)
-                .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.button_ok) { _, _ ->
                     val circle = ivCircleSelected.visibility == View.VISIBLE
                     Settings.get()
                         .ui()
@@ -2471,7 +2469,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 .setView(view)
                 .setCancelable(true)
                 .setNegativeButton(R.string.button_cancel, null)
-                .setNeutralButton(R.string.set_default) { _: DialogInterface?, _: Int ->
+                .setNeutralButton(R.string.set_default) { _, _ ->
                     Settings.get()
                         .main().playerCoverBackgroundSettings =
                         PlayerCoverBackgroundSettings().set_default()
@@ -2481,7 +2479,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     )
                     dismiss()
                 }
-                .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.button_ok) { _, _ ->
                     val st = PlayerCoverBackgroundSettings()
                     st.blur = blur.progress
                     st.invert_rotation = invertRotation.isChecked
@@ -2541,7 +2539,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 .setView(view)
                 .setCancelable(true)
                 .setNegativeButton(R.string.button_cancel, null)
-                .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.button_ok) { _, _ ->
                     val enabledVal = enabled.isChecked
                     val urlVal = url.editableText.toString()
                     val passVal = password.editableText.toString()
@@ -2753,7 +2751,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 .setView(view)
                 .setCancelable(true)
                 .setNegativeButton(R.string.button_cancel, null)
-                .setNeutralButton(R.string.set_default) { _: DialogInterface?, _: Int ->
+                .setNeutralButton(R.string.set_default) { _, _ ->
                     Settings.get()
                         .main().slidrSettings = SlidrSettings().set_default()
                     parentFragmentManager.setFragmentResult(
@@ -2762,7 +2760,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     )
                     dismiss()
                 }
-                .setPositiveButton(R.string.button_ok) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.button_ok) { _, _ ->
                     val st = SlidrSettings()
                     st.horizontal_sensitive = horizontalSensitive.progress.toFloat() / 100
                     st.vertical_sensitive = verticalSensitive.progress.toFloat() / 100

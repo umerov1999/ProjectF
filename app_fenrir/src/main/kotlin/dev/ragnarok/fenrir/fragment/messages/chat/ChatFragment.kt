@@ -28,7 +28,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.DrawableRes
@@ -279,7 +278,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         parentFragmentManager.setFragmentResultListener(
             CreatePollDialogFragment.REQUEST_CREATE_POLL_EDIT,
             this
-        ) { _: String?, result: Bundle ->
+        ) { _, result ->
             val poll: Poll = result.getParcelableCompat("poll") ?: return@setFragmentResultListener
             presenter?.fireEditAttachmentsSelected(arrayListOf(poll))
         }
@@ -312,8 +311,8 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         toolbar = root.findViewById(R.id.toolbar)
         toolbar?.inflateMenu(R.menu.menu_chat)
         toolbar?.menu?.let { prepareOptionsMenu(it) }
-        toolbar?.setOnMenuItemClickListener { item: MenuItem ->
-            optionsMenuItemSelected(item)
+        toolbar?.setOnMenuItemClickListener {
+            optionsMenuItemSelected(it)
         }
 
         stickersKeywordsView = root.findViewById(R.id.stickers)
@@ -593,10 +592,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                                     dlgAlert.setTitle(R.string.select)
                                     dlgAlert.setPositiveButton(
                                         R.string.button_yes
-                                    ) { _: DialogInterface?, _: Int -> presenter?.fireActionModeSpamClick() }
+                                    ) { _, _ -> presenter?.fireActionModeSpamClick() }
                                     dlgAlert.setNeutralButton(
                                         R.string.delete
-                                    ) { _: DialogInterface?, _: Int -> presenter?.fireActionModeDeleteClick() }
+                                    ) { _, _ -> presenter?.fireActionModeDeleteClick() }
                                     dlgAlert.setCancelable(true)
                                     dlgAlert.create().show()
                                 }
@@ -649,10 +648,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     dlgAlert?.setTitle(R.string.select)
                     dlgAlert?.setPositiveButton(
                         R.string.button_yes
-                    ) { _: DialogInterface?, _: Int -> reference.get()?.presenter?.fireActionModeSpamClick(); hide(); }
+                    ) { _, _ -> reference.get()?.presenter?.fireActionModeSpamClick(); hide(); }
                     dlgAlert?.setNeutralButton(
                         R.string.delete
-                    ) { _: DialogInterface?, _: Int -> reference.get()?.presenter?.fireActionModeDeleteClick(); hide(); }
+                    ) { _, _ -> reference.get()?.presenter?.fireActionModeDeleteClick(); hide(); }
                     dlgAlert?.setCancelable(true)
                     dlgAlert?.create()?.show()
                 }
@@ -944,7 +943,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
     private val requestMessagesUnread = registerForActivityResult(
         StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == RESULT_OK) {
             val incoming = result.data?.extras?.getInt(Extra.INCOMING) ?: -1
             val outgoing = result.data?.extras?.getInt(Extra.OUTGOING) ?: -1

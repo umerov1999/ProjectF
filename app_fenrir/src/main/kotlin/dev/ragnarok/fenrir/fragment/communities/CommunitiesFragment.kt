@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.fragment.communities
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -147,7 +146,7 @@ class CommunitiesFragment : BaseMvpFragment<CommunitiesPresenter, ICommunitiesVi
         options.add(delete)
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(community.fullName)
-            .setItems(options.toTypedArray()) { _: DialogInterface?, which: Int ->
+            .setItems(options.toTypedArray()) { _, which ->
                 val selected = options[which]
                 if (selected == delete) {
                     presenter?.fireUnsubscribe(

@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.wall.userwall
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import androidx.annotation.StringRes
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -715,7 +714,7 @@ class UserWallPresenter(
         )
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.report)
-            .setItems(items) { dialog: DialogInterface, item: Int ->
+            .setItems(items) { dialog, item ->
                 val report = values[item].toString()
                 appendDisposable(ownersRepository.report(accountId, ownerId, report, null)
                     .fromIOToMain()

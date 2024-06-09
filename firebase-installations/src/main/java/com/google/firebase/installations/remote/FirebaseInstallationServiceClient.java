@@ -206,7 +206,7 @@ public class FirebaseInstallationServiceClient {
         checkArgument(
                 EXPIRATION_TIMESTAMP_PATTERN.matcher(expiresIn).matches(),
                 PARSING_EXPIRATION_TIME_ERROR_MESSAGE);
-        return (expiresIn == null || expiresIn.length() == 0)
+        return (expiresIn == null || expiresIn.isEmpty())
                 ? 0L
                 : Long.parseLong(expiresIn.substring(0, expiresIn.length() - 1));
     }

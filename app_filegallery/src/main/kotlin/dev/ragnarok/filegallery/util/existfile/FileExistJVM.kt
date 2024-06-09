@@ -6,7 +6,6 @@ import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.util.AppPerms.hasReadWriteStoragePermission
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.CompletableEmitter
 import java.io.File
 import java.util.LinkedList
 import java.util.Locale
@@ -35,7 +34,7 @@ class FileExistJVM : AbsFileExist {
     }
 
     override fun findAllAudios(context: Context): Completable {
-        return if (!hasReadWriteStoragePermission(context)) Completable.complete() else Completable.create { t: CompletableEmitter ->
+        return if (!hasReadWriteStoragePermission(context)) Completable.complete() else Completable.create { t ->
             if (!setBusy(true)) {
                 return@create
             }

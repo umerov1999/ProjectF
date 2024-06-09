@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
@@ -63,7 +62,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
     HorizontalOptionsAdapter.Listener<FeedSource>, CustomListener<FeedSource>, MenuProvider {
     private val requestProfileSelect = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val owners: ArrayList<Owner>? =
                 result.data?.getParcelableArrayListExtraCompat(Extra.OWNERS)

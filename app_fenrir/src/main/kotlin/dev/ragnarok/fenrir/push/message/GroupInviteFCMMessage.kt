@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.push.NotificationScheduler.INSTANCE
 import dev.ragnarok.fenrir.push.NotificationUtils.configOtherPushNotification
-import dev.ragnarok.fenrir.push.OwnerInfo
 import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
@@ -52,7 +51,7 @@ class GroupInviteFCMMessage {
         Single.zip(
             group,
             user
-        ) { first: OwnerInfo, second: OwnerInfo ->
+        ) { first, second ->
             Pair(
                 first,
                 second
